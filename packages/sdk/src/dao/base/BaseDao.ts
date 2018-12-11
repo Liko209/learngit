@@ -60,6 +60,17 @@ class BaseDao<T extends {}> {
     }
   }
 
+  async batchGet(ids: number[]): Promise<T[]> {
+    try {
+      await this.db.ensureDBOpened();
+      const query = this.createQuery();
+      return await query.anyOf('id', ids).toArray();
+    } catch (err) {
+      errorHandler(err);
+      return [];
+    }
+  }
+
   async clear(): Promise<void> {
     try {
       await this.collection.clear();

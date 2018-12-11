@@ -66,7 +66,37 @@ class BaseService<
     this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
     const result = await dao.get(id);
-    return result || daoManager.getDao(DeactivatedDao).get(id);
+    return result || (await this._getDeactivatedModelLocally(id));
+  }
+
+  private async _getDeactivatedModelsLocally(
+    ids: number[],
+  ): Promise<SubModel[]> {
+    const dao = daoManager.getDao(DeactivatedDao);
+    return await dao.batchGet(ids);
+  }
+
+  private async _getDeactivatedModelLocally(id: number): Promise<SubModel> {
+    const dao = daoManager.getDao(DeactivatedDao);
+    return await dao.get(id);
+  }
+
+  async getModelsLocally(
+    ids: number[],
+    includeDeactivated: boolean,
+  ): Promise<SubModel[]> {
+    if (ids.length <= 0) {
+      return [];
+    }
+    const dao = daoManager.getDao(this.DaoClass);
+    let models = await dao.batchGet(ids);
+    if (includeDeactivated && models.length !== ids.length) {
+      const modelIds = models.map(model => model.id);
+      const diffIds = _.difference(ids, modelIds);
+      const deactivateModels = await this._getDeactivatedModelsLocally(diffIds);
+      models = _.concat(models, deactivateModels);
+    }
+    return models;
   }
 
   async getByIdFromAPI(id: number): Promise<SubModel | null> {

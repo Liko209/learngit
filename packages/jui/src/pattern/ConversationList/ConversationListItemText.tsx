@@ -7,7 +7,7 @@ import React, { CSSProperties, PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
 import MuiTypography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import { JuiArrowTip } from '../../components/Tooltip/ArrowTip';
 
 import styled from '../../foundation/styled-components';
 import { isTextOverflow, spacing, typography } from '../../foundation/utils';
@@ -52,7 +52,7 @@ class ConversationListItemText extends PureComponent<
     const { tipOpen } = this.state;
 
     return (
-      <Tooltip
+      <JuiArrowTip
         title={this.props.children}
         disableFocusListener={false}
         disableHoverListener={false}
@@ -67,7 +67,7 @@ class ConversationListItemText extends PureComponent<
         >
           {this.props.children}
         </StyledTypography>
-      </Tooltip>
+      </JuiArrowTip>
     );
   }
 

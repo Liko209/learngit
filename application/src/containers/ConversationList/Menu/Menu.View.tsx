@@ -96,7 +96,7 @@ class MenuViewComponent extends Component<Props, State> {
           </>
         ),
         okText: t('conversationMenuItem:Close Conversation'),
-        okBtnType: 'text',
+        okVariant: 'text',
         onOK: () => {
           this._closeConversationWithConfirm();
         },

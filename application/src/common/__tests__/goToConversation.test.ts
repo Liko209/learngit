@@ -15,11 +15,12 @@ const { GroupService } = service;
 const groupService = new GroupService();
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
-describe('goToConversation()', () => {
+describe('goToConversation() with group or team type', () => {
   it('getConversationId() with group type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_GROUP,
     );
+
     expect(await goToConversation(1)).toEqual(true);
   });
 
@@ -36,28 +37,28 @@ describe('goToConversation()', () => {
     );
     expect(await goToConversation(1)).toEqual(false);
   });
+});
 
-  describe('getConversationId() with person type conversationId', () => {
-    beforeAll(() => {
-      (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
-        TypeDictionary.TYPE_ID_PERSON,
-      );
-    });
+describe('getConversationId() with person type conversationId', () => {
+  beforeAll(() => {
+    (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
+      TypeDictionary.TYPE_ID_PERSON,
+    );
+  });
 
-    it('groupService should return ok', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-        ok({
-          id: 2,
-        }),
-      );
-      expect(await goToConversation(1)).toEqual(true);
-    });
+  it('groupService should return ok', async () => {
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
+      ok({
+        id: 2,
+      }),
+    );
+    expect(await goToConversation(1)).toEqual(true);
+  });
 
-    it('groupService should return err', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-        err(new BaseError(500, '')),
-      );
-      expect(await goToConversation(1)).toEqual(false);
-    });
+  it('groupService should return err', async () => {
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
+      err(new BaseError(500, '')),
+    );
+    expect(await goToConversation(1)).toEqual(false);
   });
 });

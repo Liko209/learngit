@@ -45,10 +45,11 @@ class Mention {
         (eventHandler: KeyboardEventHandler) => {
           const { key, handler } = eventHandler;
           this._quill.keyboard.addBinding({ key } as { key: any }, handler);
-          if ([Keys.TAB, Keys.ENTER].includes(key)) {
-            (this._quill.keyboard as any).bindings[key].unshift(
-              (this._quill.keyboard as any).bindings[key].pop(),
-            );
+          if ([Keys.TAB, Keys.ENTER, Keys.ESCAPE].includes(key)) {
+            const bindings = (this._quill.keyboard as any).bindings;
+            if (Array.isArray(bindings[key])) {
+              bindings[key].unshift(bindings[key].pop());
+            }
           }
         },
       );
@@ -70,11 +71,11 @@ class Mention {
       this._quill.deleteText(
         this._mentionCharPos,
         this._cursorPos - this._mentionCharPos,
-        'user',
+        'api',
       );
-      this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'user');
-      this._quill.insertText(this._mentionCharPos + 1, ' ', 'user');
-      this._quill.setSelection(this._mentionCharPos + 2, 0, 'user');
+      this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'api');
+      this._quill.insertText(this._mentionCharPos + 1, ' ', 'api');
+      this._quill.setSelection(this._mentionCharPos + 2, 0, 'api');
     });
   }
 

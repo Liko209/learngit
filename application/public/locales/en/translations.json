@@ -98,6 +98,9 @@
   "started": "started",
   "updated": "updated",
   "created": "created",
+  "delete": "Delete",
+  "deletePostTitle": "Delete message",
+  "deletePostContent": "Are you sure to delete this message? It is evitable.",
   "via": "via",
   "marked": "marked",
   "completed": "completed",
@@ -135,6 +138,11 @@
   "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
   "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
   "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+  "messageLoadingErrorTip": "We weren't able to open this conversation.",
+  "tryAgain": "Try again.",
+  "assignee": "Assignee",
+  "due": "Due",
+  "edit": "Edit post",
   "AboutRingCentral": "About RingCentral",
   "NewActions": "New Actions"
 }
