@@ -6,7 +6,7 @@
 
 import { buildContainer } from '@/base';
 import { ProfileDialogPersonTitleView } from './Title.View';
-import { ProfileDialogPersonViewModel } from '../ProfileDialogPerson.ViewModel';
+import { ProfileDialogPersonViewModel } from '../Person.ViewModel';
 import { ProfileDialogPersonTitleProps } from './types';
 
 const ProfileDialogPersonTitle = buildContainer<ProfileDialogPersonTitleProps>({

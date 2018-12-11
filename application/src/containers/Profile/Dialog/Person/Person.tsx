@@ -1,42 +1,17 @@
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-11-21 19:31:28
+ * @Date: 2018-11-21 16:25:07
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
-import { observer } from 'mobx-react';
-import {
-  JuiDialogTitleWithAction,
-  JuiDialogContentWithFill,
-} from 'jui/components/Dialog';
-import { ProfileDialogPersonTitle } from './Title';
-import { ProfileDialogPersonContent } from './Content';
+import { buildContainer } from '@/base';
+import { ProfileDialogPersonView } from './Person.View';
+import { ProfileDialogPersonViewModel } from './Person.ViewModel';
+import { ProfileDialogPersonProps } from './types';
 
-type Props = {
-  id: number;
-  dismiss: () => void;
-};
+const ProfileDialogPerson = buildContainer<ProfileDialogPersonProps>({
+  View: ProfileDialogPersonView,
+  ViewModel: ProfileDialogPersonViewModel,
+});
 
-@observer
-class ProfileDialogPerson extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
-  render() {
-    const { id, dismiss } = this.props;
-    return (
-      <>
-        <JuiDialogTitleWithAction>
-          <ProfileDialogPersonTitle id={id} dismiss={dismiss} />
-        </JuiDialogTitleWithAction>
-        <JuiDialogContentWithFill>
-          <ProfileDialogPersonContent id={id} dismiss={dismiss} />
-        </JuiDialogContentWithFill>
-      </>
-    );
-  }
-}
-
-export { ProfileDialogPerson };
+export { ProfileDialogPerson, ProfileDialogPersonProps };

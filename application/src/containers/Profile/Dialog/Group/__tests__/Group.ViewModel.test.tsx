@@ -5,7 +5,7 @@
  */
 
 import { getEntity } from '../../../../../store/utils';
-import { ProfileDialogGroupViewModel } from '../ProfileDialogGroup.ViewModel';
+import { ProfileDialogGroupViewModel } from '../Group.ViewModel';
 
 jest.mock('../../../../../store/utils');
 

@@ -6,7 +6,7 @@
 
 import { computed } from 'mobx';
 import { ProfileDialogPersonContentViewProps } from './types';
-import { ProfileDialogPersonViewModel } from '../ProfileDialogPerson.ViewModel';
+import { ProfileDialogPersonViewModel } from '../Person.ViewModel';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import CompanyModel from '@/store/models/Company';
 import { Company } from 'sdk/models';
