@@ -98,6 +98,7 @@ class NewMessageViewModel extends StoreViewModel {
   }
 
   newMessageErrorHandler(error: BaseError) {
+    this.errorUnknown = false;
     const code = error.code;
     if (code === ErrorTypes.API_INVALID_FIELD) {
       const message = error.message;

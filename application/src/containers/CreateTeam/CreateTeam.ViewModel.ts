@@ -112,6 +112,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 
   createErrorHandler(error: BaseError) {
+    this.serverUnknownError = false;
     const code = error.code;
     if (code === ErrorTypes.API_ALREADY_TAKEN) {
       this.errorMsg = 'alreadyTaken';
