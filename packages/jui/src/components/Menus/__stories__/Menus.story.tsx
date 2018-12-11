@@ -15,7 +15,9 @@ storiesOf('Components/Menus', module)
   .add('Simple Menu', () => (
     <JuiMenu open={boolean('open', true)}>
       <JuiMenuList>
-        <JuiMenuItem onClick={action('onClick Profile')}>Profile</JuiMenuItem>
+        <JuiMenuItem disabled={true} onClick={action('onClick Profile')}>
+          Profile
+        </JuiMenuItem>
         <JuiMenuItem onClick={action('onClick My account')}>
           My account
         </JuiMenuItem>

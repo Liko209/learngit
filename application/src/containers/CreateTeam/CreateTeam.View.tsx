@@ -98,18 +98,14 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       canPost,
     });
     if (result.isOk()) {
-      history.push(`/messages/${result.id}`);
       this.onClose();
+      history.push(`/messages/${result.data.id}`);
     }
   }
 
   onClose = () => {
-    const { updateCreateTeamDialogState, inputReset } = this.props;
+    const { updateCreateTeamDialogState } = this.props;
     updateCreateTeamDialogState();
-    inputReset();
-    this.setState({
-      items: CreateTeam.initItems,
-    });
   }
 
   render() {

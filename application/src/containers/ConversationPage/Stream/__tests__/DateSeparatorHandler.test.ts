@@ -42,7 +42,7 @@ const START_OF_2018_10_29 = moment(DATE_2018_10_29)
 
 describe('DateSeparatorHandler', () => {
   describe('onAdded()', () => {
-    it('should have separator for each day', () => {
+    it('should have separator for each day except 2018-10-31', () => {
       const handler = runOnAdded({
         addedPosts: [
           {
@@ -64,15 +64,19 @@ describe('DateSeparatorHandler', () => {
       });
 
       expect(Array.from(handler.separatorMap)).toEqual([
-        [1000, { timestamp: START_OF_2018_10_31, type: SeparatorType.DATE }],
         [1001, { timestamp: START_OF_2018_10_30, type: SeparatorType.DATE }],
         [1002, { timestamp: START_OF_2018_10_29, type: SeparatorType.DATE }],
       ]);
     });
 
-    it('should have separator when all posts at same day', () => {
+    it('should have separator when many posts at same day', () => {
       const handler = runOnAdded({
         addedPosts: [
+          {
+            id: 999,
+            sortValue: DATE_2018_10_30,
+            data: { created_at: DATE_2018_10_30 },
+          },
           {
             id: 1000,
             sortValue: DATE_2018_10_31,
@@ -139,6 +143,11 @@ describe('DateSeparatorHandler', () => {
     it('should not modify separator when deleted post has no separator', () => {
       const handler = runOnAdded({
         addedPosts: [
+          {
+            id: 999,
+            sortValue: DATE_2018_10_30,
+            data: { created_at: DATE_2018_10_30 },
+          },
           {
             id: 1000,
             sortValue: DATE_2018_10_31,

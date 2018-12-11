@@ -70,11 +70,12 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         );
       })(name),
     );
-    actionButtons.push(
-      <JuiIconButton key="fold" tooltipTitle={toTitleCase(t('foldShelf'))}>
-        info
-      </JuiIconButton>,
-    );
+    // hide unimplemented button
+    // actionButtons.push(
+    //   <JuiIconButton key="info" tooltipTitle={toTitleCase(t(''))}>
+    //     info
+    //   </JuiIconButton>,
+    // );
     return (
       <JuiButtonBar size="medium" overlapSize={1} awake={this.state.awake}>
         {actionButtons}
@@ -100,7 +101,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
           title: '',
           content: t('conversationMenuItem:markFavoriteServerErrorContent'),
           okText: t('conversationMenuItem:OK'),
-          okBtnType: 'text',
+          okVariant: 'text',
           onOK: () => {},
         });
       }

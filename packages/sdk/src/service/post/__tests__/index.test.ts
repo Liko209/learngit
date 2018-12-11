@@ -19,6 +19,7 @@ import { postFactory, itemFactory } from '../../../__tests__/factories';
 import notificationCenter from '../../notificationCenter';
 import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
 import { BaseError } from '../../../utils';
+import { ENTITY } from '../../eventKey';
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
@@ -437,7 +438,7 @@ describe('PostService', () => {
   describe('getPostsByIds', () => {
     beforeAll(() => {
       jest.spyOn(itemService, 'getByPosts');
-      jest.spyOn(postDao, 'queryManyPostsByIds');
+      jest.spyOn(postDao, 'batchGet');
       jest.spyOn(PostAPI, 'requestByIds');
     });
 
@@ -447,7 +448,9 @@ describe('PostService', () => {
 
     it('should return local posts if exists', async () => {
       const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
-      postDao.queryManyPostsByIds.mockReturnValue(localPosts);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       const result = await postService.getPostsByIds([3, 4, 5]);
       expect(result.posts).toEqual(localPosts);
     });
@@ -455,7 +458,10 @@ describe('PostService', () => {
     it('should return local posts + remote posts if partly exists', async () => {
       const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
       const remotePosts = [{ id: 1 }, { id: 2 }];
-      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
+
       const data = { posts: [...remotePosts], items: [] };
       PostAPI.requestByIds.mockResolvedValue(
         new NetworkResultOk(data, 200, {}),
@@ -478,7 +484,9 @@ describe('PostService', () => {
         { id: 5 },
       ];
       const data = { posts: [...remotePosts], items: [] };
-      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       PostAPI.requestByIds.mockResolvedValue(
         new NetworkResultOk(data, 200, {}),
       );
@@ -497,7 +505,9 @@ describe('PostService', () => {
         { id: 101 },
         { id: 102 },
       ]);
-      postDao.queryManyPostsByIds.mockReturnValue(localPosts);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       const result = await postService.getPostsByIds([3, 4, 5]);
       expect(result.items).toEqual([{ id: 100 }, { id: 101 }, { id: 102 }]);
     });
@@ -510,7 +520,9 @@ describe('PostService', () => {
         { id: 101 },
         { id: 102 },
       ]);
-      postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
+      jest
+        .spyOn(postService, 'getModelsLocally')
+        .mockResolvedValue([...localPosts]);
       const data = {
         posts: [...remotePosts],
         items: [{ id: 103 }, { id: 104 }],
@@ -620,6 +632,13 @@ describe('PostService', () => {
       expect(itemService.sendFile).toHaveBeenCalledWith(params);
       expect(result).toBeNull();
     });
+
+    it('should return null when error', async () => {
+      ItemService.getInstance.mockReturnValueOnce(new Error('mock error'));
+      const params = { groupId: 1, text: 'abc', file: new FormData() };
+      const result = await postService.sendItemFile(params);
+      expect(result).toBeNull();
+    });
   });
 
   describe('modifyPost()', () => {
@@ -638,11 +657,17 @@ describe('PostService', () => {
       expect(PostAPI.editPost).toHaveBeenCalledWith(1, {});
       expect(result).toEqual({ id: 1 });
     });
+    it('should return null when error', async () => {
+      PostServiceHandler.buildModifiedPostInfo.mockReturnValueOnce(
+        new Error('mock error'),
+      );
+      const result = await postService.modifyPost({ postId: 1, text: 'abc' });
+      expect(result).toBeNull();
+    });
   });
 
   describe('like post', () => {
     beforeAll(() => {
-      postService = new PostService();
       postService.getById = jest.fn();
     });
     it('should return null when post id is negative', async () => {
@@ -702,10 +727,11 @@ describe('PostService', () => {
     });
   });
 
-  describe('delete post', () => {
+  describe('deletePost()', () => {
     it('should return null when post id is negative', async () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       const result = await postService.deletePost(-1);
+      // todo the reason to return false is post id === -1?
       expect(result).toBe(false);
     });
     it('should return post', async () => {
@@ -718,6 +744,7 @@ describe('PostService', () => {
       );
       baseHandleData.mockResolvedValueOnce([{ id: 100, deactivated: true }]);
       const result = await postService.deletePost(100);
+      // todo expect result equal true dose make any sense? seems just for test to write test.
       expect(result).toEqual(true);
     });
     it('should return post null when post not exist in local', async () => {
@@ -737,6 +764,27 @@ describe('PostService', () => {
       });
       baseHandleData.mockResolvedValueOnce([{ id: 100, deactivated: true }]);
       await expect(postService.deletePost(100)).rejects.toThrowError();
+    });
+    it('should work when post isInPreInsert', async () => {
+      // do some mock
+      daoManager.getDao.mockReturnValueOnce(postDao);
+      jest.spyOn(postService, 'isInPreInsert').mockReturnValueOnce(true);
+      jest
+        .spyOn(postDao, 'get')
+        .mockReturnValueOnce(postFactory.build({ id: 100 }));
+      groupService.getGroupSendFailurePostIds.mockResolvedValueOnce([100]);
+
+      const result = await postService.deletePost(100);
+
+      expect(result).toBeTruthy();
+      expect(notificationCenter.emitEntityDelete).toBeCalledWith(ENTITY.POST, [
+        100,
+      ]);
+      expect(postDao.delete).toBeCalled();
+      expect(groupService.getGroupSendFailurePostIds).toBeCalled();
+      // find failure ids then delete
+      // then updateGroupSendFailurePostIds
+      expect(groupService.updateGroupSendFailurePostIds).toBeCalled();
     });
   });
 
@@ -797,7 +845,9 @@ describe('PostService', () => {
     });
 
     it('should return null if api result is empty', async () => {
-      PostAPI.requestPosts.mockResolvedValue(new NetworkResultOk({}, 200, {}));
+      PostAPI.requestPosts.mockResolvedValue(
+        new NetworkResultOk({ posts: [] }, 200, {}),
+      );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);
     });
@@ -936,6 +986,36 @@ describe('PostService', () => {
       await postService.deletePostsByGroupIds([3], true);
       expect(postDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('getLastPostOfGroup()', () => {
+    it('should proxy call GroupDao right', () => {
+      // should we test method inner implement?
+      const groupId = 11;
+      daoManager.getDao.mockReturnValueOnce(postDao);
+      postService.getLastPostOfGroup(groupId);
+      expect(postDao.queryLastPostByGroupId).toHaveBeenCalledTimes(1);
+      expect(postDao.queryLastPostByGroupId).toHaveBeenCalledWith(groupId);
+    });
+  });
+  describe('handleSendPostSuccess()', () => {
+    it('should update group send failure post ids', async () => {
+      const postId = 100;
+      const preInsertId = -1;
+      groupService.getGroupSendFailurePostIds.mockReturnValueOnce([
+        preInsertId,
+      ]);
+      await postService.handleSendPostSuccess(
+        {
+          _id: postId,
+          id: postId,
+          error: { code: '400', message: '', validation: false },
+          ...postFactory.build({}),
+        },
+        preInsertId,
+      );
+      expect(groupService.getGroupSendFailurePostIds).toBeCalled();
+      expect(groupService.updateGroupSendFailurePostIds).toBeCalled();
     });
   });
 });

@@ -98,6 +98,9 @@
   "started": "started",
   "updated": "updated",
   "created": "created",
+  "delete": "Delete",
+  "deletePostTitle": "Delete message",
+  "deletePostContent": "Are you sure to delete this message? It is evitable.",
   "via": "via",
   "marked": "marked",
   "completed": "completed",
@@ -127,5 +130,13 @@
   "goToTeamConversation": "Go to the conversation with team",
   "Message": "Message",
   "more": "more",
-  "close": "close"
+  "close": "close",
+  "messageLoadingErrorTip": "We weren't able to open this conversation.",
+  "tryAgain": "Try again.",
+  "assignee": "Assignee",
+  "due": "Due",
+  "edit": "Edit post",
+  "AboutRingCentral": "About RingCentral",
+  "NewActions": "New Actions",
+  "NoInternetConnection": "No Internet Connection"
 }

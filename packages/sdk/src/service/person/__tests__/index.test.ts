@@ -9,10 +9,14 @@ import GroupService, {
   FEATURE_TYPE,
   FEATURE_STATUS,
 } from '../../../service/group';
-import { daoManager, PersonDao } from '../../../dao';
+import { daoManager, PersonDao, AuthDao } from '../../../dao';
 import { Person } from '../../../models';
 import { AccountService } from '../../account/accountService';
 import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
+import { personFactory } from '../../../__tests__/factories';
+import { KVStorage } from 'foundation/src';
+import { KVStorageManager } from 'foundation';
+import PersonAPI from '../../../api/glip/person';
 
 jest.mock('../../../dao');
 jest.mock('../../../service/group');
@@ -496,5 +500,99 @@ describe('PersonService', () => {
         ).toEqual(expectRes);
       },
     );
+  });
+  describe('getEmailAsName()', () => {
+    it('should return name when email validate', () => {
+      const firstName = 'Bruce';
+      const lastName = 'Chen';
+      const person = personFactory.build({
+        email: `${firstName}.${lastName}@ringcentral.com`,
+      });
+      const result = personService.getEmailAsName(person);
+      expect(result).toEqual(`${firstName} ${lastName}`);
+    });
+    it('should return empty string while no email info', () => {
+      const person = personFactory.build({
+        email: null,
+      });
+      const result = personService.getEmailAsName(person);
+      expect(result).toEqual('');
+    });
+    it("should convert name's first letter to UpperCase", () => {
+      const firstName = 'bruce';
+      const lastName = 'chen';
+      const person = personFactory.build({
+        email: `${firstName}.${lastName}@ringcentral.com`,
+      });
+      const result = personService.getEmailAsName(person);
+      expect(result).toEqual('Bruce Chen');
+    });
+  });
+  describe('getFullName()', () => {
+    it('should return displayName first', () => {
+      const displayName = 'Bruce Chen';
+      const firstName = 'Niki';
+      const lastName = 'Rao';
+      const email = 'Dog.Mao@ringcentral.com';
+      expect(
+        personService.getFullName(
+          personFactory.build({
+            email,
+            display_name: displayName,
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        ),
+      ).toEqual(displayName);
+    });
+    it('should return LastName FirstName after displayName', () => {
+      const firstName = 'Bruce';
+      const lastName = 'Chen';
+      const email = 'Dog.Mao@ringcentral.com';
+      expect(
+        personService.getFullName(
+          personFactory.build({
+            email,
+            display_name: '',
+            first_name: firstName,
+            last_name: lastName,
+          }),
+        ),
+      ).toEqual(`${firstName} ${lastName}`);
+    });
+    it('should return name of email after displayName and FirstName LastName', () => {
+      const email = 'Bruce.Chen@ringcentral.com';
+      expect(
+        personService.getFullName(
+          personFactory.build({ email, first_name: '', last_name: '' }),
+        ),
+      ).toEqual('Bruce Chen');
+    });
+  });
+  describe('getHeadShot()', () => {
+    const kvStorageManager = new KVStorageManager();
+    const kvStorage = kvStorageManager.getStorage();
+    const authDao = new AuthDao(kvStorage);
+    beforeEach(() => {});
+    it('should return headShotUrl', () => {
+      daoManager.getKVDao.mockReturnValueOnce(authDao);
+      authDao.get.mockReturnValueOnce('token');
+      const headUrl = 'mockUrl';
+      const spy = jest
+        .spyOn(PersonAPI, 'getHeadShotUrl')
+        .mockReturnValueOnce(headUrl);
+      const result = personService.getHeadShot(1, 'xxx', 33);
+      expect(result).toEqual(headUrl);
+    });
+    it('should return empty string when headShotVersion is empty', () => {
+      daoManager.getKVDao.mockReturnValueOnce(authDao);
+      authDao.get.mockReturnValueOnce('token');
+      const headUrl = 'mockUrl';
+      const spy = jest
+        .spyOn(PersonAPI, 'getHeadShotUrl')
+        .mockReturnValueOnce(headUrl);
+      const result = personService.getHeadShot(1, '', 33);
+      expect(result).toEqual('');
+    });
   });
 });

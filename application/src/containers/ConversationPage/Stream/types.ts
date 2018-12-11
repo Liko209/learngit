@@ -55,6 +55,7 @@ type StreamViewProps = {
   items: StreamItem[];
   hasMoreUp: boolean;
   hasMoreDown: boolean;
+  notEmpty: boolean;
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
@@ -62,12 +63,15 @@ type StreamViewProps = {
   atTop: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
   loadPostUntilFirstUnread: () => Promise<number | undefined>;
+  updateHistoryHandler: () => void;
   hasHistoryUnread: boolean;
   clearHistoryUnread: () => void;
   historyUnreadCount: number;
+  historyReadThrough: number;
   firstHistoryUnreadPostId?: number;
   loading?: boolean;
 };
+
 type StreamSnapshot = {
   atBottom: boolean;
   atTop: boolean;

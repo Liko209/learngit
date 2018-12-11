@@ -5,26 +5,44 @@
  */
 
 import React, { Component } from 'react';
+import { t } from 'i18next';
+import { observer } from 'mobx-react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
+import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
+import { goToConversation } from '@/common/goToConversation';
 
 import { MessagesViewProps } from './types';
-import { observer } from 'mobx-react';
 import { PostListPage } from '../PostListPage';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { MessageRouterChangeHelper } from './helper';
 
+type State = {
+  messageError: boolean;
+  retryId: number | null;
+};
+
 @observer
-class MessagesViewComponent extends Component<MessagesViewProps> {
+class MessagesViewComponent extends Component<MessagesViewProps, State> {
+  state = {
+    messageError: false,
+    retryId: null,
+  };
+
   constructor(props: MessagesViewProps) {
     super(props);
   }
 
   componentDidMount() {
-    const conversationIdOfUrl = this.props.match.params.id;
+    const { match, location } = this.props;
+    const { id: conversationIdOfUrl } = match.params;
+
+    if (location.state && location.state.waiting) {
+      return;
+    }
     conversationIdOfUrl
       ? MessageRouterChangeHelper.goToConversation(conversationIdOfUrl)
       : MessageRouterChangeHelper.goToLastOpenedGroup();
@@ -40,10 +58,29 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
     }
   }
 
+  componentWillReceiveProps(props: MessagesViewProps) {
+    const { location } = props;
+    const { state } = location;
+
+    if (state && state.error) {
+      this.setState({
+        messageError: true,
+        retryId: state.conversationId,
+      });
+    }
+  }
+
+  retryMessage = () => {
+    const { retryId } = this.state;
+    if (!retryId) return;
+    goToConversation(retryId);
+  }
+
   render() {
+    const { isLeftNavOpen } = this.props;
+    const { messageError } = this.state;
     const id = this.props.match.params.id;
     const currentConversationId = id ? Number(id) : 0;
-    const { isLeftNavOpen } = this.props;
     let leftNavWidth = 72;
     if (isLeftNavOpen) {
       leftNavWidth = 200;
@@ -75,6 +112,17 @@ class MessagesViewComponent extends Component<MessagesViewProps> {
                 <ConversationPage {...props} groupId={currentConversationId} />
               ) : null
             }
+          />
+          <Route
+            path={'/messages'}
+            render={props => (
+              <JuiConversationLoading
+                showTip={messageError}
+                tip={t('messageLoadingErrorTip')}
+                linkText={t('tryAgain')}
+                onClick={this.retryMessage}
+              />
+            )}
           />
         </Switch>
         {currentConversationId ? <RightRail /> : null}

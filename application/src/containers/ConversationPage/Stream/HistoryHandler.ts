@@ -44,6 +44,14 @@ class HistoryHandler {
   }
 
   @computed
+  get readThrough() {
+    if (this.groupState) {
+      return this.groupState.readThrough;
+    }
+    return;
+  }
+
+  @computed
   get hasUnread() {
     return this.unreadCount > 0;
   }

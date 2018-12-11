@@ -8,7 +8,7 @@ jest.mock('../../../dao', () => {
     queryPostsByGroupId: jest.fn(),
     bulkDelete: jest.fn(),
     queryOldestPostByGroupId: jest.fn(),
-    queryManyPostsByIds: jest.fn(),
+    batchGet: jest.fn(),
   };
   return {
     daoManager: {
@@ -184,9 +184,7 @@ describe('handleEditedPostNoInDB()', () => {
         modified_at: 2,
       }),
     ];
-    daoManager
-      .getDao<PostDao>(null)
-      .queryManyPostsByIds.mockResolvedValueOnce(mock);
+    daoManager.getDao<PostDao>(null).batchGet.mockResolvedValueOnce(mock);
     const result = await IncomingPostHandler.handleEditedPostNoInDB(mock);
     expect(result).toEqual(mock);
   });
@@ -206,11 +204,9 @@ describe('handleEditedPostNoInDB()', () => {
         modified_at: 2,
       }),
     ];
-    daoManager
-      .getDao<PostDao>(null)
-      .queryManyPostsByIds.mockImplementation(() => {
-        throw new Error('error msg');
-      });
+    daoManager.getDao<PostDao>(null).batchGet.mockImplementation(() => {
+      throw new Error('error msg');
+    });
     const result = await IncomingPostHandler.handleEditedPostNoInDB(mock);
     expect(result).toEqual([]);
   });
