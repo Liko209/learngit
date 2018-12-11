@@ -191,9 +191,7 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
       group = await userPlatform.createGroup({
         type: 'Group', members: [user.rcId, users[5].rcId],
       });
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${group.data.id}`]: false
-      });
+      await user.sdk.glip.showGroups(user.rcId, group.data.id);
     });
 
     let newPost;
@@ -264,9 +262,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     group = await userPlatform.createGroup({
       type: 'Group', members: [user.rcId, users[5].rcId],
     });
-    await user.sdk.glip.updateProfile(user.rcId, {
-      [`hide_group_${group.data.id}`]: false
-    });
+    await user.sdk.glip.showGroups(user.rcId, group.data.id);
     newPost = await user5Platform.createPost(
       { text: `First AtMention, ![:Person](${user.rcId})`},
       group.data.id,
@@ -341,10 +337,7 @@ test(formalName('Jump to post position when click button or clickable area of po
       members: [user.rcId, users[5].rcId],
     })).data.id;
 
-    await user.sdk.glip.updateProfile(user.rcId, {
-      [`hide_group_${teamId}`]: false,
-      [`hide_group_${pvChatId}`]: false,
-    });
+    await user.sdk.glip.showGroups(user.rcId, [teamId, pvChatId]);
     atMentionPostTeam = await user5Platform.createPost(
       { text: verifyTextTeam + `, ![:Person](${user.rcId})` },
       teamId,

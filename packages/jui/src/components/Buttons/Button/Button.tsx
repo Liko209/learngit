@@ -57,6 +57,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
         disabled: 'disabled',
         contained: 'containedButtonStyle',
         fab: 'roundButtonStyle',
+        text: 'textButtonStyle',
       }}
       TouchRippleProps={{ classes: touchRippleClasses }}
       variant={_variant}
@@ -78,6 +79,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     padding-left: ${spacing(4)};
     padding-right: ${spacing(4)};
     ${typography('button')};
+    color: ${palette('primary', 'main')};
     &.containedButtonStyle {
       color: ${palette('common', 'white')};
       ${shadow(3)}
@@ -86,8 +88,21 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       &:hover {
         opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
       }
+      &.disabled {
+        background-color: ${palette('accent', 'ash')};
+        color: ${palette('common', 'while')};
+      }
       &:active {
         ${shadow(1)}
+      }
+    }
+
+    &.textButtonStyle {
+      &.disabled {
+        color: ${palette('accent', 'ash')};
+      }
+      &:hover {
+        background-color: ${palette('primary', 'main', 1)};
       }
     }
 
@@ -104,12 +119,6 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
         background-color: ${grey('50')};
       &:active {
         background-color: ${grey('100')};
-      }
-    }
-
-    &.textButtonStyle {
-      &.disabled {
-        color: ${palette('accent', 'ash')};
       }
     }
 
