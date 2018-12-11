@@ -80,13 +80,17 @@ class MessageInputViewComponent extends Component<
     const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
-        <AttachmentView onFileChanged={this._autoUploadFile} />
+        <AttachmentView
+          onFileChanged={this._autoUploadFile}
+          data-test-automation-id="message-action-bar-attachment"
+        />
       </MessageActionBar>
     );
     const attachmentsNode = (
       <AttachmentList
         files={files}
         removeAttachment={this.props.cancelUploadFile}
+        data-test-automation-id="message-attachment-node"
       />
     );
 
