@@ -22,6 +22,11 @@ class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get disabled() {
+    return this.props.disabled;
+  }
+
+  @computed
   get post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
