@@ -64,9 +64,9 @@ describe('likeViewModel', () => {
     it('should like post', async () => {
       mockPostService.likePost.mockImplementation(() => serviceOk({}));
 
-      const hasError = await likeViewModel.like(true);
+      const result = await likeViewModel.like(true);
 
-      expect(hasError).toBeFalsy();
+      expect(result.isFailed).toBeFalsy();
       expect(mockPostService.likePost).toBeCalledWith(
         1,
         mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
@@ -75,9 +75,9 @@ describe('likeViewModel', () => {
     });
     it('should unlike post', async () => {
       mockPostService.likePost.mockImplementation(() => serviceOk({}));
-      const hasError = await likeViewModel.like(false);
+      const result = await likeViewModel.like(false);
 
-      expect(hasError).toBeFalsy();
+      expect(result.isFailed).toBeFalsy();
       expect(mockPostService.likePost).toBeCalledWith(
         1,
         mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
@@ -89,9 +89,9 @@ describe('likeViewModel', () => {
       mockPostService.likePost.mockImplementation(() =>
         serviceErr(5300, 'mock error'),
       );
-      const hasError = await likeViewModel.like(true);
+      const result = await likeViewModel.like(true);
 
-      expect(hasError).toBeTruthy();
+      expect(result.isFailed).toBeTruthy();
       expect(mockPostService.likePost).toBeCalledWith(
         1,
         mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],

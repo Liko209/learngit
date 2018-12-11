@@ -36,6 +36,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
+  @observable
+  serverUnknownError: boolean = false;
 
   @computed
   get isOpen() {
@@ -132,14 +134,7 @@ class CreateTeamViewModel extends AbstractViewModel {
         this.emailError = true;
       }
     } else {
-      const message = 'WeWerentAbleToCreateTheTeamTryAgain';
-      Notification.flagToast({
-        message,
-        type: 'error',
-        messageAlign: 'left',
-        fullWidth: false,
-        dismissible: true,
-      });
+      this.serverUnknownError = true;
     }
   }
 }
