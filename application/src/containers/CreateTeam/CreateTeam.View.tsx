@@ -167,6 +167,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           error={nameError}
           inputProps={{
             maxLength: 200,
+            'data-test-automation-id': 'CreateTeamName',
           }}
           helperText={nameError && t(errorMsg)}
           onChange={handleNameChange}
@@ -181,6 +182,10 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           isExcludeMe={true}
         />
         <JuiTextarea
+          inputProps={{
+            'data-test-automation-id': 'CreateTeamDescription',
+            maxLength: 1000,
+          }}
           placeholder={t('Team Description')}
           fullWidth={true}
           onChange={handleDescChange}

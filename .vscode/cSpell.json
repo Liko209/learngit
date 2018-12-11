@@ -118,6 +118,8 @@
     "Sexio",
     "tinycolor",
     "uids"
+    "snackbars",
+    "dismissible"
   ],
   "flagWords": []
 }

@@ -61,14 +61,15 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.teamName = e.target.value;
-    this.disabledOkBtn = e.target.value === '';
+    const name = e.target.value.trim();
+    this.teamName = name;
+    this.disabledOkBtn = name === '';
     this.errorMsg = '';
     this.nameError = false;
   }
 
   handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.description = e.target.value;
+    this.description = e.target.value.trim();
   }
 
   handleSearchContactChange = (items: any) => {
