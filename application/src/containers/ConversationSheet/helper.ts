@@ -77,6 +77,8 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
+const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
+
 const FILE_ICON_MAP = {
   pdf: ['pdf'],
   sheet: ['xlsx', 'xls'],
@@ -123,12 +125,6 @@ function image(item: FileItem) {
     previewUrl: '',
   };
 
-  if (type === 'gif') {
-    image.isImage = true;
-    image.previewUrl = versionUrl;
-    return image;
-  }
-
   if (thumbs) {
     for (const key in thumbs) {
       const value = thumbs[key];
@@ -137,6 +133,14 @@ function image(item: FileItem) {
         image.previewUrl = thumbs[key];
       }
     }
+  }
+
+  // In order to show image
+  // If upload doc and image together, image will not has thumbs
+  if (IMAGE_TYPE.includes(type)) {
+    image.isImage = true;
+    image.previewUrl = versionUrl;
+    return image;
   }
   return image;
 }
