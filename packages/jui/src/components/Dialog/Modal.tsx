@@ -82,7 +82,7 @@ class JuiModal extends Component<JuiModalProps, {}> {
         {cancelText ? (
           <JuiButton
             onClick={onCancel}
-            color={okType}
+            color="primary"
             variant={cancelVariant}
             autoFocus={true}
             {...cancelBtnProps}
