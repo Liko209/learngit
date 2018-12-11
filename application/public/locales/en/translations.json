@@ -131,6 +131,12 @@
   "Message": "Message",
   "more": "more",
   "close": "close",
+<<<<<<< HEAD
+  "assignee": "Assignee",
+  "due": "Due",
+=======
+  "edit": "Edit post",
+>>>>>>> develop
   "AboutRingCentral": "About RingCentral",
   "NewActions": "New Actions",
   "NoInternetConnection": "No Internet Connection"

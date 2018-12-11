@@ -10,12 +10,14 @@ import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 import { JuiMenuList } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Delete } from './Delete';
+import { Delete } from '../Delete';
+import { Edit } from '../Edit';
 
 type MoreViewProps = ViewProps & WithNamespaces;
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
+  [MENU_LIST_ITEM_TYPE.EDIT]: Edit,
 }; // add more action item in menuItems
 
 @observer
@@ -35,7 +37,11 @@ class More extends React.Component<MoreViewProps> {
   }
 
   render() {
-    const { id, permissionsMap } = this.props;
+    const { id, permissionsMap, showMoreAction } = this.props;
+
+    if (!showMoreAction) {
+      return null;
+    }
 
     return (
       <JuiPopoverMenu
@@ -49,18 +55,13 @@ class More extends React.Component<MoreViewProps> {
           horizontal: 'left',
         }}
       >
-        {Object.keys(menuItems).length > 0 && (
-          <JuiMenuList>
-            {Object.keys(menuItems).map((key: string) => {
-              const hasPermission = permissionsMap[key];
-              if (hasPermission) {
-                const Component = menuItems[key];
-                return <Component id={id} key={key} />;
-              }
-              return null;
-            })}
-          </JuiMenuList>
-        )}
+        <JuiMenuList>
+          {Object.keys(menuItems).map((key: string) => {
+            const { permission } = permissionsMap[key];
+            const Component = menuItems[key];
+            return <Component id={id} key={key} disabled={!permission} />;
+          })}
+        </JuiMenuList>
       </JuiPopoverMenu>
     );
   }
