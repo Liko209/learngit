@@ -62,16 +62,6 @@ class CreateTeamViewModel extends AbstractViewModel {
     );
   }
 
-  @action
-  inputReset = () => {
-    this.errorMsg = '';
-    this.errorEmail = '';
-    this.nameError = false;
-    this.disabledOkBtn = true;
-    this.emailError = false;
-    this.serverError = false;
-  }
-
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.teamName = e.target.value;
     this.disabledOkBtn = e.target.value === '';
@@ -136,12 +126,11 @@ class CreateTeamViewModel extends AbstractViewModel {
       }
     } else {
       const message = 'WeWerentAbleToCreateTheTeamTryAgain';
-      Notification.flagToast({
+      Notification.flashToast({
         message,
         type: 'error',
         messageAlign: 'left',
         fullWidth: false,
-        dismissible: true,
       });
     }
   }
