@@ -90,6 +90,9 @@ const JuiProfileDialogContentFormEmail = styled('div')`
   ${ellipsis()};
   a {
     color: ${primary('700')};
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 
