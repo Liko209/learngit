@@ -4,13 +4,14 @@ import AccountService from '../../account';
 import { daoManager, ItemDao } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import handleData from '../handleData';
-import { NetworkResultOk } from '../../../api/NetworkResult';
+import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
 import notificationCenter from '../../notificationCenter';
 import { ItemService } from '../itemService';
 import { ItemFileUploadStatus } from '../itemFileUploadStatus';
 import { RequestHolder } from '../../../api/requestHolder';
 import { SENDING_STATUS } from '../../constants';
 import { SERVICE, ENTITY } from '../../eventKey';
+import { BaseError } from '../../../utils';
 
 jest.mock('../../../service/item');
 jest.mock('../../../service/account');
@@ -76,26 +77,36 @@ describe('ItemFileService', () => {
       versions: [storedFile],
     };
 
-    it('should only have name when a file has no extension', async () => {
-      const file = new FormData();
-      const fileName = '123';
-      file.append('filename', fileName);
-      jest
-        .spyOn(itemFileUploadHandler, '_sendItemFile')
-        .mockImplementationOnce(() => {});
-      jest
-        .spyOn(itemFileUploadHandler, '_preSaveItemFile')
-        .mockImplementationOnce(() => {});
+    it.each`
+      fileName    | name        | type    | comment
+      ${'123.ts'} | ${'123.ts'} | ${'ts'} | ${'has name and type'}
+      ${'123'}    | ${'123'}    | ${''}   | ${'has name and no type'}
+      ${''}       | ${''}       | ${''}   | ${'no name and no type'}
+    `(
+      'should return item with right name and type: $comment',
+      async ({ fileName, name, type }) => {
+        const file = new FormData();
+        file.append('filename', fileName);
+        jest
+          .spyOn(itemFileUploadHandler, '_sendItemFile')
+          .mockImplementationOnce(() => {});
+        jest
+          .spyOn(itemFileUploadHandler, '_preSaveItemFile')
+          .mockImplementationOnce(() => {});
 
-      const res = await itemFileUploadHandler.sendItemFile(
-        groupId,
-        file,
-        false,
-      );
-
-      expect(res.name).toBe(fileName);
-      expect(res.type).toBe('');
-    });
+        const res = await itemFileUploadHandler.sendItemFile(
+          groupId,
+          file,
+          false,
+        );
+        if (fileName) {
+          expect(res.name).toBe(name);
+          expect(res.type).toBe(type);
+        } else {
+          expect(res).toBeNull;
+        }
+      },
+    );
 
     it('should call go updateItem when group has the file before', async (done: jest.DoneCallback) => {
       const existItems = [
@@ -103,6 +114,7 @@ describe('ItemFileService', () => {
         { id: 4, created_at: 4, versions: [] },
         { id: 5, created_at: 5, versions: [] },
       ];
+
       const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
       itemDao.get.mockResolvedValue(itemFile);
       itemDao.getExistGroupFilesByName.mockResolvedValue(existItems);
@@ -153,6 +165,7 @@ describe('ItemFileService', () => {
       handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockImplementation(
         (files: FormData, callback: ProgressCallback) => {
+          callback({ lengthComputable: false, loaded: 0, total: 100 });
           callback({ lengthComputable: false, loaded: 10, total: 100 });
           return Promise.resolve(mockStoredFileRes);
         },
@@ -195,6 +208,75 @@ describe('ItemFileService', () => {
         done();
       });
     });
+
+    it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
+      const errResponse = new NetworkResultErr(
+        new BaseError(1, 'error'),
+        403,
+        {},
+      );
+
+      itemDao.get.mockResolvedValue(itemFile);
+      handleData.mockResolvedValue(null);
+      ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
+
+      itemService.handlePartialUpdate = jest.fn();
+      itemService.updatePreInsertItemStatus = jest.fn();
+
+      const file = new FormData();
+      const fileName = '123.pdf';
+      file.append('filename', fileName);
+      await itemFileUploadHandler.sendItemFile(groupId, file, false);
+
+      setTimeout(() => {
+        expect(ItemAPI.uploadFileItem).toBeCalled();
+        expect(ItemAPI.sendFileItem).not.toBeCalled();
+        expect(notificationCenter.emit).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
+        expect(itemService.updatePreInsertItemStatus).toBeCalledWith(
+          expect.any(Number),
+          SENDING_STATUS.FAIL,
+        );
+
+        done();
+      });
+    });
+
+    it('should go to _handleItemFileSendFailed process when send item failed ', async (done: jest.DoneCallback) => {
+      const okRes = new NetworkResultOk(itemFile, 200, undefined);
+      const errRes = new NetworkResultErr(new BaseError(1, 'error'), 403, {});
+      ItemAPI.uploadFileItem.mockResolvedValue(okRes);
+      ItemAPI.putItem.mockResolvedValue(errRes);
+
+      jest
+        .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
+        .mockImplementation(() => {});
+
+      const file = new FormData();
+      const fileName = '123.pdf';
+      file.append('filename', fileName);
+      await itemFileUploadHandler.sendItemFile(groupId, file, true);
+
+      setTimeout(() => {
+        expect(ItemAPI.uploadFileItem).toBeCalled();
+        expect(ItemAPI.sendFileItem).toBeCalled();
+
+        expect(notificationCenter.emit).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
+        expect(itemService.updatePreInsertItemStatus).toBeCalledWith(
+          expect.any(Number),
+          SENDING_STATUS.FAIL,
+        );
+
+        done();
+      });
+    });
   });
 
   describe('cancelUpload()', () => {
@@ -226,6 +308,7 @@ describe('ItemFileService', () => {
       const itemFiles2 = { id: -4 } as ItemFile;
       uploadingFiles.set(1, [itemFiles]);
       uploadingFiles.set(2, [itemFiles2, itemFiles2, itemFiles2]);
+      uploadingFiles.set(3, undefined);
 
       Object.assign(itemFileUploadHandler, {
         _progressCaches: progressCaches,

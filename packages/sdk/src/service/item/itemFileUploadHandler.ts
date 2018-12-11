@@ -158,7 +158,7 @@ class ItemFileUploadHandler {
       await this._uploadItem(groupId, preInsertItem, isUpdate);
     } else {
       this._handleItemFileSendFailed(preInsertItem.id);
-      mainLogger.error(`_uploadAndGenerateItem uploadRes error =>${uploadRes}`);
+      mainLogger.error(`_sendItemFile, uploadRes error =>${uploadRes}`);
     }
   }
 
@@ -363,15 +363,13 @@ class ItemFileUploadHandler {
       name: '',
       type: '',
     };
-    if (storagePath) {
-      const arr = storagePath.split('/');
-      if (arr && arr.length > 0) {
-        const name = arr[arr.length - 1];
-        options.name = name;
-        const seArr = name.split('.');
-        if (seArr.length > 1) {
-          options.type = seArr[seArr.length - 1];
-        }
+    const arr = storagePath.split('/');
+    if (arr && arr.length > 0) {
+      const name = arr[arr.length - 1];
+      options.name = name;
+      const seArr = name.split('.');
+      if (seArr.length > 1) {
+        options.type = seArr[seArr.length - 1];
       }
     }
     return options;
