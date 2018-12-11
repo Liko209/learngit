@@ -45,7 +45,8 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     return this._post.groupId;
   }
 
-  private get _renderedText() {
+  @computed
+  private get _quoteText() {
     let quoteText = this._text;
 
     quoteText = quoteText.split('\n').reduce((qt, t) => {
@@ -60,11 +61,20 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
       return `${qt}${t}`;
     },                                       '');
 
-    quoteText = `${quoteText}<br/><br/>`;
+    return `${quoteText}<br/><br/>`;
+  }
+
+  @computed
+  private get _quoteHead() {
     const { userDisplayName: name, id } = this._creator;
     // tslint:disable-next-line
     const quoteHead = `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span> wrote:<br />`;
-    return `${quoteHead}${quoteText}`;
+    return quoteHead;
+  }
+
+  @computed
+  private get _renderedText() {
+    return `${this._quoteHead}${this._quoteText}`;
   }
 
   quote = () => {
