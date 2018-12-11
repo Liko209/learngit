@@ -9,6 +9,7 @@ import ProfileAPI from '../../../api/glip/profile';
 import { BaseError } from '../../../utils';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
+import handleData from '../handleData';
 
 const mockAccountService = {
   getCurrentUserProfileId: jest.fn(),
