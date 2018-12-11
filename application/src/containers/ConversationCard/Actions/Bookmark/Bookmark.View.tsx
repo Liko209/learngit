@@ -18,7 +18,7 @@ class BookmarkViewComponent extends Component<Props> {
   private _handleClick = async () => {
     const { isBookmark, bookmark } = this.props;
     const result = await bookmark(!isBookmark);
-    if (result) {
+    if (result.isFailed) {
       const message = isBookmark
         ? 'SorryWeWereNotAbleToRemoveYourBookmark'
         : 'SorryWeWereNotAbleToBookmarkThisMessage';

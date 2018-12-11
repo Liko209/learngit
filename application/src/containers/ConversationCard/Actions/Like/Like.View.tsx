@@ -18,7 +18,7 @@ class LikeViewComponent extends Component<Props> {
   private _handleLikeButton = async () => {
     const { isLike, like } = this.props;
     const result = await like(!isLike);
-    if (result) {
+    if (result.isFailed) {
       const message = !isLike
         ? 'SorryWeWereNotAbleToLikeTheMessage'
         : 'SorryWeWereNotAbleToUnlikeTheMessage';

@@ -21,7 +21,7 @@ import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { GroupErrorTypes } from '../groupService';
-import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
+import { BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 import CompanyService from '../../company';
 import PostService from '../../post';
