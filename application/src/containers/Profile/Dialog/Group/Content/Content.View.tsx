@@ -23,20 +23,34 @@ import {
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { MemberHeader, MemberList } from './Members';
+import { TypeDictionary } from 'sdk/utils';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupContentViewProps
 > {
+  getAriaLabelKey = () => {
+    const { typeId } = this.props;
+    const mapping = {
+      [TypeDictionary.TYPE_ID_TEAM]: 'ariaGoToTeam',
+      [TypeDictionary.TYPE_ID_GROUP]: 'ariaGoToGroup',
+    };
+    return mapping[typeId];
+  }
+
   renderMessage = () => {
-    const { t } = this.props;
+    const { t, group } = this.props;
     return (
-      <JuiProfileDialogContentSummaryButton>
+      <JuiProfileDialogContentSummaryButton
+        tabIndex={0}
+        aria-label={t(this.getAriaLabelKey(), { name: group.displayName })}
+      >
         <JuiIconography fontSize="small">chat_bubble</JuiIconography>
         {t('message')}
       </JuiProfileDialogContentSummaryButton>
     );
   }
+
   render() {
     const { id, group, showMessage, dismiss } = this.props;
     return (

@@ -45,10 +45,18 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <Presence uid={id} size="xlarge" borderSize="xlarge" />;
   }
 
+  getAriaLabelKey = () => {
+    const { isMe } = this.props;
+    return isMe ? 'ariaGoToMe' : 'ariaGoToOther';
+  }
+
   renderMessage = () => {
-    const { t } = this.props;
+    const { t, person } = this.props;
     return (
-      <JuiProfileDialogContentSummaryButton>
+      <JuiProfileDialogContentSummaryButton
+        tabIndex={0}
+        aria-label={t(this.getAriaLabelKey(), { name: person.userDisplayName })}
+      >
         {this.renderIcon('chat_bubble')}
         {t('message')}
       </JuiProfileDialogContentSummaryButton>

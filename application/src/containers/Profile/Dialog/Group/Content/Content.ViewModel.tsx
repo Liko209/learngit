@@ -9,6 +9,7 @@ import { ProfileDialogGroupContentViewProps } from './types';
 import { ProfileDialogGroupViewModel } from '../Group.ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { GlipTypeUtil } from 'sdk/utils';
 
 class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
   implements ProfileDialogGroupContentViewProps {
@@ -19,6 +20,11 @@ class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
     }
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return this.group.members.includes(currentUserId);
+  }
+
+  @computed
+  get typeId(): number {
+    return GlipTypeUtil.extractTypeId(this.id);
   }
 }
 
