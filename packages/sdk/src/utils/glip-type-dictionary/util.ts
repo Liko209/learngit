@@ -7,11 +7,16 @@
 // http://git.ringcentral.com:8888/Glip/glip-type-dictionary
 
 const INTEGRATION_LOWER_ID = 7000;
+const TYPE_ID_MASK = 0x1fff;
 export default class GlipTypeUtil {
   static isIntegrationType(typeId: number): boolean {
     return typeId >= INTEGRATION_LOWER_ID;
   }
   static extractTypeId(objectId: number): number {
-    return objectId & 0x1fff; // eslint-disable-line no-bitwise
+    return objectId & TYPE_ID_MASK; // eslint-disable-line no-bitwise
+  }
+
+  static convertToIdWithType(typeId: number, originalId: number) {
+    return (originalId & ~TYPE_ID_MASK) ^ typeId;
   }
 }

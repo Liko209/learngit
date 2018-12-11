@@ -3,7 +3,7 @@
  * @Date: 2018-12-05 09:30:00
  */
 
-import { StoredFile, ItemFile, Raw, Progress } from '../../models';
+import { StoredFile, ItemFile, Item, Raw, Progress } from '../../models';
 import AccountService from '../account';
 import ItemAPI, { RequestHolder } from '../../api/glip/item';
 import { transform } from '../utils';
@@ -14,10 +14,12 @@ import { BaseError } from '../../utils';
 import { NetworkResult } from '../../api/NetworkResult';
 import notificationCenter from '../notificationCenter';
 import { mainLogger } from 'foundation';
-import { ENTITY } from '../eventKey';
+import { ENTITY, SERVICE } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
 import { ItemFileUploadStatus } from './itemFileUploadStatus';
-
+import { ItemService } from './itemService';
+import { SENDING_STATUS } from '../constants';
+import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
@@ -31,12 +33,38 @@ class ItemFileUploadHandler {
       | string
       | null;
     if (fileFullName) {
-      const itemFile = this._toItemFile(groupId, fileFullName);
-      await this._preInsertItemFile(itemFile);
+      const itemFile = this._toItemFile(groupId, fileFullName, isUpdate);
+      await this._preSaveItemFile(itemFile);
       this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
     }
     return null;
+  }
+
+  async resendFailedFile(itemId: number) {
+    const itemDao = daoManager.getDao(ItemDao);
+    const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+    let sendFailed = false;
+    if (itemInDB) {
+      this._updatePreInsertItemStatus(itemInDB.id, SENDING_STATUS.INPROGRESS);
+      const groupId = itemInDB.group_ids[0];
+      const isUpdate = itemInDB.is_new;
+      if (itemInDB.versions.length > 0) {
+        await this._uploadItem(groupId, itemInDB, isUpdate);
+      } else {
+        const cacheItem = this._progressCaches.get(itemId);
+        if (groupId && cacheItem && cacheItem.file) {
+          await this._sendItemFile(groupId, itemInDB, cacheItem.file, isUpdate);
+        } else {
+          sendFailed = true;
+        }
+      }
+    } else {
+      sendFailed = true;
+    }
+    if (sendFailed) {
+      this._handleItemFileSendFailed(itemId);
+    }
   }
 
   async cancelUpload(itemId: number) {
@@ -64,9 +92,7 @@ class ItemFileUploadHandler {
   }
 
   getUploadItems(groupId: number): ItemFile[] {
-    return this._uploadingItemFiles.has(groupId)
-      ? this._uploadingItemFiles[groupId]
-      : [];
+    return this._uploadingFiles.get(groupId) || [];
   }
 
   getUploadProgress(itemId: number): Progress | undefined {
@@ -74,7 +100,11 @@ class ItemFileUploadHandler {
     return status ? status.progress : undefined;
   }
 
-  updateProgress(progress: Progress) {
+  cleanUploadingFiles(groupId: number) {
+    this._uploadingFiles.delete(groupId);
+  }
+
+  private _updateProgress(progress: Progress) {
     const uploadStatus = this._progressCaches.get(progress.id);
     if (uploadStatus) {
       uploadStatus.progress = progress;
@@ -111,31 +141,23 @@ class ItemFileUploadHandler {
       (e: ProgressEventInit) => {
         const { loaded, total } = e;
         if (loaded && total) {
-          this.updateProgress({
+          this._updateProgress({
             total,
             loaded,
             groupId,
             id: preInsertItem.id,
           });
-          console.log(
-            '​ItemFileHandler -> _uploadAndGenerateItem -> loaded && total',
-            loaded,
-            total,
-          );
         }
       },
       requestHolder,
     );
+
     if (uploadRes.isOk()) {
       const storedFile = uploadRes.unwrap()[0];
-      await this._handleFileUploadSuccess(
-        groupId,
-        preInsertItem.id,
-        storedFile,
-      );
-      await this._uploadItem(groupId, preInsertItem, isUpdate, storedFile);
+      await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
+      await this._uploadItem(groupId, preInsertItem, isUpdate);
     } else {
-      // To-Do, handle failed by emit progress entity change
+      this._handleItemFileSendFailed(preInsertItem.id);
       mainLogger.error(`_uploadAndGenerateItem uploadRes error =>${uploadRes}`);
     }
   }
@@ -144,54 +166,53 @@ class ItemFileUploadHandler {
     groupId: number,
     preInsertItem: ItemFile,
     isUpdate: boolean,
-    storedFile: StoredFile,
   ) {
     let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
 
-    let shouldUpdate = isUpdate;
     let existItemFile: ItemFile | null = null;
     if (isUpdate) {
-      const nameType = this._extractFileNameAndType(storedFile.storage_path);
-      existItemFile = await this._getOldestExistFile(groupId, nameType.name);
-      if (!existItemFile) {
-        // if item not exist in local, should create new one
-        shouldUpdate = false;
-      }
+      existItemFile = await this._getOldestExistFile(
+        groupId,
+        preInsertItem.name,
+      );
     }
 
-    if (shouldUpdate && existItemFile) {
-      result = await this._updateItem(existItemFile, storedFile);
+    if (existItemFile) {
+      result = await this._updateItem(existItemFile, preInsertItem);
     } else {
-      result = await this._newItem(groupId, storedFile);
+      result = await this._newItem(groupId, preInsertItem);
     }
 
     if (result && result.isOk) {
       const data = result.unwrap();
       const fileItem = transform<ItemFile>(data);
-      this._handleUploadItemSuccess(preInsertItem, fileItem);
+      this._handleItemUploadSuccess(preInsertItem, fileItem);
     } else {
-      // To-Do, handle failed to create/update item.
+      this._handleItemFileSendFailed(preInsertItem.id);
       mainLogger.error(`_uploadItem error =>${result}`);
     }
   }
 
   private async _handleFileUploadSuccess(
-    groupId: number,
-    itemId: number,
     storedFile: StoredFile,
+    groupId: number,
+    preInsertItem: ItemFile,
   ) {
     const itemDao = daoManager.getDao(ItemDao);
-    const itemInDB = await itemDao.get(itemId);
-    if (itemInDB) {
-      const fileVersion = this._toFileVersion(storedFile);
-      itemInDB.versions = [fileVersion];
-      this._updateUploadingFiles(groupId, itemInDB);
-      itemDao.update(itemInDB);
-    }
+    const fileVersion = this._toFileVersion(storedFile);
+    preInsertItem.versions = [fileVersion];
+    this._updateUploadingFiles(groupId, preInsertItem);
+    itemDao.update(preInsertItem);
+
+    this._partialUpdateItemFile({
+      id: preInsertItem.id,
+      _id: preInsertItem.id,
+      versions: [fileVersion],
+    });
   }
 
   private _updateUploadingFiles(groupId: number, newItemFile: ItemFile) {
-    const files = this._uploadingItemFiles.get(groupId);
+    const files = this._uploadingFiles.get(groupId);
     if (files && files.length > 0) {
       const pos = files
         .map((x: ItemFile) => {
@@ -203,11 +224,11 @@ class ItemFileUploadHandler {
       } else {
         files.push(newItemFile);
       }
-      this._uploadingItemFiles.set(groupId, files);
+      this._uploadingFiles.set(groupId, files);
     }
   }
 
-  private async _handleUploadItemSuccess(
+  private async _handleItemUploadSuccess(
     preInsertItem: ItemFile,
     itemFile: ItemFile,
   ) {
@@ -217,18 +238,40 @@ class ItemFileUploadHandler {
     await itemDao.put(itemFile);
 
     const groupId = preInsertItem.group_ids[0];
-    const uploadingFiles = this._uploadingItemFiles.get(groupId);
+    const uploadingFiles = this._uploadingFiles.get(groupId);
     if (uploadingFiles) {
       const filteredRes = uploadingFiles.filter((e: ItemFile) => {
         return e.id === preInsertId;
       });
       filteredRes.push(itemFile);
-      this._uploadingItemFiles.set(groupId, filteredRes);
+      this._uploadingFiles.set(groupId, filteredRes);
     }
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
+  }
+
+  private _handleItemFileSendFailed(preInsertId: number) {
+    this._updatePreInsertItemStatus(preInsertId, SENDING_STATUS.FAIL);
+    this._emitItemFileStatus(false, preInsertId, preInsertId);
+
+    this._partialUpdateItemFile({
+      id: preInsertId,
+      _id: preInsertId,
+      status: SENDING_STATUS.FAIL,
+    });
+  }
+
+  private _partialUpdateItemFile(updateData: object) {
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.handlePartialUpdate(
+      updateData,
+      undefined,
+      async (updatedItem: Item) => {
+        return updatedItem;
+      },
+    );
   }
 
   private _toFileVersion(storedFile: StoredFile) {
@@ -242,35 +285,49 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _preInsertItemFile(itemFile: ItemFile) {
+  private async _preSaveItemFile(itemFile: ItemFile) {
     const groupId = itemFile.group_ids[0];
-    const itemFiles = this._uploadingItemFiles[groupId];
+    const itemFiles = this._uploadingFiles[groupId];
     if (itemFiles) {
-      this._uploadingItemFiles[groupId].push(itemFile);
+      this._uploadingFiles[groupId].push(itemFile);
     } else {
-      this._uploadingItemFiles.set(groupId, [itemFile]);
+      this._uploadingFiles.set(groupId, [itemFile]);
     }
 
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(itemFile);
+
+    this._updatePreInsertItemStatus(itemFile.id, SENDING_STATUS.INPROGRESS);
   }
 
-  private _toItemFile(groupId: number, fileFullName: string): ItemFile {
+  private _updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.updatePreInsertItemStatus(itemId, status);
+  }
+
+  private _toItemFile(
+    groupId: number,
+    fileFullName: string,
+    isNew: boolean,
+  ): ItemFile {
     const nameType = this._extractFileNameAndType(fileFullName);
     const accountService: AccountService = AccountService.getInstance();
     const userId = accountService.getCurrentUserId() as number;
     const companyId = accountService.getCurrentCompanyId() as number;
     const now = Date.now();
-    const vers = versionHash();
-    const id = vers < 0 ? vers : -vers;
+    const id = GlipTypeUtil.convertToIdWithType(
+      TypeDictionary.TYPE_ID_FILE,
+      now,
+    );
+
     return {
       id,
       created_at: now,
       modified_at: now,
       creator_id: userId,
-      is_new: true,
+      is_new: isNew,
       deactivated: false,
-      version: vers,
+      version: versionHash(),
       group_ids: [groupId],
       post_ids: [],
       company_id: companyId,
@@ -282,21 +339,19 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _newItem(groupId: number, storedFile: StoredFile) {
-    const nameType = this._extractFileNameAndType(storedFile.storage_path);
+  private async _newItem(groupId: number, preInsertItem: ItemFile) {
     const version = versionHash();
-    const fileVersion = this._toFileVersion(storedFile);
     const fileItemOptions = {
       version,
-      creator_id: Number(storedFile.creator_id),
+      creator_id: Number(preInsertItem.creator_id),
       new_version: version,
-      name: nameType.name,
-      type: nameType.type,
+      name: preInsertItem.name,
+      type: preInsertItem.type,
       source: 'upload',
       no_post: true,
       group_ids: [Number(groupId)],
       post_ids: [],
-      versions: [fileVersion],
+      versions: preInsertItem.versions,
       created_at: Date.now(),
       is_new: true,
     };
@@ -322,17 +377,21 @@ class ItemFileUploadHandler {
     return options;
   }
 
-  private get _uploadingItemFiles() {
-    if (!this._uploadingFiles) {
-      this._uploadingFiles = new Map();
-    }
-    return this._uploadingFiles;
+  private _emitItemFileStatus(
+    success: boolean,
+    preInsertId: number,
+    updatedId: number,
+  ) {
+    notificationCenter.emit(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, {
+      success,
+      preInsertId,
+      updatedId,
+    });
   }
 
-  private async _updateItem(existItem: ItemFile, newStoredFile: StoredFile) {
-    const fileVersion = this._toFileVersion(newStoredFile);
+  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile) {
     existItem.is_new = false;
-    existItem.versions.push(fileVersion);
+    existItem.versions = existItem.versions.concat(preInsertItem.versions);
     existItem.modified_at = Date.now();
     existItem._id = existItem.id;
     delete existItem.id;
@@ -358,14 +417,6 @@ class ItemFileUploadHandler {
     }
     return null;
   }
-
-  // private _emitItemFileStatus(
-  //   itemFileId: number,
-  //   totalSize: number,
-  //   uploadedSize: number,
-  // ) {
-  //   // To-Do emit progress entity change
-  // }
 }
 
 export { ItemFileUploadHandler };
