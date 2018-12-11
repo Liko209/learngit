@@ -133,7 +133,7 @@ describe.skip('ActionsViewModel', () => {
 });
 
 describe('MessageInputViewModel', () => {
-  describe('ActionsViewModel send post', () => {
+  describe('_sendPost()', () => {
     const mockThis = (content: string) => {
       const that = {
         quill: {
@@ -147,7 +147,7 @@ describe('MessageInputViewModel', () => {
     const enterHandler =
       messageInputViewModel.keyboardEventHandler.enter.handler;
 
-    it.skip('send post should be success', () => {
+    it.skip('should be success when has draft content', () => {
       const content = 'text';
       const that = mockThis(content);
       // @ts-ignore
@@ -158,7 +158,7 @@ describe('MessageInputViewModel', () => {
       expect(postService.sendPost).toBeCalled();
     });
 
-    it('send post content is empty should be not send', () => {
+    it('should not send when empty draft content', () => {
       const content = '';
       const that = mockThis(content);
       // @ts-ignore
@@ -168,7 +168,7 @@ describe('MessageInputViewModel', () => {
       expect(postService.sendPost).toBeCalledTimes(0);
     });
 
-    it('send post should be illegal error', () => {
+    it('should not send when draft contains illegal content', () => {
       const content = CONTENT_ILLEGAL;
       const that = mockThis(content);
       // @ts-ignore
@@ -178,7 +178,7 @@ describe('MessageInputViewModel', () => {
       expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
     });
 
-    it('send post should be over length error', () => {
+    it('should generate length error when draft.length > CONTENT_LENGTH', () => {
       const content = _.pad('test', CONTENT_LENGTH + 1);
       const that = mockThis(content);
       // @ts-ignore
@@ -188,7 +188,7 @@ describe('MessageInputViewModel', () => {
       expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
     });
 
-    it('send post should be service error', () => {
+    it('should handle error when post service fails', () => {
       postService.sendPost = jest
         .fn()
         .mockRejectedValueOnce(new Error('error'));
