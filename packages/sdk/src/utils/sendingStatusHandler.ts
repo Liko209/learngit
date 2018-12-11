@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SENDING_STATUS } from '../constants';
-import { daoManager, ConfigDao } from '../../dao';
+import { SENDING_STATUS } from '../service/constants';
+import { daoManager, ConfigDao } from '../dao';
 
-class ItemStatusHandler {
+class SendingStatusHandler {
   private _configDaoKey: string;
   private _preInsertIds: { [id: number]: SENDING_STATUS } = {};
 
@@ -49,7 +49,7 @@ class ItemStatusHandler {
   }
 
   getSendingStatus(id: number) {
-    return this._preInsertIds[id];
+    return this._preInsertIds[id] || SENDING_STATUS.SUCCESS;
   }
 
   private _syncDao() {
@@ -58,4 +58,4 @@ class ItemStatusHandler {
   }
 }
 
-export { ItemStatusHandler };
+export { SendingStatusHandler };

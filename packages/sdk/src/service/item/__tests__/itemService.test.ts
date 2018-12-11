@@ -7,68 +7,24 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 
 import ItemService from '../../../service/item';
-import handleData, {
-  uploadStorageFile,
-  sendFileItem,
-} from '../../../service/item/handleData';
 import { daoManager, PRE_INSERT_ITEM_IDS } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
 import { NetworkResultOk } from '../../../api/NetworkResult';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
-import { ItemStatusHandler } from '../itemStatusHandler';
+import { SendingStatusHandler } from '../../../utils/sendingStatusHandler';
+import handleData from '../../../service/item/handleData';
 
-jest.mock('../itemStatusHandler');
+jest.mock('../../../utils/sendingStatusHandler');
 jest.mock('../itemFileUploadHandler');
+jest.mock('../handleData');
 
 const itemService = new ItemService();
-jest.mock('../handleData');
+
 describe('ItemService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
-  });
-  describe('sendFile()', () => {
-    it('send file should be null', async () => {
-      uploadStorageFile.mockImplementation(() => [{ name: 'mock_file' }]);
-      handleData.mockImplementation(() => [{ name: 'mock' }]);
-      sendFileItem.mockImplementation(() => '');
-      const result = await itemService.sendFile({
-        file: new FormData(),
-        groupId: '1',
-      });
-      expect(result).toBeNull();
-    });
-    it('send file should return result', async () => {
-      uploadStorageFile.mockImplementation(() => [{ name: 'mock_file' }]);
-      handleData.mockImplementation(() => [{ name: 'mock' }]);
-      sendFileItem.mockImplementation(() => ({
-        id: 1,
-        name: 'xxx',
-      }));
-      const result = await itemService.sendFile({
-        file: new FormData(),
-        groupId: '1',
-      });
-      expect(result).toEqual({
-        id: 1,
-        name: 'xxx',
-      });
-    });
-
-    it('send file should be error', async () => {
-      uploadStorageFile.mockImplementation(() => {
-        throw new Error('error');
-      });
-      try {
-        await itemService.sendFile({
-          file: new FormData(),
-          groupId: '1',
-        });
-      } catch (e) {
-        expect(e).toEqual(new Error('error'));
-      }
-    });
   });
 
   describe('getRightRailItemsOfGroup()', () => {
@@ -364,22 +320,22 @@ describe('ItemService', () => {
     });
   });
 
-  describe('ItemService should call functions in ItemStatusHandler', () => {
-    const itemStatusHandler = new ItemStatusHandler(PRE_INSERT_ITEM_IDS);
+  describe('ItemService should call functions in SendingStatusHandler', () => {
+    const sendingStatusHandler = new SendingStatusHandler(PRE_INSERT_ITEM_IDS);
     beforeEach(() => {
       jest.clearAllMocks();
       jest.restoreAllMocks();
       jest
         .spyOn(itemService, '_getItemStatusHandler')
-        .mockReturnValue(itemStatusHandler);
+        .mockReturnValue(sendingStatusHandler);
     });
 
     describe('removeItemFromPreInsertIds()', () => {
       it('should call removePreInsertId', () => {
         const id = 1;
         itemService.removeItemFromPreInsertIds(id);
-        expect(itemStatusHandler.removePreInsertId).toBeCalledTimes(1);
-        expect(itemStatusHandler.removePreInsertId).toBeCalledWith(id);
+        expect(sendingStatusHandler.removePreInsertId).toBeCalledTimes(1);
+        expect(sendingStatusHandler.removePreInsertId).toBeCalledWith(id);
       });
     });
 
@@ -387,7 +343,9 @@ describe('ItemService', () => {
       it('should call getSendingStatus', () => {
         const ids = [1, 2, 3];
         itemService.getItemsSendingStatus(ids);
-        expect(itemStatusHandler.getSendingStatus).toBeCalledTimes(ids.length);
+        expect(sendingStatusHandler.getSendingStatus).toBeCalledTimes(
+          ids.length,
+        );
       });
     });
 
@@ -396,8 +354,11 @@ describe('ItemService', () => {
         const itemId = 1;
         const status = 0;
         itemService.updatePreInsertItemStatus(itemId, status);
-        expect(itemStatusHandler.setPreInsertId).toBeCalledWith(itemId, status);
-        expect(itemStatusHandler.setPreInsertId).toBeCalledTimes(1);
+        expect(sendingStatusHandler.setPreInsertId).toBeCalledWith(
+          itemId,
+          status,
+        );
+        expect(sendingStatusHandler.setPreInsertId).toBeCalledTimes(1);
       });
     });
   });
