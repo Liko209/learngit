@@ -190,7 +190,7 @@ class IncomingPostHandler {
     try {
       if (editedPostIds.length !== 0) {
         const dao = daoManager.getDao(PostDao);
-        const postsInDB: Post[] = await dao.queryManyPostsByIds(editedPostIds);
+        const postsInDB: Post[] = await dao.batchGet(editedPostIds);
         const editedPostsNotInDBIds = editedPostIds.filter(
           id => postsInDB.filter((item: Post) => item.id === id).length === 0,
         );

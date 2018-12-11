@@ -152,7 +152,8 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   conversationEntryByName(name: string) {
-    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
+    this.warnFlakySelector();
+    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
   async isExpand() {

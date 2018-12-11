@@ -26,7 +26,7 @@ class PrivacyViewComponent extends Component<Props> {
         content,
         title: '',
         okText: t('OK'),
-        okBtnType: 'text',
+        okVariant: 'text',
         onOK: () => {},
       });
     }

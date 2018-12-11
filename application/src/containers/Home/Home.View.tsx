@@ -16,6 +16,7 @@ import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import { analytics } from '@/Analytics';
 import { MiniCard } from '@/containers/MiniCard';
+import { ToastWrapper } from '@/containers/ToastWrapper';
 
 @observer
 class Home extends Component<HomeViewProps> {
@@ -40,6 +41,7 @@ class Home extends Component<HomeViewProps> {
       <Wrapper onClick={this.onClick} onScroll={this.onScroll}>
         <TopBar />
         <Bottom>
+          <ToastWrapper />
           <LeftNav />
           <Switch>
             <Redirect exact={true} from="/" to="/messages/" />

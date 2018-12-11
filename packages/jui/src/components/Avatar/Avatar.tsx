@@ -33,9 +33,9 @@ const sizes: { [key in Size]: number } = {
 };
 
 const fonts: { [key in Size]: keyof Theme['typography'] } = {
-  xlarge: 'title2',
-  large: 'title2',
-  medium: 'subheading3',
+  xlarge: 'display1',
+  large: 'subheading2',
+  medium: 'subheading2',
   small: 'caption2',
 };
 

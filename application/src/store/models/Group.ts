@@ -39,7 +39,9 @@ export default class GroupModel extends Base<Group> {
   guestUserCompanyIds?: number[];
   @observable
   permissions?: TeamPermission;
+  @observable
   mostRecentPostId?: number;
+
   latestTime: number;
 
   constructor(data: Group) {
