@@ -488,31 +488,6 @@ describe('PostService', () => {
       );
     });
 
-    // it('should return remote posts if none in local', async () => {
-    //   const localPosts = [];
-    //   const remotePosts = [
-    //     { id: 1 },
-    //     { id: 2 },
-    //     { id: 3 },
-    //     { id: 4 },
-    //     { id: 5 },
-    //   ];
-    //   const data = { posts: [...remotePosts], items: [] };
-    //   postDao.queryManyPostsByIds.mockResolvedValue([...localPosts]);
-    //   PostAPI.requestByIds.mockResolvedValue(
-    //     new ApiResultOk(data, {
-    //       status: 200,
-    //       headers: {},
-    //     } as BaseResponse),
-    //   );
-    //   baseHandleData.mockImplementationOnce((data: any) => data);
-    //   itemService.getByPosts.mockResolvedValue([]);
-    //   const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
-    //   expect(result.posts.map(({ id }) => id).sort()).toEqual(
-    //     [...remotePosts].map(({ id }) => id).sort(),
-    //   );
-    // });
-
     it('should return items get with itemService for local posts', async () => {
       const localPosts = [{ id: 3 }, { id: 4 }, { id: 5 }];
       itemService.getByPosts.mockResolvedValue([
@@ -706,7 +681,7 @@ describe('PostService', () => {
       const result = await postService.likePost(100, 101, true);
       expect(result.isErr()).toBe(true);
     });
-    it('should return post with likes', async () => {
+    it('should return old post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
       const data = { _id: 100, likes: [101] };
@@ -725,7 +700,7 @@ describe('PostService', () => {
       const result = await postService.likePost(100, 102, false);
       expect(result.data.likes).toEqual([]);
     });
-    it('should return old post if person id is in post likes when to like', async () => {
+    it('should return new post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
       const result = await postService.likePost(100, 101, true);
