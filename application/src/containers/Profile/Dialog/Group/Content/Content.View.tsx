@@ -11,14 +11,14 @@ import { ProfileDialogGroupContentViewProps } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { GroupAvatar } from '@/containers/Avatar';
 import {
-  JuiProfileDialogContentSummary,
-  JuiProfileDialogContentSummaryLeft,
-  JuiProfileDialogContentSummaryRight,
-  JuiProfileDialogContentSummaryName,
-  JuiProfileDialogContentSummaryDescription,
-  JuiProfileDialogContentSummaryButtons,
+  JuiProfileDialogContentSummary as Summary,
+  JuiProfileDialogContentSummaryLeft as Left,
+  JuiProfileDialogContentSummaryRight as Right,
+  JuiProfileDialogContentSummaryName as Name,
+  JuiProfileDialogContentSummaryDescription as Description,
+  JuiProfileDialogContentSummaryButtons as Buttons,
   JuiProfileDialogContentSummaryButton,
-  JuiProfileDialogContentMembers,
+  JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -39,13 +39,6 @@ class ProfileDialogGroupContentViewComponent extends Component<
   }
   render() {
     const { id, group, dismiss } = this.props;
-    const Summary = JuiProfileDialogContentSummary;
-    const Left = JuiProfileDialogContentSummaryLeft;
-    const Right = JuiProfileDialogContentSummaryRight;
-    const Name = JuiProfileDialogContentSummaryName;
-    const Description = JuiProfileDialogContentSummaryDescription;
-    const Buttons = JuiProfileDialogContentSummaryButtons;
-    const Members = JuiProfileDialogContentMembers;
     return (
       <>
         <Summary>
