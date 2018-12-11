@@ -96,6 +96,11 @@ class ProfileDialogPersonContentViewComponent extends Component<
     );
   }
 
+  renderEmail(value: string) {
+    const html = `<a href="mailto:${value}">${value}</a>`;
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+
   render() {
     const {
       t,
@@ -165,7 +170,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 this.renderFormGroup({
                   icon: 'email',
                   label: t('email'),
-                  value: person.email,
+                  value: this.renderEmail(person.email),
                   valueEmphasize: true,
                   copy: true,
                 })}

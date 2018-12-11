@@ -84,6 +84,9 @@ const JuiProfileDialogContentFormValue = styled<PropsFormValue, 'div'>('div')`
   padding-right: ${spacing(2)};
   color: ${({ emphasize }: PropsFormValue) =>
     emphasize ? primary('700') : grey('900')};
+  a {
+    color: ${primary('700')};
+  }
 `;
 
 export {

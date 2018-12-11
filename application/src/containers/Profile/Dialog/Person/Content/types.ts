@@ -23,7 +23,7 @@ type ProfileDialogPersonContentViewProps = ProfileDialogPersonViewProps & {
 type FormGroupType = {
   icon?: string;
   label: string;
-  value: string;
+  value: any;
   valueEmphasize?: boolean;
   copy?: boolean;
 };
