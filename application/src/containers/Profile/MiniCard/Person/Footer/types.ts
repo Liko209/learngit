@@ -9,11 +9,11 @@ import {
   ProfileMiniCardPersonViewProps,
 } from '../types';
 
-type ProfileMiniCardPersonHeaderProps = ProfileMiniCardPersonProps;
+type ProfileMiniCardPersonFooterProps = ProfileMiniCardPersonProps;
 
-type ProfileMiniCardPersonHeaderViewProps = ProfileMiniCardPersonViewProps;
+type ProfileMiniCardPersonFooterViewProps = ProfileMiniCardPersonViewProps;
 
 export {
-  ProfileMiniCardPersonHeaderProps,
-  ProfileMiniCardPersonHeaderViewProps,
+  ProfileMiniCardPersonFooterProps,
+  ProfileMiniCardPersonFooterViewProps,
 };

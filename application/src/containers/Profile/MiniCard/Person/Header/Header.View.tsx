@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
@@ -19,6 +20,7 @@ import {
 } from 'jui/pattern/ProfileMiniCard';
 import { Favorite } from '@/containers/common';
 
+@observer
 class ProfileMiniCardPersonHeaderView extends Component<
   ProfileMiniCardPersonHeaderViewProps
 > {

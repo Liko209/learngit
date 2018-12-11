@@ -146,5 +146,7 @@
   "AboutRingCentral": "About RingCentral",
   "NoInternetConnection": "No Internet Connection",
   "ariaGoToTeam": "Go to the conversation with team {{name}}",
-  "ariaGoToGroup": "Go to the conversation with group"
+  "ariaGoToGroup": "Go to the conversation with group",
+  "ariaGoToMe": "Go to the workstation of yourself",
+  "ariaGoToOther": "Go to the conversation with {{name}}"
 }

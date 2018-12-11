@@ -7,17 +7,18 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import {
-  ProfileMiniCardPersonHeaderProps,
-  ProfileMiniCardPersonHeaderViewProps,
+  ProfileMiniCardPersonProps,
+  ProfileMiniCardPersonViewProps,
 } from './types';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 
-class ProfileMiniCardPersonHeaderViewModel
-  extends AbstractViewModel<ProfileMiniCardPersonHeaderProps>
-  implements ProfileMiniCardPersonHeaderViewProps {
+class ProfileMiniCardPersonViewModel
+  extends AbstractViewModel<ProfileMiniCardPersonProps>
+  implements ProfileMiniCardPersonViewProps {
   @computed
   get id() {
     return this.props.id; // person id
@@ -27,6 +28,12 @@ class ProfileMiniCardPersonHeaderViewModel
   get person() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
+
+  @computed
+  get isMe(): boolean {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.id === currentUserId;
+  }
 }
 
-export { ProfileMiniCardPersonHeaderViewModel };
+export { ProfileMiniCardPersonViewModel };

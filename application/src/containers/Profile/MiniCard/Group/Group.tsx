@@ -1,40 +1,17 @@
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2018-11-21 19:31:28
+ * @Date: 2018-11-21 16:25:07
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
-import {
-  JuiMiniCard,
-  JuiMiniCardHeader,
-  JuiMiniCardFooter,
-} from 'jui/pattern/MiniCard';
-import { ProfileMiniCardGroupHeader } from './Header';
-import { ProfileMiniCardGroupFooter } from './Footer';
+import { buildContainer } from '@/base';
+import { ProfileMiniCardGroupView } from './Group.View';
+import { ProfileMiniCardGroupViewModel } from './Group.ViewModel';
+import { ProfileMiniCardGroupProps } from './types';
 
-type Props = {
-  id: number;
-};
+const ProfileMiniCardGroup = buildContainer<ProfileMiniCardGroupProps>({
+  View: ProfileMiniCardGroupView,
+  ViewModel: ProfileMiniCardGroupViewModel,
+});
 
-class ProfileMiniCardGroup extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
-
-  render() {
-    const { id } = this.props;
-    return (
-      <JuiMiniCard>
-        <JuiMiniCardHeader>
-          <ProfileMiniCardGroupHeader id={id} />
-        </JuiMiniCardHeader>
-        <JuiMiniCardFooter>
-          <ProfileMiniCardGroupFooter id={id} />
-        </JuiMiniCardFooter>
-      </JuiMiniCard>
-    );
-  }
-}
-
-export { ProfileMiniCardGroup };
+export { ProfileMiniCardGroup, ProfileMiniCardGroupProps };

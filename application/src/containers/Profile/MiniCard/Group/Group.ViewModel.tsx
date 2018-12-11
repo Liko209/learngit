@@ -10,7 +10,6 @@ import {
   ProfileMiniCardGroupProps,
   ProfileMiniCardGroupViewProps,
 } from './types';
-
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';

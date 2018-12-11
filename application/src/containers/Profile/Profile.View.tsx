@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { PROFILE_TYPE, ProfileViewProps } from './types';
 import { ProfileMiniCardPerson } from './MiniCard/Person';
 import { ProfileMiniCardGroup } from './MiniCard/Group';
@@ -30,6 +31,7 @@ const factory = (id: number, type: PROFILE_TYPE, typeId: number) => {
   return <Component id={id} />;
 };
 
+@observer
 class ProfileView extends Component<ProfileViewProps> {
   render() {
     const { id, type, typeId } = this.props;

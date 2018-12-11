@@ -6,7 +6,7 @@
 
 import { buildContainer } from '@/base';
 import { ProfileMiniCardGroupHeaderView } from './Header.View';
-import { ProfileMiniCardGroupViewModel } from '../MiniCardGroup.ViewModel';
+import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import { ProfileMiniCardGroupHeaderProps } from './types';
 
 const ProfileMiniCardGroupHeader = buildContainer<

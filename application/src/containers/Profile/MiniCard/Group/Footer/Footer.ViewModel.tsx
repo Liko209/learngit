@@ -6,7 +6,7 @@
 
 import { computed } from 'mobx';
 import { ProfileMiniCardGroupFooterViewProps } from './types';
-import { ProfileMiniCardGroupViewModel } from '../MiniCardGroup.ViewModel';
+import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 

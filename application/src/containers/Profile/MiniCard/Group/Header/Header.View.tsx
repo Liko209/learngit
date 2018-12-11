@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { ProfileMiniCardGroupHeaderViewProps } from './types';
 import {
   JuiProfileMiniCardHeader,
@@ -16,6 +17,7 @@ import {
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Favorite, Privacy } from '@/containers/common';
 
+@observer
 class ProfileMiniCardGroupHeaderView extends Component<
   ProfileMiniCardGroupHeaderViewProps
 > {
