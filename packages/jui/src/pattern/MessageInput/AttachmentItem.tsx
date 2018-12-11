@@ -76,7 +76,7 @@ const NameArea = styled.div<StatusProps>`
   line-height: ${height(5)};
   max-height: ${height(5)};
   margin-left: ${spacing(2)};
-  opacity: ${({ status }) => (status === 'loading' ? '0.06' : 1)};
+  opacity: ${({ status }) => (status === 'loading' ? '0.26' : 1)};
   color: ${({ theme, status }) => StatusMap[status](theme)};
 `;
 
