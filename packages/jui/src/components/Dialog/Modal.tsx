@@ -14,7 +14,7 @@ import { JuiDialogActions } from './DialogActions';
 import { spacing } from '../../foundation/utils';
 import { Omit } from '../../foundation/utils/typeHelper';
 import styled from '../../foundation/styled-components';
-import { JuiButton, JuiButtonProps } from '../Buttons/Button';
+import { JuiButton, JuiButtonProps, JuiButtonColor } from '../Buttons/Button';
 
 const StyledActions = styled<DialogActionsProps>(JuiDialogActions)`
   & button {
@@ -31,9 +31,10 @@ type JuiModalProps = {
   contentBefore?: string | JSX.Element | boolean | null;
   contentAfter?: string | JSX.Element | boolean | null;
   okText?: string;
-  okBtnType?: JuiButtonProps['variant'];
+  okVariant?: JuiButtonProps['variant'];
+  okType?: JuiButtonColor;
   okBtnProps?: JuiButtonProps;
-  cancelBtnType?: JuiButtonProps['variant'];
+  cancelVariant?: JuiButtonProps['variant'];
   cancelBtnProps?: JuiButtonProps;
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void;
@@ -70,8 +71,9 @@ class JuiModal extends Component<JuiModalProps, {}> {
       cancelText,
       onOK,
       okText,
-      okBtnType = 'contained',
-      cancelBtnType = 'text',
+      okVariant = 'contained',
+      okType = 'primary',
+      cancelVariant = 'text',
       okBtnProps,
       cancelBtnProps,
     } = this.props;
@@ -81,7 +83,7 @@ class JuiModal extends Component<JuiModalProps, {}> {
           <JuiButton
             onClick={onCancel}
             color="primary"
-            variant={cancelBtnType}
+            variant={cancelVariant}
             autoFocus={true}
             {...cancelBtnProps}
           >
@@ -90,8 +92,8 @@ class JuiModal extends Component<JuiModalProps, {}> {
         ) : null}
         <JuiButton
           onClick={onOK}
-          color="primary"
-          variant={okBtnType}
+          color={okType}
+          variant={okVariant}
           autoFocus={true}
           {...okBtnProps}
         >

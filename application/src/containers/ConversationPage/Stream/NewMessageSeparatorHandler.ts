@@ -18,6 +18,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
+  _oldestPost?: ISortableModel<Post>;
 
   @observable
   private _hasNewMessagesSeparator = false;
@@ -44,6 +45,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     hasMore: boolean,
   ): void {
     if (this._disabled) return;
+    this._oldestPost = _.first(allPosts);
 
     /*
      * (1)

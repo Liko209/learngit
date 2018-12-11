@@ -6,13 +6,7 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
-import {
-  ellipsis,
-  width,
-  height,
-  spacing,
-  grey,
-} from '../../foundation/utils/styles';
+import { width, height, spacing, grey } from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
 
 const LinkItemsWrapper = styled.div`
@@ -22,19 +16,17 @@ const LinkItemsWrapper = styled.div`
   width: 100%;
   box-shadow: ${({ theme }) => theme.boxShadow.val1};
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-  height: ${height(26)};
+  /* height: ${height(26)}; */
   overflow: hidden;
+  padding: ${spacing(3)};
+  box-sizing: border-box;
   :hover {
     background-color: ${grey('100')};
   }
 `;
 const LinkItemContents = styled.div`
   display: flex;
-  margin: ${spacing(4)};
-  height: ${height(18)};
-  width: 100%;
-  span {
-    margin-right: ${spacing(9)};
+  & > span {
     color: ${({ theme }) => theme.palette.accent.ash};
     width: ${width(5)};
     height: ${height(5)};
@@ -42,23 +34,30 @@ const LinkItemContents = styled.div`
     margin-top: ${spacing(-1)};
   }
 `;
-const LinkThumbnails = styled<{ img: string }, 'div'>('div')`
-  width: ${width(18)};
-  height: ${height(18)};
+const LinkThumbnails = styled.div<{ img: string }>`
+  width: ${width(30)};
+  height: ${height(30)};
   background: no-repeat center url(${({ img }) => img});
-  background-size: cover;
+  background-size: contain;
+  background-color: ${grey('300')};
 `;
-const TitleNSummaryWrapper = styled.div`
+
+const TitleNSummaryWrapper = styled.div``;
+const TitleWithSummary = styled.div`
+  display: flex;
   flex: 1;
   margin-left: ${spacing(3)};
-  width: 0;
-  max-width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 const LinkTitle = styled.p`
-  ${({ theme }) => theme.typography.subheading1}
-  margin-top: 0;
-  ${ellipsis()};
-  margin-right: ${spacing(5)};
+  margin: ${spacing(0, 0, 2, 0)};
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   a {
     color: ${grey('900')};
     &:hover {
@@ -86,31 +85,66 @@ const LinkSummary = styled.p`
   max-height: ${({ theme }) =>
     getMaxHeight(theme.typography.body1.lineHeight, 2)}; /* firefox */
 `;
+
+const FaviconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Favicon = styled.span<{ favicon: string }>`
+  width: ${width(5)};
+  height: ${height(5)};
+  margin: ${spacing(0, 2, 0, 0)};
+  display: inline-block;
+  background-size: cover;
+  background-image: url(${({ favicon }) => favicon});
+`;
+const FaviconName = styled.span`
+  font-size: ${({ theme }) => theme.typography.body2.fontSize};
+  color: ${grey('500')};
+`;
+
 type Props = {
   title: string;
   summary: string;
   thumbnail: string;
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
   url: string;
+  favicon: string;
+  faviconName: string;
 };
 class JuiConversationCardLinkItems extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
   render() {
-    const { title, summary, thumbnail, onLinkItemClose, url } = this.props;
+    const {
+      title,
+      summary,
+      thumbnail,
+      onLinkItemClose,
+      url,
+      favicon,
+      faviconName,
+    } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
           <LinkThumbnails img={thumbnail ? thumbnail : defaultLinkImage} />
-          <TitleNSummaryWrapper>
-            <LinkTitle>
-              <a href={url} target="_blank">
-                {title}
-              </a>
-            </LinkTitle>
-            <LinkSummary>{summary}</LinkSummary>
-          </TitleNSummaryWrapper>
+          <TitleWithSummary>
+            <TitleNSummaryWrapper>
+              <LinkTitle>
+                <a href={url} target="_blank">
+                  {title}
+                </a>
+              </LinkTitle>
+              <LinkSummary>{summary}</LinkSummary>
+            </TitleNSummaryWrapper>
+            <FaviconWrapper>
+              <Favicon favicon={favicon} />
+              <FaviconName>{faviconName}</FaviconName>
+            </FaviconWrapper>
+          </TitleWithSummary>
           <JuiIconography onClick={onLinkItemClose}>close</JuiIconography>
         </LinkItemContents>
       </LinkItemsWrapper>

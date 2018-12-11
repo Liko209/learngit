@@ -12,7 +12,7 @@ import MuiAppBar, {
   AppBarProps as MuiAppBarProps,
 } from '@material-ui/core/AppBar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import MuiTooltip from '@material-ui/core/Tooltip';
+import { JuiArrowTip } from '../../components/Tooltip/ArrowTip';
 
 import {
   typography,
@@ -100,7 +100,7 @@ class JuiConversationPageHeader
   >
   implements IJuiConversationPageHeader {
   textRef: React.RefObject<any>;
-  static dependencies = [MuiAppBar, MuiToolbar, MuiTooltip, Typography];
+  static dependencies = [MuiAppBar, MuiToolbar, JuiArrowTip, Typography];
   static defaultProps = {
     title: '',
   };
@@ -165,7 +165,7 @@ class JuiConversationPageHeader
           <div className="left-wrapper">
             <TitleAndStatusWrapper>
               {this.state.showTooltip ? (
-                <MuiTooltip title={title}>{titleElement}</MuiTooltip>
+                <JuiArrowTip title={title}>{titleElement}</JuiArrowTip>
               ) : (
                 titleElement
               )}

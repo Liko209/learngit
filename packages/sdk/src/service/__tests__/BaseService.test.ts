@@ -209,6 +209,38 @@ describe('BaseService', () => {
     });
   });
 
+  describe('getModelsLocally()', () => {
+    it('should call deactivated dao, when include deactivate model', async () => {
+      const service = new AService();
+      const dao = daoManager.get(MyDao);
+      dao.batchGet.mockResolvedValue([{ id: 3 }]);
+      jest
+        .spyOn(service, '_getDeactivatedModelsLocally')
+        .mockResolvedValue([{ id: 4 }]);
+      const result = await service.getModelsLocally([3, 4], true);
+      expect(result.length).toBe(2);
+    });
+
+    it('should not call deactivated dao, when exclude deactivate model', async () => {
+      const service = new AService();
+      const dao = daoManager.get(MyDao);
+      dao.batchGet.mockResolvedValue([{ id: 3 }]);
+      jest
+        .spyOn(service, '_getDeactivatedModelsLocally')
+        .mockResolvedValue([{ id: 4 }]);
+      const result = await service.getModelsLocally([3, 4], false);
+      expect(result.length).toBe(1);
+    });
+
+    it('should not call deactivated dao, when all model activated', async () => {
+      const service = new AService();
+      const dao = daoManager.get(MyDao);
+      dao.batchGet.mockResolvedValue([{ id: 3 }, { id: 4 }]);
+      const result = await service.getModelsLocally([3, 4], false);
+      expect(result.length).toBe(2);
+    });
+  });
+
   describe('partialUpdate()', () => {
     it('will trigger partial update event once', async () => {
       const service = new AService();

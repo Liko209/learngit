@@ -121,7 +121,6 @@ class GroupService extends BaseService<Group> {
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = await dao.queryAllGroups(offset, limit);
     } else {
-      const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
@@ -213,10 +212,12 @@ class GroupService extends BaseService<Group> {
       memberIds,
     );
     const result = await GroupAPI.requestNewGroup(info);
-    const data = result.unwrap();
-    const group = transform<Group>(data);
-    await handleData([data]);
-    return group;
+    if (result.isOk()) {
+      const data = result.unwrap();
+      await handleData([data]);
+      return transform<Group>(data);
+    }
+    return null;
   }
 
   async getLatestGroup(): Promise<Group | null> {

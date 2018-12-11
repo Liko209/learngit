@@ -62,7 +62,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     this.reaction(
       () => ({ searchTerm: this.searchTerm, memberIds: this._memberIds }),
       (data: { searchTerm?: string; memberIds: number[] }) => {
-        if (this._canDoFuzzySearch) {
+        if (this._canDoFuzzySearch || this.isEditMode) {
           this._doFuzzySearchPersons(data);
         }
         this._canDoFuzzySearch = true;
@@ -159,8 +159,12 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action selectHandler = (selectIndex: number) => {
     return () => {
       this.currentIndex = selectIndex;
+      const { pid } = this.props;
+      const query = pid
+        ? `[data-id='${pid}'] .ql-container`
+        : '.conversation-page>div>.quill>.ql-container';
       this._selectHandler(this).apply({
-        quill: (document.querySelector('.ql-container') as any).__quill,
+        quill: (document.querySelector(query) as any).__quill,
       });
     };
   }
@@ -168,7 +172,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _escapeHandler(vm: MentionViewModel) {
     return function () {
-      vm.open = false;
+      if (vm.open) {
+        vm.open = false;
+        return false;
+      }
+      return true;
     };
   }
 
@@ -185,6 +193,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     return function () {
       vm.currentIndex = (vm.currentIndex + 1) % vm.members.length;
     };
+  }
+
+  @computed
+  get isEditMode() {
+    return this.props.isEditMode;
   }
 
   mentionOptions = {

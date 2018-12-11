@@ -62,6 +62,7 @@
     "elementOnRipple": 2,
     "loading": 1000,
     "dragging": 2000,
+    "toast": 3000,
     "floatButton": 10
   },
   "size": {

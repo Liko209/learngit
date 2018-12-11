@@ -116,7 +116,9 @@
     "workspaces",
     "Zhan",
     "Sexio",
-    "tinycolor"
+    "tinycolor",
+    "snackbars",
+    "dismissible"
   ],
   "flagWords": []
 }

@@ -97,6 +97,7 @@ type Theme = {
     dragging: number;
     moreMenu: number;
     memberListHeader: number;
+    toast: number;
     floatButton: number;
   };
   size: {
