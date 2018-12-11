@@ -5,13 +5,13 @@
  */
 
 import { computed } from 'mobx';
-import { ProfileDialogGroupContentViewProps } from './types';
-import { ProfileDialogGroupViewModel } from '../ProfileDialogGroup.ViewModel';
+import { ProfileMiniCardGroupFooterViewProps } from './types';
+import { ProfileMiniCardGroupViewModel } from '../MiniCardGroup.ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 
-class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
-  implements ProfileDialogGroupContentViewProps {
+class ProfileMiniCardGroupFooterViewModel extends ProfileMiniCardGroupViewModel
+  implements ProfileMiniCardGroupFooterViewProps {
   @computed
   get showMessage() {
     if (!this.group || !this.group.members) {
@@ -22,4 +22,4 @@ class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
   }
 }
 
-export { ProfileDialogGroupContentViewModel };
+export { ProfileMiniCardGroupFooterViewModel };

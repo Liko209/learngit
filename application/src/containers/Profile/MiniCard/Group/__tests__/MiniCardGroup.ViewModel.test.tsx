@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getEntity } from '../../../../../../store/utils';
-import { ProfileMiniCardGroupHeaderViewModel } from '../Header.ViewModel';
+import { getEntity } from '../../../../../store/utils';
+import { ProfileMiniCardGroupViewModel } from '../MiniCardGroup.ViewModel';
 
-jest.mock('../../../../../../store/utils');
+jest.mock('../../../../../store/utils');
 
 const mockData = {
   displayName: 'Group name',
@@ -17,7 +17,7 @@ const mockData = {
 const props = {
   id: 1,
 };
-const vm = new ProfileMiniCardGroupHeaderViewModel(props);
+let vm: ProfileMiniCardGroupViewModel;
 
 describe('Note item', () => {
   beforeAll(() => {
@@ -26,6 +26,7 @@ describe('Note item', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    vm = new ProfileMiniCardGroupViewModel(props);
   });
 
   it('computed id', () => {

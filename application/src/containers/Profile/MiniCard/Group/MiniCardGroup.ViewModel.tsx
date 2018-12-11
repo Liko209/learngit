@@ -7,8 +7,8 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import {
-  ProfileMiniCardGroupHeaderProps,
-  ProfileMiniCardGroupHeaderViewProps,
+  ProfileMiniCardGroupProps,
+  ProfileMiniCardGroupViewProps,
 } from './types';
 
 import { getEntity } from '@/store/utils';
@@ -16,9 +16,9 @@ import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 
-class ProfileMiniCardGroupHeaderViewModel
-  extends AbstractViewModel<ProfileMiniCardGroupHeaderProps>
-  implements ProfileMiniCardGroupHeaderViewProps {
+class ProfileMiniCardGroupViewModel
+  extends AbstractViewModel<ProfileMiniCardGroupProps>
+  implements ProfileMiniCardGroupViewProps {
   @computed
   get id() {
     return this.props.id; // conversation id
@@ -30,4 +30,4 @@ class ProfileMiniCardGroupHeaderViewModel
   }
 }
 
-export { ProfileMiniCardGroupHeaderViewModel };
+export { ProfileMiniCardGroupViewModel };

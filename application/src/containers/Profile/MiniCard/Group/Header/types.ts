@@ -4,15 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import GroupModel from '@/store/models/Group';
+import {
+  ProfileMiniCardGroupProps,
+  ProfileMiniCardGroupViewProps,
+} from '../types';
 
-type ProfileMiniCardGroupHeaderProps = {
-  id: number;
-};
+type ProfileMiniCardGroupHeaderProps = ProfileMiniCardGroupProps;
 
-type ProfileMiniCardGroupHeaderViewProps = {
-  id: number;
-  group: GroupModel;
-};
+type ProfileMiniCardGroupHeaderViewProps = ProfileMiniCardGroupViewProps;
 
 export { ProfileMiniCardGroupHeaderProps, ProfileMiniCardGroupHeaderViewProps };

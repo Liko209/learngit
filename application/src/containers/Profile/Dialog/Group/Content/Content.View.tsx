@@ -38,7 +38,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
     );
   }
   render() {
-    const { id, group, dismiss } = this.props;
+    const { id, group, showMessage, dismiss } = this.props;
     return (
       <>
         <Summary>
@@ -49,7 +49,13 @@ class ProfileDialogGroupContentViewComponent extends Component<
             <Name needEllipsis={!group.isTeam}>{group.displayName}</Name>
             <Description>{group.description}</Description>
             <Buttons>
-              <Message id={id} dismiss={dismiss} render={this.renderMessage} />
+              {showMessage && (
+                <Message
+                  id={id}
+                  dismiss={dismiss}
+                  render={this.renderMessage}
+                />
+              )}
             </Buttons>
           </Right>
         </Summary>

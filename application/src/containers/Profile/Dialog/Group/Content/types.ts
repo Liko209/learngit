@@ -8,6 +8,8 @@ import { ProfileDialogGroupProps, ProfileDialogGroupViewProps } from '../types';
 
 type ProfileDialogGroupContentProps = ProfileDialogGroupProps;
 
-type ProfileDialogGroupContentViewProps = ProfileDialogGroupViewProps;
+type ProfileDialogGroupContentViewProps = ProfileDialogGroupViewProps & {
+  showMessage: boolean;
+};
 
 export { ProfileDialogGroupContentProps, ProfileDialogGroupContentViewProps };
