@@ -51,8 +51,11 @@ switch(true) {
   case argv.includes('foundation'):
     process.env.APP = '<rootDir>/packages/foundation';
     break;
+  case argv.includes('voip'):
+    process.env.APP = '<rootDir>/packages/voip';
+    break;
   default:
-    process.env.APP = '<rootDir>/{application|packages/sdk|packages/foundation}';
+    process.env.APP = '<rootDir>/{application|packages/sdk|packages/foundation|packages/voip}';
     break;
 }
 
