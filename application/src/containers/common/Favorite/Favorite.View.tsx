@@ -37,7 +37,7 @@ class FavoriteViewComponent extends Component<Props> {
         content,
         title: '',
         okText: t('OK'),
-        okBtnType: 'text',
+        okVariant: 'text',
         onOK: () => {},
       });
     }
@@ -52,7 +52,14 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { hideUnFavorite, isFavorite, size, variant, disableToolTip, t } = this.props;
+    const {
+      hideUnFavorite,
+      isFavorite,
+      size,
+      variant,
+      disableToolTip,
+      t,
+    } = this.props;
     if (hideUnFavorite && !isFavorite) {
       return null;
     }

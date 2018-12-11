@@ -35,6 +35,8 @@ type ExtendFileItem = {
 };
 
 type LinkItem = {
+  favicon: string;
+  providerName: string;
   summary: string;
   title: string;
   url: string;
