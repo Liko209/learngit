@@ -203,7 +203,8 @@
       "fontSize": "0.875rem",
       "fontWeight": 500,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "lineHeight": "16px"
+      "lineHeight": "16px",
+      "textTransform": "none"
     }
   },
   "boxShadow": {
