@@ -12,7 +12,7 @@ jest.mock('@/containers/Notification');
 describe('NewMessageView', () => {
   describe('render()', () => {
     it('should display flash toast notification when create direct message failed. [JPT-280]', () => {
-      const props = {
+      const props: any = {
         t: () => {},
         newMessage: () => {},
         isOpen: false,
@@ -31,7 +31,7 @@ describe('NewMessageView', () => {
         handleSearchContactChange: (items: any) => {},
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
-      const wrapper = shallow(<NewMessageComponent {...props} />);
+      shallow(<NewMessageComponent {...props} />);
       expect(Notification.flashToast).toHaveBeenCalled();
     });
   });

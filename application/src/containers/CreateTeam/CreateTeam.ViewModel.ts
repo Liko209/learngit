@@ -13,7 +13,6 @@ import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
-import { Notification } from '../Notification';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable

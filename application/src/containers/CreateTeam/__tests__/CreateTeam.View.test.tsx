@@ -12,7 +12,7 @@ jest.mock('@/containers/Notification');
 describe('CreateTeamView', () => {
   describe('render()', () => {
     it('should display flash toast notification when create team failed. [JPT-388]', () => {
-      const props = {
+      const props: any = {
         t: (str: string) => {},
         create: () => {},
         isOpen: false,
