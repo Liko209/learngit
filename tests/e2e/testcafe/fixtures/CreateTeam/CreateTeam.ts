@@ -47,7 +47,7 @@ test(
   },
 );
 
-test.only(
+test(
   formalName('Check the maximum length of the Team Name input box', [
     'P1',
     'JPT-102',
@@ -138,9 +138,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
     await h(t).withLog('Then Check the created team', async () => {
       const teamSection = app.homePage.messageTab.teamsSection;
       await teamSection.expand();
-      console.log("dddd")
       await t.expect(teamSection.conversations.withText(`${teamName}`).exists).ok();
-      console.log("pass team section")
       await t.expect(app.homePage.messageTab.conversationPage.title.withText(`${teamName}`).exists).ok();
     },true);
   },
