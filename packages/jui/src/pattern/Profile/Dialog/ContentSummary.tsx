@@ -48,11 +48,13 @@ const JuiProfileDialogContentSummaryLeft = styled('div')`
 
 const JuiProfileDialogContentSummaryRight = styled('div')`
   flex: 1;
+  overflow: hidden;
 `;
 
 const JuiProfileDialogContentSummaryName = styled<PropsName, 'div'>('div')`
 ${typography('subheading2')}
 color: ${grey('900')};
+word-break: break-all;
 ${({ needEllipsis }: PropsName) =>
   needEllipsis &&
   css`
