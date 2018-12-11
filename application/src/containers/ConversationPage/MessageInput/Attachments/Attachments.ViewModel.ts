@@ -20,13 +20,13 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
   private _attachmentsObserver: AttachmentsObserverFunc;
-  @observable.deep
+  @observable
   items: ItemFile[] = [];
-  @observable.deep
+  @observable
   files: ItemInfo[] = [];
-  @observable.deep
+  @observable
   duplicateFiles: ItemInfo[] = [];
-  @observable.deep
+  @observable
   uniqueFiles: ItemInfo[] = [];
 
   constructor(props: AttachmentsProps) {
@@ -59,11 +59,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       }
 
       this.uniqueFiles = uniques;
-      // has duplicate files? will prompt user
       if (duplicateFiles.length > 0) {
         this.duplicateFiles = duplicateFiles;
       } else {
-        // all files are unique, just upload them
         await this._uploadFiles(uniques, false);
         this.files = this.files.concat(uniques);
         this._clearUpSelectedFiles();
@@ -72,9 +70,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   private _uploadFiles = async (files: ItemInfo[], isUpdate: boolean) => {
-    for (let i = 0; i < files.length; ++i) {
-      await this.uploadFile(files[i], isUpdate);
-    }
+    return Promise.all(files.map(file => this.uploadFile(file, isUpdate)));
   }
 
   uploadFile = async (info: ItemInfo, isUpdate: boolean) => {
