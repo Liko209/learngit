@@ -49,11 +49,11 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     await this.props.loadInitialPosts();
-    this._visibilitySensorEnabled = true;
-    this.props.updateHistoryHandler();
     await this.scrollToPost(
       this.props.jumpToPostId || this.props.mostRecentPostId,
     );
+    this._visibilitySensorEnabled = true;
+    this.props.updateHistoryHandler();
     this.props.markAsRead();
     this._stickToBottom();
   }
