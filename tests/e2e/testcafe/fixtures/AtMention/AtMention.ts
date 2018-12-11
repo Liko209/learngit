@@ -133,12 +133,12 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     });
 
     await h(t).withLog('Should jump to the chat page and scroll to bottom', async () => {
-      await t.expect(conversationPage.currentGroupId).eql(chat.data.id, { timeout: 2e3 });
+      await conversationPage.groupIdShouldBe(chat.data.id);
       await conversationPage.expectStreamScrollToBottom();
     });
 
     await h(t).withLog('And conversation should display in the top of conversation list', async () => {
-      await t.expect(directMessagesSection.nthConversationEntry(0).self.withAttribute("data-group-id", chat.data.id).exists).ok();
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chat.data.id);
     });
 
     await h(t).withLog('Then I click the conversation name in the group\'s conversation card', async() => {
@@ -152,7 +152,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     });
 
     await h(t).withLog('And conversation should display in the top of conversation list', async () => {
-      await t.expect(directMessagesSection.nthConversationEntry(0).self.withAttribute("data-group-id", group.data.id).exists).ok();
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(group.data.id);
     });
 
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async() => {
@@ -166,7 +166,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     });
 
     await h(t).withLog('And conversation should display in the top of conversation list', async () => {
-      await t.expect(teamsSection.nthConversationEntry(0).self.withAttribute("data-group-id", team.data.id).exists).ok();
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(team.data.id);
     });
   },
 );
@@ -238,7 +238,8 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
 }
 );
 
-test(formalName('Show UMI when receive new messages after jump to conversation.',['P2','JPT-384','zack']), async (t: TestController)=>{
+// there is a bug: https://jira.ringcentral.com/browse/FIJI-2135
+test.skip(formalName('Show UMI when receive new messages after jump to conversation.',['P2','JPT-384','zack']), async (t: TestController)=>{
   if (await H.isEdge()) {
     await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
     return;
@@ -272,7 +273,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   await h(t).withLog('And I also have 20 non AtMention messages in conversation', async () => {
     for (const msg of msgList) {
       await userPlatform.createPost({ text: msg }, group.data.id);
-      await t.wait(1e3)
+      await t.wait(1e3);
     }
   });
 

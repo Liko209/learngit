@@ -52,7 +52,7 @@ async (t: TestController) => {
     });
 
     await h(t).withLog('Then the conversation 2 still remain in the second', async () => {
-        await t.expect(teamsSection.nthConversationEntry(1).self.find('p').withText(teamName1).exists).ok();
+        await teamsSection.nthConversationEntry(1).nameShouldBe(teamName1);
     });
 
     await h(t).withLog('When I refresh page', async () => {
@@ -61,7 +61,7 @@ async (t: TestController) => {
     });
 
     await h(t).withLog('Then the conversation 2 display in the top', async () => {
-        await t.expect(teamsSection.nthConversationEntry(0).self.find('p').withText(teamName1).exists).ok();
+        await teamsSection.nthConversationEntry(0).nameShouldBe(teamName1);
     });
   },
 );

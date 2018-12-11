@@ -73,20 +73,13 @@ test(formalName('Open last conversation when login and group show in the top of 
     });
 
     await h(t).withLog('And the group should display in the top of conversation list', async () => {
-      await t.expect(directMessageSection.nthConversationEntry(0).self.withAttribute("data-group-id", group.data.id).exists).ok();
+      await directMessageSection.nthConversationEntry(0).groupIdShouldBe(group.data.id);
     });
 
     await h(t).withLog(
       'And the content is shown on the conversation page',
       async () => {
-        await t
-          .expect(
-            app.homePage.messageTab.conversationPage.self.withAttribute(
-              'data-group-id',
-              group.data.id,
-            ).exists,
-          )
-          .ok();
+        await app.homePage.messageTab.conversationPage.groupIdShouldBe(group.data.id);
       },
     );
   },
