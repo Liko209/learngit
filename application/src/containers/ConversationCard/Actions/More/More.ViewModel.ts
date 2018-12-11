@@ -29,9 +29,15 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get permissionsMap() {
     return {
-      [MENU_LIST_ITEM_TYPE.QUOTE]: this._canPost,
-      [MENU_LIST_ITEM_TYPE.DELETE]: this._isPostByMe,
-      [MENU_LIST_ITEM_TYPE.EDIT]: this._canPost && this._isPostByMe,
+      [MENU_LIST_ITEM_TYPE.QUOTE]: {
+        permission: this._canPost,
+      },
+      [MENU_LIST_ITEM_TYPE.DELETE]: {
+        permission: this._isPostByMe,
+      },
+      [MENU_LIST_ITEM_TYPE.EDIT]: {
+        permission: this._canPost && this._isPostByMe,
+      },
     };
   }
 
@@ -58,19 +64,25 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   private get _canPost() {
     if (this._group.isTeam) {
-      if (!this._group.isThePersonAdmin(this._post.creatorId)) {
-        if (
-          this._group.permissions &&
-          this._group.permissions.user &&
-          this._group.permissions.user.level
-        ) {
-          const { level } = this._group.permissions.user;
-          return Boolean(level & (1 << PERMISSION_ENUM.TEAM_POST));
+      if (!this._group.isThePersonAdmin(this._currentUserId)) {
+        if (this._group.permissions && this._group.permissions.user) {
+          const { level = 0 } = this._group.permissions.user;
+          return !!(level & (1 << PERMISSION_ENUM.TEAM_POST));
         }
       }
       return true;
     }
     return true;
+  }
+
+  @computed
+  private get _isText() {
+    return !!this._post.text;
+  }
+
+  @computed
+  get showMoreAction() {
+    return this._isText;
   }
 }
 

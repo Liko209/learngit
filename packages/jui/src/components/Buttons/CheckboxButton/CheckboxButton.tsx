@@ -6,11 +6,11 @@
 import React from 'react';
 import styled, { keyframes } from '../../../foundation/styled-components';
 import MuiCheckbox, { CheckboxProps } from '@material-ui/core/Checkbox';
-import MuiTooltip from '@material-ui/core/Tooltip';
 import { Icon as MuiIcon } from '@material-ui/core';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../../../foundation/theme/theme';
+import { JuiArrowTip } from '../../../components/Tooltip/ArrowTip';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type JuiCheckboxButtonProps = {
@@ -140,7 +140,7 @@ class JuiCheckboxButton extends React.Component<
     checkedIconName: 'check_box',
   };
 
-  static dependencies = [MuiCheckbox, MuiIcon, MuiTooltip];
+  static dependencies = [MuiCheckbox, MuiIcon, JuiArrowTip];
 
   constructor(props: JuiCheckboxButtonProps) {
     super(props);
@@ -181,7 +181,7 @@ class JuiCheckboxButton extends React.Component<
     }
 
     return (
-      <MuiTooltip title={tooltipTitle}>
+      <JuiArrowTip title={tooltipTitle}>
         <WrapperForTooltip className={className} {...rest}>
           <StyledCheckboxButton
             onChange={this.changeHandler}
@@ -193,7 +193,7 @@ class JuiCheckboxButton extends React.Component<
             {...rest}
           />
         </WrapperForTooltip>
-      </MuiTooltip>
+      </JuiArrowTip>
     );
   }
 }
