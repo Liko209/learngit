@@ -15,11 +15,12 @@ const { GroupService } = service;
 const groupService = new GroupService();
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
-describe('goToConversation()', () => {
+describe('goToConversation() with group or team type', () => {
   it('getConversationId() with group type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_GROUP,
     );
+
     expect(await goToConversation(1)).toEqual(true);
   });
 
@@ -36,37 +37,26 @@ describe('goToConversation()', () => {
     );
     expect(await goToConversation(1)).toEqual(false);
   });
+});
 
-  describe('getConversationId() with person type conversationId', () => {
-    beforeAll(() => {
-      (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
-        TypeDictionary.TYPE_ID_PERSON,
-      );
-    });
+describe('getConversationId() with person type conversationId', () => {
+  beforeAll(() => {
+    (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
+      TypeDictionary.TYPE_ID_PERSON,
+    );
+  });
 
-    it('groupService return value', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-        {
-          id: 2,
-        },
-      );
-      expect(await goToConversation(1)).toEqual(true);
+  it('groupService return value', async () => {
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
     });
+    expect(await goToConversation(1)).toEqual(true);
+  });
 
-    it('groupService reject value', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValue(
-        {
-          id: 2,
-        },
-      );
-      expect(await goToConversation(1)).toEqual(false);
-    });
-
-    it('groupService return null', async () => {
-      (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-        null,
-      );
-      expect(await goToConversation(1)).toEqual(false);
-    });
+  it('groupService return null', async () => {
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
+      null,
+    );
+    expect(await goToConversation(1)).toEqual(false);
   });
 });

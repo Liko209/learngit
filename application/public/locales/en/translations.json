@@ -131,12 +131,11 @@
   "Message": "Message",
   "more": "more",
   "close": "close",
-<<<<<<< HEAD
+  "messageLoadingErrorTip": "We weren't able to open this conversation.",
+  "tryAgain": "Try again.",
   "assignee": "Assignee",
   "due": "Due",
-=======
   "edit": "Edit post",
->>>>>>> develop
   "AboutRingCentral": "About RingCentral",
   "NewActions": "New Actions",
   "NoInternetConnection": "No Internet Connection"
