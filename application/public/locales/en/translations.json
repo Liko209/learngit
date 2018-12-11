@@ -144,5 +144,7 @@
   "webpage": "Webpage",
   "copy": "Copy",
   "AboutRingCentral": "About RingCentral",
-  "NoInternetConnection": "No Internet Connection"
+  "NoInternetConnection": "No Internet Connection",
+  "ariaGoToTeam": "Go to the conversation with team {{name}}",
+  "ariaGoToGroup": "Go to the conversation with group"
 }

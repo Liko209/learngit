@@ -15,6 +15,7 @@ import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
+import { TypeDictionary } from 'sdk/utils';
 
 class ProfileMiniCardGroupFooter extends Component<
   WithNamespaces & ProfileMiniCardGroupFooterViewProps
@@ -27,8 +28,17 @@ class ProfileMiniCardGroupFooter extends Component<
     }
   }
 
+  getAriaLabelKey = () => {
+    const { typeId } = this.props;
+    const mapping = {
+      [TypeDictionary.TYPE_ID_TEAM]: 'ariaGoToTeam',
+      [TypeDictionary.TYPE_ID_GROUP]: 'ariaGoToGroup',
+    };
+    return mapping[typeId];
+  }
+
   render() {
-    const { id, t, showMessage } = this.props;
+    const { id, t, showMessage, group } = this.props;
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
@@ -42,6 +52,7 @@ class ProfileMiniCardGroupFooter extends Component<
               variant="plain"
               tooltipTitle={t('Messages')}
               onClick={this.onClickMessage}
+              ariaLabel={t(this.getAriaLabelKey(), { name: group.displayName })}
             >
               chat_bubble
             </JuiIconButton>

@@ -15,6 +15,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
+import { GlipTypeUtil } from 'sdk/utils';
 
 class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
@@ -27,6 +28,11 @@ class ProfileMiniCardGroupViewModel
   @computed
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+  }
+
+  @computed
+  get typeId(): number {
+    return GlipTypeUtil.extractTypeId(this.id);
   }
 }
 

@@ -13,6 +13,7 @@ type ProfileMiniCardGroupProps = {
 type ProfileMiniCardGroupViewProps = {
   id: number;
   group: GroupModel;
+  typeId: number;
 };
 
 export { ProfileMiniCardGroupProps, ProfileMiniCardGroupViewProps };
