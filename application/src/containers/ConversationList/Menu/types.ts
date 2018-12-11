@@ -16,7 +16,6 @@ type MenuProps = {
 
 type MenuViewProps = {
   groupId: number;
-  open: boolean;
   anchorEl: HTMLElement | null;
   isFavorite: boolean;
   favoriteText: string;

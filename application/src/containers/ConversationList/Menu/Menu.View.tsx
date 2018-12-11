@@ -8,12 +8,12 @@ import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiMenu, JuiMenuItem } from 'jui/components';
-import { JuiModal } from '@/containers/Dialog';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
-import { MenuViewProps } from './types';
 import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+import { JuiModal } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
+import { MenuViewProps } from './types';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -36,7 +36,10 @@ class MenuViewComponent extends Component<Props, State> {
     const { t } = this.props;
     if (this.props.showClose) {
       return (
-        <JuiMenuItem onClick={this._handleCloseConversation}>
+        <JuiMenuItem
+          data-test-automation-id="closeConversation"
+          onClick={this._handleCloseConversation}
+        >
           {t('conversationMenuItem:close')}
         </JuiMenuItem>
       );
@@ -180,4 +183,4 @@ const MenuView = withRouter(
   translate('conversationMenuItem')(MenuViewComponent),
 );
 
-export { MenuView };
+export { MenuView, MenuViewComponent };
