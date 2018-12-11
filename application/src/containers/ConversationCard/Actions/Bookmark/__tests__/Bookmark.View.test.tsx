@@ -28,21 +28,23 @@ describe('BookmarkView', () => {
       return props;
     }
 
-    it('should display flash toast notification when bookmark post failed. [JPT-332]', () => {
+    it('should display flash toast notification when bookmark post failed. [JPT-332]', (done: jest.DoneCallback) => {
       const props = setUpMock(false, true);
       const Wrapper = shallow(<BookmarkView {...props} />);
       Wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalled();
+        done();
       },         0);
     }, 2);
 
-    it('should display flash toast notification when bookmark post failed. [JPT-333]', () => {
+    it('should display flash toast notification when bookmark post failed. [JPT-333]', (done: jest.DoneCallback) => {
       const props = setUpMock(true, true);
       const Wrapper = shallow(<BookmarkView {...props} />);
       Wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalled();
+        done();
       },         0);
     }, 2);
   });

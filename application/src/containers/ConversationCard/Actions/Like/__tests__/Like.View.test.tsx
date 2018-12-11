@@ -27,21 +27,23 @@ describe('LikeView', () => {
       return props;
     }
 
-    it('should display flash toast notification when like post failed. [JPT-486]', () => {
+    it('should display flash toast notification when like post failed. [JPT-486]', (done: jest.DoneCallback) => {
       const props = setUpMock(false, true);
       const Wrapper = shallow(<LikeView {...props} />);
       Wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalled();
+        done();
       },         0);
     }, 2);
 
-    it('should display flash toast notification when unlike post failed. [JPT-487]', () => {
+    it('should display flash toast notification when unlike post failed. [JPT-487]', (done: jest.DoneCallback) => {
       const props = setUpMock(true, true);
       const Wrapper = shallow(<LikeView {...props} />);
       Wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalled();
+        done();
       },         0);
     }, 2);
   });
