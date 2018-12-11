@@ -63,7 +63,7 @@ class ItemFileUploadHandler {
       sendFailed = true;
     }
     if (sendFailed) {
-      this._handleFileItemSendFailed(itemId);
+      this._handleItemFileSendFailed(itemId);
     }
   }
 
@@ -157,7 +157,7 @@ class ItemFileUploadHandler {
       await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
       await this._uploadItem(groupId, preInsertItem, isUpdate);
     } else {
-      this._handleFileItemSendFailed(preInsertItem.id);
+      this._handleItemFileSendFailed(preInsertItem.id);
       mainLogger.error(`_uploadAndGenerateItem uploadRes error =>${uploadRes}`);
     }
   }
@@ -188,7 +188,7 @@ class ItemFileUploadHandler {
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
     } else {
-      this._handleFileItemSendFailed(preInsertItem.id);
+      this._handleItemFileSendFailed(preInsertItem.id);
       mainLogger.error(`_uploadItem error =>${result}`);
     }
   }
@@ -252,7 +252,7 @@ class ItemFileUploadHandler {
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
   }
 
-  private _handleFileItemSendFailed(preInsertId: number) {
+  private _handleItemFileSendFailed(preInsertId: number) {
     this._updatePreInsertItemStatus(preInsertId, SENDING_STATUS.FAIL);
     this._emitItemFileStatus(false, preInsertId, preInsertId);
 

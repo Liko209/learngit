@@ -301,7 +301,7 @@ describe('ItemFileService', () => {
       spyUpdatePreInsertItemStatus.mockImplementation(() => {});
       const spyHandleFileItemSendFailed = jest.spyOn(
         itemFileUploadHandler,
-        '_handleFileItemSendFailed',
+        '_handleItemFileSendFailed',
       );
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
@@ -390,7 +390,7 @@ describe('ItemFileService', () => {
 
       const spyHandleFileItemSendFailed = jest.spyOn(
         itemFileUploadHandler,
-        '_handleFileItemSendFailed',
+        '_handleItemFileSendFailed',
       );
       spyHandleFileItemSendFailed.mockImplementation(() => {});
 
