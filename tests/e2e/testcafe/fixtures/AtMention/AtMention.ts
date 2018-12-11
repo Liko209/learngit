@@ -76,7 +76,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   },
 );
 
-test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']),
+test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314', 'JPT-463']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -87,6 +87,8 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
     const mentionsEntry = app.homePage.messageTab.mentionsEntry;
     const postListPage = app.homePage.messageTab.mentionPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let chat, group, team;
     let chatPost, groupPost, teamPost;
@@ -135,6 +137,10 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
       await conversationPage.expectStreamScrollToBottom();
     });
 
+    await h(t).withLog('And conversation should display in the top of conversation list', async () => {
+      await t.expect(directMessagesSection.nthConversationEntry(0).self.withAttribute("data-group-id", chat.data.id).exists).ok();
+    });
+
     await h(t).withLog('Then I click the conversation name in the group\'s conversation card', async() => {
       await mentionsEntry.enter();
       await postListPage.postItemById(groupPost.data.id).jumpToConversationByClickName();
@@ -145,6 +151,10 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
       await conversationPage.expectStreamScrollToBottom();
     });
 
+    await h(t).withLog('And conversation should display in the top of conversation list', async () => {
+      await t.expect(directMessagesSection.nthConversationEntry(0).self.withAttribute("data-group-id", group.data.id).exists).ok();
+    });
+
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async() => {
       await mentionsEntry.enter();
       await postListPage.postItemById(teamPost.data.id).jumpToConversationByClickName();
@@ -153,6 +163,10 @@ test(formalName('Jump to conversation bottom when click name', ['P2', 'JPT-314']
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
       await t.expect(conversationPage.currentGroupId).eql(team.data.id, { timeout: 2e3 });
       await conversationPage.expectStreamScrollToBottom();
+    });
+
+    await h(t).withLog('And conversation should display in the top of conversation list', async () => {
+      await t.expect(teamsSection.nthConversationEntry(0).self.withAttribute("data-group-id", team.data.id).exists).ok();
     });
   },
 );

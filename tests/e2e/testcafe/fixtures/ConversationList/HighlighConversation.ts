@@ -13,12 +13,7 @@ fixture('ConversationList/HighlightConversation')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-test(
-  formalName('Open last conversation when login', [
-    'JPT-144',
-    'P2',
-    'ConversationList',
-  ]),
+test(formalName('Open last conversation when login and group show in the top of conversation list', ['JPT-144', 'JPT-463', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -80,6 +75,10 @@ test(
         .filter(`[data-group-id="${group.data.id}"]`)
         .find('p').style;
       await t.expect(textStyle.color).eql('rgb(6, 132, 189)');
+    });
+
+    await h(t).withLog('And the group should display in the top of conversation list', async () => {
+      await t.expect(directMessageSection.nthConversationEntry(0).self.withAttribute("data-group-id", group.data.id).exists).ok();
     });
 
     await h(t).withLog(
