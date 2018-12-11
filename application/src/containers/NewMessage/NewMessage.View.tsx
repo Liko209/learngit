@@ -141,5 +141,6 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 }
 
 const NewMessageView = translate('team')(withRouter(NewMessage));
+const NewMessageComponent = NewMessage;
 
-export { NewMessageView };
+export { NewMessageView, NewMessageComponent };
