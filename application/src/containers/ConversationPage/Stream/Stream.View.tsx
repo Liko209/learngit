@@ -115,9 +115,12 @@ class StreamViewComponent extends Component<Props> {
       /*  webpackChunkName: "ro" */
       'resize-observer-polyfill')).default;
     }
-    this._ro = new RO(this._heightChangedHandler);
     const el = this._listRef.current;
-    this._ro.observe(el!);
+    if (!el) {
+      return;
+    }
+    this._ro = new RO(this._heightChangedHandler);
+    this._ro.observe(el);
   }
 
   private _heightChangedHandler = (entries: any) => {
