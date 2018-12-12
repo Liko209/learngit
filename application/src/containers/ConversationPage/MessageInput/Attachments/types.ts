@@ -5,6 +5,18 @@
  */
 import { Item } from 'sdk/models';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
+import { SENDING_STATUS } from 'sdk/service/constants';
+
+type AttachmentItem = {
+  item: Item;
+  data: File;
+  status: SENDING_STATUS;
+};
+
+type SelectFile = {
+  data: File;
+  duplicate: boolean;
+};
 
 type AttachmentsProps = {
   id: number;
@@ -12,9 +24,8 @@ type AttachmentsProps = {
 
 type AttachmentsViewProps = {
   files: ItemInfo[];
-  duplicateFiles: ItemInfo[];
+  duplicateFiles: File[];
   showDuplicateFiles: boolean;
-  items: Item[];
   autoUploadFiles: (files: File[]) => void;
   cancelUploadFile: (info: ItemInfo) => void;
   cancelDuplicateFiles: () => void;
@@ -22,4 +33,4 @@ type AttachmentsViewProps = {
   updateDuplicateFiles: () => void;
 };
 
-export { AttachmentsProps, AttachmentsViewProps };
+export { AttachmentsProps, AttachmentsViewProps, AttachmentItem, SelectFile };

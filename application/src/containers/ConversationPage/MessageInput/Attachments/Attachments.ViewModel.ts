@@ -4,25 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { observable, computed, observe, IObjectDidChange } from 'mobx';
-import { AttachmentsProps, AttachmentsViewProps } from './types';
-import { ItemService } from 'sdk/service';
+import { observable, computed } from 'mobx';
+import {
+  AttachmentsProps,
+  AttachmentsViewProps,
+  AttachmentItem,
+  SelectFile,
+} from './types';
+import { ItemService, SENDING_STATUS } from 'sdk/service';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
-import { ItemFile } from 'sdk/models';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
   @observable
-  items: ItemFile[] = [];
+  items: AttachmentItem[] = [];
   @observable
-  files: ItemInfo[] = [];
-  @observable
-  duplicateFiles: ItemInfo[] = [];
-  @observable
-  uniqueFiles: ItemInfo[] = [];
+  selectedFiles: SelectFile[] = [];
 
   constructor(props: AttachmentsProps) {
     super(props);
@@ -35,54 +35,75 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   @computed
+  get files() {
+    return this.items.map(({ data, status }) => ({ file: data } as ItemInfo));
+  }
+
+  @computed
   get showDuplicateFiles() {
-    return this.duplicateFiles.length > 0;
+    return this.selectedFiles.some(({ duplicate }) => duplicate);
+  }
+
+  @computed
+  get duplicateFiles() {
+    return this.selectedFiles
+      .filter(({ duplicate }) => duplicate)
+      .map((looper: SelectFile) => looper.data);
   }
 
   autoUploadFiles = async (files: File[]) => {
     if (files.length > 0) {
-      const uniques: ItemInfo[] = [];
-      const duplicateFiles: ItemInfo[] = [];
       const exists = await Promise.all(
         files.map(file => this.isFileExists(file)),
       );
+      const hasDuplicate = exists.some(value => value);
+      const result = files.map(
+        (file, i: number) =>
+          ({ data: file, duplicate: exists[i] } as SelectFile),
+      );
 
-      for (let i = 0; i < exists.length; ++i) {
-        if (exists[i]) {
-          duplicateFiles.push({ file: files[i], status: 'normal' });
-        } else {
-          uniques.push({ file: files[i], status: 'normal' });
-        }
-      }
-
-      this.uniqueFiles = uniques;
-      if (duplicateFiles.length > 0) {
-        this.duplicateFiles = duplicateFiles;
+      if (!hasDuplicate) {
+        await this._uploadFiles(result, false);
       } else {
-        await this._uploadFiles(uniques, false);
-        this.files = this.files.concat(uniques);
-        this._clearUpSelectedFiles();
+        this.selectedFiles = result;
       }
     }
   }
 
-  private _uploadFiles = async (files: ItemInfo[], isUpdate: boolean) => {
+  private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {
     return Promise.all(files.map(file => this.uploadFile(file, isUpdate)));
   }
 
-  uploadFile = async (info: ItemInfo, isUpdate: boolean) => {
+  uploadFile = async (info: SelectFile, isUpdate: boolean) => {
     try {
-      const { file } = info;
+      const { data, duplicate } = info;
       const form = new FormData();
-      form.append(FILE_FORM_DATA_KEYS.FILE_NAME, file.name);
-      form.append(FILE_FORM_DATA_KEYS.FILE, file);
+      form.append(FILE_FORM_DATA_KEYS.FILE_NAME, data.name);
+      form.append(FILE_FORM_DATA_KEYS.FILE, data);
       const item = await this._itemService.sendItemFile(
         this.props.id,
         form,
         isUpdate,
       );
       if (item) {
-        this.items.push(item);
+        if (duplicate) {
+          const index = this.items.findIndex(
+            looper => looper.data.name === data.name,
+          );
+          if (index >= 0) {
+            this.items[index] = {
+              item,
+              data,
+              status: SENDING_STATUS.INPROGRESS,
+            } as AttachmentItem;
+          }
+        } else {
+          this.items.push({
+            item,
+            data,
+            status: SENDING_STATUS.INPROGRESS,
+          } as AttachmentItem);
+        }
       }
       return item;
     } catch (e) {
@@ -98,22 +119,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   cancelUploadFile = async (info: ItemInfo) => {
     const { file } = info;
     const items = this.items;
-    const files = this.files;
-    const index = files.findIndex(looper => looper.file === file);
+    const index = items.findIndex(looper => looper.data === file);
     if (index >= 0) {
       try {
-        const item = items[index];
-        await this._itemService.cancelUpload(item.id);
+        const info = items[index];
+        await this._itemService.cancelUpload(info.item.id);
         items.splice(index, 1);
       } catch (e) {}
-      files.splice(index, 1);
-      this.files = files.slice(0);
     }
   }
 
   private _clearUpSelectedFiles = () => {
-    this.duplicateFiles = [];
-    this.uniqueFiles = [];
+    this.selectedFiles = [];
   }
 
   cancelDuplicateFiles = () => {
@@ -122,20 +139,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   // as new files
   uploadDuplicateFiles = async () => {
-    await this._uploadFiles(this.duplicateFiles, false);
-    await this._uploadFiles(this.uniqueFiles, false);
-    // finally, update files
-    this.files = this.files
-      .concat(this.duplicateFiles)
-      .concat(this.uniqueFiles);
+    await this._uploadFiles(this.selectedFiles, false);
     this._clearUpSelectedFiles();
   }
 
   updateDuplicateFiles = async () => {
-    await this._uploadFiles(this.duplicateFiles, true);
-    await this._uploadFiles(this.uniqueFiles, false);
-    // finally, update files
-    this.files = this.files.concat(this.uniqueFiles);
+    await this._uploadFiles(this.selectedFiles, true);
     this._clearUpSelectedFiles();
   }
 }

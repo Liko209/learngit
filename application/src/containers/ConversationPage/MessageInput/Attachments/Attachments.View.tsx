@@ -20,7 +20,7 @@ class AttachmentsViewComponent extends Component<
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
-          duplicateFiles={duplicateFiles.map(({ file }) => file)}
+          duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
           onUpdate={this.props.updateDuplicateFiles}
