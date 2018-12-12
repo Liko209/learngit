@@ -196,7 +196,8 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       (state: State) => {
         const selectedItem = [...state.selectedItem];
         selectedItem.splice(selectedItem.indexOf(item), 1);
-        const shrink = selectedItem.length !== 0;
+        const shrink =
+          selectedItem.length !== 0 || state.inputValue.length !== 0;
         return { selectedItem, shrink };
       },
       () => {
