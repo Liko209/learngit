@@ -4,7 +4,7 @@ import { RTCRegistrationManager } from '../rtcRegistrationManager';
 
 // jest.mock('../rtcAccountManager');
 
-describe('Account FSM', async () => {
+describe('Registration FSM', async () => {
   function fsmCreate() {
     const am = new RTCRegistrationManager(null);
     const fsm = new RTCRegistrationFSM(am);
@@ -12,10 +12,9 @@ describe('Account FSM', async () => {
   }
 
   describe('instance', () => {
-    it('instance will trigger onInit', async () => {
+    it('Should call onInit', async () => {
       const fsm = fsmCreate();
       expect(fsm.state).toBe('idle');
-      // expect(fsm.socketClient).not.toBeNull();
     });
   });
 

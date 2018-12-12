@@ -1,3 +1,9 @@
+/*
+ * @Author: Lewi Li (lewi.li@ringcentral.com)
+ * @Date: 2018-12-10 10:42:59
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import StateMachine from 'ts-javascript-state-machine';
 
 const RegistrationState = {
@@ -22,8 +28,8 @@ const RegistrationEvent = {
 };
 
 interface IConditionalHandler {
-  processReadyOnRegSucceed(): string;
-  processReadyOnNetworkChanged(): string;
+  onReadyWhenRegSucceed(): string;
+  onReadyWhenNetworkChanged(): string;
 }
 
 class RTCRegistrationFSM extends StateMachine {
@@ -71,12 +77,12 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: RegistrationEvent.REG_SUCCEED,
           from: RegistrationState.READY,
-          to: handler.processReadyOnRegSucceed,
+          to: () => handler.onReadyWhenRegSucceed(),
         },
         {
           name: RegistrationEvent.NETWORK_CHANGED,
           from: RegistrationState.READY,
-          to: handler.processReadyOnNetworkChanged,
+          to: () => handler.onReadyWhenNetworkChanged(),
         },
 
         // registration failure
@@ -132,4 +138,4 @@ class RTCRegistrationFSM extends StateMachine {
   }
 }
 
-export { RTCRegistrationFSM, IConditionalHandler };
+export { RTCRegistrationFSM, IConditionalHandler, RegistrationState };

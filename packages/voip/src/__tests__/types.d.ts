@@ -3,7 +3,6 @@
  * @Date: 2018-05-21 15:35:35
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 declare global {
   interface Function extends jest.MockInstance<any> {}
 }

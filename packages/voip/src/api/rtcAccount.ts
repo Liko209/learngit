@@ -1,7 +1,13 @@
+/*
+ * @Author: Lewi Li (lewi.li@ringcentral.com)
+ * @Date: 2018-12-06 13:12:30
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { RTCRegistrationManager } from '../account/rtcRegistrationManager';
 
 enum AccountState {
-  IDEL,
+  IDLE,
   REGISTERED,
   FAILED,
   UNREGISTERED,
@@ -9,7 +15,10 @@ enum AccountState {
 }
 
 interface IRTCAccountListener {
-  onAccountStateChanged(state: AccountState): void;
+  onAccountStateChanged(
+    updateState: AccountState,
+    originalState: AccountState,
+  ): void;
 }
 
 class RTCAccount {
@@ -22,6 +31,10 @@ class RTCAccount {
 
   public deRegister() {
     this._registrationManager.deRegister();
+  }
+
+  public doRegister() {
+    this._registrationManager.doRegister();
   }
 }
 

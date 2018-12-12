@@ -1,3 +1,9 @@
+/*
+ * @Author: Lewi Li (lewi.li@ringcentral.com)
+ * @Date: 2018-12-05 10:41:15
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { RTCAccount, IRTCAccountListener } from './rtcAccount';
 
 class RTCEngine {
