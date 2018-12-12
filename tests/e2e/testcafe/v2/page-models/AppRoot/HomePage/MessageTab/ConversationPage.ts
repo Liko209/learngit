@@ -99,6 +99,11 @@ export class MentionPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('post-list-page');
   }
 }
+export class BookmarkPage extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('post-list-page');
+  }
+}
 
 export class PostItem extends BaseWebComponent {
   get avatar() {
@@ -125,6 +130,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  imgTitle(text) {
+    return this.text.find("img").withAttribute("title", text);
+  }
+
   get likeToggleOnActionBar() {
     return this.self.find(`[data-name="actionBarLike"]`);
   }
@@ -132,7 +141,7 @@ export class PostItem extends BaseWebComponent {
   get likeButtonOnFooter() {
     return this.self.find(`[data-name="footerLikeButton"]`).find(`[data-name="actionBarLike"]`);
   }
-  
+
   get likeCount() {
     return this.likeButtonOnFooter.nextSibling('span');
   }
@@ -144,11 +153,11 @@ export class PostItem extends BaseWebComponent {
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
- 
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }
- 
+
   async clickLikeButtonOnFooter() {
     await this.t.hover(this.self).click(this.likeButtonOnFooter);
   }
@@ -168,7 +177,7 @@ export class PostItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
 
-  
+
   // --- mention page only ---
   get conversationName() {
     return this.self.find('.conversation-name')
@@ -190,7 +199,7 @@ export class PostItem extends BaseWebComponent {
   async clickConversationByButton() {
     const buttonElement  = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
-        buttonElement().style["opacity"] = "1"; 
+        buttonElement().style["opacity"] = "1";
     }, {
       dependencies: { buttonElement } }
     );
