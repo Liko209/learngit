@@ -81,7 +81,7 @@ type Header = {
 
 interface IRequest {
   readonly id: string;
-  readonly path: string;
+  path: string;
   readonly method: NETWORK_METHOD;
   data: object | string;
   headers: Header;

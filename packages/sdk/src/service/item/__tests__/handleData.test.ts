@@ -3,7 +3,6 @@ import { daoManager } from '../../../dao';
 import UploadManager from '../../../service/UploadManager';
 import { transform, baseHandleData } from '../../../service/utils';
 import handleData, {
-  uploadStorageFile,
   sendFileItem,
   extractFileNameAndType,
   Options,
@@ -49,34 +48,6 @@ describe('handleData()', () => {
   it('should insert nothing', async () => {
     const ret = await handleData([]);
     expect(ret).toBeUndefined();
-  });
-});
-
-describe('uploadStorageFile()', () => {
-  it('should return mock response data', async () => {
-    ItemAPI.uploadFileItem.mockReturnValue(
-      new NetworkResultOk('mock response data', 200, {}),
-    );
-    const result = await uploadStorageFile({
-      file: new FormData(),
-      groupId: '1',
-    });
-    expect(result).toEqual('mock response data');
-  });
-
-  it('should emit progress event', async () => {
-    expect.assertions(1);
-    ItemAPI.uploadFileItem.mockImplementation(async (file, onProgress) => {
-      onProgress({ loaded: 1, total: 10 });
-      return new NetworkResultOk('mock response data', 200, {});
-    });
-
-    UploadManager.on('1', progress => expect(progress).toEqual('10'));
-
-    await uploadStorageFile({
-      file: new FormData(),
-      groupId: '1',
-    });
   });
 });
 

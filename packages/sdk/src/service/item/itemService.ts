@@ -5,54 +5,29 @@
  */
 
 import BaseService from '../../service/BaseService';
-import { daoManager, ItemDao } from '../../dao';
+import { daoManager, ItemDao, PRE_INSERT_ITEM_IDS } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
-import handleData, { sendFileItem, uploadStorageFile } from './handleData';
+import handleData from './handleData';
 import { transform } from '../utils';
-import {
-  StoredFile,
-  Item,
-  ItemFile,
-  NoteItem,
-  Post,
-  Raw,
-  Progress,
-} from '../../models';
+import { Item, ItemFile, NoteItem, Post, Raw, Progress } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { NetworkResult } from '../../api/NetworkResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
-
-interface ISendFile {
-  file: FormData;
-  groupId?: string;
-}
+import { SendingStatusHandler } from '../../utils/sendingStatusHandler';
+import { SENDING_STATUS } from '../constants';
+import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
   _itemFileUploadHandler: ItemFileUploadHandler;
+  _itemStatusHandler: SendingStatusHandler;
 
   constructor() {
     const subscription = {
       [SOCKET.ITEM]: handleData,
     };
     super(ItemDao, ItemAPI, handleData, subscription);
-  }
-
-  async sendFile(params: ISendFile): Promise<ItemFile | null> {
-    const options: StoredFile = await uploadStorageFile(params);
-    const itemOptions = {
-      storedFile: options[0],
-      groupId: params.groupId,
-    };
-    const result = await sendFileItem(itemOptions);
-
-    if (result) {
-      const fileItem = transform<ItemFile>(result);
-      await handleData([result]);
-      return fileItem;
-    }
-    return null;
   }
 
   async sendItemFile(
@@ -74,8 +49,18 @@ class ItemService extends BaseService<Item> {
     await this._getItemFileHandler().cancelUpload(itemId);
   }
 
-  getUploadItems(): File[] {
-    return [];
+  getUploadItems(groupId: number): ItemFile[] {
+    return this._getItemFileHandler().getUploadItems(groupId);
+  }
+
+  async resendFailedItems(itemIds: number[]) {
+    await Promise.all(
+      itemIds.map((id: number) => {
+        if (GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE) {
+          this._getItemFileHandler().resendFailedFile(id);
+        }
+      }),
+    );
   }
 
   async isFileExists(groupId: number, fileName: string): Promise<boolean> {
@@ -90,6 +75,15 @@ class ItemService extends BaseService<Item> {
     return this._getItemFileHandler().getUploadProgress(itemId);
   }
 
+  getItemsSendingStatus(itemIds: number[]) {
+    const result: SENDING_STATUS[] = [];
+    itemIds.forEach((id: number) => {
+      result.push(this._getItemStatusHandler().getSendingStatus(id));
+    });
+
+    return result;
+  }
+
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
     ItemAPI.requestRightRailItems(groupId).then(
       (result: NetworkResult<IRightRailItemModel>) => {
@@ -102,6 +96,18 @@ class ItemService extends BaseService<Item> {
       groupId,
       limit,
     );
+  }
+
+  updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
+    this._getItemStatusHandler().setPreInsertId(itemId, status);
+  }
+
+  removeItemFromPreInsertIds(itemId: number) {
+    this._getItemStatusHandler().removePreInsertId(itemId);
+  }
+
+  cleanUploadingFiles(groupId: number) {
+    this._getItemFileHandler().cleanUploadingFiles(groupId);
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
@@ -182,6 +188,13 @@ class ItemService extends BaseService<Item> {
     }
     return this._itemFileUploadHandler;
   }
+
+  private _getItemStatusHandler(): SendingStatusHandler {
+    if (!this._itemStatusHandler) {
+      this._itemStatusHandler = new SendingStatusHandler(PRE_INSERT_ITEM_IDS);
+    }
+    return this._itemStatusHandler;
+  }
 }
 
-export { ISendFile, ItemService };
+export { ItemService };

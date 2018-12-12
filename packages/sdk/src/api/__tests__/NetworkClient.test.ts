@@ -11,10 +11,12 @@ import {
   NETWORK_VIA,
   NETWORK_METHOD,
   OAuthTokenManager,
+  IRequest,
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-import { NetworkResultOk, NetworkResultErr } from '../NetworkResult';
+import { NetworkResultOk, NetworkResultErr, networkOk } from '../NetworkResult';
+import { RequestHolder } from '../glip/item';
 // Using manual mock to improve mock priority.
 jest.mock('foundation/src/network', () =>
   jest.genMockFromModule<any>('foundation/src/network'),
@@ -112,8 +114,10 @@ describe('NetworkClient', () => {
 
     it('request() should call return Promise', () => {
       const { postRequest, rcNetworkClient } = setup();
-
-      expect(rcNetworkClient.request(postRequest)).toBeInstanceOf(Promise);
+      const requestHolder: RequestHolder = { request: undefined };
+      expect(
+        rcNetworkClient.request(postRequest, requestHolder),
+      ).toBeInstanceOf(Promise);
     });
 
     it('should only send request once when request is totally same', async () => {
@@ -239,6 +243,15 @@ describe('NetworkClient', () => {
         method: 'delete',
         path: '/',
       });
+    });
+  });
+
+  describe('cancelRequest()', () => {
+    it('should call networkManager to cancel request', () => {
+      const { rcNetworkClient } = setup();
+      const request: IRequest = undefined;
+      rcNetworkClient.cancelRequest(request);
+      expect(networkManager.cancelRequest).toBeCalledWith(undefined);
     });
   });
 });

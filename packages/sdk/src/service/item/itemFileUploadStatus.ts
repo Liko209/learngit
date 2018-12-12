@@ -9,6 +9,7 @@ import { RequestHolder } from '../../api/requestHolder';
 type ItemFileUploadStatus = {
   progress: Progress;
   requestHolder: RequestHolder;
+  file?: FormData;
 };
 
 export { ItemFileUploadStatus };

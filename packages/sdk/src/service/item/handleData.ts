@@ -7,10 +7,8 @@ import { daoManager } from '../../dao';
 import ItemAPI from '../../api/glip/item';
 import ItemDao from '../../dao/item';
 import { ENTITY } from '../../service/eventKey';
-import UploadManager from '../../service/UploadManager';
 import { versionHash } from '../../utils/mathUtils';
 import { transform, baseHandleData } from '../utils';
-import { ISendFile } from '../../service/item';
 import { StoredFile, Item, Raw, ItemFile } from '../../models';
 
 const itemHandleData = async (items: Raw<Item>[]) => {
@@ -25,19 +23,6 @@ const itemHandleData = async (items: Raw<Item>[]) => {
     dao: itemDao,
     eventKey: ENTITY.ITEM,
   });
-};
-
-const uploadStorageFile = async (params: ISendFile): Promise<StoredFile> => {
-  const { file, groupId } = params;
-  const result = await ItemAPI.uploadFileItem(file, (e: ProgressEventInit) => {
-    const { loaded, total } = e;
-    if (loaded && total) {
-      const percent = loaded / total;
-      UploadManager.emit(String(groupId), (percent * 100).toFixed(0));
-    }
-  });
-  const storedFile = result.expect('Failed to upload file item.');
-  return storedFile;
 };
 
 const extractFileNameAndType = (storagePath: string) => {
@@ -93,5 +78,5 @@ const sendFileItem = async (options: Options): Promise<Raw<ItemFile>> => {
   return rawFileItem;
 };
 
-export { uploadStorageFile, extractFileNameAndType, sendFileItem };
+export { extractFileNameAndType, sendFileItem };
 export default itemHandleData;
