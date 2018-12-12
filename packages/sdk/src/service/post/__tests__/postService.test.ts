@@ -595,52 +595,6 @@ describe('PostService', () => {
       PostAPI.sendPost.mockResolvedValueOnce({ data: { error: {} } });
       await expect(postService.sendPost({ text: 'abc' })).rejects.toThrow();
     });
-
-    it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-      itemService.cleanUploadingFiles.mockImplementation(() => {});
-      daoManager.getDao.mockReturnValue(postDao);
-      postDao.update.mockImplementation(() => {});
-
-      const info = _.cloneDeep(postMockInfo);
-      info.item_ids = [-1, 3];
-      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
-
-      const spyResendFailedItems = jest.spyOn(
-        postService,
-        '_resendFailedItems',
-      );
-      spyResendFailedItems.mockImplementation(() => {});
-
-      const spyHandlePreInsertProcess = jest.spyOn(
-        postService,
-        '_handlePreInsertProcess',
-      );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
-
-      const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
-
-      notificationCenter.on.mockImplementationOnce(
-        (event: string | string[], listener: Listener) => {
-          listener(true, -1, 1);
-        },
-      );
-      await postService.sendPost(info);
-
-      setTimeout(() => {
-        expect(spySendPost).toBeCalledTimes(1);
-        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
-        expect(notificationCenter.removeListener).toBeCalled();
-        expect(notificationCenter.on).toBeCalledWith(
-          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
-          expect.anything(),
-        );
-        expect(spyResendFailedItems).not.toBeCalled();
-        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
-        done();
-      });
-    });
   });
 
   describe('modifyPost()', () => {
@@ -662,6 +616,15 @@ describe('PostService', () => {
   });
 
   describe('like post', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(postService, 'handlePartialUpdate')
+        .mockImplementation(() => {});
+    });
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
     it('should return null when post id is negative', async () => {
       const result = await postService.likePost(-1, 101, true);
       expect(result).toBe(undefined);
@@ -952,6 +915,97 @@ describe('PostService', () => {
       await postService.cancelUpload(1, 1);
 
       expect(postService.handlePartialUpdate).toBeCalledTimes(1);
+    });
+  });
+
+  describe('send post with pseudo items', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      itemService.cleanUploadingFiles.mockImplementation(() => {});
+      daoManager.getDao.mockReturnValue(postDao);
+      postDao.update.mockImplementation(() => {});
+    });
+
+    it('should resend failed items and then send post', async (done: jest.DoneCallback) => {
+      const info = _.cloneDeep(postMockInfo);
+      info.item_ids = [-1, 3];
+      PostServiceHandler.buildResendPostInfo.mockReturnValueOnce(info);
+      postDao.get.mockResolvedValue({ id: 1 });
+
+      const spyIsInPreInsert = jest.spyOn(postService, 'isInPreInsert');
+      spyIsInPreInsert.mockReturnValue(true);
+
+      const spyHandlePreInsertProcess = jest.spyOn(
+        postService,
+        '_handlePreInsertProcess',
+      );
+      spyHandlePreInsertProcess.mockImplementation(() => {});
+
+      const spySendPostWithPreInsertItems = jest.spyOn(
+        postService,
+        '_sendPostWithPreInsertItems',
+      );
+      spySendPostWithPreInsertItems.mockImplementation(() => {});
+
+      const spyCleanUploadingFiles = jest.spyOn(
+        postService,
+        '_cleanUploadingFiles',
+      );
+      spyCleanUploadingFiles.mockImplementation(() => {});
+
+      await postService.reSendPost(info.id);
+      setTimeout(() => {
+        expect(itemService.resendFailedItems).toBeCalledWith([-1]);
+        expect(spyHandlePreInsertProcess).toBeCalled();
+        expect(spySendPostWithPreInsertItems).toBeCalledWith(info);
+        expect(spyCleanUploadingFiles).not.toBeCalled();
+        done();
+      });
+    });
+
+    it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
+      const info = _.cloneDeep(postMockInfo);
+      info.item_ids = [-1, 3];
+      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+
+      const spyResendFailedItems = jest.spyOn(
+        postService,
+        '_resendFailedItems',
+      );
+      spyResendFailedItems.mockImplementation(() => {});
+
+      const spyHandlePreInsertProcess = jest.spyOn(
+        postService,
+        '_handlePreInsertProcess',
+      );
+      spyHandlePreInsertProcess.mockImplementation(() => {});
+
+      const spySendPost = jest.spyOn(postService, '_sendPost');
+      spySendPost.mockImplementation(() => {});
+
+      notificationCenter.on.mockImplementationOnce(
+        (event: string | string[], listener: Listener) => {
+          listener(true, -1, 1);
+        },
+      );
+      await postService.sendPost(info);
+
+      setTimeout(() => {
+        expect(spySendPost).toBeCalledTimes(1);
+        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+        expect(notificationCenter.removeListener).toBeCalled();
+        expect(notificationCenter.on).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(spyResendFailedItems).not.toBeCalled();
+        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
+        done();
+      });
     });
   });
 });

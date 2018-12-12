@@ -155,6 +155,7 @@ describe('ItemFileService', () => {
             ],
           }),
         );
+        expect(itemFileUploadHandler.getUploadItems).toHaveLength(1);
         done();
       });
     });
