@@ -224,12 +224,13 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
 }
 );
 
-test(formalName('Show UMI when receive new messages after jump to conversation.',['P2','JPT-384','zack']), async (t: TestController)=>{
+//Feature bug: FIJI-2135
+test.skip(formalName('Show UMI when receive new messages after jump to conversation.',['P2','JPT-384','zack']), async (t: TestController)=>{
   if (await H.isEdge()) {
     await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
     return;
-  } 
-  
+  }
+
   const app =new AppRoot(t);
   const users =h(t).rcData.mainCompany.users;
   const user = users[4];
@@ -302,7 +303,7 @@ test(formalName('Jump to post position when click button or clickable area of po
   const user = users[4];
   const user5Platform = await h(t).getPlatform(users[5]);
   user.sdk = await h(t).getSdk(user);
-  
+
   const mentionsEntry = app.homePage.messageTab.mentionsEntry;
   const postMentionPage = app.homePage.messageTab.mentionPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
