@@ -41,7 +41,6 @@ const StyledRightSection = styled('div')`
 `;
 
 const navigationStyles = ({ mode }: { mode?: string }) =>
-  mode === 'navigation' &&
   css`
     position: relative;
     cursor: pointer;
@@ -64,7 +63,7 @@ const StyledConversationCard = styled<
   &:focus {
     background: ${grey('50')};
   }
-  ${navigationStyles};
+  ${({ mode }) => mode === 'navigation' && navigationStyles};
   animation: ${({ highlight }) => (highlight ? 'highlight' : '')} 3s
     cubic-bezier(0.575, 0.105, 0.835, 0.295);
   @keyframes highlight {
@@ -86,7 +85,7 @@ const JuiConversationCard = ({
   mode,
   ...rest
 }: ConversationCardProps) => (
-  <StyledConversationCard {...rest}>
+  <StyledConversationCard mode={mode} {...rest}>
     {mode === 'navigation' ? (
       <StyledNavigationButton variant="round">
         Jump to conversation
