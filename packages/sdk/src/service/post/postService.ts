@@ -284,7 +284,14 @@ class PostService extends BaseService<Post> {
       if (pseudoItems.length > 0) {
         if (isResend) {
           this._resendFailedItems(pseudoItems);
+        } else {
+          if (
+            !this._hasItemInTargetStatus(buildPost, SENDING_STATUS.INPROGRESS) // no item in progress
+          ) {
+            return await this.handleSendPostFail(buildPost.id);
+          }
         }
+
         return await this._sendPostWithPreInsertItems(buildPost);
       }
     }
@@ -300,6 +307,15 @@ class PostService extends BaseService<Post> {
   private async _cleanUploadingFiles(groupId: number) {
     const itemService: ItemService = ItemService.getInstance();
     itemService.cleanUploadingFiles(groupId);
+  }
+
+  private _getPseudoItemStatusInPost(post: Post) {
+    const itemService: ItemService = ItemService.getInstance();
+    return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
+  }
+
+  private _hasItemInTargetStatus(post: Post, status: SENDING_STATUS) {
+    return this._getPseudoItemStatusInPost(post).indexOf(status) > -1;
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
@@ -328,11 +344,7 @@ class PostService extends BaseService<Post> {
         }
       }
 
-      const itemService: ItemService = ItemService.getInstance();
-      const itemStatuses = uniqueArray(
-        itemService.getItemsSendingStatus(post.item_ids),
-      );
-
+      const itemStatuses = this._getPseudoItemStatusInPost(post);
       // remove listener if item files are not in progress
       if (!this._hasExpectedStatus(SENDING_STATUS.INPROGRESS, itemStatuses)) {
         // has failed
