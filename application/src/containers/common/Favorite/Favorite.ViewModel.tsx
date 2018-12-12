@@ -9,7 +9,7 @@ import { AbstractViewModel } from '@/base';
 import { FavoriteProps, FavoriteViewProps } from './types';
 import { service } from 'sdk';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import { IconButtonSize } from 'jui/components/Buttons';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 import { getEntity } from '@/store/utils';
@@ -27,18 +27,8 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   conversationId: number;
 
   @computed
-  get _id() {
+  get id() {
     return this.props.id; // personId || conversationId
-  }
-
-  @computed
-  get isAction() {
-    return !!this.props.isAction;
-  }
-
-  @computed
-  get hideUnFavorite() {
-    return !!this.props.hideUnFavorite;
   }
 
   @computed
@@ -46,22 +36,17 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
     return this.props.size || 'small';
   }
 
-  @computed
-  get variant(): IconButtonVariant {
-    return this.isAction ? 'round' : 'plain';
-  }
-
-  getFavorite = async () => {
-    const type = GlipTypeUtil.extractTypeId(this._id);
+  getConversationId = async () => {
+    const type = GlipTypeUtil.extractTypeId(this.id);
     if (
       type === TypeDictionary.TYPE_ID_GROUP ||
       type === TypeDictionary.TYPE_ID_TEAM
     ) {
-      this.conversationId = this._id;
+      this.conversationId = this.id;
       return;
     }
     if (type === TypeDictionary.TYPE_ID_PERSON) {
-      const group = await this._groupService.getLocalGroup([this._id]);
+      const group = await this._groupService.getLocalGroup([this.id]);
       if (group) {
         this.conversationId = group.id;
       } else {

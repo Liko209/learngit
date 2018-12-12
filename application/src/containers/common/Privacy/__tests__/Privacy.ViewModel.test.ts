@@ -5,7 +5,7 @@
  */
 
 // import { service } from 'sdk';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+// import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
 import { PrivacyProps } from '../types';
@@ -26,7 +26,6 @@ const mockEntity = {
 const props: PrivacyProps = {
   id: 1,
   size: 'medium',
-  isAction: false,
 };
 const vm = new PrivacyViewModel(props);
 
@@ -39,13 +38,6 @@ describe('Privacy view model', () => {
     jest.clearAllMocks();
   });
 
-  it('computed isAction', () => {
-    vm.props.isAction = true;
-    expect(vm.isAction).toEqual(true);
-    vm.props.isAction = false;
-    expect(vm.isAction).toEqual(false);
-  });
-
   it('computed size', () => {
     vm.props.size = 'small';
     expect(vm.size).toEqual('small');
@@ -53,13 +45,6 @@ describe('Privacy view model', () => {
     expect(vm.size).toEqual('medium');
     vm.props.size = 'large';
     expect(vm.size).toEqual('large');
-  });
-
-  it('computed variant', () => {
-    vm.props.isAction = true;
-    expect(vm.variant).toEqual('round');
-    vm.props.isAction = false;
-    expect(vm.variant).toEqual('plain');
   });
 
   it('computed isPublic', () => {

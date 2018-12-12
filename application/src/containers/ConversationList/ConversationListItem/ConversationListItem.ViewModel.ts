@@ -55,9 +55,9 @@ class ConversationListItemViewModel extends StoreViewModel<
   get personId() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const membersExcludeMe = this._group.membersExcludeMe;
-
     switch (this.groupType) {
       case CONVERSATION_TYPES.TEAM:
+      case CONVERSATION_TYPES.NORMAL_GROUP:
         return 0;
       case CONVERSATION_TYPES.ME:
         return currentUserId;

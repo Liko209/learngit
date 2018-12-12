@@ -13,7 +13,10 @@ import { JuiModal } from '@/containers/Dialog';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { MenuViewProps } from './types';
-import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+import {
+  ProfileDialogGroup,
+  ProfileDialogPerson,
+} from '@/containers/Profile/Dialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -120,24 +123,24 @@ class MenuViewComponent extends Component<Props, State> {
       return;
     }
   }
-  private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
+  private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
-    const { groupId } = this.props;
-    JuiModal.open(GroupTeamProfile, {
+    const { personId, groupId } = this.props;
+    let ProfileDialog = ProfileDialogGroup;
+    let id = groupId;
+    if (personId) {
+      ProfileDialog = ProfileDialogPerson;
+      id = personId;
+    }
+    JuiModal.open(ProfileDialog, {
       componentProps: {
-        id: groupId,
+        id,
       },
       size: 'medium',
     });
   }
   render() {
-    const {
-      anchorEl,
-      onClose,
-      favoriteText,
-      isShowGroupTeamProfile,
-      t,
-    } = this.props;
+    const { anchorEl, onClose, favoriteText, t } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -151,11 +154,9 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
-        {isShowGroupTeamProfile ? (
-          <JuiMenuItem onClick={this._handleGroupDialog}>
-            {t('viewProfile')}
-          </JuiMenuItem>
-        ) : null}
+        <JuiMenuItem onClick={this._handleProfileDialog}>
+          {t('viewProfile')}
+        </JuiMenuItem>
         {this.renderCloseMenuItem()}
       </JuiMenu>
     );
