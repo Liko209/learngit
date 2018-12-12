@@ -2,14 +2,14 @@ import ErrorTypes from '../types';
 import * as HttpStatus from 'http-status-codes';
 
 describe('ErrorTypes', () => {
-
   const types: any = ErrorTypes;
 
   beforeEach(() => {
     Object.keys(HttpStatus).forEach((key: string) => {
-      types[key] = ErrorTypes.HTTP + HttpStatus[key];
+      types[key] = ErrorTypes.API + HttpStatus[key];
     });
   });
+
   it('HTTP ACCEPTED code is 1202', () => {
     expect(types.ACCEPTED).toBe(1202);
   });
@@ -19,6 +19,6 @@ describe('ErrorTypes', () => {
   });
 
   it('HTTP INVALIDTE_PARAMETERS code is 3001', () => {
-    expect(types.INVALIDTE_PARAMETERS).toBe(3001);
+    expect(types.SERVICE_INVALID_FIELD).toBe(3001);
   });
 });

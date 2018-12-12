@@ -3,15 +3,14 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { FavoriteViewProps } from './types';
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
 import { JuiIconButton } from 'jui/components/Buttons';
-
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { JuiModal } from '@/containers/Dialog';
+import { Notification } from '@/containers/Notification';
+import { FavoriteViewProps } from './types';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
@@ -26,18 +25,20 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   onClickFavorite = async () => {
-    const { handlerFavorite, isFavorite, t } = this.props;
-    const result = await handlerFavorite();
-    if (result === ServiceCommonErrorType.SERVER_ERROR) {
-      const content = isFavorite
-        ? t('markUnFavoriteServerErrorContent')
-        : t('markFavoriteServerErrorContent');
-      JuiModal.alert({
-        content,
-        title: '',
-        okText: t('OK'),
-        okVariant: 'text',
-        onOK: () => {},
+    const { handlerFavorite, isFavorite } = this.props;
+    const result: ServiceResult<Profile> = await handlerFavorite();
+
+    if (result.isErr()) {
+      const message = isFavorite
+        ? 'markUnFavoriteServerErrorContent'
+        : 'markFavoriteServerErrorContent';
+
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
       });
     }
   }

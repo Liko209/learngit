@@ -16,6 +16,7 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 // import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Banners';
+import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
   JuiListToggleItemProps,
@@ -108,6 +109,17 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     updateCreateTeamDialogState();
   }
 
+  renderServerUnknownError() {
+    const message = 'WeWerentAbleToCreateTheTeamTryAgain';
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
   render() {
     const { items } = this.state;
     const {
@@ -124,7 +136,11 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       isOffline,
       serverError,
       errorEmail,
+      serverUnknownError,
     } = this.props;
+    if (serverUnknownError) {
+      this.renderServerUnknownError();
+    }
     return (
       <JuiModal
         open={isOpen}
@@ -193,5 +209,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 }
 
 const CreateTeamView = translate('team')(withRouter(CreateTeam));
+const CreateTeamComponent = CreateTeam;
 
-export { CreateTeamView };
+export { CreateTeamView, CreateTeamComponent };

@@ -2,14 +2,13 @@ import _ from 'lodash';
 import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
-import { BaseModel } from 'sdk/models';
+import { BaseModel, Raw } from 'sdk/models';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-import { Raw } from 'sdk/src/models';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;

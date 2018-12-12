@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
 import { IconButtonSize } from 'jui/components/Buttons';
 
 type FavoriteProps = {
@@ -16,7 +17,7 @@ type FavoriteViewProps = FavoriteProps & {
   getConversationId: () => void;
   conversationId: number;
   isFavorite: boolean;
-  handlerFavorite: () => Promise<ServiceCommonErrorType>;
+  handlerFavorite: () => Promise<ServiceResult<Profile>>;
 };
 
 export { FavoriteProps, FavoriteViewProps };

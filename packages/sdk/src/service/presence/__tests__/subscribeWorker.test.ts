@@ -6,7 +6,7 @@
 import SubscribeWorker from '../subscribeWorker';
 import PresenceAPI from '../../../api/glip/presence';
 import socketManager from '../../socket';
-import { NetworkResultOk } from '../../../api/NetworkResult';
+import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../api/glip/presence');
 jest.mock('../../socket');
@@ -41,7 +41,7 @@ describe('Presence subscribe worker', () => {
     ];
     PresenceAPI.requestPresenceByIds.mockImplementation(() => {
       return new Promise((resolve: any) => {
-        resolve(new NetworkResultOk(data, 200, {}));
+        resolve(new ApiResultOk(data, 200, {}));
       });
     });
     jest.spyOn(worker, 'successCallback');

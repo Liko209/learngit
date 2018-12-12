@@ -5,11 +5,12 @@
  */
 
 import { service } from 'sdk';
-import { GroupErrorTypes } from 'sdk/service/group';
-import { BaseError } from 'sdk/utils';
+import { BaseError, ErrorTypes } from 'sdk/utils';
+import { err, ok } from 'foundation';
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
+jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 
@@ -20,7 +21,7 @@ const postService = {
 };
 
 const newMessageVM = new NewMessageViewModel();
-function getNewBaseError(type: GroupErrorTypes, message: string) {
+function getNewBaseError(type: ErrorTypes, message: string = '') {
   return new BaseError(type, message);
 }
 
@@ -38,7 +39,7 @@ describe('NewMessageVM', () => {
   it('new message success', async () => {
     postService.newMessageWithPeopleIds = jest
       .fn()
-      .mockImplementation(() => ({}));
+      .mockImplementation(() => ok({}));
 
     const message = 'test';
     const memberIds = [1, 2];
@@ -50,29 +51,22 @@ describe('NewMessageVM', () => {
   });
 
   it('create team success handle error', async () => {
-    postService.newMessageWithPeopleIds = jest.fn().mockResolvedValue({
-      error: {
-        code: 'invalid_field',
-      },
-    });
+    const baseError = new BaseError(ErrorTypes.API_INVALID_FIELD, '');
+    postService.newMessageWithPeopleIds = jest
+      .fn()
+      .mockResolvedValueOnce(err(baseError));
 
     jest.spyOn(newMessageVM, 'newMessageErrorHandler');
     const message = 'test';
     const memberIds = [1, 2];
-    try {
-      await newMessageVM.newMessage(memberIds, message);
-    } catch (err) {
-      expect(newMessageVM.newMessageErrorHandler).toHaveBeenCalledWith({
-        error: {
-          code: 'invalid_field',
-        },
-      });
-    }
+    const result = await newMessageVM.newMessage(memberIds, message);
+    expect(result).toBeNull();
+    expect(newMessageVM.newMessageErrorHandler).toHaveBeenCalledWith(baseError);
   });
 
   it('newMessageErrorHandler()', () => {
     const error = getNewBaseError(
-      GroupErrorTypes.INVALID_FIELD,
+      ErrorTypes.API_INVALID_FIELD,
       'This is not a valid email address: q@qq.com.',
     );
     newMessageVM.newMessageErrorHandler(error);
@@ -81,15 +75,15 @@ describe('NewMessageVM', () => {
   });
 
   it('new message server error', async () => {
-    postService.newMessageWithPeopleIds = jest.fn().mockRejectedValue(null);
+    const baseError = new BaseError(ErrorTypes.UNDEFINED_ERROR, '');
+    postService.newMessageWithPeopleIds = jest
+      .fn()
+      .mockResolvedValueOnce(err(baseError));
 
     const message = 'test';
     const memberIds = [1, 2];
-    try {
-      await newMessageVM.newMessage(memberIds, message);
-    } catch (err) {
-      expect(newMessageVM.serverError).toBe(true);
-    }
+    const result = await newMessageVM.newMessage(memberIds, message);
+    expect(result).toBeNull();
   });
 
   it('isOpen', () => {

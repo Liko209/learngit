@@ -8,10 +8,10 @@ import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiMenu, JuiMenuItem } from 'jui/components';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { JuiModal } from '@/containers/Dialog';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
+import { JuiModal } from '@/containers/Dialog';
+import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
 import {
   ProfileDialogGroup,
@@ -39,7 +39,10 @@ class MenuViewComponent extends Component<Props, State> {
     const { t } = this.props;
     if (this.props.showClose) {
       return (
-        <JuiMenuItem onClick={this._handleCloseConversation}>
+        <JuiMenuItem
+          data-test-automation-id="closeConversation"
+          onClick={this._handleCloseConversation}
+        >
           {t('conversationMenuItem:close')}
         </JuiMenuItem>
       );
@@ -48,16 +51,20 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
-    const { t } = this.props;
+    const { isFavorite } = this.props;
     this.props.onClose(event);
     const result = await this.props.toggleFavorite();
-    if (result === ServiceCommonErrorType.SERVER_ERROR) {
-      JuiModal.alert({
-        title: '',
-        content: t('conversationMenuItem:markFavoriteServerErrorContent'),
-        okText: t('conversationMenuItem:OK'),
-        okVariant: 'text',
-        onOK: () => {},
+    if (result.isErr()) {
+      const message = isFavorite
+        ? 'markUnFavoriteServerErrorContent'
+        : 'markFavoriteServerErrorContent';
+
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
       });
     }
   }
@@ -113,15 +120,25 @@ class MenuViewComponent extends Component<Props, State> {
     const result = await this.props.closeConversation(
       shouldSkipCloseConfirmation,
     );
-    if (result === ServiceCommonErrorType.NONE) {
-      // jump to section
-      const match = /messages\/(\d+)/.exec(window.location.href);
-      if (match && this.props.groupId === Number(match[1])) {
-        const { history } = this.props;
-        history.replace('/messages');
-      }
-      return;
-    }
+    result.match({
+      Ok: () => {
+        // jump to section
+        const match = /messages\/(\d+)/.exec(window.location.href);
+        if (match && this.props.groupId === Number(match[1])) {
+          const { history } = this.props;
+          history.replace('/messages');
+        }
+      },
+      Err: () => {
+        Notification.flashToast({
+          message: 'SorryWeWereNotAbleToCloseTheConversation',
+          type: 'error',
+          messageAlign: 'left',
+          fullWidth: false,
+          dismissible: false,
+        });
+      },
+    });
   }
   private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
@@ -167,4 +184,4 @@ const MenuView = withRouter(
   translate('conversationMenuItem')(MenuViewComponent),
 );
 
-export { MenuView };
+export { MenuView, MenuViewComponent };
