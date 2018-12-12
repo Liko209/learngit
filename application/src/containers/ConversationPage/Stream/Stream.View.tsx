@@ -49,6 +49,10 @@ class StreamViewComponent extends Component<Props> {
   @observable
   private _firstHistoryUnreadPostViewed: boolean | null = null;
 
+  state = {
+    _jumpToPostId: 0,
+  };
+
   private _stickToBottom() {
     if (this._stickToDisposer) {
       this._stickToDisposer();
@@ -68,13 +72,22 @@ class StreamViewComponent extends Component<Props> {
       }
     });
   }
+  componentWillMount() {
+    this.state._jumpToPostId = this.props.jumpToPostId;
+  }
 
+  static getDerivedStateFromProps(props: Props) {
+    if (props.jumpToPostId) {
+      return { _jumpToPostId: props.jumpToPostId };
+    }
+    return null;
+  }
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     await this.props.loadInitialPosts();
     await this.scrollToPost(
-      this.props.jumpToPostId || this.props.mostRecentPostId,
+      this.state._jumpToPostId || this.props.mostRecentPostId,
     );
     this._stickToBottom();
     this._visibilitySensorEnabled = true;
@@ -85,8 +98,6 @@ class StreamViewComponent extends Component<Props> {
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
-    this._stickToDisposer && this._stickToDisposer();
   }
 
   getSnapshotBeforeUpdate(): StreamSnapshot {
@@ -200,14 +211,14 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _ordinaryPostFactory(streamItem: StreamItem) {
-    const { jumpToPostId, loading } = this.props;
+    const { loading } = this.props;
+
     return (
       <ConversationPost
         id={streamItem.value}
         key={`ConversationPost${streamItem.value}`}
         ref={this._setPostRef}
-        highlight={streamItem.value === jumpToPostId && !loading}
-        onHighlightAnimationStart={this.props.resetJumpToPostId}
+        highlight={streamItem.value === this.state._jumpToPostId && !loading}
       />
     );
   }
@@ -215,7 +226,7 @@ class StreamViewComponent extends Component<Props> {
     onChangeHandler: (isVisible: boolean) => void,
     streamItem: StreamItem,
   ) {
-    const { jumpToPostId, loading } = this.props;
+    const { loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
@@ -226,8 +237,7 @@ class StreamViewComponent extends Component<Props> {
           ref={this._setPostRef}
           id={streamItem.value}
           key={`ConversationPost${streamItem.value}`}
-          highlight={streamItem.value === jumpToPostId && !loading}
-          onHighlightAnimationStart={this.props.resetJumpToPostId}
+          highlight={streamItem.value === this.state._jumpToPostId && !loading}
         />
       </VisibilitySensor>
     );
