@@ -285,7 +285,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           });
           return { hasMore, data: posts };
         } catch (err) {
-          if (err.code === ErrorTypes.NETWORK) {
+          if (err.code === ErrorTypes.API_NETWORK) {
             // TODO error handle
           }
           return { data: [], hasMore: true };

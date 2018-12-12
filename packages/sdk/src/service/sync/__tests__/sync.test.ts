@@ -14,7 +14,7 @@ jest.mock('../handleData');
 jest.mock('../fetchIndexData');
 
 import SyncService from '..';
-import { NetworkResultOk } from '../../../api/NetworkResult';
+import { ApiResultOk } from '../../../api/ApiResult';
 describe('SyncService ', () => {
   const syncService = new SyncService();
   describe('syncData', () => {
@@ -55,7 +55,7 @@ describe('SyncService ', () => {
       Object.assign(syncService, {
         isLoading: false,
       });
-      fetchIndexData.mockResolvedValueOnce(new NetworkResultOk({}, 200, {}));
+      fetchIndexData.mockResolvedValueOnce(new ApiResultOk({}, 200, {}));
       daoManager.getKVDao.mockImplementation(() => ({
         get: jest.fn().mockReturnValue(1),
       }));

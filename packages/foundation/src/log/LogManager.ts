@@ -23,7 +23,12 @@ class LogManager {
   }
 
   static get Instance() {
-    this._instance = this._instance || (this._instance = new this());
+    const appenders =
+      process.env.NODE_ENV === 'test'
+        ? LOG_APPENDER.NONE
+        : LOG_APPENDER.CONSOLE;
+
+    this._instance || (this._instance = new this(appenders));
     return this._instance;
   }
 

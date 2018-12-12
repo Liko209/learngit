@@ -10,7 +10,7 @@ import { ENTITY_SETTING } from '../../config';
 import { ENTITY_NAME } from '../../constants';
 import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
-import { NotificationEntityPayload } from '../../../../../packages/sdk/src/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 const { EVENT_TYPES } = service;
 
 // jest.mock('../ModelProvider');

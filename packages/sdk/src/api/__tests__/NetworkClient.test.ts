@@ -14,7 +14,7 @@ import {
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-import { NetworkResultOk, NetworkResultErr } from '../NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../ApiResult';
 // Using manual mock to improve mock priority.
 jest.mock('foundation/src/network', () =>
   jest.genMockFromModule<any>('foundation/src/network'),
@@ -136,32 +136,37 @@ describe('NetworkClient', () => {
   });
 
   describe('buildCallback()', () => {
-    it('promise should resolve with response', (done: jest.DoneCallback) => {
+    it('should resolve with ApiResultOk', (done: jest.DoneCallback) => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
-      rcNetworkClient
-        .request(getRequest)
-        .then((result: NetworkResultOk<any>) => {
-          expect(result).toHaveProperty('status', 200);
-          expect(result).toHaveProperty('data', { a: 1 });
-          done();
-        });
-      mockRequest.callback({ status: 200, data: { a: 1 } });
+      rcNetworkClient.request(getRequest).then((result: ApiResultOk<any>) => {
+        expect(result).toHaveProperty('status', 200);
+        expect(result).toHaveProperty('data', { a: 1 });
+        done();
+      });
+      mockRequest.callback({
+        status: 200,
+        data: { a: 1 },
+        headers: {},
+      });
     });
 
-    it('promise should reject with response', (done: jest.DoneCallback) => {
+    it('should resolve with ApiResultErr', (done: jest.DoneCallback) => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
-      rcNetworkClient
-        .request(getRequest)
-        .then((result: NetworkResultErr<any>) => {
-          expect(result.status).toBe(500);
-          expect(result.error.code).toBe(1500);
-          done();
-        });
-      mockRequest.callback({ status: 500, data: { a: 'fail' }, headers: {} });
+      rcNetworkClient.request(getRequest).then((result: ApiResultErr<any>) => {
+        expect(result.status).toBe(500);
+        expect(result.error.code).toBe(1500);
+        done();
+      });
+
+      mockRequest.callback({
+        status: 500,
+        data: { a: {} },
+        headers: {},
+      });
     });
   });
 

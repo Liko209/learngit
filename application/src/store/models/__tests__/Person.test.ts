@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '../../../store/models/Person';
-import { Person } from 'sdk/src/models';
+import { Person } from 'sdk/models';
 import PersonService, {
   PhoneNumberInfo,
   PHONE_NUMBER_TYPE,

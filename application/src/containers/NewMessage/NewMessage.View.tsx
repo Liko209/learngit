@@ -14,6 +14,7 @@ import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
+import { Notification } from '@/containers/Notification';
 import { ViewProps } from './types';
 
 type State = {
@@ -47,8 +48,10 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const { message } = this.state;
     const { history, newMessage, members } = this.props;
     const result = await newMessage(members, message);
-    history.push(`/messages/${result.id}`);
-    this.onClose();
+    if (result) {
+      history.push(`/messages/${result.id}`);
+      this.onClose();
+    }
   }
 
   onClose = () => {
@@ -59,6 +62,17 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 
   handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ message: e.target.value });
+  }
+
+  renderFailError() {
+    const message = 'SorryWeWereNotAbleToSendTheMessage';
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   render() {
@@ -73,7 +87,11 @@ class NewMessage extends React.Component<NewMessageProps, State> {
       isOffline,
       serverError,
       errorEmail,
+      errorUnknown,
     } = this.props;
+    if (errorUnknown) {
+      this.renderFailError();
+    }
     return (
       <JuiModal
         open={isOpen}
@@ -123,5 +141,6 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 }
 
 const NewMessageView = translate('team')(withRouter(NewMessage));
+const NewMessageComponent = NewMessage;
 
-export { NewMessageView };
+export { NewMessageView, NewMessageComponent };

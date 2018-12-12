@@ -12,8 +12,13 @@ import {
   generateCode,
   oauthTokenViaAuthCode,
 } from '../../api/ringcentral/auth';
-import { NetworkManager, OAuthTokenManager } from 'foundation';
-import { NetworkResultOk } from '../../api/NetworkResult';
+import {
+  NetworkManager,
+  OAuthTokenManager,
+  HttpResponseBuilder,
+  HttpResponse,
+} from 'foundation';
+import { ApiResultOk } from '../../api/ApiResult';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -26,6 +31,12 @@ jest.mock('../../api/ringcentral/auth', () => ({
   generateCode: jest.fn(),
 }));
 
+function createResponse(obj: any) {
+  const builder = new HttpResponseBuilder();
+  Object.assign(builder, obj);
+  return new HttpResponse(builder);
+}
+
 describe('UnifiedLoginAuthenticator', () => {
   const unified = new UnifiedLoginAuthenticator();
   it('UnifiedLoginAuthenticator invalid tokens', async () => {
@@ -33,16 +44,27 @@ describe('UnifiedLoginAuthenticator', () => {
     expect(resp.success).toBe(false);
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
-    const oauthTokenResult = new NetworkResultOk('token', 200, {});
-    const loginGlipResult = new NetworkResultOk('', 200, {
-      'x-authorization': 'glip_token',
-    });
-    const generateCodeResult = new NetworkResultOk(
+    const oauthTokenResult = new ApiResultOk(
+      'token',
+      createResponse({ status: 200, headers: {} }),
+    );
+    const loginGlipResult = new ApiResultOk(
+      '',
+      createResponse({
+        status: 200,
+        headers: {
+          'x-authorization': 'glip_token',
+        },
+      }),
+    );
+    const generateCodeResult = new ApiResultOk(
       {
         code: 'code',
       },
-      200,
-      {},
+      createResponse({
+        status: 200,
+        headers: {},
+      }),
     );
 
     oauthTokenViaAuthCode.mockResolvedValue(oauthTokenResult);

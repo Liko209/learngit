@@ -1,5 +1,6 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
+import { BaseResponse, ok, err } from 'foundation';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
 import AccountService from '../../account';
@@ -18,16 +19,15 @@ import { Group, Raw, Person } from '../../../models';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
-import ServiceCommonErrorType from '../../errors/ServiceCommonErrorType';
-import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { GroupErrorTypes } from '../groupService';
-import { ErrorParser, BaseError, TypeDictionary } from '../../../utils';
+import { BaseError, TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 import CompanyService from '../../company';
 import PostService from '../../post';
 import { Api } from '../../../api';
 import notificationCenter from '../../notificationCenter';
-import DaoManager from '../../../dao/DaoManager';
+import { serviceOk, serviceErr } from '../../ServiceResult';
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
@@ -141,58 +141,69 @@ describe('GroupService', () => {
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([11, 12, 1]);
     });
   });
+  describe('getGroupByMemberList()', async () => {
+    it('should return result with group if it already existed in local', async () => {
+      const mockNormal = { id: 1 };
+      const memberIDs = [1, 2];
+      // group exist in DB already
+      daoManager.getDao.mockReturnValue(groupDao);
+      groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
+      const result1 = await groupService.getOrCreateGroupByMemberList(
+        memberIDs,
+      );
+      expect(result1).toHaveProperty('data', mockNormal);
+    });
 
-  it('getGroupByMemberList()', async () => {
-    const mockNormal = { id: 1 };
-    const memberIDs = [1, 2];
-    // group exist in DB already
-    daoManager.getDao.mockReturnValue(groupDao);
-    groupDao.queryGroupByMemberList.mockResolvedValue(mockNormal);
+    it('should return result with group if it can get from remote', async () => {
+      const mockNormal = { id: 1 };
+      const memberIDs = [1, 2];
+      jest
+        .spyOn(groupService, 'requestRemoteGroupByMemberList')
+        .mockResolvedValueOnce(ok(mockNormal));
+      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
+      const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
+      expect(result).toHaveProperty('data', mockNormal);
+    });
 
-    const result1 = await groupService.getOrCreateGroupByMemberList(memberIDs);
-    expect(result1).toEqual(mockNormal);
-
-    jest
-      .spyOn(groupService, 'requestRemoteGroupByMemberList')
-      .mockResolvedValueOnce(mockNormal) // first call
-      .mockResolvedValueOnce(null); // second call
-
-    // group not in db, request from server
-    const nullGroup: Group = null;
-    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result2 = await groupService.getOrCreateGroupByMemberList(memberIDs);
-    expect(result2).toEqual(mockNormal);
-
-    // group not in db and server return null
-    groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
-    const result3 = await groupService.getOrCreateGroupByMemberList(memberIDs);
-    expect(result3).toBeNull;
+    it('should return result with error if it can not get from remote', async () => {
+      const memberIDs = [1, 2];
+      jest
+        .spyOn(groupService, 'requestRemoteGroupByMemberList')
+        .mockResolvedValueOnce(err(new BaseError(500, '')));
+      groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
+      const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
+      expect(result.isErr()).toBe(true);
+    });
   });
 
-  describe('requestRemoteGroupByMemberList()', async () => {
-    beforeEach(() => {
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      daoManager.getDao.mockReturnValue(groupDao);
-      groupDao.get.mockResolvedValue(1); // userId
-    });
-    it('should return remote result while success', async () => {
-      const mockNormal = new NetworkResultOk({ _id: 1 }, 200, {});
-      GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
-      const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-      expect(result1).toEqual({ id: 1 });
-    });
-    it('should return null while remote return null', async () => {
-      const mockEmpty = new NetworkResultOk(null, 200, {});
-      GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
-      const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-      expect(result2).toBeNull();
-    });
-    it('should throw error', async () => {
-      const mockError = new NetworkResultErr(new BaseError(403, ''), 403, {});
-      GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-      const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
-      expect(result3).toBeNull();
-    }); 
+  it('requestRemoteGroupByMemberList()', async () => {
+    daoManager.getKVDao.mockReturnValue(accountDao);
+    daoManager.getDao.mockReturnValue(groupDao);
+    groupDao.get.mockResolvedValue(1); // userId
+
+    const mockNormal = new ApiResultOk({ _id: 1 }, {
+      status: 200,
+      headers: {},
+    } as BaseResponse);
+    GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
+    const result1 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+    expect(result1).toHaveProperty('data', { id: 1 });
+
+    const mockEmpty = new ApiResultOk(null, {
+      status: 200,
+      headers: {},
+    } as BaseResponse);
+    GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
+    const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+    expect(result2).toHaveProperty('data', null);
+
+    const mockError = new ApiResultErr(new BaseError(403, ''), {
+      status: 403,
+      headers: {},
+    } as BaseResponse);
+    GroupAPI.requestNewGroup.mockResolvedValue(mockError);
+    const result3 = await groupService.requestRemoteGroupByMemberList([1, 2]);
+    expect(result3.isOk()).toBe(false);
   });
 
   it('getGroupByPersonId()', async () => {
@@ -203,7 +214,7 @@ describe('GroupService', () => {
     accountDao.get.mockReturnValue(1); // userId
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupService.getGroupByPersonId(2);
-    expect(result1).toEqual(mock);
+    expect(result1).toHaveProperty('data', mock);
   });
 
   describe('getLatestGroup()', () => {
@@ -346,18 +357,23 @@ describe('GroupService', () => {
       groupDao.get.mockResolvedValue(mockGroup);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new NetworkResultOk({ _id: 1, pinned_post_ids: [10] }, 200, {}),
+        new ApiResultOk({ _id: 1, pinned_post_ids: [10] }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await handleData.mockResolvedValueOnce(null);
       let pinResult = await groupService.pinPost(10, 1, true);
       expect(pinResult.pinned_post_ids).toEqual([10]);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new NetworkResultOk({ _id: 1, pinned_post_ids: [] }, 200, {}),
+        new ApiResultOk({ _id: 1, pinned_post_ids: [] }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await handleData.mockResolvedValueOnce(null);
       pinResult = await groupService.pinPost(10, 1, false);
-      console.log(pinResult);
       expect(pinResult.pinned_post_ids).toEqual([]);
 
       jest.clearAllMocks();
@@ -395,7 +411,10 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValueOnce(true);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new NetworkResultErr(new BaseError(1, 'error'), 403, {}),
+        new ApiResultErr(new BaseError(1, 'error'), {
+          status: 403,
+          headers: {},
+        } as BaseResponse),
       );
       const pinResult = await groupService.pinPost(11, 1, true);
 
@@ -412,7 +431,10 @@ describe('GroupService', () => {
 
     it('should return api result if request success', async () => {
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
-        new NetworkResultOk(122, 200, {}),
+        new ApiResultOk(122, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       jest
         .spyOn(require('../../utils'), 'transform')
@@ -426,7 +448,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
-        new NetworkResultOk(null, 403, {}),
+        new ApiResultOk(null, {
+          status: 403,
+          headers: {},
+        } as BaseResponse),
       );
 
       await groupService.addTeamMembers(1, []);
@@ -460,7 +485,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultOk(group, 200, {}),
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
@@ -487,7 +515,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultOk(group, 200, {}),
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       await groupService.createTeam('some team', 1323, [], 'abc', {
         isPublic: true,
@@ -521,7 +552,10 @@ describe('GroupService', () => {
       groupService.handleRawGroup.mockImplementationOnce(() => group);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultOk(group, 200, {}),
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
 
       const result = await groupService.createTeam(
@@ -549,7 +583,10 @@ describe('GroupService', () => {
         'Already taken',
       );
       GroupAPI.createTeam.mockResolvedValue(
-        new NetworkResultErr(error, 403, {}),
+        new ApiResultErr(error, {
+          status: 403,
+          headers: {},
+        } as BaseResponse),
       );
 
       const result = await groupService.createTeam(
@@ -575,35 +612,23 @@ describe('GroupService', () => {
     });
   });
 
-  describe('hideConversation', () => {
+  describe('hideConversation()', () => {
     it('hideConversation, success', async () => {
-      profileService.hideConversation.mockResolvedValueOnce({
-        id: 1,
-        hide_group_123: true,
-      });
+      profileService.hideConversation.mockResolvedValueOnce(
+        serviceOk({
+          id: 1,
+          hide_group_123: true,
+        }),
+      );
       const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.NONE);
+      expect(result.isOk()).toBeTruthy();
     });
     it('hideConversation, network not available', async () => {
       profileService.hideConversation.mockResolvedValueOnce(
-        new BaseError(5000, ''),
+        serviceErr(5000, ''),
       );
       const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.NETWORK_NOT_AVAILABLE);
-    });
-    it('hideConversation, server error', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(
-        new BaseError(5403, ''),
-      );
-      const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.SERVER_ERROR);
-    });
-    it('hideConversation, unknown error', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(
-        ErrorParser.parse({ status: 280 }),
-      );
-      const result = await groupService.hideConversation(1, false, true);
-      expect(result).toBe(ServiceCommonErrorType.UNKNOWN_ERROR);
+      expect(result.isErr()).toBeTruthy();
     });
   });
 
@@ -814,31 +839,31 @@ describe('GroupService', () => {
       );
       expect(accountService.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(result1).toEqual(mockNormal);
+      expect(result1).toHaveProperty('data', mockNormal);
     });
 
     it('group not exist in DB already, request from server', async () => {
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(mockNormal); // first call
+        .mockResolvedValueOnce(ok(mockNormal)); // first call
+      daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
       const result2 = await groupService.getOrCreateGroupByMemberList(
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(accountService.getCurrentUserId).toBeCalled();
-      expect(result2).toEqual(mockNormal);
+      expect(result2).toHaveProperty('data', mockNormal);
     });
 
     it('throw error ', async () => {
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockRejectedValueOnce(new Error('error'));
+        .mockResolvedValueOnce(err(new BaseError(500, '')));
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(null);
-      await expect(
-        groupService.getOrCreateGroupByMemberList(memberIDs),
-      ).rejects.toThrow();
+      const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
+      expect(result.isOk()).toBe(false);
     });
   });
 
@@ -856,10 +881,13 @@ describe('GroupService', () => {
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new NetworkResultOk(data, 200, {}),
+        new ApiResultOk(data, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
-      expect(result).toMatchObject({ id: 1 });
+      expect(result).toHaveProperty('data', { id: 1 });
       expect(GroupAPI.requestNewGroup).toBeCalledWith(
         expect.objectContaining({
           members: [1, 2, 3],
@@ -872,14 +900,17 @@ describe('GroupService', () => {
 
     it('should throw an error when exception happened ', async () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new NetworkResultErr(new BaseError(500, 'error'), 500, {}),
+        new ApiResultErr(new BaseError(500, 'error'), {
+          status: 500,
+          headers: {},
+        } as BaseResponse),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
-      expect(result).toBeNull();
+      expect(result.isErr()).toBe(true);
     });
   });
 
-  describe('isFavorited', () => {
+  describe('isFavored', () => {
     const favGroup = { id: 123 };
     const curUserId = 1;
     const personId = 2;
@@ -892,11 +923,11 @@ describe('GroupService', () => {
 
       accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
-    it("should return true when the person's conversion isfavorted", async () => {
+    it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');
       const ids: number[] = [personId, curUserId];
       spy.mockResolvedValueOnce(favGroup);
-      const res = await groupService.isFavorited(
+      const res = await groupService.isFavored(
         personId,
         TypeDictionary.TYPE_ID_PERSON,
       );
@@ -906,21 +937,21 @@ describe('GroupService', () => {
     it('should return false when local has no conversation with the person', async () => {
       jest.spyOn(groupService, 'getLocalGroup').mockResolvedValue(null);
 
-      const res = await groupService.isFavorited(
+      const res = await groupService.isFavored(
         personId,
         TypeDictionary.TYPE_ID_PERSON,
       );
       expect(res).toBeFalsy;
     });
 
-    it('should return true when the group or team is favorited', async () => {
-      const res = await groupService.isFavorited(
+    it('should return true when the group or team is favored', async () => {
+      const res = await groupService.isFavored(
         groupIds.indexOf(1),
         TypeDictionary.TYPE_ID_GROUP,
       );
       expect(res).toBeFalsy;
 
-      const res1 = await groupService.isFavorited(
+      const res1 = await groupService.isFavored(
         groupIds.indexOf(2),
         TypeDictionary.TYPE_ID_GROUP,
       );
@@ -928,7 +959,7 @@ describe('GroupService', () => {
     });
 
     it('should return true when type is not supported', async () => {
-      const res = await groupService.isFavorited(
+      const res = await groupService.isFavored(
         777,
         TypeDictionary.TYPE_ID_ACCOUNT,
       );
@@ -1119,18 +1150,21 @@ describe('GroupService', () => {
       expect(profileService.reorderFavoriteGroups).toBeCalledWith(1, 2);
     });
   });
+
   describe('markGroupAsFavorite()', () => {
     it('should proxy to call profileService.markGroupAsFavorite', async () => {
-      profileService.markGroupAsFavorite.mockResolvedValueOnce({});
+      profileService.markGroupAsFavorite.mockResolvedValueOnce(serviceOk({}));
       const result = await groupService.markGroupAsFavorite(1, true);
       expect(profileService.markGroupAsFavorite).lastCalledWith(1, true);
-      expect(result).toEqual(ServiceCommonErrorType.NONE);
+      expect(result.isOk()).toBeTruthy();
     });
+
     it('should return error type correctly', async () => {
-      const mockError = new BaseError(5300, 'mock error');
-      profileService.markGroupAsFavorite.mockResolvedValueOnce(mockError);
+      profileService.markGroupAsFavorite.mockResolvedValueOnce(
+        serviceErr(5300, 'mock error'),
+      );
       const result = await groupService.markGroupAsFavorite(1, true);
-      expect(result).toEqual(ServiceCommonErrorType.SERVER_ERROR);
+      expect(result.isErr()).toBeTruthy();
     });
   });
 });

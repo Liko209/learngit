@@ -101,23 +101,12 @@ describe('StreamViewModel', () => {
   });
 
   describe('onReceiveProps()', () => {
-    it('should dispose transformHandler when groupId change', () => {
-      const vm = setup();
-      jest.spyOn(vm, 'dispose');
-
-      vm.onReceiveProps({ groupId: 1 });
-
-      expect(vm.dispose).toHaveBeenCalledTimes(1);
-    });
-
     it('should do nothing when groupId not change', () => {
       const vm = setup({
         groupId: 1,
       });
       jest.spyOn(vm, 'dispose');
-
       vm.onReceiveProps({ groupId: 1 });
-
       expect(vm.dispose).not.toHaveBeenCalled();
     });
   });

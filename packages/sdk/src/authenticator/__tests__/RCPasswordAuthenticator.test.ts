@@ -3,11 +3,11 @@
  * @Date: 2018-07-10 13:36:19
  * Copyright © RingCentral. All rights reserved
  */
-
+import { HttpResponseBuilder, HttpResponse } from 'foundation';
 import { loginRCByPassword, ITokenModel } from '../../api/ringcentral/login';
 import { loginGlip } from '../../api/glip/user';
 import { RCPasswordAuthenticator } from '..';
-import { NetworkResultOk } from '../../api/NetworkResult';
+import { ApiResultOk } from '../../api/ApiResult';
 
 jest.mock('../../api/glip/user', () => ({
   loginGlip: jest.fn(),
@@ -17,9 +17,15 @@ jest.mock('../../api/ringcentral/login', () => ({
   loginRCByPassword: jest.fn(),
 }));
 
+function createResponse(obj: any) {
+  const builder = new HttpResponseBuilder();
+  Object.assign(builder, obj);
+  return new HttpResponse(builder);
+}
+
 describe('RCPasswordAuthenticator', () => {
   it('should login success', async () => {
-    const loginRCResult = new NetworkResultOk<ITokenModel>(
+    const loginRCResult = new ApiResultOk<ITokenModel>(
       {
         access_token: 'rc_token',
         endpoint_id: 'endpoint_id',
@@ -33,12 +39,20 @@ describe('RCPasswordAuthenticator', () => {
         accessTokenExpireIn: 2,
         refreshTokenExpireIn: 2,
       },
-      200,
-      {},
+      createResponse({
+        status: 200,
+        headers: {},
+      }),
     );
-    const loginGlipResult = new NetworkResultOk({}, 200, {
-      'x-authorization': 'glip_token',
-    });
+    const loginGlipResult = new ApiResultOk(
+      {},
+      createResponse({
+        status: 200,
+        headers: {
+          'x-authorization': 'glip_token',
+        },
+      }),
+    );
 
     loginRCByPassword.mockResolvedValueOnce(loginRCResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);

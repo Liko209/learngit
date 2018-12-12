@@ -38,7 +38,10 @@ function addScrollEndListener(
   callback: (event?: UIEvent) => void,
 ) {
   const SCROLL_END_DETECT_DEBOUNCE = 100;
-  const debounceCallback = debounce(callback, SCROLL_END_DETECT_DEBOUNCE);
+  const debounceCallback = debounce(() => {
+    callback();
+    el.removeEventListener('scroll', debounceCallback);
+  },                                SCROLL_END_DETECT_DEBOUNCE);
   el.addEventListener('scroll', debounceCallback);
   // When no scroll happened, we need to callback too.
   window.requestAnimationFrame(() => debounceCallback());
@@ -69,4 +72,4 @@ async function nextTick() {
   });
 }
 
-export { scrollToComponent, nextTick };
+export { scrollToComponent, nextTick, getScrollParent };

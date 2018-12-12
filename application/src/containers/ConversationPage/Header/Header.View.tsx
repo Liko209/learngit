@@ -5,6 +5,9 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
 import {
   JuiConversationPageHeader,
   JuiConversationPageHeaderSubtitle,
@@ -14,9 +17,7 @@ import {
   JuiCheckboxButton,
   JuiIconButton,
 } from 'jui/components/Buttons';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { JuiModal } from '@/containers/Dialog';
-import { observer } from 'mobx-react';
+import { Notification } from '@/containers/Notification';
 import { translate, WithNamespaces } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -35,7 +36,7 @@ type HeaderProps = {
   onFavoriteButtonHandler: (
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
-  ) => Promise<ServiceCommonErrorType>;
+  ) => Promise<ServiceResult<Profile>>;
 } & WithNamespaces;
 
 @observer
@@ -96,13 +97,18 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
       checked: boolean,
     ) => {
       const result = await onFavoriteButtonHandler(event, checked);
-      if (result === ServiceCommonErrorType.SERVER_ERROR) {
-        JuiModal.alert({
-          title: '',
-          content: t('conversationMenuItem:markFavoriteServerErrorContent'),
-          okText: t('conversationMenuItem:OK'),
-          okVariant: 'text',
-          onOK: () => {},
+
+      if (result.isErr()) {
+        const message = isFavorite
+          ? t('markUnFavoriteServerErrorContent')
+          : t('markFavoriteServerErrorContent');
+
+        Notification.flashToast({
+          message,
+          type: 'error',
+          messageAlign: 'left',
+          fullWidth: false,
+          dismissible: false,
         });
       }
     };

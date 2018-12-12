@@ -12,17 +12,13 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
-import { Post } from 'sdk/src/models';
-import { service } from 'sdk';
-import { EVENT_TYPES, ENTITY } from 'sdk/service';
+import { Post } from 'sdk/models';
+import { EVENT_TYPES, ENTITY, PostService } from 'sdk/service';
 import { transform2Map, getEntity } from '@/store/utils';
-import { PostService as IPostService } from 'sdk/src/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
-
-const { PostService } = service;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
@@ -60,7 +56,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService = PostService.getInstance<IPostService>();
+    const postService: PostService = PostService.getInstance<PostService>();
     let ids;
     let hasMore;
     if (anchor) {
@@ -125,7 +121,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const deleted = _(this._postIds)
         .difference(postIds)
         .value();
-      const postService = PostService.getInstance() as IPostService;
+      const postService: PostService = PostService.getInstance();
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
