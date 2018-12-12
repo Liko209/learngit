@@ -103,7 +103,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog(`Then the team should have 2 umi`, async () => {
-      await t.expect(await teamConversation.getUmi()).eql(2);
+      await teamConversation.expectUmi(2);
     });
 
     await h(t).withLog('When other user send a post without @mention to the group', async () => {
@@ -115,7 +115,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog(`Then the group should have 3 umi`, async () => {
-      await t.expect(await groupConversation.getUmi()).eql(3);
+      await groupConversation.expectUmi(3);
     });
 
     await h(t).withLog('When other user send a post without @mention to the team', async () => {
@@ -209,7 +209,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
       const item = teamsSection.conversationEntryById(team.data.id);
       const text = item.self.find('p');
 
-      await item.expectUmi(0,20);
+      await item.expectUmi(0, 20);
       const textFontWeight = (await text.style)['font-weight'];
       await t.expect(textFontWeight).match(/400|normal/);
     });
@@ -341,12 +341,12 @@ test(formalName('Should not display UMI when section is expended & Should displa
     );
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      const groups = [ 
-        favPrivateChat.data.id, 
-        favTeam.data.id, 
-        group1.data.id, 
-        group2.data.id, 
-        group3.data.id, 
+      const groups = [
+        favPrivateChat.data.id,
+        favTeam.data.id,
+        group1.data.id,
+        group2.data.id,
+        group3.data.id,
         team1.data.id,
         team2.data.id
       ]
@@ -356,7 +356,7 @@ test(formalName('Should not display UMI when section is expended & Should displa
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       await user.sdk.glip.clearAllUmi();
-   });
+    });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
@@ -541,7 +541,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       await user.sdk.glip.clearAllUmi();
-   });
+    });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
@@ -643,7 +643,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
       return;
     }
-    
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
@@ -658,18 +658,18 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId]
       });
-      for(var i = 0; i < 10; i++){
+      for (var i = 0; i < 10; i++) {
         await user5Platform.createPost(
           { text: 'test' },
           pvtChat.data.id,
         );
       };
       await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
-      });
+    });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       await user.sdk.glip.clearAllUmi();
-   });
+    });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
@@ -706,7 +706,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
       await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
       return;
     }
-    
+
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
@@ -727,7 +727,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
         pvtChat.data.id
       );
       await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
-   });
+    });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
       await user.sdk.glip.clearAllUmi();
@@ -783,8 +783,8 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
 
     await h(t).withLog(`Given I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
-       await h(t).directLoginWithUser(SITE_URL, user);
-       await app.homePage.ensureLoaded();
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
       },
     );
 
