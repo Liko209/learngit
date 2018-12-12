@@ -56,6 +56,7 @@ const StyledConversationCard = styled<
   { mode?: string; highlight?: boolean },
   'div'
 >('div')`
+  position: relative;
   background-color: ${palette('common', 'white')};
   display: flex;
   transition: background-color 0.2s ease-in;
@@ -82,12 +83,15 @@ const StyledConversationCard = styled<
 const JuiConversationCard = ({
   children,
   Avatar,
+  mode,
   ...rest
 }: ConversationCardProps) => (
   <StyledConversationCard {...rest}>
-    <StyledNavigationButton variant="round">
-      Jump to conversation
-    </StyledNavigationButton>
+    {mode === 'navigation' ? (
+      <StyledNavigationButton variant="round">
+        Jump to conversation
+      </StyledNavigationButton>
+    ) : null}
     <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
     <StyledRightSection>{children}</StyledRightSection>
   </StyledConversationCard>
