@@ -102,11 +102,10 @@ class StreamViewComponent extends Component<Props> {
       // scroll TOP and load posts
       if (this._isAtTop && hasMoreUp) {
         await nextTick();
-        console.log(this._scrollHeight, this._scrollTop);
-        // const parent = getScrollParent(this._listRef.current!);
-        // parent.scrollTop =
-        //   this._scrollTop + parent.scrollHeight - this._scrollHeight;
-        // return;
+        const parent = getScrollParent(this._listRef.current!);
+        parent.scrollTop =
+          this._scrollTop + parent.scrollHeight - this._scrollHeight;
+        return;
       }
     }
     return;
@@ -254,6 +253,9 @@ class StreamViewComponent extends Component<Props> {
     );
   }
   private get _streamItems() {
+    if (this.props.loading) {
+      return null;
+    }
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
 
