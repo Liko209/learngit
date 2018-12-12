@@ -77,7 +77,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
             aria-label={t('viewYourProfile')}
             data-test-automation-id="viewYourProfile"
           >
-            {t('viewYourProfile')}
+            {t('Profile')}
           </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
