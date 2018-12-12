@@ -39,10 +39,7 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
     });
 
     await h(t).withLog('Both conversation should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${teamId1}`]: false,
-        [`hide_group_${teamId2}`]: false,
-      });
+      await user.sdk.glip.showGroups(user.rcId, [teamId1, teamId2]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,

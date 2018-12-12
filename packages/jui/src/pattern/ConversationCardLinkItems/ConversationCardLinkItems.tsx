@@ -65,8 +65,15 @@ const LinkTitle = styled.p`
     }
   }
 `;
+
+function getMaxHeight(lineHeight: any, lineNumber: number) {
+  const heightNumber: number = Number(lineHeight.replace(/[^-\d\.]/g, ''));
+  const unit: string = lineHeight.replace(/[-\d\.]/g, '');
+  return `${heightNumber * lineNumber}${unit}`;
+}
+
 const LinkSummary = styled.p`
-  font-size: ${({ theme }) => theme.typography.body2.fontSize};
+  ${({ theme }) => theme.typography.body1};
   color: ${grey('500')};
   word-break: break-word;
   overflow: hidden;
@@ -75,10 +82,8 @@ const LinkSummary = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   margin-top: ${spacing(-1)};
-  line-height: ${({ theme }) =>
-    theme.typography.heading1.lineHeight}; /* firefox */
   max-height: ${({ theme }) =>
-    theme.typography.heading1.maxHeight}; /* firefox */
+    getMaxHeight(theme.typography.body1.lineHeight, 2)}; /* firefox */
 `;
 
 const FaviconWrapper = styled.div`
