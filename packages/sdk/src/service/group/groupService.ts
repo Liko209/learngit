@@ -749,14 +749,14 @@ class GroupService extends BaseService<Group> {
   }
 
   private _isValidGroup(group: Group) {
-    return this._isValid(group) && !group.is_team;
+    return this.isValid(group) && !group.is_team;
   }
 
   private _idValidTeam(group: Group) {
-    return this._isValid(group) && group.is_team;
+    return this.isValid(group) && group.is_team;
   }
 
-  private _isValid(group: Group) {
+  public isValid(group: Group) {
     return !group.is_archived && !group.deactivated && group.members;
   }
 
