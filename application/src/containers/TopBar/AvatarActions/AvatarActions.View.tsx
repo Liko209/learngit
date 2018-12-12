@@ -74,6 +74,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
         <JuiMenuList data-test-automation-id="avatarMenu">
           <JuiMenuItem
             onClick={this.handleViewYourProfile}
+            aria-label={t('viewYourProfile')}
             data-test-automation-id="viewYourProfile"
           >
             {t('viewYourProfile')}
@@ -81,6 +82,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
+              aria-label={t('AboutRingCentral')}
               data-test-automation-id="aboutPage"
             >
               {t('AboutRingCentral')}
@@ -88,6 +90,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
           )}
           <JuiMenuItem
             onClick={handleSignOut}
+            aria-label={t('signOut')}
             data-test-automation-id="signOut"
           >
             {t('signOut')}
