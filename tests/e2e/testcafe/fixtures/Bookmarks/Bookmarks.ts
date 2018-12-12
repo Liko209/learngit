@@ -89,6 +89,7 @@ test(formalName('Jump to post position when click button or clickable area of po
   });
 
   await h(t).withLog('And I bookmark the DM post', async () => {
+    await t.wait(3e3);
     await conversationPage.postItemById(bookmarksPostChat.data.id).clickBookmarkToggle();
   });
 
@@ -154,7 +155,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     await h(t).withLog('And I bookmark the post', async () => {
       await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
     });
-    //
+
     await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
       await bookmarksEntry.enter();
       await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(1);
