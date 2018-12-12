@@ -12,7 +12,7 @@ import {
   storedFileFactory,
   rawItemFactory,
 } from '../../../__tests__/factories';
-import { NetworkResultOk } from '../../../api/NetworkResult';
+import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../api/glip/item');
 // const itemDao = daoManager.getDao(ItemDao);
@@ -55,7 +55,7 @@ describe('handleData()', () => {
 describe('uploadStorageFile()', () => {
   it('should return mock response data', async () => {
     ItemAPI.uploadFileItem.mockReturnValue(
-      new NetworkResultOk('mock response data', 200, {}),
+      new ApiResultOk('mock response data', 200, {}),
     );
     const result = await uploadStorageFile({
       file: new FormData(),
@@ -68,7 +68,7 @@ describe('uploadStorageFile()', () => {
     expect.assertions(1);
     ItemAPI.uploadFileItem.mockImplementation(async (file, onProgress) => {
       onProgress({ loaded: 1, total: 10 });
-      return new NetworkResultOk('mock response data', 200, {});
+      return new ApiResultOk('mock response data', 200, {});
     });
 
     UploadManager.on('1', progress => expect(progress).toEqual('10'));
@@ -92,7 +92,7 @@ describe('sendFileItem()', () => {
   };
   it('should return the response of ItemAPI.sendFileItem()', async () => {
     ItemAPI.sendFileItem.mockReturnValue(
-      new NetworkResultOk('mock response data', 200, {}),
+      new ApiResultOk('mock response data', 200, {}),
     );
 
     const result = await sendFileItem(options);

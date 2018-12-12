@@ -31,7 +31,7 @@ class More extends React.Component<MoreViewProps> {
         size="small"
         variant="plain"
         data-name="actionBarMore"
-        tooltipTitle={t('More')}
+        tooltipTitle={t('more')}
       >
         more_horiz
       </JuiIconButton>

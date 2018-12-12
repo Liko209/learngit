@@ -5,17 +5,17 @@
  */
 
 import { computed, observable } from 'mobx';
-import { AbstractViewModel } from '@/base';
-import { FavoriteProps, FavoriteViewProps } from './types';
 import { service } from 'sdk';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { IconButtonSize } from 'jui/components/Buttons';
+import { Group } from 'sdk/models';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { IconButtonSize } from 'jui/components/Buttons';
 
+import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
-import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
+
+import { FavoriteProps, FavoriteViewProps } from './types';
 
 const { GroupService } = service;
 
@@ -74,7 +74,7 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
     return false;
   }
 
-  handlerFavorite = async (): Promise<ServiceCommonErrorType> => {
+  handlerFavorite = () => {
     return this._groupService.markGroupAsFavorite(
       this.conversationId,
       !this.isFavorite,

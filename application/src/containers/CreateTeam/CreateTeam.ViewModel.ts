@@ -5,18 +5,14 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import GroupService, {
-  CreateTeamOptions,
-  GroupErrorTypes,
-} from 'sdk/service/group';
+import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
+import { BaseError, ErrorTypes } from 'sdk/utils';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
-import { BaseError } from 'sdk/utils';
-import { Notification } from '../Notification';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -39,6 +35,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
+  @observable
+  serverUnknownError: boolean = false;
 
   @computed
   get isOpen() {
@@ -114,11 +112,12 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 
   createErrorHandler(error: BaseError) {
+    this.serverUnknownError = false;
     const code = error.code;
-    if (code === GroupErrorTypes.ALREADY_TAKEN) {
+    if (code === ErrorTypes.API_ALREADY_TAKEN) {
       this.errorMsg = 'alreadyTaken';
       this.nameError = true;
-    } else if (code === GroupErrorTypes.INVALID_FIELD) {
+    } else if (code === ErrorTypes.API_INVALID_FIELD) {
       const message = error.message;
       if (matchInvalidEmail(message).length > 0) {
         this.errorEmail = matchInvalidEmail(message);
@@ -126,13 +125,7 @@ class CreateTeamViewModel extends AbstractViewModel {
         this.emailError = true;
       }
     } else {
-      const message = 'WeWerentAbleToCreateTheTeamTryAgain';
-      Notification.flashToast({
-        message,
-        type: 'error',
-        messageAlign: 'left',
-        fullWidth: false,
-      });
+      this.serverUnknownError = true;
     }
   }
 }

@@ -10,7 +10,7 @@ type LikeProps = {
 
 type LikeViewProps = {
   isLike: boolean;
-  like: (like: boolean) => void;
+  like: (like: boolean) => Promise<{ isFailed: boolean }>;
 };
 
 export { LikeProps, LikeViewProps };
