@@ -40,9 +40,6 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
     const { match } = this.props;
     const { id: conversationIdOfUrl } = match.params;
 
-    // if (location.state && location.state.waiting) {
-    //   return;
-    // }
     conversationIdOfUrl
       ? MessageRouterChangeHelper.goToConversation(conversationIdOfUrl)
       : MessageRouterChangeHelper.goToLastOpenedGroup();
