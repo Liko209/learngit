@@ -12,12 +12,8 @@ import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
-<<<<<<< HEAD
 import { JuiModal } from '@/containers/Dialog';
 import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
-type AvatarActionsProps = WithNamespaces & ViewProps;
-=======
->>>>>>> c48d6c0762dfb0d34da16646d87518dc5d1245e6
 
 @observer
 class AvatarActionsView extends React.Component<ViewProps> {
