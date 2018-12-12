@@ -15,7 +15,7 @@
   "Files": "Files",
   "Settings": "Settings",
   "SignIn": "Sign in",
-  "signOut": "Sign out",
+  "SignOut": "Sign out",
   "CreateTeam": "Create Team",
   "SendNewMessage": "Send New Message",
   "networkDisconnected": "Network disconnected. Please try again when the network is resumed.",

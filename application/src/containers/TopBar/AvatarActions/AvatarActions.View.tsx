@@ -93,7 +93,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
             aria-label={t('signOut')}
             data-test-automation-id="signOut"
           >
-            {t('signOut')}
+            {t('SignOut')}
           </JuiMenuItem>
         </JuiMenuList>
       </JuiPopoverMenu>
