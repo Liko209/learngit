@@ -125,8 +125,7 @@ export default class MultiEntityMapStore<
 
   private _replace(entity: T) {
     if (entity && this._data[entity.id]) {
-      this.remove(entity.id);
-      this.set(entity);
+      this._partialUpdate(entity, entity.id);
     }
   }
 
