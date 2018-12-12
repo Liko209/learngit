@@ -73,13 +73,7 @@ class MessageInputViewComponent extends Component<
         />
       </MessageActionBar>
     );
-    const attachmentsNode = (
-      <Attachments
-        ref={this._attachmentsRef}
-        id={id}
-        attachmentsObserver={this.props.updateAttachmentItems}
-      />
-    );
+    const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
 
     return (
       <>

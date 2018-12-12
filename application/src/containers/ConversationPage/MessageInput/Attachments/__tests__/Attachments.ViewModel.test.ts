@@ -5,7 +5,7 @@
  */
 
 import { service } from 'sdk';
-import { ItemFile, Item } from 'sdk/models';
+import { ItemFile } from 'sdk/models';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
@@ -94,8 +94,6 @@ PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-const attachmentsObserver = () => {};
-
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -108,7 +106,7 @@ describe('AttachmentsViewModel', () => {
   let vm: AttachmentsViewModel;
 
   beforeEach(() => {
-    vm = new AttachmentsViewModel({ attachmentsObserver, id: 456 });
+    vm = new AttachmentsViewModel({ id: 456 });
     _uploadedItems = [];
     _uploadingItems = [];
   });
@@ -129,9 +127,6 @@ describe('AttachmentsViewModel', () => {
       async (content: string) => {
         const messageInputViewModel = new MessageInputViewModel({ id: 456 });
         const vm1 = new AttachmentsViewModel({
-          attachmentsObserver: (items: Item[]) => {
-            messageInputViewModel.updateAttachmentItems(items);
-          },
           id: messageInputViewModel.id,
         });
 

@@ -6,11 +6,8 @@
 import { Item } from 'sdk/models';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 
-type AttachmentsObserverFunc = (items: Item[]) => void;
-
 type AttachmentsProps = {
   id: number;
-  attachmentsObserver: AttachmentsObserverFunc;
 };
 
 type AttachmentsViewProps = {
@@ -25,4 +22,4 @@ type AttachmentsViewProps = {
   updateDuplicateFiles: () => void;
 };
 
-export { AttachmentsProps, AttachmentsViewProps, AttachmentsObserverFunc };
+export { AttachmentsProps, AttachmentsViewProps };

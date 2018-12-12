@@ -7,13 +7,12 @@
 import { action, observable, computed } from 'mobx';
 import { debounce, Cancelable } from 'lodash';
 import { MessageInputProps, MessageInputViewProps } from './types';
-import { GroupService, PostService } from 'sdk/service';
+import { GroupService, PostService, ItemService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
-import { Item } from 'sdk/models';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
 
@@ -32,11 +31,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
+  private _itemService: ItemService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
-  private _items: Item[] = [];
+
   @computed
   get id() {
     return this.props.id;
+  }
+
+  get items() {
+    return this._itemService.getUploadItems(this.id);
   }
   @observable
   draft: string = '';
@@ -54,6 +58,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
+    this._itemService = ItemService.getInstance();
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
       this._groupService.updateGroupDraft.bind(this._groupService),
       500,
@@ -141,7 +146,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         return;
       }
       vm.error = '';
-      const items = vm._items;
+      const items = vm.items;
       if (content.trim() || items.length > 0) {
         vm._sendPost(content);
         const onPostHandler = vm.props.onPost;
@@ -153,7 +158,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private async _sendPost(content: string) {
     this.changeDraft('');
     const atMentions = isAtMentions(content);
-    const items = this._items;
+    const items = this.items;
     try {
       await this._postService.sendPost({
         atMentions,
@@ -167,10 +172,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
-  }
-
-  updateAttachmentItems = (items: Item[]) => {
-    this._items = items;
   }
 }
 

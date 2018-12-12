@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { observable, computed } from 'mobx';
+import { observable, computed, observe, IObjectDidChange } from 'mobx';
 import { AttachmentsProps, AttachmentsViewProps } from './types';
 import { ItemService } from 'sdk/service';
 import StoreViewModel from '@/store/ViewModel';
@@ -27,15 +27,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
-    this.reaction(
-      () => this.items,
-      () => this._attachmentsObserver(this.items),
-    );
-  }
-
-  @computed
-  get _attachmentsObserver() {
-    return this.props.attachmentsObserver;
   }
 
   @computed
@@ -91,7 +82,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         isUpdate,
       );
       if (item) {
-        this.items = this.items.concat(item);
+        this.items.push(item);
       }
       return item;
     } catch (e) {
@@ -113,8 +104,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       try {
         const item = items[index];
         await this._itemService.cancelUpload(item.id);
-        items.splice(index);
-        this.items = items.slice(0);
+        items.splice(index, 1);
       } catch (e) {}
       files.splice(index, 1);
       this.files = files.slice(0);
