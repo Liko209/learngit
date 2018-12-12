@@ -17,7 +17,7 @@ const Footer = styled.div`
 
 const Right = styled.div``;
 
-const Content = styled.p``;
+const Content = styled.div``;
 
 type Props = {
   onCancel: () => void;

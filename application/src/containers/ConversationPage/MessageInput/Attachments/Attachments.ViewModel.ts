@@ -20,7 +20,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
   @observable
-  items: AttachmentItem[] = [];
+  items: Map<string, AttachmentItem> = new Map<string, AttachmentItem>();
   @observable
   selectedFiles: SelectFile[] = [];
 
@@ -36,7 +36,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   @computed
   get files() {
-    return this.items.map(({ data }) => ({ file: data } as ItemInfo));
+    const values: AttachmentItem[] = Array.from(this.items.values());
+    return values.map(({ data }) => ({ file: data } as ItemInfo));
   }
 
   @computed
@@ -87,18 +88,14 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       );
       if (item) {
         if (duplicate) {
-          const index = this.items.findIndex(
-            looper => looper.data.name === data.name,
-          );
-          if (index >= 0) {
-            this.items[index] = {
-              item,
-              data,
-              status: SENDING_STATUS.INPROGRESS,
-            } as AttachmentItem;
+          const record = this.items.get(data.name);
+          if (record) {
+            record.item = item;
+            record.data = data;
+            record.status = SENDING_STATUS.INPROGRESS;
           }
         } else {
-          this.items.push({
+          this.items.set(data.name, {
             item,
             data,
             status: SENDING_STATUS.INPROGRESS,
@@ -118,13 +115,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   cancelUploadFile = async (info: ItemInfo) => {
     const { file } = info;
-    const items = this.items;
-    const index = items.findIndex(looper => looper.data === file);
-    if (index >= 0) {
+    const record = this.items[file.name];
+    if (record) {
       try {
-        const info = items[index];
-        await this._itemService.cancelUpload(info.item.id);
-        items.splice(index, 1);
+        await this._itemService.cancelUpload(record.item.id);
+        this.items.delete(file.name);
       } catch (e) {}
     }
   }
@@ -149,7 +144,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   cleanFiles = () => {
-    this.items = [];
+    this.items.clear();
   }
 }
 
