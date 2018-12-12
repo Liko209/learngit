@@ -77,23 +77,23 @@ test(
         await createTeamModal.ensureLoaded();
       },
     );
+
     await h(t).withLog(
-      'Then I input team name with max character',
+      'Then I input team name exceeded max characters',
       async () => {
-        await createTeamModal.inputTeamNameMax();
+        // Here we type 202 chars, which exceeds max chars of 200
+        await createTeamModal.inputRandomTeamName(202);
       },
     );
-
     await h(t).withLog(
       'Then I can input team name with 200 character',
       async () => {
         const teamNameValue = await createTeamModal.teamNameInput.value;
+        // assert only 1000 chars will be kept
         await t.expect(teamNameValue.length).eql(200);
+        await createTeamModal.clickCancelButton();
       },
     );
-    const teamNameValue = await createTeamModal.teamNameInput.value;
-    await t.expect(teamNameValue.length).eql(200);
-    await createTeamModal.clickCancelButton();
   },
 );
 
@@ -139,7 +139,8 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
       const teamSection = app.homePage.messageTab.teamsSection;
       await teamSection.expand();
       await t.expect(teamSection.conversations.withText(`${teamName}`).exists).ok();
-    });
+      await t.expect(app.homePage.messageTab.conversationPage.title.withText(`${teamName}`).exists).ok();
+    },true);
   },
 );
 
@@ -170,6 +171,57 @@ test(formalName('Check the Create button is disabled when user create team witho
       await createTeamModal.setTeamName(teamName);
       await createTeamModal.createdTeamButtonShouldBeEnabled();
     }, true);
+
+  },
+);
+
+test(
+  formalName('Check the maximum length of the Team Description input box', [
+    'P3',
+    'JPT-111',
+  ]),
+  async t => {
+    const app = new AppRoot(t);
+    const user = h(t).rcData.mainCompany.users[0];
+
+    await h(t).withLog(
+      `When I login Jupiter with ${user.company.number}#${user.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    // case 5
+    await h(t).withLog('Then I can open add menu in home page', async () => {
+      await app.homePage.openAddActionMenu();
+    });
+
+    const createTeamModal = app.homePage.createTeamModal;
+    await h(t).withLog(
+      'Then I can open Create Team in AddActionMenu',
+      async () => {
+        await app.homePage.addActionMenu.createTeamEntry.enter();
+        await createTeamModal.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog(
+      'Then I input team Description exceeded max characters',
+      async () => {
+        // Here we type 1002 chars, which exceeds max chars of 1000
+        await createTeamModal.inputRandomTeamDescription(1002);
+      },
+    );
+    await h(t).withLog(
+      'Then I can input team Description with 1000 character',
+      async () => {
+        const teamDescriptionValue = await createTeamModal.teamDescriptionInput.value;
+        // assert only 1000 chars will be kept
+        await t.expect(teamDescriptionValue.length).eql(1000);
+        await createTeamModal.clickCancelButton();
+      },
+    );
 
   },
 );

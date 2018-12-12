@@ -30,9 +30,13 @@ class DeleteViewComponent extends React.Component<Props> {
     });
   }
   render() {
-    const { t } = this.props;
+    const { t, disabled } = this.props;
     return (
-      <JuiMenuItem onClick={this._handleDelete} icon="delete">
+      <JuiMenuItem
+        onClick={this._handleDelete}
+        disabled={disabled}
+        icon="delete"
+      >
         {t('DeletePost')}
       </JuiMenuItem>
     );

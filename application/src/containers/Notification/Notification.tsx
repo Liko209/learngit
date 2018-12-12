@@ -3,109 +3,88 @@
  * @Date: 2018-11-24 14:47:35
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  JuiSnackbarContent,
-  JuiSnackbarAction,
-  JuiSnackbarProps,
-} from 'jui/components/Snackbars';
-import Slide from '@material-ui/core/Slide';
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { genDivAndDismiss } from '@/common/genDivAndDismiss';
-import ThemeProvider from '@/containers/ThemeProvider';
-import Snackbar from '@material-ui/core/Snackbar';
-import { t } from 'i18next';
+import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
+import _ from 'lodash';
+import { AbstractViewModel } from '@/base';
+import { observable, action, autorun } from 'mobx';
+import { ToastProps } from '../ToastWrapper/Toast/types';
+import { Omit } from 'jui/foundation/utils/typeHelper';
 
-type NotificationPros = JuiSnackbarProps & {
+type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
   dismissible?: boolean;
 };
 
-type ReturnFunc = {
-  dismiss: () => void;
-};
-
-type ShowNotificationOptions = JuiSnackbarProps & {
-  dismissible?: boolean;
+type ShowNotificationOptions = NotificationProps & {
   autoHideDuration?: number;
 };
 
-function transitionDown(props: any) {
-  return <Slide {...props} direction="down" />;
-}
+const MAX_SHOW_COUNT = 3;
 
-function showNotification(props: ShowNotificationOptions) {
-  const { container, dismiss } = genDivAndDismiss();
-  const { autoHideDuration, dismissible, message, ...rest } = props;
-  const action = [];
+class Notification extends AbstractViewModel {
+  @observable
+  static data: ToastProps[] = [];
+  static _buffer: ShowNotificationOptions[] = [];
 
-  if (dismissible) {
-    action.push(
-      <JuiSnackbarAction
-        key="dismiss"
-        variant="icon"
-        aria-label="Dismiss"
-        onClick={dismiss}
-      >
-        close
-      </JuiSnackbarAction>,
+  @action
+  private static _showNotification(props: ShowNotificationOptions) {
+    if (Notification.data.length === MAX_SHOW_COUNT) {
+      Notification._buffer.push(props);
+      return {};
+    }
+    const duplicateIndex = Notification.data.findIndex(
+      ({ message }) => message === props.message,
     );
-  }
-  let ms = message;
-  if (typeof message === 'string') {
-    ms = t(message);
-  }
-  const config = { ...rest, action, message: ms };
-
-  function render(params: JuiSnackbarProps) {
-    ReactDOM.render(
-      <ThemeProvider>
-        <Snackbar
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={true}
-          TransitionComponent={transitionDown}
-          onClose={dismiss}
-          autoHideDuration={autoHideDuration}
-        >
-          <JuiSnackbarContent {...params} />
-        </Snackbar>
-      </ThemeProvider>,
-      container,
-    );
-  }
-  render(config);
-  return {
-    dismiss,
-  };
-}
-
-class Notification extends Component<NotificationPros, {}> {
-  static topHat(props: NotificationPros): ReturnFunc {
-    const config = {
-      messageAlign: 'center',
-      fullWidth: true,
+    const id = Date.now();
+    const dismiss = () => {
+      _.remove(Notification.data, item => item.id === id);
+    };
+    const toast = {
+      id,
+      dismiss,
       ...props,
     };
-    return showNotification(config);
+    if (duplicateIndex >= 0) {
+      Notification.data.splice(duplicateIndex, 1, toast);
+    } else {
+      Notification.data.unshift(toast);
+    }
+    return {
+      dismiss,
+    };
   }
 
-  static flashToast(props: NotificationPros) {
+  static flashToast(props: NotificationProps) {
     const config = {
       messageAlign: 'left',
       fullWidth: false,
       autoHideDuration: 2000,
       ...props,
     };
-    return showNotification(config);
+    return Notification._showNotification(config);
   }
 
-  static flagToast(props: NotificationPros) {
+  static flagToast(props: NotificationProps) {
     const config = {
       messageAlign: 'left',
       fullWidth: false,
       ...props,
     };
-    return showNotification(config);
+    return Notification._showNotification(config);
+  }
+
+  static checkBufferAvailability() {
+    if (
+      Notification.data.length === MAX_SHOW_COUNT - 1 &&
+      Notification._buffer.length > 0
+    ) {
+      const buffered = Notification._buffer.pop();
+      if (buffered) {
+        Notification._showNotification(buffered);
+      }
+    }
   }
 }
 
-export { Notification, NotificationPros };
+autorun(Notification.checkBufferAvailability);
+
+export { Notification, NotificationProps, ShowNotificationOptions };

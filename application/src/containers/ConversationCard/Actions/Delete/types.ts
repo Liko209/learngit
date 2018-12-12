@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type Props = { id: number };
+type Props = { id: number; disabled?: boolean };
 
-type ViewProps = { deletePost: () => Promise<any> };
+type ViewProps = { deletePost: () => Promise<any>; disabled?: boolean };
 
 export { Props, ViewProps };

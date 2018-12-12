@@ -6,7 +6,7 @@ body {
   overflow: hidden;
   margin: 0;
   padding: 0;
-  font-family: Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
 }
 
 #root {
@@ -21,4 +21,11 @@ body {
 
 a {
   text-decoration: none;
+}
+
+button {
+  display: inline !important;
+}
+button::first-letter {
+  text-transform: uppercase;
 }
