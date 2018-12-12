@@ -13,7 +13,6 @@ type JuiFileWithPreviewProps = {
   fileName: string;
   url: string;
   iconType?: string | null;
-  progress?: number;
 };
 
 class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {

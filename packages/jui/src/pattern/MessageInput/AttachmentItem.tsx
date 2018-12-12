@@ -96,6 +96,24 @@ const IconWrapper = styled.div`
   height: ${height(5)};
 `;
 
+type AttachmentItemActionProps = {
+  onClick?: (event: MouseEvent) => void;
+  loading?: boolean;
+  value?: number;
+  icon?: string;
+};
+
+const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
+  props: AttachmentItemActionProps,
+) => (
+  <ActionWrapper onClick={props.onClick}>
+    {props.loading && <JuiCircularProgress size={24} value={props.value} />}
+    <IconWrapper>
+      <JuiIconography fontSize="small">{props.icon}</JuiIconography>
+    </IconWrapper>
+  </ActionWrapper>
+);
+
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
@@ -105,12 +123,11 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
     <Wrapper>
       <Icon icon={icon} />
       <NameArea status={status}>{fileName}</NameArea>
-      <ActionWrapper onClick={onClickDeleteButton}>
-        {status === 'loading' && <JuiCircularProgress size={24} />}
-        <IconWrapper>
-          <JuiIconography fontSize="small">close</JuiIconography>
-        </IconWrapper>
-      </ActionWrapper>
+      <AttachmentItemAction
+        onClick={onClickDeleteButton}
+        loading={status === 'loading'}
+        icon="close"
+      />
     </Wrapper>
   );
 };
@@ -119,4 +136,4 @@ AttachmentItem.defaultProps = {
   status: 'normal',
 };
 
-export { AttachmentItem, ItemStatus };
+export { AttachmentItem, ItemStatus, AttachmentItemAction };

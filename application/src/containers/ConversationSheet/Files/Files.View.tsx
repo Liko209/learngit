@@ -9,22 +9,24 @@ import {
   JuiFileWithPreview,
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
-import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { AttachmentItemAction } from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
-const downloadBtn = (downloadUrl: string) => (
-  <JuiIconButton
-    component="a"
-    download={true}
-    href={downloadUrl}
-    variant="plain"
-    tooltipTitle="download"
-  >
-    get_app
-  </JuiIconButton>
-);
+const downloadBtn = (downloadUrl: string, progress?: number) => {
+  const download = () => window.open(downloadUrl);
+  const loading = typeof progress === 'number' && progress < 1 && progress > 0;
+  console.log(20, progress);
+  return (
+    <AttachmentItemAction
+      icon="get_app"
+      onClick={download}
+      value={progress}
+      loading={loading}
+    />
+  );
+};
 
 class FilesView extends React.Component<FilesViewProps> {
   render() {
@@ -41,8 +43,7 @@ class FilesView extends React.Component<FilesViewProps> {
               ratio={origHeight / origWidth}
               fileName={name}
               url={previewUrl}
-              Actions={downloadBtn(downloadUrl)}
-              progress={progresses.get(id)}
+              Actions={downloadBtn(downloadUrl, progresses.get(id))}
             />
           );
         })}
@@ -57,8 +58,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={previewUrl}
               iconType={iconType}
-              Actions={downloadBtn(downloadUrl)}
-              progress={progresses.get(id)}
+              Actions={downloadBtn(downloadUrl, progresses.get(id))}
             />
           );
         })}
@@ -72,8 +72,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               iconType={iconType}
-              Actions={downloadBtn(downloadUrl)}
-              progress={progresses.get(id)}
+              Actions={downloadBtn(downloadUrl, progresses.get(id))}
             />
           );
         })}

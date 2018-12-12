@@ -12,7 +12,6 @@ type JuiPreviewImageProps = {
   fileName: string;
   ratio: number;
   url: string;
-  progress?: number;
 };
 
 const JuiPreviewImage: React.SFC<JuiPreviewImageProps> = (
