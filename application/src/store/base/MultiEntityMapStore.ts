@@ -125,8 +125,7 @@ export default class MultiEntityMapStore<
 
   private _replace(entity: T) {
     if (entity && this._data[entity.id]) {
-      this.remove(entity.id);
-      this.set(entity);
+      this._partialUpdate(entity, entity.id);
     }
   }
 
@@ -158,11 +157,11 @@ export default class MultiEntityMapStore<
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
-            this.set(res);
+            this._partialUpdate(res as T, id);
           }
         });
       } else {
-        this.set(res as T);
+        this._partialUpdate(res as T, id);
         model = this._data[id] as K;
       }
     }

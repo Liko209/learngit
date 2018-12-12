@@ -10,15 +10,17 @@ import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 import { JuiMenuList } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { Quote } from '../Quote';
 import { Delete } from '../Delete';
 import { Edit } from '../Edit';
 
 type MoreViewProps = ViewProps & WithNamespaces;
 
 const menuItems = {
+  [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
   [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
   [MENU_LIST_ITEM_TYPE.EDIT]: Edit,
-}; // add more action item in menuItems
+};
 
 @observer
 class More extends React.Component<MoreViewProps> {
