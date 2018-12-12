@@ -14,12 +14,16 @@ import StoreViewModel from '@/store/ViewModel';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
-import { CONVERSATION_TYPES } from '@/constants';
 
 const { GroupService } = service;
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
+  @computed
+  get personId() {
+    return this.props.personId;
+  }
+
   @computed
   get groupId() {
     return this.props.groupId;
@@ -47,7 +51,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   get favoriteText() {
-    return this.isFavorite ? 'remove_from_favorite' : 'favorite';
+    return this.isFavorite ? 'remove_from_favorites' : 'favorite';
   }
 
   @computed
@@ -85,11 +89,6 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       true,
       shouldSkipNextTime,
     );
-  }
-  @computed
-  get isShowGroupTeamProfile() {
-    const type = this._group.type;
-    return (type === CONVERSATION_TYPES.TEAM) || (type === CONVERSATION_TYPES.NORMAL_GROUP);
   }
 }
 export { MenuViewModel };

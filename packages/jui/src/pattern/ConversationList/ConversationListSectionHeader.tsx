@@ -146,7 +146,7 @@ const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
       {...rest}
     >
       <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
-      <ItemText>{title}</ItemText>
+      <ItemText disableTooltip={true}>{title}</ItemText>
       <StyledRightWrapper>
         {!expanded ? umi : null}
         {!hideArrow ? (

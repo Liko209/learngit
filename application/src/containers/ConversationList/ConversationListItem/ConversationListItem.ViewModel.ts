@@ -55,9 +55,9 @@ class ConversationListItemViewModel extends StoreViewModel<
   get personId() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const membersExcludeMe = this._group.membersExcludeMe;
-
     switch (this.groupType) {
       case CONVERSATION_TYPES.TEAM:
+      case CONVERSATION_TYPES.NORMAL_GROUP:
         return 0;
       case CONVERSATION_TYPES.ME:
         return currentUserId;
@@ -67,10 +67,9 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   onClick = () => {
-    storeManager
-      .getGlobalStore()
-      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, this.groupId);
-    history.push(`/messages/${this.groupId}`);
+    history.push(`/messages/${this.groupId}`, {
+      source: 'leftRail',
+    });
   }
 
   @computed
@@ -89,7 +88,7 @@ class ConversationListItemViewModel extends StoreViewModel<
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
       );
       if (this.groupId === currentGroupId) {
-        hint = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
+        hint = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI) && hint;
       }
     });
     return hint;

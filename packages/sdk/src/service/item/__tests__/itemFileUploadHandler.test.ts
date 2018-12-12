@@ -1,10 +1,11 @@
+import { BaseResponse } from 'foundation';
 import { ItemFile, Progress } from '../../../models';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
 import AccountService from '../../account';
 import { daoManager, ItemDao } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import handleData from '../handleData';
-import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import notificationCenter from '../../notificationCenter';
 import { ItemService } from '../itemService';
 import { ItemFileUploadStatus } from '../itemFileUploadStatus';
@@ -70,7 +71,10 @@ describe('ItemFileService', () => {
       size: 1111,
     };
 
-    const mockStoredFileRes = new NetworkResultOk([storedFile], 200, undefined);
+    const mockStoredFileRes = new ApiResultOk([storedFile], {
+      status: 200,
+      headers: {},
+    } as BaseResponse);
 
     const itemFile = {
       id: 1,
@@ -101,7 +105,10 @@ describe('ItemFileService', () => {
         { id: 5, created_at: 5, versions: [] },
       ];
 
-      const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
+      const mockItemFileRes = new ApiResultOk(itemFile, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
       itemDao.get.mockResolvedValue(itemFile);
       itemDao.getExistGroupFilesByName.mockResolvedValue(existItems);
       handleData.mockResolvedValue(null);
@@ -146,7 +153,10 @@ describe('ItemFileService', () => {
     });
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
-      const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
+      const mockItemFileRes = new ApiResultOk(itemFile, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
       itemDao.get.mockResolvedValue(itemFile);
       handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockImplementation(
@@ -203,11 +213,10 @@ describe('ItemFileService', () => {
     });
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
-      const errResponse = new NetworkResultErr(
-        new BaseError(1, 'error'),
-        403,
-        {},
-      );
+      const errResponse = new ApiResultErr(new BaseError(1, 'error'), {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
 
       itemDao.get.mockResolvedValue(itemFile);
       handleData.mockResolvedValue(null);
@@ -238,8 +247,14 @@ describe('ItemFileService', () => {
     });
 
     it('should go to _handleItemFileSendFailed process when send item failed ', async (done: jest.DoneCallback) => {
-      const okRes = new NetworkResultOk(itemFile, 200, undefined);
-      const errRes = new NetworkResultErr(new BaseError(1, 'error'), 403, {});
+      const okRes = new ApiResultOk(itemFile, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      const errRes = new ApiResultErr(new BaseError(1, 'error'), {
+        status: 403,
+        headers: {},
+      } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(okRes);
       ItemAPI.putItem.mockResolvedValue(errRes);
 
@@ -386,11 +401,7 @@ describe('ItemFileService', () => {
         id: 11,
         versions: itemWithVersion.versions,
       };
-      const mockItemFileRes = new NetworkResultOk(
-        serverItemFile,
-        200,
-        undefined,
-      );
+      const mockItemFileRes = new ApiResultOk(serverItemFile, 200, undefined);
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
       const spyNewItem = jest.spyOn(itemFileUploadHandler, '_newItem');
 

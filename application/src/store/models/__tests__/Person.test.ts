@@ -4,7 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '../../../store/models/Person';
-import { Person, PhoneNumberModel } from 'sdk/src/models';
+import { Person } from 'sdk/models';
+import PersonService, {
+  PhoneNumberInfo,
+  PHONE_NUMBER_TYPE,
+} from 'sdk/service/person';
 
 type UserInfo = {
   firstName?: string;
@@ -94,17 +98,24 @@ describe('PersonModel', () => {
   });
 
   describe('phoneNumbers', () => {
-    it('should filter non CompanyMainNumber', () => {
+    const personService = new PersonService();
+    PersonService.getInstance = jest.fn().mockReturnValue(personService);
+
+    it('should filter return only direct number and extension number', () => {
       const person: Person = {
         id: 1,
         company_id: 1,
         email: '1@1.com',
         me_group_id: 2,
         rc_phone_numbers: [
-          { id: 11, phoneNumber: '123456', usageType: 'MainCompanyNumber' },
+          { id: 11, phoneNumber: '1', usageType: 'MainCompanyNumber' },
+          { id: 11, phoneNumber: '2', usageType: 'CompanyNumber' },
+          { id: 11, phoneNumber: '3', usageType: 'AdditionalCompanyNumber' },
+          { id: 11, phoneNumber: '4', usageType: 'ForwardedNumber' },
+          { id: 11, phoneNumber: '5', usageType: 'MainCompanyNumber' },
           { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
-          { id: 13, phoneNumber: '345678', usageType: 'ExtensionNumber' },
         ],
+        sanitized_rc_extension: { extensionNumber: '4711', type: 'User' },
         created_at: 111,
         modified_at: 222,
         creator_id: 11,
@@ -115,12 +126,28 @@ describe('PersonModel', () => {
 
       const pm: PersonModel = new PersonModel(person);
 
-      const expectRes: PhoneNumberModel[] = [
-        { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
-        { id: 13, phoneNumber: '345678', usageType: 'ExtensionNumber' },
+      const expectRes: PhoneNumberInfo[] = [
+        {
+          type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+          phoneNumber: '4711',
+        },
+        {
+          type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+          phoneNumber: '234567',
+        },
       ];
+
+      personService.getAvailablePhoneNumbers = jest
+        .fn()
+        .mockReturnValue(expectRes);
+
       const res = pm.phoneNumbers;
       expect(res).toEqual(expectRes);
+      expect(personService.getAvailablePhoneNumbers).toBeCalledWith(
+        pm.companyId,
+        pm.rcPhoneNumbers,
+        pm.sanitizedRcExtension,
+      );
     });
   });
 });

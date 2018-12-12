@@ -4,3 +4,4 @@
  */
 
 export { ProfileService as default } from './profileService';
+export { ProfileService } from './profileService';

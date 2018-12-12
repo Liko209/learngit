@@ -11,7 +11,7 @@ import { versionHash } from '../../utils/mathUtils';
 import { daoManager } from '../../dao';
 import ItemDao from '../../dao/item';
 import { BaseError } from '../../utils';
-import { NetworkResult } from '../../api/NetworkResult';
+import { ApiResult } from '../../api/ApiResult';
 import notificationCenter from '../notificationCenter';
 import { mainLogger } from 'foundation';
 import { ENTITY, SERVICE } from '../eventKey';
@@ -168,7 +168,7 @@ class ItemFileUploadHandler {
     preInsertItem: ItemFile,
     isUpdate: boolean,
   ) {
-    let result: NetworkResult<Raw<ItemFile>, BaseError> | undefined = undefined;
+    let result: ApiResult<Raw<ItemFile>, BaseError> | undefined = undefined;
 
     let existItemFile: ItemFile | null = null;
     if (isUpdate) {

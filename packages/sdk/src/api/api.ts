@@ -53,7 +53,7 @@ class Api {
     // Move logics that access httpConfig into Api in the future.
     // tslint:disable-next-line:max-line-length
     Aware(
-      ErrorTypes.HTTP,
+      ErrorTypes.API,
       'httpConfig should be private. but it is directly accessed by the ui layer.',
     );
     return this._httpConfig;
@@ -67,7 +67,7 @@ class Api {
     name: HttpConfigType,
     type: IHandleType,
   ): NetworkClient {
-    if (!this._httpConfig) Throw(ErrorTypes.HTTP, 'Api not initialized');
+    if (!this._httpConfig) Throw(ErrorTypes.API, 'Api not initialized');
 
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {

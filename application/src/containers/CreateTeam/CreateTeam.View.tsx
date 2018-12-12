@@ -16,6 +16,7 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 // import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Banners';
+import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
   JuiListToggleItemProps,
@@ -98,17 +99,24 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       canPost,
     });
     if (result.isOk()) {
-      history.push(`/messages/${result.id}`);
       this.onClose();
+      history.push(`/messages/${result.data.id}`);
     }
   }
 
   onClose = () => {
-    const { updateCreateTeamDialogState, inputReset } = this.props;
+    const { updateCreateTeamDialogState } = this.props;
     updateCreateTeamDialogState();
-    inputReset();
-    this.setState({
-      items: CreateTeam.initItems,
+  }
+
+  renderServerUnknownError() {
+    const message = 'WeWerentAbleToCreateTheTeamTryAgain';
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
     });
   }
 
@@ -128,7 +136,11 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       isOffline,
       serverError,
       errorEmail,
+      serverUnknownError,
     } = this.props;
+    if (serverUnknownError) {
+      this.renderServerUnknownError();
+    }
     return (
       <JuiModal
         open={isOpen}
@@ -155,6 +167,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           error={nameError}
           inputProps={{
             maxLength: 200,
+            'data-test-automation-id': 'CreateTeamName',
           }}
           helperText={nameError && t(errorMsg)}
           onChange={handleNameChange}
@@ -169,6 +182,10 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           isExcludeMe={true}
         />
         <JuiTextarea
+          inputProps={{
+            'data-test-automation-id': 'CreateTeamDescription',
+            maxLength: 1000,
+          }}
           placeholder={t('Team Description')}
           fullWidth={true}
           onChange={handleDescChange}
@@ -192,5 +209,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 }
 
 const CreateTeamView = translate('team')(withRouter(CreateTeam));
+const CreateTeamComponent = CreateTeam;
 
-export { CreateTeamView };
+export { CreateTeamView, CreateTeamComponent };

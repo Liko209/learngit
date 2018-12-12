@@ -11,7 +11,7 @@ import {
   storedFileFactory,
   rawItemFactory,
 } from '../../../__tests__/factories';
-import { NetworkResultOk } from '../../../api/NetworkResult';
+import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../api/glip/item');
 // const itemDao = daoManager.getDao(ItemDao);
@@ -63,7 +63,7 @@ describe('sendFileItem()', () => {
   };
   it('should return the response of ItemAPI.sendFileItem()', async () => {
     ItemAPI.sendFileItem.mockReturnValue(
-      new NetworkResultOk('mock response data', 200, {}),
+      new ApiResultOk('mock response data', 200, {}),
     );
 
     const result = await sendFileItem(options);

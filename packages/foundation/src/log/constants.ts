@@ -10,6 +10,7 @@ enum LOG_LEVEL {
 }
 
 enum LOG_APPENDER {
+  NONE = 0,
   CONSOLE = 1,
   LOCAL_STORAGE = 1 << 1,
   ALL = CONSOLE | LOCAL_STORAGE,

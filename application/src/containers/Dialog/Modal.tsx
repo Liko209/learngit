@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { translate, WithNamespaces } from 'react-i18next';
 import ReactDOM from 'react-dom';
+import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import { genDivAndDismiss } from '@/common/genDivAndDismiss';
 import ThemeProvider from '@/containers/ThemeProvider';
-import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
-import { translate, WithNamespaces } from 'react-i18next';
 
 type BaseType = {
   isAlert?: boolean;

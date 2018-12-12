@@ -4,6 +4,7 @@ enum ENTITY_NAME {
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',
   'ITEM' = 'item',
+  'FILE_ITEM' = 'fileItem',
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
@@ -40,6 +41,7 @@ enum GLOBAL_KEYS {
   JUMP_TO_POST_ID = 'JUMP_TO_POST_ID',
   IS_SHOW_MEMBER_LIST_HEADER_SHADOW = 'IS_SHOW_MEMBER_LIST_HEADER_SHADOW',
   CURRENT_POST_LIST_TYPE = 'CURRENT_POST_LIST_TYPE',
+  IN_EDIT_MODE_POST_IDS = 'IN_EDIT_MODE_POST_IDS',
 }
 
 export { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS };

@@ -7,19 +7,19 @@
 import _ from 'lodash';
 import { computed } from 'mobx';
 import StoreViewModel from '@/store/ViewModel';
-import { StreamProps } from './types';
+import { StreamProps, SuccinctPost } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
 import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
-import { Post } from 'sdk/src/models';
-import { service } from 'sdk';
-import { EVENT_TYPES, ENTITY } from 'sdk/service';
-import { transform2Map } from '@/store/utils';
-import { PostService as IPostService } from 'sdk/src/service';
+import { Post } from 'sdk/models';
+import { EVENT_TYPES, ENTITY, PostService } from 'sdk/service';
+import { transform2Map, getEntity } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import storeManager from '@/store/base/StoreManager';
+import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
+import PostModel from '@/store/models/Post';
 
-const { PostService } = service;
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
@@ -28,7 +28,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _options = {
     isMatchFunc: this._isMatchFunc.bind(this),
-    transformFunc: (post: Post) => ({
+    transformFunc: (post: SuccinctPost) => ({
       id: post.id,
       sortValue: -post.id,
     }),
@@ -43,7 +43,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._sortableListHandler.sortableListStore.getIds();
   }
 
-  private _sortableListHandler: FetchSortableDataListHandler<Post>;
+  private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
 
   get _postProvider() {
     return {
@@ -56,7 +56,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService = PostService.getInstance<IPostService>();
+    const postService: PostService = PostService.getInstance<PostService>();
     let ids;
     let hasMore;
     if (anchor) {
@@ -73,17 +73,32 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         .value();
       hasMore = this._postIds.length > pageSize;
     }
-    const results = await postService.getPostsByIds(ids);
-    const posts = results.posts.filter((post: Post) => !post.deactivated);
-    if (posts.length) {
-      return { hasMore, data: posts };
+    const postsStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.POST,
+    ) as MultiEntityMapStore<Post, PostModel>;
+    const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
+    let postsFromService: Post[] = [];
+
+    const postsFromStore = idsInStore.map(id =>
+      getEntity(ENTITY_NAME.POST, id),
+    );
+    try {
+      if (idsOutOfStore.length) {
+        const results = await postService.getPostsByIds(idsOutOfStore);
+        postsFromService = results.posts.filter(
+          (post: Post) => !post.deactivated,
+        );
+      }
+      const data = [...postsFromService, ...postsFromStore];
+      return { hasMore, data };
+    } catch (err) {
+      return { hasMore: true, data: [] };
     }
-    return { hasMore: true, data: [] };
   }
 
   constructor() {
     super();
-    this._sortableListHandler = new FetchSortableDataListHandler<Post>(
+    this._sortableListHandler = new FetchSortableDataListHandler<SuccinctPost>(
       this._postProvider,
       this._options,
     );
@@ -106,7 +121,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const deleted = _(this._postIds)
         .difference(postIds)
         .value();
-      const postService = PostService.getInstance() as IPostService;
+      const postService: PostService = PostService.getInstance();
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
