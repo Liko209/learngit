@@ -250,6 +250,7 @@ class ItemFileUploadHandler {
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
+    this._emitItemFileStatus(true, preInsertId, itemFile.id);
   }
 
   private _handleItemFileSendFailed(preInsertId: number) {

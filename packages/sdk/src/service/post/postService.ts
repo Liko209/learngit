@@ -303,11 +303,12 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
-    const listener = (
-      success: boolean,
-      preInsertId: number,
-      updatedId: number,
-    ) => {
+    const listener = (params: {
+      success: boolean;
+      preInsertId: number;
+      updatedId: number;
+    }) => {
+      const { success, preInsertId, updatedId } = params;
       if (success) {
         // update post to db
         if (updatedId !== preInsertId) {
