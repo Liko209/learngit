@@ -11,6 +11,7 @@ import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
+import { SelectFile } from '../types';
 
 const mockGroupEntityData = {
   draft: 'draft',
@@ -88,6 +89,8 @@ const itemService = {
       );
       return index >= 0;
     }),
+
+  getUploadItems: jest.fn().mockReturnValue([{ id: 1 }]),
 };
 
 PostService.getInstance = jest.fn().mockReturnValue(postService);
@@ -164,7 +167,7 @@ describe('AttachmentsViewModel', () => {
 
   describe('uploadFile()', () => {
     it('should upload a file', async () => {
-      const info: ItemInfo = { file, status: 'normal' };
+      const info: SelectFile = { data: file, duplicate: false };
       await vm.uploadFile(info, false);
       expect(vm.items.length).toBe(1);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
