@@ -27,13 +27,12 @@ const getConversationId = async (id: number) => {
 };
 
 async function goToConversation(id: number) {
-  history.push('/messages', { waiting: true });
+  history.push('/messages/loading');
   const conversationId = await getConversationId(id);
   if (!conversationId) {
-    history.replace('/messages', {
-      waiting: true,
+    history.replace('/messages/loading', {
+      id: conversationId,
       error: true,
-      conversationId: id,
     });
     return false;
   }
