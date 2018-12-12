@@ -19,6 +19,7 @@ const StyledLeftSection = styled('div')`
   min-width: 0;
   font-size: 0;
   align-items: center;
+  white-space: nowrap;
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
@@ -44,6 +45,10 @@ const StyledFrom = styled('div')`
   margin-right: ${spacing(1)};
   color: ${primary('700')};
   font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
+  flex-shrink: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 const RightSection = styled('div')`
   margin-left: ${spacing(4)};
