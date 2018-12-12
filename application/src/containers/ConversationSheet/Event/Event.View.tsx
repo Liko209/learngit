@@ -4,8 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import {
+  JuiEventContent,
   JuiEventLocation,
   JuiEventDescription,
   JuiTimeMessage,
@@ -13,9 +15,11 @@ import {
 import { getDurationTime, getDurationTimeText } from '../helper';
 import { EventViewProps } from './types';
 
-class EventView extends React.Component<EventViewProps, {}> {
+type Props = WithNamespaces & EventViewProps;
+
+class Event extends React.Component<Props, {}> {
   render() {
-    const { event } = this.props;
+    const { event, t } = this.props;
     const {
       location,
       color,
@@ -38,11 +42,17 @@ class EventView extends React.Component<EventViewProps, {}> {
     return (
       <JuiConversationItemCard title={text} titleColor={color} Icon="event">
         <JuiTimeMessage time={`${time} ${timeText}`} />
-        {location && <JuiEventLocation location={location} />}
+        {location && (
+          <JuiEventContent title={t('locationTitle')}>
+            <JuiEventLocation location={location} />
+          </JuiEventContent>
+        )}
         {description && <JuiEventDescription description={description} />}
       </JuiConversationItemCard>
     );
   }
 }
+
+const EventView = translate('translations')(Event);
 
 export { EventView };
