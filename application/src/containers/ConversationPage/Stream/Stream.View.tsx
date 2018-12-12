@@ -49,13 +49,16 @@ class StreamViewComponent extends Component<Props> {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     await this.props.loadInitialPosts();
+    if (!this._listRef.current) {
+      return; // the current component is unmounted
+    }
     await this.scrollToPost(
       this.props.jumpToPostId || this.props.mostRecentPostId,
     );
+    this._stickToBottom();
     this._visibilitySensorEnabled = true;
     this.props.updateHistoryHandler();
     this.props.markAsRead();
-    this._stickToBottom();
   }
 
   componentWillUnmount() {
@@ -113,8 +116,8 @@ class StreamViewComponent extends Component<Props> {
       'resize-observer-polyfill')).default;
     }
     this._ro = new RO(this._heightChangedHandler);
-
-    this._ro.observe(this._listRef.current!);
+    const el = this._listRef.current;
+    this._ro.observe(el!);
   }
 
   private _heightChangedHandler = (entries: any) => {
@@ -346,7 +349,6 @@ class StreamViewComponent extends Component<Props> {
     scrollToPostId: number,
     options: boolean | ScrollIntoViewOptions = true,
   ) => {
-    console.log('andy hu', scrollToPostId);
     await nextTick();
     const scrollToPostEl = this._postRefs.get(scrollToPostId);
     if (!scrollToPostEl) {
