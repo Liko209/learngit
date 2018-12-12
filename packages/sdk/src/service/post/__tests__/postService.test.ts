@@ -21,6 +21,7 @@ import { BaseError } from '../../../utils';
 import notificationCenter from '../../notificationCenter';
 import { SERVICE } from '../../eventKey';
 import { Listener } from 'eventemitter2';
+import { SENDING_STATUS } from '../../constants';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -992,6 +993,11 @@ describe('PostService', () => {
           listener({ success: true, preInsertId: -1, updatedId: 1 });
         },
       );
+
+      itemService.getItemsSendingStatus.mockReturnValue([
+        SENDING_STATUS.INPROGRESS,
+      ]);
+
       await postService.sendPost(info);
 
       setTimeout(() => {
@@ -1003,6 +1009,48 @@ describe('PostService', () => {
           expect.anything(),
         );
         expect(spyResendFailedItems).not.toBeCalled();
+        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
+        done();
+      });
+    });
+
+    it('should let post failed if send post with pseudo items and all items are failed', async () => {
+      const info = _.cloneDeep(postMockInfo);
+      info.item_ids = [-1, 3];
+      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+
+      const spyResendFailedItems = jest.spyOn(
+        postService,
+        '_resendFailedItems',
+      );
+      spyResendFailedItems.mockImplementation(() => {});
+
+      const spyHandlePreInsertProcess = jest.spyOn(
+        postService,
+        '_handlePreInsertProcess',
+      );
+      spyHandlePreInsertProcess.mockImplementation(() => {});
+
+      const spyHandleSendPostFail = jest.spyOn(
+        postService,
+        'handleSendPostFail',
+      );
+      spyHandleSendPostFail.mockImplementation(() => {});
+
+      const spySendPost = jest.spyOn(postService, '_sendPost');
+      spySendPost.mockImplementation(() => {});
+
+      itemService.getItemsSendingStatus.mockReturnValue([SENDING_STATUS.FAIL]);
+
+      await postService.sendPost(info);
+
+      setTimeout(() => {
+        expect(spyHandleSendPostFail).toBeCalled();
+        expect(spySendPost).not.toBeCalled();
+        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+        expect(notificationCenter.removeListener).not.toBeCalled();
+        expect(notificationCenter.on).not.toBeCalled();
+        expect(spyResendFailedItems).toBeCalled(info.id);
         expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
         done();
       });

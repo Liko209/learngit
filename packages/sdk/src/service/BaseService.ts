@@ -331,12 +331,6 @@ class BaseService<
     let result: SubModel | BaseError;
 
     do {
-      if (id <= 0) {
-        mainLogger.warn('handlePartialUpdate: invalid id');
-        result = ErrorParser.parse('none model error');
-        break;
-      }
-
       const originalModel = await this.getById(id);
       if (!originalModel) {
         mainLogger.warn('handlePartialUpdate: originalModel is nil');

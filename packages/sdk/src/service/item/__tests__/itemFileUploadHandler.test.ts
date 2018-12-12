@@ -77,36 +77,22 @@ describe('ItemFileService', () => {
       versions: [storedFile],
     };
 
-    it.each`
-      fileName    | name        | type    | comment
-      ${'123.ts'} | ${'123.ts'} | ${'ts'} | ${'has name and type'}
-      ${'123'}    | ${'123'}    | ${''}   | ${'has name and no type'}
-      ${''}       | ${''}       | ${''}   | ${'no name and no type'}
-    `(
-      'should return item with right name and type: $comment',
-      async ({ fileName, name, type }) => {
-        const file = new FormData();
-        file.append('filename', fileName);
-        jest
-          .spyOn(itemFileUploadHandler, '_sendItemFile')
-          .mockImplementationOnce(() => {});
-        jest
-          .spyOn(itemFileUploadHandler, '_preSaveItemFile')
-          .mockImplementationOnce(() => {});
+    it('should return null data when file found in the formData', async () => {
+      const file = new FormData();
+      jest
+        .spyOn(itemFileUploadHandler, '_sendItemFile')
+        .mockImplementationOnce(() => {});
+      jest
+        .spyOn(itemFileUploadHandler, '_preSaveItemFile')
+        .mockImplementationOnce(() => {});
 
-        const res = await itemFileUploadHandler.sendItemFile(
-          groupId,
-          file,
-          false,
-        );
-        if (fileName) {
-          expect(res.name).toBe(name);
-          expect(res.type).toBe(type);
-        } else {
-          expect(res).toBeNull;
-        }
-      },
-    );
+      const res = await itemFileUploadHandler.sendItemFile(
+        groupId,
+        file,
+        false,
+      );
+      expect(res).toBeNull;
+    });
 
     it('should call go updateItem when group has the file before', async (done: jest.DoneCallback) => {
       const existItems = [
@@ -125,8 +111,7 @@ describe('ItemFileService', () => {
       itemService.updatePreInsertItemStatus = jest.fn();
 
       const file = new FormData();
-      const fileName = '123.pdf';
-      file.append('filename', fileName);
+      file.append('file', { name: '1.ts', type: 'ts' } as File);
       await itemFileUploadHandler.sendItemFile(groupId, file, true);
 
       setTimeout(() => {
@@ -176,8 +161,9 @@ describe('ItemFileService', () => {
       itemService.updatePreInsertItemStatus = jest.fn();
 
       const file = new FormData();
-      const fileName = '123.pdf';
-      file.append('filename', fileName);
+      const info = { name: '1.ts', type: 'ts' };
+      file.append('file', info as File);
+
       const res = await itemFileUploadHandler.sendItemFile(
         groupId,
         file,
@@ -189,8 +175,7 @@ describe('ItemFileService', () => {
       expect(res.group_ids).toEqual([groupId]);
       expect(res.deactivated).toBeFalsy;
       expect(res.company_id).toBe(companyId);
-      expect(res.name).toBe(fileName);
-      expect(res.type).toBe('pdf');
+      expect(res.type_id).toBe(10);
 
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
@@ -232,8 +217,7 @@ describe('ItemFileService', () => {
       itemService.updatePreInsertItemStatus = jest.fn();
 
       const file = new FormData();
-      const fileName = '123.pdf';
-      file.append('filename', fileName);
+      file.append('file', { name: '1.ts', type: 'ts' } as File);
       await itemFileUploadHandler.sendItemFile(groupId, file, false);
 
       setTimeout(() => {
@@ -264,8 +248,7 @@ describe('ItemFileService', () => {
         .mockImplementation(() => {});
 
       const file = new FormData();
-      const fileName = '123.pdf';
-      file.append('filename', fileName);
+      file.append('file', { name: '1.ts', type: 'ts' } as File);
       await itemFileUploadHandler.sendItemFile(groupId, file, true);
 
       setTimeout(() => {

@@ -29,11 +29,8 @@ class ItemFileUploadHandler {
     file: FormData,
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
-    const fileFullName = file.get(FILE_FORM_DATA_KEYS.FILE_NAME) as
-      | string
-      | null;
-    if (fileFullName) {
-      const itemFile = this._toItemFile(groupId, fileFullName, isUpdate);
+    if (file.has(FILE_FORM_DATA_KEYS.FILE)) {
+      const itemFile = this._toItemFile(groupId, file, isUpdate);
       await this._preSaveItemFile(itemFile);
       this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
@@ -49,7 +46,12 @@ class ItemFileUploadHandler {
       this._updatePreInsertItemStatus(itemInDB.id, SENDING_STATUS.INPROGRESS);
       const groupId = itemInDB.group_ids[0];
       const isUpdate = itemInDB.is_new;
-      if (itemInDB.versions.length > 0) {
+      const version = itemInDB.versions[0];
+      if (
+        version &&
+        version.download_url.length > 0 &&
+        version.url.length > 0
+      ) {
         await this._uploadItem(groupId, itemInDB, isUpdate);
       } else {
         const cacheItem = this._progressCaches.get(itemId);
@@ -158,7 +160,6 @@ class ItemFileUploadHandler {
       await this._uploadItem(groupId, preInsertItem, isUpdate);
     } else {
       this._handleItemFileSendFailed(preInsertItem.id);
-      mainLogger.error(`_sendItemFile, uploadRes error =>${uploadRes}`);
     }
   }
 
@@ -308,10 +309,10 @@ class ItemFileUploadHandler {
 
   private _toItemFile(
     groupId: number,
-    fileFullName: string,
+    formFile: FormData,
     isNew: boolean,
   ): ItemFile {
-    const nameType = this._extractFileNameAndType(fileFullName);
+    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     const accountService: AccountService = AccountService.getInstance();
     const userId = accountService.getCurrentUserId() as number;
     const companyId = accountService.getCurrentCompanyId() as number;
@@ -320,7 +321,6 @@ class ItemFileUploadHandler {
       TypeDictionary.TYPE_ID_FILE,
       now,
     );
-
     return {
       id,
       created_at: now,
@@ -332,10 +332,10 @@ class ItemFileUploadHandler {
       group_ids: [groupId],
       post_ids: [],
       company_id: companyId,
-      name: nameType.name,
-      type_id: 1,
-      type: nameType.type,
-      versions: [],
+      name: file.name,
+      type_id: 10,
+      type: file.type,
+      versions: [{ download_url: '', size: file.size, url: '' }],
       url: '',
     };
   }
@@ -357,23 +357,6 @@ class ItemFileUploadHandler {
       is_new: true,
     };
     return await ItemAPI.sendFileItem(fileItemOptions);
-  }
-
-  private _extractFileNameAndType(storagePath: string) {
-    const options = {
-      name: '',
-      type: '',
-    };
-    const arr = storagePath.split('/');
-    if (arr && arr.length > 0) {
-      const name = arr[arr.length - 1];
-      options.name = name;
-      const seArr = name.split('.');
-      if (seArr.length > 1) {
-        options.type = seArr[seArr.length - 1];
-      }
-    }
-    return options;
   }
 
   private _emitItemFileStatus(
