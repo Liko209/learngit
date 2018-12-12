@@ -14,6 +14,7 @@ import {
   palette,
   typography,
   width,
+  height,
 } from '../../foundation/utils/styles';
 
 import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
@@ -36,7 +37,8 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
 
   && {
     ${typography('body1')}
-    padding: ${spacing(2, 4)};
+    line-height: ${height(6)};
+    padding: ${spacing(3, 4)};
     overflow: hidden;
     background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
@@ -49,6 +51,7 @@ const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
 
   .message {
     flex: 1;
+    padding: ${spacing(0)};
     text-align: ${props => props.messageAlign};
   }
 
