@@ -53,10 +53,10 @@ test(formalName('Display Favorite button when user tap more button of a conversa
       await app.homePage.ensureLoaded();
     });
 
-    let groupItem, teamItem; 
+    let groupItem, teamItem;
     await h(t).withLog('and I click more button of group', async () => {
       groupItem = app.homePage.messageTab.directMessagesSection.conversationEntryById(groupId);
-      await groupItem.openMoreMenu(); 
+      await groupItem.openMoreMenu();
     });
 
     await h(t).withLog('Then I can find the favorite button', async () => {
@@ -144,15 +144,15 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     let groupItem, teamItem;
     await h(t).withLog('Then I click more button of group', async () => {
       groupItem = favoritesSection.conversationEntryById(groupId);
-      await groupItem.openMoreMenu(); 
+      await groupItem.openMoreMenu();
     });
 
     await h(t).withLog('I can find the unfavorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorite');
+      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorites');
     });
 
     await h(t).withLog('Then I click the unfavorite button', async () => {
-      await favoriteToggler.enter(); 
+      await favoriteToggler.enter();
       await t.wait(1e3);
     });
 
@@ -168,11 +168,11 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('I can find the unfavorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorite');
+      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorites');
     });
 
     await h(t).withLog('Then I click the unfavorite button', async () => {
-      await favoriteToggler.enter(); 
+      await favoriteToggler.enter();
       await t.wait(1e3);
     });
 
