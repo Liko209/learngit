@@ -126,20 +126,11 @@ describe('i18next-en', () => {
     expect(i18next.t('WeWerentAbleToCreateTheTeamTryAgain')).toEqual(
       "We weren't able to create the team. Try again.",
     );
-    expect(i18next.t('currentStateFavorite')).toEqual(
-      'Conversation in Favorites',
-    );
-    expect(i18next.t('currentStateUnFavorite')).toEqual(
-      'Conversation not in Favorites',
-    );
-    expect(i18next.t('currentStatePublic')).toEqual(
-      'Conversation not in public',
-    );
-    expect(i18next.t('currentStatePrivate')).toEqual('Conversation in private');
+
     expect(i18next.t('setStateFavorites')).toEqual('Add to Favorites');
     expect(i18next.t('setStateUnFavorites')).toEqual('Remove from Favorites');
-    expect(i18next.t('setStatePublic')).toEqual('Set Public');
-    expect(i18next.t('setStatePrivate')).toEqual('Set private');
+    expect(i18next.t('setStatePublic')).toEqual('Change to Public Team');
+    expect(i18next.t('setStatePrivate')).toEqual('Change to Private Team');
     expect(i18next.t('markFavoriteServerErrorContent')).toEqual(
       "We weren't able to favorite this conversation. Try again.",
     );
@@ -247,8 +238,8 @@ describe('i18next-en', () => {
       }),
     ).toEqual('complete 10% of task');
 
-    expect(i18next.t('teamMembers')).toEqual('Team Members');
-    expect(i18next.t('groupMembers')).toEqual('Group Members');
+    expect(i18next.t('teamMembers')).toEqual('Team members');
+    expect(i18next.t('groupMembers')).toEqual('Group members');
     expect(i18next.t('checkMoreGroupOption')).toEqual(
       'Check more options you have with this group',
     );
@@ -269,8 +260,8 @@ describe('i18next-en', () => {
       'Go to the conversation with team',
     );
     expect(i18next.t('Message')).toEqual('Message');
-    expect(i18next.t('more')).toEqual('more');
-    expect(i18next.t('close')).toEqual('close');
+    expect(i18next.t('more')).toEqual('More');
+    expect(i18next.t('close')).toEqual('Close');
     expect(i18next.t('NoInternetConnection')).toEqual('No Internet Connection');
     expect(i18next.t('SorryWeWereNotAbleToSendTheMessage')).toEqual(
       "Sorry, we weren't able to send the message. Try again.",
