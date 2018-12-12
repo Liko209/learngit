@@ -29,7 +29,12 @@ async function runTests(runnerOpts) {
     .concurrency(runnerOpts.CONCURRENCY);
 
   try {
-    failed = await runner.run({ quarantineMode: runnerOpts.QUARANTINE_MODE, skipUncaughtErrors: true, skipJsErrors: true });
+    failed = await runner.run({ 
+      quarantineMode: runnerOpts.QUARANTINE_MODE, 
+      skipUncaughtErrors: true, 
+      skipJsErrors: true,
+      stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL, 
+     });
   } finally {
     await testCafe.close();
   }
