@@ -115,7 +115,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   cancelUploadFile = async (info: ItemInfo) => {
     const { file } = info;
-    const record = this.items[file.name];
+    const record = this.items.get(file.name);
     if (record) {
       try {
         await this._itemService.cancelUpload(record.item.id);

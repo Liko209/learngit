@@ -169,7 +169,7 @@ describe('AttachmentsViewModel', () => {
     it('should upload a file', async () => {
       const info: SelectFile = { data: file, duplicate: false };
       await vm.uploadFile(info, false);
-      expect(vm.items.length).toBe(1);
+      expect(vm.items.size).toBe(1);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
       const exists = await itemService.isFileExists(vm.id, file.name);
       expect(exists).toBe(true);
@@ -182,8 +182,7 @@ describe('AttachmentsViewModel', () => {
       let exists = await itemService.isFileExists(vm.id, file.name);
       expect(exists).toBe(true);
       expect(vm.files.length).toBe(1);
-      expect(vm.items.length).toBe(1);
-
+      expect(vm.items.size).toBe(1);
       await vm.cancelUploadFile({ file, status: 'normal' } as ItemInfo);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
 
