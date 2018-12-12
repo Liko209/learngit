@@ -31,6 +31,12 @@ class MessageInputViewComponent extends Component<
 
   componentDidMount() {
     this.updateModules();
+    this.props.addOnPostCallback(() => {
+      const { current } = this._attachmentsRef;
+      if (current) {
+        current.vm.cleanFiles();
+      }
+    });
   }
 
   componentWillUnmount() {

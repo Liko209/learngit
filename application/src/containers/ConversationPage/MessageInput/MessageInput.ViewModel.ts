@@ -6,7 +6,11 @@
 
 import { action, observable, computed } from 'mobx';
 import { debounce, Cancelable } from 'lodash';
-import { MessageInputProps, MessageInputViewProps } from './types';
+import {
+  MessageInputProps,
+  MessageInputViewProps,
+  OnPostCallback,
+} from './types';
 import { GroupService, PostService, ItemService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -33,7 +37,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private _postService: PostService;
   private _itemService: ItemService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
-
+  private _onPostCallbacks: OnPostCallback[] = [];
   @computed
   get id() {
     return this.props.id;
@@ -151,6 +155,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         vm._sendPost(content);
         const onPostHandler = vm.props.onPost;
         onPostHandler && onPostHandler();
+        vm._onPostCallbacks.forEach(callback => callback());
       }
     };
   }
@@ -172,6 +177,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
+  }
+
+  addOnPostCallback = (callback: OnPostCallback) => {
+    this._onPostCallbacks.push(callback);
   }
 }
 

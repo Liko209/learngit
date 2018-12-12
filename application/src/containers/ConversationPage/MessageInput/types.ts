@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type OnPostCallback = () => void;
+
 type MessageInputProps = {
   id: number; // group id
   onPost?: () => void;
@@ -15,6 +17,7 @@ type MessageInputViewProps = {
   error: string;
   forceSaveDraft(): void;
   changeDraft(value: any): void;
+  addOnPostCallback(callback: OnPostCallback): void;
   keyboardEventHandler: {
     enter: {
       key: number;
@@ -23,4 +26,4 @@ type MessageInputViewProps = {
   };
 };
 
-export { MessageInputProps, MessageInputViewProps };
+export { MessageInputProps, MessageInputViewProps, OnPostCallback };

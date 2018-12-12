@@ -36,7 +36,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   @computed
   get files() {
-    return this.items.map(({ data, status }) => ({ file: data } as ItemInfo));
+    return this.items.map(({ data }) => ({ file: data } as ItemInfo));
   }
 
   @computed
@@ -146,6 +146,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   updateDuplicateFiles = async () => {
     await this._uploadFiles(this.selectedFiles, true);
     this._clearUpSelectedFiles();
+  }
+
+  cleanFiles = () => {
+    this.items = [];
   }
 }
 
