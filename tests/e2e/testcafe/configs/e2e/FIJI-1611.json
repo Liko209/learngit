@@ -1,5 +1,6 @@
 {
   "on_merge": {
+    "fixtures": ["./fixtures/**/*.ts"],
     "include_tags": [
       "P1", 
       "P0", 
