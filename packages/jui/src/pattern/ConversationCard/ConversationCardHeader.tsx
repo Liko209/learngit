@@ -46,9 +46,7 @@ const StyledFrom = styled('div')`
   color: ${primary('700')};
   font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
   flex-shrink: 2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  ${ellipsis()};
 `;
 const RightSection = styled('div')`
   margin-left: ${spacing(4)};
