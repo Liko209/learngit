@@ -157,9 +157,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: true,
-        });
+        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, true);
       },
     );
 
@@ -256,9 +254,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: false,
-        });
+        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, false);
       },
     );
 
@@ -371,9 +367,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: false,
-        });
+        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, false);
       },
     );
 

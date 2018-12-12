@@ -14,24 +14,22 @@ fixture('DirectMessageSection')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-// this case is skipped because latest update on platform API doesn't handle account resolve properly
-test.skip(formalName(
-  'Show the 1:1 conversation and group conversation in the Direct Message section',
-  ['JPT-5', 'P2', 'ConversationList']), async (t: TestController) => {
+test(formalName('Show the 1:1 conversation and group conversation in the Direct Message section', ['JPT-5', 'P2', 'ConversationList']), 
+  async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
-    await h(t).resetGlipAccount(user);
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    user.sdk = await h(t).getSdk(user);
 
     let chat, group;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat', async () => {
-      chat = await userPlatform.createGroup({
+      chat = await user.sdk.platform.createGroup({
         type: 'PrivateChat', members: [user.rcId, users[5].rcId],
       });
-      group = await userPlatform.createGroup({
+      group = await user.sdk.platform.createGroup({
         type: 'Group', members: [user.rcId, users[5].rcId, users[6].rcId],
       });
+      await user.sdk.glip.showGroups(user.rcId, [chat.data.id, group.data.id]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -42,7 +40,7 @@ test.skip(formalName(
     await h(t).withLog('Then I can find 1 private chat and 1 group chat in direct messages section', async () => {
       const directMessagesSection = app.homePage.messageTab.directMessagesSection;
       await directMessagesSection.expand();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${chat.data.id}"]`).exists).ok();
-      await t.expect(directMessagesSection.conversations.filter(`[data-group-id="${group.data.id}"]`).exists).ok();
+      await t.expect(directMessagesSection.conversationEntryById(chat.data.id).exists).ok()
+      await t.expect(directMessagesSection.conversationEntryById(group.data.id).exists).ok()
     }, true);
   });
