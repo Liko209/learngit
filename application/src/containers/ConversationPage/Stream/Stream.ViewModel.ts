@@ -214,7 +214,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this._stateService.markAsRead(this.groupId);
   }
 
@@ -271,7 +270,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   resetAll = (groupId: number) => {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
     this.groupId = groupId;
     this.dispose();
