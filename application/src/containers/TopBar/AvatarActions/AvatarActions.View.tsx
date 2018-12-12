@@ -83,7 +83,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
               onClick={this.handleAboutPage}
               data-test-automation-id="aboutPage"
             >
-              {t('aboutRingCentral')}
+              {t('AboutRingCentral')}
             </JuiMenuItem>
           )}
           <JuiMenuItem
