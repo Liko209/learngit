@@ -12,7 +12,8 @@ import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
-
+import { JuiModal } from '@/containers/Dialog';
+import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
 type AvatarActionsProps = WithNamespaces & ViewProps;
 
 @observer
@@ -46,6 +47,16 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
+  handleViewYourProfile = () => {
+    const { currentUserId } = this.props;
+    JuiModal.open(ProfileDialogPerson, {
+      componentProps: {
+        id: currentUserId,
+      },
+      size: 'medium',
+    });
+  }
+
   render() {
     const { t, handleSignOut } = this.props;
 
@@ -62,6 +73,12 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
         }}
       >
         <JuiMenuList data-test-automation-id="avatarMenu">
+          <JuiMenuItem
+            onClick={this.handleViewYourProfile}
+            data-test-automation-id="signOut"
+          >
+            {t('viewYourProfile')}
+          </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
