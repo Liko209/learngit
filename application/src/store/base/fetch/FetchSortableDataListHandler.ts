@@ -13,6 +13,7 @@ import { transform2Map } from '@/store/utils';
 
 import {
   ISortableModel,
+  TUpdated,
   IMatchFunc,
   ITransformFunc,
   ISortFunc,
@@ -96,9 +97,15 @@ export class FetchSortableDataListHandler<
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {
+    let originalSortableModels: ISortableModel[] = [];
+    let deletedSortableModelIds: number[] = [];
+    let addedSortableModels: ISortableModel[] = [];
+    let updatedSortableItems: TUpdated = [];
+    let updatedSortableModels: ISortableModel[] = [];
+
     if (EVENT_TYPES.DELETE === payload.type) {
-      const keys = Array.from(payload.body.ids);
-      this.sortableListStore.removeByIds(keys);
+      deletedSortableModelIds = Array.from(payload.body.ids);
+      this.sortableListStore.removeByIds(deletedSortableModelIds);
     } else {
       let entities: Map<number, T>;
       let keys: number[] = [];
@@ -112,7 +119,6 @@ export class FetchSortableDataListHandler<
       }
 
       const existKeys = this.sortableListStore.getIds();
-      let notMatchedKeys: number[] = [];
       let matchedKeys: number[] = _.intersection(keys, existKeys);
       const matchedSortableModels: ISortableModel<T>[] = [];
       const matchedEntities: T[] = [];
@@ -129,15 +135,15 @@ export class FetchSortableDataListHandler<
           matchedSortableModels.push(sortableModel);
           matchedEntities.push(model);
         } else {
-          notMatchedKeys.push(key);
+          deletedSortableModelIds.push(key);
         }
       });
 
       if (payload.type === EVENT_TYPES.REPLACE) {
         if (payload.body.isReplaceAll) {
-          notMatchedKeys = existKeys;
+          deletedSortableModelIds = existKeys;
         } else {
-          notMatchedKeys = matchedKeys;
+          deletedSortableModelIds = matchedKeys;
         }
       } else {
         const differentKeys: number[] = _.difference(keys, existKeys);
@@ -153,24 +159,64 @@ export class FetchSortableDataListHandler<
         });
       }
 
+      if (this._dataChangeCallBack) {
+        originalSortableModels = _.cloneDeep(this.sortableListStore.items);
+      }
+
       if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
         this.replaceEntityStore(matchedEntities);
-        this.sortableListStore.removeByIds(notMatchedKeys);
+        this.sortableListStore.removeByIds(deletedSortableModelIds);
         this.sortableListStore.upsert(matchedSortableModels);
+
+        if (this._dataChangeCallBack) {
+          // replace models as updated models
+          updatedSortableModels = matchedSortableModels;
+        }
       } else {
         this.updateEntityStore(matchedEntities);
         this.sortableListStore.upsert(matchedSortableModels);
-        this.sortableListStore.removeByIds(notMatchedKeys);
-      }
+        this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          deleted: notMatchedKeys,
-          added: [],
-          updated: [],
-          direction: QUERY_DIRECTION.NEWER,
-        });
+        if (this._dataChangeCallBack) {
+          // calculate added models
+          addedSortableModels = _.differenceBy(
+            matchedSortableModels,
+            originalSortableModels,
+            item => item.id,
+          );
+
+          // calculate updated models
+          updatedSortableModels = _.differenceBy(
+            matchedSortableModels,
+            addedSortableModels,
+            item => item.id,
+          );
+        }
+
+        if (updatedSortableModels.length) {
+          const storeIds = this.sortableListStore.getIds();
+          updatedSortableItems = updatedSortableModels.map(
+            (item: ISortableModel) => {
+              return {
+                value: item,
+                index: storeIds.indexOf(item.id),
+                oldValue: originalSortableModels.find(
+                  iter => iter.id === item.id,
+                ),
+              };
+            },
+          );
+        }
+      }
     }
+
+    this._dataChangeCallBack &&
+      this._dataChangeCallBack({
+        deleted: deletedSortableModelIds,
+        added: addedSortableModels,
+        updated: updatedSortableItems,
+        direction: QUERY_DIRECTION.NEWER,
+      });
   }
 
   private _isInRange(sortValue: number) {
