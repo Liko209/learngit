@@ -9,10 +9,18 @@ import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { FileItem } from '@/store/models/Items';
+import { ItemService } from 'sdk/service';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
+  private _itemService: ItemService;
+
+  constructor(props: FilesViewProps) {
+    super(props);
+    this._itemService = ItemService.getInstance();
+  }
+
   @computed
   get _ids() {
     return this.props.ids;
@@ -38,6 +46,20 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return this._ids.map((id: number) => {
       return getEntity<Item, FileItem>(ENTITY_NAME.ITEM, id);
     });
+  }
+
+  @computed
+  get progresses() {
+    const result = new Map<number, number>();
+    this._ids.forEach((id: number) => {
+      const progress = this._itemService.getUploadProgress(id);
+      let value = 0;
+      if (progress) {
+        value = progress.loaded / progress.total;
+      }
+      result.set(id, value);
+    });
+    return result;
   }
 }
 

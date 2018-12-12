@@ -28,7 +28,7 @@ const downloadBtn = (downloadUrl: string) => (
 
 class FilesView extends React.Component<FilesViewProps> {
   render() {
-    const { files } = this.props;
+    const { files, progresses } = this.props;
 
     return (
       <>
@@ -42,6 +42,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               url={previewUrl}
               Actions={downloadBtn(downloadUrl)}
+              progress={progresses.get(id)}
             />
           );
         })}
@@ -57,6 +58,7 @@ class FilesView extends React.Component<FilesViewProps> {
               url={previewUrl}
               iconType={iconType}
               Actions={downloadBtn(downloadUrl)}
+              progress={progresses.get(id)}
             />
           );
         })}
@@ -71,6 +73,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               iconType={iconType}
               Actions={downloadBtn(downloadUrl)}
+              progress={progresses.get(id)}
             />
           );
         })}

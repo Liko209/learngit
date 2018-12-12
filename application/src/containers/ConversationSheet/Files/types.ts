@@ -17,6 +17,7 @@ type FilesViewProps = {
     [FileType.document]: ExtendFileItem[];
     [FileType.others]: ExtendFileItem[];
   };
+  progresses: Map<number, number>;
   ids: number[];
 };
 
