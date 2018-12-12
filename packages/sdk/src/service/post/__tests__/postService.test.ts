@@ -989,7 +989,7 @@ describe('PostService', () => {
 
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
-          listener(true, -1, 1);
+          listener({ success: true, preInsertId: -1, updatedId: 1 });
         },
       );
       await postService.sendPost(info);

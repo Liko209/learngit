@@ -205,7 +205,14 @@ describe('ItemFileService', () => {
         );
         expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
         expect(itemService.updatePreInsertItemStatus).toBeCalledTimes(1);
-
+        expect(notificationCenter.emit).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          {
+            success: true,
+            preInsertId: expect.any(Number),
+            updatedId: expect.any(Number),
+          },
+        );
         done();
       });
     });
