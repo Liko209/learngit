@@ -77,7 +77,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   uploadFile = async (info: SelectFile, isUpdate: boolean) => {
     try {
-      const { data, duplicate } = info;
+      const { data } = info;
       const form = new FormData();
       form.append(FILE_FORM_DATA_KEYS.FILE_NAME, data.name);
       form.append(FILE_FORM_DATA_KEYS.FILE, data);
@@ -87,13 +87,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         isUpdate,
       );
       if (item) {
-        if (duplicate) {
-          const record = this.items.get(data.name);
-          if (record) {
-            record.item = item;
-            record.data = data;
-            record.status = SENDING_STATUS.INPROGRESS;
-          }
+        const record = this.items.get(data.name);
+        if (record) {
+          record.item = item;
+          record.data = data;
+          record.status = SENDING_STATUS.INPROGRESS;
         } else {
           this.items.set(data.name, {
             item,
