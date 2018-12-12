@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseWebComponent } from '../../BaseWebComponent';
+import * as _ from 'lodash';
 
 export class CreateTeamModal extends BaseWebComponent {
   get self() {
@@ -17,11 +18,6 @@ export class CreateTeamModal extends BaseWebComponent {
     return this.self.find('button').nth(0);
   }
 
-  get CTself () {
-    this.warnFlakySelector();
-    return this.self.find('button').nth(1);
-  }
-
   get createButton() {
     this.warnFlakySelector();
     return this.self.find('button').nth(1);
@@ -33,7 +29,11 @@ export class CreateTeamModal extends BaseWebComponent {
   }
 
   get teamNameInput() {
-    return this.self.find('input').nth(0);
+    return this.self.find('[data-test-automation-id="CreateTeamName"]');
+  }
+
+  get teamDescriptionInput() {
+    return this.self.find('[data-test-automation-id="CreateTeamDescription"]');
   }
 
   private getToggleButton(index) {
@@ -54,12 +54,34 @@ export class CreateTeamModal extends BaseWebComponent {
     });
   }
 
+  randomString(length: number) {
+    return Array(length).fill(1).join('');
+  }
+
+  async inputRandomTeamName(length: number) {
+    await this.t.typeText(this.teamNameInput, this.randomString(length), { replace: true, paste: false})
+  }
+
+  async inputRandomTeamDescription(length: number) {
+    await this.t.typeText(this.teamDescriptionInput, this.randomString(length), { replace: true, paste: false})
+  }
+  
+  // deprecated
   async inputTeamNameMax() {
     const name = [];
     for (let i = 0; i < 202; i++) {
       name.push(1);
     }
     await this.t.typeText(this.teamNameInput, name.join(''));
+  }
+
+  // deprecated
+  async inputDescriptionNameMax() {
+    const name = [];
+    for (let i = 0; i < 1002; i++) {
+      name.push(1);
+    }
+    await this.t.typeText(this.teamDescriptionInput, name.join(''));
   }
 
   async clickCancelButton() {
@@ -76,7 +98,7 @@ export class CreateTeamModal extends BaseWebComponent {
   }
 
   get isDisable(): Promise<boolean> {
-    return this.CTself.hasAttribute('disabled');
+    return this.createButton.hasAttribute('disabled');
   }
 
   async createTeamButtonShouldBeDisabled() {

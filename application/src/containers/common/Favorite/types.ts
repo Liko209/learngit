@@ -6,21 +6,16 @@
 
 import { ServiceResult } from 'sdk/service/ServiceResult';
 import { Profile } from 'sdk/models';
-import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import { IconButtonSize } from 'jui/components/Buttons';
 
 type FavoriteProps = {
   id: number; // personId || conversationId
   size?: IconButtonSize;
-  disableToolTip?: boolean;
-  isAction?: boolean;
-  hideUnFavorite?: boolean;
 };
 
-type FavoriteViewProps = {
-  disableToolTip?: boolean;
-  size: IconButtonSize;
-  variant: IconButtonVariant;
-  isAction: boolean;
+type FavoriteViewProps = FavoriteProps & {
+  getConversationId: () => void;
+  conversationId: number;
   isFavorite: boolean;
   hideUnFavorite: boolean;
   getFavorite: () => void;

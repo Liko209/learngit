@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ServiceResult } from 'sdk/service/ServiceResult';
 import { Profile } from 'sdk/models';
@@ -13,21 +14,18 @@ import { FavoriteViewProps } from './types';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
+@observer
 class FavoriteViewComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
   }
 
   componentDidMount() {
-    this.props.getFavorite();
+    this.props.getConversationId();
   }
 
   onClickFavorite = async () => {
-    const { isAction, handlerFavorite, isFavorite } = this.props;
-    if (!isAction) {
-      return;
-    }
-
+    const { handlerFavorite, isFavorite } = this.props;
     const result: ServiceResult<Profile> = await handlerFavorite();
 
     if (result.isErr()) {
@@ -45,35 +43,19 @@ class FavoriteViewComponent extends Component<Props> {
     }
   }
 
-  getTooltipKey = () => {
-    const { isAction, isFavorite } = this.props;
-    if (isAction) {
-      return isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
-    }
-    return isFavorite ? 'currentStateFavorite' : 'currentStateUnFavorite';
-  }
-
   render() {
-    const {
-      hideUnFavorite,
-      isFavorite,
-      size,
-      variant,
-      disableToolTip,
-      t,
-    } = this.props;
-    if (hideUnFavorite && !isFavorite) {
+    const { conversationId, isFavorite, size, t } = this.props;
+    if (!conversationId) {
       return null;
     }
+    const tooltipKey = isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
     return (
       <JuiIconButton
         size={size}
-        variant={variant}
         className="favorite"
         color="accent.gold"
         onClick={this.onClickFavorite}
-        disableToolTip={disableToolTip}
-        tooltipTitle={t(this.getTooltipKey())}
+        tooltipTitle={t(tooltipKey)}
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>

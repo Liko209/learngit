@@ -14,12 +14,12 @@ type Props = WithNamespaces & MemberListHeaderViewProps;
 @observer
 class MemberListHeader extends React.Component<Props> {
   render() {
-    const { counts, type, t , isShowHeaderShadow } = this.props;
+    const { counts, type, t, isShowHeaderShadow } = this.props;
     return (
       <JuiGroupProfileListHeader className={isShowHeaderShadow ? 'shadow' : ''}>
         {type === TypeDictionary.TYPE_ID_TEAM
-          ? `${t('TeamMembers')} (${counts})`
-          : `${t('GroupMembers')} (${counts})`}
+          ? `${t('teamMembers')} (${counts})`
+          : `${t('groupMembers')} (${counts})`}
       </JuiGroupProfileListHeader>
     );
   }

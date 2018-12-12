@@ -49,9 +49,7 @@ class ProfileBody extends React.Component<Props> {
     } = this.props;
     const { goToMessageInfo } = accessHandler(type, name);
     let avatar;
-    if (
-      isGroupOrTeam
-    ) {
+    if (isGroupOrTeam) {
       avatar = <GroupAvatar cid={id} size="xlarge" />;
     } else if (isPerson) {
       avatar = <Avatar uid={id} presence={this._presence(id)} size="xlarge" />;
@@ -73,7 +71,7 @@ class ProfileBody extends React.Component<Props> {
             aria-label={t(goToMessageInfo)}
           >
             <JuiIconography>chat_bubble</JuiIconography>
-            {t('Message')}
+            {t('message')}
           </JuiGroupProfileMessageBtn>
         ) : null}
       </JuiGroupProfileBody>

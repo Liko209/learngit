@@ -9,12 +9,14 @@ import { Profile } from 'sdk/models';
 import { MouseEvent } from 'react';
 
 type MenuProps = {
+  personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
   onClose: (event: MouseEvent<HTMLElement>) => void;
 };
 
 type MenuViewProps = {
+  personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
   isFavorite: boolean;
@@ -23,7 +25,6 @@ type MenuViewProps = {
   showClose?: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => Promise<ServiceResult<Profile>>;
-  isShowGroupTeamProfile: boolean;
   closeConversation: (
     shouldSkipNextTime: boolean,
   ) => Promise<ServiceResult<Profile>>;

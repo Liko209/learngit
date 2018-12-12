@@ -8,26 +8,40 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
 import { JuiModal } from '@/containers/Dialog';
-import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
+// import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
 import { MiniCard } from '@/containers/MiniCard';
-
-type Props = ProfileButtonViewProps & WithNamespaces;
+import {
+  ProfileDialogGroup,
+  ProfileDialogPerson,
+} from '@/containers/Profile/Dialog';
 import { JuiButton } from 'jui/components/Buttons';
+import { TypeDictionary } from 'sdk/utils';
 
-class ProfileButton extends Component<Props> {
-  private onClick = () => {
-    const { id } = this.props;
+const MappingComponent = {
+  [TypeDictionary.TYPE_ID_PERSON]: ProfileDialogPerson,
+  [TypeDictionary.TYPE_ID_GROUP]: ProfileDialogGroup,
+  [TypeDictionary.TYPE_ID_TEAM]: ProfileDialogGroup,
+};
+
+class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
+  private _onClickViewProfile = () => {
+    const { id, typeId } = this.props;
     MiniCard.dismissProfile();
-    JuiModal.open(GroupTeamProfile, {
+    JuiModal.open(MappingComponent[typeId], {
       componentProps: { id },
       size: 'medium',
     });
   }
+
   render() {
     const { t } = this.props;
     return (
-      <JuiButton onClick={this.onClick} variant="text" color="primary">
-        {t('Profile')}
+      <JuiButton
+        onClick={this._onClickViewProfile}
+        variant="text"
+        color="primary"
+      >
+        {t('profile')}
       </JuiButton>
     );
   }

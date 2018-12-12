@@ -9,10 +9,8 @@ import { typography, grey, height } from '../../foundation/utils/styles';
 
 const JuiProfileMiniCardGroupName = styled('div')`
   ${typography('subheading2')};
-
   color: ${grey('900')};
   height: ${height(11)};
-
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;

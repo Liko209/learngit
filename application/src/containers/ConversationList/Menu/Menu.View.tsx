@@ -10,10 +10,13 @@ import { translate, WithNamespaces } from 'react-i18next'; // use external inste
 import { JuiMenu, JuiMenuItem } from 'jui/components';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
-import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
 import { JuiModal } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
+import {
+  ProfileDialogGroup,
+  ProfileDialogPerson,
+} from '@/containers/Profile/Dialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -137,24 +140,24 @@ class MenuViewComponent extends Component<Props, State> {
       },
     });
   }
-  private _handleGroupDialog = (event: MouseEvent<HTMLElement>) => {
+  private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
-    const { groupId } = this.props;
-    JuiModal.open(GroupTeamProfile, {
+    const { personId, groupId } = this.props;
+    let ProfileDialog = ProfileDialogGroup;
+    let id = groupId;
+    if (personId) {
+      ProfileDialog = ProfileDialogPerson;
+      id = personId;
+    }
+    JuiModal.open(ProfileDialog, {
       componentProps: {
-        id: groupId,
+        id,
       },
       size: 'medium',
     });
   }
   render() {
-    const {
-      anchorEl,
-      onClose,
-      favoriteText,
-      isShowGroupTeamProfile,
-      t,
-    } = this.props;
+    const { anchorEl, onClose, favoriteText, t } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -168,11 +171,9 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
-        {isShowGroupTeamProfile ? (
-          <JuiMenuItem onClick={this._handleGroupDialog}>
-            {t('viewProfile')}
-          </JuiMenuItem>
-        ) : null}
+        <JuiMenuItem onClick={this._handleProfileDialog}>
+          {t('viewProfile')}
+        </JuiMenuItem>
         {this.renderCloseMenuItem()}
       </JuiMenu>
     );

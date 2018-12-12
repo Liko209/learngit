@@ -247,8 +247,8 @@ describe('i18next-en', () => {
       }),
     ).toEqual('complete 10% of task');
 
-    expect(i18next.t('TeamMembers')).toEqual('Team Members');
-    expect(i18next.t('GroupMembers')).toEqual('Group Members');
+    expect(i18next.t('teamMembers')).toEqual('Team Members');
+    expect(i18next.t('groupMembers')).toEqual('Group Members');
     expect(i18next.t('checkMoreGroupOption')).toEqual(
       'Check more options you have with this group',
     );
