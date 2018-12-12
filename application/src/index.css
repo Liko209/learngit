@@ -22,10 +22,3 @@ body {
 a {
   text-decoration: none;
 }
-
-button {
-  display: inline !important;
-}
-button::first-letter {
-  text-transform: uppercase;
-}
