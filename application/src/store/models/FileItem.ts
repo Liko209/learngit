@@ -13,26 +13,8 @@ enum FileType {
   others = 2,
 }
 
-type FileItem = {
-  type: string;
-  downloadUrl: string;
-  size: number;
-  name: string;
-  isDocument: boolean;
-  isNew: boolean;
-  versionUrl: string;
-  versions: any;
-  pages: {
-    file_id: number;
-    url: string;
-  }[];
-  thumbs: any;
-  origHeight: number;
-  origWidth: number;
-} & ItemModel;
-
 type ExtendFileItem = {
-  item: FileItem;
+  item: FileItemModal;
   type: number;
   previewUrl: string;
 };
@@ -110,4 +92,4 @@ export default class FileItemModal extends ItemModel {
   }
 }
 
-export { FileType, FileItem, ExtendFileItem };
+export { FileType, ExtendFileItem };

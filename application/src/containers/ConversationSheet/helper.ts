@@ -5,7 +5,10 @@
  */
 import moment from 'moment';
 import { t } from 'i18next';
-import { FileItem, ExtendFileItem, FileType } from '@/store/models/FileItem';
+import FileItemModal, {
+  ExtendFileItem,
+  FileType,
+} from '@/store/models/FileItem';
 
 import { getDateMessage } from '@/utils/date';
 
@@ -95,7 +98,7 @@ function getFileIcon(fileType: string) {
   return null;
 }
 
-function getFileType(item: FileItem): ExtendFileItem {
+function getFileType(item: FileItemModal): ExtendFileItem {
   const fileType: ExtendFileItem = {
     item,
     type: -1,
@@ -118,7 +121,7 @@ function getFileType(item: FileItem): ExtendFileItem {
   return fileType;
 }
 
-function image(item: FileItem) {
+function image(item: FileItemModal) {
   const { thumbs, type, versionUrl } = item;
   const image = {
     isImage: false,
@@ -139,13 +142,13 @@ function image(item: FileItem) {
   // If upload doc and image together, image will not has thumbs
   if (IMAGE_TYPE.includes(type)) {
     image.isImage = true;
-    image.previewUrl = versionUrl;
+    image.previewUrl = versionUrl || '';
     return image;
   }
   return image;
 }
 
-function document(item: FileItem) {
+function document(item: FileItemModal) {
   const { pages } = item;
   const doc = {
     isDocument: false,
