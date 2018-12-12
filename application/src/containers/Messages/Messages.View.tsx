@@ -18,6 +18,7 @@ import { goToConversation } from '@/common/goToConversation';
 import { MessagesViewProps } from './types';
 import { PostListPage } from '../PostListPage';
 import { POST_LIST_TYPE } from '../PostListPage/types';
+import { MessageRouterChangeHelper } from './helper';
 
 type State = {
   messageError: boolean;
@@ -35,27 +36,30 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
     super(props);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const { match, location } = this.props;
     const { id: conversationIdOfUrl } = match.params;
 
     if (location.state && location.state.waiting) {
       return;
     }
+    conversationIdOfUrl
+      ? MessageRouterChangeHelper.goToConversation(conversationIdOfUrl)
+      : MessageRouterChangeHelper.goToLastOpenedGroup();
+  }
 
-    let groupId;
-    if (!conversationIdOfUrl) {
-      groupId = await this.props.getLastGroupId();
-      this.props.history.replace(`/messages/${groupId || ''}`);
-    } else {
-      groupId = conversationIdOfUrl;
+  componentDidUpdate(prevProps: MessagesViewProps) {
+    const currentConversationId = this.props.match.params.id;
+    const prevConversationId = prevProps.match.params.id;
+    if (currentConversationId !== prevConversationId) {
+      MessageRouterChangeHelper.updateCurrentConversationId(
+        currentConversationId,
+      );
     }
-    this.props.updateCurrentConversationId(groupId);
   }
 
   componentWillReceiveProps(props: MessagesViewProps) {
-    const { updateCurrentConversationId } = this.props;
-    const { match, location } = props;
+    const { location } = props;
     const { state } = location;
 
     if (state && state.error) {
@@ -64,8 +68,6 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
         retryId: state.conversationId,
       });
     }
-
-    updateCurrentConversationId(match.params.id);
   }
 
   retryMessage = () => {
@@ -75,8 +77,10 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
   }
 
   render() {
+    const { isLeftNavOpen } = this.props;
     const { messageError } = this.state;
-    const { isLeftNavOpen, currentConversationId } = this.props;
+    const id = this.props.match.params.id;
+    const currentConversationId = id ? Number(id) : 0;
     let leftNavWidth = 72;
     if (isLeftNavOpen) {
       leftNavWidth = 200;
@@ -103,9 +107,11 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
           />
           <Route
             path="/messages/:id"
-            render={props => (
-              <ConversationPage {...props} groupId={currentConversationId} />
-            )}
+            render={props =>
+              currentConversationId ? (
+                <ConversationPage {...props} groupId={currentConversationId} />
+              ) : null
+            }
           />
           <Route
             path={'/messages'}

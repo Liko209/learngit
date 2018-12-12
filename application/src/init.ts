@@ -52,12 +52,11 @@ export async function initAll() {
 
   const updateAccountInfoForGlobalStore = () => {
     const accountService: service.AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId() as number;
-    if (currentUserId) {
+
+    if (accountService.isAccountReady()) {
+      const currentUserId = accountService.getCurrentUserId();
+      const currentCompanyId = accountService.getCurrentCompanyId();
       globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
-    }
-    const currentCompanyId = accountService.getCurrentCompanyId() as number;
-    if (currentCompanyId) {
       globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
     }
   };

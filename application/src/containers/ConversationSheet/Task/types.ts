@@ -3,7 +3,8 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { TaskItem, FileType, ExtendFileItem } from '@/store/models/Items';
+import { TaskItem } from '@/store/models/Items';
+import { FileType, ExtendFileItem } from '@/store/models/FileItem';
 
 type ActivityData = {
   [index: string]: any;

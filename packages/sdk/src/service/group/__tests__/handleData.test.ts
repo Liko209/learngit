@@ -18,7 +18,7 @@ import handleData, {
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
 import { EVENT_TYPES } from '../..';
-import { NetworkResultOk } from '../../../api/NetworkResult';
+import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
@@ -52,7 +52,7 @@ jest.mock('../../serviceManager', () => {
   };
 });
 
-const requestGroupByIdResult = new NetworkResultOk(
+const requestGroupByIdResult = new ApiResultOk(
   {
     id: 1,
     members: [1],

@@ -15,7 +15,7 @@ import { ENTITY_NAME } from '@/store';
 
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 // import { service } from 'sdk';
-import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import { IconButtonSize } from 'jui/components/Buttons';
 // const { GroupService } = service;
 
 class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
@@ -28,23 +28,8 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   }
 
   @computed
-  get isAction() {
-    return !!this.props.isAction;
-  }
-
-  @computed
   get size(): IconButtonSize {
     return this.props.size || 'small';
-  }
-
-  @computed
-  get variant(): IconButtonVariant {
-    return this.isAction ? 'round' : 'plain';
-  }
-
-  @computed
-  get color(): string {
-    return this.isAction ? 'grey.500' : 'accent.ash';
   }
 
   @computed
@@ -58,7 +43,7 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   }
 
   handlePrivacy = async (): Promise<ServiceCommonErrorType> => {
-    alert('The service is not currently supported');
+    // alert('The service is not currently supported');
     // const result = await this._groupService.set(this.id);
     return ServiceCommonErrorType.NONE;
   }

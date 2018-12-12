@@ -3,7 +3,8 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -49,11 +50,11 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   async nameShouldBe(name: string) {
-    await this.t.expect(this.name).eql(name, { timeout: 5e3 });
+    await this.t.expect(this.name).eql(name);
   }
 
   async groupIdShouldBe(id: string | number) {
-    await this.t.expect(this.groupId).eql(id.toString(), { timeout: 5e3 });
+    await this.t.expect(this.groupId).eql(id.toString());
   }
 
   async getUmi() {
@@ -257,6 +258,14 @@ export class MessageTab extends BaseWebComponent {
   get postListPage() {
     return this.getSelectorByAutomationId('post-list-page');
   }
+
+  get bookmarksEntry() {
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
+    }
+
+    get bookmarkPage() {
+    return this.getComponent(BookmarkPage);
+    }
 
   get moreMenu() {
     return this.getComponent(MoreMenu);

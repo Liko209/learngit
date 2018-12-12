@@ -12,7 +12,7 @@ import { transform } from '../utils';
 import { StoredFile, Item, FileItem, NoteItem, Post, Raw } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
-import { NetworkResult } from '../../api/NetworkResult';
+import { ApiResult } from '../../api/ApiResult';
 
 interface ISendFile {
   file: FormData;
@@ -47,7 +47,7 @@ class ItemService extends BaseService<Item> {
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
     ItemAPI.requestRightRailItems(groupId).then(
-      (result: NetworkResult<IRightRailItemModel>) => {
+      (result: ApiResult<IRightRailItemModel>) => {
         if (result.isOk()) {
           handleData(result.data.items);
         }

@@ -79,8 +79,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       : _.first(this.postIds);
 
     return (
-      firstUnreadPostId ||
       this._newMessageSeparatorHandler.firstUnreadPostId ||
+      firstUnreadPostId ||
       this._historyHandler.getFirstUnreadPostId(this.postIds)
     );
   }
@@ -287,7 +287,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           });
           return { hasMore, data: posts };
         } catch (err) {
-          if (err.code === ErrorTypes.NETWORK) {
+          if (err.code === ErrorTypes.API_NETWORK) {
             // TODO error handle
           }
           return { data: [], hasMore: true };

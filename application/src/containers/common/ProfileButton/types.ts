@@ -10,5 +10,6 @@ type ProfileButtonProps = {
 type ProfileButtonViewProps = {
   handleGlobalGroupId: (event: MouseEvent<HTMLElement>) => void;
   id: number;
+  typeId: number;
 };
 export { ProfileButtonProps, ProfileButtonViewProps };

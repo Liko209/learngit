@@ -167,6 +167,19 @@ function ellipsis() {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-all;
+  `;
+}
+
+function lineClamp(lineNumber: number, maxHeight: number) {
+  return css`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: ${lineNumber};
+    -webkit-box-orient: vertical;
+    max-height: ${height(maxHeight)};
+    word-break: break-all;
   `;
 }
 
@@ -195,5 +208,6 @@ export {
   disabledOpacity,
   typography,
   ellipsis,
+  lineClamp,
   rippleEnter,
 };
