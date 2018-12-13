@@ -183,7 +183,10 @@ describe('AttachmentsViewModel', () => {
       expect(exists).toBe(true);
       expect(vm.files.length).toBe(1);
       expect(vm.items.size).toBe(1);
-      await vm.cancelUploadFile({ file, status: 'normal' } as ItemInfo);
+      await vm.cancelUploadFile({
+        name: file.name,
+        status: 'normal',
+      } as ItemInfo);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
 
       exists = await itemService.isFileExists(vm.id, file.name);
