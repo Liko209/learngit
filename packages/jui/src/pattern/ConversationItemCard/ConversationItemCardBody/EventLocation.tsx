@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey, spacing } from '../../../foundation/utils/styles';
+import { typography, grey } from '../../../foundation/utils/styles';
 
 type Props = {
   location: string;
@@ -14,7 +14,6 @@ type Props = {
 const StyledEventLocation = styled.div`
   ${typography('body1')};
   color: ${grey('900')};
-  margin-top: ${spacing(2)};
 `;
 
 const JuiEventLocation = (props: Props) => (

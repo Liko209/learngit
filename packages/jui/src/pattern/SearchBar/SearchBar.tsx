@@ -19,7 +19,7 @@ const JuiSearchBarWrapper = styled.div`
 const StyledBackdrop = styled<JuiBackdropProps>(JuiBackdrop)`
   && {
     position: ${({ open }) => (open ? 'fixed' : 'relative')};
-    z-index: ${({ open }) => (open ? 1 : -1)};
+    z-index: ${({ open, theme }) => (open ? theme.zIndex.drawer + 11 : -1)};
   }
 `;
 

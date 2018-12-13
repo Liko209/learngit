@@ -44,24 +44,35 @@ class StreamViewComponent extends Component<Props> {
 
   @observable
   private _firstHistoryUnreadPostViewed: boolean | null = null;
+  state = {
+    _jumpToPostId: 0,
+  };
 
+  static getDerivedStateFromProps(props: Props) {
+    if (props.jumpToPostId) {
+      return { _jumpToPostId: props.jumpToPostId };
+    }
+    return null;
+  }
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
     await this.props.loadInitialPosts();
+    if (!this._listRef.current) {
+      return; // the current component is unmounted
+    }
     await this.scrollToPost(
-      this.props.jumpToPostId || this.props.mostRecentPostId,
+      this.state._jumpToPostId || this.props.mostRecentPostId,
     );
+    this._stickToBottom();
     this._visibilitySensorEnabled = true;
     this.props.updateHistoryHandler();
     this.props.markAsRead();
-    this._stickToBottom();
   }
 
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     this._ro && this._ro.disconnect();
   }
 
@@ -94,11 +105,10 @@ class StreamViewComponent extends Component<Props> {
       // scroll TOP and load posts
       if (this._isAtTop && hasMoreUp) {
         await nextTick();
-        console.log(this._scrollHeight, this._scrollTop);
-        // const parent = getScrollParent(this._listRef.current!);
-        // parent.scrollTop =
-        //   this._scrollTop + parent.scrollHeight - this._scrollHeight;
-        // return;
+        const parent = getScrollParent(this._listRef.current!);
+        parent.scrollTop =
+          this._scrollTop + parent.scrollHeight - this._scrollHeight;
+        return;
       }
     }
     return;
@@ -112,9 +122,12 @@ class StreamViewComponent extends Component<Props> {
       /*  webpackChunkName: "ro" */
       'resize-observer-polyfill')).default;
     }
+    const el = this._listRef.current;
+    if (!el) {
+      return;
+    }
     this._ro = new RO(this._heightChangedHandler);
-
-    this._ro.observe(this._listRef.current!);
+    this._ro.observe(el);
   }
 
   private _heightChangedHandler = (entries: any) => {
@@ -214,14 +227,14 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _ordinaryPostFactory(streamItem: StreamItem) {
-    const { jumpToPostId, loading } = this.props;
+    const { loading } = this.props;
+
     return (
       <ConversationPost
         id={streamItem.value}
         key={`ConversationPost${streamItem.value}`}
         ref={this._setPostRef}
-        highlight={streamItem.value === jumpToPostId && !loading}
-        onHighlightAnimationStart={this.props.resetJumpToPostId}
+        highlight={streamItem.value === this.state._jumpToPostId && !loading}
       />
     );
   }
@@ -229,7 +242,7 @@ class StreamViewComponent extends Component<Props> {
     onChangeHandler: (isVisible: boolean) => void,
     streamItem: StreamItem,
   ) {
-    const { jumpToPostId, loading } = this.props;
+    const { loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
@@ -240,13 +253,15 @@ class StreamViewComponent extends Component<Props> {
           ref={this._setPostRef}
           id={streamItem.value}
           key={`ConversationPost${streamItem.value}`}
-          highlight={streamItem.value === jumpToPostId && !loading}
-          onHighlightAnimationStart={this.props.resetJumpToPostId}
+          highlight={streamItem.value === this.state._jumpToPostId && !loading}
         />
       </VisibilitySensor>
     );
   }
   private get _streamItems() {
+    if (this.props.loading) {
+      return null;
+    }
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
 
@@ -346,7 +361,6 @@ class StreamViewComponent extends Component<Props> {
     scrollToPostId: number,
     options: boolean | ScrollIntoViewOptions = true,
   ) => {
-    console.log('andy hu', scrollToPostId);
     await nextTick();
     const scrollToPostEl = this._postRefs.get(scrollToPostId);
     if (!scrollToPostEl) {
