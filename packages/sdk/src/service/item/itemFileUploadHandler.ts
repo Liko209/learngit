@@ -366,7 +366,7 @@ class ItemFileUploadHandler {
       created_at: Date.now(),
       is_new: true,
     };
-    return await ItemAPI.sendFileItem(fileItemOptions);
+    return await ItemAPI.sendFileItem(fileItemOptions, version);
   }
 
   private _emitItemFileStatus(
