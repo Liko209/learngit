@@ -317,7 +317,7 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
-    const listener = (params: {
+    const listener = async (params: {
       success: boolean;
       preInsertId: number;
       updatedId: number;
@@ -329,9 +329,9 @@ class PostService extends BaseService<Post> {
           post.item_ids = post.item_ids.map((id: number) => {
             return id === preInsertId ? updatedId : id;
           });
-
-          this._updatePost(post);
         }
+
+        await this._updatePost(post);
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
           notificationCenter.removeListener(
@@ -361,9 +361,9 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  private _updatePost(post: Post) {
+  private async _updatePost(post: Post) {
     const postDao = daoManager.getDao(PostDao);
-    postDao.update(post);
+    await postDao.update(post);
     notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
   }
 
