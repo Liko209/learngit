@@ -41,7 +41,7 @@ describe('LinkItemViewModel', () => {
     }, { ...mockItemValue }, { ...mockItemValue }]);
   });
   it('while delete item and item id not exist should not update item', () => {
-    linkItemVM.onLinkItemClick(1);
+    linkItemVM.onLinkItemClose(1);
     expect(linkItemVM.postItems).toHaveLength(3);
   });
 });
