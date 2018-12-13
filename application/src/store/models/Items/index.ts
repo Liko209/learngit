@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './Files';
 export * from './Link';
 export * from './Event';
 export * from './Task';

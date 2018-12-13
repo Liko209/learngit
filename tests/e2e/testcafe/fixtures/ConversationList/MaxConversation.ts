@@ -29,8 +29,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     await h(t).withLog('Given I clear all UMIs before login', async () => {
-      const  unReadTeamIds = await user.sdk.glip.getTeamsIds();
-      await user.sdk.glip.markAsRead(user.rcId, unReadTeamIds);
+      await user.sdk.glip.clearAllUmi();
     });
 
     let newTeam1;
@@ -43,7 +42,8 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     });
 
     await h(t).withLog(`And 1.favorite the created team(JPT-344) 2.Set limit conversation count=${MAX_NUMBER}(JPT-58)`, async () => {
-      await user.sdk.glip.updateProfile(user.rcId, { favorite_group_ids: [+newTeam1.data.id], max_leftrail_group_tabs2: MAX_NUMBER })
+      await user.sdk.glip.setMaxTeamDisplay(user.rcId, MAX_NUMBER);
+      await user.sdk.glip.favoriteGroups(user.rcId, [+newTeam1.data.id]);
     });
 
     const newTeamIds = [];
@@ -161,8 +161,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
 
     await h(t).withLog('Given clear all UMIs before login', async () => {
-      const  unReadTeamIds = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-      await user.sdk.glip.markAsRead(user.rcId, unReadTeamIds);
+      await user.sdk.glip.clearAllUmi();
     });
 
     await h(t).withLog(`And set limit conversation count=${MAX_NUMBER}(JPT-353)`, async () => {

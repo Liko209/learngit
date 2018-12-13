@@ -4,10 +4,16 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
+import { toTitleCase } from '@/utils/string';
 
 function getMessagesTitle(messagePath?: string) {
-  if (messagePath === POST_LIST_TYPE.mentions) {
-    return 'Mentions';
+  if (
+    messagePath &&
+    new RegExp(`^(${Object.values(POST_LIST_TYPE).join('|')})$`).test(
+      messagePath,
+    )
+  ) {
+    return toTitleCase(messagePath);
   }
   if (messagePath && /^\d+$/.test(messagePath)) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);

@@ -9,7 +9,7 @@ import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { progressBar } from '../../utils/progress';
-import { NetworkResult } from '../../api/NetworkResult';
+import { ApiResult } from '../../api/ApiResult';
 import { IndexDataModel } from '../../api/glip/user';
 
 interface IParams {
@@ -18,7 +18,7 @@ interface IParams {
 
 const fetchInitialData = async (currentTime: number) => {
   progressBar.start();
-  let promise: Promise<NetworkResult<IndexDataModel, BaseError>>;
+  let promise: Promise<ApiResult<IndexDataModel, BaseError>>;
   try {
     promise = initialData({ _: currentTime });
   } finally {
@@ -44,7 +44,7 @@ const fetchIndexData = async (timeStamp: string) => {
       progressBar.update(e);
     },
   };
-  let result: NetworkResult<IndexDataModel, BaseError>;
+  let result: ApiResult<IndexDataModel, BaseError>;
 
   try {
     result = await indexData(params, requestConfig);

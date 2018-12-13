@@ -59,7 +59,7 @@ class ConversationPageViewComponent extends Component<
           <Stream
             groupId={groupId}
             viewRef={this._streamRef}
-            key={this.streamKey}
+            key={`Stream_${groupId}_${this.streamKey}`}
           />
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>

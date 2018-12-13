@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../dao';
+import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, SortableModel } from '../../models';
+import { Group, GroupApiType, Raw, SortableModel, Profile } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -36,7 +36,6 @@ import Permission from './permission';
 import { mainLogger, err, ok, Result } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
-import ServiceCommonErrorType from '../errors/ServiceCommonErrorType';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
@@ -46,6 +45,9 @@ import { compareName } from '../../utils/helper';
 import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
+import notificationCenter from '../notificationCenter';
+import PostService from '../post';
+import { ServiceResult } from '../ServiceResult';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -61,6 +63,11 @@ const GroupErrorTypes = {
   UNKNOWN: 99,
 };
 
+const handleTeamsRemovedFrom = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.removeTeamsByIds(ids, true);
+};
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -71,6 +78,7 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
+      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
@@ -88,10 +96,10 @@ class GroupService extends BaseService<Group> {
       let favorite_group_ids = profile.favorite_group_ids.filter(
         id => typeof id === 'number' && !isNaN(id),
       );
-      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      const hiddenIds = extractHiddenGroupIds(profile);
       favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
       const dao = daoManager.getDao(GroupDao);
-      result = (await dao.queryGroupsByIds(favorite_group_ids)) as Group[];
+      result = await dao.queryGroupsByIds(favorite_group_ids);
       result = sortFavoriteGroups(favorite_group_ids, result);
     }
     return result;
@@ -113,7 +121,6 @@ class GroupService extends BaseService<Group> {
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       result = await dao.queryAllGroups(offset, limit);
     } else {
-      const profileService: ProfileService = ProfileService.getInstance();
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
@@ -140,7 +147,7 @@ class GroupService extends BaseService<Group> {
     mainLogger.debug(`get last ${n} groups`);
     let result: Group[] = [];
     const dao = daoManager.getDao(GroupDao);
-    result = (await dao.getLastNGroups(n)) as Group[];
+    result = await dao.getLastNGroups(n);
     return result;
   }
 
@@ -175,40 +182,36 @@ class GroupService extends BaseService<Group> {
     }
   }
 
-  async getGroupByPersonId(personId: number): Promise<Group | null> {
-    try {
-      return await this.getOrCreateGroupByMemberList([personId]);
-    } catch (e) {
-      mainLogger.error(`getGroupByPersonId error =>${e}`);
-      throw ErrorParser.parse(e);
-    }
+  async getGroupByPersonId(personId: number): Promise<Result<Group>> {
+    return await this.getOrCreateGroupByMemberList([personId]);
   }
 
-  async getOrCreateGroupByMemberList(members: number[]): Promise<Group | null> {
-    try {
-      const result = await this._queryGroupByMemberList(members);
-      if (result) {
-        return result;
-      }
-      return await this.requestRemoteGroupByMemberList(members);
-    } catch (e) {
-      mainLogger.error(`getOrCreateGroupByMemberList error =>${e}`);
-      throw ErrorParser.parse(e);
+  async getOrCreateGroupByMemberList(
+    members: number[],
+  ): Promise<Result<Group>> {
+    const result = await this._queryGroupByMemberList(members);
+    if (result) {
+      return ok(result);
     }
+    return this.requestRemoteGroupByMemberList(members);
   }
 
   async requestRemoteGroupByMemberList(
     members: number[],
-  ): Promise<Group | null> {
+  ): Promise<Result<Group>> {
     const memberIds = this._addCurrentUserToMemList(members);
     const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
       memberIds,
     );
     const result = await GroupAPI.requestNewGroup(info);
-    const data = result.unwrap();
-    const group = transform<Group>(data);
-    await handleData([data]);
-    return group;
+    return result.match({
+      Ok: async (rawGroup: Raw<Group>) => {
+        const group = transform<Group>(rawGroup);
+        await handleData([rawGroup]);
+        return ok(group);
+      },
+      Err: (error: BaseError) => err(error),
+    });
   }
 
   async getLatestGroup(): Promise<Group | null> {
@@ -306,7 +309,7 @@ class GroupService extends BaseService<Group> {
     memberIds: (number | string)[],
     description: string,
     options: CreateTeamOptions = {},
-  ): Promise<Result<Group | Raw<Group>>> {
+  ): Promise<Result<Group>> {
     const {
       isPublic = false,
       canAddMember = false,
@@ -340,16 +343,17 @@ class GroupService extends BaseService<Group> {
         },
       },
     };
-    const result = await GroupAPI.createTeam(team);
 
-    const a = result.match({
+    const apiResult = await GroupAPI.createTeam(team);
+
+    const result = apiResult.match({
       Ok: async (rawGroup: Raw<Group>) => {
         const newGroup = await this.handleRawGroup(rawGroup);
         return ok(newGroup);
       },
       Err: (error: BaseError) => err(error),
     });
-    return a;
+    return result;
   }
 
   async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
@@ -359,14 +363,7 @@ class GroupService extends BaseService<Group> {
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = await profileService.markGroupAsFavorite(
-      groupId,
-      markAsFavorite,
-    );
-    if (result instanceof BaseError && result.code >= 5300) {
-      return ServiceCommonErrorType.SERVER_ERROR;
-    }
-    return ServiceCommonErrorType.NONE;
+    return await profileService.markGroupAsFavorite(groupId, markAsFavorite);
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
@@ -392,24 +389,13 @@ class GroupService extends BaseService<Group> {
     groupId: number,
     hidden: boolean,
     shouldUpdateSkipConfirmation: boolean,
-  ): Promise<ServiceCommonErrorType> {
+  ): Promise<ServiceResult<Profile>> {
     const profileService: ProfileService = ProfileService.getInstance();
-    const result = await profileService.hideConversation(
+    return profileService.hideConversation(
       groupId,
       hidden,
       shouldUpdateSkipConfirmation,
     );
-
-    if (result instanceof BaseError) {
-      if (result.code === 5000) {
-        return ServiceCommonErrorType.NETWORK_NOT_AVAILABLE;
-      }
-      if (result.code > 5300) {
-        return ServiceCommonErrorType.SERVER_ERROR;
-      }
-      return ServiceCommonErrorType.UNKNOWN_ERROR;
-    }
-    return ServiceCommonErrorType.NONE;
   }
 
   /**
@@ -445,7 +431,10 @@ class GroupService extends BaseService<Group> {
     id: number;
     draft: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      __draft: params.draft,
+    });
     return result;
   }
 
@@ -454,7 +443,10 @@ class GroupService extends BaseService<Group> {
     id: number;
     send_failure_post_ids: number[];
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData(params);
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      __send_failure_post_ids: params.send_failure_post_ids,
+    });
     return result;
   }
 
@@ -462,7 +454,7 @@ class GroupService extends BaseService<Group> {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.getGroupById(id)) as Group;
-      return group.send_failure_post_ids || [];
+      return group.__send_failure_post_ids || [];
     } catch (error) {
       throw ErrorParser.parse(error);
     }
@@ -486,7 +478,7 @@ class GroupService extends BaseService<Group> {
     return actionMap;
   }
 
-  async isFavorited(id: number, type: number): Promise<boolean> {
+  async isFavored(id: number, type: number): Promise<boolean> {
     let groupId: number | undefined = undefined;
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
@@ -502,18 +494,18 @@ class GroupService extends BaseService<Group> {
         break;
       }
       default: {
-        mainLogger.error('isFavorited : should not run to here');
+        mainLogger.error('isFavored : should not run to here');
       }
     }
 
     if (groupId) {
-      return await this._isGroupFavorited(groupId);
+      return await this._isGroupFavored(groupId);
     }
 
     return false;
   }
 
-  private async _isGroupFavorited(groupId: number): Promise<boolean> {
+  private async _isGroupFavored(groupId: number): Promise<boolean> {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
     const favoriteGroupIds =
@@ -528,7 +520,7 @@ class GroupService extends BaseService<Group> {
   }
 
   private _isCurrentUserInGroup(group: Group) {
-    const accountService = AccountService.getInstance() as AccountService;
+    const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     return group
       ? group.members.some((x: number) => x === currentUserId)
@@ -542,7 +534,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService = AccountService.getInstance() as AccountService;
+    const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     if (!currentUserId) {
       return null;
@@ -562,7 +554,7 @@ class GroupService extends BaseService<Group> {
             return {
               id: group.id,
               displayName: groupName,
-              sortKey: groupName.toLowerCase(),
+              firstSortKey: groupName.toLowerCase(),
               entity: group,
             };
           }
@@ -571,8 +563,21 @@ class GroupService extends BaseService<Group> {
       },
       searchKey,
       undefined,
-      this.sortEntitiesByName.bind(this),
+      this._orderByName.bind(this),
     );
+  }
+
+  private _orderByName(
+    groupA: SortableModel<Group>,
+    groupB: SortableModel<Group>,
+  ) {
+    if (groupA.firstSortKey < groupB.firstSortKey) {
+      return -1;
+    }
+    if (groupA.firstSortKey > groupB.firstSortKey) {
+      return 1;
+    }
+    return 0;
   }
 
   async doFuzzySearchTeams(
@@ -582,7 +587,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService = AccountService.getInstance() as AccountService;
+    const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     if (!currentUserId) {
       return null;
@@ -601,14 +606,14 @@ class GroupService extends BaseService<Group> {
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
-            sortKey: team.set_abbreviation.toLowerCase(),
+            firstSortKey: team.set_abbreviation.toLowerCase(),
             entity: team,
           }
           : null;
       },
       searchKey,
       undefined,
-      this.sortEntitiesByName.bind(this),
+      this._orderByName.bind(this),
     );
   }
 
@@ -686,6 +691,19 @@ class GroupService extends BaseService<Group> {
     return email;
   }
 
+  // update partial group data, for last accessed time
+  async updateGroupLastAccessedTime(params: {
+    id: number;
+    timestamp: number;
+  }): Promise<boolean> {
+    const { id, timestamp } = params;
+    const result = await this.updateGroupPartialData({
+      id,
+      __last_accessed_at: timestamp,
+    });
+    return result;
+  }
+
   private _getENVDomain() {
     let apiServer = Api.httpConfig['glip'].server;
     if (apiServer) {
@@ -708,19 +726,31 @@ class GroupService extends BaseService<Group> {
   }
 
   private _isValidGroup(group: Group) {
-    return this._isValid(group) && !group.is_team;
+    return this.isValid(group) && !group.is_team;
   }
 
   private _idValidTeam(group: Group) {
-    return this._isValid(group) && group.is_team;
+    return this.isValid(group) && group.is_team;
   }
 
-  private _isValid(group: Group) {
+  public isValid(group: Group) {
     return !group.is_archived && !group.deactivated && group.members;
   }
 
   private _getTeamAdmins(permission?: TeamPermission) {
     return permission && permission.admin ? permission.admin.uids : [];
+  }
+
+  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(GroupDao);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
+    }
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
   }
 }
 

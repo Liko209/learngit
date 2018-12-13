@@ -4,11 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { t } from 'i18next';
 import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
+import { JuiIconButton } from 'jui/components/Buttons';
 import { AttachmentItemAction } from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
@@ -17,10 +19,20 @@ import { FilesViewProps, FileType, ExtendFileItem } from './types';
 const downloadBtn = (downloadUrl: string, progress?: number) => {
   const download = () => window.open(downloadUrl);
   const loading = typeof progress === 'number' && progress < 1 && progress > 0;
-  console.log(20, progress);
+  const iconButton = (
+    <JuiIconButton
+      component="a"
+      download={true}
+      href={downloadUrl}
+      variant="plain"
+      tooltipTitle={t('download')}
+    >
+      get_app
+    </JuiIconButton>
+  );
   return (
     <AttachmentItemAction
-      icon="get_app"
+      icon={iconButton}
       onClick={download}
       value={progress}
       loading={loading}

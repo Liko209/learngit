@@ -70,6 +70,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           hidden={this.props.hidden}
         />
         <Menu
+          personId={this.props.personId}
           groupId={this.props.groupId}
           anchorEl={this.menuAnchorEl}
           onClose={this._closeMenu}

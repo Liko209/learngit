@@ -5,7 +5,10 @@
  */
 import moment from 'moment';
 import { t } from 'i18next';
-import { FileItem, ExtendFileItem, FileType } from '@/store/models/Items';
+import FileItemModal, {
+  ExtendFileItem,
+  FileType,
+} from '@/store/models/FileItem';
 
 import { getDateMessage } from '@/utils/date';
 
@@ -77,6 +80,8 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
+const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
+
 const FILE_ICON_MAP = {
   pdf: ['pdf'],
   sheet: ['xlsx', 'xls'],
@@ -93,7 +98,7 @@ function getFileIcon(fileType: string) {
   return null;
 }
 
-function getFileType(item: FileItem): ExtendFileItem {
+function getFileType(item: FileItemModal): ExtendFileItem {
   const fileType: ExtendFileItem = {
     item,
     type: -1,
@@ -116,18 +121,12 @@ function getFileType(item: FileItem): ExtendFileItem {
   return fileType;
 }
 
-function image(item: FileItem) {
-  const { thumbs, type, url } = item;
+function image(item: FileItemModal) {
+  const { thumbs, type, versionUrl } = item;
   const image = {
     isImage: false,
     previewUrl: '',
   };
-
-  if (type === 'gif') {
-    image.isImage = true;
-    image.previewUrl = url;
-    return image;
-  }
 
   if (thumbs) {
     for (const key in thumbs) {
@@ -138,11 +137,19 @@ function image(item: FileItem) {
       }
     }
   }
+
+  // In order to show image
+  // If upload doc and image together, image will not has thumbs
+  if (IMAGE_TYPE.includes(type)) {
+    image.isImage = true;
+    image.previewUrl = versionUrl || '';
+    return image;
+  }
   return image;
 }
 
-function document(item: FileItem) {
-  const pages = item.pages;
+function document(item: FileItemModal) {
+  const { pages } = item;
   const doc = {
     isDocument: false,
     previewUrl: '',

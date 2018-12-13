@@ -6,11 +6,17 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProfileButtonProps } from './types';
+import { GlipTypeUtil } from 'sdk/utils';
 
 class ProfileButtonViewModel extends AbstractViewModel<ProfileButtonProps> {
   @computed
   get id() {
     return this.props.id;
+  }
+
+  @computed
+  get typeId(): number {
+    return GlipTypeUtil.extractTypeId(this.id);
   }
 }
 

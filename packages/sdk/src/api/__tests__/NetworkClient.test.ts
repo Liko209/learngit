@@ -15,8 +15,9 @@ import {
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-import { NetworkResultOk, NetworkResultErr, networkOk } from '../NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../ApiResult';
 import { RequestHolder } from '../glip/item';
+
 // Using manual mock to improve mock priority.
 jest.mock('foundation/src/network', () =>
   jest.genMockFromModule<any>('foundation/src/network'),
@@ -140,32 +141,37 @@ describe('NetworkClient', () => {
   });
 
   describe('buildCallback()', () => {
-    it('promise should resolve with response', (done: jest.DoneCallback) => {
+    it('should resolve with ApiResultOk', (done: jest.DoneCallback) => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
-      rcNetworkClient
-        .request(getRequest)
-        .then((result: NetworkResultOk<any>) => {
-          expect(result).toHaveProperty('status', 200);
-          expect(result).toHaveProperty('data', { a: 1 });
-          done();
-        });
-      mockRequest.callback({ status: 200, data: { a: 1 } });
+      rcNetworkClient.request(getRequest).then((result: ApiResultOk<any>) => {
+        expect(result).toHaveProperty('status', 200);
+        expect(result).toHaveProperty('data', { a: 1 });
+        done();
+      });
+      mockRequest.callback({
+        status: 200,
+        data: { a: 1 },
+        headers: {},
+      });
     });
 
-    it('promise should reject with response', (done: jest.DoneCallback) => {
+    it('should resolve with ApiResultErr', (done: jest.DoneCallback) => {
       expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
 
-      rcNetworkClient
-        .request(getRequest)
-        .then((result: NetworkResultErr<any>) => {
-          expect(result.status).toBe(500);
-          expect(result.error.code).toBe(1500);
-          done();
-        });
-      mockRequest.callback({ status: 500, data: { a: 'fail' }, headers: {} });
+      rcNetworkClient.request(getRequest).then((result: ApiResultErr<any>) => {
+        expect(result.status).toBe(500);
+        expect(result.error.code).toBe(1500);
+        done();
+      });
+
+      mockRequest.callback({
+        status: 500,
+        data: { a: {} },
+        headers: {},
+      });
     });
   });
 
@@ -213,9 +219,51 @@ describe('NetworkClient', () => {
         path: '/',
       });
     });
+
+    it('should omit properties starts with __', () => {
+      const { rcNetworkClient } = setup();
+
+      jest.spyOn(rcNetworkClient, 'request');
+      rcNetworkClient.post('/', {
+        id: 123,
+        __draft: '123',
+        a: true,
+      });
+
+      expect(rcNetworkClient.request).toHaveBeenCalledWith({
+        data: {
+          id: 123,
+          a: true,
+        },
+        headers: {},
+        method: 'post',
+        path: '/',
+      });
+    });
   });
   describe('put()', () => {
     it('should call http()', () => {
+      const { rcNetworkClient } = setup();
+
+      jest.spyOn(rcNetworkClient, 'http');
+      rcNetworkClient.put('/', {
+        id: 123,
+        __draft: '123',
+        a: true,
+      });
+
+      expect(rcNetworkClient.http).toHaveBeenCalledWith({
+        data: {
+          id: 123,
+          a: true,
+        },
+        headers: {},
+        method: 'put',
+        path: '/',
+      });
+    });
+
+    it('should omit properties starts with __', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');

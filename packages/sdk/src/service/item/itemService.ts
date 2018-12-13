@@ -12,7 +12,7 @@ import { transform } from '../utils';
 import { Item, ItemFile, NoteItem, Post, Raw, Progress } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
-import { NetworkResult } from '../../api/NetworkResult';
+import { ApiResult } from '../../api/ApiResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
 import { SendingStatusHandler } from '../../utils/sendingStatusHandler';
 import { SENDING_STATUS } from '../constants';
@@ -86,7 +86,7 @@ class ItemService extends BaseService<Item> {
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
     ItemAPI.requestRightRailItems(groupId).then(
-      (result: NetworkResult<IRightRailItemModel>) => {
+      (result: ApiResult<IRightRailItemModel>) => {
         if (result.isOk()) {
           handleData(result.data.items);
         }

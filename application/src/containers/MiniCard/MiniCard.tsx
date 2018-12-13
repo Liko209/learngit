@@ -4,20 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Profile } from './Profile';
+import { ProfileMiniCard } from './Profile';
 import { MiniCardShowProfileParams } from './types';
 
 class MiniCard {
   static showProfile({ anchor, id }: MiniCardShowProfileParams) {
-    Profile.instance.show({ anchor, id });
+    ProfileMiniCard.instance.show({ anchor, id });
   }
 
   static dismissProfile() {
-    Profile.instance.dismiss();
+    ProfileMiniCard.instance.dismiss();
   }
 
   static refreshProfile() {
-    Profile.instance.refresh();
+    ProfileMiniCard.instance.refresh();
   }
 }
 

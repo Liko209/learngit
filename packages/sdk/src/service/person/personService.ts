@@ -11,7 +11,17 @@ import handleData from './handleData';
 import GroupService, { FEATURE_STATUS, FEATURE_TYPE } from '../group';
 import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
-import { Person, SortableModel } from '../../models'; // eslint-disable-line
+import {
+  Person,
+  SortableModel,
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+} from '../../models';
+import {
+  CALL_ID_USAGE_TYPE,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberInfo,
+} from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { AccountService } from '../account/accountService';
@@ -21,7 +31,6 @@ class PersonService extends BaseService<Person> {
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
-      [SOCKET.ITEM]: handleData,
     };
     super(PersonDao, PersonAPI, handleData, subscription);
     this.enableCache();
@@ -146,19 +155,34 @@ class PersonService extends BaseService<Person> {
     }
     return this.searchEntitiesFromCache(
       (person: Person, terms: string[]) => {
-        if (
-          !this._isValid(person) ||
-          (currentUserId && person.id === currentUserId)
-        ) {
-          return null;
-        }
-        let name: string = this.getName(person);
-        if (
-          (fetchAllIfSearchKeyEmpty && terms.length === 0) ||
-          (terms.length > 0 &&
-            (this.isFuzzyMatched(name, terms) ||
-              (person.email && this.isFuzzyMatched(person.email, terms))))
-        ) {
+        do {
+          if (
+            !this._isValid(person) ||
+            (currentUserId && person.id === currentUserId)
+          ) {
+            break;
+          }
+
+          let name: string = this.getName(person);
+          let sortValue = 0;
+
+          if (!fetchAllIfSearchKeyEmpty && terms.length === 0) {
+            break;
+          }
+
+          if (terms.length > 0) {
+            if (this.isFuzzyMatched(name, terms)) {
+              sortValue = 100;
+            } else if (
+              person.email &&
+              this.isFuzzyMatched(person.email, terms)
+            ) {
+              sortValue = 0;
+            } else {
+              break;
+            }
+          }
+
           if (name.length <= 0) {
             name = this.getEmailAsName(person);
           }
@@ -166,15 +190,31 @@ class PersonService extends BaseService<Person> {
           return {
             id: person.id,
             displayName: name,
-            sortKey: name.toLowerCase(),
+            firstSortKey: sortValue,
+            secondSortKey: name.toLowerCase(),
             entity: person,
           };
-        }
+        } while (false);
         return null;
       },
       searchKey,
       arrangeIds,
-      this.sortEntitiesByName.bind(this),
+      (personA: SortableModel<Person>, personB: SortableModel<Person>) => {
+        if (personA.firstSortKey > personB.firstSortKey) {
+          return -1;
+        }
+        if (personA.firstSortKey < personB.firstSortKey) {
+          return 1;
+        }
+
+        if (personA.secondSortKey < personB.secondSortKey) {
+          return -1;
+        }
+        if (personA.secondSortKey > personB.secondSortKey) {
+          return 1;
+        }
+        return 0;
+      },
     );
   }
 
@@ -217,6 +257,34 @@ class PersonService extends BaseService<Person> {
 
   private _isValid(person: Person) {
     return !person.deactivated && !person.is_pseudo_user;
+  }
+
+  getAvailablePhoneNumbers(
+    companyId: number,
+    phoneNumbersData?: PhoneNumberModel[],
+    extensionData?: SanitizedExtensionModel,
+  ) {
+    const availNumbers: PhoneNumberInfo[] = [];
+    const accountService: AccountService = AccountService.getInstance();
+    const isCoWorker = accountService.getCurrentCompanyId() === companyId;
+    if (isCoWorker && extensionData) {
+      availNumbers.push({
+        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+        phoneNumber: extensionData.extensionNumber,
+      });
+    }
+    // filter out company main number
+    if (phoneNumbersData) {
+      phoneNumbersData.forEach((element: PhoneNumberModel) => {
+        if (element.usageType === CALL_ID_USAGE_TYPE.DIRECT_NUMBER) {
+          availNumbers.push({
+            type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
+            phoneNumber: element.phoneNumber,
+          });
+        }
+      });
+    }
+    return availNumbers;
   }
 }
 

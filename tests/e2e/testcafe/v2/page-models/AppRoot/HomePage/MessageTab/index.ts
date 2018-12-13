@@ -3,7 +3,8 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -152,7 +153,8 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   conversationEntryByName(name: string) {
-    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
+    this.warnFlakySelector();
+    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
   async isExpand() {
@@ -240,6 +242,14 @@ export class MessageTab extends BaseWebComponent {
   get postListPage() {
     return this.getSelectorByAutomationId('post-list-page');
   }
+
+  get bookmarksEntry() {
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
+    }
+
+    get bookmarkPage() {
+    return this.getComponent(BookmarkPage);
+    }
 
   get moreMenu() {
     return this.getComponent(MoreMenu);

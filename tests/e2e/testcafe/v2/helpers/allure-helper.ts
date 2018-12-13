@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
 import { identity } from 'lodash';
-import { IStep } from '../models'
+import { IStep, IConsoleLog } from '../models'
 
 const testStatusEnum = {
   passed: 'passed',
@@ -73,7 +73,7 @@ export class AllureHelper {
     this.allure.addArgument(argument, value);
   }
 
-  writeReport(consoleLogPath: string) {
+  writeReport(consoleLog: IConsoleLog) {
     this.configure();
     const testRun = this.t['testRun'];
     const {
@@ -101,7 +101,9 @@ export class AllureHelper {
     this.startCase(testCaseName, testCaseStartTime, userAgent);
     this.writeSteps(steps);
     if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot On Fail');
-    this.addAttachment(consoleLogPath, 'Console Log');
+    this.addAttachment(consoleLog.consoleLogPath, 'Console Full Log');
+    this.addAttachment(consoleLog.warnConsoleLogPath, `Console Warning Log, Number: ${consoleLog.warnConsoleLogNumber}`);
+    this.addAttachment(consoleLog.errorConsoleLogPath, `Console Error Log, Number: ${consoleLog.errorConsoleLogNumber}`);
     this.endCase(testStatus, testInfo, Date.now());
     this.endSuite(Date.now());
   }

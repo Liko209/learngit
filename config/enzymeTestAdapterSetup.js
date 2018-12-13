@@ -3,8 +3,12 @@
  * @Date: 2018-08-30 08:42:25
  * Copyright © RingCentral. All rights reserved.
  */
+import faker from "faker";
 import { configure } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
+
+// Use fixed seed to make UT stable
+faker.seed(1);
 
 const withNamespaces = () => Component => {
   Component.defaultProps = { ...Component.defaultProps, t: () => "" };

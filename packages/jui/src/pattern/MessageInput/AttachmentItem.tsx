@@ -100,7 +100,7 @@ type AttachmentItemActionProps = {
   onClick?: (event: MouseEvent) => void;
   loading?: boolean;
   value?: number;
-  icon?: string;
+  icon?: string | JSX.Element;
 };
 
 const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
@@ -109,7 +109,11 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
   <ActionWrapper onClick={props.onClick}>
     {props.loading && <JuiCircularProgress size={24} value={props.value} />}
     <IconWrapper>
-      <JuiIconography fontSize="small">{props.icon}</JuiIconography>
+      {typeof props.icon === 'string' ? (
+        <JuiIconography fontSize="small">{props.icon}</JuiIconography>
+      ) : (
+        props.icon
+      )}
     </IconWrapper>
   </ActionWrapper>
 );

@@ -27,6 +27,7 @@ function getKnobs() {
     {
       primary: 'primary',
       secondary: 'secondary',
+      negative: 'negative',
     },
     'primary',
   );

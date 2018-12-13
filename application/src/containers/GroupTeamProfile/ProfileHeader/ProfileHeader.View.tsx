@@ -17,12 +17,16 @@ type Props = WithNamespaces & ProfileHeaderViewProps;
 class ProfileHeader extends React.Component<Props> {
   render() {
     const { title = 'Profile', dismiss, id, isTeam, type, t } = this.props;
-    const privacy = <Privacy id={id} disableToolTip={false} />;
+    const privacy = <Privacy id={id} />;
     const moreIcon = <MoreHorizIcon id={id} type={type} />;
     return (
-      <JuiGroupProfileHeader title={t(title)} dismiss={dismiss} toolTipCloseTitle={t('close')}>
+      <JuiGroupProfileHeader
+        title={t(title)}
+        dismiss={dismiss}
+        toolTipCloseTitle={t('close')}
+      >
         {isTeam ? privacy : null}
-        <Favorite id={id} isAction={false} />
+        <Favorite id={id} />
         {isTeam ? moreIcon : null}
       </JuiGroupProfileHeader>
     );

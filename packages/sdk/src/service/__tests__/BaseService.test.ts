@@ -8,10 +8,11 @@ import notificationCenter from '../notificationCenter';
 import { SOCKET } from '../eventKey';
 import dataDispatcher from '../../component/DataDispatcher/index';
 
-import { BaseModel, Raw } from '../../models'; // eslint-disable-line
+import { BaseModel, Raw, SortableModel } from '../../models'; // eslint-disable-line
 import { BaseError, ErrorParser } from '../../utils';
 import _ from 'lodash';
-import { NetworkResultOk } from '../../api/NetworkResult';
+import { ApiResultOk } from '../../api/ApiResult';
+import { BaseResponse, ResultType } from 'foundation/src';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
@@ -49,8 +50,21 @@ class AService extends BaseService<BaseServiceTestModel> {
 
   async doUpdateModel(
     updatedModel: BaseServiceTestModel,
-  ): Promise<BaseServiceTestModel | BaseError> {
+  ): Promise<BaseServiceTestModel | null> {
     return updatedModel;
+  }
+
+  sortEntitiesByName(
+    groupA: SortableModel<BaseServiceTestModel>,
+    groupB: SortableModel<BaseServiceTestModel>,
+  ) {
+    if (groupA.firstSortKey < groupB.firstSortKey) {
+      return -1;
+    }
+    if (groupA.firstSortKey > groupB.firstSortKey) {
+      return 1;
+    }
+    return 0;
   }
 }
 
@@ -88,9 +102,12 @@ describe('BaseService', () => {
     it('should return data from API when Dao not return value', async () => {
       const service = new AService();
       jest.spyOn(service, 'getByIdFromDao').mockResolvedValue(null);
-      jest
-        .spyOn(service, 'getByIdFromAPI')
-        .mockResolvedValue(new NetworkResultOk({ id: 2 }, 200, {}));
+      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue(
+        new ApiResultOk({ id: 2 }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
+      );
 
       const result = await service.getById(2);
 
@@ -114,7 +131,10 @@ describe('BaseService', () => {
     it('should return data from API', async () => {
       const service = new AService();
       fakeApi.getDataById.mockResolvedValue(
-        new NetworkResultOk({ _id: 4 }, 200, {}),
+        new ApiResultOk({ _id: 4 }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
       );
 
       const result = await service.getByIdFromAPI(4);
@@ -196,6 +216,38 @@ describe('BaseService', () => {
     });
   });
 
+  describe('getModelsLocally()', () => {
+    it('should call deactivated dao, when include deactivate model', async () => {
+      const service = new AService();
+      const dao = daoManager.get(MyDao);
+      dao.batchGet.mockResolvedValue([{ id: 3 }]);
+      jest
+        .spyOn(service, '_getDeactivatedModelsLocally')
+        .mockResolvedValue([{ id: 4 }]);
+      const result = await service.getModelsLocally([3, 4], true);
+      expect(result.length).toBe(2);
+    });
+
+    it('should not call deactivated dao, when exclude deactivate model', async () => {
+      const service = new AService();
+      const dao = daoManager.get(MyDao);
+      dao.batchGet.mockResolvedValue([{ id: 3 }]);
+      jest
+        .spyOn(service, '_getDeactivatedModelsLocally')
+        .mockResolvedValue([{ id: 4 }]);
+      const result = await service.getModelsLocally([3, 4], false);
+      expect(result.length).toBe(1);
+    });
+
+    it('should not call deactivated dao, when all model activated', async () => {
+      const service = new AService();
+      const dao = daoManager.get(MyDao);
+      dao.batchGet.mockResolvedValue([{ id: 3 }, { id: 4 }]);
+      const result = await service.getModelsLocally([3, 4], false);
+      expect(result.length).toBe(2);
+    });
+  });
+
   describe('partialUpdate()', () => {
     it('will trigger partial update event once', async () => {
       const service = new AService();
@@ -214,20 +266,21 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const resp = await service.handlePartialUpdate(
+      const result = await service.handlePartialUpdate(
         partialModel,
         service.preHandlePartialModel,
         service.doUpdateModel,
         service.doPartialNotify,
       );
 
-      expect(resp).toEqual(updateModel);
+      expect(result.isOk()).toBeTruthy();
+      expect(result).toHaveProperty('data', updateModel);
       expect(service.doPartialNotify).toBeCalledTimes(1);
     });
   });
 
   describe('partialUpdate()', () => {
-    it('will trigger partial update event twice', async () => {
+    it('should trigger partial update event twice', async () => {
       const service = new AService();
 
       const partialModel = {
@@ -235,9 +288,7 @@ describe('BaseService', () => {
         name: 'someone',
       };
 
-      const error = new BaseError(5000, '');
-
-      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(error);
+      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(null);
 
       jest
         .spyOn(service, 'getById')
@@ -245,14 +296,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const resp = await service.handlePartialUpdate(
+      const result = await service.handlePartialUpdate(
         partialModel,
         service.preHandlePartialModel,
         service.doUpdateModel,
         service.doPartialNotify,
       );
 
-      expect(resp).toEqual(error);
+      expect(result.isErr()).toBeTruthy();
 
       expect(service.doPartialNotify).toBeCalledTimes(2);
     });
@@ -271,14 +322,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const resp = await service.handlePartialUpdate(
+      const result = await service.handlePartialUpdate(
         partialModel,
         service.preHandlePartialModel,
         service.doUpdateModel,
         service.doPartialNotify,
       );
 
-      expect(resp).toEqual(ErrorParser.parse('none model error'));
+      expect(result.isErr()).toBeTruthy();
 
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
@@ -299,13 +350,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const resp = await service.handlePartialUpdate(
+      const result = await service.handlePartialUpdate(
         partialModel,
         service.preHandlePartialModel,
         service.doUpdateModel,
         service.doPartialNotify,
       );
-      expect(resp).toEqual(originalModel);
+      expect(result.isOk()).toBeTruthy();
+      expect(result).toHaveProperty('data', originalModel);
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
   });
@@ -425,7 +477,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -459,7 +511,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -492,7 +544,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -526,7 +578,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -560,7 +612,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -595,7 +647,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -629,7 +681,7 @@ describe('BaseService', () => {
               entity,
               id: entity.id,
               displayName: entity.name,
-              sortKey: entity.name.toLowerCase(),
+              firstSortKey: entity.name.toLowerCase(),
             };
           }
           return null;
@@ -666,9 +718,7 @@ describe('BaseService', () => {
       ];
 
       const cacheManager = service.getCacheManager();
-      models.forEach(element => {
-        cacheManager.set(element);
-      });
+      models.forEach(element => cacheManager.set(element));
       const res = await service.getMultiEntitiesFromCache(
         [1, 2, 3, 4, 5],
         (entity: BaseServiceTestModel) => {

@@ -18,24 +18,26 @@ const getConversationId = async (id: number) => {
     return id;
   }
   if (type === TypeDictionary.TYPE_ID_PERSON) {
-    try {
-      const group = await groupService.getOrCreateGroupByMemberList([id]);
-      if (group) {
-        return group.id;
-      }
-      return null;
-    } catch (e) {
-      return null;
+    const result = await groupService.getOrCreateGroupByMemberList([id]);
+    if (result.isOk()) {
+      return result.data.id;
     }
   }
   return null;
 };
 
 async function goToConversation(id: number) {
+  history.push('/messages', { waiting: true });
   const conversationId = await getConversationId(id);
-  if (!conversationId) return false;
-
-  history.push(`/messages/${conversationId}`);
+  if (!conversationId) {
+    history.replace('/messages', {
+      waiting: true,
+      error: true,
+      conversationId: id,
+    });
+    return false;
+  }
+  history.replace(`/messages/${conversationId}`);
   return true;
 }
 

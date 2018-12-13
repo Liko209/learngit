@@ -1,10 +1,11 @@
+import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile, Progress } from '../../../models';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
 import AccountService from '../../account';
 import { daoManager, ItemDao } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import handleData from '../handleData';
-import { NetworkResultOk, NetworkResultErr } from '../../../api/NetworkResult';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import notificationCenter from '../../notificationCenter';
 import { ItemService } from '../itemService';
 import { ItemFileUploadStatus } from '../itemFileUploadStatus';
@@ -70,7 +71,10 @@ describe('ItemFileService', () => {
       size: 1111,
     };
 
-    const mockStoredFileRes = new NetworkResultOk([storedFile], 200, undefined);
+    const mockStoredFileRes = new ApiResultOk([storedFile], {
+      status: 200,
+      headers: {},
+    } as BaseResponse);
 
     const itemFile = {
       id: 1,
@@ -101,7 +105,10 @@ describe('ItemFileService', () => {
         { id: 5, created_at: 5, versions: [] },
       ];
 
-      const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
+      const mockItemFileRes = new ApiResultOk(itemFile, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
       itemDao.get.mockResolvedValue(itemFile);
       itemDao.getExistGroupFilesByName.mockResolvedValue(existItems);
       handleData.mockResolvedValue(null);
@@ -142,11 +149,14 @@ describe('ItemFileService', () => {
         );
         expect(itemFileUploadHandler.getUploadItems).toHaveLength(1);
         done();
-      });
+      },         1000);
     });
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
-      const mockItemFileRes = new NetworkResultOk(itemFile, 200, undefined);
+      const mockItemFileRes = new ApiResultOk(itemFile, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
       itemDao.get.mockResolvedValue(itemFile);
       handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockImplementation(
@@ -199,15 +209,14 @@ describe('ItemFileService', () => {
           },
         );
         done();
-      });
+      },         1000);
     });
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
-      const errResponse = new NetworkResultErr(
-        new BaseError(1, 'error'),
-        403,
-        {},
-      );
+      const errResponse = new ApiResultErr(new BaseError(1, 'error'), {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
 
       itemDao.get.mockResolvedValue(itemFile);
       handleData.mockResolvedValue(null);
@@ -234,14 +243,56 @@ describe('ItemFileService', () => {
         );
 
         done();
-      });
+      },         1000);
+    });
+
+    it('should not handle failed result when the request is failed because of the user canceled it.  ', async (done: jest.DoneCallback) => {
+      const errRes = new ApiResultErr(new BaseError(1, 'error'), {
+        status: 403,
+        statusText: NETWORK_FAIL_TYPE.CANCELLED,
+        headers: {},
+      } as BaseResponse);
+      ItemAPI.uploadFileItem.mockResolvedValue(errRes);
+      itemService.updatePreInsertItemStatus = jest.fn();
+      itemService.handlePartialUpdate = jest.fn();
+
+      jest
+        .spyOn(itemFileUploadHandler, '_preSaveItemFile')
+        .mockImplementation(() => {});
+
+      jest
+        .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
+        .mockImplementation(() => {});
+
+      const file = new FormData();
+      file.append('file', { name: '1.ts', type: 'ts' } as File);
+      await itemFileUploadHandler.sendItemFile(groupId, file, true);
+
+      setTimeout(() => {
+        expect(ItemAPI.uploadFileItem).toBeCalled();
+        expect(ItemAPI.sendFileItem).not.toBeCalled();
+
+        expect(notificationCenter.emit).not.toBeCalled();
+        expect(itemService.handlePartialUpdate).not.toBeCalled();
+        expect(itemService.updatePreInsertItemStatus).not.toBeCalled();
+
+        done();
+      },         1000);
     });
 
     it('should go to _handleItemFileSendFailed process when send item failed ', async (done: jest.DoneCallback) => {
-      const okRes = new NetworkResultOk(itemFile, 200, undefined);
-      const errRes = new NetworkResultErr(new BaseError(1, 'error'), 403, {});
+      const okRes = new ApiResultOk(itemFile, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      const errRes = new ApiResultErr(new BaseError(1, 'error'), {
+        status: 403,
+        headers: {},
+      } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(okRes);
       ItemAPI.putItem.mockResolvedValue(errRes);
+      itemService.updatePreInsertItemStatus = jest.fn();
+      itemService.handlePartialUpdate = jest.fn();
 
       jest
         .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
@@ -266,7 +317,7 @@ describe('ItemFileService', () => {
         );
 
         done();
-      });
+      },         1000);
     });
   });
 
@@ -386,11 +437,7 @@ describe('ItemFileService', () => {
         id: 11,
         versions: itemWithVersion.versions,
       };
-      const mockItemFileRes = new NetworkResultOk(
-        serverItemFile,
-        200,
-        undefined,
-      );
+      const mockItemFileRes = new ApiResultOk(serverItemFile, 200, undefined);
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
       const spyNewItem = jest.spyOn(itemFileUploadHandler, '_newItem');
 
@@ -413,7 +460,7 @@ describe('ItemFileService', () => {
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         done();
-      });
+      },         1000);
     });
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
@@ -471,7 +518,7 @@ describe('ItemFileService', () => {
           itemWithOutVersion.is_new,
         );
         done();
-      });
+      },         1000);
     });
 
     it('should notify upload failed when the file does not exist in db', async (done: jest.DoneCallback) => {
@@ -506,7 +553,7 @@ describe('ItemFileService', () => {
           expect.anything(),
         );
         done();
-      });
+      },         1000);
     });
 
     it('should notify upload failed when can not find the cache of the item', async (done: jest.DoneCallback) => {
@@ -541,7 +588,7 @@ describe('ItemFileService', () => {
         );
         expect(spyHandleFileItemSendFailed).toBeCalledWith(itemId);
         done();
-      });
+      },         1000);
     });
   });
 

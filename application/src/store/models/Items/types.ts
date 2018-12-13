@@ -5,36 +5,9 @@
  */
 import ItemModel from '../Item';
 
-enum FileType {
-  image = 0,
-  document = 1,
-  others = 2,
-}
-
-type FileItem = {
-  type: string;
-  downloadUrl: string;
-  size: number;
-  name: string;
-  isDocument: boolean;
-  isNew: boolean;
-  url: string;
-  pages: {
-    file_id: number;
-    url: string;
-  }[];
-  thumbs: any;
-  origHeight: number;
-  origWidth: number;
-} & ItemModel;
-
-type ExtendFileItem = {
-  item: FileItem;
-  type: number;
-  previewUrl: string;
-};
-
 type LinkItem = {
+  favicon: string;
+  providerName: string;
   summary: string;
   title: string;
   url: string;
@@ -81,12 +54,4 @@ type NoteItem = {
   summary: string;
 } & ItemModel;
 
-export {
-  FileItem,
-  FileType,
-  LinkItem,
-  EventItem,
-  TaskItem,
-  NoteItem,
-  ExtendFileItem,
-};
+export { LinkItem, EventItem, TaskItem, NoteItem };
