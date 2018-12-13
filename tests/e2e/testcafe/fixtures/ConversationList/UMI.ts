@@ -275,6 +275,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
 
     // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
     await h(t).withLog('Then I should not have UMI in the private chat', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
 
@@ -285,6 +286,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     });
 
     await h(t).withLog('Then I should not have UMI in the private chat too', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
   },
@@ -695,6 +697,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Then UMI dismiss', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
     });
   },
@@ -747,6 +750,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     });
 
     await h(t).withLog(`Then should not show UMI and scroll up automatically`, async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
       const posts = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(posts.nth(-1).withText(postContent).exists).ok();
