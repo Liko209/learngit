@@ -187,7 +187,7 @@ export class GlipSdk {
   async getInitRcTeamId() {
     const teams = (await this.getTeams()).data.teams;
     if (!teams) return [];
-    const ids = teams.filter(team => team["set_abbreviation"] =="Team RingCentral Inc.").map(team => team['_id']);
+    const ids = teams.filter(team => team["set_abbreviation"] == "Team RingCentral Inc.").map(team => team['_id']);
     return ids;
   }
 

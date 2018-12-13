@@ -55,7 +55,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     });
 
     await h(t).withLog('Then I can find the favorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Favorite');
+      await t.expect(favoriteToggler.textContent).eql('Favorite');
     });
 
     await h(t).withLog('When I click the favorite button', async () => {
@@ -75,7 +75,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     });
 
     await h(t).withLog('Then I can find the favorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Favorite');
+      await t.expect(favoriteToggler.textContent).eql('Favorite');
     });
 
     await h(t).withLog('When I click the favorite button', async () => {
@@ -136,7 +136,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('I can find the unfavorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorites');
+      await t.expect(favoriteToggler.textContent).eql('Remove from Favorites');
     });
 
     await h(t).withLog('Then I click the unfavorite button', async () => {
@@ -156,7 +156,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('I can find the unfavorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorites');
+      await t.expect(favoriteToggler.textContent).eql('Remove from Favorites');
     });
 
     await h(t).withLog('Then I click the unfavorite button', async () => {
