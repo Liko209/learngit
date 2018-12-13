@@ -15,6 +15,7 @@ import { ItemService, SENDING_STATUS } from 'sdk/service';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
+import { ItemFile } from 'sdk/src/models';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
@@ -27,6 +28,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
+    this.reaction(
+      () => this.id,
+      (id: number) => {
+        this.reloadFiles();
+      },
+    );
   }
 
   @computed
@@ -37,7 +44,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   @computed
   get files() {
     const values: AttachmentItem[] = Array.from(this.items.values());
-    return values.map(({ data }) => ({ file: data } as ItemInfo));
+    return values.map(({ item }) => ({ name: item.name } as ItemInfo));
   }
 
   @computed
@@ -50,6 +57,20 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     return this.selectedFiles
       .filter(({ duplicate }) => duplicate)
       .map((looper: SelectFile) => looper.data);
+  }
+
+  reloadFiles = () => {
+    const result: ItemFile[] = this._itemService.getUploadItems(this.id);
+    if (result && result.length > 0) {
+      result.forEach((element: ItemFile) => {
+        this.items.set(element.name, {
+          item: element,
+          status: element.sendStatus,
+        } as AttachmentItem);
+      });
+    } else {
+      this.cleanFiles();
+    }
   }
 
   autoUploadFiles = async (files: File[]) => {
@@ -105,12 +126,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   cancelUploadFile = async (info: ItemInfo) => {
-    const { file } = info;
-    const record = this.items.get(file.name);
+    const { name } = info;
+    const record = this.items.get(name);
     if (record) {
       try {
         await this._itemService.cancelUpload(record.item.id);
-        this.items.delete(file.name);
+        this.items.delete(name);
       } catch (e) {}
     }
   }

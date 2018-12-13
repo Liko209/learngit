@@ -30,6 +30,14 @@ class AttachmentsViewComponent extends Component<
     return null;
   }
 
+  componentWillMount() {
+    this.props.reloadFiles();
+  }
+
+  componentWillUnmount() {
+    this.props.cleanFiles();
+  }
+
   didSelectFiles = (files: File[]) => {
     this.props.autoUploadFiles(files);
   }

@@ -10,7 +10,7 @@ import { AttachmentItem, ItemStatus } from './AttachmentItem';
 import { height, spacing } from '../../foundation/utils/styles';
 
 type ItemInfo = {
-  file: File;
+  name: string;
   status: ItemStatus;
 };
 
@@ -37,7 +37,7 @@ const AttachmentList: React.SFC<AttachmentListProps> = (
       {files.map((looper: ItemInfo, idx: number) => (
         <AttachmentItem
           status={looper.status}
-          name={looper.file.name}
+          name={looper.name}
           onClickDeleteButton={() => removeAttachment(looper)}
           key={idx}
         />

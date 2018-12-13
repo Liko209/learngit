@@ -32,6 +32,7 @@ type AttachmentsViewProps = {
   uploadDuplicateFiles: () => void;
   updateDuplicateFiles: () => void;
   cleanFiles: () => void;
+  reloadFiles: () => void;
 };
 
 export { AttachmentsProps, AttachmentsViewProps, AttachmentItem, SelectFile };
