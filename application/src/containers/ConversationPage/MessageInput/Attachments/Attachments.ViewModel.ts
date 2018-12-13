@@ -87,18 +87,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         isUpdate,
       );
       if (item) {
-        const record = this.items.get(data.name);
-        if (record) {
-          record.item = item;
-          record.data = data;
-          record.status = SENDING_STATUS.INPROGRESS;
-        } else {
-          this.items.set(data.name, {
-            item,
-            data,
-            status: SENDING_STATUS.INPROGRESS,
-          } as AttachmentItem);
-        }
+        this.items.set(data.name, {
+          item,
+          data,
+          status: SENDING_STATUS.INPROGRESS,
+        } as AttachmentItem);
       }
       return item;
     } catch (e) {
