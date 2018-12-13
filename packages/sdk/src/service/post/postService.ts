@@ -273,11 +273,12 @@ class PostService extends BaseService<Post> {
   }
 
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
+    if (!isResend && buildPost.item_ids.length > 0) {
+      this._cleanUploadingFiles(buildPost.group_id);
+    }
+
     await this._handlePreInsertProcess(buildPost);
     if (buildPost.item_ids.length > 0) {
-      if (!isResend) {
-        this._cleanUploadingFiles(buildPost.group_id);
-      }
       const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
       if (pseudoItems.length > 0) {
         if (isResend) {
