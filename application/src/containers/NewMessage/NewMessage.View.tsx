@@ -120,6 +120,8 @@ class NewMessage extends React.Component<NewMessageProps, State> {
           errorEmail={errorEmail}
         />
         <JuiTextarea
+          id={t('Type new message')}
+          label={t('Type new message')}
           placeholder={t('Type new message')}
           fullWidth={true}
           inputProps={{
