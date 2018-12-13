@@ -5,6 +5,7 @@
  */
 
 export * from './EventLocation';
+export * from './EventContent';
 export * from './EventDescription';
 export * from './TaskSection';
 export * from './TaskNotes';

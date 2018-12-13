@@ -80,6 +80,7 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
     const { isLeftNavOpen } = this.props;
     const { messageError } = this.state;
     const id = this.props.match.params.id;
+
     const currentConversationId = id ? Number(id) : 0;
     let leftNavWidth = 72;
     if (isLeftNavOpen) {
