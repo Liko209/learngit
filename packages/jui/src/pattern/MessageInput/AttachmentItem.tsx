@@ -6,6 +6,7 @@
 
 import React, { MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
+import { t } from 'i18next';
 import {
   shape,
   spacing,
@@ -14,9 +15,11 @@ import {
   grey,
   palette,
 } from '../../foundation/utils/styles';
-import { JuiIconography } from '../../foundation/Iconography';
+// import { JuiIconography } from '../../foundation/Iconography';
 import { truncateLongName } from '../../foundation/utils/getFileName';
 import { JuiCircularProgress } from '../../components/Progress';
+import { JuiIconButton } from '../../components/Buttons';
+
 import defaultIcon from './default.svg';
 
 const MAX_TITLE_LENGTH = 36;
@@ -110,7 +113,9 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     {props.loading && <JuiCircularProgress size={24} value={props.value} />}
     <IconWrapper>
       {typeof props.icon === 'string' ? (
-        <JuiIconography fontSize="small">{props.icon}</JuiIconography>
+        <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
+          close
+        </JuiIconButton>
       ) : (
         props.icon
       )}
