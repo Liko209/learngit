@@ -2,7 +2,7 @@
  * @Author: Jerry Cai (jerry.cai@ringcentral.com)
  * @Date: 2018-12-05 09:30:00
  */
-
+import { NETWORK_FAIL_TYPE, mainLogger } from 'foundation';
 import { StoredFile, ItemFile, Item, Raw, Progress } from '../../models';
 import AccountService from '../account';
 import ItemAPI, { RequestHolder } from '../../api/glip/item';
@@ -11,9 +11,8 @@ import { versionHash } from '../../utils/mathUtils';
 import { daoManager } from '../../dao';
 import ItemDao from '../../dao/item';
 import { BaseError } from '../../utils';
-import { ApiResult } from '../../api/ApiResult';
+import { ApiResult, ApiResultErr } from '../../api/ApiResult';
 import notificationCenter from '../notificationCenter';
-import { mainLogger } from 'foundation';
 import { ENTITY, SERVICE } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
 import { ItemFileUploadStatus } from './itemFileUploadStatus';
@@ -159,7 +158,8 @@ class ItemFileUploadHandler {
       await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
       await this._uploadItem(groupId, preInsertItem, isUpdate);
     } else {
-      this._handleItemFileSendFailed(preInsertItem.id);
+      this._handleItemFileSendFailed(preInsertItem.id, uploadRes);
+      mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
     }
   }
 
@@ -189,8 +189,10 @@ class ItemFileUploadHandler {
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
     } else {
-      this._handleItemFileSendFailed(preInsertItem.id);
-      mainLogger.error(`_uploadItem error =>${result}`);
+      this._handleItemFileSendFailed(preInsertItem.id, result as ApiResultErr<
+        ItemFile
+      >);
+      mainLogger.warn(`_uploadItem error =>${result}`);
     }
   }
 
@@ -254,7 +256,16 @@ class ItemFileUploadHandler {
     this._emitItemFileStatus(true, preInsertId, itemFile.id);
   }
 
-  private _handleItemFileSendFailed(preInsertId: number) {
+  private _handleItemFileSendFailed<T>(
+    preInsertId: number,
+    errRes?: ApiResultErr<T>,
+  ) {
+    console.log('errr ', errRes ? errRes.response.statusText : '');
+    if (errRes && errRes.response.statusText === NETWORK_FAIL_TYPE.CANCELLED) {
+      mainLogger.info(`the request has been canceled, ${errRes}`);
+      return;
+    }
+
     this._updatePreInsertItemStatus(preInsertId, SENDING_STATUS.FAIL);
     this._emitItemFileStatus(false, preInsertId, preInsertId);
 
