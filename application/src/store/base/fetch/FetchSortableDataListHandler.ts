@@ -7,7 +7,12 @@ import _ from 'lodash';
 import { transaction } from 'mobx';
 import { BaseModel } from 'sdk/models';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import {
+  NotificationEntityPayload,
+  NotificationEntityUpdatePayload,
+  NotificationEntityReplacePayload,
+  NotificationEntityDeletePayload,
+} from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
 
@@ -50,8 +55,9 @@ export class FetchSortableDataListHandler<
   constructor(
     dataProvider: IFetchSortableDataProvider<T>,
     options: IFetchSortableDataListHandlerOptions<T>,
+    listStore: SortableListStore<T> = new SortableListStore<T>(options.sortFunc),
   ) {
-    super(null, options, new SortableListStore<T>(options.sortFunc));
+    super(null, options, listStore);
     this._isMatchFunc = options.isMatchFunc;
     this._transformFunc = options.transformFunc;
     this._sortableDataProvider = dataProvider;
@@ -96,117 +102,132 @@ export class FetchSortableDataListHandler<
     return data;
   }
 
-  onDataChanged(payload: NotificationEntityPayload<T>) {
+  handleDataDeleted(payload: NotificationEntityDeletePayload) {
+    let originalSortableModels: ISortableModel[] = [];
+
+    if (this._dataChangeCallBack) {
+      originalSortableModels = _.cloneDeep(this.sortableListStore.items);
+    }
+
+    const deletedSortableModelIds = Array.from(payload.body.ids);
+    this.sortableListStore.removeByIds(deletedSortableModelIds);
+
+    if (this._dataChangeCallBack) {
+      const deletedSortableModels = _.differenceBy(
+        originalSortableModels,
+        this.sortableListStore.items,
+        item => item.id,
+      );
+      this._dataChangeCallBack({
+        deleted: deletedSortableModels.map(item => item.id),
+        added: [],
+        updated: [],
+        direction: QUERY_DIRECTION.NEWER,
+      });
+    }
+  }
+
+  handleDataUpdateReplace(
+    payload:
+      | NotificationEntityUpdatePayload<T>
+      | NotificationEntityReplacePayload<T>,
+  ) {
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
     let updatedSortableItems: TUpdated = [];
     let updatedSortableModels: ISortableModel[] = [];
 
-    if (EVENT_TYPES.DELETE === payload.type) {
-      deletedSortableModelIds = Array.from(payload.body.ids);
-      this.sortableListStore.removeByIds(deletedSortableModelIds);
+    const entities = payload.body.entities;
+    const keys = Array.from(payload.body.ids);
+
+    const existKeys = this.sortableListStore.getIds();
+    let matchedKeys: number[] = _.intersection(keys, existKeys);
+    const matchedSortableModels: ISortableModel<T>[] = [];
+    const matchedEntities: T[] = [];
+
+    if (payload.type === EVENT_TYPES.REPLACE) {
+      if (payload.body.isReplaceAll) {
+        matchedKeys = keys;
+      }
+    }
+
+    matchedKeys.forEach((key: number) => {
+      const model = entities.get(key) as T;
+      if (this._isMatchFunc(model)) {
+        const sortableModel = this._transformFunc(model);
+        matchedSortableModels.push(sortableModel);
+        matchedEntities.push(model);
+      } else {
+        deletedSortableModelIds.push(key);
+      }
+    });
+
+    if (payload.type === EVENT_TYPES.REPLACE) {
+      if (payload.body.isReplaceAll) {
+        deletedSortableModelIds = existKeys;
+      } else {
+        deletedSortableModelIds = matchedKeys;
+      }
     } else {
-      let entities: Map<number, T>;
-      let keys: number[] = [];
-
-      if (
-        EVENT_TYPES.UPDATE === payload.type ||
-        EVENT_TYPES.REPLACE === payload.type
-      ) {
-        entities = payload.body.entities;
-        keys = Array.from(payload.body.ids);
-      }
-
-      const existKeys = this.sortableListStore.getIds();
-      let matchedKeys: number[] = _.intersection(keys, existKeys);
-      const matchedSortableModels: ISortableModel<T>[] = [];
-      const matchedEntities: T[] = [];
-
-      if (payload.type === EVENT_TYPES.REPLACE) {
-        if (payload.body.isReplaceAll) {
-          matchedKeys = keys;
-        }
-      }
-      matchedKeys.forEach((key: number) => {
+      const differentKeys: number[] = _.difference(keys, existKeys);
+      differentKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
         if (this._isMatchFunc(model)) {
-          const sortableModel = this._transformFunc(model);
-          matchedSortableModels.push(sortableModel);
-          matchedEntities.push(model);
-        } else {
-          deletedSortableModelIds.push(key);
+          const idSortKey = this._transformFunc(model);
+          if (this._isInRange(idSortKey.sortValue)) {
+            matchedSortableModels.push(idSortKey);
+            matchedEntities.push(model);
+          }
         }
       });
+    }
 
-      if (payload.type === EVENT_TYPES.REPLACE) {
-        if (payload.body.isReplaceAll) {
-          deletedSortableModelIds = existKeys;
-        } else {
-          deletedSortableModelIds = matchedKeys;
-        }
-      } else {
-        const differentKeys: number[] = _.difference(keys, existKeys);
-        differentKeys.forEach((key: number) => {
-          const model = entities.get(key) as T;
-          if (this._isMatchFunc(model)) {
-            const idSortKey = this._transformFunc(model);
-            if (this._isInRange(idSortKey.sortValue)) {
-              matchedSortableModels.push(idSortKey);
-              matchedEntities.push(model);
-            }
-          }
-        });
-      }
+    if (this._dataChangeCallBack) {
+      originalSortableModels = _.cloneDeep(this.sortableListStore.items);
+    }
+
+    if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
+      this.replaceEntityStore(matchedEntities);
+      this.sortableListStore.removeByIds(deletedSortableModelIds);
+      this.sortableListStore.upsert(matchedSortableModels);
 
       if (this._dataChangeCallBack) {
-        originalSortableModels = _.cloneDeep(this.sortableListStore.items);
+        // replace models as updated models
+        addedSortableModels = matchedSortableModels;
+      }
+    } else {
+      this.updateEntityStore(matchedEntities);
+      this.sortableListStore.upsert(matchedSortableModels);
+      this.sortableListStore.removeByIds(deletedSortableModelIds);
+
+      if (this._dataChangeCallBack) {
+        // calculate added models
+        addedSortableModels = _.differenceBy(
+          matchedSortableModels,
+          originalSortableModels,
+          item => item.id,
+        );
+
+        // calculate updated models
+        updatedSortableModels = _.differenceBy(
+          matchedSortableModels,
+          addedSortableModels,
+          item => item.id,
+        );
       }
 
-      if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
-        this.replaceEntityStore(matchedEntities);
-        this.sortableListStore.removeByIds(deletedSortableModelIds);
-        this.sortableListStore.upsert(matchedSortableModels);
-
-        if (this._dataChangeCallBack) {
-          // replace models as updated models
-          updatedSortableModels = matchedSortableModels;
-        }
-      } else {
-        this.updateEntityStore(matchedEntities);
-        this.sortableListStore.upsert(matchedSortableModels);
-        this.sortableListStore.removeByIds(deletedSortableModelIds);
-
-        if (this._dataChangeCallBack) {
-          // calculate added models
-          addedSortableModels = _.differenceBy(
-            matchedSortableModels,
-            originalSortableModels,
-            item => item.id,
-          );
-
-          // calculate updated models
-          updatedSortableModels = _.differenceBy(
-            matchedSortableModels,
-            addedSortableModels,
-            item => item.id,
-          );
-        }
-
-        if (updatedSortableModels.length) {
-          const storeIds = this.sortableListStore.getIds();
-          updatedSortableItems = updatedSortableModels.map(
-            (item: ISortableModel) => {
-              return {
-                value: item,
-                index: storeIds.indexOf(item.id),
-                oldValue: originalSortableModels.find(
-                  iter => iter.id === item.id,
-                ),
-              };
-            },
-          );
-        }
+      if (updatedSortableModels.length) {
+        const storeIds = this.sortableListStore.getIds();
+        updatedSortableItems = updatedSortableModels.map(
+          (item: ISortableModel) => {
+            return {
+              value: item,
+              index: storeIds.indexOf(item.id),
+              oldValue: originalSortableModels.find(iter => iter.id === item.id),
+            };
+          },
+        );
       }
     }
 
@@ -217,6 +238,18 @@ export class FetchSortableDataListHandler<
         updated: updatedSortableItems,
         direction: QUERY_DIRECTION.NEWER,
       });
+  }
+
+  onDataChanged(payload: NotificationEntityPayload<T>) {
+    switch (payload.type) {
+      case EVENT_TYPES.DELETE:
+        this.handleDataDeleted(payload);
+        break;
+      case EVENT_TYPES.UPDATE:
+      case EVENT_TYPES.REPLACE:
+        this.handleDataUpdateReplace(payload);
+        break;
+    }
   }
 
   private _isInRange(sortValue: number) {
