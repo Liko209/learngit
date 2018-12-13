@@ -255,9 +255,8 @@ class PostService extends BaseService<Post> {
   }
 
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
-    // handle params, if has file item, should send file first then send post
     mainLogger.info('start to send post log');
-    const buildPost: Post = PostServiceHandler.buildPostInfo(params);
+    const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
     return this.innerSendPost(buildPost, false);
   }
 

@@ -12,7 +12,11 @@ import { Markdown } from 'glipdown';
 import { Post } from '../../models';
 import { RawPostInfo } from './types';
 import { POST_STATUS } from '../constants';
+import ItemService from '../item';
 
+export type ItemData = {
+  version_map: { [key: number]: number };
+};
 // global_url_regex
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
@@ -74,7 +78,24 @@ class PostServiceHandler {
     return links;
   }
 
-  static buildPostInfo(params: RawPostInfo): Post {
+  static async buildVersionMap(
+    updateItems?: number[],
+  ): Promise<ItemData | undefined> {
+    if (updateItems) {
+      const itemData: ItemData = { version_map: {} };
+      const itemService: ItemService = ItemService.getInstance();
+      const promises = updateItems.map(id => itemService.getItemVersion(id));
+      const versions = await Promise.all(promises);
+      for (let i = 0; i < updateItems.length; i++) {
+        itemData.version_map[updateItems[i]] = versions[i];
+      }
+      return itemData;
+    }
+
+    return undefined;
+  }
+
+  static async buildPostInfo(params: RawPostInfo): Promise<Post> {
     const userId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
     const companyId: number = daoManager
       .getKVDao(AccountDao)
@@ -85,7 +106,7 @@ class PostServiceHandler {
     );
     const links = PostServiceHandler.buildLinksInfo(params);
     const now = Date.now();
-    return {
+    const buildPost: Post = {
       links,
       id: vers,
       created_at: now,
@@ -108,6 +129,12 @@ class PostServiceHandler {
       status: POST_STATUS.INPROGRESS,
       activity_data: {},
     };
+
+    const itemData = await PostServiceHandler.buildVersionMap(params.updateIds);
+    if (itemData) {
+      buildPost.item_data = itemData;
+    }
+    return buildPost;
   }
 
   static buildResendPostInfo(post: Post) {
