@@ -120,7 +120,6 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
   onLinkItemClose = (event: React.MouseEvent<HTMLElement>) => {
     const { onLinkItemClose } = this.props;
     event.stopPropagation();
-    event.preventDefault();
     onLinkItemClose && onLinkItemClose(event);
   }
   render() {
