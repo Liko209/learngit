@@ -62,7 +62,7 @@ class AttachmentViewComponent extends Component<Props> {
       <Fragment>
         <JuiIconButton
           data-test-automation-id="conversation-chatbar-attachment-button"
-          tooltipTitle={t('attachment')}
+          tooltipTitle={t('Attach file')}
           onClick={this._handleClickEvent}
           size="medium"
         >
@@ -77,10 +77,11 @@ class AttachmentViewComponent extends Component<Props> {
           >
             <ClickAwayListener onClickAway={this._hideMenu}>
               <JuiMenuItem
+                icon="computer"
                 data-test-automation-id="chatbar-attchment-selectfile"
                 onClick={this._hideMenuAndShowDialog}
               >
-                Share File
+                Computer
               </JuiMenuItem>
             </ClickAwayListener>
           </JuiMenu>
