@@ -9,10 +9,11 @@ fixture('Profile/ViewYourProfile')
     .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
     .afterEach(teardownCase());
 
-test(formalName('ViewYourProfile', ['JPT-460', 'P1','zack']), async (t) => {
+test(formalName('ViewYourProfile', ['JPT-460','JPT-453', 'P1','zack']), async (t) => {
     const user = h(t).rcData.mainCompany.users[4];
     const app = new AppRoot(t);
     const viewProfile= app.homePage.viewProfile;
+    const conversationSection = app.homePage.messageTab.conversationPage;
 
     await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -28,4 +29,11 @@ test(formalName('ViewYourProfile', ['JPT-460', 'P1','zack']), async (t) => {
     await h(t).withLog('Then I can see Profile title', async () => {
         await viewProfile.shouldExistviewProfile('Profile');
     }, true);
+    await h(t).withLog('When I click messasge link in Profile', async () => {
+      await t.click(viewProfile.messageLink);
+     }, true);
+     await h(t).withLog('And I can jump to Me Conversation', async () => {
+      await t.expect(conversationSection.title.withText(/\(me\)$/).exists).ok();
+     }, true);
+
 });
