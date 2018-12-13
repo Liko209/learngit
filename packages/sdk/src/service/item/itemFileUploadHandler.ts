@@ -260,7 +260,6 @@ class ItemFileUploadHandler {
     preInsertId: number,
     errRes?: ApiResultErr<T>,
   ) {
-    console.log('errr ', errRes ? errRes.response.statusText : '');
     if (errRes && errRes.response.statusText === NETWORK_FAIL_TYPE.CANCELLED) {
       mainLogger.info(`the request has been canceled, ${errRes}`);
       return;
