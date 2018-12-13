@@ -14,6 +14,7 @@ import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { Attachments } from './Attachments';
+import { extractView } from 'jui/hoc/extractView';
 
 @observer
 class MessageInputViewComponent extends Component<
@@ -106,6 +107,9 @@ class MessageInputViewComponent extends Component<
   }
 }
 
-const MessageInputView = translate('Conversations')(MessageInputViewComponent);
+const view = extractView<WithNamespaces & MessageInputViewProps>(
+  MessageInputViewComponent,
+);
+const MessageInputView = translate('Conversations')(view);
 
-export { MessageInputView };
+export { MessageInputView, MessageInputViewComponent };

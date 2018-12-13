@@ -14,6 +14,7 @@ import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
 import { Header } from './Header';
 import { MessageInput } from './MessageInput';
+import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
 import { ConversationPageViewProps } from './types';
 import { action, observable } from 'mobx';
 
@@ -25,7 +26,7 @@ class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
   private _streamRef: React.RefObject<StreamViewComponent> = React.createRef();
-  private _messageInputRef: RefObject<any> = createRef();
+  private _messageInputRef: RefObject<MessageInputViewComponent> = createRef();
 
   @observable
   streamKey = 0;
@@ -73,7 +74,7 @@ class ConversationPageViewComponent extends Component<
         </JuiStreamWrapper>
         {canPost ? (
           <MessageInput
-            ref={this._messageInputRef}
+            viewRef={this._messageInputRef}
             id={groupId}
             onPost={this.sendHandler}
           />
