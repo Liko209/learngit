@@ -44,7 +44,7 @@ const Textarea = styled<Textarea>(WrapperTextField)`
     padding: 0;
     ${typography('body1')};
   }
-  .rootrootroot {
+  .form-label-root {
     top: ${spacing(1)};
     z-index: 1;
   }
@@ -91,7 +91,7 @@ class JuiTextarea extends React.Component<Props, State> {
         }}
         InputLabelProps={{
           FormLabelClasses: {
-            root: 'rootrootroot',
+            root: 'form-label-root',
           },
         }}
         rows={rows || 3}
