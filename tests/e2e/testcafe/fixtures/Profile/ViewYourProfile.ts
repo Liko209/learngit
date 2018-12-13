@@ -9,7 +9,7 @@ fixture('Profile/ViewYourProfile')
     .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
     .afterEach(teardownCase());
 
-test(formalName('ViewYourProfile', ['JPT-460','JPT-453', 'P1','zack']), async (t) => {
+test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460','JPT-453', 'P1','zack']), async (t) => {
     const user = h(t).rcData.mainCompany.users[4];
     const app = new AppRoot(t);
     const viewProfile= app.homePage.viewProfile;
