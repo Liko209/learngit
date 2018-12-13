@@ -35,7 +35,7 @@ function buildModel(id: number): SimpleModel {
 }
 
 function sortableTransformFunc(model: SimpleModel): ISortableModel {
-  return { id: model.id, sortValue: model.value };
+  return { data: model, id: model.id, sortValue: model.value };
 }
 
 function buildSortableModel(id: number) {
@@ -169,10 +169,6 @@ class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   }
 }
 
-function buildNumberSortableModel(data: number) {
-  return { data: { id: data }, id: data, sortValue: data };
-}
-
 function notMatchFunc<T>(arg: T): boolean {
   return false;
 }
@@ -219,12 +215,16 @@ describe('FetchSortableDataListHandler', () => {
         fetchSortableDataHandler.hasMore(QUERY_DIRECTION.NEWER),
       ).toBeTruthy();
       expect(fetchSortableDataHandler.listStore.items).toEqual([
-        buildNumberSortableModel(1),
-        buildNumberSortableModel(2),
+        buildSortableModel(1),
+        buildSortableModel(2),
       ]);
     });
 
     it('should append data when fetch many times', async () => {
+      const { fetchSortableDataHandler, dataProvider } = setup({
+        originalItems: [],
+      });
+
       dataProvider.mockData = { data: [buildModel(1)], hasMore: true };
       await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
       dataProvider.mockData = { data: [buildModel(2)], hasMore: true };
@@ -233,9 +233,9 @@ describe('FetchSortableDataListHandler', () => {
       await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
 
       expect(fetchSortableDataHandler.listStore.items).toEqual([
-        buildNumberSortableModel(1),
-        buildNumberSortableModel(2),
-        buildNumberSortableModel(3),
+        buildSortableModel(1),
+        buildSortableModel(2),
+        buildSortableModel(3),
       ]);
     });
 
