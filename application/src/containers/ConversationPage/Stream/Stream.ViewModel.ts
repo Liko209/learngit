@@ -149,7 +149,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.groupId === props.groupId) {
       return;
     }
-    this.resetAll(props.groupId);
+    this.initialize(props.groupId);
   }
 
   @loading
@@ -214,7 +214,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this._stateService.markAsRead(this.groupId);
   }
 
@@ -231,6 +230,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this._transformHandler) {
       this._transformHandler.dispose();
     }
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
   private async _prepareAllData(posts: Post[]) {
@@ -264,17 +266,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this.firstHistoryUnreadPostId;
   }
 
-  resetJumpToPostId = () => {
+  initialize = (groupId: number) => {
     const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-    this.jumpToPostId = 0;
-  }
-
-  resetAll = (groupId: number) => {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
     this.groupId = groupId;
-    this.dispose();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (direction, pageSize, anchor) => {
         try {

@@ -4,20 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import { t } from 'i18next';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
-
-type AvatarActionsProps = WithNamespaces & ViewProps;
+import { JuiModal } from '@/containers/Dialog';
+import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
 
 @observer
-class AvatarActions extends React.Component<AvatarActionsProps> {
-  constructor(props: AvatarActionsProps) {
+class AvatarActionsView extends React.Component<ViewProps> {
+  constructor(props: ViewProps) {
     super(props);
     window.jupiterElectron = {
       ...window.jupiterElectron,
@@ -46,8 +46,18 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
+  handleViewYourProfile = () => {
+    const { currentUserId } = this.props;
+    JuiModal.open(ProfileDialogPerson, {
+      componentProps: {
+        id: currentUserId,
+      },
+      size: 'medium',
+    });
+  }
+
   render() {
-    const { t, handleSignOut } = this.props;
+    const { handleSignOut } = this.props;
 
     return (
       <JuiPopoverMenu
@@ -62,9 +72,17 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
         }}
       >
         <JuiMenuList data-test-automation-id="avatarMenu">
+          <JuiMenuItem
+            onClick={this.handleViewYourProfile}
+            aria-label={t('viewYourProfile')}
+            data-test-automation-id="viewYourProfile"
+          >
+            {t('Profile')}
+          </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
+              aria-label={t('AboutRingCentral')}
               data-test-automation-id="aboutPage"
             >
               {t('AboutRingCentral')}
@@ -72,6 +90,7 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
           )}
           <JuiMenuItem
             onClick={handleSignOut}
+            aria-label={t('signOut')}
             data-test-automation-id="signOut"
           >
             {t('SignOut')}
@@ -81,7 +100,5 @@ class AvatarActions extends React.Component<AvatarActionsProps> {
     );
   }
 }
-
-const AvatarActionsView = translate('translations')(AvatarActions);
 
 export { AvatarActionsView };
