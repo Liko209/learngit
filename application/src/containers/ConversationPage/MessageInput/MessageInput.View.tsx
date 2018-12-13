@@ -68,6 +68,13 @@ class MessageInputViewComponent extends Component<
     }
   }
 
+  private _handleDropFile = (file: File) => {
+    const { current } = this._attachmentsRef;
+    if (current && file) {
+      current.vm.autoUploadFiles([file]);
+    }
+  }
+
   render() {
     const { draft, changeDraft, error, id, t } = this.props;
     const { modules } = this.state;
@@ -90,6 +97,7 @@ class MessageInputViewComponent extends Component<
           modules={modules}
           toolbarNode={toolbarNode}
           attachmentsNode={attachmentsNode}
+          didDropFile={this._handleDropFile}
         >
           <Mention id={id} ref={this._mentionRef} />
         </JuiMessageInput>
