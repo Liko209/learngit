@@ -9,6 +9,8 @@ import { SITE_URL } from '../../config';
 fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
+
+  
 test(formalName('Jump to post position when click button or clickable area of post.',['P1','JPT-315','zack']),
   async (t: TestController)=>{
   const app =new AppRoot(t);
@@ -39,16 +41,15 @@ test(formalName('Jump to post position when click button or clickable area of po
       members: [user.rcId, users[5].rcId],
     })).data.id;
 
-    await user.sdk.glip.updateProfile(user.rcId, {
-      [`hide_group_${teamId}`]: false,
-      [`hide_group_${pvChatId}`]: false,
-    });
-    bookmarksPostTeam = await user5Platform.createPost(
-      { text: verifyTextTeam + `, (${user.rcId})` },
+    await user.sdk.glip.showGroups(user.rcId, [ pvChatId, teamId ]);
+    await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
+
+    bookmarksPostTeam = await user5Platform.sendTextPost( 
+      verifyTextTeam + `, (${user.rcId})`,
       teamId,
     );
-    bookmarksPostChat = await user5Platform.createPost(
-      { text: verifyTextChat + `, (${user.rcId})` },
+    bookmarksPostChat = await user5Platform.sendTextPost(
+      verifyTextChat + `, (${user.rcId})`,
       pvChatId,
     );
 
@@ -112,7 +113,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   async (t: TestController)=>{
     const app =new AppRoot(t);
     const users =h(t).rcData.mainCompany.users;
-    const user = users[4];
+    const user = users[7];
     await h(t).resetGlipAccount(user);
     const userPlatform = await h(t).getPlatform(user);
     const user5Platform = await h(t).getPlatform(users[5]);
@@ -129,15 +130,13 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
       group = await userPlatform.createGroup({
         type: 'Group', members: [user.rcId, users[5].rcId],
       });
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${group.data.id}`]: false
-      });
+      await user.sdk.glip.showGroups(user.rcId, group.data.id);
     });
 
     let bookmarkPost;
     await h(t).withLog('And I have a post', async () => {
-      bookmarkPost = await user5Platform.createPost(
-        { text: `Hi I'm Bookmarks, (${user.rcId})` },
+      bookmarkPost = await user5Platform.sendTextPost(
+        `Hi I'm Bookmarks, (${user.rcId})`,
         group.data.id,
       );
     }, true);

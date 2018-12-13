@@ -443,6 +443,11 @@ export class GlipSdk {
     }
     await this.updateProfile(rcId, data);
   }
+
+  async clearFavoriteGroupsRemainMeChat(rcId?: string) {
+    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+    await this.favoriteGroups(rcId, [ +meChatId ]);
+  }
   
   async setMaxTeamDisplay(rcId: string, n: number) { 
     await this.updateProfile(rcId, { max_leftrail_group_tabs2: n });

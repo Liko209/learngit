@@ -53,6 +53,11 @@ export class RcPlatformSdk {
     });
   }
 
+  async sendTextPost(text: string, groupId: string) {
+    const data = { text };
+     return await this.createPost(data, groupId);
+  }
+
   async createGroup(data: object) {
     const url = 'restapi/v1.0/glip/groups';
     return await this.retryRequestOnException(async () => {
