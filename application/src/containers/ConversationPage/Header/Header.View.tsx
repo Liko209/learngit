@@ -71,12 +71,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         );
       })(name),
     );
-    // hide unimplemented button
-    // actionButtons.push(
-    //   <JuiIconButton key="info" tooltipTitle={toTitleCase(t(''))}>
-    //     info
-    //   </JuiIconButton>,
-    // );
+    // hide toggle right rail button
     return (
       <JuiButtonBar size="medium" overlapSize={1} awake={this.state.awake}>
         {actionButtons}
