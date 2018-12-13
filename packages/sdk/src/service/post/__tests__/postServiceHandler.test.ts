@@ -9,15 +9,25 @@ import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
 import { POST_STATUS } from '../../constants';
+import ItemService from '../../item';
 
 jest.mock('../../../dao');
 jest.mock('../../../utils/mathUtils');
+jest.mock('../../item');
 
-const mockPostDao = new PostDao(null);
-daoManager.getDao.mockReturnValue(mockPostDao);
-const mockAccountDao = new AccountDao(null);
-daoManager.getKVDao.mockReturnValue(mockAccountDao);
 describe('PostServiceHandler', () => {
+  const mockPostDao = new PostDao(null);
+  const mockAccountDao = new AccountDao(null);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+
+    daoManager.getDao.mockReturnValue(mockPostDao);
+    daoManager.getKVDao.mockReturnValue(mockAccountDao);
+  });
+
   describe('buildAtMentionsPeopleInfo()', () => {
     it('atMentions = true', () => {
       const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
@@ -52,7 +62,10 @@ describe('PostServiceHandler', () => {
     beforeEach(() => {
       versionHash.mockReturnValue('versionHash');
       randomInt.mockReturnValue(1000);
+      Date.now = jest.fn().mockReturnValue(123123);
+      mockAccountDao.get.mockReturnValue(123);
     });
+
     const expectData = (hasItemIds: boolean) => ({
       id: 'versionHash',
       created_at: 123123,
@@ -76,13 +89,9 @@ describe('PostServiceHandler', () => {
       status: 2,
       activity_data: {},
     });
-    beforeEach(() => {
-      Date.now = jest.fn().mockReturnValue(123123);
-    });
 
-    it('params has itemsIds', () => {
-      mockAccountDao.get.mockReturnValue(123);
-      const ret = PostServiceHandler.buildPostInfo({
+    it('params has itemsIds', async () => {
+      const ret = await PostServiceHandler.buildPostInfo({
         atMentions: true,
         text: 'text',
         groupId: 123,
@@ -96,8 +105,9 @@ describe('PostServiceHandler', () => {
       });
       expect(ret).toEqual(expectData(true));
     });
-    it('params not itemsIds', () => {
-      const retNotItemsIds = PostServiceHandler.buildPostInfo({
+
+    it('params not itemsIds', async () => {
+      const retNotItemsIds = await PostServiceHandler.buildPostInfo({
         atMentions: true,
         text: 'text',
         groupId: 123,
@@ -110,9 +120,39 @@ describe('PostServiceHandler', () => {
       });
       expect(retNotItemsIds).toMatchObject(expectData(false));
     });
+
+    it('should have item data and version map when has items to update', async () => {
+      const itemService = new ItemService();
+      ItemService.getInstance = jest.fn().mockReturnValueOnce(itemService);
+      itemService.getItemVersion
+        .mockResolvedValueOnce(3)
+        .mockResolvedValueOnce(3);
+      const versionData = { version_map: { 1: 3, 2: 3 } };
+      const ret = await PostServiceHandler.buildPostInfo({
+        text: 'text',
+        groupId: 123,
+        itemIds: [1, 2],
+        users: [
+          {
+            display: 'display',
+            id: 1,
+          },
+        ],
+        updateIds: [1, 2],
+      });
+      expect(itemService.getItemVersion).toBeCalledTimes(2);
+      expect(ret.item_data).toEqual(versionData);
+    });
   });
 
   describe('buildModifiedPostInfo()', () => {
+    beforeEach(() => {
+      versionHash.mockReturnValue('versionHash');
+      randomInt.mockReturnValue(1000);
+      Date.now = jest.fn().mockReturnValue(123123);
+      mockAccountDao.get.mockReturnValue(123);
+    });
+
     it('has oldpost & has users', async () => {
       mockPostDao.get.mockReturnValue({
         id: 1,

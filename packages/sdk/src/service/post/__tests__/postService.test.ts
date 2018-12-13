@@ -560,7 +560,7 @@ describe('PostService', () => {
     it('should throw error', async () => {
       const response = { data: { id: 1, text: 'abc' } };
       PostAPI.sendPost.mockResolvedValue(null);
-      PostServiceHandler.buildPostInfo.mockReturnValueOnce({
+      PostServiceHandler.buildPostInfo.mockResolvedValueOnce({
         id: 1,
         text: 'abc',
       });
@@ -583,7 +583,7 @@ describe('PostService', () => {
 
       itemService.cleanUploadingFiles = jest.fn();
 
-      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce(
         new ApiResultOk(responseData, {
           status: 200,
@@ -599,7 +599,7 @@ describe('PostService', () => {
 
     it('should send post fail', async () => {
       const info = _.cloneDeep(postMockInfo);
-      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
       PostAPI.sendPost.mockResolvedValueOnce({ data: { error: {} } });
       await expect(postService.sendPost({ text: 'abc' })).rejects.toThrow();
     });
@@ -1019,7 +1019,7 @@ describe('PostService', () => {
     it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
       const info = _.cloneDeep(postMockInfo);
       info.item_ids = [-1, 3];
-      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
       const spyResendFailedItems = jest.spyOn(
         postService,
@@ -1065,7 +1065,7 @@ describe('PostService', () => {
     it('should let post failed if send post with pseudo items and all items are failed', async () => {
       const info = _.cloneDeep(postMockInfo);
       info.item_ids = [-1, 3];
-      PostServiceHandler.buildPostInfo.mockReturnValueOnce(info);
+      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
       const spyResendFailedItems = jest.spyOn(
         postService,
@@ -1133,7 +1133,7 @@ describe('PostService', () => {
       expect(postDao.queryLastPostByGroupId).toHaveBeenCalledWith(groupId);
     });
   });
-  
+
   describe('handleSendPostSuccess()', () => {
     it('should update group send failure post ids', async () => {
       const postId = 100;

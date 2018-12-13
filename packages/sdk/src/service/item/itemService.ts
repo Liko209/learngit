@@ -42,6 +42,11 @@ class ItemService extends BaseService<Item> {
     );
   }
 
+  async getItemVersion(itemId: number): Promise<number> {
+    const item = await this.getById(itemId);
+    return item ? item.versions.length : 0;
+  }
+
   async cancelUpload(itemId: number) {
     if (itemId >= 0) {
       return;
