@@ -109,7 +109,10 @@ type AttachmentItemActionProps = {
 const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
   props: AttachmentItemActionProps,
 ) => (
-  <ActionWrapper onClick={props.onClick}>
+  <ActionWrapper
+    onClick={props.onClick}
+    data-test-automation-id="attachment-item-remove-button"
+  >
     {props.loading && <JuiCircularProgress size={24} value={props.value} />}
     <IconWrapper>
       {typeof props.icon === 'string' ? (

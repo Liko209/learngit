@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 09:21:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import {
@@ -25,6 +25,7 @@ class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
   private _streamRef: React.RefObject<StreamViewComponent> = React.createRef();
+  private _messageInputRef: RefObject<any> = createRef();
 
   @observable
   streamKey = 0;
@@ -45,6 +46,13 @@ class ConversationPageViewComponent extends Component<
     return this.streamKey++;
   }
 
+  _handleDropFile = (file: File) => {
+    const { current } = this._messageInputRef;
+    if (current) {
+      current.handleDropFile && current.handleDropFile(file);
+    }
+  }
+
   render() {
     const { t, groupId, canPost } = this.props;
 
@@ -55,7 +63,7 @@ class ConversationPageViewComponent extends Component<
         data-test-automation-id="messagePanel"
       >
         <Header id={groupId} />
-        <JuiStreamWrapper>
+        <JuiStreamWrapper didDropFile={this._handleDropFile}>
           <Stream
             groupId={groupId}
             viewRef={this._streamRef}
@@ -64,7 +72,11 @@ class ConversationPageViewComponent extends Component<
           <div id="jumpToFirstUnreadButtonRoot" />
         </JuiStreamWrapper>
         {canPost ? (
-          <MessageInput id={groupId} onPost={this.sendHandler} />
+          <MessageInput
+            ref={this._messageInputRef}
+            id={groupId}
+            onPost={this.sendHandler}
+          />
         ) : (
           <JuiDisabledInput text={t('disabledText')} />
         )}

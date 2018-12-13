@@ -32,7 +32,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
   if (showDuplicateFiles) {
     const title = 'Updated Files?';
     const content = (
-      <Content>
+      <Content data-test-automation-id="messageinput-duplicate-modal-content">
         The following files already exist.
         <br />
         <ul>
@@ -46,7 +46,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
       </Content>
     );
     const footer = (
-      <Footer>
+      <Footer data-test-automation-id="messageinput-duplicate-modal-footer">
         <JuiButton
           onClick={onCreate}
           color="primary"
