@@ -87,9 +87,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`,
         async () => {
           await item.enter();
-          currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
-            'data-group-id',
-          );
+          currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
           await item.expectUmi(0);
           await item.openMoreMenu();
           await app.homePage.messageTab.moreMenu.close.enter();
@@ -180,9 +178,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
-      currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
-        'data-group-id',
-      );
+      currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
     });
 
     await h(t).withLog('When I open conversation B and close conversation A', async () => {

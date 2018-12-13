@@ -41,6 +41,22 @@ class ConversationEntry extends BaseWebComponent {
     return this.self.find('span').withText('more_vert');
   }
 
+  get name() {
+    return this.self.find("p").textContent;
+  }
+
+  get groupId() {
+    return this.self.getAttribute("data-group-id");
+  }
+
+  async nameShouldBe(name: string) {
+    await this.t.expect(this.name).eql(name);
+  }
+
+  async groupIdShouldBe(id: string | number) {
+    await this.t.expect(this.groupId).eql(id.toString());
+  }
+
   async getUmi() {
     const umi = this.self.find('.umi');
     if (await umi.exists == false) {

@@ -77,26 +77,12 @@ test(
       'And the conversations should not be hidden before login',
       async () => {
         await user.sdk.glip.showAllGroups();
-        // await glipSDK.updateProfile(user.rcId, {
-        //   [`hide_group_${favPrivateChatId}`]: false,
-        //   [`hide_group_${favTeamId}`]: false,
-        //   [`hide_group_${groupId1}`]: false,
-        //   [`hide_group_${groupId2}`]: false,
-        //   [`hide_group_${groupId3}`]: false,
-        //   [`hide_group_${teamId1}`]: false,
-        //   [`hide_group_${teamId2}`]: false,
-        //   // favorite_group_ids: [+favPrivateChatId, +favTeamId],
-        // });
         await user.sdk.glip.favoriteGroups(user.rcId, [+favPrivateChatId, +favTeamId]);
       },
     );
 
     await h(t).withLog('And clear all UMIs before login', async () => {
       await user.sdk.glip.clearAllUmi();
-      // const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-      //   user.rcId,
-      // );
-      // await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(

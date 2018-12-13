@@ -40,11 +40,6 @@ test(formalName('Display Favorite button when user tap more button of a conversa
 
     await h(t).withLog('And the conversations should not be hidden and unfavorited before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
-      // await user.sdk.glip.updateProfile(user.rcId, {
-      //   [`hide_group_${groupId}`]: false,
-      //   [`hide_group_${teamId}`]: false,
-      //   // favorite_group_ids: [],
-      // });
       await user.sdk.glip.clearFavoriteGroups();
     });
 
@@ -123,14 +118,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
         await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
-
-        // await user.sdk.glip.updateProfile(user.rcId, {
-        //   [`hide_group_${groupId}`]: false,
-        //   [`hide_group_${teamId}`]: false,
-        //   // favorite_group_ids: [+groupId, +teamId],
-        // });
         await user.sdk.glip.favoriteGroups(user.rcId, [+groupId, +teamId]);
-
       },
     );
 
