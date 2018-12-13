@@ -54,16 +54,20 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   private get _quoteText() {
     let quoteText = this._text;
 
-    quoteText = quoteText.split('\n').reduce((qt, t) => {
+    quoteText = quoteText.split('\n').reduce((qt, t, index, arr) => {
       // filter empty line
-      if (t.length) {
+      if (t.length > 0) {
         // add '>' before last quote message
         if (t.charAt(0) === '>') {
           return `${qt}${t}<br/>`;
         }
         return `${qt}> ${t}<br/>`;
       }
-      return `${qt}${t}`;
+      // the last item in quoteText arr
+      if (index === arr.length - 1) {
+        return `${qt}${t} `;
+      }
+      return `${qt}${t}> <br/>`;
     },                                       '');
 
     return `${quoteText}<br/><br/>`;
