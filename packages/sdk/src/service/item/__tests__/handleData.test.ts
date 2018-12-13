@@ -2,11 +2,7 @@ import ItemAPI from '../../../api/glip/item';
 import { daoManager } from '../../../dao';
 import UploadManager from '../../../service/UploadManager';
 import { transform, baseHandleData } from '../../../service/utils';
-import handleData, {
-  sendFileItem,
-  extractFileNameAndType,
-  Options,
-} from '../handleData';
+import handleData, { extractFileNameAndType } from '../handleData';
 import {
   storedFileFactory,
   rawItemFactory,
@@ -48,37 +44,6 @@ describe('handleData()', () => {
   it('should insert nothing', async () => {
     const ret = await handleData([]);
     expect(ret).toBeUndefined();
-  });
-});
-
-describe('sendFileItem()', () => {
-  const options: Options = {
-    storedFile: storedFileFactory.build({
-      id: 1243,
-      created_at: 1234,
-      creator_id: 12443,
-      storage_path: 'fake/path/file.txt',
-    }),
-    groupId: '1',
-  };
-  it('should return the response of ItemAPI.sendFileItem()', async () => {
-    ItemAPI.sendFileItem.mockReturnValue(
-      new ApiResultOk('mock response data', 200, {}),
-    );
-
-    const result = await sendFileItem(options);
-
-    expect(result).toEqual('mock response data');
-  });
-  it('should return the error', async () => {
-    ItemAPI.sendFileItem.mockImplementation(() => {
-      throw new Error('error');
-    });
-    try {
-      await sendFileItem(options);
-    } catch (e) {
-      expect(e).toEqual(new Error('error'));
-    }
   });
 });
 
