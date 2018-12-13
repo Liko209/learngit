@@ -7,8 +7,10 @@ import { PostService } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import { StreamItemType } from '../types';
+import storeManager, { ENTITY_NAME } from '@/store';
 
 jest.mock('sdk/service/post');
+jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
@@ -24,6 +26,7 @@ describe('StreamViewModel', () => {
     jest.clearAllMocks();
     postService = new PostService();
     PostService.getInstance = jest.fn().mockReturnValue(postService);
+    spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
   describe('loadInitialPosts()', () => {
@@ -34,7 +37,7 @@ describe('StreamViewModel', () => {
       return vm;
     }
 
-    it('should load posts', async () => {
+    it('should load posts and update itemStore when fetch initial post', async () => {
       const vm = setup({
         props: { groupId: 1 },
       });
@@ -44,14 +47,18 @@ describe('StreamViewModel', () => {
           { id: 2, item_ids: [] },
           { id: 3, item_ids: [] },
         ],
+        items: [{ id: 1 }],
       });
-
       await vm.loadInitialPosts();
       expect(vm.items).toEqual([
         { type: StreamItemType.POST, value: 1 },
         { type: StreamItemType.POST, value: 2 },
         { type: StreamItemType.POST, value: 3 },
       ]);
+      expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
+        ENTITY_NAME.ITEM,
+        [{ id: 1 }],
+      );
     });
   });
 
