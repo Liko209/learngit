@@ -76,7 +76,12 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
       </Footer>
     );
     return (
-      <JuiModal open={showDuplicateFiles} title={title} footer={footer}>
+      <JuiModal
+        open={showDuplicateFiles}
+        title={title}
+        footer={footer}
+        data-test-automation-id="messageinput-duplicate-modal"
+      >
         {content}
       </JuiModal>
     );
