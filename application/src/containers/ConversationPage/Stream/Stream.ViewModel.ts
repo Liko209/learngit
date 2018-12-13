@@ -214,7 +214,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this._stateService.markAsRead(this.groupId);
   }
 
