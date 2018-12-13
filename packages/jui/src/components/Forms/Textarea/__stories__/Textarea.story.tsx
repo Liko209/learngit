@@ -18,6 +18,8 @@ storiesOf('Components/Forms', module)
     };
     return (
       <JuiTextarea
+        id="New Message"
+        label="New Message"
         placeholder="placeholder"
         fullWidth={true}
         onChange={onChange}

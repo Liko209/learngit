@@ -9,9 +9,9 @@ import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 
 import {
   typography,
-  spacing,
   grey,
-  shape,
+  spacing,
+  palette,
 } from '../../../foundation/utils/styles';
 
 type State = {
@@ -30,17 +30,23 @@ const WrapperTextField = ({ hasValue, ...rest }: State) => {
 
 const Textarea = styled<Textarea>(WrapperTextField)`
   && {
-    background: ${props => (props.hasValue ? '#fff' : grey('100'))};
-    padding: ${({ theme }) => spacing(2)};
-    margin: ${spacing(2)} 0 0 0;
-    box-sizing: border-box;
-    border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-    border: ${props =>
-      props.hasValue ? shape('border3') : '1px solid transparent'};
+    textarea {
+      background: ${grey('100')};
+      margin: ${spacing(2)} 0 0 0;
+      box-sizing: border-box;
+      &:hover,
+      &:focus {
+        background: ${palette('common', 'white')};
+      }
+    }
   }
   .input-root {
     padding: 0;
     ${typography('body1')};
+  }
+  .rootrootroot {
+    top: ${spacing(1)};
+    z-index: 1;
   }
 `;
 
@@ -79,9 +85,13 @@ class JuiTextarea extends React.Component<Props, State> {
         hasValue={hasValue}
         onKeyDown={this.onKeyDown}
         InputProps={{
-          disableUnderline: true,
           classes: {
             root: 'input-root',
+          },
+        }}
+        InputLabelProps={{
+          FormLabelClasses: {
+            root: 'rootrootroot',
           },
         }}
         rows={rows || 3}
