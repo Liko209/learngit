@@ -7,7 +7,7 @@
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { LikeProps, LikeViewProps } from './types';
-import { PostService } from 'sdk/service';
+import { PostService } from 'sdk/module/post/service/PostService';
 import { Post } from 'sdk/models';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -35,14 +35,16 @@ class LikeViewModel extends StoreViewModel<LikeProps> implements LikeViewProps {
 
   @action
   like = async (toLike: boolean): Promise<{ isFailed: boolean }> => {
-    const postService = PostService.getInstance<PostService>();
+    // const postService = PostService.getInstance<PostService>();
+    const postService = new PostService();
+
     const result = await postService.likePost(
       this._id,
       this._currentUserId,
       toLike,
     );
     return {
-      isFailed: result.isErr(),
+      isFailed: !result,
     };
   }
 }
