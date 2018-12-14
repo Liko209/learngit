@@ -45,7 +45,8 @@ describe('i18next-en', () => {
     expect(i18next.t('SignIn')).toEqual('Sign in');
     expect(i18next.t('SignOut')).toEqual('Sign out');
     expect(i18next.t('CreateTeam')).toEqual('Create Team');
-    expect(i18next.t('SendNewMessage')).toEqual('Send New Message');
+    expect(i18next.t('Type new message')).toEqual('Type new message');
+    expect(i18next.t('SendNewMessage')).toEqual('Send new message');
     expect(i18next.t('networkDisconnected')).toEqual(
       'Network disconnected. Please try again when the network is resumed.',
     );
