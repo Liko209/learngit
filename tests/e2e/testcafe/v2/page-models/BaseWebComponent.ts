@@ -41,6 +41,10 @@ export abstract class BaseWebComponent {
         return this.self.visible;
     }
 
+    get textContent() {
+        return this.self.textContent;
+    }
+
     getAttribute(attributeName: string) {
         return this.self.getAttribute(attributeName);
     }
