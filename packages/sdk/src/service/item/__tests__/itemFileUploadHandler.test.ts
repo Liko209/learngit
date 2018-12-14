@@ -346,11 +346,12 @@ describe('ItemFileService', () => {
       progressCaches.set(-4, itemFileUploadStatus);
 
       uploadingFiles = new Map();
-      const itemFiles = { id: -3 } as ItemFile;
-      const itemFiles2 = { id: -4 } as ItemFile;
-      uploadingFiles.set(1, [itemFiles]);
-      uploadingFiles.set(2, [itemFiles2, itemFiles2, itemFiles2]);
-      uploadingFiles.set(3, undefined);
+      const itemFile = { id: -3 } as ItemFile;
+      const itemFile2 = { id: -4 } as ItemFile;
+      uploadingFiles.set(1, [itemFile]);
+      uploadingFiles.set(2, [itemFile2, itemFile2, itemFile2]);
+      uploadingFiles.set(3, [itemFile]);
+      uploadingFiles.set(5, [itemFile2]);
 
       Object.assign(itemFileUploadHandler, {
         _progressCaches: progressCaches,
@@ -378,10 +379,12 @@ describe('ItemFileService', () => {
       await itemFileUploadHandler.cancelUpload(itemId);
       expect(itemDao.delete).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
-      expect(progressCaches.get(itemId)).toBeUndefined;
-      expect(progressCaches.get(-4)).not.toBeUndefined;
-      expect(uploadingFiles.get(1)).toEqual([]);
-      expect(uploadingFiles.get(2)).not.toEqual([]);
+      expect(progressCaches.get(itemId)).toBeUndefined();
+      expect(progressCaches.get(-4)).not.toBeUndefined();
+      expect(uploadingFiles.get(1)).toBeUndefined();
+      expect(uploadingFiles.get(2)).toHaveLength(3);
+      expect(uploadingFiles.get(3)).toBeUndefined();
+      expect(uploadingFiles.get(5)).toHaveLength(1);
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
         ENTITY.ITEM,
         expect.anything(),

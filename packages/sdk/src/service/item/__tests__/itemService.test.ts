@@ -306,15 +306,9 @@ describe('ItemService', () => {
     });
 
     describe('cancelUpload()', () => {
-      it('should not call cancel upload, when invalid itemId', async () => {
+      it('should call cancel upload', async () => {
         itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-        await itemService.cancelUpload(0);
-        expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(0);
-      });
-
-      it('should call cancel upload, when valid itemId', async () => {
-        itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-        await itemService.cancelUpload(-1);
+        await itemService.cancelUpload(1);
         expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
       });
     });

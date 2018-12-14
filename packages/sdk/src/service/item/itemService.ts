@@ -48,9 +48,6 @@ class ItemService extends BaseService<Item> {
   }
 
   async cancelUpload(itemId: number) {
-    if (itemId >= 0) {
-      return;
-    }
     await this._getItemFileHandler().cancelUpload(itemId);
   }
 

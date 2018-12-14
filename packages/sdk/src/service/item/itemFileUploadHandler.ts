@@ -77,13 +77,15 @@ class ItemFileUploadHandler {
 
     this._uploadingFiles.forEach((itemFiles: ItemFile[], id: number) => {
       if (itemFiles) {
-        this._uploadingFiles.set(
-          id,
-          itemFiles.filter((itemFile: ItemFile) => {
-            const id = itemFile._id ? itemFile._id : itemFile.id;
-            return id !== itemId;
-          }),
-        );
+        const items = itemFiles.filter((itemFile: ItemFile) => {
+          const id = itemFile._id ? itemFile._id : itemFile.id;
+          return id !== itemId;
+        });
+        if (items.length > 0) {
+          this._uploadingFiles.set(id, items);
+        } else {
+          this._uploadingFiles.delete(id);
+        }
       }
     });
 
