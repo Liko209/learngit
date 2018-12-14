@@ -115,6 +115,11 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // a temporary method:  need time to wait back-end and front-end sync umi data.
+  async waitUmiDismiss(timeout: number = 1e3) {
+    await this.t.wait(timeout);
+  }
+
   // misc
   async resetGlipAccount(user: IUser) {
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(user.company.admin);

@@ -12,6 +12,52 @@ class Entry extends BaseWebComponent {
   }
 }
 
+class UnReadToggler extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('unreadOnlyToggler');
+  }
+
+  get title() {
+    return this.self.find('.title')
+  }
+
+  get toggleButton() {
+    return this.self.find('.toggle-button');
+  }
+
+  get isChecked() {
+    return this.self.find('input[type="checkbox"]').checked;
+  }
+
+  async shouldBeOn() {
+    await this.t.expect(this.isChecked).ok();
+  }
+
+  async shouldBeOff() {
+    await this.t.expect(this.isChecked).notOk();
+  }
+
+  async isExpand() {
+    this.warnFlakySelector();
+    return await this.self.child().withText('keyboard_arrow_up').exists;
+  }
+
+  private async turn(on: boolean) {
+    const isOn = await this.isChecked;
+    if (isOn != on) {
+      await this.t.click(this.toggleButton);
+    }
+  }
+
+  async turnOn() {
+    await this.turn(true);
+  }
+
+  async turnOff() {
+    await this.turn(false);
+  }
+}
+
 class MoreMenu extends BaseWebComponent {
   get self() {
     return this.getSelector('*[role="document"]');
@@ -49,12 +95,24 @@ class ConversationEntry extends BaseWebComponent {
     return this.self.getAttribute("data-group-id");
   }
 
+  get isVisible(): Promise<boolean> {
+    return this.self.visible;
+  }
+
   async nameShouldBe(name: string) {
     await this.t.expect(this.name).eql(name);
   }
 
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.groupId).eql(id.toString());
+  }
+
+  async shouldBeVisible() {
+    await this.t.expect(this.isVisible).ok();
+  }
+
+  async shouldBeInvisible() {
+    await this.t.expect(this.isVisible).notOk();
   }
 
   async getUmi() {
@@ -180,7 +238,7 @@ class ConversationListSection extends BaseWebComponent {
 
   private async toggle(expand: boolean) {
     const isExpand = await this.isExpand();
-    if ((!isExpand && expand) || (isExpand && !expand)) {
+    if (isExpand != expand) {
       await this.t.click(this.toggleButton);
     }
   }
@@ -233,6 +291,10 @@ export class MessageTab extends BaseWebComponent {
     );
   }
 
+  get unReadToggler() {
+    return this.getComponent(UnReadToggler);
+  }
+
   get favoritesSection() {
     return this.getSection('Favorites');
   }
@@ -263,9 +325,9 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
     }
 
-    get bookmarkPage() {
+  get bookmarkPage() {
     return this.getComponent(BookmarkPage);
-    }
+  }
 
   get moreMenu() {
     return this.getComponent(MoreMenu);

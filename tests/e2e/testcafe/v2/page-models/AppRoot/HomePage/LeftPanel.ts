@@ -36,6 +36,10 @@ export class LeftPanel extends BaseWebComponent {
         return this.getSelectorByAutomationId('toggleBtn');
     }
 
+    get width() {
+        return this.self.offsetWidth;
+    }
+
     private getEntry(automationId: string) {
         const entry = this.getComponent(LeftNavigatorEntry, this.getSelectorByAutomationId(automationId));
         entry.name = automationId;
@@ -88,13 +92,17 @@ export class LeftPanel extends BaseWebComponent {
     }
 
     async isExpand() {
-        const width = await this.self.offsetWidth;
+        const width = await this.width;
         return width > 200 * 0.9;
+    }
+
+    async widthShouldBe(n: number) {
+        await this.t.expect(this.width).eql(n);
     }
 
     private async toggle(expand: boolean) {
         const isExpand = await this.isExpand();
-        if ((!isExpand && expand) || (isExpand && !expand)) {
+        if (isExpand != expand) {
             await this.t.click(this.toggleButton);
         }
     }

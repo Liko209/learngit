@@ -187,7 +187,7 @@ export class GlipSdk {
   async getInitRcTeamId() {
     const teams = (await this.getTeams()).data.teams;
     if (!teams) return [];
-    const ids = teams.filter(team => team["set_abbreviation"] =="Team RingCentral Inc.").map(team => team['_id']);
+    const ids = teams.filter(team => team["set_abbreviation"] == "Team RingCentral Inc.").map(team => team['_id']);
     return ids;
   }
 
@@ -442,6 +442,11 @@ export class GlipSdk {
       favorite_group_ids: [],
     }
     await this.updateProfile(rcId, data);
+  }
+
+  async clearFavoriteGroupsRemainMeChat(rcId?: string) {
+    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+    await this.favoriteGroups(rcId, [ +meChatId ]);
   }
   
   async setMaxTeamDisplay(rcId: string, n: number) { 
