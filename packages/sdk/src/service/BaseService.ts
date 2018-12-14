@@ -395,7 +395,7 @@ class BaseService<
     const rollbackPartialEntity = _.pick(originalEntity, keys);
 
     keys.forEach((key: string) => {
-      if (!rollbackPartialEntity[key]) {
+      if (!rollbackPartialEntity.hasOwnProperty(key)) {
         rollbackPartialEntity[key] = undefined;
       }
     });
