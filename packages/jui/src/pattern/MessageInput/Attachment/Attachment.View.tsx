@@ -16,7 +16,7 @@ import { observer } from 'mobx-react';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
-import { JuiMenu, JuiMenuItem } from '../../../components';
+import { JuiMenu, JuiMenuItem, JuiMenuList } from '../../../components';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
 type Props = AttachmentViewProps;
@@ -85,15 +85,17 @@ class AttachmentView extends Component<Props> {
             <JuiMenuItem disabled={true} divider={true}>
               Upload files from
             </JuiMenuItem>
-            <ClickAwayListener onClickAway={this._hideMenu}>
-              <JuiMenuItem
-                icon="computer"
-                data-test-automation-id="chatbar-attchment-selectfile"
-                onClick={this._hideMenuAndShowDialog}
-              >
-                Computer
-              </JuiMenuItem>
-            </ClickAwayListener>
+            <JuiMenuList>
+              <ClickAwayListener onClickAway={this._hideMenu}>
+                <JuiMenuItem
+                  icon="computer"
+                  data-test-automation-id="chatbar-attchment-selectfile"
+                  onClick={this._hideMenuAndShowDialog}
+                >
+                  Computer
+                </JuiMenuItem>
+              </ClickAwayListener>
+            </JuiMenuList>
           </JuiMenu>
         )}
       </Fragment>
