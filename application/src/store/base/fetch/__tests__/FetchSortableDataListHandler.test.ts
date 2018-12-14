@@ -140,8 +140,8 @@ function setup({ originalItems }: { originalItems: SimpleModel[] }) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleModel>();
   const listStore = new SortableListStore<SimpleModel>(sortFunc);
   listStore.append(
-    originalItems.map(({ id, value }: SimpleModel) => {
-      return { id, sortValue: value };
+    originalItems.map((item: SimpleModel) => {
+      return { id: item.id, sortValue: item.value, data: item };
     }),
   );
   const fetchSortableDataHandler = new FetchSortableDataListHandler(
@@ -277,6 +277,23 @@ describe('FetchSortableDataListHandler', () => {
         expectedOrder: [3, 4, 5],
         expectedCallbackResponse: {
           added: [buildSortableModel(4)],
+        },
+      },
+    ],
+    [
+      'when insert item between 3 and 5',
+      {
+        originalItems: [buildModel(3), buildModel(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [{ id: 5, value: 2 }]),
+        expectedOrder: [5, 3],
+        expectedCallbackResponse: {
+          updated: [
+            {
+              index: 0,
+              oldValue: buildSortableModel(5),
+              value: { data: { id: 5, value: 2 }, id: 5, sortValue: 2 },
+            },
+          ],
         },
       },
     ],
