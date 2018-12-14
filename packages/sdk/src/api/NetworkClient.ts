@@ -90,22 +90,46 @@ export default class NetworkClient {
   ): Promise<ApiResult<T>> {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
-      const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
-      const duplicate = this._isDuplicate(method, apiMapKey);
+      const request = this.getRequestByVia<T>(query, via);
+      let shouldExecuteRequest = true;
+      if (this._needCheckDuplicated(method)) {
+        const apiMapKey = `${path}_${method}_${serializeUrlParams(
+          params || {},
+        )}`;
 
-      const promiseResolvers = this.apiMap.get(apiMapKey) || [];
-      promiseResolvers.push({ resolve, reject });
-      this.apiMap.set(apiMapKey, promiseResolvers);
+        const isDuplicated = this.apiMap.has(apiMapKey);
+        const promiseResolvers = this.apiMap.get(apiMapKey) || [];
+        promiseResolvers.push({ resolve, reject });
+        this.apiMap.set(apiMapKey, promiseResolvers);
 
-      if (!duplicate) {
-        const request = this.getRequestByVia<T>(query, via);
-        request.callback = this.buildCallback<T>(apiMapKey);
-        if (requestHolder) {
-          requestHolder.request = request;
+        // check duplicated
+        if (!isDuplicated) {
+          request.callback = this.buildCallback<T>(apiMapKey);
+        } else {
+          shouldExecuteRequest = false;
         }
+      } else {
+        request.callback = this._apiResolvedCallBack(resolve);
+      }
+
+      if (requestHolder) {
+        requestHolder.request = request;
+      }
+
+      if (shouldExecuteRequest) {
         this.networkManager.addApiRequest(request);
       }
     });
+  }
+
+  private _apiResolvedCallBack(resolve: IResultResolveFn<any>) {
+    return (resp: BaseResponse) => {
+      if (resp.status >= 200 && resp.status < 300) {
+        resolve(apiOk(resp));
+      } else {
+        resolve(apiErr(resp));
+      }
+    };
   }
 
   buildCallback<T>(apiMapKey: string) {
@@ -113,11 +137,7 @@ export default class NetworkClient {
       const promiseResolvers = this.apiMap.get(apiMapKey);
       if (!promiseResolvers) return;
       promiseResolvers.forEach(({ resolve }) => {
-        if (resp.status >= 200 && resp.status < 300) {
-          resolve(apiOk(resp));
-        } else {
-          resolve(apiErr(resp));
-        }
+        this._apiResolvedCallBack(resolve)(resp);
       });
       this.apiMap.delete(apiMapKey);
     };
@@ -239,11 +259,7 @@ export default class NetworkClient {
     });
   }
 
-  private _isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
-    if (method !== NETWORK_METHOD.GET && method !== NETWORK_METHOD.DELETE) {
-      return false;
-    }
-
-    return this.apiMap.has(apiMapKey);
+  private _needCheckDuplicated(method: NETWORK_METHOD) {
+    return method === NETWORK_METHOD.GET || method === NETWORK_METHOD.DELETE;
   }
 }

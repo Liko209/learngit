@@ -78,6 +78,61 @@ const setup = () => {
       perpage: 20,
     },
   };
+
+  const deleteRequest = {
+    method: NETWORK_METHOD.GET,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const putRequest = {
+    method: NETWORK_METHOD.PUT,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const headRequest = {
+    method: NETWORK_METHOD.HEAD,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const optionRequest = {
+    method: NETWORK_METHOD.OPTIONS,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const patchRequest = {
+    method: NETWORK_METHOD.PATCH,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const deleteRequest = {
+    method: NETWORK_METHOD.GET,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
   const mockQuery = {
     data: { username: 'test' },
     handlerType: HandleByRingCentral,
@@ -95,6 +150,11 @@ const setup = () => {
     rcNetworkClient,
     postRequest,
     getRequest,
+    optionRequest,
+    putRequest,
+    deleteRequest,
+    patchRequest,
+    headRequest,
     config,
     mockQuery,
   };
@@ -138,6 +198,43 @@ describe('NetworkClient', () => {
       expect(response1).toHaveProperty('data', { a: 1 });
       expect(response2).toHaveProperty('data', { a: 1 });
     });
+  });
+
+  describe('duplicate request', () => {
+    beforeEach(() => {
+      networkManager.addApiRequest.mockClear();
+    });
+
+    const {
+      getRequest,
+      deleteRequest,
+      postRequest,
+      putRequest,
+      headRequest,
+      patchRequest,
+      optionRequest,
+    } = setup();
+
+    it.each`
+      request          | expectCallCnt | comment
+      ${getRequest}    | ${1}          | ${'getRequest'}
+      ${deleteRequest} | ${1}          | ${'deleteRequest'}
+      ${postRequest}   | ${2}          | ${'postRequest'}
+      ${putRequest}    | ${2}          | ${'putRequest'}
+      ${headRequest}   | ${2}          | ${'headRequest'}
+      ${patchRequest}  | ${2}          | ${'patchRequest'}
+      ${optionRequest} | ${2}          | ${'optionRequest'}
+    `(
+      'should block duplicate reqeust when request type is GET and DELETE: $comment',
+      ({ request, expectCallCnt }) => {
+        const { rcNetworkClient } = setup();
+
+        rcNetworkClient.request(request);
+        rcNetworkClient.request(request);
+
+        expect(networkManager.addApiRequest).toBeCalledTimes(expectCallCnt);
+      },
+    );
   });
 
   describe('buildCallback()', () => {
