@@ -47,13 +47,13 @@ class BaseConversationPage extends BaseWebComponent {
     await this.t.eval(() => {
       document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
     }, {
-      dependencies: { y }
-    });
+        dependencies: { y }
+      });
   }
 
   async scrollToMiddle() {
     const scrollHeight = await this.streamWrapper.clientHeight;
-    this.scrollToY(scrollHeight/2);
+    this.scrollToY(scrollHeight / 2);
   }
 
   async scrollToBottom() {
@@ -92,6 +92,30 @@ export class ConversationPage extends BaseConversationPage {
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
   }
+
+  get messageFilesArea() {
+    return this.getSelectorByAutomationId('attachment-list');
+  }
+
+  get uploadFileInput(){
+    return this.getSelectorByAutomationId('upload-file-input');
+  }
+  get removeButton(){
+    return this.getSelectorByAutomationId('attachment-item-remove-button');
+  }
+
+  private uploadFiles(selector: Selector, filesPath: Array<string>) {
+    return this.t.setFilesToUpload(selector, filesPath);
+  }
+
+  async uploadFilesToMessageFilesArea(filesPath: Array<string>) {
+    await this.uploadFiles(this.messageFilesArea, filesPath);
+  }
+
+  async uploadFilesToConversation(filesPath: Array<string>) {
+    await this.uploadFiles(this.streamWrapper, filesPath);
+  }
+
 }
 
 export class MentionPage extends BaseConversationPage {
@@ -197,11 +221,12 @@ export class PostItem extends BaseWebComponent {
 
 
   async clickConversationByButton() {
-    const buttonElement  = this.jumpToConversationButton;
+    const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
         buttonElement().style["opacity"] = "1";
     }, {
-      dependencies: { buttonElement } }
+        dependencies: { buttonElement }
+      }
     );
     await this.t.hover(this.self)
     await displayJumpButton();
