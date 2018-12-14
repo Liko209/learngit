@@ -32,8 +32,8 @@ export default class CompanyService extends BaseService<Company> {
       if (company.webmail_person_id && company.webmail_person_id > 0) {
         result = company.id.toString();
       } else {
-        const domains: string[] = JSON.parse(company.domain);
-        result = domains.length > 0 ? domains[0] : '';
+        const domains = company.domain;
+        result = Array.isArray(domains) ? domains[0] : domains;
       }
     }
     return result;
