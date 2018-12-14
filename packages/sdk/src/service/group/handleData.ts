@@ -7,8 +7,6 @@ import { mainLogger } from 'foundation';
 import { daoManager, DeactivatedDao } from '../../dao';
 import GroupDao from '../../dao/group';
 import GroupAPI from '../../api/glip/group';
-import AccountDao from '../../dao/account';
-import { ACCOUNT_USER_ID } from '../../dao/account/constants';
 import notificationCenter, {
   NotificationEntityUpdatePayload,
 } from '../notificationCenter';
@@ -213,14 +211,8 @@ export default async function handleData(groups: Raw<Group>[]) {
 
   const logLabel = `[Performance]grouphandleData ${Date.now()}`;
   console.time(logLabel);
-  // const dao = daoManager.getDao(GroupDao);
-  const accountDao = daoManager.getKVDao(AccountDao);
-  const userId = Number(accountDao.get(ACCOUNT_USER_ID));
   const transformData = await getTransformData(groups);
-
-  const data = transformData.filter(
-    item => item !== null && item.members && item.members.indexOf(userId) !== -1,
-  );
+  const data = transformData.filter(item => item);
 
   // handle deactivated data and normal data
   await saveDataAndDoNotification(data);
@@ -418,18 +410,27 @@ async function getUnreadGroupIds(groups: Group[]) {
  * extract out groups/teams which are latest than the oldest unread post
  * or just use default limit length
  */
-async function filterGroups(
-  groups: Group[],
-  limit: number,
-  shouldFilterGroupWithoutPostTime: boolean,
-) {
+async function filterGroups(groups: Group[], limit: number, isGroup: boolean) {
   let sortedGroups = groups;
-  if (shouldFilterGroupWithoutPostTime) {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+  const accountService: AccountService = AccountService.getInstance();
+  const currentUserId = accountService.getCurrentUserId();
+  if (isGroup) {
+    /**
+     * group without post should not be shown unless it's created by current user
+     */
     sortedGroups = groups.filter((model: Group) => {
       return (
         model.most_recent_post_created_at !== undefined ||
+        model.creator_id === currentUserId
+      );
+    });
+  } else {
+    /**
+     * Teams can only be shown if it includes current user or created by current user
+     */
+    sortedGroups = groups.filter((model: Group) => {
+      return (
+        model.members.includes(currentUserId) ||
         model.creator_id === currentUserId
       );
     });

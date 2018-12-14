@@ -73,19 +73,22 @@ type GenerateFakeGroupOptions = {
   hasPost: boolean;
 };
 
-function generateFakeGroups(count: number, { hasPost = true } = {}) {
+function generateFakeGroups(
+  count: number,
+  { hasPost = true, creator_id = 0, members = [] } = {},
+) {
   const groups: Group[] = [];
 
   for (let i = 1; i <= count; i += 1) {
     const group: Group = {
+      members,
       id: i,
       created_at: i,
       modified_at: i,
-      creator_id: i,
+      creator_id: creator_id ? creator_id : i,
       is_new: false,
       deactivated: false,
       version: i,
-      members: [],
       company_id: i,
       set_abbreviation: '',
       email_friendly_abbreviation: '',
@@ -322,41 +325,42 @@ describe('handleGroupMostRecentPostChanged()', () => {
 });
 
 describe('filterGroups()', () => {
-  it('should remove extra, when limit < total groups', async () => {
+  it('should remove extra, when limit < total teams', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
-    const groups = generateFakeGroups(TOTAL_GROUPS);
-
+    const groups = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     const filteredGroups = await filterGroups(groups, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
-  it('should return all groups, when limit = total groups', async () => {
+  it('should return all teams, when limit = total teams', async () => {
     const LIMIT = 5;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
-  it('should return all groups, when limit > total groups', async () => {
+  it('should return all teams, when limit > total teams', async () => {
     const LIMIT = 10;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
-
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
 
-  it("should return groups with unread group which unread group's position > limit", async () => {
+  it("should return teams with unread team which unread team's position > limit", async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
 
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1 },
@@ -366,11 +370,12 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(3);
   });
 
-  it("should return all groups when unread group's position = limit", async () => {
+  it("should return all teams when unread teams' position = limit", async () => {
     const LIMIT = 4;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1 },
     ]);
@@ -379,11 +384,12 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
-  it("should return all groups when unread group's position < limit", async () => {
+  it("should return all teams when unread team's position < limit", async () => {
     const LIMIT = 5;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1 },
     ]);
@@ -392,11 +398,12 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(LIMIT);
   });
 
-  it('should return groups with unread @mention', async () => {
+  it('should return teams with unread @mention', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_mentions_count: 1 },
       { id: 3, unread_mentions_count: 1 },
@@ -406,11 +413,12 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(4);
   });
 
-  it('should return groups until oldest unread, when multiple groups have unread', async () => {
+  it('should return teams until oldest unread, when multiple teams have unread', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS);
+    const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
+    accountService.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValue([
       { id: 4, unread_count: 1 },
       { id: 3, unread_count: 1 },
@@ -420,16 +428,49 @@ describe('filterGroups()', () => {
     expect(filteredGroups.length).toBe(3);
   });
 
-  it('should also return groups that have not post', async () => {
+  it('should also return teams that have not post', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS, { hasPost: false });
+    const teams = generateFakeGroups(TOTAL_GROUPS, {
+      hasPost: false,
+      creator_id: 99,
+    });
+    accountService.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
     const filteredGroups = await filterGroups(teams, LIMIT, false);
     expect(filteredGroups.length).toBe(LIMIT);
   });
+  it('should not return teams which does not created by me or includes me', async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS, {
+      hasPost: false,
+    });
+    accountService.getCurrentUserId.mockReturnValue(99);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
+    expect(filteredGroups.length).toBe(0);
+  });
+
+  it('should return team which includes me', async () => {
+    const LIMIT = 2;
+    const TOTAL_GROUPS = 5;
+
+    const teams = generateFakeGroups(TOTAL_GROUPS, {
+      hasPost: false,
+      members: [99, 10],
+    });
+    accountService.getCurrentUserId.mockReturnValue(99);
+    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+
+    const filteredGroups = await filterGroups(teams, LIMIT, false);
+    expect(filteredGroups.length).toBe(LIMIT);
+  });
+
   it('should not return group without post', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
