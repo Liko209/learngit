@@ -42,7 +42,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
   const showDuplicateFiles = duplicateFiles.length > 0;
   if (showDuplicateFiles) {
     const content = (
-      <Content>
+      <Content data-test-automation-id="messageinput-duplicate-modal-title">
         {subtitle}
         <br />
         <ul>
@@ -55,12 +55,13 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
       </Content>
     );
     const footer = (
-      <Footer>
+      <Footer data-test-automation-id="messageinput-duplicate-footer">
         <JuiButton
           onClick={onCreate}
           color="primary"
           variant="contained"
           autoFocus={true}
+          data-test-automation-id="messageinput-duplicate-create-button"
         >
           {'Create'}
         </JuiButton>
@@ -70,6 +71,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
             color="primary"
             variant="text"
             autoFocus={true}
+            data-test-automation-id="messageinput-duplicate-cancel-button"
           >
             {'Cancel'}
           </JuiButton>
@@ -78,6 +80,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
             color="primary"
             variant="contained"
             autoFocus={true}
+            data-test-automation-id="messageinput-duplicate-update-button"
           >
             {'Update'}
           </JuiButton>
