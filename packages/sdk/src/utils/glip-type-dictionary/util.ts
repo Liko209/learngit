@@ -8,15 +8,17 @@
 
 const INTEGRATION_LOWER_ID = 7000;
 const TYPE_ID_MASK = 0x1fff;
+const MAX_PSEUDO_ID = 0x3ffff;
+
 export default class GlipTypeUtil {
   static isIntegrationType(typeId: number): boolean {
     return typeId >= INTEGRATION_LOWER_ID;
   }
   static extractTypeId(objectId: number): number {
-    return objectId & TYPE_ID_MASK; // eslint-disable-line no-bitwise
+    return objectId > 0 ? objectId & TYPE_ID_MASK : -objectId & TYPE_ID_MASK; // eslint-disable-line no-bitwise
   }
 
-  static convertToIdWithType(typeId: number, originalId: number) {
-    return (originalId & ~TYPE_ID_MASK) ^ typeId;
+  static generatePseudoIdByType(typeId: number) {
+    return -((Math.floor(Math.random() * MAX_PSEUDO_ID) << 13) + typeId);
   }
 }

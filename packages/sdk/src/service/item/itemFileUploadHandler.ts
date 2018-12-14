@@ -19,6 +19,7 @@ import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
 import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
+
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
@@ -328,10 +329,7 @@ class ItemFileUploadHandler {
     const userId = accountService.getCurrentUserId() as number;
     const companyId = accountService.getCurrentCompanyId() as number;
     const now = Date.now();
-    const id = GlipTypeUtil.convertToIdWithType(
-      TypeDictionary.TYPE_ID_FILE,
-      now,
-    );
+    const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {
       id,
       created_at: now,
