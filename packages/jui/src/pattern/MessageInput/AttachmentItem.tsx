@@ -52,9 +52,9 @@ const Wrapper = styled.div`
   align-items: center;
   height: ${height(5)};
   max-height: ${height(5)};
-  width: ${width(84)};
-  min-width: ${width(84)};
-  max-width: ${width(84)};
+  width: ${width(77)};
+  min-width: ${width(77)};
+  max-width: ${width(77)};
   padding: ${spacing(4, 3, 4, 4)};
   border-radius: ${shape('borderRadius', 1)};
   box-shadow: ${props => props.theme.shadows[1]};
