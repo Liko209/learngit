@@ -109,7 +109,10 @@ type AttachmentItemActionProps = {
 const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
   props: AttachmentItemActionProps,
 ) => (
-  <ActionWrapper onClick={props.onClick}>
+  <ActionWrapper
+    onClick={props.onClick}
+    data-test-automation-id="attachment-action-button"
+  >
     {props.loading && <JuiCircularProgress size={24} value={props.value} />}
     <IconWrapper>
       {typeof props.icon === 'string' ? (
@@ -131,7 +134,9 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   return (
     <Wrapper>
       <Icon icon={icon} />
-      <NameArea status={status}>{fileName}</NameArea>
+      <NameArea status={status} data-test-automation-id="attachment-file-name">
+        {fileName}
+      </NameArea>
       <AttachmentItemAction
         onClick={onClickDeleteButton}
         loading={status === 'loading'}

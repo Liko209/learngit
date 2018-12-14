@@ -16,10 +16,15 @@ class AttachmentsViewComponent extends Component<
   AttachmentsViewProps & WithNamespaces
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles, showDuplicateFiles } = this.props;
+    const { duplicateFiles, showDuplicateFiles, t } = this.props;
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
+          title={t('Updated Files?')}
+          subtitle={t('The following files already exist.')}
+          footText={t(
+            'Do you want to update the existing files or do you wish to create new files?',
+          )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
