@@ -299,19 +299,19 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _preSaveItemFile(itemFile: ItemFile) {
-    const groupId = itemFile.group_ids[0];
-    const itemFiles = this._uploadingFiles[groupId];
-    if (itemFiles) {
-      this._uploadingFiles[groupId].push(itemFile);
+  private async _preSaveItemFile(newItemFile: ItemFile) {
+    const groupId = newItemFile.group_ids[0];
+    let existFiles: ItemFile[] | undefined = this._uploadingFiles.get(groupId);
+    if (existFiles && existFiles.length > 0) {
+      existFiles.push(newItemFile);
     } else {
-      this._uploadingFiles.set(groupId, [itemFile]);
+      existFiles = [newItemFile];
     }
-
+    this._uploadingFiles.set(groupId, existFiles);
     const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.put(itemFile);
+    await itemDao.put(newItemFile);
 
-    this._updatePreInsertItemStatus(itemFile.id, SENDING_STATUS.INPROGRESS);
+    this._updatePreInsertItemStatus(newItemFile.id, SENDING_STATUS.INPROGRESS);
   }
 
   private _updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
