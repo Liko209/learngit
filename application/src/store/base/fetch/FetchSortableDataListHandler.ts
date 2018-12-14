@@ -103,23 +103,18 @@ export class FetchSortableDataListHandler<
   }
 
   handleDataDeleted(payload: NotificationEntityDeletePayload) {
-    let originalSortableModels: ISortableModel[] = [];
+    let originalSortableIds: number[] = [];
 
     if (this._dataChangeCallBack) {
-      originalSortableModels = _.cloneDeep(this.sortableListStore.items);
+      originalSortableIds = this.sortableListStore.getIds();
     }
 
     const deletedSortableModelIds = Array.from(payload.body.ids);
     this.sortableListStore.removeByIds(deletedSortableModelIds);
 
     if (this._dataChangeCallBack) {
-      const deletedSortableModels = _.differenceBy(
-        originalSortableModels,
-        this.sortableListStore.items,
-        item => item.id,
-      );
       this._dataChangeCallBack({
-        deleted: deletedSortableModels.map(item => item.id),
+        deleted: _.intersection(originalSortableIds, payload.body.ids),
         added: [],
         updated: [],
         direction: QUERY_DIRECTION.NEWER,

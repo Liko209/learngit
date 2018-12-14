@@ -293,7 +293,7 @@ describe('FetchSortableDataListHandler', () => {
         },
       ],
       [
-        'when try to insert item that is not matched',
+        'when trying to insert item that is not matched',
         {
           originalItems: [buildModel(3), buildModel(5)],
           payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(1)]),
@@ -304,7 +304,7 @@ describe('FetchSortableDataListHandler', () => {
         },
       ],
       [
-        'when try to update a item that no in range',
+        'when trying to update a item that no in range',
         {
           originalItems: [
             buildModel(5),
