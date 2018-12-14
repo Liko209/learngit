@@ -50,8 +50,11 @@ function getItemServerUrl(id: number): string {
 
 class ItemAPI extends Api {
   static basePath = '/item';
-  static sendFileItem(data: object) {
-    return this.glipNetworkClient.post<Raw<ItemFile>>('/file', data);
+  static sendFileItem(data: object, version: number) {
+    return this.glipNetworkClient.post<Raw<ItemFile>>(
+      `/file?fileVersion=${version}`,
+      data,
+    );
   }
 
   static uploadFileItem(

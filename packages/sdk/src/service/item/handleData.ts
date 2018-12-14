@@ -4,12 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { daoManager } from '../../dao';
-import ItemAPI from '../../api/glip/item';
 import ItemDao from '../../dao/item';
 import { ENTITY } from '../../service/eventKey';
-import { versionHash } from '../../utils/mathUtils';
 import { transform, baseHandleData } from '../utils';
-import { StoredFile, Item, Raw, ItemFile } from '../../models';
+import { Item, Raw } from '../../models';
 
 const itemHandleData = async (items: Raw<Item>[]) => {
   if (items.length === 0) {
@@ -43,40 +41,5 @@ const extractFileNameAndType = (storagePath: string) => {
   return options;
 };
 
-export type Options = {
-  storedFile: StoredFile;
-  groupId?: string;
-};
-
-const sendFileItem = async (options: Options): Promise<Raw<ItemFile>> => {
-  const nameType = extractFileNameAndType(options.storedFile.storage_path);
-  const version = versionHash();
-  const fileVersion = {
-    stored_file_id: options.storedFile._id, // eslint-disable-line
-    url: options.storedFile.storage_url,
-    download_url: options.storedFile.download_url,
-    date: options.storedFile.last_modified,
-    size: options.storedFile.size,
-    creator_id: Number(options.storedFile.creator_id),
-  };
-  const fileItemOptions = {
-    version,
-    creator_id: Number(options.storedFile.creator_id),
-    new_version: version,
-    name: nameType.name,
-    type: nameType.type,
-    source: 'upload',
-    no_post: true,
-    group_ids: [Number(options.groupId)],
-    post_ids: [],
-    versions: [fileVersion],
-    created_at: Date.now(),
-    is_new: true,
-  };
-  const result = await ItemAPI.sendFileItem(fileItemOptions);
-  const rawFileItem = result.expect('Failed to send file item.');
-  return rawFileItem;
-};
-
-export { extractFileNameAndType, sendFileItem };
+export { extractFileNameAndType };
 export default itemHandleData;

@@ -104,7 +104,7 @@ class BaseService<
       throwError('ApiClass || HandleData');
     }
     if (id <= 0) {
-      throwError('invalid id, should not do network request');
+      throwError(`invalid id(${id}), should not do network request`);
     }
     const result: ApiResult<any> = await this.ApiClass.getDataById(id);
     if (result.isOk()) {

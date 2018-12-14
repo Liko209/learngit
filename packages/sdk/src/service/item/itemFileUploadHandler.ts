@@ -168,8 +168,6 @@ class ItemFileUploadHandler {
     preInsertItem: ItemFile,
     isUpdate: boolean,
   ) {
-    let result: ApiResult<Raw<ItemFile>, BaseError> | undefined = undefined;
-
     let existItemFile: ItemFile | null = null;
     if (isUpdate) {
       existItemFile = await this._getOldestExistFile(
@@ -178,6 +176,7 @@ class ItemFileUploadHandler {
       );
     }
 
+    let result: ApiResult<Raw<ItemFile>, BaseError> | undefined = undefined;
     if (existItemFile) {
       result = await this._updateItem(existItemFile, preInsertItem);
     } else {
@@ -366,7 +365,7 @@ class ItemFileUploadHandler {
       created_at: Date.now(),
       is_new: true,
     };
-    return await ItemAPI.sendFileItem(fileItemOptions);
+    return await ItemAPI.sendFileItem(fileItemOptions, version);
   }
 
   private _emitItemFileStatus(
