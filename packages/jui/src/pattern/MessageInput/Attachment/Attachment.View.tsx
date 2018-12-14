@@ -75,7 +75,7 @@ class AttachmentView extends Component<Props> {
               horizontal: 'right',
             }}
             transformOrigin={{
-              vertical: 'bottom',
+              vertical: 'center',
               horizontal: 'left',
             }}
             data-test-automation-id="conversation-chatbar-attachment-menu"
@@ -83,7 +83,7 @@ class AttachmentView extends Component<Props> {
             open={open}
           >
             <JuiMenuItem disabled={true} divider={true}>
-              Upload file from
+              Upload files from
             </JuiMenuItem>
             <ClickAwayListener onClickAway={this._hideMenu}>
               <JuiMenuItem
