@@ -26,27 +26,27 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { SortableListStore } from '../SortableListStore';
 
-type SimpleModel = BaseModel & {
+type SimpleItem = BaseModel & {
   value: number;
 };
 
-function buildModel(id: number): SimpleModel {
+function buildItem(id: number): SimpleItem {
   return { id, value: id };
 }
 
-function sortableTransformFunc(model: SimpleModel): ISortableModel {
+function sortableTransformFunc(model: SimpleItem): ISortableModel {
   return { data: model, id: model.id, sortValue: model.value };
 }
 
 function buildSortableModel(id: number) {
-  return sortableTransformFunc(buildModel(id));
+  return sortableTransformFunc(buildItem(id));
 }
 
-function matchInRange(target: SimpleModel) {
+function matchInRange(target: SimpleItem) {
   return target.id >= 2 && target.id <= 10;
 }
 
-const transformFunc: ITransformFunc<SimpleModel> = sortableTransformFunc;
+const transformFunc: ITransformFunc<SimpleItem> = sortableTransformFunc;
 const sortFunc: ISortFunc<any> = (
   first: ISortableModel,
   second: ISortableModel,
@@ -54,15 +54,15 @@ const sortFunc: ISortFunc<any> = (
 
 function buildReplacePayload(
   originalIds: number[],
-  models: SimpleModel[],
+  models: SimpleItem[],
   isReplaceAll = false,
 ) {
   const ids = originalIds;
-  const entities = new Map<number, SimpleModel>();
-  models.forEach((model: SimpleModel, index: number) => {
+  const entities = new Map<number, SimpleItem>();
+  models.forEach((model: SimpleItem, index: number) => {
     entities.set(ids[index], model);
   });
-  const payload: NotificationEntityPayload<SimpleModel> = {
+  const payload: NotificationEntityPayload<SimpleItem> = {
     type: EVENT_TYPES.REPLACE,
     body: {
       ids,
@@ -75,14 +75,14 @@ function buildReplacePayload(
 
 function buildPayload(
   type: EVENT_TYPES,
-  models: SimpleModel[],
+  models: SimpleItem[],
   originalIds?: number[],
 ) {
-  let payload: NotificationEntityPayload<SimpleModel>;
-  const entities = new Map<number, SimpleModel>();
+  let payload: NotificationEntityPayload<SimpleItem>;
+  const entities = new Map<number, SimpleItem>();
 
   const ids = models.map(model => model.id);
-  models.forEach((model: SimpleModel) => {
+  models.forEach((model: SimpleItem) => {
     entities.set(model.id, model);
   });
 
@@ -136,11 +136,11 @@ function buildPayload(
   return payload;
 }
 
-function setup({ originalItems }: { originalItems: SimpleModel[] }) {
-  const dataProvider = new TestFetchSortableDataHandler<SimpleModel>();
-  const listStore = new SortableListStore<SimpleModel>(sortFunc);
+function setup({ originalItems }: { originalItems: SimpleItem[] }) {
+  const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
+  const listStore = new SortableListStore<SimpleItem>(sortFunc);
   listStore.append(
-    originalItems.map((item: SimpleModel) => {
+    originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
     }),
   );
@@ -206,7 +206,7 @@ describe('FetchSortableDataListHandler', () => {
       });
 
       dataProvider.mockData = {
-        data: [buildModel(1), buildModel(2)],
+        data: [buildItem(1), buildItem(2)],
         hasMore: true,
       };
       await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
@@ -225,11 +225,11 @@ describe('FetchSortableDataListHandler', () => {
         originalItems: [],
       });
 
-      dataProvider.mockData = { data: [buildModel(1)], hasMore: true };
+      dataProvider.mockData = { data: [buildItem(1)], hasMore: true };
       await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-      dataProvider.mockData = { data: [buildModel(2)], hasMore: true };
+      dataProvider.mockData = { data: [buildItem(2)], hasMore: true };
       await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-      dataProvider.mockData = { data: [buildModel(3)], hasMore: false };
+      dataProvider.mockData = { data: [buildItem(3)], hasMore: false };
       await fetchSortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
 
       expect(fetchSortableDataHandler.listStore.items).toEqual([
@@ -262,7 +262,7 @@ describe('FetchSortableDataListHandler', () => {
       'when add item',
       {
         originalItems: [],
-        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(2)]),
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
         expectedOrder: [2],
         expectedCallbackResponse: {
           added: [buildSortableModel(2)],
@@ -272,8 +272,8 @@ describe('FetchSortableDataListHandler', () => {
     [
       'when insert item between 3 and 5',
       {
-        originalItems: [buildModel(3), buildModel(5)],
-        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(4)]),
+        originalItems: [buildItem(3), buildItem(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(4)]),
         expectedOrder: [3, 4, 5],
         expectedCallbackResponse: {
           added: [buildSortableModel(4)],
@@ -283,7 +283,7 @@ describe('FetchSortableDataListHandler', () => {
     [
       'when insert item between 3 and 5',
       {
-        originalItems: [buildModel(3), buildModel(5)],
+        originalItems: [buildItem(3), buildItem(5)],
         payload: buildPayload(EVENT_TYPES.UPDATE, [{ id: 5, value: 2 }]),
         expectedOrder: [5, 3],
         expectedCallbackResponse: {
@@ -300,8 +300,8 @@ describe('FetchSortableDataListHandler', () => {
     [
       'when append after 3,5',
       {
-        originalItems: [buildModel(3), buildModel(5)],
-        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(6)]),
+        originalItems: [buildItem(3), buildItem(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(6)]),
         expectedOrder: [3, 5, 6],
         expectedCallbackResponse: {
           added: [buildSortableModel(6)],
@@ -311,8 +311,8 @@ describe('FetchSortableDataListHandler', () => {
     [
       'when trying to insert item that is not matched',
       {
-        originalItems: [buildModel(3), buildModel(5)],
-        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(1)]),
+        originalItems: [buildItem(3), buildItem(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(1)]),
         expectedOrder: [3, 5],
         expectedCallbackResponse: {
           added: [],
@@ -323,11 +323,11 @@ describe('FetchSortableDataListHandler', () => {
       'when trying to update a item that no in range',
       {
         originalItems: [
-          buildModel(5),
-          buildModel(1),
-          buildModel(2),
-          buildModel(3),
-          buildModel(4),
+          buildItem(5),
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
         ],
         payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
         expectedOrder: [1, 2, 3, 4, 5],
@@ -340,11 +340,11 @@ describe('FetchSortableDataListHandler', () => {
       'when existed but not match',
       {
         originalItems: [
-          buildModel(1),
-          buildModel(2),
-          buildModel(3),
-          buildModel(4),
-          buildModel(5),
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
         ],
         payload: buildReplacePayload([1], [{ id: 1, value: 10 }]),
         expectedOrder: [2, 3, 4, 5],
@@ -361,13 +361,13 @@ describe('FetchSortableDataListHandler', () => {
       'when replace a preinsert model',
       {
         originalItems: [
-          buildModel(1),
+          buildItem(1),
           { id: -2, value: 2 },
-          buildModel(3),
-          buildModel(4),
-          buildModel(5),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
         ],
-        payload: buildReplacePayload([-2], [buildModel(2)]),
+        payload: buildReplacePayload([-2], [buildItem(2)]),
         expectedOrder: [1, 2, 3, 4, 5],
         expectedCallbackResponse: {
           added: [buildSortableModel(2)],
@@ -379,15 +379,15 @@ describe('FetchSortableDataListHandler', () => {
       'when replace all',
       {
         originalItems: [
-          buildModel(1),
-          buildModel(2),
-          buildModel(3),
-          buildModel(4),
-          buildModel(5),
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
         ],
         payload: buildReplacePayload(
           [6, 7],
-          [buildModel(6), buildModel(7)],
+          [buildItem(6), buildItem(7)],
           true, // isReplaceAll
         ),
         expectedOrder: [6, 7],
@@ -404,16 +404,13 @@ describe('FetchSortableDataListHandler', () => {
       'when delete 2,4',
       {
         originalItems: [
-          buildModel(1),
-          buildModel(2),
-          buildModel(3),
-          buildModel(4),
-          buildModel(5),
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
         ],
-        payload: buildPayload(EVENT_TYPES.DELETE, [
-          buildModel(2),
-          buildModel(4),
-        ]),
+        payload: buildPayload(EVENT_TYPES.DELETE, [buildItem(2), buildItem(4)]),
         expectedOrder: [1, 3, 5],
         expectedCallbackResponse: {
           deleted: [2, 4],
@@ -424,13 +421,13 @@ describe('FetchSortableDataListHandler', () => {
       'when trying to delete no existed item',
       {
         originalItems: [
-          buildModel(1),
-          buildModel(2),
-          buildModel(3),
-          buildModel(4),
-          buildModel(5),
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
         ],
-        payload: buildPayload(EVENT_TYPES.DELETE, [buildModel(6)]),
+        payload: buildPayload(EVENT_TYPES.DELETE, [buildItem(6)]),
         expectedOrder: [1, 2, 3, 4, 5],
         expectedCallbackResponse: {
           deleted: [],
@@ -471,8 +468,24 @@ describe('FetchSortableDataListHandler', () => {
     },
   );
 
-  describe('upsert()', () => {
-    it('should update', () => {});
+  describe('removeByIds()', () => {
+    it('should remove by ids', () => {
+      const originalItems = [
+        buildItem(1),
+        buildItem(2),
+        buildItem(3),
+        buildItem(4),
+        buildItem(5),
+      ];
+      const { fetchSortableDataHandler } = setup({ originalItems });
+
+      fetchSortableDataHandler.removeByIds([1, 2, 4]);
+
+      expect(fetchSortableDataHandler.sortableListStore.items).toEqual([
+        buildSortableModel(3),
+        buildSortableModel(5),
+      ]);
+    });
   });
 
   describe('updateEntityStore()', () => {

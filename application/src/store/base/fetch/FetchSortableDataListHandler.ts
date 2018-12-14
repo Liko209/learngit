@@ -286,7 +286,12 @@ export class FetchSortableDataListHandler<
   }
 
   removeByIds(ids: number[]) {
-    this.sortableListStore.removeByIds(ids);
+    this.onDataChanged({
+      type: EVENT_TYPES.DELETE,
+      body: {
+        ids,
+      },
+    });
   }
 
   upsert(models: T[]) {
