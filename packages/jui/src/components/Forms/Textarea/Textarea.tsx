@@ -12,6 +12,7 @@ import {
   grey,
   spacing,
   palette,
+  height,
 } from '../../../foundation/utils/styles';
 
 type State = {
@@ -31,6 +32,7 @@ const WrapperTextField = ({ hasValue, ...rest }: State) => {
 const Textarea = styled<Textarea>(WrapperTextField)`
   && {
     textarea {
+      height: ${height(18)};
       background: ${grey('100')};
       margin: ${spacing(2)} 0 0 0;
       box-sizing: border-box;
