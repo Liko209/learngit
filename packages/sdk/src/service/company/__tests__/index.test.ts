@@ -31,7 +31,7 @@ describe('CompanyService', () => {
       const spy = jest.spyOn(companyService, 'getCompanyById');
       const company = {
         id: 1,
-        domain: '["aaa", "bbb", "ccc"]',
+        domain: ['aaa', 'bbb', 'ccc'],
         webmail_person_id: 123,
       };
       spy.mockResolvedValueOnce(company);
@@ -44,7 +44,7 @@ describe('CompanyService', () => {
       const spy = jest.spyOn(companyService, 'getCompanyById');
       const company = {
         id: 1,
-        domain: '["aaa", "bbb", "ccc"]',
+        domain: ['aaa', 'bbb', 'ccc'],
         webmail_person_id: -123,
       };
       spy.mockResolvedValueOnce(company);
@@ -55,7 +55,7 @@ describe('CompanyService', () => {
 
     it('should return company domain when dont have webmail_person_id  and has one domain', async () => {
       const spy = jest.spyOn(companyService, 'getCompanyById');
-      const company = { id: 1, domain: '["ddd"]' };
+      const company = { id: 1, domain: 'ddd' };
       spy.mockResolvedValueOnce(company);
       const res = await companyService.getCompanyEmailDomain(company.id);
       expect(res).toBe('ddd');
