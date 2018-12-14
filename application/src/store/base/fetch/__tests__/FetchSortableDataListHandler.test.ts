@@ -254,200 +254,179 @@ describe('FetchSortableDataListHandler', () => {
     });
   });
 
-  describe('onDataChange()', () => {
-    it.each([
-      /**
-       * UPDATE
-       */
-      [
-        'when add item',
-        {
-          originalItems: [],
-          payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(2)]),
-          expectedOrder: [2],
-          expectedCallbackResponse: {
-            added: [buildSortableModel(2)],
-          },
+  describe.each([
+    /**
+     * UPDATE
+     */
+    [
+      'when add item',
+      {
+        originalItems: [],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(2)]),
+        expectedOrder: [2],
+        expectedCallbackResponse: {
+          added: [buildSortableModel(2)],
         },
-      ],
-      [
-        'when insert item between 3 and 5',
-        {
-          originalItems: [buildModel(3), buildModel(5)],
-          payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(4)]),
-          expectedOrder: [3, 4, 5],
-          expectedCallbackResponse: {
-            added: [buildSortableModel(4)],
-          },
+      },
+    ],
+    [
+      'when insert item between 3 and 5',
+      {
+        originalItems: [buildModel(3), buildModel(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(4)]),
+        expectedOrder: [3, 4, 5],
+        expectedCallbackResponse: {
+          added: [buildSortableModel(4)],
         },
-      ],
-      [
-        'when append after 3,5',
-        {
-          originalItems: [buildModel(3), buildModel(5)],
-          payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(6)]),
-          expectedOrder: [3, 5, 6],
-          expectedCallbackResponse: {
-            added: [buildSortableModel(6)],
-          },
+      },
+    ],
+    [
+      'when append after 3,5',
+      {
+        originalItems: [buildModel(3), buildModel(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(6)]),
+        expectedOrder: [3, 5, 6],
+        expectedCallbackResponse: {
+          added: [buildSortableModel(6)],
         },
-      ],
-      [
-        'when trying to insert item that is not matched',
-        {
-          originalItems: [buildModel(3), buildModel(5)],
-          payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(1)]),
-          expectedOrder: [3, 5],
-          expectedCallbackResponse: {
-            added: [],
-          },
+      },
+    ],
+    [
+      'when trying to insert item that is not matched',
+      {
+        originalItems: [buildModel(3), buildModel(5)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildModel(1)]),
+        expectedOrder: [3, 5],
+        expectedCallbackResponse: {
+          added: [],
         },
-      ],
-      [
-        'when trying to update a item that no in range',
-        {
-          originalItems: [
-            buildModel(5),
-            buildModel(1),
-            buildModel(2),
-            buildModel(3),
-            buildModel(4),
-          ],
-          payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
-          expectedOrder: [1, 2, 3, 4, 5],
-          expectedCallbackResponse: {
-            added: [],
-          },
+      },
+    ],
+    [
+      'when trying to update a item that no in range',
+      {
+        originalItems: [
+          buildModel(5),
+          buildModel(1),
+          buildModel(2),
+          buildModel(3),
+          buildModel(4),
+        ],
+        payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
+        expectedOrder: [1, 2, 3, 4, 5],
+        expectedCallbackResponse: {
+          added: [],
         },
-      ],
-      [
-        'when existed but not match',
-        {
-          originalItems: [
-            buildModel(1),
-            buildModel(2),
-            buildModel(3),
-            buildModel(4),
-            buildModel(5),
-          ],
-          payload: buildReplacePayload([1], [{ id: 1, value: 10 }]),
-          expectedOrder: [2, 3, 4, 5],
-          expectedCallbackResponse: {
-            deleted: [1],
-            added: [],
-          },
+      },
+    ],
+    [
+      'when existed but not match',
+      {
+        originalItems: [
+          buildModel(1),
+          buildModel(2),
+          buildModel(3),
+          buildModel(4),
+          buildModel(5),
+        ],
+        payload: buildReplacePayload([1], [{ id: 1, value: 10 }]),
+        expectedOrder: [2, 3, 4, 5],
+        expectedCallbackResponse: {
+          deleted: [1],
+          added: [],
         },
-      ],
-      /**
-       * REPLACE
-       */
-      [
-        'when replace a preinsert model',
-        {
-          originalItems: [
-            buildModel(1),
-            { id: -2, value: 2 },
-            buildModel(3),
-            buildModel(4),
-            buildModel(5),
-          ],
-          payload: buildReplacePayload([-2], [buildModel(2)]),
-          expectedOrder: [1, 2, 3, 4, 5],
-          expectedCallbackResponse: {
-            added: [buildSortableModel(2)],
-            deleted: [-2],
-          },
+      },
+    ],
+    /**
+     * REPLACE
+     */
+    [
+      'when replace a preinsert model',
+      {
+        originalItems: [
+          buildModel(1),
+          { id: -2, value: 2 },
+          buildModel(3),
+          buildModel(4),
+          buildModel(5),
+        ],
+        payload: buildReplacePayload([-2], [buildModel(2)]),
+        expectedOrder: [1, 2, 3, 4, 5],
+        expectedCallbackResponse: {
+          added: [buildSortableModel(2)],
+          deleted: [-2],
         },
-      ],
-      [
-        'when replace all',
-        {
-          originalItems: [
-            buildModel(1),
-            buildModel(2),
-            buildModel(3),
-            buildModel(4),
-            buildModel(5),
-          ],
-          payload: buildReplacePayload(
-            [6, 7],
-            [buildModel(6), buildModel(7)],
-            true, // isReplaceAll
-          ),
-          expectedOrder: [6, 7],
-          expectedCallbackResponse: {
-            added: [buildSortableModel(6), buildSortableModel(7)],
-            deleted: [1, 2, 3, 4, 5],
-          },
+      },
+    ],
+    [
+      'when replace all',
+      {
+        originalItems: [
+          buildModel(1),
+          buildModel(2),
+          buildModel(3),
+          buildModel(4),
+          buildModel(5),
+        ],
+        payload: buildReplacePayload(
+          [6, 7],
+          [buildModel(6), buildModel(7)],
+          true, // isReplaceAll
+        ),
+        expectedOrder: [6, 7],
+        expectedCallbackResponse: {
+          added: [buildSortableModel(6), buildSortableModel(7)],
+          deleted: [1, 2, 3, 4, 5],
         },
-      ],
-      /**
-       * DELETE
-       */
-      [
-        'when delete 2,4',
-        {
-          originalItems: [
-            buildModel(1),
-            buildModel(2),
-            buildModel(3),
-            buildModel(4),
-            buildModel(5),
-          ],
-          payload: buildPayload(EVENT_TYPES.DELETE, [
-            buildModel(2),
-            buildModel(4),
-          ]),
-          expectedOrder: [1, 3, 5],
-          expectedCallbackResponse: {
-            deleted: [2, 4],
-          },
+      },
+    ],
+    /**
+     * DELETE
+     */
+    [
+      'when delete 2,4',
+      {
+        originalItems: [
+          buildModel(1),
+          buildModel(2),
+          buildModel(3),
+          buildModel(4),
+          buildModel(5),
+        ],
+        payload: buildPayload(EVENT_TYPES.DELETE, [
+          buildModel(2),
+          buildModel(4),
+        ]),
+        expectedOrder: [1, 3, 5],
+        expectedCallbackResponse: {
+          deleted: [2, 4],
         },
-      ],
-      [
-        'when trying to delete no existed item',
-        {
-          originalItems: [
-            buildModel(1),
-            buildModel(2),
-            buildModel(3),
-            buildModel(4),
-            buildModel(5),
-          ],
-          payload: buildPayload(EVENT_TYPES.DELETE, [buildModel(6)]),
-          expectedOrder: [1, 2, 3, 4, 5],
-          expectedCallbackResponse: {
-            deleted: [],
-          },
+      },
+    ],
+    [
+      'when trying to delete no existed item',
+      {
+        originalItems: [
+          buildModel(1),
+          buildModel(2),
+          buildModel(3),
+          buildModel(4),
+          buildModel(5),
+        ],
+        payload: buildPayload(EVENT_TYPES.DELETE, [buildModel(6)]),
+        expectedOrder: [1, 2, 3, 4, 5],
+        expectedCallbackResponse: {
+          deleted: [],
         },
-      ],
-    ])(
-      'should have correct order %s',
-      (
-        _: string,
-        { originalItems, payload, expectedOrder, expectedCallbackResponse }: any,
-      ) => {
-        /**
-         * With data callback
-         */
-        const { fetchSortableDataHandler } = setup({
-          originalItems,
-        });
-        const dataChangeCallback = jest.fn();
-        fetchSortableDataHandler.setUpDataChangeCallback(dataChangeCallback);
-
-        fetchSortableDataHandler.onDataChanged(payload);
-
-        expect(
-          fetchSortableDataHandler.listStore.items.map(item => item.id),
-        ).toEqual(expectedOrder);
-        expect(dataChangeCallback).toHaveBeenCalledWith(
-          expect.objectContaining(expectedCallbackResponse),
-        );
-
-        /**
-         * Without data callback
-         */
+      },
+    ],
+  ])(
+    'onDataChange()',
+    (
+      when: string,
+      { originalItems, payload, expectedOrder, expectedCallbackResponse }: any,
+    ) => {
+      it(`should have correct order ${when}`, () => {
         const { fetchSortableDataHandler: fetchSortableDataHandler2 } = setup({
           originalItems,
         });
@@ -457,9 +436,23 @@ describe('FetchSortableDataListHandler', () => {
         expect(
           fetchSortableDataHandler2.listStore.items.map(item => item.id),
         ).toEqual(expectedOrder);
-      },
-    );
-  });
+      });
+
+      it(`should notify callback ${when}`, () => {
+        const { fetchSortableDataHandler } = setup({
+          originalItems,
+        });
+        const dataChangeCallback = jest.fn();
+        fetchSortableDataHandler.setUpDataChangeCallback(dataChangeCallback);
+
+        fetchSortableDataHandler.onDataChanged(payload);
+
+        expect(dataChangeCallback).toHaveBeenCalledWith(
+          expect.objectContaining(expectedCallbackResponse),
+        );
+      });
+    },
+  );
 
   describe('upsert()', () => {
     it('should update', () => {});
