@@ -12,6 +12,8 @@ import { JuiMessageInput } from '..';
 import { AttachmentItem } from '../AttachmentItem';
 import { AttachmentList, ItemInfo } from '../AttachmentList';
 import { DuplicateAlert } from '../DuplicateAlert';
+import { MessageActionBar } from '../MessageActionBar';
+import { AttachmentView } from '../Attachment';
 
 storiesOf('Pattern/MessageInput', module)
   .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
@@ -26,6 +28,17 @@ storiesOf('Pattern/MessageInput', module)
       />
     );
   });
+
+storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
+  const autoUploadFile = () => {};
+  return (
+    <div>
+      <MessageActionBar>
+        <AttachmentView onFileChanged={autoUploadFile} />
+      </MessageActionBar>
+    </div>
+  );
+});
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
   const status = select(
@@ -75,24 +88,18 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
     },
   );
   const files = [
-    { file: f1, status: 'normal' },
-    { file: f2, status: 'loading' },
-    { file: f3, status: 'error' },
-    { file: f1, status: 'normal' },
-    { file: f2, status: 'loading' },
-    { file: f3, status: 'error' },
-    { file: f1, status: 'normal' },
-    { file: f2, status: 'loading' },
-    { file: f3, status: 'error' },
-    { file: f1, status: 'normal' },
-    { file: f2, status: 'loading' },
-    { file: f3, status: 'error' },
-    { file: f1, status: 'normal' },
-    { file: f2, status: 'loading' },
-    { file: f3, status: 'error' },
-    { file: f1, status: 'normal' },
-    { file: f2, status: 'loading' },
-    { file: f3, status: 'error' },
+    { name: f1.name, status: 'normal' },
+    { name: f2.name, status: 'loading' },
+    { name: f3.name, status: 'error' },
+    { name: f1.name, status: 'normal' },
+    { name: f2.name, status: 'loading' },
+    { name: f3.name, status: 'error' },
+    { name: f1.name, status: 'normal' },
+    { name: f2.name, status: 'loading' },
+    { name: f3.name, status: 'error' },
+    { name: f1.name, status: 'normal' },
+    { name: f2.name, status: 'loading' },
+    { name: f3.name, status: 'error' },
   ];
   return (
     <div>

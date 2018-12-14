@@ -13,14 +13,13 @@ import React, {
   createRef,
 } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiMenu, JuiMenuItem } from '../../../components';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
-type Props = AttachmentViewProps & WithNamespaces;
+type Props = AttachmentViewProps;
 
 @withUploadFile
 class UploadArea extends PureComponent<any> {
@@ -30,7 +29,7 @@ class UploadArea extends PureComponent<any> {
 }
 
 @observer
-class AttachmentViewComponent extends Component<Props> {
+class AttachmentView extends Component<Props> {
   state = {
     anchorEl: null,
   };
@@ -55,14 +54,14 @@ class AttachmentViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, onFileChanged } = this.props;
+    const { onFileChanged } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
     return (
       <Fragment>
         <JuiIconButton
           data-test-automation-id="conversation-chatbar-attachment-button"
-          tooltipTitle={t('Attach file')}
+          tooltipTitle="Attach file"
           onClick={this._handleClickEvent}
           size="medium"
         >
@@ -71,10 +70,21 @@ class AttachmentViewComponent extends Component<Props> {
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (
           <JuiMenu
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
             data-test-automation-id="conversation-chatbar-attachment-menu"
             anchorEl={anchorEl}
             open={open}
           >
+            <JuiMenuItem disabled={true} divider={true}>
+              Upload file from
+            </JuiMenuItem>
             <ClickAwayListener onClickAway={this._hideMenu}>
               <JuiMenuItem
                 icon="computer"
@@ -90,7 +100,5 @@ class AttachmentViewComponent extends Component<Props> {
     );
   }
 }
-
-const AttachmentView = translate('Conversations')(AttachmentViewComponent);
 
 export { AttachmentView };
