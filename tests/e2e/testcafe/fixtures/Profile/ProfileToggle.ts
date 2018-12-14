@@ -12,7 +12,7 @@ fixture('ProfileToggle')
 
 
 const title = 'Profile';
-test(formalName('Open a team/group conversation from team/group profile, then close by message button',
+test(formalName('Open a team/group conversation from team/group profile, then close by message button in profile',
   ['JPT-408', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -20,12 +20,11 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
     const user = users[7];
     user.sdk = await h(t).getSdk(user);
 
-    const dmSection = app.homePage.messageTab.directMessagesSection;
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
 
-    let favChatId, teamId, currentGroupId, urlAfterClose;
-    await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
+    let favChatId, teamId, urlAfterClose;
+    await h(t).withLog('Given I have an extension with group chat A and 1 team chat B',
       async () => {
         teamId = (await user.sdk.platform.createGroup({
           isPublic: true,
@@ -40,26 +39,15 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
       },
     );
 
-    await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${favChatId}`]: false,
-        [`hide_group_${teamId}`]: false,
-        favorite_group_ids: [+favChatId],
-      });
+    await h(t).withLog('All conversa(tions should not be hidden before login', async () => {
+      await user.sdk.glip.showGroups(user.rcId, [favChatId, teamId])
+      await user.sdk.glip.favoriteGroups(user.rcId, [+ favChatId])
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
         const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
         await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
-      },
-    );
-
-    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
-      async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: true,
-        });
       },
     );
 
@@ -89,6 +77,7 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
       team: teamId
     }
 
+    const dialog = app.homePage.messageTab.profileModal;
     for (const key in groupList) {
       const item = groupList[key];
 
@@ -97,7 +86,6 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
         await app.homePage.messageTab.moreMenu.profile.enter();
       });
 
-      const dialog = app.homePage.messageTab.profileModal;
       await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
         await t.expect(dialog.getSelector('hr').exists).ok();
         await t.expect(dialog.getSelector('div').withText(title).exists).ok();
@@ -136,7 +124,7 @@ test(formalName('Open profile via conversation list',
     const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     let favChatId, pvtChatId, teamId;
-    await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
+    await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B and 1 group chat C',
       async () => {
         pvtChatId = (await user.sdk.platform.createGroup({
           type: 'PrivateChat',
@@ -171,14 +159,6 @@ test(formalName('Open profile via conversation list',
       },
     );
 
-    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
-      async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: true,
-        });
-      },
-    );
-
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -205,6 +185,7 @@ test(formalName('Open profile via conversation list',
       teamChat: teamChat
     }
 
+    const dialog = app.homePage.messageTab.profileModal;
     for (const key in groupList) {
       const item = groupList[key];
 
@@ -213,7 +194,6 @@ test(formalName('Open profile via conversation list',
         await app.homePage.messageTab.moreMenu.profile.enter();
       });
 
-      const dialog = app.homePage.messageTab.profileModal;
       await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
         await t.expect(dialog.getSelector('hr').exists).ok();
         await t.expect(dialog.getSelector('div').withText(title).exists).ok();
