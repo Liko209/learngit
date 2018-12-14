@@ -52,23 +52,24 @@ class ConversationListItemText extends PureComponent<
   render() {
     const { tipOpen } = this.state;
 
-    return this.props.disableTooltip ? (
-      <StyledTypography {...this.props}>{this.props.children}</StyledTypography>
+    const { disableTooltip, children, ...rest } = this.props;
+    return disableTooltip ? (
+      <StyledTypography {...rest}>{children}</StyledTypography>
     ) : (
       <JuiArrowTip
-        title={this.props.children}
+        title={children}
         disableFocusListener={false}
         disableHoverListener={false}
         disableTouchListener={false}
         open={tipOpen}
       >
         <StyledTypography
-          {...this.props}
+          {...rest}
           ref={this.textRef}
           onMouseOver={this._handleMouseEnter}
           onMouseLeave={this._handleMouseLeave}
         >
-          {this.props.children}
+          {children}
         </StyledTypography>
       </JuiArrowTip>
     );
