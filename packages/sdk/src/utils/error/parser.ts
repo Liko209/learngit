@@ -39,6 +39,23 @@ class ErrorParser {
     const { data, status, statusText } = resp;
 
     /**
+     * From resp.statusText
+     */
+    if (statusText === 'Network Error') {
+      return new BaseError(
+        ErrorTypes.API_NETWORK,
+        'Api Error: Please check whether server crash',
+      );
+    }
+
+    if (statusText === 'NOT NETWORK CONNECTION') {
+      return new BaseError(
+        ErrorTypes.API_NETWORK,
+        'Api Error: Please check network connection',
+      );
+    }
+
+    /**
      * From resp.data
      */
     if (data.error) {
@@ -63,23 +80,6 @@ class ErrorParser {
       if (code) {
         return new BaseError(code, httpErrorMessage);
       }
-    }
-
-    /**
-     * From resp.statusText
-     */
-    if (statusText === 'Network Error') {
-      return new BaseError(
-        ErrorTypes.API_NETWORK,
-        'Api Error: Please check whether server crash',
-      );
-    }
-
-    if (statusText === 'NOT NETWORK CONNECTION') {
-      return new BaseError(
-        ErrorTypes.API_NETWORK,
-        'Api Error: Please check network connection',
-      );
     }
 
     /**

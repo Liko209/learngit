@@ -30,7 +30,12 @@ class ItemFileUploadHandler {
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
     if (file.has(FILE_FORM_DATA_KEYS.FILE)) {
-      const itemFile = this._toItemFile(groupId, file, isUpdate);
+      const itemFile = this._toItemFile(
+        groupId,
+        file,
+        isUpdate,
+        SENDING_STATUS.INPROGRESS,
+      );
       await this._preSaveItemFile(itemFile);
       this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
@@ -43,7 +48,12 @@ class ItemFileUploadHandler {
     const itemInDB = (await itemDao.get(itemId)) as ItemFile;
     let sendFailed = false;
     if (itemInDB) {
-      this._updatePreInsertItemStatus(itemInDB.id, SENDING_STATUS.INPROGRESS);
+      await this._partialUpdateItemFile({
+        id: itemInDB.id,
+        _id: itemInDB.id,
+        status: SENDING_STATUS.INPROGRESS,
+      });
+
       const groupId = itemInDB.group_ids[0];
       const isUpdate = itemInDB.is_new;
       const version = itemInDB.versions[0];
@@ -108,6 +118,34 @@ class ItemFileUploadHandler {
     this._uploadingFiles.delete(groupId);
   }
 
+  getItemsSendStatus(itemIds: number[]): SENDING_STATUS[] {
+    const result: SENDING_STATUS[] = [];
+    itemIds.forEach((id: number) => {
+      if (id > 0) {
+        result.push(SENDING_STATUS.SUCCESS);
+      } else {
+        const info = this._progressCaches.get(id);
+        if (info) {
+          result.push(
+            info.progress.loaded < 0
+              ? SENDING_STATUS.FAIL
+              : SENDING_STATUS.INPROGRESS,
+          );
+        } else {
+          result.push(SENDING_STATUS.FAIL);
+        }
+      }
+    });
+    return result;
+  }
+
+  private _updateFailedFIleProgress(failedItemId: number) {
+    const info = this._progressCaches.get(failedItemId);
+    if (info && info.progress) {
+      info.progress.loaded = -1;
+    }
+  }
+
   private _updateProgress(progress: Progress) {
     const uploadStatus = this._progressCaches.get(progress.id);
     if (uploadStatus) {
@@ -133,10 +171,12 @@ class ItemFileUploadHandler {
     if (status) {
       status.requestHolder = requestHolder;
       status.progress = progress;
+      status.file = file;
     } else {
       this._progressCaches.set(preInsertItem.id, {
         requestHolder,
         progress,
+        file,
       });
     }
 
@@ -149,7 +189,7 @@ class ItemFileUploadHandler {
             total,
             loaded,
             groupId,
-            id: preInsertItem.id,
+            id: preInsertItem.id, // id is item id
           });
         }
       },
@@ -191,6 +231,7 @@ class ItemFileUploadHandler {
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
     } else {
+      debugger;
       this._handleItemFileSendFailed(preInsertItem.id, result as ApiResultErr<
         ItemFile
       >);
@@ -207,9 +248,9 @@ class ItemFileUploadHandler {
     const fileVersion = this._toFileVersion(storedFile);
     preInsertItem.versions = [fileVersion];
     this._updateUploadingFiles(groupId, preInsertItem);
-    itemDao.update(preInsertItem);
 
-    this._partialUpdateItemFile({
+    itemDao.update(preInsertItem);
+    await this._partialUpdateItemFile({
       id: preInsertItem.id,
       _id: preInsertItem.id,
       versions: [fileVersion],
@@ -252,6 +293,8 @@ class ItemFileUploadHandler {
       this._uploadingFiles.set(groupId, filteredRes);
     }
 
+    this._progressCaches.delete(preInsertId);
+
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
@@ -267,7 +310,8 @@ class ItemFileUploadHandler {
       return;
     }
 
-    this._updatePreInsertItemStatus(preInsertId, SENDING_STATUS.FAIL);
+    this._updateFailedFIleProgress(preInsertId);
+
     this._emitItemFileStatus(false, preInsertId, preInsertId);
 
     this._partialUpdateItemFile({
@@ -310,19 +354,13 @@ class ItemFileUploadHandler {
     this._uploadingFiles.set(groupId, existFiles);
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(newItemFile);
-
-    this._updatePreInsertItemStatus(newItemFile.id, SENDING_STATUS.INPROGRESS);
-  }
-
-  private _updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
-    const itemService: ItemService = ItemService.getInstance();
-    itemService.updatePreInsertItemStatus(itemId, status);
   }
 
   private _toItemFile(
     groupId: number,
     formFile: FormData,
     isNew: boolean,
+    sendStatus: SENDING_STATUS,
   ): ItemFile {
     const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     const accountService: AccountService = AccountService.getInstance();
@@ -332,6 +370,7 @@ class ItemFileUploadHandler {
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {
       id,
+      sendStatus,
       created_at: now,
       modified_at: now,
       creator_id: userId,
