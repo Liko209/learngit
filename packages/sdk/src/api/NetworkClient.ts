@@ -88,36 +88,15 @@ export default class NetworkClient {
     query: IQuery,
     requestHolder?: RequestHolder,
   ): Promise<ApiResult<T>> {
-    const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
-      const request = this.getRequestByVia<T>(query, via);
-      let shouldExecuteRequest = true;
-      if (this._needCheckDuplicated(method)) {
-        const apiMapKey = `${path}_${method}_${serializeUrlParams(
-          params || {},
-        )}`;
-
-        const isDuplicated = this.apiMap.has(apiMapKey);
-        const promiseResolvers = this.apiMap.get(apiMapKey) || [];
-        promiseResolvers.push({ resolve, reject });
-        this.apiMap.set(apiMapKey, promiseResolvers);
-
-        // check duplicated
-        if (!isDuplicated) {
-          request.callback = this.buildCallback<T>(apiMapKey);
-        } else {
-          shouldExecuteRequest = false;
-        }
-      } else {
-        request.callback = this._apiResolvedCallBack(resolve);
+      const request = this.getRequestByVia<T>(query, query.via);
+      request.callback = this._requestCallback(query, resolve, reject);
+      if (request.callback) {
+        this.networkManager.addApiRequest(request);
       }
 
       if (requestHolder) {
         requestHolder.request = request;
-      }
-
-      if (shouldExecuteRequest) {
-        this.networkManager.addApiRequest(request);
       }
     });
   }
@@ -132,15 +111,34 @@ export default class NetworkClient {
     };
   }
 
-  buildCallback<T>(apiMapKey: string) {
-    return (resp: BaseResponse) => {
-      const promiseResolvers = this.apiMap.get(apiMapKey);
-      if (!promiseResolvers) return;
-      promiseResolvers.forEach(({ resolve }) => {
-        this._apiResolvedCallBack(resolve)(resp);
-      });
-      this.apiMap.delete(apiMapKey);
-    };
+  private _requestCallback<T>(
+    query: IQuery,
+    resolve: IResultResolveFn<any>,
+    reject: IResponseRejectFn,
+  ) {
+    const { method } = query;
+    if (this._needCheckDuplicated(method)) {
+      const { path, params } = query;
+      const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
+      const isDuplicated = this.apiMap.has(apiMapKey);
+      const promiseResolvers = this.apiMap.get(apiMapKey) || [];
+      promiseResolvers.push({ resolve, reject });
+      this.apiMap.set(apiMapKey, promiseResolvers);
+
+      if (!isDuplicated) {
+        return (resp: BaseResponse) => {
+          const promiseResolvers = this.apiMap.get(apiMapKey);
+          if (promiseResolvers) {
+            promiseResolvers.forEach(({ resolve }) => {
+              this._apiResolvedCallBack(resolve)(resp);
+            });
+            this.apiMap.delete(apiMapKey);
+          }
+        };
+      }
+    } else {
+      return this._apiResolvedCallBack(resolve);
+    }
   }
 
   cancelRequest(request: IRequest) {
