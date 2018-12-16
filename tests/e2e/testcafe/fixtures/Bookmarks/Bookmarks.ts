@@ -283,7 +283,7 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
   });
 });
 
-test(formalName('Remove UMI when jump to conversation which have unread messages.',['P2','JPT-330','zack']),
+test(formalName('Bookmark/Remove Bookmark a message in a conversation',['P2','JPT-330','JPT-326','zack']),
 async (t: TestController)=>{
 const app =new AppRoot(t);
 const users =h(t).rcData.mainCompany.users;
