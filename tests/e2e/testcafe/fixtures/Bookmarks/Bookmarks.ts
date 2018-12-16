@@ -10,7 +10,6 @@ fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
-  
 test(formalName('Jump to post position when click button or clickable area of post.',['P1','JPT-315','zack']),
   async (t: TestController)=>{
   const app =new AppRoot(t);
@@ -44,7 +43,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     await user.sdk.glip.showGroups(user.rcId, [ pvChatId, teamId ]);
     await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
 
-    bookmarksPostTeam = await user5Platform.sendTextPost( 
+    bookmarksPostTeam = await user5Platform.sendTextPost(
       verifyTextTeam + `, (${user.rcId})`,
       teamId,
     );
@@ -283,3 +282,69 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
     await dmSection.expectHeaderUmi(0);
   });
 });
+
+test(formalName('Remove UMI when jump to conversation which have unread messages.',['P2','JPT-330','zack']),
+async (t: TestController)=>{
+const app =new AppRoot(t);
+const users =h(t).rcData.mainCompany.users;
+const user = users[7];
+await h(t).resetGlipAccount(user);
+const userPlatform = await h(t).getPlatform(user);
+const user5Platform = await h(t).getPlatform(users[5]);
+const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+const postListPage = app.homePage.messageTab.postListPage;
+const conversationPage =app.homePage.messageTab.conversationPage;
+const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+const dmSection = app.homePage.messageTab.directMessagesSection;
+user.sdk = await h(t).getSdk(user);
+const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+
+let group;
+await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
+  group = await userPlatform.createGroup({
+    type: 'Group', members: [user.rcId, users[5].rcId],
+  });
+  await user.sdk.glip.showGroups(user.rcId, group.data.id);
+});
+
+let bookmarkPost;
+await h(t).withLog('And I have a post', async () => {
+  bookmarkPost = await user5Platform.sendTextPost(
+    `Hi I'm Bookmarks, (${user.rcId})`,
+    group.data.id,
+  );
+}, true);
+
+await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+  await h(t).directLoginWithUser(SITE_URL, user);
+  await app.homePage.ensureLoaded();
+});
+
+await h(t).withLog(`And I jump to the specific conversation`, async () => {
+  await dmSection.expand();
+  await dmSection.conversationEntryById(group.data.id).enter();
+});
+
+await h(t).withLog('And I bookmark the post', async () => {
+  await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+});
+
+await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
+  await bookmarksEntry.enter();
+  await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(1);
+}, true);
+
+await h(t).withLog('When I click the post and jump to the conversation', async () => {
+  await bookmarkPage.postItemById(bookmarkPost.data.id).jumpToConversationByClickPost();
+});
+
+await h(t).withLog('And I cancel the bookmark in the post', async () => {
+  await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+});
+
+await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
+  await bookmarksEntry.enter();
+  await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(0);
+}, true);
+
+})
