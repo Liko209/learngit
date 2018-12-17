@@ -6,6 +6,5 @@
 
 export * from './Link';
 export * from './Event';
-export * from './Task';
 export * from './Note';
 export * from './types';

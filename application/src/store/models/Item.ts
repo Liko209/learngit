@@ -1,11 +1,10 @@
 import { Item } from 'sdk/models';
 import { observable } from 'mobx';
 import { TypeDictionary } from 'sdk/utils';
-import { setLinkData, setEventData, setTaskData, setNoteData } from './Items';
+import { setLinkData, setEventData, setNoteData } from './Items';
 import Base from './Base';
 
 const ITEM_DATA_HANDLE_MAP = {
-  [TypeDictionary.TYPE_ID_TASK]: setTaskData,
   [TypeDictionary.TYPE_ID_EVENT]: setEventData,
   [TypeDictionary.TYPE_ID_LINK]: setLinkData,
   [TypeDictionary.TYPE_ID_PAGE]: setNoteData,

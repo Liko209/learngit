@@ -29,29 +29,9 @@ type EventItem = {
   text: string;
 } & ItemModel;
 
-type TaskItem = {
-  color: string;
-  complete: boolean;
-  notes: string;
-  start: number;
-  end: number;
-  section: string;
-  repeat: string;
-  repeatEnding: string;
-  repeatEndingAfter: string;
-  repeatEndingOn: string;
-  text: string;
-  due: number;
-  completeType: string;
-  assignedToIds: number[];
-  attachmentIds: number[];
-  completePeopleIds: number[];
-  completePercentage: number;
-} & ItemModel;
-
 type NoteItem = {
   title: string;
   summary: string;
 } & ItemModel;
 
-export { LinkItem, EventItem, TaskItem, NoteItem };
+export { LinkItem, EventItem, NoteItem };
