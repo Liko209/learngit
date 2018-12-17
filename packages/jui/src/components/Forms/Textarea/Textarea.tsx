@@ -36,6 +36,7 @@ const Textarea = styled<Textarea>(WrapperTextField)`
       background: ${grey('100')};
       margin: ${spacing(2)} 0 0 0;
       box-sizing: border-box;
+      font-size: ${spacing(4)};
       &:hover,
       &:focus {
         background: ${palette('common', 'white')};
@@ -50,6 +51,7 @@ const Textarea = styled<Textarea>(WrapperTextField)`
     }
   }
   .form-label-root {
+    color: ${grey('500')};
     top: ${spacing(1)};
     z-index: 1;
     &.form-label-focus {
