@@ -23,10 +23,10 @@ initModel().then(async () => {
     // run scenes
     let host = process.env.JUPITER_HOST;
     let scenes: Array<Scene> = [
-        new Scene(`${host}`),
-        // new LoginScene(`${host}`),
-        // new RefreshScene(`${host}`),
-        // new OfflineScene(`${host}`),
+        new Scene(`${host}`, taskDto),
+        // new LoginScene(`${host}`, taskDto),
+        // new RefreshScene(`${host}`, taskDto),
+        // new OfflineScene(`${host}`, taskDto),
     ];
 
     for (let s of scenes) {

@@ -21,14 +21,16 @@ class MetriceService {
         }, { where: { id: taskDto.id } });
     }
 
-    async createScene(artifacts, startTime: Date, endTime: Date): Promise<SceneDto> {
+    async createScene(taskDto: TaskDto, data, artifacts, startTime: Date, endTime: Date): Promise<SceneDto> {
         return await SceneDto.create({});
     }
 
-    async createPerformance(artifacts) {
+    async createPerformance(scene: SceneDto, data, artifacts) {
+        console.log(Object.keys(artifacts));
     }
 
-    async createPerformanceItem(artifacts) {
+    async createPerformanceItem(scene: SceneDto, data, artifacts) {
+        console.log(artifacts.ProcessGatherer);
     }
 }
 

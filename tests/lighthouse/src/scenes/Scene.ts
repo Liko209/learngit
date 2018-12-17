@@ -6,40 +6,44 @@ import { SceneConfig } from './config/SceneConfig';
 import * as puppeteer from 'puppeteer';
 import * as lighthouse from 'lighthouse';
 import { logUtils } from '../utils/LogUtils';
+import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
+import { metriceService } from '../services/MetricService';
 import * as reportGenerater from 'lighthouse/lighthouse-core/report/report-generator';
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
-type Timing = { startDate: Date, endDate: Date, total: number };
+type Timing = { startTime: Date, endTime: Date, total: number };
 
 class Scene {
     protected url: string;
     protected config: SceneConfig;
     protected timing: Timing;
-    protected data = {};
+    protected data;
     protected report;
     protected artifacts;
+    protected taskDto: TaskDto;
     protected logger = logUtils.getLogger(__filename);
 
-    constructor(url: string) {
+    constructor(url: string, taskDto: TaskDto) {
         this.url = url;
+        this.taskDto = taskDto;
     }
 
     /**
      * @description: run scene. don't override this method
      */
     async run() {
-        const startDate = new Date();
+        const startTime = new Date();
 
         await this.preHandle();
 
         await this.collectData();
 
-        const endDate = new Date();
+        const endTime = new Date();
         this.timing = {
-            startDate,
-            endDate,
-            total: endDate.getTime() - startDate.getTime()
+            startTime,
+            endTime,
+            total: endTime.getTime() - startTime.getTime()
         }
 
         await this.saveMetircsIntoDisk();
@@ -103,8 +107,13 @@ class Scene {
      * @description: save performance metrics into db
      */
     async saveMetircsIntoDb() {
-        //todo save metrics into db
-        this.logger.info('saveData');
+        let { startTime, endTime } = this.timing;
+
+        let sceneDto = await metriceService.createScene(this.taskDto, this.data, this.artifacts, startTime, endTime);
+
+        await metriceService.createPerformance(sceneDto, this.data, this.artifacts);
+
+        await metriceService.createPerformanceItem(sceneDto, this.data, this.artifacts);
     }
 
     /**
