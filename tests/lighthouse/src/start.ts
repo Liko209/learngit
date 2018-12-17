@@ -5,37 +5,43 @@
 require('dotenv').config();
 import { initModel } from './models';
 import { dbUtils } from './utils/DbUtils';
+import { metriceService } from './services/MetricService';
 import { fileService } from './services/FileService';
 import { Scene, LoginScene, RefreshScene, OfflineScene } from './scenes';
 import { logUtils } from './utils/LogUtils';
 
 const logger = logUtils.getLogger(__filename);
-let startTime = Date.now();
 
 initModel().then(async () => {
+    let startTime = Date.now();
+
+    let taskDto = await metriceService.createTask();
+
     // check report dir
     await fileService.checkReportPath();
-}).then(async () => {
+
     // run scenes
     let host = process.env.JUPITER_HOST;
     let scenes: Array<Scene> = [
-        new LoginScene(`${host}`),
-        new RefreshScene(`${host}`),
-        new OfflineScene(`${host}`),
+        new Scene(`${host}`),
+        // new LoginScene(`${host}`),
+        // new RefreshScene(`${host}`),
+        // new OfflineScene(`${host}`),
     ];
 
     for (let s of scenes) {
         await s.run();
     }
-}).then(async () => {
+
     // generate report index.html
     await fileService.generateReportIndex();
 
+    let endTime = Date.now();
+
+    await metriceService.updateTaskForEnd(taskDto);
+
+    logger.info(`total cost ${endTime - startTime}ms`);
 }).then(async () => {
     // release resources
     await dbUtils.close();
-
-    let endTime = Date.now();
-
-    logger.info(`total cost ${endTime - startTime}ms`);
 });

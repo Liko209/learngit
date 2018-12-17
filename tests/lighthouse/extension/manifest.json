@@ -28,7 +28,8 @@
     "externally_connectable": {
         "matches": [
             "*://*.gliprc.com/*",
-            "*://*.nordigy.ru/*"
+            "*://*.nordigy.ru/*",
+            "*://*.baidu.com/*"
         ]
     }
 }

@@ -17,6 +17,7 @@ class DbUtils {
             dialect: process.env.DB_DIALECT,
             operatorsAliases: false,
             logging: false,
+            timezone: '+08:00',
 
             pool: {
                 max: parseInt(process.env.DB_POOL_MAX),

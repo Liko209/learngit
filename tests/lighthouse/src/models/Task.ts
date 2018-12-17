@@ -40,7 +40,7 @@ class TaskDto extends Model<TaskDto> {
         defaultValue: Sequelize.NOW,
         field: 'start_time',
     })
-    starteTime?: Date;
+    startTime?: Date;
 
     @Column({
         allowNull: false,
@@ -48,7 +48,7 @@ class TaskDto extends Model<TaskDto> {
         defaultValue: Sequelize.NOW,
         field: 'end_time',
     })
-    endDate?: Date;
+    endTime?: Date;
 }
 
 export {
