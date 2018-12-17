@@ -87,6 +87,7 @@ String scmCredentialId = env.SCM_CREDENTIAL
 String gitlabApi = env.GITLAB_API
 String gitlabCredentialId = env.GITLAB_CREDENTIAL
 String npmRegistry = env.NPM_REGISTRY
+String nodejsTool = env.NODEJS_TOOL
 String deployUri = env.DEPLOY_URI
 String deployCredentialId = env.DEPLOY_CREDENTIAL
 String deployBaseDir = env.DEPLOY_BASE_DIR
@@ -111,6 +112,10 @@ updateGitlabCommitStatus name: 'jenkins', state: 'pending'
 
 node(buildNode) {
     updateGitlabCommitStatus name: 'jenkins', state: 'running'
+
+    // install nodejs tool
+    env.NODEJS_HOME = tool nodejsTool
+    env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
 
     try {
         // start to build
