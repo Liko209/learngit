@@ -76,6 +76,10 @@ class MoreMenu extends BaseWebComponent {
     return this.getToggler('favToggler');
   }
 
+  get profile() {
+    return this.getEntry('Profile');
+  }
+
   get close() {
     return this.getEntry('Close');
   }
@@ -278,6 +282,31 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
+class ProfileModal extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').find('span').withText('close');
+  }
+
+  get messageButton() {
+    this.warnFlakySelector();
+    return this.self.find('span').find('span').withText('chat_bubble');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  async message() {
+    await this.t.click(this.messageButton);
+  }
+}
+
 export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
@@ -323,7 +352,7 @@ export class MessageTab extends BaseWebComponent {
 
   get bookmarksEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
-    }
+  }
 
   get bookmarkPage() {
     return this.getComponent(BookmarkPage);
@@ -335,6 +364,10 @@ export class MessageTab extends BaseWebComponent {
 
   get closeConversationModal() {
     return this.getComponent(CloseConversationModal);
+  }
+
+  get profileModal() {
+    return this.getComponent(ProfileModal);
   }
 
   get conversationListSections() {

@@ -50,7 +50,7 @@ export async function getOrCreateRunId() {
         'SELENIUM_SERVER',
         'HOST_NAME',
         'BUILD_URL',
-        'appUrl',
+        'SITE_URL',
         'gitlabActionType',
         'gitlabBranch',
         'gitlabMergedByUser',

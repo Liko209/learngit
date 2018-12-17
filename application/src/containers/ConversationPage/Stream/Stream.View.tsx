@@ -22,6 +22,7 @@ import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { mainLogger } from 'sdk';
+import RO from 'resize-observer-polyfill';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -58,13 +59,14 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    const { _jumpToPostId } = this.state;
     await this.props.loadInitialPosts();
     if (!this._listRef.current) {
       return; // the current component is unmounted
     }
-    await this.scrollToPost(
-      this.state._jumpToPostId || this.props.mostRecentPostId,
-    );
+    _jumpToPostId
+      ? await this.scrollToPost(_jumpToPostId)
+      : await this.scrollToBottom();
     this._stickToBottom();
     this._visibilitySensorEnabled = true;
     this.props.updateHistoryHandler();
@@ -122,13 +124,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private async _stickToBottom() {
-    const win = window as any;
-    let RO = win.ResizeObserver;
-    if (typeof win.ResizeObserver === 'undefined') {
-      RO = (await import(/* webpackMode: "eager" */
-      /*  webpackChunkName: "ro" */
-      'resize-observer-polyfill')).default;
-    }
     const el = this._listRef.current;
     if (!el) {
       return;
@@ -267,7 +262,7 @@ class StreamViewComponent extends Component<Props> {
   }
   private get _streamItems() {
     if (this.props.loading) {
-      return null;
+      return [];
     }
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
@@ -366,8 +361,7 @@ class StreamViewComponent extends Component<Props> {
   scrollToBottom = async () => {
     const lastItem = _(this.props.items).nth(-1);
     if (lastItem) {
-      await nextTick();
-      this.scrollToPost(lastItem.value);
+      await this.scrollToPost(lastItem.value, false);
     }
   }
 

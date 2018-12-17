@@ -171,7 +171,8 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
           {arr.map((item, index) => {
             const navUrl = item.url;
             const navPath = navUrl.split('/')[1];
-            const selected = selectedPath === navPath;
+            const selected =
+              selectedPath.toLowerCase() === navPath.toLowerCase();
             const NavItem = (
               <StyledListItem
                 button={true}
