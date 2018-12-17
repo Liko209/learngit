@@ -297,7 +297,6 @@ const conversationPage =app.homePage.messageTab.conversationPage;
 const bookmarkPage = app.homePage.messageTab.bookmarkPage;
 const dmSection = app.homePage.messageTab.directMessagesSection;
 user.sdk = await h(t).getSdk(user);
-const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
 let group;
 await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
@@ -325,8 +324,9 @@ await h(t).withLog(`And I jump to the specific conversation`, async () => {
   await dmSection.conversationEntryById(group.data.id).enter();
 });
 
-await h(t).withLog('And I bookmark the post', async () => {
+await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
   await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+  await t.expect(conversationPage.postItemById(bookmarkPost.data.id).bookmarkIcon.exists).ok();
 });
 
 await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
@@ -338,13 +338,13 @@ await h(t).withLog('When I click the post and jump to the conversation', async (
   await bookmarkPage.postItemById(bookmarkPost.data.id).jumpToConversationByClickPost();
 });
 
-await h(t).withLog('And I cancel the bookmark in the post', async () => {
+await h(t).withLog('And I cancel the bookmark in the post then make sure bookmark icon is correct', async () => {
   await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+  await t.expect(conversationPage.postItemById(bookmarkPost.data.id).unBookmarkIcon.exists).ok();
 });
 
 await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
   await bookmarksEntry.enter();
   await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(0);
 }, true);
-
 })
