@@ -239,6 +239,26 @@ export type Item = ExtendedBaseModel & {
   do_not_render?: boolean;
 };
 
+export type TaskItem = Item & {
+  color: string;
+  complete: boolean;
+  notes: string;
+  start: number;
+  end: number;
+  section: string;
+  repeat: string;
+  repeat_ending: string;
+  repeat_ending_after: string;
+  repeat_ending_on: string;
+  text: string;
+  due: number;
+  complete_type: string;
+  assigned_to_ids: number[];
+  complete_people_ids: number[];
+  attachment_ids: number[];
+  complete_percentage: number;
+};
+
 export type FileItem = Item & {
   name: string;
 };
