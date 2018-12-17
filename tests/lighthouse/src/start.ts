@@ -17,7 +17,7 @@ initModel().then(async () => {
     await fileService.checkReportPath();
 }).then(async () => {
     // run scenes
-    let host = process.env.JUIPTER_HOST;
+    let host = process.env.JUPITER_HOST;
     let scenes: Array<Scene> = [
         new LoginScene(`${host}`),
         new RefreshScene(`${host}`),

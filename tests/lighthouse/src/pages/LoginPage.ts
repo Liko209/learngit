@@ -19,7 +19,7 @@ class LoginPage {
     private step3Submit: string = 'button[data-test-automation-id="signInBtn"]';
 
     constructor() {
-        this.url = process.env.JUIPTER_LOGIN_URL;
+        this.url = process.env.JUPITER_LOGIN_URL;
     }
 
     async authUrl() {
@@ -51,12 +51,12 @@ class LoginPage {
         await this.utils.click(page, this.step1Submit);
 
         // step two
-        await this.utils.type(page, this.step2Credential, process.env.JUIPTER_USER_CREDENTIAL);
+        await this.utils.type(page, this.step2Credential, process.env.JUPITER_USER_CREDENTIAL);
         await this.utils.click(page, this.step2Submit);
 
         // step three
-        await this.utils.type(page, this.step3Pin, process.env.JUIPTER_USER_PIN);
-        await this.utils.type(page, this.step3Password, process.env.JUIPTER_USER_PASSWORD);
+        await this.utils.type(page, this.step3Pin, process.env.JUPITER_USER_PIN);
+        await this.utils.type(page, this.step3Password, process.env.JUPITER_USER_PASSWORD);
 
         // login 
         await this.utils.click(page, this.step3Submit);
@@ -83,7 +83,7 @@ class LoginPage2 extends Page {
 
     constructor(passContext: any) {
         super(passContext);
-        this.url = process.env.JUIPTER_LOGIN_URL;
+        this.url = process.env.JUPITER_LOGIN_URL;
     }
 
     async login() {
@@ -96,12 +96,12 @@ class LoginPage2 extends Page {
         await this.utils.click(page, this.step1Submit);
 
         // step two
-        await this.utils.type(page, this.step2Credential, process.env.JUIPTER_USER_CREDENTIAL);
+        await this.utils.type(page, this.step2Credential, process.env.JUPITER_USER_CREDENTIAL);
         await this.utils.click(page, this.step2Submit);
 
         // step three
-        await this.utils.type(page, this.step3Pin, process.env.JUIPTER_USER_PIN);
-        await this.utils.type(page, this.step3Password, process.env.JUIPTER_USER_PASSWORD);
+        await this.utils.type(page, this.step3Pin, process.env.JUPITER_USER_PIN);
+        await this.utils.type(page, this.step3Password, process.env.JUPITER_USER_PASSWORD);
 
         // login 
         await this.utils.click(page, this.step3Submit);
