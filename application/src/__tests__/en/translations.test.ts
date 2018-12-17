@@ -262,6 +262,15 @@ describe('i18next-en', () => {
     expect(i18next.t('Message')).toEqual('Message');
     expect(i18next.t('more')).toEqual('More');
     expect(i18next.t('close')).toEqual('Close');
+    expect(i18next.t('company')).toEqual('Company');
+    expect(i18next.t('location')).toEqual('Location');
+    expect(i18next.t('department')).toEqual('Department');
+    expect(i18next.t('ext')).toEqual('Ext');
+    expect(i18next.t('directNumber')).toEqual('Direct Number');
+    expect(i18next.t('email')).toEqual('Email');
+    expect(i18next.t('linkedIn')).toEqual('LinkedIn');
+    expect(i18next.t('webpage')).toEqual('Webpage');
+    expect(i18next.t('copy')).toEqual('Copy');
     expect(i18next.t('NoInternetConnection')).toEqual('No Internet Connection');
     expect(i18next.t('SorryWeWereNotAbleToSendTheMessage')).toEqual(
       "Sorry, we weren't able to send the message. Try again.",
