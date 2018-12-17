@@ -279,6 +279,20 @@ export type FileItem = Item & {
 export type NoteItem = Item & {
   body: string;
   title: string;
+  summary: string;
+};
+
+export type LinkItem = Item & {
+  favicon: string;
+  providerName: string;
+  summary: string;
+  title: string;
+  url: string;
+  image: string;
+  deactivated: boolean;
+  data: {
+    provider_name: string;
+  };
 };
 
 export type StoredFile = Raw<ExtendedBaseModel> & {

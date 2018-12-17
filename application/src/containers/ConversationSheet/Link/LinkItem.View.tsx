@@ -7,10 +7,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
-import { LinkItem } from '@/store/models/Items';
+import LinkItemModal from '@/store/models/LinkItem';
 
 type Props = {
-  postItems: LinkItem[];
+  postItems: LinkItemModal[];
   onLinkItemClose: Function;
 };
 @observer
@@ -23,7 +23,7 @@ class LinkItemView extends React.Component<Props> {
     const { postItems } = this.props;
     return (
       <>
-        {postItems.map((item: LinkItem) => {
+        {postItems.map((item: LinkItemModal) => {
           // hard code in order to show the current image
           const image = item.image
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
