@@ -78,6 +78,61 @@ const setup = () => {
       perpage: 20,
     },
   };
+
+  const deleteRequest = {
+    method: NETWORK_METHOD.GET,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const putRequest = {
+    method: NETWORK_METHOD.PUT,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const headRequest = {
+    method: NETWORK_METHOD.HEAD,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const optionRequest = {
+    method: NETWORK_METHOD.OPTIONS,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const patchRequest = {
+    method: NETWORK_METHOD.PATCH,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
+  const deleteRequest = {
+    method: NETWORK_METHOD.GET,
+    path: '/',
+    params: {
+      page: 1,
+      perpage: 20,
+    },
+  };
+
   const mockQuery = {
     data: { username: 'test' },
     handlerType: HandleByRingCentral,
@@ -95,6 +150,11 @@ const setup = () => {
     rcNetworkClient,
     postRequest,
     getRequest,
+    optionRequest,
+    putRequest,
+    deleteRequest,
+    patchRequest,
+    headRequest,
     config,
     mockQuery,
   };
@@ -106,6 +166,7 @@ describe('NetworkClient', () => {
     NetworkRequestBuilder.mockReset();
     jest.clearAllMocks();
   });
+
   describe('request()', () => {
     it('networkManager addApiRequest should be called with request', () => {
       const { postRequest, rcNetworkClient } = setup();
@@ -122,57 +183,92 @@ describe('NetworkClient', () => {
     });
 
     it('should only send request once when request is totally same', async () => {
-      expect.assertions(5);
+      // expect.assertions(7);
       const { getRequest, rcNetworkClient } = setup();
+
+      const mockRequest1: any = { path: '1' };
+      const mockRequest2: any = { path: '2' };
+      NetworkRequestBuilder.mockReset();
+      const times = 0;
+      NetworkRequestBuilder.mockImplementation(() => {
+        return {
+          setNetworkManager: jest.fn().mockReturnThis(),
+          setHost: jest.fn().mockReturnThis(),
+          setHandlerType: jest.fn().mockReturnThis(),
+          setPath: jest.fn().mockReturnThis(),
+          setMethod: jest.fn().mockReturnThis(),
+          setData: jest.fn().mockReturnThis(),
+          setHeaders: jest.fn().mockReturnThis(),
+          setParams: jest.fn().mockReturnThis(),
+          setAuthfree: jest.fn().mockReturnThis(),
+          setRequestConfig: jest.fn().mockReturnThis(),
+          setRetryCount: jest.fn().mockReturnThis(),
+          setVia: jest.fn().mockReturnThis(),
+          build: jest.fn().mockImplementation(() => {
+            if (times === 0) {
+              ++times;
+              return mockRequest1;
+            }
+            return mockRequest2;
+          }),
+        };
+      });
 
       const promise1 = rcNetworkClient.request(getRequest);
       const promise2 = rcNetworkClient.request(getRequest);
 
-      mockRequest.callback({ status: 200, data: { a: 1 } });
+      mockRequest1.callback({ status: 200, data: { a: 1 } });
 
-      expect(networkManager.addApiRequest).toHaveBeenCalledTimes(1);
       const response1 = await promise1;
       const response2 = await promise2;
+      expect(mockRequest1.callback).not.toBeUndefined();
+      expect(mockRequest2.callback).toBeUndefined();
+      expect(networkManager.addApiRequest).toHaveBeenCalledTimes(1);
       expect(response1).toHaveProperty('status', 200);
-      expect(response2).toHaveProperty('status', 200);
       expect(response1).toHaveProperty('data', { a: 1 });
+      expect(response2).toHaveProperty('status', 200);
       expect(response2).toHaveProperty('data', { a: 1 });
     });
   });
 
-  describe('buildCallback()', () => {
-    it('should resolve with ApiResultOk', (done: jest.DoneCallback) => {
-      expect.assertions(2);
-      const { rcNetworkClient, getRequest } = setup();
-
-      rcNetworkClient.request(getRequest).then((result: ApiResultOk<any>) => {
-        expect(result).toHaveProperty('status', 200);
-        expect(result).toHaveProperty('data', { a: 1 });
-        done();
-      });
-      mockRequest.callback({
-        status: 200,
-        data: { a: 1 },
-        headers: {},
-      });
+  describe('duplicate request', () => {
+    beforeEach(() => {
+      networkManager.addApiRequest.mockClear();
     });
 
-    it('should resolve with ApiResultErr', (done: jest.DoneCallback) => {
-      expect.assertions(2);
-      const { rcNetworkClient, getRequest } = setup();
+    const {
+      getRequest,
+      deleteRequest,
+      postRequest,
+      putRequest,
+      headRequest,
+      patchRequest,
+      optionRequest,
+    } = setup();
 
-      rcNetworkClient.request(getRequest).then((result: ApiResultErr<any>) => {
-        expect(result.status).toBe(500);
-        expect(result.error.code).toBe(1500);
-        done();
-      });
+    it.each`
+      request          | expectCallCnt | comment
+      ${getRequest}    | ${1}          | ${'getRequest'}
+      ${deleteRequest} | ${1}          | ${'deleteRequest'}
+      ${postRequest}   | ${2}          | ${'postRequest'}
+      ${putRequest}    | ${2}          | ${'putRequest'}
+      ${headRequest}   | ${2}          | ${'headRequest'}
+      ${patchRequest}  | ${2}          | ${'patchRequest'}
+      ${optionRequest} | ${2}          | ${'optionRequest'}
+    `(
+      'should block duplicate reqeust when request type is GET and DELETE: $comment',
+      ({ request, expectCallCnt }) => {
+        expect.assertions(1);
+        const { rcNetworkClient } = setup();
 
-      mockRequest.callback({
-        status: 500,
-        data: { a: {} },
-        headers: {},
-      });
-    });
+        rcNetworkClient.request(request);
+        rcNetworkClient.request(request);
+
+        expect(networkManager.addApiRequest).toHaveBeenCalledTimes(
+          expectCallCnt,
+        );
+      },
+    );
   });
 
   describe('http()', () => {
