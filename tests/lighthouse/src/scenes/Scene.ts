@@ -79,13 +79,13 @@ class Scene {
             `--load-extension=${EXTENSION_PATH}`,
             '--enable-experimental-extension-apis'
         ];
-
-        if (process.env.RUN_MODE !== 'DEBUG') {
+        let isDebug = process.env.RUN_MODE === 'DEBUG';
+        if (!isDebug) {
             args.push('--no-sandbox', '--disable-setuid-sandbox');
         }
 
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: !isDebug,
             defaultViewport: null,
             args: args
         });
