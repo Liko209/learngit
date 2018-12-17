@@ -6,10 +6,14 @@
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
+import HTML5Backend, { NativeTypes } from 'react-dnd-html5-backend';
+import { DragDropContextProvider, DropTargetMonitor } from 'react-dnd';
 import {
   JuiConversationPage,
   JuiStreamWrapper,
 } from 'jui/pattern/ConversationPage';
+import { StreamDropZoneClasses } from 'jui/pattern/ConversationPage/StreamWrapper';
+import { DropZone } from 'jui/pattern/MessageInput/DropZone';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
 import { Header } from './Header';
@@ -47,10 +51,23 @@ class ConversationPageViewComponent extends Component<
     return this.streamKey++;
   }
 
-  _handleDropFile = (file: File) => {
-    const { current } = this._messageInputRef;
-    if (current) {
-      current.handleDropFile && current.handleDropFile(file);
+  _handleDropFileInStream = (item: any, monitor: DropTargetMonitor) => {
+    if (monitor) {
+      const { files } = monitor.getItem();
+      const { current } = this._messageInputRef;
+      if (current) {
+        current.directPostFiles && current.directPostFiles(files);
+      }
+    }
+  }
+
+  _handleDropFileInMessageInput = (item: any, monitor: DropTargetMonitor) => {
+    if (monitor) {
+      const { files } = monitor.getItem();
+      const { current } = this._messageInputRef;
+      if (current) {
+        current.handleDropFile && current.handleDropFile(files);
+      }
     }
   }
 
@@ -58,30 +75,43 @@ class ConversationPageViewComponent extends Component<
     const { t, groupId, canPost } = this.props;
 
     return groupId ? (
-      <JuiConversationPage
-        className="conversation-page"
-        data-group-id={groupId}
-        data-test-automation-id="messagePanel"
-      >
-        <Header id={groupId} />
-        <JuiStreamWrapper didDropFile={this._handleDropFile}>
-          <Stream
-            groupId={groupId}
-            viewRef={this._streamRef}
-            key={`Stream_${groupId}_${this.streamKey}`}
-          />
-          <div id="jumpToFirstUnreadButtonRoot" />
-        </JuiStreamWrapper>
-        {canPost ? (
-          <MessageInput
-            viewRef={this._messageInputRef}
-            id={groupId}
-            onPost={this.sendHandler}
-          />
-        ) : (
-          <JuiDisabledInput text={t('disabledText')} />
-        )}
-      </JuiConversationPage>
+      <DragDropContextProvider backend={HTML5Backend}>
+        <JuiConversationPage
+          className="conversation-page"
+          data-group-id={groupId}
+          data-test-automation-id="messagePanel"
+        >
+          <Header id={groupId} />
+          <DropZone
+            accepts={[NativeTypes.FILE]}
+            onDrop={this._handleDropFileInStream}
+            dropzoneClass={StreamDropZoneClasses}
+          >
+            <JuiStreamWrapper>
+              <Stream
+                groupId={groupId}
+                viewRef={this._streamRef}
+                key={`Stream_${groupId}_${this.streamKey}`}
+              />
+              <div id="jumpToFirstUnreadButtonRoot" />
+            </JuiStreamWrapper>
+          </DropZone>
+          {canPost ? (
+            <DropZone
+              accepts={[NativeTypes.FILE]}
+              onDrop={this._handleDropFileInMessageInput}
+            >
+              <MessageInput
+                viewRef={this._messageInputRef}
+                id={groupId}
+                onPost={this.sendHandler}
+              />
+            </DropZone>
+          ) : (
+            <JuiDisabledInput text={t('disabledText')} />
+          )}
+        </JuiConversationPage>
+      </DragDropContextProvider>
     ) : null;
   }
 }

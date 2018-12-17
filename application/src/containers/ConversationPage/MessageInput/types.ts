@@ -18,6 +18,7 @@ type MessageInputViewProps = {
   draft: string;
   error: string;
   forceSaveDraft(): void;
+  forceSendPost(): void;
   changeDraft(value: any): void;
   addOnPostCallback(callback: OnPostCallback): void;
   keyboardEventHandler: {

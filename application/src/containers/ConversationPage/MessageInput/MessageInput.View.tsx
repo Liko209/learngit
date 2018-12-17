@@ -51,7 +51,10 @@ class MessageInputViewComponent extends Component<
       modules: {
         toolbar: false,
         keyboard: {
-          bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
+          bindings: {
+            ...keyboardEventHandler,
+            ...keyboardEventDefaultHandler,
+          },
         },
         mention: mention.vm.mentionOptions,
       },
@@ -69,10 +72,19 @@ class MessageInputViewComponent extends Component<
     }
   }
 
-  handleDropFile = (file: File) => {
+  handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
-    if (current && file) {
-      current.vm.autoUploadFiles([file]);
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files);
+    }
+  }
+
+  directPostFiles = (files: File[]) => {
+    const { current } = this._attachmentsRef;
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files).then(() => {
+        this.props.forceSendPost();
+      });
     }
   }
 
@@ -90,19 +102,16 @@ class MessageInputViewComponent extends Component<
     const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
 
     return (
-      <>
-        <JuiMessageInput
-          value={draft}
-          onChange={changeDraft}
-          error={error ? t(error) : error}
-          modules={modules}
-          toolbarNode={toolbarNode}
-          attachmentsNode={attachmentsNode}
-          didDropFile={this.handleDropFile}
-        >
-          <Mention id={id} ref={this._mentionRef} />
-        </JuiMessageInput>
-      </>
+      <JuiMessageInput
+        value={draft}
+        onChange={changeDraft}
+        error={error ? t(error) : error}
+        modules={modules}
+        toolbarNode={toolbarNode}
+        attachmentsNode={attachmentsNode}
+      >
+        <Mention id={id} ref={this._mentionRef} />
+      </JuiMessageInput>
     );
   }
 }

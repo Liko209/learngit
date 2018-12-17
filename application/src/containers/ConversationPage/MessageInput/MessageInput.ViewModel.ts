@@ -153,9 +153,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       const items = vm.items;
       if (content.trim() || items.length > 0) {
         vm._sendPost(content);
-        const onPostHandler = vm.props.onPost;
-        onPostHandler && onPostHandler();
-        vm._onPostCallbacks.forEach(callback => callback());
       }
     };
   }
@@ -174,9 +171,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       });
       // clear context (attachments) after post
       //
+      const onPostHandler = this.props.onPost;
+      onPostHandler && onPostHandler();
+      this._onPostCallbacks.forEach(callback => callback());
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
+  }
+
+  forceSendPost = () => {
+    this._sendPost('');
   }
 
   addOnPostCallback = (callback: OnPostCallback) => {
