@@ -215,8 +215,8 @@ node(buildNode) {
                     report.juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
                     safeMail(
                             reportChannels,
-                            "JUI Deployment Successful",
-                            "JUI deployment successful: ${report.juiUrl}"
+                            "Storybook Deployment Successful",
+                            "**Storybook deployment successful**: ${report.juiUrl}"
 
                     )
                 },
@@ -240,7 +240,7 @@ node(buildNode) {
                     safeMail(
                             reportChannels,
                             "Jupiter Deployment Successful",
-                            "Jupiter deployment successful: ${report.applicationUrl}"
+                            "**Jupiter deployment successful**: ${report.applicationUrl}"
 
                     )
                 }
@@ -281,7 +281,7 @@ node(buildNode) {
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline ${currentBuild.result}: ${currentBuild.fullDisplayName}",
-                buildReport(currentBuild.result, env.BUILD_URL, report)
+                buildReport(':white_check_mark: Success', env.BUILD_URL, report)
 
         )
     } catch (e) {
@@ -290,7 +290,7 @@ node(buildNode) {
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline ${currentBuild.result}: ${currentBuild.fullDisplayName}",
-                buildReport(currentBuild.result, env.BUILD_URL, report),
+                buildReport(':no_entry_sign: Failure', env.BUILD_URL, report),
         )
         throw e
     }
