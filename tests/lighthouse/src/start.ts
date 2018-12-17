@@ -9,8 +9,9 @@ import { fileService } from './services/FileService';
 import { Scene, LoginScene, RefreshScene, OfflineScene } from './scenes';
 import { logUtils } from './utils/LogUtils';
 
-const logger = logUtils.getLogger(__filename);
+console.log(process.env);
 
+const logger = logUtils.getLogger(__filename);
 let startTime = Date.now();
 
 initModel().then(async () => {
