@@ -24,6 +24,7 @@ class LinkItemView extends React.Component<Props> {
     return (
       <>
         {postItems.map((item: LinkItemModal) => {
+          console.log(item, '--nello link');
           // hard code in order to show the current image
           const image = item.image
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`

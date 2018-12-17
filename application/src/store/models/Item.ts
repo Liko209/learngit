@@ -10,18 +10,7 @@ import Base from './Base';
 export default class ItemModel extends Base<Item> {
   @observable
   typeId: number;
-  // @observable
-  // doNotRender: boolean;
-  // @observable
-  // deactivated: boolean;
-  // @observable
-  // summary: string;
-  // @observable
-  // title: string;
-  // @observable
-  // url: string;
-  // @observable
-  // image: string;
+
   constructor(data: Item) {
     super(data);
     const { type_id } = data;

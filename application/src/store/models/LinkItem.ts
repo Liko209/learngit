@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LinkItem } from 'sdk/models';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 
 export default class LinkItemModal extends ItemModel {
@@ -21,7 +21,9 @@ export default class LinkItemModal extends ItemModel {
   @observable
   image: string;
   @observable
-  providerName: string;
+  detailData: {
+    provider_name: string;
+  };
   @observable
   favicon: string;
 
@@ -43,8 +45,13 @@ export default class LinkItemModal extends ItemModel {
     this.image = image || '';
     this.deactivated = deactivated;
     this.doNotRender = do_not_render || false;
-    this.providerName = detail && detail.provider_name;
+    this.detailData = detail;
     this.favicon = favicon;
+  }
+
+  @computed
+  get providerName() {
+    return this.data && this.data.provider_name;
   }
 
   static fromJS(data: LinkItem) {
