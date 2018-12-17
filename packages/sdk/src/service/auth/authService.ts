@@ -76,9 +76,12 @@ class AuthService extends BaseService {
   async loginGlip2(params: ILogin) {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
-      const glip2AuthData = await loginGlip2ByPassword(params);
-      authDao.put(AUTH_GLIP2_TOKEN, glip2AuthData.data);
-      notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, glip2AuthData.data);
+      const loginResult = await loginGlip2ByPassword(params);
+      const authToken = loginResult.expect(
+        'Failed to login glip2 by password.',
+      );
+      authDao.put(AUTH_GLIP2_TOKEN, authToken);
+      notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors
       Aware(ErrorTypes.OAUTH, err.message);

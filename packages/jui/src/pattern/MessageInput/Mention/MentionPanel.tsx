@@ -7,11 +7,13 @@ import {
   palette,
 } from '../../../foundation/utils/styles';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{
+  isEditMode?: boolean;
+}>`
   position: absolute;
-  bottom: ${spacing(14.5)};
-  left: ${spacing(4.5)};
-  right: ${spacing(4.5)};
+  bottom: ${({ isEditMode }) => (isEditMode ? spacing(10.5) : spacing(14.5))};
+  left: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};
+  right: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};
   max-height: ${height(68)};
   box-shadow: ${props => props.theme.shadows[8]};
   overflow: scroll;
@@ -21,12 +23,13 @@ const Wrapper = styled.div`
 
 type Props = {
   children: React.ReactChild;
+  isEditMode?: boolean;
 };
 
 class JuiMentionPanel extends PureComponent<Props> {
   render() {
-    const { children } = this.props;
-    return <Wrapper>{children}</Wrapper>;
+    const { children, isEditMode } = this.props;
+    return <Wrapper isEditMode={isEditMode}>{children}</Wrapper>;
   }
 }
 

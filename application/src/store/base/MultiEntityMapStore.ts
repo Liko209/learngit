@@ -2,14 +2,13 @@ import _ from 'lodash';
 import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
-import { BaseModel } from 'sdk/models';
+import { BaseModel, Raw } from 'sdk/models';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
-import { Raw } from 'sdk/src/models';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -125,8 +124,7 @@ export default class MultiEntityMapStore<
 
   private _replace(entity: T) {
     if (entity && this._data[entity.id]) {
-      this.remove(entity.id);
-      this.set(entity);
+      this._partialUpdate(entity, entity.id);
     }
   }
 
@@ -158,11 +156,11 @@ export default class MultiEntityMapStore<
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
-            this.set(res);
+            this._partialUpdate(res as T, id);
           }
         });
       } else {
-        this.set(res as T);
+        this._partialUpdate(res as T, id);
         model = this._data[id] as K;
       }
     }
@@ -175,6 +173,11 @@ export default class MultiEntityMapStore<
     return !!this._data[id];
   }
 
+  subtractedBy(ids: number[]) {
+    const existingKeys = Object.keys(this._data).map(Number);
+    return [_.difference(ids, existingKeys), _.intersection(ids, existingKeys)];
+  }
+
   getSize() {
     return Object.keys(this._data).length;
   }
@@ -183,7 +186,7 @@ export default class MultiEntityMapStore<
     return this._data;
   }
 
-  getByService(id: number): Promise<T> | T {
+  getByService(id: number): Promise<T | null> {
     if (!this._service) {
       if (Array.isArray(this._getService)) {
         this._service = this._getService[0]();

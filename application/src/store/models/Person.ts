@@ -1,7 +1,7 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person, PhoneNumberModel } from 'sdk/models';
+import { Person, PhoneNumberModel, SanitizedExtensionModel } from 'sdk/models';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,
@@ -9,8 +9,7 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
-
-const MainCompanyNumberType: string = 'MainCompanyNumber';
+import PersonService, { PhoneNumberInfo } from 'sdk/service/person';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -43,6 +42,13 @@ export default class PersonModel extends Base<Person> {
   inviterId?: number;
   @observable
   displayName?: string;
+  @observable
+  location?: string;
+  @observable
+  homepage?: string;
+  @observable
+  sanitizedRcExtension?: SanitizedExtensionModel;
+
   constructor(data: Person) {
     super(data);
     const {
@@ -61,6 +67,9 @@ export default class PersonModel extends Base<Person> {
       rc_account_id,
       inviter_id,
       display_name,
+      location,
+      homepage,
+      sanitized_rc_extension,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -77,6 +86,9 @@ export default class PersonModel extends Base<Person> {
     this.rcAccountId = rc_account_id;
     this.inviterId = inviter_id;
     this.displayName = display_name;
+    this.location = location;
+    this.homepage = homepage;
+    this.sanitizedRcExtension = sanitized_rc_extension;
   }
 
   static fromJS(data: Person) {
@@ -144,14 +156,12 @@ export default class PersonModel extends Base<Person> {
   }
 
   @computed
-  get phoneNumbers() {
-    // filter out company main number
-    if (this.rcPhoneNumbers && this.rcPhoneNumbers.length > 0) {
-      return this.rcPhoneNumbers.filter(
-        (phoneInfo: PhoneNumberModel) =>
-          phoneInfo.usageType !== MainCompanyNumberType,
-      );
-    }
-    return [];
+  get phoneNumbers(): PhoneNumberInfo[] {
+    const personService: PersonService = PersonService.getInstance();
+    return personService.getAvailablePhoneNumbers(
+      this.companyId,
+      this.rcPhoneNumbers,
+      this.sanitizedRcExtension,
+    );
   }
 }

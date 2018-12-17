@@ -32,10 +32,11 @@ class MentionViewComponent extends Component<
       searchTerm,
       groupType,
       selectHandler,
+      isEditMode,
     } = this.props;
     if (open && members.length) {
       return (
-        <JuiMentionPanel>
+        <JuiMentionPanel isEditMode={isEditMode}>
           <JuiMentionPanelSection
             hasPadding={groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE}
           >

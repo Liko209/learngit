@@ -14,9 +14,11 @@ import {
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-
+import { ApiResultOk, ApiResultErr } from '../ApiResult';
 // Using manual mock to improve mock priority.
-jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
+jest.mock('foundation/src/network', () =>
+  jest.genMockFromModule<any>('foundation/src/network'),
+);
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 const mockRequest: any = {};
@@ -95,7 +97,7 @@ const setup = () => {
   };
 };
 
-describe('apiRequest', () => {
+describe('NetworkClient', () => {
   beforeAll(() => {});
   beforeEach(() => {
     NetworkRequestBuilder.mockReset();
@@ -115,7 +117,7 @@ describe('apiRequest', () => {
     });
 
     it('should only send request once when request is totally same', async () => {
-      expect.assertions(3);
+      expect.assertions(5);
       const { getRequest, rcNetworkClient } = setup();
 
       const promise1 = rcNetworkClient.request(getRequest);
@@ -124,29 +126,46 @@ describe('apiRequest', () => {
       mockRequest.callback({ status: 200, data: { a: 1 } });
 
       expect(networkManager.addApiRequest).toHaveBeenCalledTimes(1);
-      await expect(promise1).resolves.toEqual({ status: 200, data: { a: 1 } });
-      await expect(promise2).resolves.toEqual({ status: 200, data: { a: 1 } });
+      const response1 = await promise1;
+      const response2 = await promise2;
+      expect(response1).toHaveProperty('status', 200);
+      expect(response2).toHaveProperty('status', 200);
+      expect(response1).toHaveProperty('data', { a: 1 });
+      expect(response2).toHaveProperty('data', { a: 1 });
     });
   });
 
   describe('buildCallback()', () => {
-    it('promise should resolve with response', async () => {
-      expect.assertions(1);
+    it('should resolve with ApiResultOk', (done: jest.DoneCallback) => {
+      expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
-      const promise = rcNetworkClient.request(getRequest);
 
-      mockRequest.callback({ status: 200, data: { a: 1 } });
-      await expect(promise).resolves.toEqual({ status: 200, data: { a: 1 } });
+      rcNetworkClient.request(getRequest).then((result: ApiResultOk<any>) => {
+        expect(result).toHaveProperty('status', 200);
+        expect(result).toHaveProperty('data', { a: 1 });
+        done();
+      });
+      mockRequest.callback({
+        status: 200,
+        data: { a: 1 },
+        headers: {},
+      });
     });
 
-    it('promise should reject with response', async () => {
+    it('should resolve with ApiResultErr', (done: jest.DoneCallback) => {
+      expect.assertions(2);
       const { rcNetworkClient, getRequest } = setup();
-      const promise = rcNetworkClient.request(getRequest);
 
-      mockRequest.callback({ status: 500, data: { a: 'fail' } });
-      await expect(promise).rejects.toEqual({
-        data: { a: 'fail' },
+      rcNetworkClient.request(getRequest).then((result: ApiResultErr<any>) => {
+        expect(result.status).toBe(500);
+        expect(result.error.code).toBe(1500);
+        done();
+      });
+
+      mockRequest.callback({
         status: 500,
+        data: { a: {} },
+        headers: {},
       });
     });
   });
@@ -192,9 +211,51 @@ describe('apiRequest', () => {
         path: '/',
       });
     });
+
+    it('should omit properties starts with __', () => {
+      const { rcNetworkClient } = setup();
+
+      jest.spyOn(rcNetworkClient, 'request');
+      rcNetworkClient.post('/', {
+        id: 123,
+        __draft: '123',
+        a: true,
+      });
+
+      expect(rcNetworkClient.request).toHaveBeenCalledWith({
+        data: {
+          id: 123,
+          a: true,
+        },
+        headers: {},
+        method: 'post',
+        path: '/',
+      });
+    });
   });
   describe('put()', () => {
     it('should call http()', () => {
+      const { rcNetworkClient } = setup();
+
+      jest.spyOn(rcNetworkClient, 'http');
+      rcNetworkClient.put('/', {
+        id: 123,
+        __draft: '123',
+        a: true,
+      });
+
+      expect(rcNetworkClient.http).toHaveBeenCalledWith({
+        data: {
+          id: 123,
+          a: true,
+        },
+        headers: {},
+        method: 'put',
+        path: '/',
+      });
+    });
+
+    it('should omit properties starts with __', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');

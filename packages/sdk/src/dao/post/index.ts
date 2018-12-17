@@ -38,11 +38,6 @@ class PostDao extends BaseDao<Post> {
     return result;
   }
 
-  async queryManyPostsByIds(ids: number[]): Promise<Post[]> {
-    const query = this.createQuery();
-    return query.anyOf('id', ids).toArray();
-  }
-
   queryLastPostByGroupId(groupId: number): Promise<Post | null> {
     const query = this.createQuery();
     return query

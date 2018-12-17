@@ -12,6 +12,7 @@ const Bottom: any = styled.div`
   display: flex;
   flex-direction: row;
   overflow: hidden;
+  position: relative;
   height: calc(100% - ${spacing(16)}); // safari compatibility
 `;
 

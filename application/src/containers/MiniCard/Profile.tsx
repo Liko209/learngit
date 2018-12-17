@@ -7,19 +7,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ThemeProvider from '@/containers/ThemeProvider';
-import { ProfileMiniCard } from '@/containers/ProfileMiniCard';
+// import { ProfileMiniCard } from '@/containers/ProfileMiniCard';
+import { Profile, PROFILE_TYPE } from '@/containers/Profile';
 import { MiniCardShowProfileParams } from './types';
 
-class Profile {
-  static instance: Profile;
+class ProfileMiniCard {
+  static instance: ProfileMiniCard;
   div: HTMLDivElement | null;
   anchor: HTMLElement | null;
 
   constructor() {
-    if (Profile.instance instanceof Profile) {
-      return Profile.instance;
+    if (ProfileMiniCard.instance instanceof ProfileMiniCard) {
+      return ProfileMiniCard.instance;
     }
-    Profile.instance = this;
+    ProfileMiniCard.instance = this;
     return this;
   }
 
@@ -34,7 +35,7 @@ class Profile {
     document.body.appendChild(this.div);
     ReactDOM.render(
       <ThemeProvider>
-        <ProfileMiniCard id={id} />
+        <Profile id={id} type={PROFILE_TYPE.MINI_CARD} />
       </ThemeProvider>,
       this.div,
     );
@@ -93,6 +94,6 @@ class Profile {
 }
 
 // singleton
-new Profile();
+new ProfileMiniCard();
 
-export { Profile };
+export { ProfileMiniCard };

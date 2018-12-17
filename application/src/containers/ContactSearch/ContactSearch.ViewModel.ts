@@ -7,7 +7,7 @@ import { observable, action, computed } from 'mobx';
 import { debounce } from 'lodash';
 
 import PersonService from 'sdk/service/person';
-import { Person, SortableModel } from 'sdk/src/models';
+import { Person, SortableModel } from 'sdk/models';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, ViewProps, SelectedMember } from './types';
 
@@ -47,6 +47,11 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
   @computed
   private get _isExcludeMe() {
     return this.props.isExcludeMe;
+  }
+
+  @computed
+  get errorEmail() {
+    return this.props.errorEmail;
   }
 
   constructor(props: ContactSearchProps) {

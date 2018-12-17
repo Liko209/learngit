@@ -4,5 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './ThreeColumnResponse';
-export * from './TwoColumnResponse';
+export * from './ResponsiveLayout';

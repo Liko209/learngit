@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
 import { Post, GroupState, Group } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
@@ -63,14 +63,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get historyReadThrough() {
+    return this._historyHandler.readThrough;
+  }
+
+  @computed
   get historyUnreadCount() {
     return this._historyHandler.unreadCount;
   }
 
   @computed
   get firstHistoryUnreadPostId() {
+    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
+      ? undefined
+      : _.first(this.postIds);
+
     return (
       this._newMessageSeparatorHandler.firstUnreadPostId ||
+      firstUnreadPostId ||
       this._historyHandler.getFirstUnreadPostId(this.postIds)
     );
   }
@@ -123,17 +133,23 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._transformHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
+  @computed
+  get notEmpty() {
+    return this.items.length > 0 || this.hasMoreUp;
+  }
+
   constructor() {
     super();
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
+    this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
   }
 
   onReceiveProps(props: StreamProps) {
     if (this.groupId === props.groupId) {
       return;
     }
-    this.resetAll(props.groupId);
+    this.initialize(props.groupId);
   }
 
   @loading
@@ -143,33 +159,38 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const post = await PostService.getInstance<PostService>().getById(
         this.jumpToPostId,
       );
-      this._transformHandler.orderListStore.append([transformFunc(post)]);
-      const result = await Promise.all([
-        this._loadPosts(QUERY_DIRECTION.OLDER),
-        this._loadPosts(QUERY_DIRECTION.NEWER),
-      ]);
-      posts = _(result)
-        .flatten()
-        .value();
+      if (post) {
+        this._transformHandler.orderListStore.append([transformFunc(post)]);
+        const result = await Promise.all([
+          this._loadPosts(QUERY_DIRECTION.OLDER),
+          this._loadPosts(QUERY_DIRECTION.NEWER),
+        ]);
+        posts = _(result)
+          .flatten()
+          .value();
+      }
     } else {
       posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
     }
     if (posts && posts.length) {
       await this._prepareAllData(posts);
     }
+  }
+
+  updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
-    this._initialized = true;
-    this.markAsRead();
   }
 
   @onScrollToTop
   @loadingTop
+  @action
   async loadPrevPosts() {
     return this._loadPosts(QUERY_DIRECTION.OLDER);
   }
 
   @onScrollToBottom
   @loadingBottom
+  @action
   async loadNextPosts() {
     return this._loadPosts(QUERY_DIRECTION.NEWER);
   }
@@ -193,11 +214,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    const isFocused = document.hasFocus();
-    if (isFocused && this._initialized) {
-      storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
-      this._stateService.markAsRead(this.groupId);
-    }
+    this._stateService.markAsRead(this.groupId);
   }
 
   enableNewMessageSeparatorHandler = () => {
@@ -213,6 +230,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this._transformHandler) {
       this._transformHandler.dispose();
     }
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
   private async _prepareAllData(posts: Post[]) {
@@ -246,17 +266,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this.firstHistoryUnreadPostId;
   }
 
-  resetJumpToPostId = () => {
+  initialize = (groupId: number) => {
     const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-    this.jumpToPostId = 0;
-  }
-
-  resetAll = (groupId: number) => {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
     this.groupId = groupId;
-    this.dispose();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (direction, pageSize, anchor) => {
         try {
@@ -269,7 +284,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           });
           return { hasMore, data: posts };
         } catch (err) {
-          if (err.code === ErrorTypes.NETWORK) {
+          if (err.code === ErrorTypes.API_NETWORK) {
             // TODO error handle
           }
           return { data: [], hasMore: true };

@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
-import { Post } from 'sdk/src/models';
+import { Post } from 'sdk/models';
 import { ISortableModel } from '@/store/base';
 import { ISeparatorHandler } from './ISeparatorHandler';
 import { NewSeparator, SeparatorType } from './types';
@@ -18,6 +18,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
+  _oldestPost?: ISortableModel<Post>;
 
   @observable
   private _hasNewMessagesSeparator = false;
@@ -44,6 +45,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     hasMore: boolean,
   ): void {
     if (this._disabled) return;
+    this._oldestPost = _.first(allPosts);
 
     /*
      * (1)

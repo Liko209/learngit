@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text } from '@storybook/addon-knobs';
+import { boolean, select, text, number } from '@storybook/addon-knobs';
 import {
   withInfoDecorator,
   alignCenterDecorator,
@@ -34,13 +34,13 @@ const getKnobs = () => {
     'medium',
   );
 
-  const overlapping = boolean('overlapping', false);
+  const overlapSize = number('overlapSize', 0);
   const invisible = boolean('invisible', false);
   const awake = boolean('awake', false);
   return {
     direction,
     size,
-    overlapping,
+    overlapSize,
     invisible,
     awake,
   };

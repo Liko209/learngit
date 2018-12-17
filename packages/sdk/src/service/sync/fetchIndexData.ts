@@ -4,42 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { BaseError } from 'foundation';
 import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
-import { IndexDataModel } from '../../api/glip/user';
-import { IResponse, IResponseError } from '../../api/NetworkClient';
 import { progressBar } from '../../utils/progress';
+import { ApiResult } from '../../api/ApiResult';
+import { IndexDataModel } from '../../api/glip/user';
 
 interface IParams {
   newer_than?: string;
 }
 
-const fetchInitialData = async (
-  currentTime: number,
-): Promise<IResponse<IndexDataModel & IResponseError>> => {
+const fetchInitialData = async (currentTime: number) => {
   progressBar.start();
-  let result;
+  let promise: Promise<ApiResult<IndexDataModel, BaseError>>;
   try {
-    result = initialData({ _: currentTime });
+    promise = initialData({ _: currentTime });
   } finally {
     progressBar.stop();
   }
-  return result;
+  return promise;
 };
 
-const fetchRemainingData = async (
-  currentTime: number,
-): Promise<IResponse<IndexDataModel & IResponseError>> => {
-  const result = remainingData({ _: currentTime });
-  return result;
+const fetchRemainingData = async (currentTime: number) => {
+  return remainingData({ _: currentTime });
 };
 
 // fetch plugins
 
-const fetchIndexData = async (
-  timeStamp: string,
-): Promise<IResponse<IndexDataModel & IResponseError>> => {
+const fetchIndexData = async (timeStamp: string) => {
   progressBar.start();
   const params: IParams = { newer_than: timeStamp };
 
@@ -50,9 +44,8 @@ const fetchIndexData = async (
       progressBar.update(e);
     },
   };
-  let result;
+  let result: ApiResult<IndexDataModel, BaseError>;
 
-  // logger.time('fetch index data');
   try {
     result = await indexData(params, requestConfig);
   } catch (e) {
@@ -60,7 +53,7 @@ const fetchIndexData = async (
   } finally {
     progressBar.stop();
   }
-  // logger.timeEnd('fetch index data');
+
   return result;
 };
 

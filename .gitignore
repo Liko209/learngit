@@ -37,3 +37,5 @@ packages/jui/.cache
 /lint
 # UT error
 /ut
+# jira
+jira.config.json

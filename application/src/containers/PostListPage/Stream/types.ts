@@ -16,5 +16,9 @@ type StreamViewProps = {
 type TPluginsProps = {
   loadingMorePlugin: LoadingMorePlugin;
 };
+type SuccinctPost = {
+  id: number;
+  deactivated?: boolean;
+};
 
-export { StreamProps, StreamViewProps };
+export { StreamProps, StreamViewProps, SuccinctPost };

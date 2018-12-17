@@ -19,6 +19,10 @@ const { GroupService } = service;
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
+  @computed
+  get personId() {
+    return this.props.personId;
+  }
 
   @computed
   get groupId() {
@@ -47,7 +51,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   get favoriteText() {
-    return this.isFavorite ? 'remove_from_favorite' : 'favorite';
+    return this.isFavorite ? 'remove_from_favorites' : 'favorite';
   }
 
   @computed

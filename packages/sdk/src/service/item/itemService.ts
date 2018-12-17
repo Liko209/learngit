@@ -6,22 +6,13 @@
 
 import BaseService from '../../service/BaseService';
 import { daoManager, ItemDao } from '../../dao';
-import ItemAPI from '../../api/glip/item';
+import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
 import handleData, { sendFileItem, uploadStorageFile } from './handleData';
 import { transform } from '../utils';
-import {
-  StoredFile,
-  Item,
-  FileItem,
-  NoteItem,
-  Post,
-  Raw,
-  IResponseError,
-} from '../../models';
+import { StoredFile, Item, FileItem, NoteItem, Post, Raw } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
-import ErrorParser from '../../utils/error/parser';
-import { IResponse } from '../../api/NetworkClient';
+import { ApiResult } from '../../api/ApiResult';
 
 interface ISendFile {
   file: FormData;
@@ -45,6 +36,7 @@ class ItemService extends BaseService<Item> {
       groupId: params.groupId,
     };
     const result = await sendFileItem(itemOptions);
+
     if (result) {
       const fileItem = transform<FileItem>(result);
       await handleData([result]);
@@ -54,11 +46,13 @@ class ItemService extends BaseService<Item> {
   }
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
-    ItemAPI.requestRightRailItems(groupId).then(({ data }) => {
-      if (data && data.items && data.items.length) {
-        handleData(data.items);
-      }
-    });
+    ItemAPI.requestRightRailItems(groupId).then(
+      (result: ApiResult<IRightRailItemModel>) => {
+        if (result.isOk()) {
+          handleData(result.data.items);
+        }
+      },
+    );
     return (daoManager.getDao(this.DaoClass) as ItemDao).getItemsByGroupId(
       groupId,
       limit,
@@ -66,21 +60,23 @@ class ItemService extends BaseService<Item> {
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
-    const result = (await this.getByIdFromDao(id)) as NoteItem;
-    if (result) {
-      return result;
+    const item = (await this.getByIdFromDao(id)) as NoteItem;
+    if (item) {
+      return item;
     }
 
-    const resp = await ItemAPI.getNote(id);
-    if (resp.data) {
-      const note = transform<NoteItem>(resp.data);
-      await handleData([resp.data]);
-      return note;
-    }
+    const result = await ItemAPI.getNote(id);
 
-    // should handle errors when error handling ready
-    return null;
+    return result.match({
+      Ok: async (rawNoteItem: Raw<NoteItem>) => {
+        const note = transform<NoteItem>(rawNoteItem);
+        await handleData([rawNoteItem]);
+        return note;
+      },
+      Err: () => null,
+    });
   }
+
   async doNotRenderItem(id: number, type: string) {
     const itemDao = daoManager.getDao(ItemDao);
     const item = (await itemDao.get(id)) as Item;
@@ -122,20 +118,17 @@ class ItemService extends BaseService<Item> {
     updatedItemModel.do_not_render = true;
     updatedItemModel._id = updatedItemModel.id;
     delete updatedItemModel.id;
-    let itemData: Raw<Item>;
-    const resp = ItemAPI.putItem<Item>(
+
+    const result = await ItemAPI.putItem(
       updatedItemModel._id,
       type,
       updatedItemModel,
-    )
-      .then((resolve: IResponse<Raw<Item> & IResponseError>) => {
-        itemData = resolve.data;
-        return itemData;
-      })
-      .catch((e: any) => {
-        return ErrorParser.parse(e);
-      });
-    return resp;
+    );
+
+    return result.match({
+      Ok: (item: Raw<Item>) => item,
+      Err: (e: BaseError) => e,
+    });
   }
 }
 

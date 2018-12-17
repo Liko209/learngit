@@ -6,11 +6,12 @@
 import SubscribeWorker from '../subscribeWorker';
 import PresenceAPI from '../../../api/glip/presence';
 import socketManager from '../../socket';
+import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../api/glip/presence');
 jest.mock('../../socket');
 
-const worker = new SubscribeWorker(() => { }, () => { });
+const worker = new SubscribeWorker(() => {}, () => {});
 
 describe('Presence subscribe worker', () => {
   beforeEach(() => {
@@ -28,26 +29,24 @@ describe('Presence subscribe worker', () => {
     expect(worker.successCallback).not.toHaveBeenCalled();
   });
   it('execute success', async () => {
-    const response = {
-      data: [
-        {
-          personId: 1,
-          calculatedStatus: 'Unavailable',
-        },
-        {
-          personId: 2,
-          calculatedStatus: 'Available',
-        },
-      ],
-    };
+    const data = [
+      {
+        personId: 1,
+        calculatedStatus: 'Unavailable',
+      },
+      {
+        personId: 2,
+        calculatedStatus: 'Available',
+      },
+    ];
     PresenceAPI.requestPresenceByIds.mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve(response);
+      return new Promise((resolve: any) => {
+        resolve(new ApiResultOk(data, 200, {}));
       });
     });
     jest.spyOn(worker, 'successCallback');
     await worker.execute([1, 2, 3]);
-    expect(worker.successCallback).toHaveBeenCalledWith(response.data);
+    expect(worker.successCallback).toHaveBeenCalledWith(data);
   });
 
   it('execute failCallback', async () => {
@@ -60,5 +59,4 @@ describe('Presence subscribe worker', () => {
     await worker.execute([1, 2, 3]);
     expect(worker.failCallback).toHaveBeenCalledWith([1, 2, 3]);
   });
-
 });

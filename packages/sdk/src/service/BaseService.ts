@@ -3,19 +3,21 @@
  * @Date: 2018-04-16 09:47:05
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
+import { mainLogger } from 'foundation';
 import { transform, isFunction } from '../service/utils';
-import { BaseError, ErrorParser } from '../utils';
+import { ErrorTypes } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
 import { BaseModel, Raw, SortableModel } from '../models'; // eslint-disable-line
-import { mainLogger } from 'foundation';
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
 } from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
+import { ApiResult } from '../api/ApiResult';
+import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
-import _ from 'lodash';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
 
@@ -43,7 +45,7 @@ class BaseService<
   }
 
   static getInstance<T extends BaseService<any>>(): T {
-    return container.get(this.name) as T;
+    return container.get(this.name);
   }
 
   protected async shouldSaveItemFetchedById(
@@ -52,10 +54,10 @@ class BaseService<
     return true;
   }
 
-  async getById(id: number): Promise<SubModel> {
-    let result = await this.getByIdFromDao(id);
+  async getById(id: number): Promise<SubModel | null> {
+    const result = await this.getByIdFromDao(id);
     if (!result) {
-      result = await this.getByIdFromAPI(id);
+      return this.getByIdFromAPI(id);
     }
     return result;
   }
@@ -64,24 +66,56 @@ class BaseService<
     this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
     const result = await dao.get(id);
-    return result || daoManager.getDao(DeactivatedDao).get(id);
+    return result || (await this._getDeactivatedModelLocally(id));
   }
 
-  async getByIdFromAPI(id: number): Promise<SubModel> {
+  private async _getDeactivatedModelsLocally(
+    ids: number[],
+  ): Promise<SubModel[]> {
+    const dao = daoManager.getDao(DeactivatedDao);
+    return await dao.batchGet(ids);
+  }
+
+  private async _getDeactivatedModelLocally(id: number): Promise<SubModel> {
+    const dao = daoManager.getDao(DeactivatedDao);
+    return await dao.get(id);
+  }
+
+  async getModelsLocally(
+    ids: number[],
+    includeDeactivated: boolean,
+  ): Promise<SubModel[]> {
+    if (ids.length <= 0) {
+      return [];
+    }
+    const dao = daoManager.getDao(this.DaoClass);
+    let models = await dao.batchGet(ids);
+    if (includeDeactivated && models.length !== ids.length) {
+      const modelIds = models.map(model => model.id);
+      const diffIds = _.difference(ids, modelIds);
+      const deactivateModels = await this._getDeactivatedModelsLocally(diffIds);
+      models = _.concat(models, deactivateModels);
+    }
+    return models;
+  }
+
+  async getByIdFromAPI(id: number): Promise<SubModel | null> {
     if (!this.ApiClass || !isFunction(this.handleData)) {
       throwError('ApiClass || HandleData');
     }
     if (id <= 0) {
       throwError('invalid id, should not do network request');
     }
-    let result = await this.ApiClass.getDataById(id);
-    if (result && result.data) {
-      const arr = [].concat(result.data).map(transform); // normal transform
+    const result: ApiResult<any> = await this.ApiClass.getDataById(id);
+    if (result.isOk()) {
+      const arr: SubModel[] = []
+        .concat(result.data)
+        .map((item: Raw<SubModel>) => transform(item)); // normal transform
       const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
       await this.handleData(arr, shouldSaveToDB);
-      result = arr.length > 0 ? arr[0] : null;
+      return arr.length > 0 ? arr[0] : null;
     }
-    return result;
+    return null;
   }
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
@@ -211,19 +245,6 @@ class BaseService<
       : false;
   }
 
-  sortEntitiesByName(
-    entityA: SortableModel<SubModel>,
-    entityB: SortableModel<SubModel>,
-  ) {
-    if (entityA.sortKey < entityB.sortKey) {
-      return -1;
-    }
-    if (entityA.sortKey > entityB.sortKey) {
-      return 1;
-    }
-    return 0;
-  }
-
   protected getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
   }
@@ -313,31 +334,35 @@ class BaseService<
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | null>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
-  ): Promise<SubModel | BaseError> {
+  ): Promise<ServiceResult<SubModel>> {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
       ? partialModel._id
       : 0;
-    let result: SubModel | BaseError;
+    let result: ServiceResult<SubModel>;
 
     do {
       if (id <= 0) {
-        mainLogger.warn('handlePartialUpdate: invalid id');
-        result = ErrorParser.parse('none model error');
+        mainLogger.warn('handlePartialUpdate: Invalid model id');
+        result = serviceErr(ErrorTypes.SERVICE_INVALID_MODEL_ID);
         break;
       }
 
       const originalModel = await this.getById(id);
+
       if (!originalModel) {
-        mainLogger.warn('handlePartialUpdate: originalModel is nil');
-        result = ErrorParser.parse('none model error');
+        mainLogger.warn('handlePartialUpdate: OriginalModel not found');
+        result = serviceErr(
+          ErrorTypes.SERVICE,
+          `OriginalModel not found: modelId: ${id}`,
+        );
         break;
       }
 
@@ -345,13 +370,13 @@ class BaseService<
         mainLogger.warn(
           'handlePartialUpdate: doUpdateModel is nil, no updates',
         );
-        result = originalModel;
+        result = serviceOk(originalModel);
         break;
       }
 
       result = await this._handlePartialUpdateWithOriginal(
         preHandlePartialModel
-          ? await preHandlePartialModel(partialModel, originalModel)
+          ? preHandlePartialModel(partialModel, originalModel)
           : partialModel,
         originalModel,
         doUpdateModel,
@@ -430,14 +455,14 @@ class BaseService<
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | null>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
-  ): Promise<SubModel | BaseError> {
-    let result: SubModel | BaseError;
+  ): Promise<ServiceResult<SubModel>> {
+    let result: ServiceResult<SubModel>;
     do {
       partialModel.id = originalModel.id;
       if (partialModel._id) {
@@ -450,8 +475,8 @@ class BaseService<
       );
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
-        result = originalModel;
         mainLogger.warn('handlePartialUpdate: no changes, no need update');
+        result = serviceOk(originalModel);
         break;
       }
 
@@ -467,8 +492,9 @@ class BaseService<
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
 
-      const resp = await doUpdateModel(mergedModel);
-      if (resp instanceof BaseError) {
+      const updatedModel = await doUpdateModel(mergedModel);
+
+      if (!updatedModel) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
           rollbackPartialModel,
@@ -480,9 +506,11 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed');
+        break;
       }
 
-      result = resp;
+      result = serviceOk(updatedModel);
     } while (false);
 
     return result;

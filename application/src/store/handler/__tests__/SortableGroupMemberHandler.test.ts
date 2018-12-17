@@ -13,7 +13,7 @@ import {
 
 import { TeamPermission } from 'sdk/service/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';
-import { Person } from '../../../../../packages/sdk/src/models';
+import { Person } from 'sdk/models';
 
 jest.mock('sdk/service/group');
 jest.mock('sdk/service/person');

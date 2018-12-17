@@ -15,7 +15,8 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 // import { JuiTextWithLink } from 'jui/components/TextWithLink';
-import { JuiSnackbarContent } from 'jui/components/Snackbars';
+import { JuiSnackbarContent } from 'jui/components/Banners';
+import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
   JuiListToggleItemProps,
@@ -93,22 +94,29 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    try {
-      const result = await create(teamName, members, description, {
-        isPublic,
-        canPost,
-      });
-      history.push(`/messages/${result.id}`);
+    const result = await create(teamName, members, description, {
+      isPublic,
+      canPost,
+    });
+    if (result.isOk()) {
       this.onClose();
-    } catch (err) {}
+      history.push(`/messages/${result.data.id}`);
+    }
   }
 
   onClose = () => {
-    const { updateCreateTeamDialogState, inputReset } = this.props;
+    const { updateCreateTeamDialogState } = this.props;
     updateCreateTeamDialogState();
-    inputReset();
-    this.setState({
-      items: CreateTeam.initItems,
+  }
+
+  renderServerUnknownError() {
+    const message = 'WeWerentAbleToCreateTheTeamTryAgain';
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
     });
   }
 
@@ -127,7 +135,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       handleSearchContactChange,
       isOffline,
       serverError,
+      errorEmail,
+      serverUnknownError,
     } = this.props;
+    if (serverUnknownError) {
+      this.renderServerUnknownError();
+    }
     return (
       <JuiModal
         open={isOpen}
@@ -154,6 +167,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           error={nameError}
           inputProps={{
             maxLength: 200,
+            'data-test-automation-id': 'CreateTeamName',
           }}
           helperText={nameError && t(errorMsg)}
           onChange={handleNameChange}
@@ -164,9 +178,14 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
           helperText={emailError && t(emailErrorMsg)}
+          errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea
+          inputProps={{
+            'data-test-automation-id': 'CreateTeamDescription',
+            maxLength: 1000,
+          }}
           placeholder={t('Team Description')}
           fullWidth={true}
           onChange={handleDescChange}
@@ -190,5 +209,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
 }
 
 const CreateTeamView = translate('team')(withRouter(CreateTeam));
+const CreateTeamComponent = CreateTeam;
 
-export { CreateTeamView };
+export { CreateTeamView, CreateTeamComponent };

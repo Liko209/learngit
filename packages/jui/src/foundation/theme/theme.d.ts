@@ -93,10 +93,12 @@ type Theme = {
   zIndex: {
     ripple: number;
     elementOnRipple: number;
-    reponsePanel: number;
-    reponseResizer: number;
     loading: number;
     dragging: number;
+    moreMenu: number;
+    memberListHeader: number;
+    toast: number;
+    floatButton: number;
   };
   size: {
     width: number;
@@ -127,12 +129,6 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    subheading3: {
-      fontSize: string;
-      fontWeight: number;
-      fontFamily: string;
-      lineHeight: string;
-    };
     caption1: {
       fontSize: string;
       fontWeight: number;
@@ -145,13 +141,20 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    heading1: {
+    h6: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
       lineHeight: string;
-      maxHeight: string;
     };
   };
   boxShadow: {
     val1: string;
+    val2: string;
+    val3: string;
+  };
+  maxHeight: {
+    dialog: string;
   };
 } & MuiTheme;
 

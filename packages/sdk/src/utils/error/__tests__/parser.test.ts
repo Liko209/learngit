@@ -2,6 +2,7 @@ import { HttpResponse, HttpResponseBuilder } from 'foundation';
 
 import ErrorParser from '../parser';
 import { DBCriticalError } from '../../../dao/errors/handler';
+import { ErrorTypes } from '..';
 
 const DB_CRITICAL_ERROR = 2001;
 const HTTP_BASE_CODE = 1000;
@@ -13,37 +14,45 @@ function createResponse(obj: any) {
 }
 
 describe('ErrorParser', () => {
-  it('ErrorParser parse/dexie/http', () => {
-    const dexieError: any = new DBCriticalError();
-    expect(ErrorParser.parse(dexieError).code).toBe(DB_CRITICAL_ERROR);
-
-    const httpError: HttpResponse = createResponse({
-      status: 200,
-      data: { error: { message: '' } },
-    });
-    expect(ErrorParser.parse(httpError)).toEqual({
-      data: { error: { message: '' } },
-      headers: {},
-      request: undefined,
-      retryAfter: 6000,
-      status: 200,
-      statusText: '',
+  describe('parse()', () => {
+    it('should parse dexie error', () => {
+      const dexieError: DBCriticalError = new DBCriticalError();
+      expect(ErrorParser.parse(dexieError).code).toBe(DB_CRITICAL_ERROR);
     });
 
-    const commonError: HttpResponse = createResponse({
-      status: 400,
-      data: {
-        error: 'invalid_grant',
-        error_description: 'xxxx',
-      },
+    it('should parse when response.data.error is object', () => {
+      const response: HttpResponse = createResponse({
+        status: 200,
+        data: { error: { code: 'invalid_field', message: 'Invalid field' } },
+      });
+
+      const error = ErrorParser.parse(response);
+
+      expect(error.code).toBe(ErrorTypes.API_INVALID_FIELD);
     });
 
-    expect(ErrorParser.parse(commonError).code).toBe(4147);
+    it('should parse when response.data.error is string', () => {
+      const response: HttpResponse = createResponse({
+        status: 400,
+        data: {
+          error: 'invalid_grant',
+          error_description: 'xxxx',
+        },
+      });
 
-    const baseError = {
-      message: 'baseError',
-    };
+      const error = ErrorParser.parse(response);
 
-    expect(ErrorParser.parse(baseError).code).toBe(0);
+      expect(error.code).toBe(ErrorTypes.API_INVALID_GRANT);
+    });
+
+    it('should return UNDEFINED_ERROR when then input can not be parse', () => {
+      const obj = {
+        message: 'baseError',
+      };
+
+      const error = ErrorParser.parse(obj);
+
+      expect(error.code).toBe(ErrorTypes.UNDEFINED_ERROR);
+    });
   });
 });

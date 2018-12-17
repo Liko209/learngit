@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import GroupModel from '../Group';
-import { Group } from 'sdk/src/models';
+import { Group } from 'sdk/models';
 
 describe('GroupModel', () => {
   describe('isThePersonGuest()', () => {

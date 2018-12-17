@@ -6,7 +6,7 @@ import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
 import { BaseModel } from 'sdk/models';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 

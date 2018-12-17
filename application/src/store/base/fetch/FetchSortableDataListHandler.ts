@@ -3,10 +3,14 @@
  * @Date: 2018-10-07 00:50:11
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
+import { transaction } from 'mobx';
 import { BaseModel } from 'sdk/models';
+import { QUERY_DIRECTION } from 'sdk/dao';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-
 import { EVENT_TYPES } from 'sdk/service';
+import { transform2Map } from '@/store/utils';
+
 import {
   ISortableModel,
   IMatchFunc,
@@ -18,11 +22,7 @@ import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
 } from './FetchDataListHandler';
-
 import { SortableListStore } from './SortableListStore';
-import _ from 'lodash';
-import { transform2Map } from '@/store/utils';
-import { QUERY_DIRECTION } from 'sdk/dao';
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -81,15 +81,17 @@ export class FetchSortableDataListHandler<
     data.forEach((element: T) => {
       sortableResult.push(this._transformFunc(element));
     });
-    this.updateEntityStore(data);
-    this.handleHasMore(hasMore, direction);
-    this.handlePageData(sortableResult);
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        direction,
-        added: sortableResult,
-        deleted: [],
-      });
+    transaction(() => {
+      this.updateEntityStore(data);
+      this.handleHasMore(hasMore, direction);
+      this.handlePageData(sortableResult);
+      this._dataChangeCallBack &&
+        this._dataChangeCallBack({
+          direction,
+          added: sortableResult,
+          deleted: [],
+        });
+    });
     return data;
   }
 

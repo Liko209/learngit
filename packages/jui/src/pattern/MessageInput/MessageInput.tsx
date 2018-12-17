@@ -12,17 +12,25 @@ import {
   ellipsis,
 } from '../../foundation/utils/styles';
 import { markdownFromDelta } from './markdown';
+import { handleAtMention } from './Mention/handleAtMention';
 
 import 'react-quill/dist/quill.snow.css';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{
+  isEditMode?: boolean;
+}>`
   position: relative;
-  box-shadow: ${props => props.theme.shadows[2]};
-  padding: ${spacing(4)};
+  box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
+  padding: ${props => (props.isEditMode ? 0 : spacing(4))};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
 `;
 
 const GlobalStyle = createGlobalStyle<{}>`
+  [data-name=conversation-card] {
+      &&&& .ql-editor {
+      max-height: ${height(64)};
+    }
+  }
   .quill {
     width: 100%;
     align-self: flex-end;
@@ -42,7 +50,7 @@ const GlobalStyle = createGlobalStyle<{}>`
         ${typography('body1')};
         padding: ${spacing(2)};
         min-height: ${height(9)};
-        max-height: ${height(68)};
+        max-height: ${height(36.5)};
         height: auto;
         border-radius: ${spacing(1)};
         color: ${grey('700')};
@@ -75,22 +83,24 @@ const StyledError = styled.div`
 `;
 
 type Props = {
-  value: string | Delta;
-  onChange: Function;
+  value?: string | Delta;
+  defaultValue?: string;
+  onChange?: Function;
   error: string;
   children: React.ReactNode;
   modules: object;
-};
-type State = {
-  modules: {};
+  isEditMode?: boolean;
 };
 
-class JuiMessageInput extends React.Component<Props, State> {
+class JuiMessageInput extends React.Component<Props> {
   private _changeSource: Sources = 'api';
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
 
   componentDidMount() {
-    this.focusEditor(false);
+    const { isEditMode } = this.props;
+    if (!isEditMode) {
+      this.focusEditor(false);
+    }
   }
 
   componentDidUpdate() {
@@ -104,16 +114,19 @@ class JuiMessageInput extends React.Component<Props, State> {
 
     if (this._inputRef.current) {
       const quill = this._inputRef.current.getEditor();
-      requestAnimationFrame(() => quill.setSelection(quill.getLength(), 0));
+      const length = quill.getLength();
+      if (length > 1) {
+        setTimeout(() => quill.setSelection(length - 1, 0), 300);
+      }
     }
   }
 
   onChange = (content: string, delta: Delta, source: Sources, editor: any) => {
     this._changeSource = source;
-    if (source === 'api') {
+    const { onChange } = this.props;
+    if (!onChange) {
       return;
     }
-    const { onChange } = this.props;
     if (!markdownFromDelta(editor.getContents()).trim()) {
       onChange('');
       return;
@@ -122,11 +135,25 @@ class JuiMessageInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { value, error, children, modules } = this.props;
+    const {
+      value,
+      defaultValue,
+      error,
+      children,
+      modules,
+      isEditMode,
+    } = this.props;
+    const reactQuillValueProp = defaultValue
+      ? {
+        defaultValue: handleAtMention(defaultValue),
+      }
+      : {
+        value,
+      };
     return (
-      <Wrapper>
+      <Wrapper isEditMode={isEditMode}>
         <ReactQuill
-          value={value}
+          {...reactQuillValueProp}
           onChange={this.onChange}
           placeholder="Type new message"
           modules={modules}

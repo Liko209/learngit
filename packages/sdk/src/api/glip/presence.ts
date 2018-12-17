@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IResponse } from '../NetworkClient';
 import Api from '../api';
 import { RawPresence } from '../../models';
 import { NETWORK_VIA } from 'foundation';
@@ -14,11 +13,9 @@ class PresenceAPI extends Api {
    * @param {*} idsArr  presence ids
    * return presences or null
    */
-  static requestPresenceByIds(
-    idArr: number[],
-  ): Promise<IResponse<RawPresence[]>> {
+  static requestPresenceByIds(idArr: number[]) {
     const ids = idArr.join(',');
-    return this.uploadNetworkClient.get(
+    return this.uploadNetworkClient.get<RawPresence[]>(
       `/glip-presence/v1/person/${ids}/presence`,
       {},
       NETWORK_VIA.SOCKET,

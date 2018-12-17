@@ -16,7 +16,7 @@ type Props = {
 const StyledAvatarName = styled.div`
   display: flex;
   align-items: flex-end;
-  margin: ${spacing(0, 2, 1, 0)};
+  margin: ${spacing(0, 4, 1, 0)};
 `;
 
 const StyledName = styled.span`

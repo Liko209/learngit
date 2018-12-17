@@ -34,7 +34,7 @@
       "negative": "#f44336",
       "positive": "#26a304",
       "critical": "#f6ad16",
-      "neutral": "#8c8c8c"
+      "neutral": "#616161"
     },
     "accent": {
       "ash": "#bfbfbf",
@@ -109,28 +109,47 @@
   "zIndex": {
     "ripple": 1,
     "elementOnRipple": 2,
-    "reponsePanel": 1,
-    "reponseResizer": 2,
     "loading": 1000,
-    "dragging": 2000
+    "dragging": 2000,
+    "moreMenu": 999,
+    "toast": 3000,
+    "memberListHeader": 100,
+    "floatButton": 10
   },
   "size": {
     "width": 4,
     "height": 4
   },
   "typography": {
-    "button": {
-      "fontSize": "0.875rem",
-      "textTransform": "capitalize",
-      "fontWeight": 500,
+    "display4": {
+      "fontSize": "6rem",
+      "fontWeight": 300,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "color": "rgba(0, 0, 0, 0.87)"
+      "lineHeight": "112px"
     },
-    "title1": {
-      "fontSize": "1.25rem",
+    "display3": {
+      "fontSize": "3.5rem",
       "fontWeight": 400,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "lineHeight": "24px"
+      "lineHeight": "72px"
+    },
+    "display2": {
+      "fontSize": "2.8125rem",
+      "fontWeight": 400,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "56px"
+    },
+    "display1": {
+      "fontSize": "2.125rem",
+      "fontWeight": 400,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "40px"
+    },
+    "headline": {
+      "fontSize": "1.5rem",
+      "fontWeight": 400,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "28px"
     },
     "title2": {
       "fontSize": "1.25rem",
@@ -138,8 +157,8 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "24px"
     },
-    "subheading1": {
-      "fontSize": "1rem",
+    "title1": {
+      "fontSize": "1.25rem",
       "fontWeight": 400,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "24px"
@@ -148,19 +167,25 @@
       "fontSize": "1rem",
       "fontWeight": 500,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "lineHeight": "24px"
+      "lineHeight": "22px"
     },
-    "subheading3": {
+    "subheading1": {
+      "fontSize": "1rem",
+      "fontWeight": 400,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "22px"
+    },
+    "body2": {
       "fontSize": "0.875rem",
       "fontWeight": 500,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "lineHeight": "24px"
+      "lineHeight": "20px"
     },
-    "caption1": {
-      "fontSize": "0.75rem",
+    "body1": {
+      "fontSize": "0.875rem",
       "fontWeight": 400,
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      "lineHeight": "16px"
+      "lineHeight": "20px"
     },
     "caption2": {
       "fontSize": "0.75rem",
@@ -168,12 +193,26 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "16px"
     },
-    "heading1": {
-      "lineHeight": "1.5em",
-      "maxHeight": "3em"
+    "caption1": {
+      "fontSize": "0.75rem",
+      "fontWeight": 400,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "16px"
+    },
+    "button": {
+      "fontSize": "0.875rem",
+      "fontWeight": 500,
+      "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
+      "lineHeight": "16px",
+      "textTransform": "none"
     }
   },
   "boxShadow": {
-    "val1": "0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.14)"
+    "val1": "0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.14)",
+    "val2": "0 -2px 4px -2px rgba(0, 0, 0, 0.14)",
+    "val3": "0 3px 1px -2px rgba(0, 0, 0, 0.14)"
+  },
+  "maxHeight": {
+    "dialog": "72vh"
   }
 }

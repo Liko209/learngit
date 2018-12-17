@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import moment from 'moment';
-import { observable, computed, transaction } from 'mobx';
+import { observable, computed } from 'mobx';
 import { Post } from 'sdk/models';
 import { ISortableModel } from '@/store/base';
 import { DateSeparator, SeparatorType } from './types';
@@ -16,18 +16,18 @@ class DateSeparatorHandler implements ISeparatorHandler {
   priority: number = 1;
 
   @observable
-  postsByDateMap: Map<number, ISortableModel<Post>[]> = new Map();
+  private _postsByDateMap: Map<number, ISortableModel<Post>[]> = new Map();
 
-  // _separatorMap: Map<number, DateSeparator> = new Map();
+  private _oldestPost?: ISortableModel<Post>;
 
   @computed
   get separatorMap() {
     const resultMap = new Map<number, DateSeparator>();
-    this.postsByDateMap.forEach(
+    this._postsByDateMap.forEach(
       (posts: ISortableModel<Post>[], timestamp: number) => {
         const firstPost = _.first(posts);
         if (!firstPost) return;
-
+        if (this._oldestPost && firstPost.id === this._oldestPost.id) return;
         resultMap.set(firstPost.id, {
           timestamp,
           type: SeparatorType.DATE,
@@ -42,38 +42,35 @@ class DateSeparatorHandler implements ISeparatorHandler {
     addedPosts: ISortableModel<Post>[],
     allPosts: ISortableModel<Post>[],
   ): void {
-    transaction(() => {
-      _(addedPosts)
-        .reverse()
-        .forEach((post: ISortableModel<Post>) => {
-          if (post.data) {
-            const timestamp = moment(post.data.created_at)
-              .startOf('day')
-              .valueOf();
-            const posts = this.postsByDateMap.get(timestamp) || [];
-            if (posts) {
-              posts.push(post);
-            }
-            this.postsByDateMap.set(timestamp, _.sortBy(posts, 'id'));
+    this._oldestPost = _.first(allPosts);
+    _(addedPosts)
+      .reverse()
+      .forEach((post: ISortableModel<Post>) => {
+        if (post.data) {
+          const timestamp = moment(post.data.created_at)
+            .startOf('day')
+            .valueOf();
+          const posts = this._postsByDateMap.get(timestamp) || [];
+          if (posts) {
+            posts.push(post);
           }
-        });
-    });
+          this._postsByDateMap.set(timestamp, _.sortBy(posts, 'id'));
+        }
+      });
   }
 
   onDeleted(deletedPostIds: number[], allPosts: ISortableModel<any>[]): void {
-    transaction(() => {
-      deletedPostIds.forEach((deletedPostId: number) => {
-        this.postsByDateMap.forEach(
-          (posts: ISortableModel[], timestamp: number) => {
-            const newPosts = _.filter(posts, post => post.id !== deletedPostId);
-            if (newPosts.length > 0) {
-              this.postsByDateMap.set(timestamp, newPosts);
-            } else {
-              this.postsByDateMap.delete(timestamp);
-            }
-          },
-        );
-      });
+    deletedPostIds.forEach((deletedPostId: number) => {
+      this._postsByDateMap.forEach(
+        (posts: ISortableModel[], timestamp: number) => {
+          const newPosts = _.filter(posts, post => post.id !== deletedPostId);
+          if (newPosts.length > 0) {
+            this._postsByDateMap.set(timestamp, newPosts);
+          } else {
+            this._postsByDateMap.delete(timestamp);
+          }
+        },
+      );
     });
   }
 }

@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/ConversationList/MaxConversation.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

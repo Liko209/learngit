@@ -11,15 +11,17 @@ import { transform } from '../utils';
 import { Company, Raw } from '../../models';
 import CompanyAPI from '../../api/glip/company';
 
-const _getTransformData = async (companies: Raw<Company>[]): Promise<Company[]> => {
+const _getTransformData = async (
+  companies: Raw<Company>[],
+): Promise<Company[]> => {
   const transformedData: (Company | null)[] = await Promise.all(
     companies.map(async (item: Raw<Company>) => {
       const { _delta: delta, _id: id } = item;
       let finalItem = item;
       if (delta && id) {
-        const resp = await CompanyAPI.requestCompanyById(id);
-        if (resp && resp.data) {
-          finalItem = resp.data;
+        const result = await CompanyAPI.requestCompanyById(id);
+        if (result.isOk()) {
+          finalItem = result.data;
         } else {
           return null;
         }
@@ -27,7 +29,9 @@ const _getTransformData = async (companies: Raw<Company>[]): Promise<Company[]> 
       return transform<Company>(finalItem);
     }),
   );
-  return transformedData.filter((item: Company | null) => item !== null) as Company[];
+  return transformedData.filter(
+    (item: Company | null) => item !== null,
+  ) as Company[];
 };
 
 const companyHandleData = async (companies: Raw<Company>[]) => {

@@ -3,19 +3,19 @@
  * @Date: 2018-02-05 15:07:23
  * Copyright © RingCentral. All rights reserved.
  */
-
 import {
-  NetworkManager,
-  NetworkRequestBuilder,
-  NETWORK_VIA,
+  BaseResponse,
   IHandleType,
   IRequest,
   NETWORK_METHOD,
-  BaseResponse,
+  NETWORK_VIA,
+  NetworkManager,
+  NetworkRequestBuilder,
 } from 'foundation';
 
-// import logger from './logger';
-import { serializeUrlParams } from '../utils';
+import { omitLocalProperties, serializeUrlParams } from '../utils';
+import { ApiResult } from './ApiResult';
+import { apiErr, apiOk } from './utils';
 
 export interface IQuery {
   via?: NETWORK_VIA;
@@ -40,8 +40,8 @@ export interface INetworkRequests {
   readonly handlerType: IHandleType;
 }
 
-export interface IResponseResolveFn<T = {}> {
-  (value: IResponse<T> | PromiseLike<IResponse<T>>): void;
+export interface IResultResolveFn<T = {}> {
+  (value: ApiResult<T> | PromiseLike<ApiResult<T>>): void;
 }
 
 export interface IResponseRejectFn {
@@ -63,7 +63,7 @@ export default class NetworkClient {
   apiPlatformVersion: string;
   apiMap: Map<
     string,
-    { resolve: IResponseResolveFn<any>; reject: IResponseRejectFn }[]
+    { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;
@@ -83,7 +83,7 @@ export default class NetworkClient {
     this.networkManager = networkManager;
   }
 
-  request<T>(query: IQuery): Promise<IResponse<T>> {
+  request<T>(query: IQuery): Promise<ApiResult<T>> {
     const { via, path, method, params } = query;
     return new Promise((resolve, reject) => {
       const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
@@ -105,21 +105,13 @@ export default class NetworkClient {
     return (resp: BaseResponse) => {
       const promiseResolvers = this.apiMap.get(apiMapKey);
       if (!promiseResolvers) return;
-
-      if (resp.status >= 200 && resp.status < 300) {
-        promiseResolvers.forEach(({ resolve }) =>
-          resolve({
-            status: resp.status,
-            headers: resp.headers,
-            data: resp.data as T,
-          }),
-        );
-      } else {
-        promiseResolvers.forEach(({ reject }) => {
-          console.log('Network reject', resp);
-          reject(resp);
-        });
-      }
+      promiseResolvers.forEach(({ resolve }) => {
+        if (resp.status >= 200 && resp.status < 300) {
+          resolve(apiOk(resp));
+        } else {
+          resolve(apiErr(resp));
+        }
+      });
       this.apiMap.delete(apiMapKey);
     };
   }
@@ -198,8 +190,8 @@ export default class NetworkClient {
   post<T>(path: string, data = {}, headers = {}) {
     return this.request<T>({
       path,
-      data,
       headers,
+      data: omitLocalProperties(data),
       method: NETWORK_METHOD.POST,
     });
   }
@@ -214,8 +206,8 @@ export default class NetworkClient {
   put<T>(path: string, data = {}, headers = {}) {
     return this.http<T>({
       path,
-      data,
       headers,
+      data: omitLocalProperties(data),
       method: NETWORK_METHOD.PUT,
     });
   }

@@ -6,7 +6,7 @@
 
 import { RouteComponentProps } from 'react-router-dom';
 
-type MessagesProps = {} & RouteComponentProps<{ id: string }>;
+type MessagesProps = RouteComponentProps<{ id: string }>;
 
 type MessagesViewProps = {
   isLeftNavOpen: boolean;

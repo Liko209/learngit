@@ -14,6 +14,7 @@ jest.mock('../handleData');
 jest.mock('../fetchIndexData');
 
 import SyncService from '..';
+import { ApiResultOk } from '../../../api/ApiResult';
 describe('SyncService ', () => {
   const syncService = new SyncService();
   describe('syncData', () => {
@@ -25,7 +26,9 @@ describe('SyncService ', () => {
     it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
       jest.clearAllMocks();
 
-      syncService.isLoading = false;
+      Object.assign(syncService, {
+        isLoading: false,
+      });
 
       daoManager.getKVDao.mockImplementation(() => ({
         get: jest.fn().mockReturnValue(null),
@@ -36,7 +39,9 @@ describe('SyncService ', () => {
     });
     it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
       jest.clearAllMocks();
-      syncService.isLoading = true;
+      Object.assign(syncService, {
+        isLoading: true,
+      });
 
       daoManager.getKVDao.mockImplementation(() => ({
         get: jest.fn().mockReturnValue(null),
@@ -45,10 +50,12 @@ describe('SyncService ', () => {
       await syncService.syncData();
       expect(spy).not.toBeCalled();
     });
-    it('should call _firstLogin if LAST_INDEX_TIMESTAMP is no null', async () => {
+    it('should not call _firstLogin if LAST_INDEX_TIMESTAMP is not null', async () => {
       jest.clearAllMocks();
-      syncService.isLoading = false;
-
+      Object.assign(syncService, {
+        isLoading: false,
+      });
+      fetchIndexData.mockResolvedValueOnce(new ApiResultOk({}, 200, {}));
       daoManager.getKVDao.mockImplementation(() => ({
         get: jest.fn().mockReturnValue(1),
       }));

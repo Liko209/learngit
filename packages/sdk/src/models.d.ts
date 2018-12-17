@@ -14,7 +14,8 @@ export type BaseModel = {
 export type SortableModel<T> = {
   id: number;
   displayName: string;
-  sortKey: string;
+  firstSortKey?: any;
+  secondSortKey?: any;
   entity: T;
 };
 
@@ -55,7 +56,7 @@ export type GroupCommon = {
   is_archived?: boolean;
   guest_user_company_ids?: number[];
   removed_guest_user_ids?: number[];
-  privacy?: string; // 'public'|'protected'|'private'
+  privacy?: string; // 'protected'|'private'
   team_folder?: string;
   converted_to_team?: object;
   converted_from_group?: object;
@@ -69,8 +70,9 @@ export type GroupCommon = {
   is_public?: boolean;
   description?: string;
   has_no_more_post?: boolean;
-  draft?: string;
-  send_failure_post_ids?: number[];
+  __send_failure_post_ids?: number[];
+  __draft?: string;
+  __last_accessed_at?: number;
 };
 
 export type Group = ExtendedBaseModel & {
@@ -92,7 +94,7 @@ export type Profile = ExtendedBaseModel & {
 
 export type Company = ExtendedBaseModel & {
   name: string;
-  domain: string;
+  domain: string | string[];
   admins: number[];
   custom_emoji: { [index: string]: { data: string } };
   _delta?: { add_keys?: object; remove_keys: object };
@@ -104,6 +106,11 @@ export type PhoneNumberModel = {
   id: number;
   phoneNumber: string;
   usageType: string;
+};
+
+export type SanitizedExtensionModel = {
+  extensionNumber: string;
+  type: string;
 };
 
 export type Person = ExtendedBaseModel & {
@@ -125,13 +132,16 @@ export type Person = ExtendedBaseModel & {
   locked?: boolean;
   inviter_id?: number;
   rc_phone_numbers?: PhoneNumberModel[];
-  sanitized_rc_extension?: object;
+  sanitized_rc_extension?: SanitizedExtensionModel;
   is_pseudo_user?: boolean;
   glip_user_id?: number;
   away_status?: string;
   job_title?: string;
   pseudo_user_phone_number?: string;
   rc_account_id?: number;
+  location?: string;
+  homepage?: string;
+  teams_removed_from?: number[];
 };
 
 export type UserInfo = {

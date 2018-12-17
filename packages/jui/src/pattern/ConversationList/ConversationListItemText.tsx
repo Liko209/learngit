@@ -7,7 +7,7 @@ import React, { CSSProperties, PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
 import MuiTypography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
+import { JuiArrowTip } from '../../components/Tooltip/ArrowTip';
 
 import styled from '../../foundation/styled-components';
 import { isTextOverflow, spacing, typography } from '../../foundation/utils';
@@ -27,6 +27,7 @@ const StyledTypography = styled(MuiTypography)`
 
 type ItemTextProps = {
   style?: CSSProperties;
+  disableTooltip?: boolean;
 };
 
 type ItemTextStates = {
@@ -51,8 +52,10 @@ class ConversationListItemText extends PureComponent<
   render() {
     const { tipOpen } = this.state;
 
-    return (
-      <Tooltip
+    return this.props.disableTooltip ? (
+      <StyledTypography {...this.props}>{this.props.children}</StyledTypography>
+    ) : (
+      <JuiArrowTip
         title={this.props.children}
         disableFocusListener={false}
         disableHoverListener={false}
@@ -67,15 +70,17 @@ class ConversationListItemText extends PureComponent<
         >
           {this.props.children}
         </StyledTypography>
-      </Tooltip>
+      </JuiArrowTip>
     );
   }
 
   componentDidMount() {
-    const textEl = ReactDOM.findDOMNode(this.textRef.current);
+    if (!this.props.disableTooltip) {
+      const textEl = ReactDOM.findDOMNode(this.textRef.current);
 
-    if (textEl && textEl instanceof HTMLElement) {
-      this.textEl = textEl;
+      if (textEl && textEl instanceof HTMLElement) {
+        this.textEl = textEl;
+      }
     }
   }
 

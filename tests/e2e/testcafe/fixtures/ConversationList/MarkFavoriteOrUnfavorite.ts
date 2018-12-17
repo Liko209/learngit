@@ -39,11 +39,13 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     });
 
     await h(t).withLog('And the conversations should not be hidden and unfavorited before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${groupId}`]: false,
-        [`hide_group_${teamId}`]: false,
-        favorite_group_ids: [],
-      });
+      await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
+      // await user.sdk.glip.updateProfile(user.rcId, {
+      //   [`hide_group_${groupId}`]: false,
+      //   [`hide_group_${teamId}`]: false,
+      //   // favorite_group_ids: [],
+      // });
+      await user.sdk.glip.clearFavoriteGroups();
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -51,10 +53,10 @@ test(formalName('Display Favorite button when user tap more button of a conversa
       await app.homePage.ensureLoaded();
     });
 
-    let groupItem, teamItem; 
+    let groupItem, teamItem;
     await h(t).withLog('and I click more button of group', async () => {
       groupItem = app.homePage.messageTab.directMessagesSection.conversationEntryById(groupId);
-      await groupItem.openMoreMenu(); 
+      await groupItem.openMoreMenu();
     });
 
     await h(t).withLog('Then I can find the favorite button', async () => {
@@ -120,11 +122,15 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          [`hide_group_${groupId}`]: false,
-          [`hide_group_${teamId}`]: false,
-          favorite_group_ids: [+groupId, +teamId],
-        });
+        await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
+
+        // await user.sdk.glip.updateProfile(user.rcId, {
+        //   [`hide_group_${groupId}`]: false,
+        //   [`hide_group_${teamId}`]: false,
+        //   // favorite_group_ids: [+groupId, +teamId],
+        // });
+        await user.sdk.glip.favoriteGroups(user.rcId, [+groupId, +teamId]);
+
       },
     );
 
@@ -138,15 +144,15 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     let groupItem, teamItem;
     await h(t).withLog('Then I click more button of group', async () => {
       groupItem = favoritesSection.conversationEntryById(groupId);
-      await groupItem.openMoreMenu(); 
+      await groupItem.openMoreMenu();
     });
 
     await h(t).withLog('I can find the unfavorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorite');
+      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorites');
     });
 
     await h(t).withLog('Then I click the unfavorite button', async () => {
-      await favoriteToggler.enter(); 
+      await favoriteToggler.enter();
       await t.wait(1e3);
     });
 
@@ -162,11 +168,11 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('I can find the unfavorite button', async () => {
-      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorite');
+      await t.expect(favoriteToggler.self.textContent).eql('Remove from Favorites');
     });
 
     await h(t).withLog('Then I click the unfavorite button', async () => {
-      await favoriteToggler.enter(); 
+      await favoriteToggler.enter();
       await t.wait(1e3);
     });
 
@@ -193,10 +199,9 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          [`hide_group_${meChatId}`]: false,
-          favorite_group_ids: [+meChatId],
-        });
+        await user.sdk.glip.showGroups(user.rcId, [meChatId]);
+        await user.sdk.glip.favoriteGroups(user.rcId, [+meChatId]);
+ 
       },
     );
 

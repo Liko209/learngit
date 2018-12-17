@@ -1,0 +1,92 @@
+import React from 'react';
+import { shallow } from 'enzyme';
+import { ErrorTypes } from 'sdk/utils';
+import { serviceErr } from 'sdk/service/ServiceResult';
+import { Notification } from '@/containers/Notification';
+import { MenuViewComponent } from '../Menu.View';
+
+jest.mock('@/common/genDivAndDismiss');
+jest.mock('@/containers/Notification');
+
+Notification.flashToast = jest.fn();
+
+describe('MenuView', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('render()', () => {
+    it('should display flash toast notification when close conversation failed [JPT-490]', (done: jest.DoneCallback) => {
+      const props: any = {
+        groupId: 1,
+        showClose: true,
+        closeConversation: () =>
+          serviceErr(ErrorTypes.SERVICE, 'Failed to close conversation'),
+        shouldSkipCloseConfirmation: true,
+        onClose: () => {},
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper
+        .find('[data-test-automation-id="closeConversation"]')
+        .simulate('click');
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'SorryWeWereNotAbleToCloseTheConversation',
+            type: 'error',
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
+
+    it('should display flash toast notification when favorite conversation failed [JPT-488]', (done: jest.DoneCallback) => {
+      const props: any = {
+        isFavorite: false,
+        onClose: () => {},
+        toggleFavorite: () =>
+          serviceErr(ErrorTypes.SERVICE, 'Failed to favorite conversation'),
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper.find('[data-test-automation-id="favToggler"]').simulate('click');
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'markFavoriteServerErrorContent',
+            type: 'error',
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
+
+    it('should display flash toast notification when unFavorite conversation failed [JPT-489]', (done: jest.DoneCallback) => {
+      const props: any = {
+        isFavorite: true,
+        onClose: () => {},
+        toggleFavorite: () =>
+          serviceErr(ErrorTypes.SERVICE, 'Failed to unFavorite conversation'),
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper.find('[data-test-automation-id="favToggler"]').simulate('click');
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'markUnFavoriteServerErrorContent',
+            type: 'error',
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
+  });
+});

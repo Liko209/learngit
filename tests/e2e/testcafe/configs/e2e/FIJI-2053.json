@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/SendNewMessage/SendNewMessage.ts"
+    ],
+    "browsers": [
+      "selenium:internet explorer"
+    ]
+  }
+}

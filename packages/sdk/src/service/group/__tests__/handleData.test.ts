@@ -17,8 +17,8 @@ import handleData, {
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
-import { transform } from '../../utils';
 import { EVENT_TYPES } from '../..';
+import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
@@ -52,16 +52,21 @@ jest.mock('../../serviceManager', () => {
   };
 });
 
+const requestGroupByIdResult = new ApiResultOk(
+  {
+    id: 1,
+    members: [1],
+    deactivated: true,
+    _delta: false,
+  },
+  200,
+  {},
+);
+
 jest.mock('../../../api/glip/group', () => {
-  const response = {
-    data: {
-      id: 1,
-      members: [1],
-      deactivated: true,
-      _delta: false,
-    },
+  return {
+    requestGroupById: jest.fn(),
   };
-  return { requestGroupById: jest.fn().mockResolvedValue(response) };
 });
 
 type GenerateFakeGroupOptions = {
@@ -102,6 +107,7 @@ const profileService = new ProfileService();
 
 beforeEach(() => {
   jest.clearAllMocks();
+  GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
   StateService.getInstance = jest.fn().mockReturnValue(stateService);
   AccountService.getInstance = jest.fn().mockReturnValue(accountService);
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
@@ -455,7 +461,7 @@ describe('filterGroups()', () => {
         creator_id: 3,
         most_recent_post_created_at: 22,
       },
-    ];
+    ] as Group[];
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
     accountService.getCurrentUserId.mockReturnValue(2);
     const filteredGroups = await filterGroups(group, 2, true);

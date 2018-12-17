@@ -5,3 +5,5 @@
  */
 export * from './Modal';
 export * from './Dialog';
+export * from './DialogTitleWithAction';
+export * from './DialogContentWithFill';

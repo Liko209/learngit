@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/AtMention/AtMention.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

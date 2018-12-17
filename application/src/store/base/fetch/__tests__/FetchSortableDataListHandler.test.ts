@@ -22,7 +22,7 @@ import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import GroupModel from '@/store/models/Group';
 import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
 import _ from 'lodash';
-import { QUERY_DIRECTION } from '../../../../../../packages/sdk/src/dao/constants';
+import { QUERY_DIRECTION } from 'sdk/dao/constants';
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: false };

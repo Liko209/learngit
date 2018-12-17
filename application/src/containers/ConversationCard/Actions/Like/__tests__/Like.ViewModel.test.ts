@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { serviceOk, serviceErr } from 'sdk/service/ServiceResult';
 import { getEntity, getGlobalValue } from '../../../../../store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { LikeViewModel } from '../Like.ViewModel';
@@ -59,18 +60,43 @@ describe('likeViewModel', () => {
     expect(likeViewModel.isLike).toBe(true);
   });
 
-  it('like()', async () => {
-    await likeViewModel.like(true);
-    expect(mockPostService.likePost).toBeCalledWith(
-      1,
-      mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
-      true,
-    );
-    await likeViewModel.like(false);
-    expect(mockPostService.likePost).toBeCalledWith(
-      1,
-      mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
-      false,
-    );
+  describe('like()', () => {
+    it('should like post', async () => {
+      mockPostService.likePost.mockImplementation(() => serviceOk({}));
+
+      const result = await likeViewModel.like(true);
+
+      expect(result.isFailed).toBeFalsy();
+      expect(mockPostService.likePost).toBeCalledWith(
+        1,
+        mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
+        true,
+      );
+    });
+    it('should unlike post', async () => {
+      mockPostService.likePost.mockImplementation(() => serviceOk({}));
+      const result = await likeViewModel.like(false);
+
+      expect(result.isFailed).toBeFalsy();
+      expect(mockPostService.likePost).toBeCalledWith(
+        1,
+        mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
+        false,
+      );
+    });
+
+    it('should return hasError=true when like failed', async () => {
+      mockPostService.likePost.mockImplementation(() =>
+        serviceErr(5300, 'mock error'),
+      );
+      const result = await likeViewModel.like(true);
+
+      expect(result.isFailed).toBeTruthy();
+      expect(mockPostService.likePost).toBeCalledWith(
+        1,
+        mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
+        true,
+      );
+    });
   });
 });

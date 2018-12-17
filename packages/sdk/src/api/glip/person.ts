@@ -3,10 +3,8 @@
  * @Date: 2018-03-28 14:35:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { IResponse } from '../NetworkClient';
-
 import Api from '../api';
-import { Person, Raw } from '../../models';
+import { Person } from '../../models';
 
 class PersonAPI extends Api {
   /**
@@ -15,12 +13,19 @@ class PersonAPI extends Api {
    * return group or null
    */
   static basePath = '/person';
-  static requestPersonById(id: number): Promise<IResponse<Raw<Person>>> {
-    return this.getDataById(id);
+  static requestPersonById(id: number) {
+    return this.getDataById<Person>(id);
   }
-  static getHeadShotUrl(headShotParam: {uid: number, headShotVersion: string, size: number, glipToken: string}) {
+  static getHeadShotUrl(headShotParam: {
+    uid: number;
+    headShotVersion: string;
+    size: number;
+    glipToken: string;
+  }) {
     const { uid, headShotVersion, size, glipToken } = headShotParam;
-    return `${this.httpConfig.glip.cacheServer}/headshot/${uid}/${size}/${headShotVersion}?t=${glipToken}`;
+    return `${
+      this.httpConfig.glip.cacheServer
+    }/headshot/${uid}/${size}/${headShotVersion}?t=${glipToken}`;
   }
 }
 

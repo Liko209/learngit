@@ -16,16 +16,14 @@ class SubscribeWorker {
     if (ids.length === 0) return;
     if (!socketManager.isConnected()) return;
 
-    let requestResult;
     try {
-      requestResult = await PresenceAPI.requestPresenceByIds(ids);
+      const requestResult = await PresenceAPI.requestPresenceByIds(ids);
+      const data = requestResult.expect('request presence by id failed');
+      this.successCallback(data);
     } catch (err) {
       this.failCallback(ids);
       return;
     }
-    const { data } = requestResult;
-
-    this.successCallback(data);
   }
 }
 

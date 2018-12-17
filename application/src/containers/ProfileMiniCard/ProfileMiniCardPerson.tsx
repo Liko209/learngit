@@ -18,10 +18,11 @@ import {
 import { ProfileMiniCardPersonHeader } from './ProfileMiniCardPersonHeader';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { Profile } from '@/containers/common/Profile';
+import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
+import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
 type Props = WithNamespaces & {
   id: number;
@@ -50,7 +51,7 @@ class ProfileMiniCardPersonComponent extends Component<Props> {
         </JuiMiniCardHeader>
         <JuiMiniCardFooter>
           <JuiProfileMiniCardFooterLeft>
-            <Profile id={id} />
+            {TypeDictionary.TYPE_ID_PERSON ? null : <ProfileButton id={id} />}
           </JuiProfileMiniCardFooterLeft>
           <JuiProfileMiniCardFooterRight>
             <JuiIconButton

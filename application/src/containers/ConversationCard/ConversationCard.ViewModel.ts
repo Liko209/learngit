@@ -10,7 +10,8 @@ import {
   ConversationCardViewProps,
 } from '@/containers/ConversationCard/types';
 import { computed } from 'mobx';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import { Post, Person } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
@@ -88,6 +89,12 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
     if (this.highlight && this.props.onHighlightAnimationStart) {
       this.props.onHighlightAnimationStart(evt);
     }
+  }
+
+  @computed
+  get isEditMode() {
+    const inEditModePostIds = getGlobalValue(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS);
+    return inEditModePostIds.includes(this.id);
   }
 }
 

@@ -16,7 +16,7 @@ import {
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/ProfileMiniCard';
 import { ProfileMiniCardGroupHeader } from './ProfileMiniCardGroupHeader';
-import { Profile } from '@/containers/common/Profile';
+import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
@@ -47,7 +47,7 @@ class ProfileMiniCardGroupComponent extends Component<Props> {
         </JuiMiniCardHeader>
         <JuiMiniCardFooter>
           <JuiProfileMiniCardFooterLeft>
-            <Profile id={id} />
+            <ProfileButton id={id} />
           </JuiProfileMiniCardFooterLeft>
           <JuiProfileMiniCardFooterRight>
             <JuiIconButton

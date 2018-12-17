@@ -4,20 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import { IconButtonSize } from 'jui/components/Buttons';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type PrivacyProps = {
   id: number; // teamId
   size?: IconButtonSize;
-  isAction?: boolean;
 };
 
-type PrivacyViewProps = {
-  size: IconButtonSize;
-  variant: IconButtonVariant;
-  color: string;
-  isAction: boolean;
+type PrivacyViewProps = PrivacyProps & {
   isPublic: boolean;
   handlePrivacy: () => Promise<ServiceCommonErrorType>;
 };

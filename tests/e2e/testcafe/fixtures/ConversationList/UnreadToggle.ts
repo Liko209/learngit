@@ -9,7 +9,6 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
-import { GlipSdk } from '../../v2/sdk/glip';
 
 fixture('ConversationList/UnreadToggle')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
@@ -27,8 +26,8 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const userPlatform = await h(t).getPlatform(user);
-    const glipSDK: GlipSdk = await h(t).getGlip(user);
+    user.sdk = await h(t).getSdk(user)
+
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -40,33 +39,33 @@ test(
     await h(t).withLog(
       'Given I have an extension with some conversations',
       async () => {
-        favPrivateChatId = (await userPlatform.createGroup({
+        favPrivateChatId = (await user.sdk.platform.createGroup({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
         })).data.id;
-        favTeamId = (await userPlatform.createGroup({
+        favTeamId = (await user.sdk.platform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         })).data.id;
-        groupId1 = (await userPlatform.createGroup({
+        groupId1 = (await user.sdk.platform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[6].rcId],
         })).data.id;
-        groupId2 = (await userPlatform.createGroup({
+        groupId2 = (await user.sdk.platform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[1].rcId],
         })).data.id;
-        groupId3 = (await userPlatform.createGroup({
+        groupId3 = (await user.sdk.platform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[2].rcId],
         })).data.id;
-        teamId1 = (await userPlatform.createGroup({
+        teamId1 = (await user.sdk.platform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
         })).data.id;
-        teamId2 = (await userPlatform.createGroup({
+        teamId2 = (await user.sdk.platform.createGroup({
           type: 'Team',
           name: `My Team ${uuid()}`,
           members: [user.rcId, users[5].rcId],
@@ -77,24 +76,27 @@ test(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await glipSDK.updateProfile(user.rcId, {
-          [`hide_group_${favPrivateChatId}`]: false,
-          [`hide_group_${favTeamId}`]: false,
-          [`hide_group_${groupId1}`]: false,
-          [`hide_group_${groupId2}`]: false,
-          [`hide_group_${groupId3}`]: false,
-          [`hide_group_${teamId1}`]: false,
-          [`hide_group_${teamId2}`]: false,
-          favorite_group_ids: [+favPrivateChatId, +favTeamId],
-        });
+        await user.sdk.glip.showAllGroups();
+        // await glipSDK.updateProfile(user.rcId, {
+        //   [`hide_group_${favPrivateChatId}`]: false,
+        //   [`hide_group_${favTeamId}`]: false,
+        //   [`hide_group_${groupId1}`]: false,
+        //   [`hide_group_${groupId2}`]: false,
+        //   [`hide_group_${groupId3}`]: false,
+        //   [`hide_group_${teamId1}`]: false,
+        //   [`hide_group_${teamId2}`]: false,
+        //   // favorite_group_ids: [+favPrivateChatId, +favTeamId],
+        // });
+        await user.sdk.glip.favoriteGroups(user.rcId, [+favPrivateChatId, +favTeamId]);
       },
     );
 
     await h(t).withLog('And clear all UMIs before login', async () => {
-      const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
-        user.rcId,
-      );
-      await glipSDK.markAsRead(user.rcId, unreadGroupIds);
+      await user.sdk.glip.clearAllUmi();
+      // const unreadGroupIds = await glipSDK.getIdsOfGroupsWithUnreadMessages(
+      //   user.rcId,
+      // );
+      // await glipSDK.markAsRead(user.rcId, unreadGroupIds);
     });
 
     await h(t).withLog(

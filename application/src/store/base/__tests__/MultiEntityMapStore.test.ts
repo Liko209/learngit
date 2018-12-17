@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-05-10 10:55:24
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-05-10 10:55:24
+ * Copyright © RingCentral. All rights reserved.
+ */
 import faker from 'faker';
 import { service } from 'sdk';
 import MultiEntityMapStore from '../MultiEntityMapStore';
@@ -10,7 +10,7 @@ import { ENTITY_SETTING } from '../../config';
 import { ENTITY_NAME } from '../../constants';
 import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
-import { NotificationEntityPayload } from '../../../../../packages/sdk/src/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 const { EVENT_TYPES } = service;
 
 // jest.mock('../ModelProvider');
@@ -91,4 +91,12 @@ describe('get()', () => {
   const models = instance.getData();
   expect(Object.keys(models)).toHaveLength(1);
   expect(Object.keys(models).includes('1')).toBeTruthy();
+});
+
+describe('subtractedBy()', () => {
+  it('should return differences and interactions', () => {
+    getEntityMap(10);
+    const result = instance.subtractedBy([10, 11]);
+    expect(result).toEqual([[10, 11], []]);
+  });
 });

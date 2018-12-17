@@ -27,13 +27,13 @@ const interpolation = {
   format(value: any, format: any, lng: any) {
     if (format === 'titlecase') return toTitleCase(value);
     if (format === 'uppercase') return value.toUpperCase();
-    if (value instanceof Date) return moment(value).format(format);
     if (format === 'en-handle-an') {
-      return !lng || lng === 'en' ? getVariationOfAOrAn(value, false) : '';
+      return getVariationOfAOrAn(value, false);
     }
     if (format === 'en-handle-an-capitalized') {
-      return !lng || lng === 'en' ? getVariationOfAOrAn(value, true) : '';
+      return getVariationOfAOrAn(value, true);
     }
+    if (value instanceof Date) return moment(value).format(format);
     return value;
   },
   escapeValue: false, // not needed for react!!

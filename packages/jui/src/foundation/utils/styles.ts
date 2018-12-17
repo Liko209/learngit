@@ -78,13 +78,16 @@ function getPalette(name: keyof Palette, sub: string = 'main') {
  * @param opacity
  */
 function palette(name: keyof Palette, sub: string, opacity?: number) {
-  if (opacity) {
-    return ({ theme }: { theme: Theme }) =>
-      tinycolor(getPalette(name, sub)({ theme }))
-        .setAlpha(theme.palette.action.hoverOpacity * opacity)
-        .toRgbString();
-  }
-  return getPalette(name, sub);
+  if (!opacity) return getPalette(name, sub);
+
+  return ({ theme }: { theme: Theme }) =>
+    tinycolor(getPalette(name, sub)({ theme }))
+      .setAlpha(
+        String(opacity).indexOf('.') > -1
+          ? opacity
+          : theme.palette.action.hoverOpacity * opacity,
+      )
+      .toRgbString();
 }
 
 /**
@@ -112,6 +115,20 @@ function secondary(sub: string = 'main', opacity?: number) {
  */
 function grey(sub: string, opacity?: number) {
   return palette('grey', sub, opacity);
+}
+
+function activeOpacity() {
+  return css`
+    opacity: ${({ theme }: { theme: Theme }) =>
+      1 - theme.palette.action.hoverOpacity * 2};
+  `;
+}
+
+function disabledOpacity() {
+  return css`
+    opacity: ${({ theme }: { theme: Theme }) =>
+      theme.palette.action.hoverOpacity * 2};
+  `;
 }
 
 /********************************************
@@ -150,6 +167,19 @@ function ellipsis() {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-all;
+  `;
+}
+
+function lineClamp(lineNumber: number, maxHeight: number) {
+  return css`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: ${lineNumber};
+    -webkit-box-orient: vertical;
+    max-height: ${height(maxHeight)};
+    word-break: break-all;
   `;
 }
 
@@ -174,7 +204,10 @@ export {
   primary,
   secondary,
   grey,
+  activeOpacity,
+  disabledOpacity,
   typography,
   ellipsis,
+  lineClamp,
   rippleEnter,
 };

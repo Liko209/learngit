@@ -30,6 +30,7 @@ type ConversationCardViewProps = {
   mode?: string;
   onAnimationStart?: React.AnimationEventHandler;
   onHighlightAnimationStart?: React.AnimationEventHandler;
+  isEditMode: boolean;
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

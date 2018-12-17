@@ -15,8 +15,8 @@ import {
 const JuiProfileMiniCardPersonName = styled('div')`
   ${typography('subheading2')};
   ${ellipsis()};
-  color: ${grey('900')};
   height: ${height(5.5)};
+  color: ${grey('900')};
 `;
 
 JuiProfileMiniCardPersonName.displayName = 'JuiProfileMiniCardPersonName';

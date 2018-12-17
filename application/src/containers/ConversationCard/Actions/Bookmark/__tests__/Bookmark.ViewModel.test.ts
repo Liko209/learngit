@@ -6,6 +6,7 @@
 
 import { getSingleEntity } from '../../../../../store/utils';
 import { BookmarkViewModel } from '../Bookmark.ViewModel';
+import { serviceOk } from 'sdk/service/ServiceResult';
 
 const mockPostService = {
   bookmarkPost: jest.fn(),
@@ -44,6 +45,7 @@ describe('ActionsViewModel', () => {
   });
 
   it('bookmark()', async () => {
+    mockPostService.bookmarkPost.mockResolvedValue(serviceOk({}));
     await bookmarkViewModel.bookmark(true);
     expect(mockPostService.bookmarkPost).toBeCalledWith(1, true);
     await bookmarkViewModel.bookmark(false);

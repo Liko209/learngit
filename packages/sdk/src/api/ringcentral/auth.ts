@@ -1,20 +1,20 @@
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-03-01 15:43:04
- * @Last Modified by: Jeffery Huang
- * @Last Modified time: 2018-09-09 14:07:31
+ * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
+ * @Last Modified time: 2018-11-26 14:14:50
  */
-import { IResponse } from '../NetworkClient';
+
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
-export interface IAuthModel { }
+export interface IAuthModel {}
 
 export interface IAuthCodeModel {
   code: string;
 }
 
-function oauthTokenViaAuthCode(params: object, headers?: object): Promise<IResponse<IAuthModel>> {
+function oauthTokenViaAuthCode(params: object, headers?: object) {
   const model = {
     ...params,
     grant_type: 'authorization_code',
@@ -28,18 +28,20 @@ function oauthTokenViaAuthCode(params: object, headers?: object): Promise<IRespo
     data: model,
     authFree: true,
   };
-  return Api.glip2NetworkClient.http(query);
+  return Api.glip2NetworkClient.http<IAuthModel>(query);
 }
 
-function generateCode(clientId: string, redirectUri: string): Promise<IResponse<IAuthCodeModel>> {
+function generateCode(clientId: string, redirectUri: string) {
   const model = {
     clientId,
     redirectUri,
   };
-  const path = Api.httpConfig.rc.apiPlatformVersion ?
-    `/${Api.httpConfig.rc.apiPlatformVersion}${RINGCENTRAL_API.API_GENERATE_CODE}`
+  const path = Api.httpConfig.rc.apiPlatformVersion
+    ? `/${Api.httpConfig.rc.apiPlatformVersion}${
+        RINGCENTRAL_API.API_GENERATE_CODE
+      }`
     : `${RINGCENTRAL_API.API_GENERATE_CODE}`;
-  return Api.glip2NetworkClient.http({
+  return Api.glip2NetworkClient.http<IAuthCodeModel>({
     path,
     method: NETWORK_METHOD.POST,
     via: NETWORK_VIA.HTTP,
@@ -47,7 +49,4 @@ function generateCode(clientId: string, redirectUri: string): Promise<IResponse<
   });
 }
 
-export {
-  oauthTokenViaAuthCode,
-  generateCode,
-};
+export { oauthTokenViaAuthCode, generateCode };

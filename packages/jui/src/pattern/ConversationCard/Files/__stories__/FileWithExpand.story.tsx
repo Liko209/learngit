@@ -13,7 +13,7 @@ import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconBut
 storiesOf('Pattern/ConversationCard', module)
   .addDecorator(withInfoDecorator(JuiFileWithExpand, { inline: true }))
   .add('JuiFileWithExpand', () => {
-    const fileName = text('fileName', '12312312312312313.jpg');
+    const fileName = text('fileName', '土asd豆你个马拉松sdsds.jpg');
     const expand = boolean('expand', false);
     return (
       <div>

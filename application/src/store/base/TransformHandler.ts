@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
 import { ListStore } from './fetch/ListStore';
 import { ISortableModel, TDelta, TUpdated } from './fetch/types';
-import { BaseModel } from 'sdk/src/models';
+import { BaseModel } from 'sdk/models';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
 abstract class TransformHandler<T, K extends BaseModel> {

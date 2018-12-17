@@ -25,4 +25,18 @@ function toTitleCase(input: string) {
     .join('');
 }
 
-export { toTitleCase };
+/**
+ * Match invalid email
+ * matchInvalidEmail('This is not a valid email address: q@qq.com.'); //=> 'q@qq.com'
+ */
+function matchInvalidEmail(value: string) {
+  const matches = value.match(/: (.+?)\.$/);
+  if (matches) {
+    const email = matches[1];
+    const errorEmail = email && email.trim();
+    return errorEmail;
+  }
+  return '';
+}
+
+export { toTitleCase, matchInvalidEmail };

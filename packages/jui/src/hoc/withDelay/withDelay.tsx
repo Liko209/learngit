@@ -11,7 +11,7 @@ type States = { visible: boolean };
 function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
   class ComponentWithDelay extends React.Component<Props, States> {
     static defaultProps = {
-      delay: 500,
+      delay: 0,
     };
 
     state = {

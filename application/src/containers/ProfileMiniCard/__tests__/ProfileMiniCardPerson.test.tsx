@@ -13,7 +13,6 @@ import {
   JuiMiniCardFooter,
 } from 'jui/pattern/MiniCard';
 import { ProfileMiniCardPersonHeader } from '../ProfileMiniCardPersonHeader';
-import { Profile } from '@/containers/common/Profile';
 import { JuiIconButton } from 'jui/components/Buttons';
 
 describe('Profile mini card person component', () => {
@@ -23,7 +22,6 @@ describe('Profile mini card person component', () => {
     expect(Wrapper.find(JuiMiniCardHeader)).toHaveLength(1);
     expect(Wrapper.find(JuiMiniCardFooter)).toHaveLength(1);
     expect(Wrapper.find(ProfileMiniCardPersonHeader)).toHaveLength(1);
-    expect(Wrapper.find(Profile)).toHaveLength(1);
     expect(Wrapper.find(JuiIconButton)).toHaveLength(1);
   });
 });

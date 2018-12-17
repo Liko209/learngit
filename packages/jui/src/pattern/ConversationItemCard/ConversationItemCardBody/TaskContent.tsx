@@ -17,7 +17,6 @@ const StyledWrapper = styled.div`
 `;
 
 const StyledTitle = styled.div`
-  margin-bottom: ${spacing(1)};
   ${typography('caption1')};
   color: ${grey('500')};
   overflow: hidden;

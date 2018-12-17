@@ -3,7 +3,7 @@
  * @Date: 2018-10-16 15:13:14
  * Copyright © RingCentral. All rights reserved.
  */
-import { PRESENCE } from 'sdk/src/service';
+import { PRESENCE } from 'sdk/service';
 
 type PresenceProps = {
   uid: number;

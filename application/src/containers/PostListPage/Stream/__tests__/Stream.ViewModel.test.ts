@@ -8,7 +8,12 @@ import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
 import { service } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import storeManager from '@/store';
+import * as _ from 'lodash';
+import * as utils from '@/store/utils';
 const { PostService } = service;
+jest.mock('@/store');
+jest.mock('@/store/utils');
 function setup(obj: any) {
   const vm = new StreamViewModel();
   vm.props.type = POST_LIST_TYPE.mentions;
@@ -101,5 +106,44 @@ describe('StreamViewModel', () => {
       QUERY_DIRECTION.NEWER,
     );
     expect(vm._postIds).toEqual([2, 1]);
+  });
+  describe('fetchData()', () => {
+    const data: number[] = [];
+    const mockedStore = {
+      _data: data,
+      subtractedBy(ids: number[]) {
+        return [_.difference(ids, this._data), _.intersection(ids, this._data)];
+      },
+    };
+    beforeEach(() => {
+      jest.spyOn(postService, 'getPostsByIds').mockResolvedValue({
+        posts: [],
+      });
+
+      vm._postIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+      jest
+        .spyOn(storeManager, 'getEntityMapStore')
+        .mockImplementationOnce(() => mockedStore);
+      jest.spyOn(utils, 'getEntity').mockImplementationOnce(() => null);
+      data.splice(0, data.length);
+    });
+    afterEach(() => jest.clearAllMocks());
+    it('should get all the posts from service', async () => {
+      await vm.fetchData(null, 4);
+      expect(postService.getPostsByIds).toBeCalledWith([1, 2, 3, 4]);
+      expect(utils.getEntity).toBeCalledTimes(0);
+    });
+    it('should partially get the posts from service and store', async () => {
+      data.push(1, 2, 3);
+      await vm.fetchData(null, 4);
+      expect(postService.getPostsByIds).toBeCalledWith([4]);
+      expect(utils.getEntity).toBeCalledTimes(3);
+    });
+    it('should get all the post from store', async () => {
+      data.push(1, 2, 3, 4);
+      await vm.fetchData(null, 4);
+      expect(postService.getPostsByIds).toBeCalledTimes(0);
+      expect(utils.getEntity).toBeCalledTimes(4);
+    });
   });
 });

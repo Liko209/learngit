@@ -15,6 +15,8 @@ type Props = {
 const Wrapper = styled('div')`
   display: inline-flex;
   margin-left: ${spacing(1.5)};
+  margin-top: -${spacing(1)};
+  margin-right: ${spacing(2.5)};
 `;
 
 const StyledAction = styled('span')`

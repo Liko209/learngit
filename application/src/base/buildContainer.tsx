@@ -4,49 +4,52 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component, ComponentType } from 'react';
-import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
 import { IPlugin } from './IPlugin';
 import StoreViewModel from '@/store/ViewModel';
+import { computed, action, observable } from 'mobx';
 
+type Plugins = { [key: string]: IPlugin };
 type BuildContainerOptions<T> = {
+  displayName?: string;
   ViewModel: new (...args: any[]) => StoreViewModel;
   View: ComponentType<any>;
-  plugins?: { [key: string]: IPlugin };
+  plugins?: () => Plugins;
 };
 
 function buildContainer<P = {}, S = {}, SS = any>({
   View,
   ViewModel,
-  plugins = {},
+  plugins,
 }: BuildContainerOptions<P>) {
   const ObserverView = observer(View);
 
   @observer
   class Container extends Component<P, S, SS> {
+    static displayName = View.displayName
+      ? `Container(${View.displayName})`
+      : 'Container';
     @observable
     vm: StoreViewModel;
-    View = ObserverView;
+    View: ComponentType<any>;
+    plugins: Plugins;
 
     constructor(props: P) {
       super(props);
-      this.vm = new ViewModel(props);
-      _(plugins).forEach((plugin: IPlugin) => {
-        plugin.install(this.vm);
-        this.View = plugin.wrapView(this.View);
-      });
-      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
+      this.plugins = this._createPlugins();
+      this.View = this._createView(ObserverView);
+      this.vm = this._createViewModel(props);
     }
 
     componentWillUnmount() {
       this.vm.dispose && this.vm.dispose();
     }
 
-    componentDidUpdate() {
-      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props);
-      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props);
+    @action
+    componentWillReact() {
+      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props || {});
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props || {});
     }
 
     render() {
@@ -54,6 +57,32 @@ function buildContainer<P = {}, S = {}, SS = any>({
       return <View {...this._viewProps} />;
     }
 
+    private _createPlugins() {
+      return plugins ? plugins() : {};
+    }
+
+    private _createView(OriginalView: ComponentType<any>) {
+      let View = OriginalView;
+      _(this.plugins).forEach((plugin: IPlugin) => {
+        View = plugin.wrapView(View);
+      });
+      return View;
+    }
+
+    private _createViewModel(props: any = {}) {
+      const vm = new ViewModel(props);
+
+      _(this.plugins).forEach((plugin: IPlugin) => {
+        plugin.install(vm);
+      });
+
+      vm.getDerivedProps && vm.getDerivedProps(props);
+      vm.onReceiveProps && vm.onReceiveProps(props);
+
+      return vm;
+    }
+
+    @computed
     private get _viewProps() {
       const descriptors = Object.getOwnPropertyDescriptors(this.vm);
       const props: any = {};

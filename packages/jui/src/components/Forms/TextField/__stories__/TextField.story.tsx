@@ -13,11 +13,13 @@ import { JuiTextField } from '../';
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiTextField, { inline: true }))
   .add('TextField', () => {
+    const onKeyDown = e => console.log(e);
     return (
       <JuiTextField
         id="Team name"
         label="Team name"
         fullWidth={true}
+        onKeyDown={onKeyDown}
         InputProps={{
           classes: {
             root: 'root',

@@ -1,75 +1,76 @@
 /*
- * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-10-16 10:08:17
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2018-11-22 15:22:09
  * Copyright © RingCentral. All rights reserved.
  */
+
 import React from 'react';
 import * as Jui from './style';
 import { Palette } from '../../foundation/theme/theme';
+import { SnackbarContentProps as MuiSnackbarContentProps } from '@material-ui/core/SnackbarContent';
 
 type JuiSnackbarsType = 'warn' | 'success' | 'error' | 'info';
-
 type SnackbarContentColor = [keyof Palette, string];
-
-type IconAndColor = {
-  icon: string;
+type MessageAlignment = 'left' | 'center';
+type ColorType = {
   color: SnackbarContentColor;
 };
+type ColorMap = {
+  [key: string]: ColorType;
+};
 
-type JuiSnackbarsProps = {
-  open?: boolean;
+type JuiSnackbarContentProps = MuiSnackbarContentProps & {
   type: JuiSnackbarsType;
-  children: React.ReactNode;
+  messageAlign: MessageAlignment;
+  fullWidth: boolean;
 };
 
-type IconAndColorMap = {
-  [key: string]: IconAndColor;
+const COLOR_MAP: ColorMap = {
+  warn: {
+    color: ['semantic', 'critical'],
+  },
+  success: {
+    color: ['semantic', 'positive'],
+  },
+  error: {
+    color: ['semantic', 'negative'],
+  },
+  info: {
+    color: ['grey', '700'],
+  },
 };
 
-function getIconAndColor(type: JuiSnackbarsType): IconAndColor {
-  const ICON_AND_COLOR: IconAndColorMap = {
-    warn: {
-      icon: 'warning',
-      color: ['semantic', 'critical'],
-    },
-    success: {
-      icon: 'check_circle',
-      color: ['semantic', 'positive'],
-    },
-    error: {
-      icon: 'error',
-      color: ['semantic', 'negative'],
-    },
-    info: {
-      icon: 'info',
-      color: ['primary', 'main'],
-    },
+function getColor(type: JuiSnackbarsType, map: ColorMap): ColorType {
+  return map[type];
+}
+class JuiSnackbarContent extends React.PureComponent<JuiSnackbarContentProps> {
+  static defaultProps = {
+    radius: 0,
+    messageAlign: 'left',
+    fullWidth: false,
   };
-  return ICON_AND_COLOR[type];
+
+  render() {
+    const { type, ...rest } = this.props;
+    const result = getColor(type, COLOR_MAP);
+    const color = result.color;
+    return (
+      <Jui.SnackbarContent
+        classes={{
+          message: 'message',
+          action: 'action',
+        }}
+        bgColor={color}
+        {...rest}
+      />
+    );
+  }
 }
 
-const JuiSnackbarContent: React.SFC<JuiSnackbarsProps> = (
-  props: JuiSnackbarsProps,
-) => {
-  const { children, type, ...rest } = props;
-  const { icon, color } = getIconAndColor(type);
-  const message = (
-    <Jui.MessageWrapper>
-      {<Jui.SnackbarIcon color={color}>{icon}</Jui.SnackbarIcon>}
-      {children}
-    </Jui.MessageWrapper>
-  );
-
-  return (
-    <Jui.SnackbarContent
-      bgColor={color}
-      classes={{
-        message: 'message',
-      }}
-      message={message}
-      {...rest}
-    />
-  );
+export {
+  JuiSnackbarContent,
+  JuiSnackbarContentProps,
+  MessageAlignment,
+  SnackbarContentColor,
+  JuiSnackbarsType,
 };
-
-export { JuiSnackbarContent, JuiSnackbarsProps, SnackbarContentColor };

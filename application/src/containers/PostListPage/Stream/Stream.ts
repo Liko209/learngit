@@ -13,13 +13,15 @@ import { StreamProps } from './types';
 const Stream = buildContainer<StreamProps>({
   View: StreamView,
   ViewModel: StreamViewModel,
-  plugins: {
-    loadingMorePlugin: new LoadingMorePlugin({
-      thresholdDown: 600,
-      initialScrollTop: 0,
-      stickTo: 'top',
-    }),
-    loadingPlugin: new LoadingPlugin(),
+  plugins() {
+    return {
+      loadingMorePlugin: new LoadingMorePlugin({
+        thresholdDown: 600,
+        initialScrollTop: 0,
+        stickTo: 'top',
+      }),
+      loadingPlugin: new LoadingPlugin(),
+    };
   },
 });
 

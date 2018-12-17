@@ -9,7 +9,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
-import { FileItem, TaskItem } from '@/store/models/Items';
+import { TaskItem } from '@/store/models/Items';
+import FileItemModal from '@/store/models/FileItem';
 import { Item } from 'sdk/models';
 import { getFileType } from '../helper';
 
@@ -31,7 +32,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get files() {
-    return this.attachments.map((file: FileItem) => {
+    return this.attachments.map((file: FileItemModal) => {
       return getFileType(file);
     });
   }
@@ -39,7 +40,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get attachments() {
     return this.attachmentIds.map((attachment: number) => {
-      return getEntity<Item, FileItem>(ENTITY_NAME.ITEM, attachment);
+      return getEntity<Item, FileItemModal>(ENTITY_NAME.ITEM, attachment);
     });
   }
 }

@@ -3,7 +3,8 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -27,6 +28,10 @@ class MoreMenu extends BaseWebComponent {
 
   get favoriteToggler() {
     return this.getToggler('favToggler');
+  }
+
+  get profile() {
+    return this.getEntry('Profile');
   }
 
   get close() {
@@ -152,7 +157,8 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   conversationEntryByName(name: string) {
-    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name));
+    this.warnFlakySelector();
+    return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
   async isExpand() {
@@ -202,6 +208,31 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
+class ProfileModal extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').find('span').withText('close');
+  }
+
+  get messageButton() {
+    this.warnFlakySelector();
+    return this.self.find('span').find('span').withText('chat_bubble');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  async message() {
+    await this.t.click(this.messageButton);
+  }
+}
+
 export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
@@ -241,12 +272,24 @@ export class MessageTab extends BaseWebComponent {
     return this.getSelectorByAutomationId('post-list-page');
   }
 
+  get bookmarksEntry() {
+    return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
+  }
+
+    get bookmarkPage() {
+    return this.getComponent(BookmarkPage);
+    }
+
   get moreMenu() {
     return this.getComponent(MoreMenu);
   }
 
   get closeConversationModal() {
     return this.getComponent(CloseConversationModal);
+  }
+
+  get profileModal() {
+    return this.getComponent(ProfileModal);
   }
 
   get conversationListSections() {

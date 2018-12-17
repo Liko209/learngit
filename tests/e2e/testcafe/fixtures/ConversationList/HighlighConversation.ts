@@ -23,8 +23,7 @@ test(
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
-    const glipSdk = await h(t).sdkHelper.sdkManager.getGlip(user);
+    user.sdk = await h(t).getSdk(user);
     const directMessageSection =
       app.homePage.messageTab.directMessagesSection;
 
@@ -32,7 +31,7 @@ test(
     await h(t).withLog(
       'Given I have an extension with a group chat',
       async () => {
-        group = await userPlatform.createGroup({
+        group = await user.sdk.platform.createGroup({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[6].rcId],
         });
@@ -42,19 +41,15 @@ test(
     await h(t).withLog(
       'And the conversation should not be hidden and not favorite',
       async () => {
-        await glipSdk.updateProfile(user.rcId, {
-          [`hide_group_${group.data.id}`]: false,
-          favorite_group_ids: [],
-        });
+        await user.sdk.glip.showGroups(user.rcId, group.data.id);
+        await user.sdk.glip.clearFavoriteGroups();
       },
     );
 
     await h(t).withLog(
       `Given the group chat ${group.data.id} is last group selected`,
       async () => {
-        await glipSdk.partialUpdateState(user.rcId, {
-          last_group_id: +group.data.id,
-        });
+        await user.sdk.glip.setLastGroupId(user.rcId, group.data.id)
       },
     );
 

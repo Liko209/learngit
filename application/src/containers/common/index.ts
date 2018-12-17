@@ -6,4 +6,4 @@
 
 export * from './Favorite';
 export * from './Privacy';
-export * from './Profile';
+export * from './ProfileButton';

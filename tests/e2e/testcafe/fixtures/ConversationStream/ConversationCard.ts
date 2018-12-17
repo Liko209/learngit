@@ -146,8 +146,7 @@ test(formalName('When update custom status, can sync dynamically in message meta
     });
 
     await h(t).withLog(`Then I only can find username display without status`, async () => {
-      // FIXME: waiting for FIJI-1433 add status data-name
-      await t.expect(targetPost.userStatus.withAttribute('data-name', 'time').exists).ok();
+      await t.expect(targetPost.userStatus.exists).notOk();
     });
   },
 );

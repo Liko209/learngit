@@ -48,11 +48,13 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
         title: 'mention_plural',
         icon: 'alternate_email',
         type: POST_LIST_TYPE.mentions,
+        testId: 'entry-mentions',
       },
       {
         title: 'bookmark_plural',
         icon: 'bookmark_border',
         type: POST_LIST_TYPE.bookmarks,
+        testId: 'entry-bookmarks',
       },
     ];
   }

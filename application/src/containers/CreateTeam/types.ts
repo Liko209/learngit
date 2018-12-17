@@ -19,11 +19,13 @@ type ViewProps = WithNamespaces & {
   description: string;
   serverError: boolean;
   members: (number | string)[];
+  errorEmail: string;
   updateCreateTeamDialogState: () => void;
   inputReset: () => void;
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;
+  serverUnknownError: boolean;
 } & RouteComponentProps;
 
 export { ViewProps };

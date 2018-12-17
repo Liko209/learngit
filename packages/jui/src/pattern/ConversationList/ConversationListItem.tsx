@@ -158,7 +158,9 @@ const JuiConversationListItem: IConversationListItem = (
       {...rest}
     >
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-      <ItemText style={{ fontWeight }}>{title}</ItemText>
+      <ItemText disableTooltip={true} style={{ fontWeight }}>
+        {title}
+      </ItemText>
       {umi}
       <StyledRightWrapper>
         {indicator}

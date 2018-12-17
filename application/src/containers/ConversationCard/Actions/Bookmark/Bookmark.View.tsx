@@ -9,15 +9,27 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { BookmarkViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { Notification } from '@/containers/Notification';
 
 type Props = BookmarkViewProps & WithNamespaces;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
-  private _handleClick = (evt: React.MouseEvent) => {
-    evt.stopPropagation();
+  private _handleClick = async () => {
     const { isBookmark, bookmark } = this.props;
-    bookmark(!isBookmark);
+    const result = await bookmark(!isBookmark);
+    if (result.isFailed) {
+      const message = isBookmark
+        ? 'SorryWeWereNotAbleToRemoveYourBookmark'
+        : 'SorryWeWereNotAbleToBookmarkThisMessage';
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
   }
 
   render() {
@@ -29,6 +41,7 @@ class BookmarkViewComponent extends Component<Props> {
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"
+        data-name="actionBarBookmark"
       >
         {isBookmark ? 'bookmark' : 'bookmark_border'}
       </JuiIconButton>

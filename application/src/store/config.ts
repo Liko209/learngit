@@ -49,6 +49,12 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
+  [ENTITY_NAME.FILE_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),
@@ -103,6 +109,8 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.SHOULD_SHOW_UMI]: true,
   [GLOBAL_KEYS.JUMP_TO_POST_ID]: 0,
   [GLOBAL_KEYS.CURRENT_POST_LIST_TYPE]: '',
+  [GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW]: false,
+  [GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS]: [] as number[],
 };
 
 export { ENTITY_SETTING, GLOBAL_VALUES };

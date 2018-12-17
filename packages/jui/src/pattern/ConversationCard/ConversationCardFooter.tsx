@@ -26,7 +26,7 @@ const StyledIconWrapper = styled('div')`
   transition: all 0.1s ease-in;
   display: inline-flex;
   align-items: center;
-  & > div {
+  & > button {
     color: ${palette('primary', '700')};
     margin-right: ${spacing(1)};
   }
@@ -43,12 +43,24 @@ const StyledIconWrapper = styled('div')`
 `;
 
 class JuiConversationCardFooter extends React.PureComponent<Props> {
+  constructor(props: Props) {
+    super(props);
+    this.likeButtonClickHandler = this.likeButtonClickHandler.bind(this);
+  }
+
+  likeButtonClickHandler(evt: React.MouseEvent) {
+    evt.stopPropagation();
+  }
+
   render() {
     const { Like, likeCount } = this.props;
     return (
       <Collapse in={!!likeCount}>
         <StyledConversationCardFooter>
-          <StyledIconWrapper>
+          <StyledIconWrapper
+            data-name="footerLikeButton"
+            onClick={this.likeButtonClickHandler}
+          >
             {Like}
             <span>{likeCount}</span>
           </StyledIconWrapper>

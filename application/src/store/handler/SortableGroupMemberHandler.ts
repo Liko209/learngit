@@ -16,7 +16,7 @@ import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscriba
 import { Person, Group } from 'sdk/models';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
-import { NotificationEntityPayload } from 'sdk/src/service/notificationCenter';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { QUERY_DIRECTION } from 'sdk/dao';
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {

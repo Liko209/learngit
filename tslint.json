@@ -1,12 +1,8 @@
 {
-  "extends": [
-    "tslint-react",
-    "tslint-config-airbnb"
-  ],
+  "extends": ["tslint-react", "tslint-config-airbnb"],
+
   "linterOptions": {
-    "exclude": [
-      "**/*.json"
-    ]
+    "exclude": ["**/*.json"]
   },
   "rules": {
     "variable-name": [
@@ -18,18 +14,11 @@
       "allow-pascal-case",
       "allow-snake-case"
     ],
-    "import-name": [
-      false
-    ],
-    "jsx-no-multiline-js": [
-      false
-    ],
+    "import-name": [false],
+    "jsx-no-multiline-js": [false],
     "jsx-no-lambda": false,
     "no-increment-decrement": false,
-    "max-line-length": [
-      true,
-      200
-    ],
+    "max-line-length": [true, 200],
     "function-name": [
       true,
       {
@@ -37,10 +26,7 @@
         "static-method-regex": "^[a-z][\\w\\d]+$"
       }
     ],
-    "interface-name": [
-      true,
-      "always-prefix"
-    ]
+    "interface-name": [true, "always-prefix"]
   },
   "jsRules": {
     "no-empty": true

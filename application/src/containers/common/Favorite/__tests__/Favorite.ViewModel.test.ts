@@ -28,8 +28,6 @@ const mockEntity = {
 };
 const props: FavoriteProps = {
   id: 1,
-  isAction: false,
-  hideUnFavorite: false,
   size: 'medium',
 };
 const vm = new FavoriteViewModel(props);
@@ -43,20 +41,6 @@ describe('Favorite view model', () => {
     jest.clearAllMocks();
   });
 
-  it('computed isAction', () => {
-    vm.props.isAction = true;
-    expect(vm.isAction).toEqual(true);
-    vm.props.isAction = false;
-    expect(vm.isAction).toEqual(false);
-  });
-
-  it('computed hideUnFavorite', () => {
-    vm.props.hideUnFavorite = true;
-    expect(vm.hideUnFavorite).toEqual(true);
-    vm.props.hideUnFavorite = false;
-    expect(vm.hideUnFavorite).toEqual(false);
-  });
-
   it('computed size', () => {
     vm.props.size = 'small';
     expect(vm.size).toEqual('small');
@@ -66,22 +50,15 @@ describe('Favorite view model', () => {
     expect(vm.size).toEqual('large');
   });
 
-  it('computed variant', () => {
-    vm.props.isAction = true;
-    expect(vm.variant).toEqual('round');
-    vm.props.isAction = false;
-    expect(vm.variant).toEqual('plain');
-  });
-
   it('computed conversationId by person id', async () => {
     vm.props.id = 2514947;
-    await vm.getFavorite();
+    await vm.getConversationId();
     expect(vm.conversationId).toEqual(mockGroup.id);
   });
 
   it('computed conversationId by team or group id', async () => {
     vm.props.id = 11370502;
-    await vm.getFavorite();
+    await vm.getConversationId();
     expect(vm.conversationId).toEqual(11370502);
   });
 

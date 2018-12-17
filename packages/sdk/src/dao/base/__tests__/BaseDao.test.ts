@@ -105,6 +105,102 @@ describe('BaseDao', () => {
     });
   });
 
+  it('should batch get all items', async () => {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: false,
+      },
+    ]);
+
+    const result = await dao.batchGet([1, 2, 3]);
+    expect(result.length).toBe(3);
+  });
+
+  it('should batch get one of item', async () => {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: false,
+      },
+    ]);
+
+    const result = await dao.batchGet([2]);
+    expect(result.length).toBe(1);
+    expect(result[0].name).toBe('name2');
+    expect(result[0].boolean).toBe(false);
+  });
+
+  it('should batch get none of item', async () => {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: false,
+      },
+    ]);
+
+    const result = await dao.batchGet([4]);
+    expect(result.length).toBe(0);
+  });
+
+  it('should batch get some of item', async () => {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: false,
+      },
+    ]);
+
+    const result = await dao.batchGet([1, 4]);
+    expect(result.length).toBe(1);
+    expect(result[0].name).toBe('name1');
+    expect(result[0].boolean).toBe(false);
+  });
+
   it('should update item', async () => {
     await dao.update({
       id: 1,

@@ -3,7 +3,7 @@
  * @Date: 2018-11-15 10:47:06
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { mainLogger, BaseError } from 'foundation';
 import BaseService from '../../service/BaseService';
 import {
   ACCOUNT_USER_ID,
@@ -17,7 +17,6 @@ import PersonDao from '../../dao/person';
 import ConfigDao from '../../dao/config';
 import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
-import { mainLogger } from 'foundation';
 import { generateUUID } from '../../utils/mathUtils';
 import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
@@ -35,29 +34,51 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     this.accountDao = daoManager.getKVDao(AccountDao);
   }
 
-  getCurrentUserId(): number | null {
+  isAccountReady(): boolean {
+    return !!this.accountDao.get(ACCOUNT_USER_ID);
+  }
+
+  getCurrentUserId(): number {
     const userId: string = this.accountDao.get(ACCOUNT_USER_ID);
     if (!userId) {
-      mainLogger.info('there is not UserId');
-      return null;
+      // Current user id not found is a unexpected error,
+      // the error should be throw to tell developer that there
+      // must be some bug happened.
+      mainLogger.warn('Current user id not found.');
+      throw new BaseError(
+        ErrorTypes.SERVICE,
+        'ServiceError: Current user id not found.',
+      );
     }
     return Number(userId);
   }
 
-  getCurrentUserProfileId(): number | null {
+  getCurrentUserProfileId(): number {
     const profileId = this.accountDao.get(ACCOUNT_PROFILE_ID);
     if (!profileId) {
-      mainLogger.warn('there is not profile Id');
-      return null;
+      // Current user profileId not found is a unexpected error,
+      // the error should be throw to tell developer that there
+      // must be some bug happened.
+      mainLogger.warn('Current profile id not found.');
+      throw new BaseError(
+        ErrorTypes.SERVICE,
+        'ServiceError: Current profile id not found.',
+      );
     }
     return Number(profileId);
   }
 
-  getCurrentCompanyId(): number | null {
+  getCurrentCompanyId(): number {
     const companyId = this.accountDao.get(ACCOUNT_COMPANY_ID);
     if (!companyId) {
-      mainLogger.info('there is not companyId');
-      return null;
+      // Current user companyId not found is a unexpected error,
+      // the error should be throw to tell developer that there
+      // must be some bug happened.
+      mainLogger.warn('Current company id not found.');
+      throw new BaseError(
+        ErrorTypes.SERVICE,
+        'ServiceError: Current company id not found.',
+      );
     }
     return Number(companyId);
   }
@@ -100,15 +121,12 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   async refreshRCToken(): Promise<ITokenModel | null> {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
-      const rcToken = authDao.get(AUTH_RC_TOKEN);
-      const { refresh_token, endpoint_id } = rcToken;
-      const refreshedRCAuthData = await refreshToken({
-        refresh_token,
-        endpoint_id,
-      });
-      authDao.put(AUTH_RC_TOKEN, refreshedRCAuthData.data);
-      notificationCenter.emitKVChange(AUTH_RC_TOKEN, refreshedRCAuthData.data);
-      return refreshedRCAuthData.data;
+      const oldRcToken = authDao.get(AUTH_RC_TOKEN);
+      const refreshResult = await refreshToken(oldRcToken);
+      const newRcToken = refreshResult.expect('Failed to refresh rcTOken');
+      authDao.put(AUTH_RC_TOKEN, newRcToken);
+      notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
+      return newRcToken;
     } catch (err) {
       Aware(ErrorTypes.OAUTH, err.message);
       return null;

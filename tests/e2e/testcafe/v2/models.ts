@@ -55,3 +55,11 @@ export enum Status {
   FAILED = 'failed',
   BROKEN = 'broken',
 }
+
+export interface IConsoleLog {
+  consoleLogPath: string;
+  warnConsoleLogPath: string;
+  errorConsoleLogPath: string;
+  warnConsoleLogNumber?: number;
+  errorConsoleLogNumber?: number;
+}

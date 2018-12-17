@@ -16,10 +16,7 @@ type Props = PrivacyViewProps & WithNamespaces;
 
 class PrivacyViewComponent extends Component<Props> {
   onClickPrivacy = async () => {
-    const { isAction, handlePrivacy, isPublic, t } = this.props;
-    if (!isAction) {
-      return;
-    }
+    const { handlePrivacy, isPublic, t } = this.props;
     const result = await handlePrivacy();
     if (result === ServiceCommonErrorType.SERVER_ERROR) {
       const content = isPublic
@@ -29,29 +26,22 @@ class PrivacyViewComponent extends Component<Props> {
         content,
         title: '',
         okText: t('OK'),
-        okBtnType: 'text',
+        okVariant: 'text',
         onOK: () => {},
       });
     }
   }
 
-  getTooltipKey = () => {
-    const { isAction, isPublic } = this.props;
-    if (isAction) {
-      return isPublic ? 'setPrivateStatus' : 'setPublicStatus';
-    }
-    return isPublic ? 'currentStatePublic' : 'currentStatePrivate';
-  }
-
   render() {
-    const { isPublic, size, variant, color, t } = this.props;
+    const { isPublic, size, t } = this.props;
+    const tooltipKey = isPublic ? 'setStatePrivate' : 'setStatePublic';
     return (
       <JuiIconButton
         size={size}
-        variant={variant}
-        color={color}
+        color="grey.500"
+        className="privacy"
         onClick={this.onClickPrivacy}
-        tooltipTitle={t(this.getTooltipKey())}
+        tooltipTitle={t(tooltipKey)}
       >
         {isPublic ? 'lock_open' : 'lock'}
       </JuiIconButton>

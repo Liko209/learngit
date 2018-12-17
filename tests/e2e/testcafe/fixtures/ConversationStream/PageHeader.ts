@@ -44,9 +44,7 @@ test.skip(
     await h(t).withLog(
       'And the conversations should not be hidden before login',
       async () => {
-        await userGlip.updateProfile(user.rcId, {
-          [`hide_group_${chat.data.id}`]: false,
-        });
+        await userGlip.showGroups(user.rcId, chat.data.id);
       },
     );
 

@@ -4,24 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { IconButtonSize, IconButtonVariant } from 'jui/components/Buttons';
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
+import { IconButtonSize } from 'jui/components/Buttons';
 
 type FavoriteProps = {
   id: number; // personId || conversationId
   size?: IconButtonSize;
-  isAction?: boolean;
-  hideUnFavorite?: boolean;
 };
 
-type FavoriteViewProps = {
-  size: IconButtonSize;
-  variant: IconButtonVariant;
-  isAction: boolean;
+type FavoriteViewProps = FavoriteProps & {
+  getConversationId: () => void;
+  conversationId: number;
   isFavorite: boolean;
-  hideUnFavorite: boolean;
-  getFavorite: () => void;
-  handlerFavorite: () => Promise<ServiceCommonErrorType>;
+  handlerFavorite: () => Promise<ServiceResult<Profile>>;
 };
 
 export { FavoriteProps, FavoriteViewProps };

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { t } from 'i18next';
 import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
@@ -20,7 +21,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle="download"
+    tooltipTitle={t('download')}
   >
     get_app
   </JuiIconButton>

@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiConversationItemCard as EventUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiEventLocation,
+  JuiEventContent,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
@@ -17,7 +18,9 @@ import {
 import { getDurationTime, getDurationTimeText } from '../helper';
 import { EventUpdateViewProps } from './types';
 
-class EventUpdateView extends React.Component<EventUpdateViewProps> {
+type Props = WithNamespaces & EventUpdateViewProps;
+
+class EventUpdate extends React.Component<Props> {
   private _getDurationTime = (value: any) => {
     const { event } = this.props;
     const { start, end } = event;
@@ -55,7 +58,7 @@ class EventUpdateView extends React.Component<EventUpdateViewProps> {
   private _getLocation = (value: any) => value.location;
 
   render() {
-    const { event, activityData } = this.props;
+    const { event, activityData, t } = this.props;
     const { color, text } = event;
     const { old_values, new_values } = activityData;
 
@@ -91,10 +94,16 @@ class EventUpdateView extends React.Component<EventUpdateViewProps> {
         }
       >
         {hasNewTime && <JuiTimeMessage time={`${newTime} ${newTimeText}`} />}
-        {newLocation && <JuiEventLocation location={newLocation} />}
+        {newLocation && (
+          <JuiEventContent title={t('locationTitle')}>
+            <JuiEventLocation location={newLocation} />
+          </JuiEventContent>
+        )}
       </EventUpdateViewCard>
     );
   }
 }
+
+const EventUpdateView = translate('translations')(EventUpdate);
 
 export { EventUpdateView };

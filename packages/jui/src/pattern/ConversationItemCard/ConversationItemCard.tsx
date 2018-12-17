@@ -30,7 +30,7 @@ const ItemCardHeader = styled.div`
   padding: 0;
   margin: ${spacing(0, 0, 0, -6)};
   display: flex;
-  ${typography('subheading3')};
+  ${typography('body1')};
   color: ${({ color }) => color || palette('primary', 'main')};
   word-break: break-all;
   svg {
@@ -41,15 +41,15 @@ const ItemCardHeader = styled.div`
 
 const ItemCardContent = styled(JuiCardContent)`
   && {
-    padding: ${spacing(4, 10, 5, 10)} !important;
-    ${typography('subheading3')};
+    padding: ${spacing(4, 4, 5, 10)} !important;
+    ${typography('body1')};
   }
 `;
 
 const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
   margin-top: ${spacing(-2)};
   padding: ${({ footerPadding }) => footerPadding && spacing(4, 10, 4, 10)};
-  ${typography('subheading3')};
+  ${typography('body1')};
   background-color: ${palette('grey', '100')};
   .task-avatar-name {
     margin-top: 0;

@@ -3,28 +3,31 @@
  * @Date: 2018-09-29 19:01:00
  * Copyright © RingCentral. All rights reserved.
  */
+
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
 import { MouseEvent } from 'react';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type MenuProps = {
+  personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
   onClose: (event: MouseEvent<HTMLElement>) => void;
 };
 
 type MenuViewProps = {
+  personId: number;
   groupId: number;
-  open: boolean;
   anchorEl: HTMLElement | null;
   isFavorite: boolean;
   favoriteText: string;
   shouldSkipCloseConfirmation: boolean;
   showClose?: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
-  toggleFavorite: () => Promise<ServiceCommonErrorType>;
+  toggleFavorite: () => Promise<ServiceResult<Profile>>;
   closeConversation: (
     shouldSkipNextTime: boolean,
-  ) => Promise<ServiceCommonErrorType>;
+  ) => Promise<ServiceResult<Profile>>;
 };
 
 export { MenuProps, MenuViewProps };

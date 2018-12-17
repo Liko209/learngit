@@ -1,58 +1,103 @@
 /*
- * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-10-16 10:46:08
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2018-11-22 15:45:22
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import MuiButtonBase from '@material-ui/core/ButtonBase';
 import MuiSnackbarContent, {
   SnackbarContentProps,
 } from '@material-ui/core/SnackbarContent';
 
 import styled from '../../foundation/styled-components';
-import { spacing, palette, grey } from '../../foundation/utils/styles';
-import { JuiIconography } from '../../foundation/Iconography';
-import { SnackbarContentColor } from './SnackbarContent';
+import {
+  spacing,
+  palette,
+  typography,
+  width,
+  height,
+  activeOpacity,
+  disabledOpacity,
+} from '../../foundation/utils/styles';
+
+import { MessageAlignment, SnackbarContentColor } from './SnackbarContent';
+import { JuiSnackbarAction } from './SnackbarAction';
 
 type JuiSnackbarContentProps = {
+  messageAlign: MessageAlignment;
   bgColor: SnackbarContentColor;
+  fullWidth: boolean;
 } & SnackbarContentProps;
 
-type JuiSnackbarIcon = {
-  color: SnackbarContentColor;
-};
+const WrapperContent = ({
+  messageAlign,
+  bgColor,
+  fullWidth,
+  ...rest
+}: JuiSnackbarContentProps) => <MuiSnackbarContent {...rest} />;
 
-const WrapperSnackbarIcon = ({ color, ...rest }: JuiSnackbarIcon) => (
-  <JuiIconography {...rest} />
-);
+const StyledTextButton = styled(MuiButtonBase)`
+  ${typography('body2')}
+  line-height: ${height(4)};
 
-const SnackbarIcon = styled<JuiSnackbarIcon>(WrapperSnackbarIcon)`
-  margin: ${spacing(0, 2, 0, 0)};
-  color: ${({ color }) => palette(...color)};
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:active {
+    ${activeOpacity()}
+  }
+
+  &:disabled {
+    ${disabledOpacity()}
+  }
 `;
 
-const WrapperContent = ({ bgColor, ...rest }: JuiSnackbarContentProps) => (
-  <MuiSnackbarContent {...rest} />
-);
+const StyledIconButton = styled(MuiButtonBase)`
+  font-size: ${height(4)};
+
+  &:active {
+    ${activeOpacity()}
+  }
+
+  &:disabled {
+    ${disabledOpacity()}
+  }
+`;
 
 const SnackbarContent = styled<JuiSnackbarContentProps>(WrapperContent)`
+
   && {
-    padding: ${spacing(2, 6)};
-    color: ${grey('900')};
-    background: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 1)};
+    ${typography('body1')}
+    line-height: ${height(6)};
+    padding: ${spacing(3, 4)};
+    overflow: hidden;
+    background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
-    width: 100% !important;
-    border-radius: 0 !important;
-    max-width: 100% !important;
+    border-radius: ${({ fullWidth, theme }) =>
+      fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
+    max-width: ${props => (props.fullWidth ? '100%' : width(160))} !important;
     box-sizing: border-box;
+    margin: 0 auto;
   }
+
   .message {
-    padding: 0;
+    flex: 1;
+    padding: ${spacing(0)};
+    text-align: ${props => props.messageAlign};
+  }
+
+  .action {
+    margin-right: 0;
+  }
+
+  ${JuiSnackbarAction} + ${StyledTextButton} {
+    margin-left: ${spacing(3)};
+  }
+
+  ${JuiSnackbarAction} + ${StyledIconButton} {
+    margin-left: ${spacing(4)};
   }
 `;
 
-const MessageWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-export { SnackbarContent, MessageWrapper, SnackbarIcon };
+export { StyledTextButton, StyledIconButton, SnackbarContent };

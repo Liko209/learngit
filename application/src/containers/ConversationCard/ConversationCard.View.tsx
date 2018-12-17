@@ -18,6 +18,7 @@ import history from '@/history';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Activity } from './Activity';
+import { EditMessageInput } from './EditMessageInput';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -68,6 +69,7 @@ export class ConversationCard extends React.Component<
       highlight,
       onAnimationStart,
       onHighlightAnimationStart,
+      isEditMode,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -111,7 +113,8 @@ export class ConversationCard extends React.Component<
             {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
-            {hideText ? null : <TextMessage id={id} />}
+            {hideText || isEditMode ? null : <TextMessage id={id} />}
+            {isEditMode && <EditMessageInput id={id} />}
             {idsToConversationSheet(itemTypeIds, id)}
           </JuiConversationCardBody>
           <Footer id={id} />

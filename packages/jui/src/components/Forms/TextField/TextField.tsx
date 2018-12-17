@@ -27,43 +27,58 @@ const TextField = styled(MuiTextField)`
 
 type Props = TextFieldProps;
 
-const JuiTextField = (props: Props) => {
-  const { innerRef, ...textFieldRest } = props;
-  const { InputLabelProps, InputProps, ...rest } = textFieldRest;
-  let inputPropsClasses;
-  let inputPropsRest;
-  let formLabelClasses;
-  let inputLabelRest;
-  if (InputProps) {
-    const { classes, ...InputPropsRest } = InputProps;
-    inputPropsClasses = classes;
-    inputPropsRest = InputPropsRest;
+class JuiTextField extends React.Component<Props, {}> {
+  constructor(props: Props) {
+    super(props);
   }
-  if (InputLabelProps) {
-    const { FormLabelClasses, ...InputLabelPropsRest } = InputLabelProps;
-    formLabelClasses = FormLabelClasses;
-    inputLabelRest = InputLabelPropsRest;
+
+  onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { onKeyDown } = this.props;
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+    }
+    onKeyDown && onKeyDown(e);
   }
-  return (
-    <TextField
-      {...rest}
-      InputLabelProps={{
-        FormLabelClasses: {
-          error: 'form-label-error',
-          focused: 'form-label-focused',
-          ...formLabelClasses,
-        },
-        ...inputLabelRest,
-      }}
-      InputProps={{
-        classes: {
-          underline: 'underline',
-          ...inputPropsClasses,
-        },
-        ...inputPropsRest,
-      }}
-    />
-  );
-};
+
+  render() {
+    const { innerRef, ...textFieldRest } = this.props;
+    const { InputLabelProps, InputProps, ...rest } = textFieldRest;
+    let inputPropsClasses;
+    let inputPropsRest;
+    let formLabelClasses;
+    let inputLabelRest;
+    if (InputProps) {
+      const { classes, ...InputPropsRest } = InputProps;
+      inputPropsClasses = classes;
+      inputPropsRest = InputPropsRest;
+    }
+    if (InputLabelProps) {
+      const { FormLabelClasses, ...InputLabelPropsRest } = InputLabelProps;
+      formLabelClasses = FormLabelClasses;
+      inputLabelRest = InputLabelPropsRest;
+    }
+    return (
+      <TextField
+        {...rest}
+        onKeyDown={this.onKeyDown}
+        InputLabelProps={{
+          FormLabelClasses: {
+            error: 'form-label-error',
+            focused: 'form-label-focused',
+            ...formLabelClasses,
+          },
+          ...inputLabelRest,
+        }}
+        InputProps={{
+          classes: {
+            underline: 'underline',
+            ...inputPropsClasses,
+          },
+          ...inputPropsRest,
+        }}
+      />
+    );
+  }
+}
 
 export { JuiTextField };

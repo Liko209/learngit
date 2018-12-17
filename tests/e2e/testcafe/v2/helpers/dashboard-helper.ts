@@ -1,6 +1,6 @@
 import 'testcafe';
 import { getLogger } from 'log4js';
-import { IStep, Status } from "../models";
+import { IStep, Status, IConsoleLog } from "../models";
 import { BeatsClient, Step, Attachment } from 'bendapi';
 import { MiscUtils } from '../utils';
 import { getTmtId, parseFormalName } from '../../libs/filter';
@@ -45,7 +45,7 @@ export class DashboardHelper {
     }
   }
 
-  private async createTestInDashboard(runId: number, consoleLogPath) {
+  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
@@ -67,11 +67,13 @@ export class DashboardHelper {
     logger.info(`add detail as an extra step to case ${beatsTest.id}`);
     const detailStep = <IStep>{
       status,
-      message: 'Test Detail',
+      message: `Test Detail, Warning Log Number: ${consoleLog.warnConsoleLogNumber}, Error Log Number: ${consoleLog.errorConsoleLogNumber}`,
       attachments: [],
     };
     detailStep.startTime = Date.now();
-    detailStep.attachments.push(consoleLogPath);
+    detailStep.attachments.push(consoleLog.consoleLogPath);
+    detailStep.attachments.push(consoleLog.warnConsoleLogPath);
+    detailStep.attachments.push(consoleLog.errorConsoleLogPath);
     if (status === Status.FAILED) {
       const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))
       detailStep.attachments.push(errorDetailPath);
@@ -85,7 +87,7 @@ export class DashboardHelper {
     await this.createStepInDashboard(detailStep, beatsTest.id);
   }
 
-  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: any) {
+  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog) {
     this.beatsClient = beatsClient;
     const ts = Date.now();
     try {

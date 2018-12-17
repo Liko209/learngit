@@ -204,7 +204,7 @@ export class GlipSdk {
     });
   }
 
-  getGroup(groupId) {
+  getGroup(groupId: string | number) {
     const uri = `/api/group/${groupId}`;
     return this.axiosClient.get(uri, {
       headers: this.headers,
@@ -267,6 +267,41 @@ export class GlipSdk {
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async resetProfile(rcId?: string) {
+    const groupList = await this.getTeamsIds();
+    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+
+    const initData = {
+      model_size: 0,
+      is_new: false,
+      want_email_people: 900000,
+      want_email_team: 0,
+      want_push_team: 0,
+      want_push_people: 1,
+      want_email_mentions: true,
+      want_push_mentions: true,
+      want_push_video_chat: true,
+      want_email_glip_today: true,
+      new_message_badges: 'all',
+      want_push_missed_calls_and_voicemails: 1,
+      send_push_notifications_ignoring_presence: 0,
+      send_email_notifications_ignoring_presence: 0,
+      has_new_notification_defaults: true,
+      deactivated: false,
+      favorite_group_ids: [+meChatId],
+      me_tab: true,
+      skip_close_conversation_confirmation: false,
+      max_leftrail_group_tabs2: 20
+    }
+    const data = _.assign(
+      initData, 
+      ...groupList.map(id => (
+        { [`hide_group_${id}`]: false })
+      )
+    );
+    await this.updateProfile(rcId, data);
   }
 
   /* state */
@@ -338,9 +373,82 @@ export class GlipSdk {
     return unreadGroups;
   }
 
+  async clearAllUmi(rcId?: string) {
+    const unreadGroupIds = await this.getIdsOfGroupsWithUnreadMessages(rcId); 
+    await this.markAsRead(rcId, unreadGroupIds);
+  }
+
   async skipCloseConversationConfirmation(rcId: string, skipCloseConversationConfirm: boolean) {
-    const profileId = rcId ? this.toProfileId(rcId) : this.myProfile._id;
     const data: object = { skip_close_conversation_confirmation: skipCloseConversationConfirm };
-    return await this.updateProfile(profileId, data);
+    return await this.updateProfile(rcId, data);
+  }
+
+  async setLastGroupId(rcId: string, groupId: string | number) {
+    await this.partialUpdateState(rcId, {
+      last_group_id: +groupId,
+    });
+  }
+
+  async showAllGroups(rcId?: string) {
+    const groupList = await this.getTeamsIds();
+    const data = _.assign(
+      {},
+      ...groupList.map(id => {
+        return { [`hide_group_${id}`]: false }
+      }) 
+    )
+    await this.updateProfile(rcId, data);
+  }
+  
+  async showGroups(rcId: string, groupIds: string[] | number[] | string | number) {
+    let data;
+    if (Object.prototype.toString.call(groupIds) === '[object Array]') {
+      data = _.assign(
+        {},
+        ...(groupIds as string[]).map(id => {
+          return { [`hide_group_${id}`]: false }
+        }) 
+      )
+    } else {
+      data = { [`hide_group_${groupIds}`]: false }
+    }
+    await this.updateProfile(rcId, data);
+  }
+
+  async hideGroups(rcId: string, groupIds: string[] | number[]) {
+    let data;
+    if (Object.prototype.toString.call(groupIds) === '[object Array]') {
+      data = _.assign(
+        {},
+        ...(groupIds as string[]).map(id => {
+          return { [`hde_group_${id}`]: true }
+        }) 
+      )
+    } else {
+      data = { [`hide_group_${groupIds}`]: true }
+    }
+    await this.updateProfile(rcId, data);
+  }
+
+  async favoriteGroups(rcId: string, groupIds: number[]) {
+    const data = {
+      favorite_group_ids: groupIds
+    }
+    await this.updateProfile(rcId, data); 
+  }
+  
+  async clearFavoriteGroups(rcId?: string) {
+    const data = {
+      favorite_group_ids: [],
+    }
+    await this.updateProfile(rcId, data);
+  }
+  
+  async setMaxTeamDisplay(rcId: string, n: number) { 
+    await this.updateProfile(rcId, { max_leftrail_group_tabs2: n });
+  }
+
+  async updateTeamName(teamId: string | number, newName: string) {
+    await this.updateGroup(+teamId, { set_abbreviation: newName });
   }
 }

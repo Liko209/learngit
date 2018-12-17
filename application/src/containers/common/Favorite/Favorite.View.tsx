@@ -3,66 +3,59 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { FavoriteViewProps } from './types';
+import { ServiceResult } from 'sdk/service/ServiceResult';
+import { Profile } from 'sdk/models';
 import { JuiIconButton } from 'jui/components/Buttons';
-
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { JuiModal } from '@/containers/Dialog';
+import { Notification } from '@/containers/Notification';
+import { FavoriteViewProps } from './types';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
+@observer
 class FavoriteViewComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
   }
 
   componentDidMount() {
-    this.props.getFavorite();
+    this.props.getConversationId();
   }
 
   onClickFavorite = async () => {
-    const { isAction, handlerFavorite, isFavorite, t } = this.props;
-    if (!isAction) {
-      return;
-    }
-    const result = await handlerFavorite();
-    if (result === ServiceCommonErrorType.SERVER_ERROR) {
-      const content = isFavorite
-        ? t('markUnFavoriteServerErrorContent')
-        : t('markFavoriteServerErrorContent');
-      JuiModal.alert({
-        content,
-        title: '',
-        okText: t('OK'),
-        okBtnType: 'text',
-        onOK: () => {},
+    const { handlerFavorite, isFavorite } = this.props;
+    const result: ServiceResult<Profile> = await handlerFavorite();
+
+    if (result.isErr()) {
+      const message = isFavorite
+        ? 'markUnFavoriteServerErrorContent'
+        : 'markFavoriteServerErrorContent';
+
+      Notification.flashToast({
+        message,
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
       });
     }
   }
 
-  getTooltipKey = () => {
-    const { isAction, isFavorite } = this.props;
-    if (isAction) {
-      return isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
-    }
-    return isFavorite ? 'currentStateFavorite' : 'currentStateUnFavorite';
-  }
-
   render() {
-    const { hideUnFavorite, isFavorite, size, variant, t } = this.props;
-    if (hideUnFavorite && !isFavorite) {
+    const { conversationId, isFavorite, size, t } = this.props;
+    if (!conversationId) {
       return null;
     }
+    const tooltipKey = isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
     return (
       <JuiIconButton
         size={size}
-        variant={variant}
+        className="favorite"
         color="accent.gold"
         onClick={this.onClickFavorite}
-        tooltipTitle={t(this.getTooltipKey())}
+        tooltipTitle={t(tooltipKey)}
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>

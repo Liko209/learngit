@@ -74,6 +74,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   setUpDataChangeCallback(cb: DeltaDataHandler) {
     this._dataChangeCallBack = cb;
   }
+
   async fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
     const size = pageSize ? pageSize : this._pageSize;
     let anchor: T | undefined;
@@ -82,6 +83,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     } else {
       anchor = this._listStore.last();
     }
+
     return this.fetchDataInternal(direction, size, anchor);
   }
 

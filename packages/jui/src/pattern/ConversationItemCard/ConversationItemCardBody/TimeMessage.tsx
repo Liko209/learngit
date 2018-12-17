@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey, spacing } from '../../../foundation/utils/styles';
+import { typography, grey } from '../../../foundation/utils/styles';
 
 type Props = {
   time: string;
@@ -13,7 +13,6 @@ type Props = {
 
 const StyledTimeMessage = styled.div`
   text-transform: capitalize;
-  margin-top: ${spacing(2)};
   ${typography('body1')};
   color: ${grey('900')};
 `;

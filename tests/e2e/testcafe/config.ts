@@ -52,22 +52,27 @@ configLoader.load();
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
+const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '10');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
-const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures);
+const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES  === 'true';
+const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
+const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 
 const RUNNER_OPTS = {
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
+  SCREENSHOT_WEBP_QUALITY,
   CONCURRENCY,
   FIXTURES,
   BROWSERS,
   INCLUDE_TAGS,
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
+  STOP_ON_FIRST_FAIL, 
 }
 
 // create electron configuration file
@@ -82,7 +87,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
-const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-xta05.lab.rcch.ringcentral.com:8000/api/v1";
+const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || uuid();
 

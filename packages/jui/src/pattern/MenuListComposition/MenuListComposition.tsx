@@ -16,6 +16,7 @@ import MenuList from '@material-ui/core/MenuList';
 type MenuItems = {
   label: string;
   automationId?: string;
+  ariaLabel?: string;
   onClick: (event: React.MouseEvent<HTMLInputElement>) => void;
 }[];
 
@@ -34,7 +35,7 @@ type MenuListCompositionProps = {
 const MenuListCompositionWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin-right: ${({ theme }) => `${1 * theme.spacing.unit}px`};
+  margin-right: ${({ theme }) => `${theme.spacing.unit}px`};
 `;
 
 const MenuWrapper = styled(Popper)``;
@@ -100,6 +101,8 @@ class JuiMenuListComposition extends React.Component<
                         return (
                           <MenuItem
                             key={index}
+                            tabIndex={0}
+                            arai-label={item.ariaLabel}
                             data-test-automation-id={item.automationId}
                             onClick={this.handleMenuItemClick(item.onClick)}
                           >

@@ -20,7 +20,6 @@ export RC_PLATFORM_APP_KEY=$RC_PLATFORM_APP_KEY
 export RC_PLATFORM_APP_SECRET=$RC_PLATFORM_APP_SECRET
 export ACTION="ON_MERGE"
 export BRANCH="${gitlabBranch}"
-export ENABLE_REMOTE_DASHBOARD=true
 export DEBUG_MODE=false
 export QUARANTINE_MODE=true
 export RUN_NAME="[Jupiter][Pipeline][Merge][${START_TIME}][${gitlabBranch}][${gitlabMergeRequestLastCommit}]"

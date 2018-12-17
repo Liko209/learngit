@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Profile } from '../Profile';
+import { ProfileMiniCard } from '../Profile';
 
 describe('Profile mini card', () => {
   it('Profile class is singleton pattern', async () => {
-    const profile1 = new Profile();
-    const profile2 = new Profile();
+    const profile1 = new ProfileMiniCard();
+    const profile2 = new ProfileMiniCard();
     expect(profile1).toEqual(profile2);
   });
 });

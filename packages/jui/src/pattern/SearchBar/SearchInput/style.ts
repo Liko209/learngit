@@ -43,7 +43,7 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
             border-bottom: 1px solid ${grey('200')};
           `
         : null};
-  z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
+  z-index: ${({ theme }) => theme.zIndex.drawer + 12};
   transition: all 0.3s ${({ theme }) => theme.transitions.easing.easeInOut};
   &:hover {
     background: ${({ focus }) =>

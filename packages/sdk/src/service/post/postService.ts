@@ -15,14 +15,14 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Item, Raw } from '../../models';
+import { Post, Item, Raw, Group } from '../../models';
 import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS } from '../constants';
 import { ENTITY, SOCKET } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo, RawPostInfoWithFile } from './types';
-import { mainLogger } from 'foundation';
-import { ErrorParser, BaseError } from '../../utils/error';
+import { mainLogger, err, Result } from 'foundation';
+import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 
 interface IPostResult {
@@ -111,7 +111,7 @@ class PostService extends BaseService<Post> {
   }: IPostQuery): Promise<IRawPostResult> {
     const groupService: GroupService = GroupService.getInstance();
     const group = await groupService.getById(groupId);
-    if (!group.most_recent_post_created_at) {
+    if (group && !group.most_recent_post_created_at) {
       // The group has no post
       return {
         posts: [],
@@ -135,9 +135,10 @@ class PostService extends BaseService<Post> {
         items: [],
         hasMore: false,
       };
-      if (requestResult && requestResult.data) {
-        result.posts = requestResult.data.posts;
-        result.items = requestResult.data.items;
+      const data = requestResult.expect('Get Remote post failed');
+      if (data) {
+        result.posts = data.posts;
+        result.items = data.items;
         if (result.posts.length === limit) {
           result.hasMore = true;
         }
@@ -150,9 +151,6 @@ class PostService extends BaseService<Post> {
         hasMore: true,
       };
     }
-    // if (!result.hasMore) {
-    //   await groupService.markAsNoPost(groupId);
-    // }
   }
 
   async getPostsByGroupId({
@@ -233,19 +231,18 @@ class PostService extends BaseService<Post> {
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
     const itemService: ItemService = ItemService.getInstance();
-    const dao = daoManager.getDao(PostDao);
-    const localPosts = await dao.queryManyPostsByIds(ids);
+    const localPosts = await this.getModelsLocally(ids, true);
     const result = {
       posts: localPosts,
       items: await itemService.getByPosts(localPosts),
     };
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
-      const remoteResult = (await PostAPI.requestByIds(restIds)).data;
+      const remoteResult = await PostAPI.requestByIds(restIds);
+      const remoteData = remoteResult.expect('getPostsByIds failed');
       const posts: Post[] =
-        (await baseHandleData(remoteResult.posts, false)) || [];
-      const items = (await itemHandleData(remoteResult.items)) || [];
-
+        (await baseHandleData(remoteData.posts, false)) || [];
+      const items = (await itemHandleData(remoteData.items)) || [];
       result.posts.push(...posts);
       result.items.push(...items);
     }
@@ -283,12 +280,8 @@ class PostService extends BaseService<Post> {
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
-      if (resp && !resp.data.error) {
-        return this.handleSendPostSuccess(resp.data, preInsertId);
-      }
-
-      // error, notifiy, should add error handle after IResponse give back error info
-      throw resp;
+      const data = resp.expect('send post failed');
+      return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId);
       throw ErrorParser.parse(e);
@@ -382,8 +375,9 @@ class PostService extends BaseService<Post> {
         };
         const info = PostServiceHandler.buildPostInfo(options);
         delete info.id; // should merge sendItemFile function into sendPost
-        const resp = await PostAPI.sendPost(info);
-        const posts = await baseHandleData(resp.data);
+        const sendPostResult = await PostAPI.sendPost(info);
+        const rawPost = sendPostResult.expect('Send post failed.');
+        const posts = await baseHandleData(rawPost);
         return posts[0];
       }
       return null;
@@ -402,7 +396,8 @@ class PostService extends BaseService<Post> {
       const post = await PostServiceHandler.buildModifiedPostInfo(params);
       if (params.postId && post) {
         const resp = await PostAPI.editPost(params.postId, post);
-        const result = await baseHandleData(resp.data);
+        const data = resp.expect('modified post fail');
+        const result = await baseHandleData(data);
         return result[0];
       }
       return null;
@@ -442,10 +437,8 @@ class PostService extends BaseService<Post> {
       delete post.id;
       try {
         const resp = await PostAPI.putDataById<Post>(id, post);
-        if (resp && !resp.data.error) {
-          return true;
-        }
-        throw resp;
+        resp.expect('delete post failed');
+        return true;
       } catch (e) {
         throw ErrorParser.parse(e);
       }
@@ -456,74 +449,65 @@ class PostService extends BaseService<Post> {
   private async _requestUpdatePost(
     newPost: Post,
     handleDataFunc?: (profile: Raw<Post> | null) => Promise<Post | null>,
-  ): Promise<Post | BaseError> {
-    try {
-      newPost._id = newPost.id;
-      delete newPost.id;
-      const response = await PostAPI.putDataById<Post>(newPost._id, newPost);
-
-      if (response.data) {
-        if (handleDataFunc) {
-          const result = await handleDataFunc(response.data);
-          if (result) {
-            return result;
-          }
-        } else {
-          const latestPostModel: Post = transform(response.data);
-          return latestPostModel;
-        }
+  ): Promise<Post | null> {
+    newPost._id = newPost.id;
+    delete newPost.id;
+    const result = await PostAPI.putDataById<Post>(newPost._id, newPost);
+    if (result.isOk()) {
+      if (handleDataFunc) {
+        return await handleDataFunc(result.data);
       }
-      return ErrorParser.parse(response);
-    } catch (e) {
-      return ErrorParser.parse(e);
+      return transform<Post>(result.data);
     }
+    return null;
   }
 
   private async _doUpdateModel(updatedModel: Post) {
-    return await this._requestUpdatePost(updatedModel);
+    return this._requestUpdatePost(updatedModel);
   }
 
-  async likePost(postId: number, personId: number, toLike: boolean) {
-    try {
-      const postDao = daoManager.getDao(PostDao);
-      const post = await postDao.get(postId);
-      if (post) {
-        const likes = post.likes || [];
-        const index = likes.indexOf(personId);
-        if (toLike) {
-          if (index === -1) {
-            likes.push(personId);
-          }
-        } else {
-          if (index > -1) {
-            likes.splice(index, 1);
-          }
+  async likePost(
+    postId: number,
+    personId: number,
+    toLike: boolean,
+  ): Promise<Result<Post>> {
+    const post = await this.getById(postId);
+    if (post) {
+      const likes = post.likes || [];
+      const index = likes.indexOf(personId);
+      if (toLike) {
+        if (index === -1) {
+          likes.push(personId);
         }
-
-        const partialModel = {
-          ...post,
-          likes,
-        };
-
-        this.handlePartialUpdate(
-          partialModel,
-          undefined,
-          this._doUpdateModel.bind(this),
-        );
+      } else {
+        if (index > -1) {
+          likes.splice(index, 1);
+        }
       }
-    } catch (e) {
-      throw ErrorParser.parse(e);
+
+      const partialModel = {
+        ...post,
+        likes,
+      };
+
+      return this.handlePartialUpdate(
+        partialModel,
+        undefined,
+        this._doUpdateModel.bind(this),
+      );
     }
+    return err(
+      new BaseError(
+        ErrorTypes.UNDEFINED_ERROR,
+        `Post can not find with id ${postId}`,
+      ),
+    );
   }
 
   async bookmarkPost(postId: number, toBook: boolean) {
-    try {
-      // favorite_post_ids in profile
-      const profileService: ProfileService = ProfileService.getInstance();
-      await profileService.putFavoritePost(postId, toBook);
-    } catch (e) {
-      throw ErrorParser.parse(e);
-    }
+    // favorite_post_ids in profile
+    const profileService: ProfileService = ProfileService.getInstance();
+    return await profileService.putFavoritePost(postId, toBook);
   }
 
   getLastPostOfGroup(groupId: number): Promise<Post | null> {
@@ -549,7 +533,8 @@ class PostService extends BaseService<Post> {
     };
     try {
       const requestResult = await PostAPI.requestPosts(params);
-      const post = requestResult.data.posts[0];
+      const data = requestResult.expect('get newest post id of group failed');
+      const post = data.posts[0];
       if (post) {
         return post._id;
       }
@@ -589,26 +574,34 @@ class PostService extends BaseService<Post> {
   async newMessageWithPeopleIds(
     ids: number[],
     message: string,
-  ): Promise<{ id?: number }> {
-    try {
-      const groupService: GroupService = GroupService.getInstance();
-      const group = await groupService.getOrCreateGroupByMemberList(ids);
-      const id = group ? group.id : undefined;
+  ): Promise<Result<Group>> {
+    const groupService: GroupService = GroupService.getInstance();
+    const result = await groupService.getOrCreateGroupByMemberList(ids);
+    if (result.isOk()) {
+      const id = result.data.id;
       if (id && this._isValidTextMessage(message)) {
         setTimeout(() => {
           this.sendPost({ groupId: id, text: message });
         },         2000);
       }
-
-      return { id };
-    } catch (e) {
-      mainLogger.error(`newMessageWithPeopleIds: ${JSON.stringify(e)}`);
-      throw ErrorParser.parse(e);
     }
+    return result;
   }
 
   private _isValidTextMessage(message: string) {
     return message.trim() !== '';
+  }
+
+  async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(PostDao);
+    const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
+    const postsMap = await Promise.all(promises);
+    const posts = _.union(...postsMap);
+    const ids = posts.map(post => post.id);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.POST, ids);
+    }
   }
 }
 
