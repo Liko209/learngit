@@ -78,6 +78,8 @@ class Scene {
             headless: false,
             defaultViewport: null,
             args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
                 `--disable-extensions-except=${EXTENSION_PATH}`,
                 `--load-extension=${EXTENSION_PATH}`,
                 '--enable-experimental-extension-apis'
