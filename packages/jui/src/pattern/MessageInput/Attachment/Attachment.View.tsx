@@ -23,6 +23,7 @@ import {
   JuiDivider,
 } from '../../../components';
 import {
+  JuiAttachmentIcon,
   JuiGoogleDriveIcon,
   JuiDropboxIcon,
   JuiOneboxIcon,
@@ -78,7 +79,7 @@ class AttachmentView extends Component<Props> {
           onClick={this._handleClickEvent}
           size="medium"
         >
-          attachment
+          <JuiAttachmentIcon viewBox="-2 -2 24 24" />
         </JuiIconButton>
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (
