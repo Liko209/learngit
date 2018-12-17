@@ -90,7 +90,9 @@ const itemService = {
       return index >= 0;
     }),
 
-  getUploadItems: jest.fn().mockReturnValue([{ id: 1 }]),
+  getUploadItems: jest.fn().mockImplementation(() => {
+    return _uploadingItems.concat(_uploadedItems);
+  }),
 };
 
 PostService.getInstance = jest.fn().mockReturnValue(postService);
