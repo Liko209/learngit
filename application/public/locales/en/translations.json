@@ -149,6 +149,7 @@
   "ariaGoToTeam": "Go to the conversation with team {{name}}",
   "ariaGoToGroup": "Go to the conversation with group",
   "ariaGoToMe": "Go to the workstation of yourself",
-  "viewYourProfile": "View Your Profile",
-  "ariaGoToOther": "Go to the conversation with {{name}}"
+  "ariaGoToOther": "Go to the conversation with {{name}}",
+  "locationTitle": "Location",
+  "viewYourProfile": "View Your Profile"
 }

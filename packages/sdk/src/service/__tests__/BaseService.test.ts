@@ -369,11 +369,12 @@ describe('BaseService', () => {
       const partialModel = {
         id: 3,
         name: 'someone',
+        sex: 'boy',
       };
 
       const originalModel = { id: 3, name: 'trump', note: 'a player' };
 
-      const targetModel = { id: 3, name: 'trump' };
+      const targetModel = { id: 3, name: 'trump', sex: undefined };
 
       service.doPartialNotify = jest.fn();
 

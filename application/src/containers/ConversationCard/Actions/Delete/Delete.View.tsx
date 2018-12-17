@@ -4,18 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import { t } from 'i18next';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
 import { JuiMenuItem } from 'jui/components';
 import { JuiModal } from '@/containers/Dialog';
 import { ViewProps } from './types';
 
-type Props = ViewProps & WithNamespaces;
-
 @observer
-class DeleteViewComponent extends React.Component<Props> {
+class DeleteView extends React.Component<ViewProps> {
   private _handleDelete = () => {
-    const { deletePost, t } = this.props;
+    const { deletePost } = this.props;
     JuiModal.confirm({
       title: t('deletePostTitle'),
       content: t('deletePostContent'),
@@ -30,7 +28,7 @@ class DeleteViewComponent extends React.Component<Props> {
     });
   }
   render() {
-    const { t, disabled } = this.props;
+    const { disabled } = this.props;
     return (
       <JuiMenuItem
         onClick={this._handleDelete}
@@ -42,7 +40,5 @@ class DeleteViewComponent extends React.Component<Props> {
     );
   }
 }
-
-const DeleteView = translate('Conversations')(DeleteViewComponent);
 
 export { DeleteView };

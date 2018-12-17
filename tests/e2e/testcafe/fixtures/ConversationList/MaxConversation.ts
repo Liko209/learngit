@@ -14,8 +14,7 @@ fixture('ConversationList/maxConversation')
   .afterEach(teardownCase());
 
 const DEFAULT_MAX_NUMBER = 20;
-// FIXME : on Edge, enter a conversation with UMI, but UMI does not disappear.
-test.skip(formalName('JPT-58 Show conversations with limit count conversations, older unread and current opened;JPT-344 The conversation will disappear when removing one older conversation from Fav and the section shows >= limit count conversations',
+test(formalName('JPT-58 Show conversations with limit count conversations, older unread and current opened;JPT-344 The conversation will disappear when removing one older conversation from Fav and the section shows >= limit count conversations',
     ['JPT-58', 'JPT-344', 'P2', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const createdNum = 6;
@@ -23,6 +22,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
+    await h(t).resetGlipAccount(user);
     user.sdk = await h(t).getSdk(user);
     const user5Platform = await h(t).getPlatform(users[5]);
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -126,7 +126,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
       const expectNewTeamIds = Array.from(newTeamIds);
       expectNewTeamIds.splice(2, 2); 
       for (let i = 0; i < expectNewTeamIds.length; i++) {
-        await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok();
+        await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok(newTeamIds.indexOf(expectNewTeamIds[i]) + " : " + expectNewTeamIds[i]);
       }
       await t.expect(teamsSection.conversationEntryById(newTeamIds[2]).exists).notOk();
       await t.expect(teamsSection.conversationEntryById(newTeamIds[3]).exists).notOk();
@@ -141,7 +141,7 @@ test.skip(formalName('JPT-58 Show conversations with limit count conversations, 
 
     await h(t).withLog('The older fav team will disappear', async () => {
       await t.expect(favConversation.exists).notOk();
-      await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
+      await user.sdk.glip.setMaxTeamDisplay(user.rcId, DEFAULT_MAX_NUMBER);
     });
   }
 );
