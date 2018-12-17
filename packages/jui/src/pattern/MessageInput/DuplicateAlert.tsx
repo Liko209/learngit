@@ -7,6 +7,7 @@ import React from 'react';
 import { JuiButton } from '../../components/Buttons/Button';
 import { JuiModal } from '../../components/Dialog';
 import styled from '../../foundation/styled-components';
+import { height, grey } from '../../foundation/utils/styles';
 
 const Footer = styled.div`
   display: flex;
@@ -29,6 +30,18 @@ type Props = {
   duplicateFiles: File[];
 };
 
+const NameList = styled.p`
+  max-height: ${height(44)};
+  overflow-y: scroll;
+  background: ${grey('50')};
+`;
+
+const Item = styled.li`
+  list-style: none;
+  line-height: ${height(5)};
+  color: ${grey('900')};
+`;
+
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {
   const {
     onCancel,
@@ -45,26 +58,19 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
       <Content data-test-automation-id="messageinput-duplicate-modal-title">
         {subtitle}
         <br />
-        <ul>
-          {duplicateFiles.map((file: File, index: number) => (
-            <li key={index}>{file.name}</li>
-          ))}
-        </ul>
-        <br />
+        <NameList>
+          <ul>
+            {duplicateFiles.map((file: File, index: number) => (
+              <Item key={index}>{file.name}</Item>
+            ))}
+          </ul>
+        </NameList>
         {footText}
       </Content>
     );
     const footer = (
       <Footer data-test-automation-id="messageinput-duplicate-footer">
-        <JuiButton
-          onClick={onCreate}
-          color="primary"
-          variant="contained"
-          autoFocus={true}
-          data-test-automation-id="messageinput-duplicate-create-button"
-        >
-          {'Create'}
-        </JuiButton>
+        <div />
         <Right>
           <JuiButton
             onClick={onCancel}
@@ -83,6 +89,15 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
             data-test-automation-id="messageinput-duplicate-update-button"
           >
             {'Update'}
+          </JuiButton>
+          <JuiButton
+            onClick={onCreate}
+            color="primary"
+            variant="contained"
+            autoFocus={true}
+            data-test-automation-id="messageinput-duplicate-create-button"
+          >
+            {'Create'}
           </JuiButton>
         </Right>
       </Footer>
