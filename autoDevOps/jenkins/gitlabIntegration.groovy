@@ -73,7 +73,7 @@ def buildReport(result, buildUrl, report) {
     if (null != report.coverage)
         lines.push("**Coverage Report**: ${report.coverage}")
     if (null != report.juiUrl)
-        lines.push("**JUI URL**: ${report.juiUrl}")
+        lines.push("**Storybook URL**: ${report.juiUrl}")
     if (null != report.e2eUrl)
         lines.push("**E2E Report**: ${report.e2eUrl}")
     return lines.join(' \n')
