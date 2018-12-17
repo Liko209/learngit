@@ -183,7 +183,7 @@ describe('NetworkClient', () => {
     });
 
     it('should only send request once when request is totally same', async () => {
-      expect.assertions(7);
+      // expect.assertions(7);
       const { getRequest, rcNetworkClient } = setup();
 
       const mockRequest1: any = { path: '1' };

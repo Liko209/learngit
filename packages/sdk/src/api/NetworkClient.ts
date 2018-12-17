@@ -84,19 +84,55 @@ export default class NetworkClient {
     this.networkManager = networkManager;
   }
 
+  private _buildApiKey(query: IQuery) {
+    const { path, params, method } = query;
+    return `${path}_${method}_${serializeUrlParams(params || {})}`;
+  }
+
+  private _saveApiCallback(
+    apiMapKey: string,
+    resolve: IResultResolveFn<any>,
+    reject: IResponseRejectFn,
+  ) {
+    const promiseResolvers = this.apiMap.get(apiMapKey) || [];
+    promiseResolvers.push({ resolve, reject });
+    this.apiMap.set(apiMapKey, promiseResolvers);
+  }
+
   request<T>(
     query: IQuery,
     requestHolder?: RequestHolder,
   ): Promise<ApiResult<T>> {
     return new Promise((resolve, reject) => {
+      let isDuplicated = false;
+      const { method } = query;
       const request = this.getRequestByVia<T>(query, query.via);
-      request.callback = this._requestCallback(query, resolve, reject);
-      if (request.callback) {
-        this.networkManager.addApiRequest(request);
+      if (this._needCheckDuplicated(method)) {
+        const apiMapKey = this._buildApiKey(query);
+        isDuplicated = this.apiMap.has(apiMapKey);
+        this._saveApiCallback(apiMapKey, resolve, reject);
+
+        if (!isDuplicated) {
+          request.callback = (resp: BaseResponse) => {
+            const promiseResolvers = this.apiMap.get(apiMapKey);
+            if (promiseResolvers) {
+              promiseResolvers.forEach(({ resolve }) => {
+                this._apiResolvedCallBack(resolve)(resp);
+              });
+              this.apiMap.delete(apiMapKey);
+            }
+          };
+        }
+      } else {
+        request.callback = this._apiResolvedCallBack(resolve);
       }
 
-      if (requestHolder) {
-        requestHolder.request = request;
+      if (!isDuplicated) {
+        this.networkManager.addApiRequest(request);
+
+        if (requestHolder) {
+          requestHolder.request = request;
+        }
       }
     });
   }
@@ -109,36 +145,6 @@ export default class NetworkClient {
         resolve(apiErr(resp));
       }
     };
-  }
-
-  private _requestCallback<T>(
-    query: IQuery,
-    resolve: IResultResolveFn<any>,
-    reject: IResponseRejectFn,
-  ) {
-    const { method } = query;
-    if (this._needCheckDuplicated(method)) {
-      const { path, params } = query;
-      const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
-      const isDuplicated = this.apiMap.has(apiMapKey);
-      const promiseResolvers = this.apiMap.get(apiMapKey) || [];
-      promiseResolvers.push({ resolve, reject });
-      this.apiMap.set(apiMapKey, promiseResolvers);
-
-      if (!isDuplicated) {
-        return (resp: BaseResponse) => {
-          const promiseResolvers = this.apiMap.get(apiMapKey);
-          if (promiseResolvers) {
-            promiseResolvers.forEach(({ resolve }) => {
-              this._apiResolvedCallBack(resolve)(resp);
-            });
-            this.apiMap.delete(apiMapKey);
-          }
-        };
-      }
-    } else {
-      return this._apiResolvedCallBack(resolve);
-    }
   }
 
   cancelRequest(request: IRequest) {
