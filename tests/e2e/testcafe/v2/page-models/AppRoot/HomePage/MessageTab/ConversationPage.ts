@@ -74,6 +74,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get currentGroupId() {
+    return this.self.getAttribute('data-group-id');
+  }
+
   async sendMessage(message: string) {
     await this.t
       .typeText(this.messageInputArea, message)
@@ -89,8 +93,8 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
   }
 
-  get currentGroupId() {
-    return this.self.getAttribute('data-group-id');
+  async groupIdShouldBe(id: string | number) {
+    await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 }
 

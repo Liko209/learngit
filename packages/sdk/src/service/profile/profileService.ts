@@ -166,7 +166,7 @@ class ProfileService extends BaseService<Profile> {
         originalModel: Profile,
       ): Partial<Raw<Profile>> => {
         const favIds = originalModel.favorite_group_ids || [];
-        if (favIds.indexOf(currentId) === -1) {
+        if (!favIds.includes(me_group_id)) {
           partialModel['favorite_group_ids'] = [me_group_id].concat(favIds);
         }
         partialModel['me_tab'] = true;

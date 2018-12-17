@@ -25,7 +25,6 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.document]: [],
       [FileType.others]: [],
     };
-
     this.items.forEach((item: FileItemModal) => {
       const file = getFileType(item);
       files[file.type].push(file);

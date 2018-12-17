@@ -22,6 +22,7 @@ import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { mainLogger } from 'sdk';
+import RO from 'resize-observer-polyfill';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -39,6 +40,7 @@ class StreamViewComponent extends Component<Props> {
   private _scrollHeight = 0;
   private _scrollTop = 0;
   private _ro: ResizeObserver;
+  private _globalStore = storeManager.getGlobalStore();
   @observable
   private _jumpToFirstUnreadLoading = false;
 
@@ -57,13 +59,14 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    const { _jumpToPostId } = this.state;
     await this.props.loadInitialPosts();
     if (!this._listRef.current) {
       return; // the current component is unmounted
     }
-    await this.scrollToPost(
-      this.state._jumpToPostId || this.props.mostRecentPostId,
-    );
+    _jumpToPostId
+      ? await this.scrollToPost(_jumpToPostId)
+      : await this.scrollToBottom();
     this._stickToBottom();
     this._visibilitySensorEnabled = true;
     this.props.updateHistoryHandler();
@@ -86,11 +89,17 @@ class StreamViewComponent extends Component<Props> {
   }
 
   async componentDidUpdate(prevProps: StreamViewProps) {
-    const { hasMoreDown, hasMoreUp } = prevProps;
-    const prevSize = prevProps.postIds.length;
-    const currSize = this.props.postIds.length;
-    const prevLastPost = prevProps.postIds.slice(-1)[0];
-    const currentLastPost = this.props.postIds.slice(-1)[0];
+    const { hasMoreDown, hasMoreUp, postIds: prevPostIds } = prevProps;
+    const { postIds, mostRecentPostId } = this.props;
+    const prevSize = prevPostIds.length;
+    const currSize = postIds.length;
+    const prevLastPost = _(prevPostIds).last();
+    const currentLastPost = _(postIds).last();
+    if (postIds.length && mostRecentPostId) {
+      if (!postIds.includes(mostRecentPostId)) {
+        storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+      }
+    }
     if (prevSize === 0) {
       return;
     }
@@ -115,13 +124,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private async _stickToBottom() {
-    const win = window as any;
-    let RO = win.ResizeObserver;
-    if (typeof win.ResizeObserver === 'undefined') {
-      RO = (await import(/* webpackMode: "eager" */
-      /*  webpackChunkName: "ro" */
-      'resize-observer-polyfill')).default;
-    }
     const el = this._listRef.current;
     if (!el) {
       return;
@@ -260,7 +262,7 @@ class StreamViewComponent extends Component<Props> {
   }
   private get _streamItems() {
     if (this.props.loading) {
-      return null;
+      return [];
     }
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
@@ -317,8 +319,15 @@ class StreamViewComponent extends Component<Props> {
   }
   private _handleMostRecentPostRead = (isVisible: boolean) => {
     const isFocused = document.hasFocus();
-    if (this._visibilitySensorEnabled && isVisible && isFocused) {
+    if (!this._visibilitySensorEnabled) {
+      return;
+    }
+    if (!isVisible) {
+      return this._setUmiDisplay(true);
+    }
+    if (isFocused) {
       this.props.markAsRead();
+      this._setUmiDisplay(false);
     }
   }
 
@@ -352,8 +361,7 @@ class StreamViewComponent extends Component<Props> {
   scrollToBottom = async () => {
     const lastItem = _(this.props.items).nth(-1);
     if (lastItem) {
-      await nextTick();
-      this.scrollToPost(lastItem.value);
+      await this.scrollToPost(lastItem.value, false);
     }
   }
 
@@ -373,16 +381,20 @@ class StreamViewComponent extends Component<Props> {
   private _focusHandler = () => {
     const { atBottom, markAsRead } = this.props;
     atBottom() && markAsRead();
+    this._setUmiDisplay(false);
   }
 
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
   }
 
   private _setPostRef = (postRef: any) => {
     if (!postRef) return;
     this._postRefs.set(postRef.props.id, postRef);
+  }
+
+  private _setUmiDisplay(value: boolean) {
+    this._globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, value);
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);

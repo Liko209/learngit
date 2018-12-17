@@ -11,12 +11,16 @@ import { LinkItem } from '@/store/models/Items';
 
 type Props = {
   postItems: LinkItem[];
-  onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  onLinkItemClose: Function;
 };
 @observer
 class LinkItemView extends React.Component<Props> {
+  onLinkItemClose = (id: number) => () => {
+    const { onLinkItemClose } = this.props;
+    onLinkItemClose(id);
+  }
   render() {
-    const { postItems, onLinkItemClick } = this.props;
+    const { postItems } = this.props;
     return (
       <>
         {postItems.map((item: LinkItem) => {
@@ -33,7 +37,7 @@ class LinkItemView extends React.Component<Props> {
               summary={item.summary}
               thumbnail={image}
               url={item.url}
-              onLinkItemClose={onLinkItemClick.bind(this, item.id)}
+              onLinkItemClose={this.onLinkItemClose(item.id)}
               favicon={
                 item.favicon
                   ? `${item.favicon}&key=4527f263d6e64d7a8251b007b1ba9972` // hard code in order to show the current image

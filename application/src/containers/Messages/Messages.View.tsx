@@ -37,12 +37,9 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
   }
 
   componentDidMount() {
-    const { match, location } = this.props;
+    const { match } = this.props;
     const { id: conversationIdOfUrl } = match.params;
 
-    if (location.state && location.state.waiting) {
-      return;
-    }
     conversationIdOfUrl
       ? MessageRouterChangeHelper.goToConversation(conversationIdOfUrl)
       : MessageRouterChangeHelper.goToLastOpenedGroup();
@@ -95,6 +92,17 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
         <LeftRail />
         <Switch>
           <Route
+            path={'/messages/loading'}
+            render={props => (
+              <JuiConversationLoading
+                showTip={messageError}
+                tip={t('messageLoadingErrorTip')}
+                linkText={t('tryAgain')}
+                onClick={this.retryMessage}
+              />
+            )}
+          />
+          <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
             render={props => (
               <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
@@ -113,17 +121,6 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
                 <ConversationPage {...props} groupId={currentConversationId} />
               ) : null
             }
-          />
-          <Route
-            path={'/messages'}
-            render={props => (
-              <JuiConversationLoading
-                showTip={messageError}
-                tip={t('messageLoadingErrorTip')}
-                linkText={t('tryAgain')}
-                onClick={this.retryMessage}
-              />
-            )}
           />
         </Switch>
         {currentConversationId ? <RightRail /> : null}

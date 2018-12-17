@@ -77,7 +77,7 @@ const shadow = (n: number) => {
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
-    padding: ${spacing(0, 4)};
+    padding: ${spacing(2.5, 4)};
     ${typography('button')};
     color: ${palette('primary', 'main')};
     &.containedButtonStyle {

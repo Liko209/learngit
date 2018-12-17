@@ -26,7 +26,7 @@
     "test:watch": "npm run test -- --watch",
     "test:dev": "npm run test -- --coverage --watch --bail",
     "lint": "tslint",
-    "lint-all": "tslint -p application && tslint -p packages/foundation && tslint -p packages/sdk && tslint -p packages/jui",
+    "lint-all": "tslint -p application && tslint -p packages/foundation && tslint -p packages/sdk && tslint -p packages/jui && tslint -p packages/voip",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
     "watch": "node scripts/watch.js",
     "commits": "git-cz",
