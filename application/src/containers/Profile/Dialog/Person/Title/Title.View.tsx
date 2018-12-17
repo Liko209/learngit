@@ -12,7 +12,7 @@ import {
   JuiDialogTitleWithActionLeft,
   JuiDialogTitleWithActionRight,
 } from 'jui/components/Dialog';
-import { Favorite } from '@/containers/common';
+import { Favorite } from '@/containers/common/Favorite';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 
 @observer

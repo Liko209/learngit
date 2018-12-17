@@ -267,7 +267,7 @@ class StreamViewComponent extends Component<Props> {
   }
   private get _streamItems() {
     if (this.props.loading) {
-      return null;
+      return [];
     }
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
