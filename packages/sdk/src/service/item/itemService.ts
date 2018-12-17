@@ -5,7 +5,7 @@
  */
 
 import BaseService from '../../service/BaseService';
-import { daoManager, ItemDao, PRE_INSERT_ITEM_IDS } from '../../dao';
+import { daoManager, ItemDao } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
 import handleData from './handleData';
 import { transform } from '../utils';
@@ -14,14 +14,11 @@ import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { ApiResult } from '../../api/ApiResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
-import { SendingStatusHandler } from '../../utils/sendingStatusHandler';
-import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
   _itemFileUploadHandler: ItemFileUploadHandler;
-  _itemStatusHandler: SendingStatusHandler;
 
   constructor() {
     const subscription = {
@@ -48,9 +45,6 @@ class ItemService extends BaseService<Item> {
   }
 
   async cancelUpload(itemId: number) {
-    if (itemId >= 0) {
-      return;
-    }
     await this._getItemFileHandler().cancelUpload(itemId);
   }
 
@@ -81,12 +75,7 @@ class ItemService extends BaseService<Item> {
   }
 
   getItemsSendingStatus(itemIds: number[]) {
-    const result: SENDING_STATUS[] = [];
-    itemIds.forEach((id: number) => {
-      result.push(this._getItemStatusHandler().getSendingStatus(id));
-    });
-
-    return result;
+    return this._getItemFileHandler().getItemsSendStatus(itemIds);
   }
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
@@ -101,14 +90,6 @@ class ItemService extends BaseService<Item> {
       groupId,
       limit,
     );
-  }
-
-  updatePreInsertItemStatus(itemId: number, status: SENDING_STATUS) {
-    this._getItemStatusHandler().setPreInsertId(itemId, status);
-  }
-
-  removeItemFromPreInsertIds(itemId: number) {
-    this._getItemStatusHandler().removePreInsertId(itemId);
   }
 
   cleanUploadingFiles(groupId: number) {
@@ -192,13 +173,6 @@ class ItemService extends BaseService<Item> {
       this._itemFileUploadHandler = new ItemFileUploadHandler();
     }
     return this._itemFileUploadHandler;
-  }
-
-  private _getItemStatusHandler(): SendingStatusHandler {
-    if (!this._itemStatusHandler) {
-      this._itemStatusHandler = new SendingStatusHandler(PRE_INSERT_ITEM_IDS);
-    }
-    return this._itemStatusHandler;
   }
 }
 

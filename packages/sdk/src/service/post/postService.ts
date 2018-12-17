@@ -273,11 +273,12 @@ class PostService extends BaseService<Post> {
   }
 
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
+    if (!isResend && buildPost.item_ids.length > 0) {
+      this._cleanUploadingFiles(buildPost.group_id);
+    }
+
     await this._handlePreInsertProcess(buildPost);
     if (buildPost.item_ids.length > 0) {
-      if (!isResend) {
-        this._cleanUploadingFiles(buildPost.group_id);
-      }
       const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
       if (pseudoItems.length > 0) {
         if (isResend) {
@@ -317,21 +318,25 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
-    const listener = (params: {
+    const listener = async (params: {
       success: boolean;
       preInsertId: number;
       updatedId: number;
     }) => {
       const { success, preInsertId, updatedId } = params;
+      if (!post.item_ids.includes(preInsertId)) {
+        return;
+      }
+
       if (success) {
         // update post to db
         if (updatedId !== preInsertId) {
           post.item_ids = post.item_ids.map((id: number) => {
             return id === preInsertId ? updatedId : id;
           });
-
-          this._updatePost(post);
         }
+
+        await this._updatePost(post);
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
           notificationCenter.removeListener(
@@ -347,7 +352,7 @@ class PostService extends BaseService<Post> {
       if (!this._hasExpectedStatus(SENDING_STATUS.INPROGRESS, itemStatuses)) {
         // has failed
         if (this._hasExpectedStatus(SENDING_STATUS.FAIL, itemStatuses)) {
-          this.handleSendPostFail(preInsertId);
+          this.handleSendPostFail(post.id);
         }
 
         notificationCenter.removeListener(
@@ -361,9 +366,9 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  private _updatePost(post: Post) {
+  private async _updatePost(post: Post) {
     const postDao = daoManager.getDao(PostDao);
-    postDao.update(post);
+    await postDao.update(post);
     notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
   }
 

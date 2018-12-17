@@ -52,9 +52,9 @@ const Wrapper = styled.div`
   align-items: center;
   height: ${height(5)};
   max-height: ${height(5)};
-  width: ${width(84)};
-  min-width: ${width(84)};
-  max-width: ${width(84)};
+  width: ${width(77)};
+  min-width: ${width(77)};
+  max-width: ${width(77)};
   padding: ${spacing(4, 3, 4, 4)};
   border-radius: ${shape('borderRadius', 1)};
   box-shadow: ${props => props.theme.shadows[1]};
@@ -111,7 +111,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 ) => (
   <ActionWrapper
     onClick={props.onClick}
-    data-test-automation-id="attachment-item-remove-button"
+    data-test-automation-id="attachment-action-button"
   >
     {props.loading && <JuiCircularProgress size={24} value={props.value} />}
     <IconWrapper>
@@ -134,7 +134,9 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   return (
     <Wrapper>
       <Icon icon={icon} />
-      <NameArea status={status}>{fileName}</NameArea>
+      <NameArea status={status} data-test-automation-id="attachment-file-name">
+        {fileName}
+      </NameArea>
       <AttachmentItemAction
         onClick={onClickDeleteButton}
         loading={status === 'loading'}

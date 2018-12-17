@@ -20,6 +20,9 @@ const Right = styled.div``;
 const Content = styled.div``;
 
 type Props = {
+  title: string;
+  subtitle: string;
+  footText: string;
   onCancel: () => void;
   onUpdate: () => void;
   onCreate: () => void;
@@ -27,13 +30,20 @@ type Props = {
 };
 
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {
-  const { onCancel, onUpdate, onCreate, duplicateFiles } = props;
+  const {
+    onCancel,
+    onUpdate,
+    onCreate,
+    duplicateFiles,
+    title,
+    subtitle,
+    footText,
+  } = props;
   const showDuplicateFiles = duplicateFiles.length > 0;
   if (showDuplicateFiles) {
-    const title = 'Updated Files?';
     const content = (
-      <Content data-test-automation-id="messageinput-duplicate-modal-content">
-        The following files already exist.
+      <Content data-test-automation-id="messageinput-duplicate-modal-title">
+        {subtitle}
         <br />
         <ul>
           {duplicateFiles.map((file: File, index: number) => (
@@ -41,17 +51,17 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
           ))}
         </ul>
         <br />
-        Do you want to update the existing files or do you wish to create new
-        files?
+        {footText}
       </Content>
     );
     const footer = (
-      <Footer data-test-automation-id="messageinput-duplicate-modal-footer">
+      <Footer data-test-automation-id="messageinput-duplicate-footer">
         <JuiButton
           onClick={onCreate}
           color="primary"
           variant="contained"
           autoFocus={true}
+          data-test-automation-id="messageinput-duplicate-create-button"
         >
           {'Create'}
         </JuiButton>
@@ -61,6 +71,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
             color="primary"
             variant="text"
             autoFocus={true}
+            data-test-automation-id="messageinput-duplicate-cancel-button"
           >
             {'Cancel'}
           </JuiButton>
@@ -69,6 +80,7 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
             color="primary"
             variant="contained"
             autoFocus={true}
+            data-test-automation-id="messageinput-duplicate-update-button"
           >
             {'Update'}
           </JuiButton>

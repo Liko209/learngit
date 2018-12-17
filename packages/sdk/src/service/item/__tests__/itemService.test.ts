@@ -7,15 +7,13 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 
 import ItemService from '../../../service/item';
-import { daoManager, PRE_INSERT_ITEM_IDS, ItemDao } from '../../../dao';
+import { daoManager, ItemDao } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
 import { ApiResultOk } from '../../../api/ApiResult';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
-import { SendingStatusHandler } from '../../../utils/sendingStatusHandler';
 import handleData from '../../../service/item/handleData';
 
-jest.mock('../../../utils/sendingStatusHandler');
 jest.mock('../itemFileUploadHandler');
 jest.mock('../handleData');
 
@@ -266,6 +264,14 @@ describe('ItemService', () => {
         .mockReturnValue(itemFileUploadHandler);
     });
 
+    describe('getItemsSendingStatus()', () => {
+      it('should call getItemsSendStatus ', () => {
+        const ids = [250052362250, -250052378634, 3];
+        itemService.getItemsSendingStatus(ids);
+        expect(itemFileUploadHandler.getItemsSendStatus).toBeCalledTimes(1);
+      });
+    });
+
     describe('resendFailedItems()', () => {
       it('should call resendFailedFile ', () => {
         const resendIds = [250052362250, 250052378634, 3];
@@ -306,59 +312,10 @@ describe('ItemService', () => {
     });
 
     describe('cancelUpload()', () => {
-      it('should not call cancel upload, when invalid itemId', async () => {
+      it('should call cancel upload', async () => {
         itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-        await itemService.cancelUpload(0);
-        expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(0);
-      });
-
-      it('should call cancel upload, when valid itemId', async () => {
-        itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
-        await itemService.cancelUpload(-1);
+        await itemService.cancelUpload(1);
         expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
-      });
-    });
-  });
-
-  describe('ItemService should call functions in SendingStatusHandler', () => {
-    const sendingStatusHandler = new SendingStatusHandler(PRE_INSERT_ITEM_IDS);
-    beforeEach(() => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-      jest
-        .spyOn(itemService, '_getItemStatusHandler')
-        .mockReturnValue(sendingStatusHandler);
-    });
-
-    describe('removeItemFromPreInsertIds()', () => {
-      it('should call removePreInsertId', () => {
-        const id = 1;
-        itemService.removeItemFromPreInsertIds(id);
-        expect(sendingStatusHandler.removePreInsertId).toBeCalledTimes(1);
-        expect(sendingStatusHandler.removePreInsertId).toBeCalledWith(id);
-      });
-    });
-
-    describe('getItemsSendingStatus()', () => {
-      it('should call getSendingStatus', () => {
-        const ids = [1, 2, 3];
-        itemService.getItemsSendingStatus(ids);
-        expect(sendingStatusHandler.getSendingStatus).toBeCalledTimes(
-          ids.length,
-        );
-      });
-    });
-
-    describe('updatePreInsertItemStatus()', () => {
-      it('should call setPreInsertId', () => {
-        const itemId = 1;
-        const status = 0;
-        itemService.updatePreInsertItemStatus(itemId, status);
-        expect(sendingStatusHandler.setPreInsertId).toBeCalledWith(
-          itemId,
-          status,
-        );
-        expect(sendingStatusHandler.setPreInsertId).toBeCalledTimes(1);
       });
     });
   });

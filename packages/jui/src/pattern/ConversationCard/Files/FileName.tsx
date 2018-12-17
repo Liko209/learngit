@@ -30,7 +30,7 @@ const FileName = (Props: FileNameProps) => {
   const [left, right] = getFileName(filename);
 
   return (
-    <FileNameWrapper>
+    <FileNameWrapper data-test-automation-id="file-name">
       <LeftName>{left}</LeftName>
       <span>{right}</span>
     </FileNameWrapper>

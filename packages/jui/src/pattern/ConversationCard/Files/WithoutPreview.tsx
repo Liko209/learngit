@@ -18,7 +18,7 @@ type JuiFileWithoutPreviewProps = {
 const FileSecondary = (secondary: string, children: JSX.Element) => {
   return (
     <>
-      <span>{secondary}</span>
+      <span data-test-automation-id="file-no-preview-size">{secondary}</span>
       <Jui.FileActionsWrapper>{children}</Jui.FileActionsWrapper>
     </>
   );

@@ -75,6 +75,7 @@ function withUploadFile(Component: ComponentType<any>) {
             ref={this._fileInputRef}
             onChange={this._fileChanged}
             type="file"
+            data-test-automation-id="upload-file-input"
           />
         </Fragment>
       );
