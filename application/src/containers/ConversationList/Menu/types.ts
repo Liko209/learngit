@@ -22,7 +22,7 @@ type MenuViewProps = {
   isFavorite: boolean;
   favoriteText: string;
   shouldSkipCloseConfirmation: boolean;
-  showClose?: boolean;
+  closable: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => Promise<ServiceResult<Profile>>;
   closeConversation: (
