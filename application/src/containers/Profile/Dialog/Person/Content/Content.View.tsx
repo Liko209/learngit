@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { Markdown } from 'glipdown';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
@@ -110,6 +111,16 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <FormEmail dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
+  renderHomepage(value: string) {
+    const html = Markdown(value);
+    const FormHomepage = FormEmail;
+    return (
+      <FormHomepage>
+        <div dangerouslySetInnerHTML={{ __html: html }} />
+      </FormHomepage>
+    );
+  }
+
   render() {
     const {
       t,
@@ -202,7 +213,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                     this.renderFormGroup({
                       icon: 'link',
                       label: t('webpage'),
-                      value: person.homepage,
+                      value: this.renderHomepage(person.homepage),
                       copy: true,
                     })}
                 </Grid>
