@@ -324,6 +324,10 @@ class PostService extends BaseService<Post> {
       updatedId: number;
     }) => {
       const { success, preInsertId, updatedId } = params;
+      if (!post.item_ids.includes(preInsertId)) {
+        return;
+      }
+
       if (success) {
         // update post to db
         if (updatedId !== preInsertId) {
@@ -348,7 +352,7 @@ class PostService extends BaseService<Post> {
       if (!this._hasExpectedStatus(SENDING_STATUS.INPROGRESS, itemStatuses)) {
         // has failed
         if (this._hasExpectedStatus(SENDING_STATUS.FAIL, itemStatuses)) {
-          this.handleSendPostFail(preInsertId);
+          this.handleSendPostFail(post.id);
         }
 
         notificationCenter.removeListener(

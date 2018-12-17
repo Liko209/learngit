@@ -7,14 +7,6 @@ describe('GlipTypeUtil', () => {
     jest.restoreAllMocks();
   });
 
-  it('GlipTypeUtil   isIntegrationType / extractTypeId', () => {
-    const integrationType = GlipTypeUtil.isIntegrationType(12);
-    expect(integrationType).toBe(false);
-
-    const extractType = GlipTypeUtil.extractTypeId(12);
-    expect(extractType).toBe(12);
-  });
-
   it('TypeDictionary', () => {
     const res = TypeDictionary.TYPE_ID_COMPANY;
     expect(res).toBe(1);
@@ -53,19 +45,35 @@ describe('GlipTypeUtil', () => {
     expect(parseSocketMessage('io client disconnect')).toBeNull;
   });
 
-  describe('convertToIdWithType()', () => {
+  describe('extractTypeId()', () => {
+    it('should return right type id when input is a positive number', () => {
+      const integrationType = GlipTypeUtil.isIntegrationType(12);
+      expect(integrationType).toBe(false);
+      const extractType = GlipTypeUtil.extractTypeId(12);
+      expect(extractType).toBe(12);
+    });
+
+    it('should return right type id when input is a negative number', () => {
+      const integrationType = GlipTypeUtil.isIntegrationType(12);
+      expect(integrationType).toBe(false);
+      const extractType = GlipTypeUtil.extractTypeId(-12);
+      expect(extractType).toBe(12);
+    });
+  });
+
+  describe('generatePseudoIdByType()', () => {
     it('should be able to get type from the converted id', () => {
       const randomId = versionHash();
       const randomIds = [randomId, -randomId];
       randomIds.forEach((id: number) => {
         Object.getOwnPropertyNames(TypeDictionary).forEach(val => {
-          const result = GlipTypeUtil.convertToIdWithType(
+          const result = GlipTypeUtil.generatePseudoIdByType(
             TypeDictionary[val],
-            randomId,
           );
 
           expect(result).not.toBe(randomId);
-          expect(result & 0x1fff).toBe(TypeDictionary[val]);
+          expect(result).toBeLessThan(0);
+          expect(-result & 0x1fff).toBe(TypeDictionary[val]);
         });
       });
     });
