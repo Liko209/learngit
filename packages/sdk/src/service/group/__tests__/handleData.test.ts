@@ -278,6 +278,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
     daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
       id: 2,
       most_recent_post_created_at: 99,
+      members: [],
     });
     await handleGroupMostRecentPostChanged({
       type: EVENT_TYPES.UPDATE,
@@ -295,6 +296,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
       });
     daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
       id: 2,
+      members: [],
     });
     await handleGroupMostRecentPostChanged({
       type: EVENT_TYPES.UPDATE,
@@ -313,6 +315,7 @@ describe('handleGroupMostRecentPostChanged()', () => {
       });
     daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
       id: 2,
+      members: [],
       most_recent_post_created_at: 101,
     });
     await handleGroupMostRecentPostChanged({
@@ -465,20 +468,21 @@ describe('filterGroups()', () => {
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(LIMIT);
   });
-  it('should not return teams which does not created by me or includes me', async () => {
-    const LIMIT = 2;
-    const TOTAL_GROUPS = 5;
+  // before pass value to filterGroup function, the groups are created by me or include me
+  // it('should not return teams which does not created by me or includes me', async () => {
+  //   const LIMIT = 2;
+  //   const TOTAL_GROUPS = 5;
 
-    const teams = generateFakeGroups(TOTAL_GROUPS, {
-      hasPost: false,
-      is_team: true,
-    });
-    accountService.getCurrentUserId.mockReturnValue(99);
-    stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
+  //   const teams = generateFakeGroups(TOTAL_GROUPS, {
+  //     hasPost: false,
+  //     is_team: true,
+  //   });
+  //   accountService.getCurrentUserId.mockReturnValue(99);
+  //   stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
-    const filteredGroups = await filterGroups(teams, LIMIT);
-    expect(filteredGroups.length).toBe(0);
-  });
+  //   const filteredGroups = await filterGroups(teams, LIMIT);
+  //   expect(filteredGroups.length).toBe(0);
+  // });
 
   it('should return team which includes me', async () => {
     const LIMIT = 2;
