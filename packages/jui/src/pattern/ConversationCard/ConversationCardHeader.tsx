@@ -19,6 +19,7 @@ const StyledLeftSection = styled('div')`
   min-width: 0;
   font-size: 0;
   align-items: center;
+  white-space: nowrap;
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
