@@ -1,3 +1,8 @@
+/*
+ * @Author: Mia.Cai
+ * @Date: 2018-12-17 20:47:52
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as _ from 'lodash';
 import { ClientFunction } from 'testcafe';
@@ -101,7 +106,47 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('upload-file-input');
   }
   get removeButton(){
-    return this.getSelectorByAutomationId('attachment-item-remove-button');
+    return this.getSelectorByAutomationId('attachment-action-button');
+  }
+
+  get attachmentFileName(){
+    return this.getSelectorByAutomationId('attachment-file-name');
+  }
+  
+  get fileName(){
+    return this.getSelectorByAutomationId('file-name');
+  }
+
+  get fileSize(){
+    return this.getSelectorByAutomationId('file-size');
+  }
+
+  get previewFileSize(){
+    return this.getSelectorByAutomationId('file-no-preview-size');
+  }
+
+  get conversationCard(){
+    return this.getSelectorByAutomationId('conversation-card-activity');
+  }
+
+  get duplicateModal(){
+    return this.getSelectorByAutomationId('messageinput-duplicate-footer');
+  }
+
+  get duplicateContent(){
+    return this.getSelectorByAutomationId('messageinput-duplicate-modal-title');
+  }
+
+  get duplicateCreateButton(){
+    return this.getSelectorByAutomationId('messageinput-duplicate-create-button');
+  }
+
+  get duplicateCancelButton(){
+    return this.getSelectorByAutomationId('messageinput-duplicate-cancel-button');
+  }
+
+  get duplicateUpdateButton(){
+    return this.getSelectorByAutomationId('messageinput-duplicate-update-button');
   }
 
   private uploadFiles(selector: Selector, filesPath: Array<string>) {
@@ -109,11 +154,27 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async uploadFilesToMessageFilesArea(filesPath: Array<string>) {
-    await this.uploadFiles(this.messageFilesArea, filesPath);
+    await this.uploadFiles(this.uploadFileInput, filesPath);
   }
 
   async uploadFilesToConversation(filesPath: Array<string>) {
     await this.uploadFiles(this.streamWrapper, filesPath);
+  }
+
+  async clickCancelButton(){
+    await this.t.click(this.duplicateCancelButton);
+  }
+
+  async clickUpdateButton(){
+    await this.t.click(this.duplicateUpdateButton);
+  }
+
+  async clickCreateButton(){
+    await this.t.click(this.duplicateCreateButton);
+  }
+
+  async clickRemoveButton(){
+    await this.t.click(this.removeButton);
   }
 
 }
