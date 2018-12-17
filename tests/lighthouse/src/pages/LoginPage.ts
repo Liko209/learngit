@@ -24,11 +24,15 @@ class LoginPage {
 
     async authUrl() {
         this._authUrl = null;
+        let args = ['--enable-features=NetworkService'];
+        if (process.env.RUN_MODE !== 'DEBUG') {
+            args.push('--no-sandbox', '--disable-setuid-sandbox');
+        }
 
         let browser = await puppeteer.launch({
             headless: false,
             defaultViewport: null,
-            args: ['--enable-features=NetworkService']
+            args: args
         });
 
         browser.on('targetchanged', async (target) => {
