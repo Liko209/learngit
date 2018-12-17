@@ -74,20 +74,14 @@ class Scene {
      * @description: collect performance metrics
      */
     async collectData() {
-        let args = [
-            `--disable-extensions-except=${EXTENSION_PATH}`,
-            `--load-extension=${EXTENSION_PATH}`,
-            '--enable-experimental-extension-apis'
-        ];
-        let isDebug = process.env.RUN_MODE === 'DEBUG';
-        if (!isDebug) {
-            args.push('--no-sandbox', '--disable-setuid-sandbox');
-        }
-
         const browser = await puppeteer.launch({
-            headless: !isDebug,
+            headless: false,
             defaultViewport: null,
-            args: args
+            args: [
+                `--disable-extensions-except=${EXTENSION_PATH}`,
+                `--load-extension=${EXTENSION_PATH}`,
+                '--enable-experimental-extension-apis'
+            ]
         });
 
         const { lhr, artifacts } = await lighthouse(this.finallyUrl(), {
