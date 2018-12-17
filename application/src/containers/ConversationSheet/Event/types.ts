@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 15:47:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { EventItem } from '@/store/models/Items';
+import EventItemModal from '@/store/models/EventItem';
 
 type ActivityData = {
   [index: string]: any;
@@ -18,12 +18,12 @@ type EventUpdateProps = {
 } & EventProps;
 
 type EventViewProps = {
-  event: EventItem;
+  event: EventItemModal;
 };
 
 type EventUpdateViewProps = {
   activityData: ActivityData;
-  event: EventItem;
+  event: EventItemModal;
 };
 
 export { EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps };

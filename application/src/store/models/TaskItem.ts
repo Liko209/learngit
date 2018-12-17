@@ -7,7 +7,7 @@ import { TaskItem } from 'sdk/models';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class TasktemModal extends ItemModel {
+export default class TaskItemModal extends ItemModel {
   @observable color: string;
   @observable complete: boolean;
   @observable notes: string;
@@ -67,6 +67,6 @@ export default class TasktemModal extends ItemModel {
   }
 
   static fromJS(data: TaskItem) {
-    return new TasktemModal(data);
+    return new TaskItemModal(data);
   }
 }

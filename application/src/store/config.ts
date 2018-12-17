@@ -61,6 +61,24 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
+  [ENTITY_NAME.EVENT_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
+  [ENTITY_NAME.LINK_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
+  [ENTITY_NAME.NOTE_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),

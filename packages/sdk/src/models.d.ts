@@ -259,6 +259,19 @@ export type TaskItem = Item & {
   complete_percentage: number;
 };
 
+export type EventItem = Item & {
+  color: string;
+  description: string;
+  start: number;
+  end: number;
+  location: string;
+  repeat: string;
+  repeat_ending: string;
+  repeat_ending_after: string;
+  repeat_ending_on: string;
+  text: string;
+};
+
 export type FileItem = Item & {
   name: string;
 };
