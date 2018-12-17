@@ -21,7 +21,7 @@ export default class LinkItemModal extends ItemModel {
   @observable
   image: string;
   @observable
-  detailData: {
+  data?: {
     provider_name: string;
   };
   @observable
@@ -45,13 +45,13 @@ export default class LinkItemModal extends ItemModel {
     this.image = image || '';
     this.deactivated = deactivated;
     this.doNotRender = do_not_render || false;
-    this.detailData = detail;
+    this.data = detail;
     this.favicon = favicon;
   }
 
   @computed
   get providerName() {
-    return this.data && this.data.provider_name;
+    return (this.data && this.data.provider_name) || '';
   }
 
   static fromJS(data: LinkItem) {
