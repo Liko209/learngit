@@ -88,12 +88,10 @@ const GlobalToolTipStyle = createGlobalStyle`
 export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
   arrowRef: React.RefObject<any>;
-  tooltipRef: React.RefObject<any>;
 
   constructor(props: any) {
     super(props);
     this.arrowRef = React.createRef();
-    this.tooltipRef = React.createRef();
   }
 
   handleArrowRef = (ele: any) => {
@@ -108,7 +106,6 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
       <React.Fragment>
         <MuiTooltip
           {...rest}
-          innerRef={this.tooltipRef}
           placement={placement}
           title={
             <React.Fragment>
