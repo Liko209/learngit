@@ -20,7 +20,7 @@ class AttachmentsViewComponent extends Component<
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
-          title={t('Updated Files?')}
+          title={t('Update Files?')}
           subtitle={t('The following files already exist.')}
           footText={t(
             'Do you want to update the existing files or do you wish to create new files?',
