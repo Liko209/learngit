@@ -130,7 +130,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     const record = this.items.get(name);
     if (record) {
       try {
-        await this._itemService.cancelUpload(record.item.id);
+        const items = await this._itemService.getUploadItems(this.id);
+        const target = items.find(looper => looper.name === name);
+        if (target) {
+          await this._itemService.cancelUpload(target.id);
+        }
         this.items.delete(name);
       } catch (e) {}
     }
