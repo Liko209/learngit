@@ -260,6 +260,7 @@ node(buildNode) {
                     "ACTION=ON_MERGE",
                     "DEBUG_MODE=false",
                     "QUARANTINE_MODE=true",
+                    "SCREENSHOT_WEBP_QUALITY=80",
                     "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${env.gitlabSourceBranch}][${env.gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
                 sh 'env'
