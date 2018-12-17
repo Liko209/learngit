@@ -371,7 +371,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isTeamInTeamSection = model.is_team as boolean;
-      return notInFav && isTeamInTeamSection;
+      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      const includesMe =
+        userId && model.members ? model.members.includes(userId) : true;
+      return notInFav && isTeamInTeamSection && includesMe;
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
