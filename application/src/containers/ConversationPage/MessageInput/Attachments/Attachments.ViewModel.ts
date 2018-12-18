@@ -158,14 +158,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   cancelUploadFile = async (info: ItemInfo) => {
-    console.log(157, info, this.items);
     const { id } = info;
     const record = this.items.get(id);
     if (record) {
       try {
         await this._itemService.cancelUpload(id);
         this.items.delete(id);
-        console.log(168, this.items);
       } catch (e) {}
     }
   }
