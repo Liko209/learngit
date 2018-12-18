@@ -192,15 +192,13 @@ class ItemFileUploadHandler {
     itemId: number,
     requestHolder: RequestHolder,
   ) {
-    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE);
-    return !file
-      ? null
-      : await ItemAPI.requestAmazonFilePolicy({
-        size: file.size,
-        filename: file.name,
-        for_file_type: true,
-        filetype: file.type,
-      });
+    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
+    return await ItemAPI.requestAmazonFilePolicy({
+      size: file.size,
+      filename: file.name,
+      for_file_type: true,
+      filetype: file.type,
+    });
   }
 
   private async _uploadFileToAmazonS3(
