@@ -166,6 +166,22 @@ class JuiMessageInput extends React.Component<Props> {
     this.setState({ isDragOver: false });
   }
 
+  private _handlePaste = (event: any) => {
+    if (event.clipboardData) {
+      const files: FileList = event.clipboardData.files;
+      if (files) {
+        // access data directly
+        const result: File[] = [];
+        for (let i = 0; i < files.length; ++i) {
+          const file = files[i];
+          result.push(file);
+        }
+        const { didDropFile } = this.props;
+        didDropFile && files && didDropFile(files[0]);
+        event.preventDefault();
+      }
+    }
+  }
   render() {
     const {
       value,
@@ -193,6 +209,7 @@ class JuiMessageInput extends React.Component<Props> {
         onDragEnter={this._handleDragEnter}
         onDragLeave={this._handleDragLeave}
         onDragOver={this._handleDragOver}
+        onPaste={this._handlePaste}
       >
         {toolbarNode}
         <ReactQuill
