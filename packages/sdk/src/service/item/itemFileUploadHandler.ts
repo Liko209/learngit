@@ -20,6 +20,7 @@ import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
 import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
+import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
@@ -284,7 +285,7 @@ class ItemFileUploadHandler {
   }
 
   private _shouldUploadToAmazonS3() {
-    return false;
+    return isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS);
   }
 
   private async _sendItemFile(
