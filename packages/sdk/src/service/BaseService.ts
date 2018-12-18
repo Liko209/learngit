@@ -55,7 +55,12 @@ class BaseService<
   }
 
   async getById(id: number): Promise<SubModel | null> {
-    const result = await this.getByIdFromDao(id);
+    let result = null;
+    if (this.isCacheInitialized()) {
+      result = this._cachedManager.getEntity(id);
+    } else {
+      result = await this.getByIdFromDao(id);
+    }
     if (!result) {
       return this.getByIdFromAPI(id);
     }
@@ -132,7 +137,15 @@ class BaseService<
   }
 
   async getAll({ offset = 0, limit = Infinity } = {}): Promise<SubModel[]> {
+    if (this.isCacheInitialized()) {
+      const values = await this.getEntitiesFromCache();
+      return values.slice(0, limit === Infinity ? values.length : limit);
+    }
     return this.getAllFromDao({ offset, limit });
+  }
+
+  isCacheInitialized() {
+    return this.isCacheEnable() && this._cachedManager.isInitialized();
   }
 
   isCacheEnable(): boolean {
@@ -251,7 +264,7 @@ class BaseService<
 
   protected async initialEntitiesCache() {
     mainLogger.debug('initialEntitiesCache begin');
-    if (this._cachedManager && !this._cachedManager.isInitialized()) {
+    if (this._cachedManager && !this._cachedManager.isStartInitial()) {
       const eventKey: string = this._getModelEventKey();
       if (eventKey.length > 0) {
         notificationCenter.on(

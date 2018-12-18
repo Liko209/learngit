@@ -85,7 +85,6 @@ class GroupService extends BaseService<Group> {
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
-    let result: Group[] = [];
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
     if (
@@ -93,16 +92,22 @@ class GroupService extends BaseService<Group> {
       profile.favorite_group_ids &&
       profile.favorite_group_ids.length > 0
     ) {
-      let favorite_group_ids = profile.favorite_group_ids.filter(
+      let favoriteGroupIds = profile.favorite_group_ids.filter(
         id => typeof id === 'number' && !isNaN(id),
       );
       const hiddenIds = extractHiddenGroupIds(profile);
-      favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
+      favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
+      if (this.isCacheInitialized()) {
+        return await this.getMultiEntitiesFromCache(
+          favoriteGroupIds,
+          (item: Group) => !item.is_archived,
+        );
+      }
       const dao = daoManager.getDao(GroupDao);
-      result = await dao.queryGroupsByIds(favorite_group_ids);
-      result = sortFavoriteGroups(favorite_group_ids, result);
+      const result = await dao.queryGroupsByIds(favoriteGroupIds);
+      return sortFavoriteGroups(favoriteGroupIds, result);
     }
-    return result;
+    return [];
   }
 
   async getGroupsByType(
@@ -127,13 +132,26 @@ class GroupService extends BaseService<Group> {
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userId = profile ? profile.creator_id : undefined;
-      result = await dao.queryGroups(
-        offset,
-        Infinity,
-        groupType === GROUP_QUERY_TYPE.TEAM,
-        excludeIds,
-        userId,
-      );
+      if (this.isCacheInitialized()) {
+        result = await this.getEntitiesFromCache(
+          (item: Group) =>
+            !item.is_archived &&
+            groupType === GROUP_QUERY_TYPE.TEAM &&
+            !excludeIds.includes(item.id) &&
+            (userId ? item.members.includes(userId) : true),
+        );
+        if (offset !== 0) {
+          result = result.slice(offset + 1, result.length);
+        }
+      } else {
+        result = await dao.queryGroups(
+          offset,
+          Infinity,
+          groupType === GROUP_QUERY_TYPE.TEAM,
+          excludeIds,
+          userId,
+        );
+      }
       result = await filterGroups(result, limit);
     }
     return result;
@@ -143,8 +161,19 @@ class GroupService extends BaseService<Group> {
   async getLastNGroups(n: number): Promise<Group[]> {
     mainLogger.debug(`get last ${n} groups`);
     let result: Group[] = [];
-    const dao = daoManager.getDao(GroupDao);
-    result = await dao.getLastNGroups(n);
+    if (this.isCacheInitialized()) {
+      result = await this.getEntitiesFromCache(
+        (item: Group) => !item.is_archived,
+      );
+      result = _.orderBy(
+        result,
+        ['most_recent_post_created_at'],
+        ['desc'],
+      ).slice(0, n);
+    } else {
+      const dao = daoManager.getDao(GroupDao);
+      result = await dao.getLastNGroups(n);
+    }
     return result;
   }
 
@@ -232,7 +261,12 @@ class GroupService extends BaseService<Group> {
 
   async pinPost(postId: number, groupId: number, toPin: boolean) {
     const groupDao = daoManager.getDao(GroupDao);
-    const group = await groupDao.get(groupId);
+    let group = null;
+    if (this.isCacheInitialized()) {
+      group = await this.getEntityFromCache(groupId);
+    } else {
+      group = await groupDao.get(groupId);
+    }
     if (group && this.canPinPost(postId, group)) {
       // pinned_post_ids
       if (toPin) {
@@ -639,6 +673,15 @@ class GroupService extends BaseService<Group> {
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
     const memberIds = this._addCurrentUserToMemList(ids);
     const groupDao = daoManager.getDao(GroupDao);
+    if (this.isCacheInitialized()) {
+      return await this.getEntitiesFromCache(
+        (item: Group) =>
+          !item.is_archived &&
+          !item.is_team &&
+          item.members &&
+          item.members.sort().toString() === ids.sort().toString(),
+      )[0];
+    }
     return await groupDao.queryGroupByMemberList(memberIds);
   }
 
