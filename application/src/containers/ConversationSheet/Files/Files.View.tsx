@@ -29,8 +29,11 @@ const downloadBtn = (downloadUrl: string) => (
 );
 
 class FilesView extends React.Component<FilesViewProps> {
+  componentWillUnmount() {
+    this.props.dispose();
+  }
   render() {
-    const { files } = this.props;
+    const { files, progresses } = this.props;
     return (
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
@@ -41,6 +44,7 @@ class FilesView extends React.Component<FilesViewProps> {
               <AttachmentItem
                 key={id}
                 name={name}
+                progress={progresses.get(id)}
                 onClickDeleteButton={() => this.props.removeFile(id)}
               />
             );
@@ -65,6 +69,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 key={id}
                 name={name}
                 icon={iconType || undefined}
+                progress={progresses.get(id)}
                 onClickDeleteButton={() => this.props.removeFile(id)}
               />
             );
@@ -90,6 +95,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 key={id}
                 name={name}
                 icon={iconType || undefined}
+                progress={progresses.get(id)}
                 onClickDeleteButton={() => this.props.removeFile(id)}
               />
             );

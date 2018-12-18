@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text } from '@storybook/addon-knobs';
+import { boolean, number, select, text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
@@ -50,6 +50,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
     },
     'normal',
   );
+  const value = number('value', 0);
   const name = text('name', 'This is the name of attachment item');
 
   return (
@@ -58,7 +59,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
       <br />
       <AttachmentItem name="test" status="error" />
       <br />
-      <AttachmentItem name="test" status="loading" />
+      <AttachmentItem name="test" progress={value} />
       <br />
       <div>Long title example:</div>
       <AttachmentItem

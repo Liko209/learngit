@@ -114,7 +114,9 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     onClick={props.onClick}
     data-test-automation-id="attachment-action-button"
   >
-    {props.loading && <JuiCircularProgress size={24} value={props.value} />}
+    {props.value && (
+      <JuiCircularProgress variant="static" size={24} value={props.value} />
+    )}
     <IconWrapper>
       {typeof props.icon === 'string' ? (
         <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
@@ -132,6 +134,7 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
 ) => {
   const { icon, name, status, onClickDeleteButton, progress } = props;
   const fileName = truncateLongName(name, MAX_TITLE_LENGTH);
+  const loading = status === 'loading' || typeof progress !== 'undefined';
   return (
     <Wrapper>
       <Icon icon={icon} />
@@ -140,7 +143,7 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
       </NameArea>
       <AttachmentItemAction
         onClick={onClickDeleteButton}
-        loading={status === 'loading'}
+        loading={loading}
         value={progress}
         icon="close"
       />
