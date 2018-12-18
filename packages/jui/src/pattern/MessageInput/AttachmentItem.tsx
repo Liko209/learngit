@@ -31,11 +31,12 @@ type IconProps = {
 type ItemStatus = 'normal' | 'loading' | 'error';
 
 type StatusProps = {
-  status: ItemStatus;
+  status?: ItemStatus;
 };
 
 type AttachmentItemProps = IconProps &
   StatusProps & {
+    progress?: number;
     name: string;
     onClickDeleteButton?: (event: MouseEvent) => void;
   };
@@ -80,7 +81,7 @@ const NameArea = styled.div<StatusProps>`
   max-height: ${height(5)};
   margin-left: ${spacing(2)};
   opacity: ${({ status }) => (status === 'loading' ? '0.26' : 1)};
-  color: ${({ theme, status }) => StatusMap[status](theme)};
+  color: ${({ theme, status }) => StatusMap[status || 'normal'](theme)};
 `;
 
 const ActionWrapper = styled.div`
@@ -129,7 +130,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { icon, name, status, onClickDeleteButton } = props;
+  const { icon, name, status, onClickDeleteButton, progress } = props;
   const fileName = truncateLongName(name, MAX_TITLE_LENGTH);
   return (
     <Wrapper>
@@ -140,6 +141,7 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
       <AttachmentItemAction
         onClick={onClickDeleteButton}
         loading={status === 'loading'}
+        value={progress}
         icon="close"
       />
     </Wrapper>

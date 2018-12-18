@@ -63,6 +63,10 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     });
     return result;
   }
+
+  removeFile = async (id: number) => {
+    await this._itemService.cancelUpload(id);
+  }
 }
 
 export { FilesViewModel };

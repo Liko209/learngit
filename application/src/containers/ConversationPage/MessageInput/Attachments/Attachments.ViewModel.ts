@@ -15,7 +15,7 @@ import { ItemService, SENDING_STATUS } from 'sdk/service';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
-import { ItemFile } from 'sdk/src/models';
+import { ItemFile } from 'sdk/models';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {

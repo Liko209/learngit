@@ -5,7 +5,6 @@
  */
 
 import FileItemModel from '../FileItem';
-// import { Item } from 'sdk/src/models';
 
 describe('FileItemModel', () => {
   describe('hasVersions()', () => {
