@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@types/lodash": "4.14.117",
-    "typescript": "3.1.4"
+    "typescript": "3.1.4",
+    "foundation": "0.1.0"
   }
 }
