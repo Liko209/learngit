@@ -7,7 +7,10 @@ import React from 'react';
 import { t } from 'i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
-import { JuiTaskAvatarName } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
+import {
+  JuiTaskAvatarName,
+  JuiTaskContent,
+} from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
   JuiEventCollapse,
   JuiEventCollapseContent,
@@ -65,9 +68,11 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         }
       >
         {key === 'assigned_to_ids' ? (
-          <JuiTaskAvatarName>
-            {this._getTaskAvatarNames(value)}
-          </JuiTaskAvatarName>
+          <JuiTaskContent title={t('assignee')}>
+            <JuiTaskAvatarName>
+              {this._getTaskAvatarNames(value)}
+            </JuiTaskAvatarName>
+          </JuiTaskContent>
         ) : null}
       </TaskUpdateViewCard>
     );
