@@ -28,42 +28,42 @@ class PerformanceDto extends Model<PerformanceDto> {
     @Column({
         allowNull: false,
         field: 'first_contentful_paint',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     firstContentfulPaint: number;
 
     @Column({
         allowNull: false,
         field: 'first_meaningful_paint',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     firstMeaningfulPaint: number;
 
     @Column({
         allowNull: false,
         field: 'speed_index',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     speedIndex: number;
 
     @Column({
         allowNull: false,
         field: 'first_cpu_idle',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     firstCpuIdle: number;
 
     @Column({
         allowNull: false,
         field: 'time_to_interactive',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     timeToInteractive: number;
 
     @Column({
         allowNull: false,
         field: 'estimated_input_latency',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     estimatedInputLatency: number;
 }
@@ -90,23 +90,51 @@ class PerformanceItemDto extends Model<PerformanceItemDto> {
     @Column({
         allowNull: false,
         field: 'index',
-        type: Sequelize.BIGINT
+        type: Sequelize.INTEGER
     })
     index: number;
 
     @Column({
         allowNull: false,
-        field: 'memory',
-        type: Sequelize.BIGINT
+        field: 'url',
+        type: Sequelize.STRING
     })
-    memory: number;
+    url: string;
+
+    @Column({
+        allowNull: false,
+        field: 'js_memory_allocated',
+        type: Sequelize.DECIMAL(10, 2)
+    })
+    jsMemoryAllocated: number;
+
+    @Column({
+        allowNull: false,
+        field: 'js_memory_used',
+        type: Sequelize.DECIMAL(10, 2)
+    })
+    jsMemoryUsed: number;
+
+    @Column({
+        allowNull: false,
+        field: 'private_memory',
+        type: Sequelize.DECIMAL(10, 2)
+    })
+    privateMemory: number;
 
     @Column({
         allowNull: false,
         field: 'cpu',
-        type: Sequelize.BIGINT
+        type: Sequelize.DECIMAL(10, 2)
     })
     cpu: number;
+
+    @Column({
+        allowNull: false,
+        field: 'type',
+        type: Sequelize.STRING
+    })
+    type: string;
 }
 
 export {

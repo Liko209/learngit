@@ -81,20 +81,18 @@ class SceneDto extends Model<SceneDto> {
     pwa: number;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
         field: 'start_time',
     })
-    starteTime?: Date;
+    startTime?: Date;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
         field: 'end_time',
     })
-    endDate?: Date;
+    endTime?: Date;
 }
 
 export {

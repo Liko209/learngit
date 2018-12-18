@@ -5,6 +5,7 @@
 import { SceneConfig } from './config/SceneConfig';
 import * as puppeteer from 'puppeteer';
 import * as lighthouse from 'lighthouse';
+import * as url from 'url';
 import { logUtils } from '../utils/LogUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
@@ -33,22 +34,26 @@ class Scene {
      * @description: run scene. don't override this method
      */
     async run() {
-        const startTime = new Date();
+        try {
+            const startTime = new Date();
 
-        await this.preHandle();
+            await this.preHandle();
 
-        await this.collectData();
+            await this.collectData();
 
-        const endTime = new Date();
-        this.timing = {
-            startTime,
-            endTime,
-            total: endTime.getTime() - startTime.getTime()
+            const endTime = new Date();
+            this.timing = {
+                startTime,
+                endTime,
+                total: endTime.getTime() - startTime.getTime()
+            }
+
+            await this.saveMetircsIntoDisk();
+
+            await this.saveMetircsIntoDb();
+        } catch (err) {
+            this.logger.error(err);
         }
-
-        await this.saveMetircsIntoDisk();
-
-        await this.saveMetircsIntoDb();
     }
 
     /**
@@ -88,32 +93,36 @@ class Scene {
             ]
         });
 
-        const { lhr, artifacts } = await lighthouse(this.finallyUrl(), {
-            port: (new URL(browser.wsEndpoint())).port,
-            logLevel: 'info'
-        }, this.config.toLightHouseConfig());
+        try {
+            const { lhr, artifacts } = await lighthouse(this.finallyUrl(), {
+                port: (new URL(browser.wsEndpoint())).port,
+                logLevel: 'info'
+            }, this.config.toLightHouseConfig());
 
-        lhr['finalUrl'] = this.url;
-        lhr['requestedUrl'] = this.url;
+            lhr['finalUrl'] = this.url;
+            lhr['uri'] = url.parse(this.url).pathname;
+            lhr['aliasUri'] = lhr['uri'];
+            lhr['requestedUrl'] = this.url;
 
-        this.data = lhr;
-        this.report = reportGenerater.generateReport(lhr, 'html');
-        this.artifacts = artifacts;
-
-        await browser.close();
+            this.data = lhr;
+            this.report = reportGenerater.generateReport(lhr, 'html');
+            this.artifacts = artifacts;
+        } catch (err) {
+            this.logger.error(err);
+        } finally {
+            await browser.close();
+        }
     }
 
     /**
      * @description: save performance metrics into db
      */
     async saveMetircsIntoDb() {
-        let { startTime, endTime } = this.timing;
+        let sceneDto = await metriceService.createScene(this.taskDto, this);
 
-        let sceneDto = await metriceService.createScene(this.taskDto, this.data, this.artifacts, startTime, endTime);
+        await metriceService.createPerformance(sceneDto, this);
 
-        await metriceService.createPerformance(sceneDto, this.data, this.artifacts);
-
-        await metriceService.createPerformanceItem(sceneDto, this.data, this.artifacts);
+        await metriceService.createPerformanceItem(sceneDto, this);
     }
 
     /**
@@ -129,6 +138,18 @@ class Scene {
 
     finallyUrl(): string {
         return this.url;
+    }
+
+    getData() {
+        return this.data;
+    }
+
+    getArtifacts() {
+        return this.artifacts;
+    }
+
+    getTiming(): Timing {
+        return this.timing;
     }
 }
 

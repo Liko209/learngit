@@ -35,17 +35,15 @@ class TaskDto extends Model<TaskDto> {
     status: string;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
         field: 'start_time',
     })
     startTime?: Date;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
         field: 'end_time',
     })
     endTime?: Date;
