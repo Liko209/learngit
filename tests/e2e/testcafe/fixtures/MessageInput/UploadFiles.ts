@@ -83,7 +83,6 @@ test(formalName(
       const files2Size = '3.2Kb';
       const filesPath1 = ['../../sources/1.txt'];
       const filesPath2 = ['../../sources/files/1.txt'];
-      const message = uuid();
 
       let teamId;
       await h(t).withLog(`Given I create one new team`, async () => {
@@ -108,11 +107,10 @@ test(formalName(
      });
 
       await h(t).withLog('Then I can send message to this conversation', async () => {
-          await conversationPage.sendMessage(message);
+          await conversationPage.sendMessageWithoutText()
       });
 
       await h(t).withLog('And I can read this message with files from post list', async () => {
-        await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
         await t.expect(conversationPage.fileName.nth(0).withText(fileName).exists).ok();
       });
 
@@ -205,7 +203,11 @@ test.skip(formalName('JPT-499 Can update files when click update the button in t
         await conversationPage.clickUpdateButton();
       });
 
-      await h(t).withLog('And I can send message to this conversation', async () => {
+      await h(t).withLog('Then the file is in the the message attachment ', async () => {
+        await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).ok();
+      });
+
+      await h(t).withLog('When I can send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
     });
 
@@ -227,6 +229,7 @@ test(formalName('JPT-500 Can create files when click create button in the duplic
       user.sdk = await h(t).getSdk(user);
       const teamsSection = app.homePage.messageTab.teamsSection;
       const conversationPage = app.homePage.messageTab.conversationPage;
+      const fileName = '1.txt';
       const file1Size = '0.4Kb';
       const file2Size = '3.2Kb';
       const filesPath1 = ['../../sources/1.txt'];
@@ -259,7 +262,7 @@ test(formalName('JPT-500 Can create files when click create button in the duplic
           await conversationPage.sendMessage(message);
       });
 
-      await h(t).withLog('And upload the file again ', async () => {
+      await h(t).withLog('And upload the same name file to the conversation ', async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
      });
 
@@ -267,8 +270,12 @@ test(formalName('JPT-500 Can create files when click create button in the duplic
           await t.expect(conversationPage.duplicateModal.exists).ok();
       });
 
-      await h(t).withLog('When click create button in the duplicate prompt', async () => {
+      await h(t).withLog('When click Create button in the duplicate prompt', async () => {
         await conversationPage.clickCreateButton();
+      });
+
+      await h(t).withLog('Then the file is in the the message attachment ', async () => {
+        await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).ok();
       });
 
       await h(t).withLog('Then I can send message to this conversation', async () => {
@@ -296,7 +303,6 @@ test.skip(formalName('JPT-512 Can remove files when selected files to conversati
         const conversationPage = app.homePage.messageTab.conversationPage;
         const filesPath = ['../../sources/1.txt'];
         const fileName = '1.txt';
-        const message = uuid();
 
         let teamId;
         await h(t).withLog(`Given I create one new team`, async () => {
@@ -333,7 +339,7 @@ test.skip(formalName('JPT-512 Can remove files when selected files to conversati
         });
 
         await h(t).withLog('When I send message to this conversation', async () => {
-            await conversationPage.sendMessage(message);
+            await conversationPage.sendMessageWithoutText();
          });
 
          await h(t).withLog('Then the file shouldn\'t be sent to the conversation ', async () => {
@@ -382,13 +388,17 @@ test.skip(formalName('JPT-515 The selected files shouldn\'t be in the other conv
           await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).ok();
         });
 
-        await h(t).withLog('WHen open the second conversation', async () => {
+        await h(t).withLog('When open the second conversation', async () => {
             await teamsSection.conversationEntryById(teamId[1]).enter();
          });
 
          await h(t).withLog('Then the file doesn\'t show in the second conversation ', async () => {
             await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).notOk()
         });
+
+        await h(t).withLog('Then I can find "Draft" icon on right of the first conversation name', async () => {
+            await t.expect(teamsSection.conversationEntryById(teamId[0]).hasDraftMessage).ok();
+          });
 
         await h(t).withLog('When back to the first conversation', async () => {
             await teamsSection.conversationEntryById(teamId[0]).enter();

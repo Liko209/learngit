@@ -85,6 +85,12 @@ export class ConversationPage extends BaseConversationPage {
       .click(this.messageInputArea)
       .pressKey('enter');
   }
+  
+  async sendMessageWithoutText() {
+    await this.t
+      .click(this.messageInputArea)
+      .pressKey('enter');
+  }
 
   async favorite() {
     await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
