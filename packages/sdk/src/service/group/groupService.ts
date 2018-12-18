@@ -143,11 +143,12 @@ class GroupService extends BaseService<Group> {
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userId = profile ? profile.creator_id : undefined;
+      const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.isCacheInitialized()) {
         result = await this.getEntitiesFromCache(
           (item: Group) =>
             !item.is_archived &&
-            groupType === GROUP_QUERY_TYPE.TEAM &&
+            item.is_team === isTeam &&
             !excludeIds.includes(item.id) &&
             (userId ? item.members.includes(userId) : true),
         );
@@ -158,7 +159,7 @@ class GroupService extends BaseService<Group> {
         result = await dao.queryGroups(
           offset,
           Infinity,
-          groupType === GROUP_QUERY_TYPE.TEAM,
+          isTeam,
           excludeIds,
           userId,
         );
