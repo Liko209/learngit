@@ -69,8 +69,8 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
     });
 
 
-test.only(formalName(
-    'JPT-457 Will show the prompt when re-upload an existing file in the conversation;JPT-498 Can cancel when clicking cancel button in the duplicate prompt;Can cancel files in the duplicate prompt when the same name is in the attachment',
+test(formalName(`JPT-457 Will show the prompt when re-upload an existing file in the conversation;
+    JPT-498 Can cancel when clicking cancel button in the duplicate prompt;Can cancel files in the duplicate prompt when the same name is in the attachment`,
     ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-457', 'JPT-498','JPT-534']), async t => {
       const app = new AppRoot(t);
       const users = h(t).rcData.mainCompany.users;
@@ -248,6 +248,79 @@ test.skip(formalName('JPT-499 Can update files when click update the button in t
       });
 
     });
+
+    // TODO bugid: fiji-2340
+test.only(formalName('JPT-532 Can update files in the duplicate prompt when the same name is in the attachment',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-532']), async t => {
+        const app = new AppRoot(t);
+        const users = h(t).rcData.mainCompany.users;
+        const user = users[0];
+        user.sdk = await h(t).getSdk(user);
+        const teamsSection = app.homePage.messageTab.teamsSection;
+        const conversationPage = app.homePage.messageTab.conversationPage;
+        const fileName = '1.txt';
+        const filesPath1 = ['../../sources/1.txt'];
+        const filesPath2 = ['../../sources/files/1.txt'];
+        const files1Size = '0.4Kb';
+        const files2Size = '3.2Kb';
+        const message = uuid();
+        const V2 = 'uploaded version 2';
+  
+        let teamId;
+        await h(t).withLog(`Given I create one new teams`, async () => {
+            teamId = (await user.sdk.platform.createGroup({
+                type: 'Team',
+                name: uuid(),
+                members: [user.rcId, users[5].rcId],
+            })).data.id;
+        });
+  
+        await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
+            await h(t).directLoginWithUser(SITE_URL, user);
+            await app.homePage.ensureLoaded();
+        });
+  
+        await h(t).withLog('And open the created conversation', async () => {
+           await teamsSection.conversationEntryById(teamId).enter();
+        });
+  
+        await h(t).withLog(`And upload one file to the message attachment in the created conversation,size=${files1Size} `, async () => {
+          await conversationPage.uploadFilesToMessageAttachment(filesPath1);
+      });
+
+      await h(t).withLog('Then the file count should be one in the attachment ', async () => {
+        await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
+      });
+  
+        await h(t).withLog(`When upload the same name file to the conversation,size=${files2Size} `, async () => {
+            await t.wait(5e3);
+            await conversationPage.uploadFilesToMessageAttachment(filesPath2);
+       });
+  
+        await h(t).withLog('Then will show a duplicate prompt ', async () => {
+            await t.expect(conversationPage.duplicateModal.exists).ok();
+        });
+  
+        await h(t).withLog('When click update button in the duplicate prompt', async () => {
+          await conversationPage.clickUpdateButton();
+        });
+  
+        await h(t).withLog('Then the file count should be one in the attachment ', async () => {
+          await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
+        });
+  
+        await h(t).withLog('When I can send message to this conversation', async () => {
+          await conversationPage.sendMessage(message);
+      });
+  
+        await h(t).withLog('Then updated to version2', async () => {
+          t.expect(conversationPage.conversationCard.withText(V2).exists).ok();
+        });
+  
+        await h(t).withLog(`And the sent file size should be ${files2Size}`, async () => {
+          await t.expect(conversationPage.previewFileSize.nth(0).withText(files2Size).exists).ok();
+        });
+  
+      });
 
 test(formalName('JPT-500 Can create files when click create button in the duplicate prompt',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-500']), async t => {
       const app = new AppRoot(t);
