@@ -54,10 +54,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         this.forceSaveDraft();
       },
     );
-    // @ts-ignore
-    window.vm = this;
-    // @ts-ignore
-    window.getEntity = getEntity;
   }
 
   private _isEmpty = (content: string) => {
