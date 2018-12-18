@@ -57,14 +57,13 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
         await h(t).withLog('And I can read this message with files from post list', async () => {
             await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
             for (let i = 0; i < filesNames.length; i++) {
-              await t.expect(conversationPage.fileName.nth(i).withText(filesNames[i]).exists).ok();
+              await t.expect(conversationPage.fileName.withText(filesNames[i]).exists).ok();
             }
         }, true);
 
-        // todo the uploaded file will show at the top???? ====need pm confirm
         await h(t).withLog(`And the sent files size should be correct `, async () => {
             for (let i = 0; i < filesNames.length; i++) {
-                await t.expect(conversationPage.previewFileSize.nth(i).withText(filesSize[i]).exists).ok();
+                await t.expect(conversationPage.previewFileSize.withText(filesSize[i]).exists).ok();
               }
           });
     });
