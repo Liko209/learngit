@@ -5,7 +5,7 @@
  */
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiIconography } from '../../foundation/Iconography';
+import { JuiIconButton } from '../../components/Buttons/IconButton';
 import { width, height, spacing, grey } from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
 
@@ -123,14 +123,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     onLinkItemClose && onLinkItemClose(event);
   }
   render() {
-    const {
-      title,
-      summary,
-      thumbnail,
-      url,
-      favicon,
-      faviconName,
-    } = this.props;
+    const { title, summary, thumbnail, url, favicon, faviconName } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
@@ -149,7 +142,13 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
               <FaviconName>{faviconName}</FaviconName>
             </FaviconWrapper>
           </TitleWithSummary>
-          <JuiIconography onClick={this.onLinkItemClose}>close</JuiIconography>
+          <JuiIconButton
+            disableToolTip={true}
+            variant="plain"
+            onClick={this.onLinkItemClose}
+          >
+            close
+          </JuiIconButton>
         </LinkItemContents>
       </LinkItemsWrapper>
     );
