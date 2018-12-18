@@ -14,7 +14,7 @@ type MessageInputViewProps = {
   draft: string;
   error: string;
   forceSaveDraft(): void;
-  changeDraft(value: any): void;
+  contentChange(draft: string): void;
   keyboardEventHandler: {
     enter: {
       key: number;
