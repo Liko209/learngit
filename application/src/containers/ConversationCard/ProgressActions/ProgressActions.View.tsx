@@ -22,12 +22,12 @@ type States = {
 
 @observer
 class ProgressActionsViewComponent extends Component<Props, States> {
-  timer: NodeJS.Timer;
   state: States = {
     postStatus: POST_STATUS.SUCCESS,
   };
+  private _timer: NodeJS.Timer;
 
-  delete = () => {
+  private _deletePost = () => {
     const { deletePost, t } = this.props;
     JuiModal.confirm({
       title: t('deletePostTitle'),
@@ -44,13 +44,13 @@ class ProgressActionsViewComponent extends Component<Props, States> {
     });
   }
 
-  resend = async () => {
+  private _resendPost = async () => {
     try {
       await this.props.resend();
     } catch (e) {}
   }
 
-  renderLoading = () => {
+  private _renderLoading = () => {
     const { postStatus } = this.state;
     if (postStatus === POST_STATUS.INPROGRESS) {
       return <JuiCircularProgress size={12} />;
@@ -58,7 +58,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
     return null;
   }
 
-  renderResend = () => {
+  private _renderResend = () => {
     const { postStatus } = this.state;
     const { t } = this.props;
     if (postStatus === POST_STATUS.FAIL) {
@@ -66,7 +66,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
         <JuiIconButton
           variant="plain"
           tooltipTitle={t('resendPost')}
-          onClick={this.resend}
+          onClick={this._resendPost}
           size="small"
           color="semantic.negative"
         >
@@ -77,7 +77,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
     return null;
   }
 
-  renderDelete = () => {
+  private _renderDelete = () => {
     const { postStatus } = this.state;
     const { t } = this.props;
     if (postStatus === POST_STATUS.FAIL) {
@@ -85,7 +85,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
         <JuiIconButton
           variant="plain"
           tooltipTitle={t('deletePost')}
-          onClick={this.delete}
+          onClick={this._deletePost}
           size="small"
         >
           delete
@@ -95,13 +95,13 @@ class ProgressActionsViewComponent extends Component<Props, States> {
     return null;
   }
 
-  setPostStatus = () => {
+  private _setPostStatus = () => {
     const { status } = this.props.post;
-    clearTimeout(this.timer);
+    clearTimeout(this._timer);
     if (status === POST_STATUS.INPROGRESS) {
-      this.timer = setTimeout(() => {
+      this._timer = setTimeout(() => {
         this.setState({ postStatus: status });
-      },                      500);
+      },                       500);
     } else {
       this.setState({ postStatus: status });
     }
@@ -109,24 +109,24 @@ class ProgressActionsViewComponent extends Component<Props, States> {
 
   componentDidUpdate() {
     if (this.props.post.status !== this.state.postStatus) {
-      this.setPostStatus();
+      this._setPostStatus();
     }
   }
 
   componentDidMount() {
-    this.setPostStatus();
+    this._setPostStatus();
   }
 
   componentWillUnmount() {
-    clearTimeout(this.timer);
+    clearTimeout(this._timer);
   }
 
   render() {
     return (
       <JuiActions>
-        {this.renderLoading()}
-        {this.renderResend()}
-        {this.renderDelete()}
+        {this._renderLoading()}
+        {this._renderResend()}
+        {this._renderDelete()}
       </JuiActions>
     );
   }
