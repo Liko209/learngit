@@ -4,23 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
+import { AbstractHandleType } from 'foundation';
 
-import {
-  IRequest,
-  ITokenHandler,
-  AbstractHandleType,
-  NETWORK_VIA,
-} from 'foundation';
-
-const HandleByCustom = new class extends AbstractHandleType {
-  defaultVia = NETWORK_VIA.HTTP;
-  survivalModeSupportable = true;
-  requestDecoration(tokenHandler: ITokenHandler) {
-    return (request: IRequest) => {
-      return request;
-    };
-  }
-}();
+const HandleByCustom = new class extends AbstractHandleType {}();
 
 export default HandleByCustom;

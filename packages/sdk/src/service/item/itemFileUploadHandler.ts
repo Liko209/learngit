@@ -169,7 +169,7 @@ class ItemFileUploadHandler {
     }
   }
 
-  private _fillPolicyDataToFile(
+  private _createFromDataWithPolicyData(
     formFile: FormData,
     extendFileData: AmazonFileUploadPolicyData,
   ) {
@@ -191,13 +191,15 @@ class ItemFileUploadHandler {
     itemId: number,
     requestHolder: RequestHolder,
   ) {
-    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
-    return await ItemAPI.requestAmazonFilePolicy({
-      size: file.size,
-      filename: file.name,
-      for_file_type: true,
-      filetype: file.type,
-    });
+    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE);
+    return !file
+      ? null
+      : await ItemAPI.requestAmazonFilePolicy({
+        size: file.size,
+        filename: file.name,
+        for_file_type: true,
+        filetype: file.type,
+      });
   }
 
   private async _uploadFileToAmazonS3(
@@ -217,7 +219,10 @@ class ItemFileUploadHandler {
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
-      const newFormData = this._fillPolicyDataToFile(formFile, extendFileData);
+      const newFormData = this._createFromDataWithPolicyData(
+        formFile,
+        extendFileData,
+      );
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         newFormData,
@@ -227,9 +232,11 @@ class ItemFileUploadHandler {
         requestHolder,
       );
       if (uploadResponse.isOk()) {
-        const storedFile = extendFileData.stored_file;
-        await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
-        await this._uploadItem(groupId, preInsertItem, isUpdate);
+        this._onUploadFileSuccess(
+          extendFileData.stored_file,
+          preInsertItem,
+          isUpdate,
+        );
       } else {
         this._handleItemFileSendFailed(itemId, uploadResponse);
       }
@@ -255,13 +262,25 @@ class ItemFileUploadHandler {
     );
 
     if (uploadRes.isOk()) {
-      const storedFile = uploadRes.unwrap()[0];
-      await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
-      await this._uploadItem(groupId, preInsertItem, isUpdate);
+      await this._onUploadFileSuccess(
+        uploadRes.unwrap()[0],
+        preInsertItem,
+        isUpdate,
+      );
     } else {
       this._handleItemFileSendFailed(preInsertItem.id, uploadRes);
       mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
     }
+  }
+
+  private async _onUploadFileSuccess(
+    storedFile: StoredFile,
+    preInsertItem: ItemFile,
+    isUpdate: boolean,
+  ) {
+    const groupId = preInsertItem.group_ids[0];
+    await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
+    await this._uploadItem(groupId, preInsertItem, isUpdate);
   }
 
   private _shouldUploadToAmazonS3() {

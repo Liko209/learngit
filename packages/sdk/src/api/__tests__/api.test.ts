@@ -45,4 +45,12 @@ describe('Api', () => {
       expect(Api.uploadNetworkClient).toBeInstanceOf(NetworkClient);
     });
   });
+
+  describe('custom network client', () => {
+    it('customNetworkClient()', () => {
+      const host = 'www.rc.com';
+      const customNetworkClient = Api.customNetworkClient(host);
+      expect(customNetworkClient).toBeInstanceOf(NetworkClient);
+    });
+  });
 });
