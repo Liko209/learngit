@@ -108,7 +108,6 @@ const ListLink = styled.a`
   text-decoration: none;
   &&&:active {
     opacity: ${({ theme }) => 1 - 2 * theme.palette.action.hoverOpacity};
-    span,
     .nav-icon,
     .nav-text span {
       color: ${palette('primary', 'main')}; // RC Blue
@@ -130,6 +129,7 @@ const ListLink = styled.a`
 `;
 
 const UmiWrapper = styled<{ expand: boolean }, 'div'>('div')`
+  display: flex;
   position: ${props => (!props.expand ? 'absolute' : 'static')};
   top: ${props => (!props.expand ? spacing(1) : '')};
   left: ${props => (!props.expand ? spacing(8) : '')};
