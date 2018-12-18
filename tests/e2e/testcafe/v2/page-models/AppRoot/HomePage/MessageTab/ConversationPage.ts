@@ -153,12 +153,8 @@ export class ConversationPage extends BaseConversationPage {
     return this.t.setFilesToUpload(selector, filesPath);
   }
 
-  async uploadFilesToMessageFilesArea(filesPath: Array<string>) {
+  async uploadFilesToMessageAttachment(filesPath: Array<string>) {
     await this.uploadFiles(this.uploadFileInput, filesPath);
-  }
-
-  async uploadFilesToConversation(filesPath: Array<string>) {
-    await this.uploadFiles(this.streamWrapper, filesPath);
   }
 
   async clickCancelButton(){
