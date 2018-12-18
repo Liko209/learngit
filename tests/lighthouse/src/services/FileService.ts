@@ -39,6 +39,7 @@ class FileService {
         names.sort();
 
         html = html.replace('$$FILE_LIST$$', JSON.stringify(names));
+        html = html.replace('$$DASHBOARD_URL$$', process.env.DASHBOARD_URL);
 
         let indexPath = `${REPORT_DIR_PATH}/index.html`;
 
