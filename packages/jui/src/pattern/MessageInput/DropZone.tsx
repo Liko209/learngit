@@ -5,32 +5,44 @@
  */
 
 import React, { CSSProperties, Component } from 'react';
-
+import { withTheme } from 'styled-components';
 import {
   DropTarget,
   DropTargetConnector,
   ConnectDropTarget,
   DropTargetMonitor,
 } from 'react-dnd';
+import { ThemeProps } from '../../foundation/theme/theme';
+import { grey, palette } from '../../foundation/utils/styles';
 
 type DropZoneProps = {
   dropzoneClass?: CSSProperties;
 };
 
 class TargetBox extends Component<
-  ITargetBoxProps & ITargetBoxCollectedProps & DropZoneProps
+  ITargetBoxProps & ITargetBoxCollectedProps & DropZoneProps & ThemeProps
 > {
   render() {
-    const { isOver, connectDropTarget, dropzoneClass, children } = this.props;
+    const {
+      isOver,
+      connectDropTarget,
+      dropzoneClass,
+      children,
+      theme,
+    } = this.props;
     const style: CSSProperties = {
-      border: isOver ? '2px dotted #ff8800' : 'none',
-      background: isOver ? '#eee' : 'transparent',
-      opacity: isOver ? 0.24 : 1,
+      border: isOver
+        ? `2px dotted ${palette('secondary', '600')({ theme })}`
+        : 'none',
+      background: isOver ? grey('200')({ theme }) : 'transparent',
+      opacity: isOver ? theme.palette.action.hoverOpacity * 2 : 1,
       ...dropzoneClass,
     };
     return connectDropTarget(<div style={style}>{children}</div>);
   }
 }
+
+const ThemedBox = withTheme(TargetBox);
 
 const boxTarget = {
   drop(props: ITargetBoxProps, monitor: DropTargetMonitor) {
@@ -62,6 +74,6 @@ const DropZone = DropTarget<
     isOver: monitor.isOver(),
     canDrop: monitor.canDrop(),
   }),
-)(TargetBox);
+)(ThemedBox);
 
 export { DropZone, DropZoneProps };
