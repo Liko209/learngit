@@ -104,16 +104,13 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     searchTerm: string,
     denotationChar: string,
   ) => {
-    if (!this.isEditMode) {
+    if (searchTerm !== undefined) {
       this.searchTerm =
         this.searchTerm === searchTerm ? `${searchTerm} ` : searchTerm;
     }
     if (!match) {
       this.open = false;
       return;
-    }
-    if (this.isEditMode) {
-      this.searchTerm = searchTerm;
     }
     this.open = true;
     this._denotationChar = denotationChar;
