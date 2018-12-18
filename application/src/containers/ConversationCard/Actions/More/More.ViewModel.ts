@@ -25,12 +25,14 @@ enum PERMISSION_ENUM {
 
 class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  // use currentGroupId === 0 to judge is on Bookmarks/Mentions page
+  private _currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
 
   @computed
   get permissionsMap() {
     return {
       [MENU_LIST_ITEM_TYPE.QUOTE]: {
-        permission: this._canPost,
+        permission: this._canPost && this._excludeBookmarksOrMentionsPage,
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
@@ -73,6 +75,11 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
       return true;
     }
     return true;
+  }
+
+  @computed
+  private get _excludeBookmarksOrMentionsPage() {
+    return this._currentGroupId !== 0;
   }
 
   @computed
