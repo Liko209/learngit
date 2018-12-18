@@ -57,7 +57,7 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
         await h(t).withLog('And I can read this message with files from post list', async () => {
             await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
             for (let i = 0; i < filesNames.length; i++) {
-              await t.expect(conversationPage.fileName.withText(filesNames[i]).exists).ok();
+              await t.expect(conversationPage.fileNameOnPost.withText(filesNames[i]).exists).ok();
             }
         }, true);
 
@@ -104,24 +104,43 @@ test(formalName(
 
       await h(t).withLog('And upload one file to the message attachment in the created conversation ', async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath1);
+      });
+
+      await h(t).withLog('Then the file is in the the message attachment ', async () => {
+        await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).ok();
+      });
+
+      await h(t).withLog('And upload the same name file to the message attachment in the created conversation ', async () => {
+        await t.wait(5e3),
+        await conversationPage.uploadFilesToMessageAttachment(filesPath2);
      });
 
-      await h(t).withLog('Then I can send message to this conversation', async () => {
+     // case JPT-457   Entry1
+      await h(t).withLog('Then will show a duplicate prompt ', async () => {
+          await t.expect(conversationPage.duplicateModal.exists).ok();
+      });
+
+      await h(t).withLog('When click cancel button in the duplicate prompt', async () => {
+        await conversationPage.clickCancelButton();
+      });
+
+      await h(t).withLog('When I send message to this conversation', async () => {
           await conversationPage.sendMessageWithoutText()
       });
 
       await h(t).withLog('And I can read this message with files from post list', async () => {
-        await t.expect(conversationPage.fileName.nth(0).withText(fileName).exists).ok();
+        await t.expect(conversationPage.fileNameOnPost.nth(0).withText(fileName).exists).ok();
       });
 
       await h(t).withLog(`And the sent files size=${files1Size} `, async () => {
         await t.expect(conversationPage.previewFileSize.nth(0).withText(files1Size).exists).ok();
       });
 
-      await h(t).withLog('And upload the same name file to the message attachment in the created conversation ', async () => {
+      await h(t).withLog('And upload the same name file to the message attachment in the conversation ', async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
     });
 
+     // case JPT-457   Entry2
       await h(t).withLog('Then will show a duplicate prompt ', async () => {
           await t.expect(conversationPage.duplicateModal.exists).ok();
       });
@@ -184,7 +203,7 @@ test.skip(formalName('JPT-499 Can update files when click update the button in t
 
       await h(t).withLog('Then I can read this message with files from post list', async () => {
         await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
-        await t.expect(conversationPage.fileName.nth(0).withText(fileName).exists).ok();
+        await t.expect(conversationPage.fileNameOnPost.nth(0).withText(fileName).exists).ok();
       });
 
       await h(t).withLog(`And the sent files size should be correct `, async () => {
