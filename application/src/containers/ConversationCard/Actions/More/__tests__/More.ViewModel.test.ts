@@ -19,7 +19,7 @@ const mockGlobalValue = {
 
 describe('MoreVM', () => {
   describe('permissionsMap for quote', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.resetAllMocks();
     });
     it('should display Quote option on more actions in Group [JPT-443]', () => {
@@ -99,7 +99,7 @@ describe('MoreVM', () => {
     });
   });
   describe('permissionsMap for delete', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.resetAllMocks();
     });
     it('should display Delete option on more actions with post by me condition [JPT-466]', () => {
@@ -143,7 +143,7 @@ describe('MoreVM', () => {
     });
   });
   describe('permissionsMap for edit', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.resetAllMocks();
     });
     it('should display Edit post option on more actions with post by me condition in Group [JPT-477]', () => {
@@ -232,7 +232,7 @@ describe('MoreVM', () => {
     });
   });
   describe('showMoreAction()', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.resetAllMocks();
     });
     it('should show quote & delete & edit action buttons [JPT-440, JPT-475, JPT-482, JPT-472]', () => {
@@ -249,7 +249,7 @@ describe('MoreVM', () => {
   });
 
   describe('_isEventOrTask()', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       jest.resetAllMocks();
     });
     it('should not show quote action button in task [JPT-514]', () => {
