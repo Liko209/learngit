@@ -9,7 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 // import { service } from 'sdk';
 import { Post, Group } from 'sdk/models';
-import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
+import { TypeDictionary } from 'sdk/utils';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
@@ -62,15 +62,11 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   private get _isEventOrTask() {
-    const { existItemIds } = this._post;
+    const { itemTypeIds } = this._post;
     return (
-      existItemIds &&
-      existItemIds.length > 0 &&
-      existItemIds.every((id: number) =>
-        [TypeDictionary.TYPE_ID_TASK, TypeDictionary.TYPE_ID_EVENT].includes(
-          GlipTypeUtil.extractTypeId(id),
-        ),
-      )
+      itemTypeIds &&
+      (!!itemTypeIds[TypeDictionary.TYPE_ID_TASK] ||
+        !!itemTypeIds[TypeDictionary.TYPE_ID_EVENT])
     );
   }
 

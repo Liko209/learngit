@@ -8,7 +8,7 @@ import { MoreViewModel } from '../More.ViewModel';
 import { MENU_LIST_ITEM_TYPE } from '../types';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
+import { TypeDictionary } from 'sdk/utils';
 jest.mock('../../../../../store/utils');
 jest.mock('sdk/utils');
 
@@ -255,13 +255,11 @@ describe('MoreVM', () => {
     it('should not show quote action button in task [JPT-514]', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.POST) {
-          return { existItemIds: [1] };
+          return { itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] } };
         }
         return null;
       });
-      (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
-        TypeDictionary.TYPE_ID_TASK,
-      );
+
       ViewModel = new MoreViewModel({ id: 1 });
 
       expect(ViewModel._isEventOrTask).toBe(true);
@@ -270,13 +268,11 @@ describe('MoreVM', () => {
     it('should not show quote action button in event [JPT-514]', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.POST) {
-          return { existItemIds: [1] };
+          return { itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] } };
         }
         return null;
       });
-      (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
-        TypeDictionary.TYPE_ID_EVENT,
-      );
+
       ViewModel = new MoreViewModel({ id: 1 });
 
       expect(ViewModel._isEventOrTask).toBe(true);
