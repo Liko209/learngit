@@ -241,7 +241,7 @@ describe('ItemFileService', () => {
       },         1000);
     });
 
-    it('should not handle failed result when the request is failed because of the user canceled it.  ', async (done: jest.DoneCallback) => {
+    it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
       const errRes = new ApiResultErr(new BaseError(1, 'error'), {
         status: 403,
         statusText: NETWORK_FAIL_TYPE.CANCELLED,
@@ -249,10 +249,6 @@ describe('ItemFileService', () => {
       } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(errRes);
       itemService.handlePartialUpdate = jest.fn();
-
-      jest
-        .spyOn(itemFileUploadHandler, '_preSaveItemFile')
-        .mockImplementation(() => {});
 
       jest
         .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')

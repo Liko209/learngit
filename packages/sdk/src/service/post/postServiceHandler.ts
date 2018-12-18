@@ -2,6 +2,7 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-08 11:15:48
  */
+import _ from 'lodash';
 import { daoManager, AccountDao, PostDao } from '../../dao';
 import {
   ACCOUNT_USER_ID,
@@ -9,7 +10,7 @@ import {
 } from '../../dao/account/constants';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
-import { Post } from '../../models';
+import { Post, ItemFile } from '../../models';
 import { RawPostInfo } from './types';
 import { POST_STATUS } from '../constants';
 import ItemService from '../item';
@@ -78,16 +79,27 @@ class PostServiceHandler {
     return links;
   }
 
-  static async buildVersionMap(
-    updateItems?: number[],
-  ): Promise<ItemData | undefined> {
-    if (updateItems) {
+  static buildVersionMap(
+    groupId: number,
+    itemIds: number[],
+  ): ItemData | undefined {
+    if (itemIds && itemIds.length > 0) {
       const itemData: ItemData = { version_map: {} };
       const itemService: ItemService = ItemService.getInstance();
-      const promises = updateItems.map(id => itemService.getItemVersion(id));
-      const versions = await Promise.all(promises);
-      for (let i = 0; i < updateItems.length; i++) {
-        itemData.version_map[updateItems[i]] = versions[i];
+      const uploadFiles = itemService.getUploadItems(groupId);
+      const needCheckItemFiles = _.intersectionWith(
+        uploadFiles,
+        itemIds,
+        (itemFile: ItemFile, id: number) => {
+          return id === itemFile.id;
+        },
+      );
+      if (needCheckItemFiles.length > 0) {
+        needCheckItemFiles.forEach((itemFile: ItemFile) => {
+          if (itemFile && !itemFile.is_new && itemFile.versions.length > 0) {
+            itemData.version_map[itemFile.id] = itemFile.versions.length;
+          }
+        });
       }
       return itemData;
     }
@@ -130,10 +142,17 @@ class PostServiceHandler {
       activity_data: {},
     };
 
-    const itemData = await PostServiceHandler.buildVersionMap(params.updateIds);
-    if (itemData) {
-      buildPost.item_data = itemData;
+    if (params.groupId && params.itemIds && params.itemIds.length > 0) {
+      const itemData = PostServiceHandler.buildVersionMap(
+        params.groupId,
+        params.itemIds,
+      );
+
+      if (itemData) {
+        buildPost.item_data = itemData;
+      }
     }
+
     return buildPost;
   }
 

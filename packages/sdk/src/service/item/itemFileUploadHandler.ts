@@ -30,13 +30,8 @@ class ItemFileUploadHandler {
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
     if (file.has(FILE_FORM_DATA_KEYS.FILE)) {
-      const itemFile = this._toItemFile(
-        groupId,
-        file,
-        isUpdate,
-        SENDING_STATUS.INPROGRESS,
-      );
-      await this._preSaveItemFile(itemFile);
+      const itemFile = this._toItemFile(groupId, file, isUpdate);
+      await this._preSaveItemFile(itemFile, file);
       this._sendItemFile(groupId, itemFile, file, isUpdate);
       return itemFile;
     }
@@ -44,16 +39,12 @@ class ItemFileUploadHandler {
   }
 
   async resendFailedFile(itemId: number) {
+    this._updateFileProgress(itemId, SENDING_STATUS.INPROGRESS);
+
     const itemDao = daoManager.getDao(ItemDao);
     const itemInDB = (await itemDao.get(itemId)) as ItemFile;
     let sendFailed = false;
     if (itemInDB) {
-      await this._partialUpdateItemFile({
-        id: itemInDB.id,
-        _id: itemInDB.id,
-        status: SENDING_STATUS.INPROGRESS,
-      });
-
       const groupId = itemInDB.group_ids[0];
       const isUpdate = itemInDB.is_new;
       const version = itemInDB.versions[0];
@@ -139,10 +130,24 @@ class ItemFileUploadHandler {
     return result;
   }
 
-  private _updateFailedFIleProgress(failedItemId: number) {
+  private _updateFileProgress(failedItemId: number, status: SENDING_STATUS) {
     const info = this._progressCaches.get(failedItemId);
     if (info && info.progress) {
-      info.progress.loaded = -1;
+      let loaded = info.progress.loaded;
+      switch (status) {
+        case SENDING_STATUS.FAIL:
+          loaded = -1;
+          break;
+        case SENDING_STATUS.INPROGRESS:
+          loaded = 0;
+          break;
+        case SENDING_STATUS.SUCCESS:
+          loaded = info.progress.total;
+          break;
+        default:
+          break;
+      }
+      info.progress.loaded = loaded;
     }
   }
 
@@ -154,31 +159,20 @@ class ItemFileUploadHandler {
     notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
   }
 
+  private _getRequestHolder(preInsertItemId: number) {
+    const uploadInfo = this._progressCaches.get(
+      preInsertItemId,
+    ) as ItemFileUploadStatus;
+    return uploadInfo.requestHolder;
+  }
+
   private async _sendItemFile(
     groupId: number,
     preInsertItem: ItemFile,
     file: FormData,
     isUpdate: boolean,
   ) {
-    const requestHolder: RequestHolder = { request: undefined };
-    const progress = {
-      id: preInsertItem.id,
-      total: 0,
-      loaded: 0,
-    };
-
-    const status = this._progressCaches.get(preInsertItem.id);
-    if (status) {
-      status.requestHolder = requestHolder;
-      status.progress = progress;
-      status.file = file;
-    } else {
-      this._progressCaches.set(preInsertItem.id, {
-        requestHolder,
-        progress,
-        file,
-      });
-    }
+    const requestHolder = this._getRequestHolder(preInsertItem.id);
 
     const uploadRes = await ItemAPI.uploadFileItem(
       file,
@@ -310,15 +304,9 @@ class ItemFileUploadHandler {
       return;
     }
 
-    this._updateFailedFIleProgress(preInsertId);
+    this._updateFileProgress(preInsertId, SENDING_STATUS.FAIL);
 
     this._emitItemFileStatus(false, preInsertId, preInsertId);
-
-    this._partialUpdateItemFile({
-      id: preInsertId,
-      _id: preInsertId,
-      status: SENDING_STATUS.FAIL,
-    });
   }
 
   private _partialUpdateItemFile(updateData: object) {
@@ -343,15 +331,47 @@ class ItemFileUploadHandler {
     };
   }
 
-  private async _preSaveItemFile(newItemFile: ItemFile) {
-    const groupId = newItemFile.group_ids[0];
+  private _saveItemFileToUploadingFiles(preInsertItem: ItemFile) {
+    const groupId = preInsertItem.group_ids[0];
     let existFiles: ItemFile[] | undefined = this._uploadingFiles.get(groupId);
     if (existFiles && existFiles.length > 0) {
-      existFiles.push(newItemFile);
+      existFiles.push(preInsertItem);
     } else {
-      existFiles = [newItemFile];
+      existFiles = [preInsertItem];
     }
     this._uploadingFiles.set(groupId, existFiles);
+  }
+
+  private _saveItemFileToProgressCache(
+    preInsertItem: ItemFile,
+    formFile: FormData,
+  ) {
+    const requestHolder: RequestHolder = { request: undefined };
+    const progress = {
+      id: preInsertItem.id,
+      total: 0,
+      loaded: 0,
+    };
+
+    const preInsertItemId = preInsertItem.id;
+    const status = this._progressCaches.get(preInsertItemId);
+    if (status) {
+      status.requestHolder = requestHolder;
+      status.progress = progress;
+      status.file = formFile;
+    } else {
+      this._progressCaches.set(preInsertItemId, {
+        requestHolder,
+        progress,
+        file: formFile,
+      });
+    }
+  }
+
+  private async _preSaveItemFile(newItemFile: ItemFile, formFile: FormData) {
+    this._saveItemFileToUploadingFiles(newItemFile);
+    this._saveItemFileToProgressCache(newItemFile, formFile);
+
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(newItemFile);
   }
@@ -360,7 +380,6 @@ class ItemFileUploadHandler {
     groupId: number,
     formFile: FormData,
     isNew: boolean,
-    sendStatus: SENDING_STATUS,
   ): ItemFile {
     const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     const accountService: AccountService = AccountService.getInstance();
@@ -370,7 +389,6 @@ class ItemFileUploadHandler {
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {
       id,
-      sendStatus,
       created_at: now,
       modified_at: now,
       creator_id: userId,
