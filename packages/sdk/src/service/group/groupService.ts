@@ -100,7 +100,7 @@ class GroupService extends BaseService<Group> {
       if (this.isCacheInitialized()) {
         return await this.getMultiEntitiesFromCache(
           favoriteGroupIds,
-          (item: Group) => !item.is_archived,
+          (item: Group) => this.isValid(item),
         );
       }
       const dao = daoManager.getDao(GroupDao);
@@ -125,8 +125,8 @@ class GroupService extends BaseService<Group> {
       result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       if (this.isCacheInitialized()) {
-        result = await this.getEntitiesFromCache(
-          (item: Group) => !item.is_archived,
+        result = await this.getEntitiesFromCache((item: Group) =>
+          this.isValid(item),
         );
         result = _.orderBy(
           result,
@@ -147,7 +147,7 @@ class GroupService extends BaseService<Group> {
       if (this.isCacheInitialized()) {
         result = await this.getEntitiesFromCache(
           (item: Group) =>
-            !item.is_archived &&
+            this.isValid(item) &&
             item.is_team === isTeam &&
             !excludeIds.includes(item.id) &&
             (userId ? item.members.includes(userId) : true),
@@ -174,8 +174,8 @@ class GroupService extends BaseService<Group> {
     mainLogger.debug(`get last ${n} groups`);
     let result: Group[] = [];
     if (this.isCacheInitialized()) {
-      result = await this.getEntitiesFromCache(
-        (item: Group) => !item.is_archived,
+      result = await this.getEntitiesFromCache((item: Group) =>
+        this.isValid(item),
       );
       result = _.orderBy(
         result,
@@ -688,7 +688,7 @@ class GroupService extends BaseService<Group> {
     if (this.isCacheInitialized()) {
       return await this.getEntitiesFromCache(
         (item: Group) =>
-          !item.is_archived &&
+          this.isValid(item) &&
           !item.is_team &&
           item.members &&
           item.members.sort().toString() === ids.sort().toString(),
@@ -783,7 +783,7 @@ class GroupService extends BaseService<Group> {
   }
 
   public isValid(group: Group) {
-    return !group.is_archived && !group.deactivated && group.members;
+    return !group.is_archived && !group.deactivated && group.members.length > 0;
   }
 
   private _getTeamAdmins(permission?: TeamPermission) {

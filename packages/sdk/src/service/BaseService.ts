@@ -55,7 +55,7 @@ class BaseService<
   }
 
   async getById(id: number): Promise<SubModel | null> {
-    let result = null;
+    let result: SubModel | null = null;
     if (this.isCacheInitialized()) {
       result = this._cachedManager.getEntity(id);
     } else {
