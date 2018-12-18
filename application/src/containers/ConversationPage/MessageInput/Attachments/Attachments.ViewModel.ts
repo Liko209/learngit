@@ -51,7 +51,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
           const { ids, entities } = data.body;
           ids.forEach((looper: number) => {
             const record = this.items.get(looper);
-            if (record) {
+            if (record && record.item.group_ids.includes(this.id)) {
               this.items.delete(looper);
               const newItem: ItemFile = entities.get(looper);
               this.items.set(newItem.id, {
@@ -92,6 +92,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   reloadFiles = () => {
+    this.items.clear();
     const result: ItemFile[] = this._itemService.getUploadItems(this.id);
     if (result && result.length > 0) {
       result.forEach((element: ItemFile) => {
