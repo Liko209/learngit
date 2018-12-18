@@ -17,9 +17,8 @@ const handleAtMention = (str: string) => {
     text = `<p>${text.replace(
       UN_ESCAPE_HTML_AT_MENTION_REGEXP,
       (match, id, name) => {
-        return `
-          <span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span>
-        `;
+        // tslint:disable-next-line
+        return `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span>`;
       },
     )}</p>`;
   }
