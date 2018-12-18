@@ -10,7 +10,7 @@ import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 
 const ItemCardWrapper = styled(JuiCard)`
-  word-break: break-all;
+  word-break: break-word;
   margin-bottom: ${spacing(3)};
 `;
 
@@ -32,7 +32,7 @@ const ItemCardHeader = styled.div`
   display: flex;
   ${typography('body1')};
   color: ${({ color }) => color || palette('primary', 'main')};
-  word-break: break-all;
+  word-break: break-word;
   svg {
     font-size: ${spacing(5)};
     margin: ${spacing(0.5)} 0 0;
