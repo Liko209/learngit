@@ -88,7 +88,10 @@ class JuiConversationCardHeader extends React.Component<
       return;
     }
     const width =
-      this.leftSection.clientWidth / this.leftSection.childNodes.length;
+      this.leftSection.clientWidth /
+      Array.from(this.leftSection.childNodes).filter(childNode =>
+        childNode.hasChildNodes(),
+      ).length;
     if (this.state.headerItemMaxWidth !== width) {
       this.setState({
         headerItemMaxWidth: width,
@@ -122,11 +125,19 @@ class JuiConversationCardHeader extends React.Component<
             </StyledStatus>
           ) : null}
           {notification ? (
-            <StyledNotification style={inlineStyle}>
+            <StyledNotification
+              data-name="cardHeaderNotification"
+              style={inlineStyle}
+            >
               {notification}
             </StyledNotification>
           ) : null}
-          {from ? React.cloneElement(from, { style: inlineStyle }) : null}
+          {from
+            ? React.cloneElement(from, {
+              style: inlineStyle,
+              'data-name': 'cardHeaderFrom',
+            })
+            : null}
         </StyledLeftSection>
         <RightSection>
           <StyledTime data-name="time">{time}</StyledTime>
