@@ -35,7 +35,10 @@ function isInBeta(flag: EBETA_FLAG): boolean {
     case EBETA_FLAG.BETA_LOG:
       return isInBetaList(BETA_CONFIG_KEYS.BETA_ENABLE_LOG);
     case EBETA_FLAG.BETA_S3_DIRECT_UPLOADS:
-      return isInBetaList(BETA_CONFIG_KEYS.BETA_S3_DIRECT_UPLOADS);
+      return (
+        isInBetaList(BETA_CONFIG_KEYS.BETA_S3_DIRECT_UPLOADS) ||
+        isBetaOn(BETA_CONFIG_KEYS.BETA_S3_DIRECT_UPLOADS)
+      );
     // case EBETA_FLAG.BETA_TELEPHONY_EMAIL:
     //   return isInBetaEmailList('');
     // case EBETA_FLAG.BETA_TELEPHONY_DOMAIN:
@@ -72,6 +75,11 @@ function isInBetaList(flagName: string): boolean {
     isInBetaEmailList(`${flagName}_emails`) ||
     isInBetaDomainList(`${flagName}_domains`)
   );
+}
+
+function isBetaOn(flagName: string, defaultVal = false): boolean {
+  const value: string = getFlagValue(flagName);
+  return value ? value === 'true' : defaultVal;
 }
 
 function isInBetaEmailList(flagName: string): boolean {

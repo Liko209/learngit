@@ -17,6 +17,15 @@ describe('Client Config', () => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
   });
+
+  function setS3UploadBeta() {
+    const dao = daoManager.getKVDao(AccountDao);
+    dao.put(ACCOUNT_CLIENT_CONFIG, {
+      beta_s3_direct_uploads_emails: '123,234,456',
+      beta_s3_direct_uploads_domains: '1,2,3,4',
+    });
+  }
+
   it('beta log', async () => {
     const dao = daoManager.getKVDao(AccountDao);
     dao.put(ACCOUNT_CLIENT_CONFIG, {
@@ -34,12 +43,9 @@ describe('Client Config', () => {
   });
 
   it('should return true when user id is in beta list', () => {
-    const dao = daoManager.getKVDao(AccountDao);
-    dao.put(ACCOUNT_CLIENT_CONFIG, {
-      beta_s3_direct_uploads_emails: '123,234,456',
-      beta_s3_direct_uploads_domains: '1,2,3,4',
-    });
+    setS3UploadBeta();
 
+    const dao = daoManager.getKVDao(AccountDao);
     dao.put(ACCOUNT_USER_ID, 123);
     dao.put(ACCOUNT_COMPANY_ID, 5);
 
@@ -47,41 +53,47 @@ describe('Client Config', () => {
   });
 
   it('should return false when user id is not in beta list', () => {
-    const dao = daoManager.getKVDao(AccountDao);
-    dao.put(ACCOUNT_CLIENT_CONFIG, {
-      beta_s3_direct_uploads_emails: '123,234,456',
-      beta_s3_direct_uploads_domains: '1,2,3,4',
-    });
+    setS3UploadBeta();
 
+    const dao = daoManager.getKVDao(AccountDao);
     dao.put(ACCOUNT_USER_ID, 123);
     dao.put(ACCOUNT_COMPANY_ID, 5);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });
 
-  it('should return true when user company is in beta domain list', () => {
-    const dao = daoManager.getKVDao(AccountDao);
-    dao.put(ACCOUNT_CLIENT_CONFIG, {
-      beta_s3_direct_uploads_emails: '123,234,456',
-      beta_s3_direct_uploads_domains: '1,2,3,4',
-    });
+  it('should return true when user company is in beta domain list', async () => {
+    setS3UploadBeta();
 
+    const dao = daoManager.getKVDao(AccountDao);
     dao.put(ACCOUNT_USER_ID, 567);
     dao.put(ACCOUNT_COMPANY_ID, 3);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });
 
-  it('should return false when user company is not in beta domain list', () => {
+  it('should return false when user company is not in beta domain list', async () => {
+    setS3UploadBeta();
+
     const dao = daoManager.getKVDao(AccountDao);
+    dao.put(ACCOUNT_USER_ID, 567);
+    dao.put(ACCOUNT_COMPANY_ID, 9);
+
+    expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(false);
+  });
+
+  it('should return true when beta flag is on for all', async () => {
+    const dao = daoManager.getKVDao(AccountDao);
+
     dao.put(ACCOUNT_CLIENT_CONFIG, {
       beta_s3_direct_uploads_emails: '123,234,456',
       beta_s3_direct_uploads_domains: '1,2,3,4',
+      beta_s3_direct_uploads: 'true',
     });
 
     dao.put(ACCOUNT_USER_ID, 567);
     dao.put(ACCOUNT_COMPANY_ID, 9);
 
-    expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(false);
+    expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });
 });
