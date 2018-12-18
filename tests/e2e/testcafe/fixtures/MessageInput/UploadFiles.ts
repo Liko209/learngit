@@ -218,7 +218,7 @@ test.skip(formalName('JPT-499 Can update files when click update the button in t
         await t.expect(conversationPage.previewFileSize.nth(0).withText(files1Size).exists).ok();
       });
 
-      await h(t).withLog(`And upload the same name file to the conversation,size=${files1Size} `, async () => {
+      await h(t).withLog(`And upload the same name file to the conversation,size=${files2Size} `, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
      });
 
@@ -249,8 +249,8 @@ test.skip(formalName('JPT-499 Can update files when click update the button in t
 
     });
 
-    // TODO bugid: fiji-2340
-test.only(formalName('JPT-532 Can update files in the duplicate prompt when the same name is in the attachment',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-532']), async t => {
+// TODO bugid: fiji-2340
+test.skip(formalName('JPT-532 Can update files in the duplicate prompt when the same name is in the attachment',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-532']), async t => {
         const app = new AppRoot(t);
         const users = h(t).rcData.mainCompany.users;
         const user = users[0];
@@ -392,6 +392,74 @@ test(formalName('JPT-500 Can create files when click create button in the duplic
 
     });
 
+test.skip(formalName('JPT-533 Can create files in the duplicate prompt when the same name is in the attachment',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-533']), async t => {
+        const app = new AppRoot(t);
+        const users = h(t).rcData.mainCompany.users;
+        const user = users[0];
+        user.sdk = await h(t).getSdk(user);
+        const teamsSection = app.homePage.messageTab.teamsSection;
+        const conversationPage = app.homePage.messageTab.conversationPage;
+        const fileName = '1.txt';
+        const file1Size = '0.4Kb';
+        const file2Size = '3.2Kb';
+        const filesPath1 = ['../../sources/1.txt'];
+        const filesPath2 = ['../../sources/files/1.txt'];
+        const message = uuid();
+  
+        let teamId;
+        await h(t).withLog(`Given I create one new teams`, async () => {
+            teamId = (await user.sdk.platform.createGroup({
+                type: 'Team',
+                name: uuid(),
+                members: [user.rcId, users[5].rcId],
+            })).data.id;
+        });
+  
+        await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
+            await h(t).directLoginWithUser(SITE_URL, user);
+            await app.homePage.ensureLoaded();
+        });
+  
+        await h(t).withLog('And open the created conversation', async () => {
+           await teamsSection.conversationEntryById(teamId).enter();
+        });
+  
+        await h(t).withLog('And upload one file to the message attachment in the created conversation ', async () => {
+          await conversationPage.uploadFilesToMessageAttachment(filesPath1);
+      });
+  
+      await h(t).withLog('Then the file count should be one in the attachment ', async () => {
+        await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
+      });
+
+        await h(t).withLog('When upload the same name file to the conversation ', async () => {
+          await t.wait(5e3);
+          await conversationPage.uploadFilesToMessageAttachment(filesPath2);
+       });
+  
+        await h(t).withLog('Then will show a duplicate prompt ', async () => {
+            await t.expect(conversationPage.duplicateModal.exists).ok();
+        });
+  
+        await h(t).withLog('When click Create button in the duplicate prompt', async () => {
+          await conversationPage.clickCreateButton();
+        });
+  
+        // todo bug fiji-2340
+        await h(t).withLog('Then the file count should be two in the attachment ', async () => {
+            await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(2);
+        });
+  
+        await h(t).withLog('Then I can send message to this conversation', async () => {
+          await conversationPage.sendMessage(message);
+       });
+  
+        await h(t).withLog(`And the sent files size should have ${file1Size} and   ${file2Size}`, async () => {
+          await t.expect(conversationPage.previewFileSize.withText(file1Size).exists).ok();
+          await t.expect(conversationPage.previewFileSize.withText(file2Size).exists).ok();
+        });
+  
+      });
 // todo bug:fiji-2236
 test.skip(formalName('JPT-512 Can remove files when selected files to conversations',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-512']), async t => {
 
@@ -448,7 +516,7 @@ test.skip(formalName('JPT-512 Can remove files when selected files to conversati
 
       });
 
-      // todo bug: fiji-2218
+// todo bug: fiji-2218
 test.skip(formalName('JPT-515 The selected files shouldn\'t be in the other conversation when switch to other conversations',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-515']), async t => {
 
         const app = new AppRoot(t);
