@@ -42,28 +42,29 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       },
     );
 
-    notificationCenter.on(
-      ENTITY.ITEM,
-      (payload: NotificationEntityPayload<ItemFile>) => {
-        const { type } = payload;
-        if (type === EVENT_TYPES.REPLACE) {
-          const data: any = payload;
-          const { ids, entities } = data.body;
-          ids.forEach((looper: number) => {
-            const record = this.items.get(looper);
-            if (record && record.item.group_ids.includes(this.id)) {
-              this.items.delete(looper);
-              const newItem: ItemFile = entities.get(looper);
-              this.items.set(newItem.id, {
-                item: newItem,
-                data: record.data,
-                status: newItem.sendStatus,
-              } as AttachmentItem);
-            }
-          });
+    notificationCenter.on(ENTITY.ITEM, this._handleItemChanged);
+  }
+
+  private _handleItemChanged = (
+    payload: NotificationEntityPayload<ItemFile>,
+  ) => {
+    const { type } = payload;
+    if (type === EVENT_TYPES.REPLACE) {
+      const data: any = payload;
+      const { ids, entities } = data.body;
+      ids.forEach((looper: number) => {
+        const record = this.items.get(looper);
+        if (record && record.item.group_ids.includes(this.id)) {
+          this.items.delete(looper);
+          const newItem: ItemFile = entities.get(looper);
+          this.items.set(newItem.id, {
+            item: newItem,
+            data: record.data,
+            status: newItem.sendStatus,
+          } as AttachmentItem);
         }
-      },
-    );
+      });
+    }
   }
 
   @computed
@@ -190,6 +191,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   cleanFiles = () => {
     this.items.clear();
+  }
+
+  dispose = () => {
+    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
   }
 }
 
