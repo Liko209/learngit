@@ -16,17 +16,9 @@ import { POST_STATUS } from 'sdk/service';
 import { JuiModal } from '@/containers/Dialog';
 
 type Props = ProgressActionsViewProps & WithNamespaces;
-type States = {
-  postStatus?: POST_STATUS;
-};
 
 @observer
-class ProgressActionsViewComponent extends Component<Props, States> {
-  state: States = {
-    postStatus: POST_STATUS.SUCCESS,
-  };
-  private _timer: NodeJS.Timer;
-
+class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost, t } = this.props;
     JuiModal.confirm({
@@ -51,7 +43,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
   }
 
   private _renderLoading = () => {
-    const { postStatus } = this.state;
+    const { postStatus } = this.props;
     if (postStatus === POST_STATUS.INPROGRESS) {
       return <JuiCircularProgress size={12} />;
     }
@@ -59,8 +51,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
   }
 
   private _renderResend = () => {
-    const { postStatus } = this.state;
-    const { t } = this.props;
+    const { postStatus, t } = this.props;
     if (postStatus === POST_STATUS.FAIL) {
       return (
         <JuiIconButton
@@ -78,8 +69,7 @@ class ProgressActionsViewComponent extends Component<Props, States> {
   }
 
   private _renderDelete = () => {
-    const { postStatus } = this.state;
-    const { t } = this.props;
+    const { postStatus, t } = this.props;
     if (postStatus === POST_STATUS.FAIL) {
       return (
         <JuiIconButton
@@ -93,32 +83,6 @@ class ProgressActionsViewComponent extends Component<Props, States> {
       );
     }
     return null;
-  }
-
-  private _setPostStatus = () => {
-    const { status } = this.props.post;
-    clearTimeout(this._timer);
-    if (status === POST_STATUS.INPROGRESS) {
-      this._timer = setTimeout(() => {
-        this.setState({ postStatus: status });
-      },                       500);
-    } else {
-      this.setState({ postStatus: status });
-    }
-  }
-
-  componentDidUpdate() {
-    if (this.props.post.status !== this.state.postStatus) {
-      this._setPostStatus();
-    }
-  }
-
-  componentDidMount() {
-    this._setPostStatus();
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this._timer);
   }
 
   render() {

@@ -7,22 +7,39 @@
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
-import { PostService } from 'sdk/service';
+import { PostService, POST_STATUS } from 'sdk/service';
 import { Post } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
 
-class ProgressActionsViewModel extends AbstractViewModel
+class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
-  @observable
-  id: number;
   private _postService: PostService = PostService.getInstance();
+  private _timer: NodeJS.Timer;
+  @observable
+  postStatus?: POST_STATUS;
 
-  onReceiveProps({ id }: ProgressActionsProps) {
-    if (id !== this.id) {
-      this.id = id;
-    }
+  constructor(props: ProgressActionsProps) {
+    super(props);
+    this.reaction(
+      () => this.post.status,
+      (status?: POST_STATUS) => {
+        if (status === POST_STATUS.INPROGRESS) {
+          clearTimeout(this._timer);
+          this._timer = setTimeout(() => {
+            this.postStatus = status;
+          },                       500);
+        } else {
+          this.postStatus = status;
+        }
+      },
+    );
+  }
+
+  @computed
+  get id() {
+    return this.props.id; // post id
   }
 
   @computed
