@@ -282,10 +282,6 @@ class ItemFileUploadHandler {
     await this._uploadItem(groupId, preInsertItem, isUpdate);
   }
 
-  private _shouldUploadToAmazonS3() {
-    return isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS);
-  }
-
   private async _sendItemFile(
     groupId: number,
     preInsertItem: ItemFile,
@@ -313,7 +309,7 @@ class ItemFileUploadHandler {
       });
     }
 
-    if (this._shouldUploadToAmazonS3()) {
+    if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
       await this._uploadFileToAmazonS3(
         file,
         preInsertItem,
