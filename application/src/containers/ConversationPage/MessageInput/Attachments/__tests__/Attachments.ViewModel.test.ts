@@ -185,7 +185,10 @@ describe('AttachmentsViewModel', () => {
       expect(exists).toBe(true);
       expect(vm.files.length).toBe(1);
       expect(vm.items.size).toBe(1);
+      const items = itemService.getUploadItems(vm.id);
+      const item = items[0];
       await vm.cancelUploadFile({
+        id: item.id,
         name: file.name,
         status: 'normal',
       } as ItemInfo);
