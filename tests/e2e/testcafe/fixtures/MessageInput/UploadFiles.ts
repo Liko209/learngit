@@ -69,9 +69,9 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
     });
 
 
-test(formalName(
-    'JPT-457 Will show the prompt when re-upload an existing file in the conversation;JPT-498 Can cancel when clicking cancel button in the duplicate prompt',
-    ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-457', 'JPT-498']), async t => {
+test.only(formalName(
+    'JPT-457 Will show the prompt when re-upload an existing file in the conversation;JPT-498 Can cancel when clicking cancel button in the duplicate prompt;Can cancel files in the duplicate prompt when the same name is in the attachment',
+    ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-457', 'JPT-498','JPT-534']), async t => {
       const app = new AppRoot(t);
       const users = h(t).rcData.mainCompany.users;
       const user = users[0];
@@ -122,6 +122,14 @@ test(formalName(
 
       await h(t).withLog('When click cancel button in the duplicate prompt', async () => {
         await conversationPage.clickCancelButton();
+      });
+
+      await h(t).withLog('Then the duplicate prompt dismiss', async () => {
+        await t.expect(conversationPage.duplicateCreateButton.exists).notOk();
+      });
+
+      await h(t).withLog('And the file count in the attachment should be one', async () => {
+        await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
       });
 
       await h(t).withLog('When I send message to this conversation', async () => {
