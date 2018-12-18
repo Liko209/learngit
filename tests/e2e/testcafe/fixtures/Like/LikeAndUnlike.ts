@@ -1,6 +1,6 @@
 /*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2018-08-21 16:30:30
+ * @Author: Potar He (potar.he@ringcentral.com)
+ * @Date: 2018-12-18 16:30:30
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
 
-fixture('Unified Login')
+fixture('LikeAndUnlike')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
 
