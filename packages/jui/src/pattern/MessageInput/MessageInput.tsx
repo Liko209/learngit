@@ -169,7 +169,7 @@ class JuiMessageInput extends React.Component<Props> {
   private _handlePaste = (event: any) => {
     if (event.clipboardData) {
       const files: FileList = event.clipboardData.files;
-      if (files) {
+      if (files && files.length > 0) {
         // access data directly
         const result: File[] = [];
         for (let i = 0; i < files.length; ++i) {
