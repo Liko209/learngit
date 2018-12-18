@@ -125,11 +125,14 @@ class GroupService extends BaseService<Group> {
       result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
       if (this.isCacheInitialized()) {
-        result = await this.getEntitiesFromCache();
-        result = result.slice(
-          offset,
-          limit === Infinity ? result.length : limit,
+        result = await this.getEntitiesFromCache(
+          (item: Group) => !item.is_archived,
         );
+        result = _.orderBy(
+          result,
+          ['most_recent_post_created_at'],
+          ['desc'],
+        ).slice(offset, limit === Infinity ? result.length : limit);
       } else {
         result = await dao.queryAllGroups(offset, limit);
       }
