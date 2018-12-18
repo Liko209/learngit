@@ -124,7 +124,15 @@ class GroupService extends BaseService<Group> {
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
-      result = await dao.queryAllGroups(offset, limit);
+      if (this.isCacheInitialized()) {
+        result = await this.getEntitiesFromCache();
+        result = result.slice(
+          offset,
+          limit === Infinity ? result.length : limit,
+        );
+      } else {
+        result = await dao.queryAllGroups(offset, limit);
+      }
     } else {
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
