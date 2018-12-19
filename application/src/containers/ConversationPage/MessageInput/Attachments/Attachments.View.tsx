@@ -41,6 +41,7 @@ class AttachmentsViewComponent extends Component<
 
   componentWillUnmount() {
     this.props.cleanFiles();
+    this.props.dispose();
   }
 
   didSelectFiles = (files: File[]) => {

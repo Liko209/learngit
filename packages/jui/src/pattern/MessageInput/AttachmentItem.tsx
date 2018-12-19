@@ -31,11 +31,12 @@ type IconProps = {
 type ItemStatus = 'normal' | 'loading' | 'error';
 
 type StatusProps = {
-  status: ItemStatus;
+  status?: ItemStatus;
 };
 
 type AttachmentItemProps = IconProps &
   StatusProps & {
+    progress?: number;
     name: string;
     onClickDeleteButton?: (event: MouseEvent) => void;
   };
@@ -85,7 +86,7 @@ const NameArea = styled.div<StatusProps>`
   max-width: ${width(63)};
   overflow-x: hidden;
   opacity: ${({ status }) => (status === 'loading' ? '0.26' : 1)};
-  color: ${({ theme, status }) => StatusMap[status](theme)};
+  color: ${({ theme, status }) => StatusMap[status || 'normal'](theme)};
 `;
 
 const ActionWrapper = styled.div`
@@ -119,7 +120,9 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     onClick={props.onClick}
     data-test-automation-id="attachment-action-button"
   >
-    {props.loading && <JuiCircularProgress size={24} value={props.value} />}
+    {props.value && (
+      <JuiCircularProgress variant="static" size={24} value={props.value} />
+    )}
     <IconWrapper>
       {typeof props.icon === 'string' ? (
         <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
@@ -135,8 +138,9 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { icon, name, status, onClickDeleteButton } = props;
+  const { icon, name, status, onClickDeleteButton, progress } = props;
   const fileName = truncateLongName(name, MAX_TITLE_LENGTH);
+  const loading = status === 'loading' || typeof progress !== 'undefined';
   return (
     <Wrapper>
       <Icon icon={icon} />
@@ -145,7 +149,8 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
       </NameArea>
       <AttachmentItemAction
         onClick={onClickDeleteButton}
-        loading={status === 'loading'}
+        loading={loading}
+        value={progress}
         icon="close"
       />
     </Wrapper>

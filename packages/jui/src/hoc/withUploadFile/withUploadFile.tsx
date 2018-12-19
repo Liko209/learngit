@@ -58,9 +58,11 @@ function withUploadFile(Component: ComponentType<any>) {
     }
 
     public showFileDialog = () => {
-      const inputRef = this._fileInputRef.current;
+      const inputRef: HTMLInputElement = this._fileInputRef.current;
       if (inputRef) {
-        inputRef.click();
+        const event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        inputRef.dispatchEvent(event);
       }
     }
 

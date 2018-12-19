@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text } from '@storybook/addon-knobs';
+import { boolean, number, select, text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
@@ -50,6 +50,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
     },
     'normal',
   );
+  const value = number('value', 0);
   const name = text('name', 'This is the name of attachment item');
 
   return (
@@ -58,7 +59,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
       <br />
       <AttachmentItem name="test" status="error" />
       <br />
-      <AttachmentItem name="test" status="loading" />
+      <AttachmentItem name="test" progress={value} />
       <br />
       <div>Long title example:</div>
       <AttachmentItem
@@ -74,32 +75,23 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
   const removeAttachment = () => {};
-  const f2 = new File(['bar'], 'f2.txt', {
-    type: 'text/plain',
-  });
-  const f1 = new File(['bar'], 'f1.txt', {
-    type: 'text/plain',
-  });
-  const f3 = new File(
-    ['bar'],
-    'This is the name of attachment itemThis is the name of attachment item.txt',
-    {
-      type: 'text/plain',
-    },
-  );
+  const f2 = 'f2.txt';
+  const f1 = 'f1.txt';
+  const f3 =
+    'This is the name of attachment itemThis is the name of attachment item.txt';
   const files = [
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
   ];
   return (
     <div>
@@ -113,23 +105,11 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
 
 storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const removeAttachment = () => {};
-  const f2 = new File(['bar'], 'f2.txt', {
-    type: 'text/plain',
-  });
-  const f1 = new File(['bar'], 'f1.txt', {
-    type: 'text/plain',
-  });
-  const f3 = new File(
-    ['bar'],
-    'This is the name of attachment itemThis is the name of attachment item.txt',
-    {
-      type: 'text/plain',
-    },
-  );
-  const cell: File[] = [f1, f2, f3];
-  const files: File[] = Array(18)
-    .fill(cell)
-    .flat();
+  const f2 = 'f2.txt';
+  const f1 = 'f1.txt';
+  const f3 =
+    'This is the name of attachment itemThis is the name of attachment item.txt';
+  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>
