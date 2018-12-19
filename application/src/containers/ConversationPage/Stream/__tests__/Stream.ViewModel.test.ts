@@ -3,7 +3,7 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService, ItemService } from 'sdk/service';
+import { PostService, ItemService, StateService } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import { StreamItemType } from '../types';
@@ -187,28 +187,15 @@ describe('StreamViewModel', () => {
 
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
-      const mockMarkAsRead = jest.fn();
-      const groupId = Math.random();
-      const mockGlobalStore = {
-        set: jest.fn(),
-      };
-      const vm = setup({
-        groupId,
-        _stateService: {
-          markAsRead: mockMarkAsRead,
-        },
-      });
-      const spy = jest
-        .spyOn(storeManager, 'getGlobalStore')
-        .mockImplementation(() => mockGlobalStore);
-
+      const stateService = new StateService();
+      const spy = jest.spyOn(stateService, 'markAsRead');
+      StateService.getInstance = jest.fn().mockReturnValue(stateService);
+      const groupId = 123123;
+      const vm = setup({ groupId });
       vm.markAsRead();
-      expect(mockMarkAsRead).toBeCalledTimes(1);
-      expect(mockMarkAsRead).toBeCalledWith(groupId);
-      expect(mockGlobalStore.set).toBeCalledWith(
-        GLOBAL_KEYS.SHOULD_SHOW_UMI,
-        false,
-      );
+
+      expect(spy).toBeCalledWith(groupId);
+
       spy.mockRestore();
     });
   });
@@ -236,35 +223,7 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe('resetJumpToPostId()', () => {
-    function resetJumpToPostIdSetup() {
-      const globalStore = { set: jest.fn() };
-      const vm = setup({ jumpToPostId: 5 });
-      return { globalStore, vm };
-    }
-
-    it('should set global store', () => {
-      const { globalStore, vm } = resetJumpToPostIdSetup();
-      const spy = jest
-        .spyOn(storeManager, 'getGlobalStore')
-        .mockImplementation(() => globalStore);
-
-      vm.resetJumpToPostId();
-
-      expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-
-      spy.mockRestore();
-    });
-
-    it('should set jumpToPostId to 0', () => {
-      const { vm } = resetJumpToPostIdSetup();
-      vm.resetJumpToPostId();
-
-      expect(vm.jumpToPostId).toBe(0);
-    });
-  });
-
-  describe('resetAll()', () => {
+  describe('initialize()', () => {
     function localSetup() {
       const autorun = jest.fn();
       const globalStore = { set: jest.fn(), get: jest.fn() };
@@ -291,12 +250,13 @@ describe('StreamViewModel', () => {
       const spy = jest
         .spyOn(storeManager, 'getGlobalStore')
         .mockImplementation(() => globalStore);
-      vm.resetAll(12);
+      vm.initialize(12);
 
       expect(globalStore.set).toBeCalledWith(
         GLOBAL_KEYS.SHOULD_SHOW_UMI,
         false,
       );
+      expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
 
       spy.mockRestore();
@@ -309,7 +269,7 @@ describe('StreamViewModel', () => {
       expect(vm.jumpToPostId).toBe(oldValue.jumpToPostId);
       expect(vm.groupId).toBe(oldValue.groupId);
       expect(vm._initialized).toBe(true);
-      vm.resetAll(groupId);
+      vm.initialize(groupId);
 
       expect(vm.groupId).toBe(groupId);
       expect(vm.jumpToPostId).not.toBe(oldValue.jumpToPostId);
@@ -321,45 +281,34 @@ describe('StreamViewModel', () => {
       expect(vm._initialized).toBe(false);
     });
 
-    it('should call dispose', () => {
-      const { vm, dispose } = localSetup();
-      vm.resetAll(11);
-
-      expect(dispose).toBeCalled();
-    });
-
     it('should call autorun', () => {
       const { vm, autorun } = localSetup();
-      vm.resetAll(11);
+      vm.initialize(11);
 
       expect(autorun).toBeCalledTimes(3);
     });
   });
 
-  describe('_prepareAllData', () => {
-    const posts = [{ item_ids: [1, 2, 3] }, { item_ids: [4, 5] }] as Post[];
-    const ids = [1, 2, 3, 4, 5];
-    let itemService: ItemService;
+  describe('loadPrevPosts()', () => {
+    it('should get [] when hasMore is false', async () => {
+      const data = [Math.random()];
+      const fetchData = jest.fn(() => Promise.resolve(data));
+      const hasMore = jest.fn(() => true);
+      const vm = setup({
+        _transformHandler: {
+          fetchData,
+          hasMore,
+        },
+      });
 
-    beforeEach(() => {
-      itemService = new ItemService();
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-    });
+      const posts = await vm.loadPrevPosts();
 
-    it('should call dispatchUpdatedDataModels on storeManager with certain arguments', async () => {
-      const dispatchUpdatedDataModels = jest.fn();
-      itemService.getById = jest.fn(id => Promise.resolve(id));
-      const spy = jest
-        .spyOn(storeManager, 'dispatchUpdatedDataModels')
-        .mockImplementation((...args) => dispatchUpdatedDataModels(args));
-      const vm = setup();
-
-      await vm._prepareAllData(posts);
-
-      expect(itemService.getById).toBeCalled();
-      expect(spy).toBeCalledWith(ENTITY_NAME.ITEM, ids);
-
-      spy.mockRestore();
+      expect(hasMore).toBeCalled();
+      expect(posts).toEqual([]);
     });
   });
+
+  describe('loadNextPosts()', () => {});
+
+  describe('handleNewMessageSeparatorState()', () => {});
 });
