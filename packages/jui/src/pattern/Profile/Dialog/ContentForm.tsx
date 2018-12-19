@@ -30,7 +30,7 @@ const JuiProfileDialogContentFormCopy = styled('div')`
   right: 0;
   top: 0;
   bottom: 0;
-  width: 40px;
+  width: ${width(10)};
   background-color: ${grey('100')};
   display: flex;
   align-items: center;
