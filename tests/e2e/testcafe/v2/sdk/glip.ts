@@ -240,7 +240,14 @@ export class GlipSdk {
     });
   }
 
-  updatePost(postId, data) {
+  getPost(postId: string | number) {
+    const uri = `api/post/${postId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+ updatePost(postId, data) {
     const uri = `api/post/${postId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
@@ -251,6 +258,49 @@ export class GlipSdk {
     return this.updatePost(postId, { _id: postId, deactivated: true, group_id: groupId, });
   }
 
+  async getPostLikesCount(PostId: string | number): Promise<number> {
+    return await this.getPost(PostId).then(res => {
+      return res.data.likes ? res.data.likes : []; 
+    }).then(likes => {
+      return  likes.length;
+    });
+  }
+
+  async likePost(postId, rcId?: string) {
+    const initData = await this.getPost(postId).then(res => { return res.data });
+    const likes = initData.likes ? initData.likes : [];
+    const text = initData.text;
+    const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
+    let data = {};
+    if(likes.indexOf(personId) === -1) {
+      likes.push(personId);
+      data = {
+        _id: postId,
+        likes,
+        text,
+      }
+      return await this.updatePost(postId, data);      
+    }
+    return;
+  }
+  
+  async unlikePost(postId, rcId?: string) {
+    const initData = await this.getPost(postId).then(res => { return res.data });
+    const likes = initData.likes ? initData.likes : [];
+    const text = initData.text;
+    const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
+    const index = likes.indexOf(personId);
+    if ( -1 < index) {
+      likes.splice(index, 1);
+      const data = {
+        _id: postId,
+        likes,
+        text,
+      }
+      return await this.updatePost(postId, data);
+    }
+    return;
+  }
 
   /* profile */
   getProfile(rcId?: string) {
