@@ -23,6 +23,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { mainLogger } from 'sdk';
 import RO from 'resize-observer-polyfill';
+import { noop } from 'jui/foundation/utils';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -218,6 +219,7 @@ class StreamViewComponent extends Component<Props> {
     return this._visibilityPostWrapper(
       this._handleFirstUnreadPostVisibilityChange,
       streamItem,
+      true,
     );
   }
 
@@ -225,24 +227,17 @@ class StreamViewComponent extends Component<Props> {
     return this._visibilityPostWrapper(
       this._handleMostRecentPostRead,
       streamItem,
+      true,
     );
   }
 
   private _ordinaryPostFactory(streamItem: StreamItem) {
-    const { loading } = this.props;
-
-    return (
-      <ConversationPost
-        id={streamItem.value}
-        key={`ConversationPost${streamItem.value}`}
-        ref={this._setPostRef}
-        highlight={streamItem.value === this.state._jumpToPostId && !loading}
-      />
-    );
+    return this._visibilityPostWrapper(noop, streamItem);
   }
   private _visibilityPostWrapper(
     onChangeHandler: (isVisible: boolean) => void,
     streamItem: StreamItem,
+    active = false,
   ) {
     const { loading } = this.props;
     return (
@@ -250,6 +245,7 @@ class StreamViewComponent extends Component<Props> {
         key={`VisibilitySensor${streamItem.value}`}
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={onChangeHandler}
+        active={active}
       >
         <ConversationPost
           ref={this._setPostRef}

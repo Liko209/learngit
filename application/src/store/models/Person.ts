@@ -23,7 +23,7 @@ export default class PersonModel extends Base<Person> {
     url: string;
   };
   @observable
-  headShotVersion?: string | undefined;
+  headshotVersion?: string | undefined;
   @observable
   email: string;
   @observable
@@ -75,7 +75,7 @@ export default class PersonModel extends Base<Person> {
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
-    this.headShotVersion = headshot_version;
+    this.headshotVersion = headshot_version;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers || [];
     this.isPseudoUser = is_pseudo_user;
@@ -152,7 +152,7 @@ export default class PersonModel extends Base<Person> {
   }
   @computed
   get hasHeadShot() {
-    return this.headShotVersion || this.headshot;
+    return this.headshotVersion || this.headshot;
   }
 
   @computed
