@@ -162,5 +162,6 @@
   "ariaGoToOther": "Go to the conversation with {{name}}",
   "locationTitle": "Location",
   "viewYourProfile": "View Your Profile",
+  "deletePost": "Delete post",
   "showMore": "Show more"
 }
