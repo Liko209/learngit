@@ -5,3 +5,4 @@
  */
 
 export * from './Attachments';
+export * from './AttachmentManager';

@@ -79,15 +79,6 @@ class MessageInputViewComponent extends Component<
     }
   }
 
-  directPostFiles = (files: File[]) => {
-    const { current } = this._attachmentsRef;
-    if (current && files && files.length > 0) {
-      current.vm.autoUploadFiles(files).then(() => {
-        this.props.forceSendPost();
-      });
-    }
-  }
-
   render() {
     const { draft, changeDraft, error, id, t } = this.props;
     const { modules } = this.state;
@@ -99,7 +90,9 @@ class MessageInputViewComponent extends Component<
         />
       </MessageActionBar>
     );
-    const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
+    const attachmentsNode = (
+      <Attachments viewRef={undefined} ref={this._attachmentsRef} id={id} />
+    );
 
     return (
       <JuiMessageInput

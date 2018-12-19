@@ -11,7 +11,7 @@ import {
   AttachmentItem,
   SelectFile,
 } from './types';
-import { ItemService, SENDING_STATUS } from 'sdk/service';
+import { ItemService, PostService, SENDING_STATUS } from 'sdk/service';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
@@ -20,6 +20,7 @@ import { ItemFile } from 'sdk/src/models';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
+  private _postService: PostService;
   @observable
   items: Map<string, AttachmentItem> = new Map<string, AttachmentItem>();
   @observable
@@ -28,6 +29,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
+    this._postService = PostService.getInstance();
     this.reaction(
       () => this.id,
       (id: number) => {
@@ -157,6 +159,21 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   cleanFiles = () => {
     this.items.clear();
+  }
+
+  sendFilesOnlyPost = async () => {
+    try {
+      const values: AttachmentItem[] = Array.from(this.items.values());
+      const ids = values.map(({ item }) => item.id);
+      await this._postService.sendPost({
+        atMentions: false,
+        text: '',
+        groupId: this.id,
+        users: undefined,
+        itemIds: ids,
+      });
+      this.items.clear();
+    } catch (e) {}
   }
 }
 

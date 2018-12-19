@@ -24,13 +24,18 @@ import { action, observable } from 'mobx';
 
 import { StreamViewComponent } from './Stream/Stream.View';
 import { Stream } from './Stream';
+import { AttachmentManager } from './MessageInput/Attachments';
+import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
 
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
 > {
-  private _streamRef: React.RefObject<StreamViewComponent> = React.createRef();
+  private _streamRef: RefObject<StreamViewComponent> = createRef();
   private _messageInputRef: RefObject<MessageInputViewComponent> = createRef();
+  private _attachmentManagerRef: RefObject<
+    AttachmentManagerViewComponent
+  > = createRef();
 
   @observable
   streamKey = 0;
@@ -54,9 +59,10 @@ class ConversationPageViewComponent extends Component<
   _handleDropFileInStream = (item: any, monitor: DropTargetMonitor) => {
     if (monitor) {
       const { files } = monitor.getItem();
-      const { current } = this._messageInputRef;
+      const { current } = this._attachmentManagerRef;
       if (current) {
-        current.directPostFiles && current.directPostFiles(files);
+        current.directPostFiles &&
+          current.directPostFiles(files).then(() => console.log(999999999));
       }
     }
   }
@@ -110,6 +116,10 @@ class ConversationPageViewComponent extends Component<
           ) : (
             <JuiDisabledInput text={t('disabledText')} />
           )}
+          <AttachmentManager
+            id={groupId}
+            viewRef={this._attachmentManagerRef}
+          />
         </JuiConversationPage>
       </DragDropContextProvider>
     ) : null;
