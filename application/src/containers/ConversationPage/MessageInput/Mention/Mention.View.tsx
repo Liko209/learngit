@@ -37,9 +37,7 @@ class MentionViewComponent extends Component<
     if (open && members.length) {
       return (
         <JuiMentionPanel isEditMode={isEditMode}>
-          <JuiMentionPanelSection
-            hasPadding={groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE}
-          >
+          <JuiMentionPanelSection>
             {groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
               <JuiMentionPanelSectionHeader
                 title={t(searchTerm ? 'suggested people' : 'team members')}
