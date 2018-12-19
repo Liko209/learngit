@@ -23,10 +23,10 @@ describe('MoreVM', () => {
     it('should display Quote option on more actions in Group [JPT-443]', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: false };
+          return { isTeam: false, text: 'a' };
         }
         if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
+          return { creatorId: 1, text: 'a' };
         }
         return null;
       });
@@ -40,10 +40,10 @@ describe('MoreVM', () => {
     it('should display Quote option on more actions in Team with admin permission [JPT-443]', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: true, isThePersonAdmin: () => true };
+          return { isTeam: true, isThePersonAdmin: () => true, text: 'a' };
         }
         if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
+          return { creatorId: 1, text: 'a' };
         }
         return null;
       });
@@ -61,10 +61,11 @@ describe('MoreVM', () => {
             isTeam: true,
             isThePersonAdmin: () => false,
             permissions: { user: { level: 1 } },
+            text: 'a',
           };
         }
         if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
+          return { creatorId: 1, text: 'a' };
         }
         return null;
       });
@@ -150,10 +151,10 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: false };
+          return { isTeam: false, text: 'a' };
         }
         if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
+          return { creatorId: 1, text: 'a' };
         }
         return null;
       });
@@ -170,10 +171,10 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: true, isThePersonAdmin: () => true };
+          return { isTeam: true, isThePersonAdmin: () => true, text: 'a' };
         }
         if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
+          return { creatorId: 1, text: 'a' };
         }
         return null;
       });
@@ -194,10 +195,11 @@ describe('MoreVM', () => {
             isTeam: true,
             isThePersonAdmin: () => false,
             permissions: { user: { level: 1 } },
+            text: 'a',
           };
         }
         if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
+          return { creatorId: 1, text: 'a' };
         }
         return null;
       });
