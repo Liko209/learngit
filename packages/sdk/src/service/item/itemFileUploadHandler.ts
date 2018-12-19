@@ -6,6 +6,7 @@ import { NETWORK_FAIL_TYPE, mainLogger } from 'foundation';
 import { StoredFile, ItemFile, Item, Raw, Progress } from '../../models';
 import AccountService from '../account';
 import ItemAPI, { RequestHolder } from '../../api/glip/item';
+import { AmazonFileUploadPolicyData } from '../../api/glip/types';
 import { transform } from '../utils';
 import { versionHash } from '../../utils/mathUtils';
 import { daoManager } from '../../dao';
@@ -146,12 +147,142 @@ class ItemFileUploadHandler {
     }
   }
 
-  private _updateProgress(progress: Progress) {
-    const uploadStatus = this._progressCaches.get(progress.id);
-    if (uploadStatus) {
-      uploadStatus.progress = progress;
+  private _updateProgress(
+    event: ProgressEventInit,
+    groupId: number,
+    itemId: number,
+  ) {
+    const { loaded, total } = event;
+    if (loaded && total) {
+      const progress = {
+        total,
+        loaded,
+        groupId,
+        id: itemId, // id is item id
+      };
+
+      const uploadStatus = this._progressCaches.get(progress.id);
+      if (uploadStatus) {
+        uploadStatus.progress = progress;
+      }
+      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
     }
-    notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
+  }
+
+  private _createFromDataWithPolicyData(
+    formFile: FormData,
+    extendFileData: AmazonFileUploadPolicyData,
+  ) {
+    const newFormFile = new FormData();
+    const storedPostForm = extendFileData.signed_post_form;
+    Object.getOwnPropertyNames(storedPostForm).forEach((val: string) => {
+      newFormFile.append(val, storedPostForm[val]);
+    });
+
+    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
+    newFormFile.append(FILE_FORM_DATA_KEYS.CONTENT_TYPE, file.type);
+    newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
+    return newFormFile;
+  }
+
+  private async _requestAmazonS3Policy(
+    formFile: FormData,
+    groupId: number,
+    itemId: number,
+    requestHolder: RequestHolder,
+  ) {
+    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
+    return await ItemAPI.requestAmazonFilePolicy({
+      size: file.size,
+      filename: file.name,
+      for_file_type: true,
+      filetype: file.type,
+    });
+  }
+
+  private async _uploadFileToAmazonS3(
+    formFile: FormData,
+    preInsertItem: ItemFile,
+    isUpdate: boolean,
+    requestHolder: RequestHolder,
+  ) {
+    const groupId = preInsertItem.group_ids[0];
+    const itemId = preInsertItem.id;
+    const policyResponse = await this._requestAmazonS3Policy(
+      formFile,
+      groupId,
+      itemId,
+      requestHolder,
+    );
+
+    if (policyResponse.isOk()) {
+      const extendFileData = policyResponse.unwrap();
+      const newFormData = this._createFromDataWithPolicyData(
+        formFile,
+        extendFileData,
+      );
+      const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
+        extendFileData.post_url,
+        newFormData,
+        (event: ProgressEventInit) => {
+          this._updateProgress(event, groupId, itemId);
+        },
+        requestHolder,
+      );
+      if (uploadResponse.isOk()) {
+        this._onUploadFileSuccess(
+          extendFileData.stored_file,
+          preInsertItem,
+          isUpdate,
+        );
+      } else {
+        this._handleItemFileSendFailed(itemId, uploadResponse);
+      }
+    } else {
+      this._handleItemFileSendFailed(itemId, policyResponse);
+    }
+  }
+
+  private async _uploadFileFileToGlip(
+    file: FormData,
+    preInsertItem: ItemFile,
+    isUpdate: boolean,
+    requestHolder: RequestHolder,
+  ) {
+    const groupId = preInsertItem.group_ids[0];
+    const itemId = preInsertItem.id;
+    const uploadRes = await ItemAPI.uploadFileItem(
+      file,
+      (e: ProgressEventInit) => {
+        this._updateProgress(e, groupId, itemId);
+      },
+      requestHolder,
+    );
+
+    if (uploadRes.isOk()) {
+      await this._onUploadFileSuccess(
+        uploadRes.unwrap()[0],
+        preInsertItem,
+        isUpdate,
+      );
+    } else {
+      this._handleItemFileSendFailed(preInsertItem.id, uploadRes);
+      mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
+    }
+  }
+
+  private async _onUploadFileSuccess(
+    storedFile: StoredFile,
+    preInsertItem: ItemFile,
+    isUpdate: boolean,
+  ) {
+    const groupId = preInsertItem.group_ids[0];
+    await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
+    await this._uploadItem(groupId, preInsertItem, isUpdate);
+  }
+
+  private _shouldUploadToAmazonS3() {
+    return false;
   }
 
   private async _sendItemFile(
@@ -167,42 +298,34 @@ class ItemFileUploadHandler {
       loaded: 0,
     };
 
-    const status = this._progressCaches.get(preInsertItem.id);
+    const preInsertItemId = preInsertItem.id;
+    const status = this._progressCaches.get(preInsertItemId);
     if (status) {
       status.requestHolder = requestHolder;
       status.progress = progress;
       status.file = file;
     } else {
-      this._progressCaches.set(preInsertItem.id, {
+      this._progressCaches.set(preInsertItemId, {
         requestHolder,
         progress,
         file,
       });
     }
 
-    const uploadRes = await ItemAPI.uploadFileItem(
-      file,
-      (e: ProgressEventInit) => {
-        const { loaded, total } = e;
-        if (loaded && total) {
-          this._updateProgress({
-            total,
-            loaded,
-            groupId,
-            id: preInsertItem.id, // id is item id
-          });
-        }
-      },
-      requestHolder,
-    );
-
-    if (uploadRes.isOk()) {
-      const storedFile = uploadRes.unwrap()[0];
-      await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
-      await this._uploadItem(groupId, preInsertItem, isUpdate);
+    if (this._shouldUploadToAmazonS3()) {
+      await this._uploadFileToAmazonS3(
+        file,
+        preInsertItem,
+        isUpdate,
+        requestHolder,
+      );
     } else {
-      this._handleItemFileSendFailed(preInsertItem.id, uploadRes);
-      mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
+      await this._uploadFileFileToGlip(
+        file,
+        preInsertItem,
+        isUpdate,
+        requestHolder,
+      );
     }
   }
 
@@ -231,7 +354,6 @@ class ItemFileUploadHandler {
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
     } else {
-      debugger;
       this._handleItemFileSendFailed(preInsertItem.id, result as ApiResultErr<
         ItemFile
       >);
