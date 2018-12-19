@@ -9,6 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 // import { service } from 'sdk';
 import { Post, Group } from 'sdk/models';
+import { TypeDictionary } from 'sdk/utils';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
@@ -31,12 +32,15 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
     return {
       [MENU_LIST_ITEM_TYPE.QUOTE]: {
         permission: this._canPost,
+        shouldShowAction: !this._isEventOrTask,
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
+        shouldShowAction: true,
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
+        shouldShowAction: true,
       },
     };
   }
@@ -54,6 +58,16 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   private get _group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._post.groupId);
+  }
+
+  @computed
+  private get _isEventOrTask() {
+    const { itemTypeIds } = this._post;
+    return (
+      itemTypeIds &&
+      (!!itemTypeIds[TypeDictionary.TYPE_ID_TASK] ||
+        !!itemTypeIds[TypeDictionary.TYPE_ID_EVENT])
+    );
   }
 
   @computed
