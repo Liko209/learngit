@@ -206,7 +206,6 @@ export default class GroupModel extends Base<Group> {
       const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       if (!this.isThePersonAdmin(currentUserId)) {
         if (this.permissions && this.permissions.user) {
-          debugger;
           const { level = 0 } = this.permissions.user;
           return !!(level & PERMISSION_ENUM.TEAM_POST);
         }
