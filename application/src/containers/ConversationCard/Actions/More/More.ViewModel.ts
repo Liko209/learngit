@@ -9,6 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 // import { service } from 'sdk';
 import { Post, Group } from 'sdk/models';
+import { TypeDictionary } from 'sdk/utils';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
@@ -25,18 +26,23 @@ enum PERMISSION_ENUM {
 
 class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  // use currentGroupId === 0 to judge is on Bookmarks/Mentions page
+  private _currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
 
   @computed
   get permissionsMap() {
     return {
       [MENU_LIST_ITEM_TYPE.QUOTE]: {
-        permission: this._canPost,
+        permission: this._canPost && this._excludeBookmarksOrMentionsPage,
+        shouldShowAction: !this._isEventOrTask,
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
+        shouldShowAction: true,
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
+        shouldShowAction: true,
       },
     };
   }
@@ -57,6 +63,16 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  private get _isEventOrTask() {
+    const { itemTypeIds } = this._post;
+    return (
+      itemTypeIds &&
+      (!!itemTypeIds[TypeDictionary.TYPE_ID_TASK] ||
+        !!itemTypeIds[TypeDictionary.TYPE_ID_EVENT])
+    );
+  }
+
+  @computed
   private get _isPostByMe() {
     return this._currentUserId === this._post.creatorId;
   }
@@ -73,6 +89,11 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
       return true;
     }
     return true;
+  }
+
+  @computed
+  private get _excludeBookmarksOrMentionsPage() {
+    return this._currentGroupId !== 0;
   }
 
   @computed

@@ -12,7 +12,8 @@ import {
   JuiDialogTitleWithActionLeft,
   JuiDialogTitleWithActionRight,
 } from 'jui/components/Dialog';
-import { Favorite, Privacy } from '@/containers/common';
+import { Favorite } from '@/containers/common/Favorite';
+import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 

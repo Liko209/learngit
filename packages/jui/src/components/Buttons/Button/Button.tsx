@@ -58,6 +58,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
         contained: 'containedButtonStyle',
         fab: 'roundButtonStyle',
         text: 'textButtonStyle',
+        outlined: 'outlineButtonStyle',
       }}
       TouchRippleProps={{ classes: touchRippleClasses }}
       variant={_variant}
@@ -76,8 +77,7 @@ const shadow = (n: number) => {
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
-    padding-left: ${spacing(4)};
-    padding-right: ${spacing(4)};
+    padding: ${spacing(2.5, 4)};
     ${typography('button')};
     color: ${palette('primary', 'main')};
     &.containedButtonStyle {
@@ -104,6 +104,10 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       &:hover {
         background-color: ${palette('primary', 'main', 1)};
       }
+    }
+
+    &.outlineButtonStyle {
+      border-color: ${palette('primary', 'main')};
     }
 
     &.roundButtonStyle {

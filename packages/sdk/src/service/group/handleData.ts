@@ -7,8 +7,6 @@ import { mainLogger } from 'foundation';
 import { daoManager, DeactivatedDao } from '../../dao';
 import GroupDao from '../../dao/group';
 import GroupAPI from '../../api/glip/group';
-import AccountDao from '../../dao/account';
-import { ACCOUNT_USER_ID } from '../../dao/account/constants';
 import notificationCenter, {
   NotificationEntityUpdatePayload,
 } from '../notificationCenter';
@@ -142,8 +140,12 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
+  const accountService: AccountService = AccountService.getInstance();
+  const currentUserId = accountService.getCurrentUserId();
   const normalData = groups.filter(
-    (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
+    (group: Group) =>
+      hiddenGroupIds.indexOf(group.id) === -1 &&
+      (group.members ? group.members.includes(currentUserId) : true),
   );
 
   notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
@@ -162,12 +164,12 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   let addedTeams = normalData.filter(
     (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedTeams = await filterGroups(addedTeams, limit, false);
+  addedTeams = await filterGroups(addedTeams, limit);
 
   let addedGroups = normalData.filter(
     (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
   );
-  addedGroups = await filterGroups(addedGroups, limit, true);
+  addedGroups = await filterGroups(addedGroups, limit);
 
   const addFavorites = normalData.filter(
     (item: Group) => favIds.indexOf(item.id) !== -1,
@@ -213,14 +215,8 @@ export default async function handleData(groups: Raw<Group>[]) {
 
   const logLabel = `[Performance]grouphandleData ${Date.now()}`;
   console.time(logLabel);
-  // const dao = daoManager.getDao(GroupDao);
-  const accountDao = daoManager.getKVDao(AccountDao);
-  const userId = Number(accountDao.get(ACCOUNT_USER_ID));
   const transformData = await getTransformData(groups);
-
-  const data = transformData.filter(
-    item => item !== null && item.members && item.members.indexOf(userId) !== -1,
-  );
+  const data = transformData.filter(item => item);
 
   // handle deactivated data and normal data
   await saveDataAndDoNotification(data);
@@ -418,22 +414,19 @@ async function getUnreadGroupIds(groups: Group[]) {
  * extract out groups/teams which are latest than the oldest unread post
  * or just use default limit length
  */
-async function filterGroups(
-  groups: Group[],
-  limit: number,
-  shouldFilterGroupWithoutPostTime: boolean,
-) {
+async function filterGroups(groups: Group[], limit: number) {
   let sortedGroups = groups;
-  if (shouldFilterGroupWithoutPostTime) {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
-    sortedGroups = groups.filter((model: Group) => {
-      return (
-        model.most_recent_post_created_at !== undefined ||
-        model.creator_id === currentUserId
-      );
-    });
-  }
+  const accountService: AccountService = AccountService.getInstance();
+  const currentUserId = accountService.getCurrentUserId();
+  sortedGroups = groups.filter((model: Group) => {
+    if (model.is_team) {
+      return true;
+    }
+    return (
+      model.creator_id === currentUserId ||
+      model.most_recent_post_created_at !== undefined
+    );
+  });
   sortedGroups = sortedGroups.sort(
     (group1: Group, group2: Group) =>
       getGroupTime(group2) - getGroupTime(group1),

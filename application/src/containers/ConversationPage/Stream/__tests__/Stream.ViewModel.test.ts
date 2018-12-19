@@ -12,6 +12,7 @@ import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { Post, Item } from 'sdk/models';
 
 jest.mock('sdk/service/post');
+jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
@@ -27,6 +28,7 @@ describe('StreamViewModel', () => {
     jest.clearAllMocks();
     postService = new PostService();
     PostService.getInstance = jest.fn().mockReturnValue(postService);
+    spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
   describe('loadInitialPosts()', () => {
@@ -37,7 +39,7 @@ describe('StreamViewModel', () => {
       return vm;
     }
 
-    it('should load posts', async () => {
+    it('should load posts and update itemStore when fetch initial post', async () => {
       const vm = setup({
         props: { groupId: 1 },
       });
@@ -47,14 +49,18 @@ describe('StreamViewModel', () => {
           { id: 2, item_ids: [] },
           { id: 3, item_ids: [] },
         ],
+        items: [{ id: 1 }],
       });
-
       await vm.loadInitialPosts();
       expect(vm.items).toEqual([
         { type: StreamItemType.POST, value: 1 },
         { type: StreamItemType.POST, value: 2 },
         { type: StreamItemType.POST, value: 3 },
       ]);
+      expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
+        ENTITY_NAME.ITEM,
+        [{ id: 1 }],
+      );
     });
   });
 
@@ -104,23 +110,12 @@ describe('StreamViewModel', () => {
   });
 
   describe('onReceiveProps()', () => {
-    it('should dispose transformHandler when groupId change', () => {
-      const vm = setup();
-      jest.spyOn(vm, 'dispose');
-
-      vm.onReceiveProps({ groupId: 1 });
-
-      expect(vm.dispose).toHaveBeenCalledTimes(1);
-    });
-
     it('should do nothing when groupId not change', () => {
       const vm = setup({
         groupId: 1,
       });
       jest.spyOn(vm, 'dispose');
-
       vm.onReceiveProps({ groupId: 1 });
-
       expect(vm.dispose).not.toHaveBeenCalled();
     });
   });

@@ -6,7 +6,7 @@
 
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
-import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
+import { PostService, StateService, ENTITY } from 'sdk/service';
 import { Post, GroupState, Group } from 'sdk/models';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
@@ -149,31 +149,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.groupId === props.groupId) {
       return;
     }
-    this.resetAll(props.groupId);
+    this.initialize(props.groupId);
   }
 
   @loading
   async loadInitialPosts() {
-    let posts: Post[] = [];
     if (this.jumpToPostId) {
       const post = await PostService.getInstance<PostService>().getById(
         this.jumpToPostId,
       );
       if (post) {
         this._transformHandler.orderListStore.append([transformFunc(post)]);
-        const result = await Promise.all([
+        await Promise.all([
           this._loadPosts(QUERY_DIRECTION.OLDER),
           this._loadPosts(QUERY_DIRECTION.NEWER),
         ]);
-        posts = _(result)
-          .flatten()
-          .value();
       }
     } else {
-      posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
-    }
-    if (posts && posts.length) {
-      await this._prepareAllData(posts);
+      await this._loadPosts(QUERY_DIRECTION.OLDER);
     }
   }
 
@@ -214,7 +207,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this._stateService.markAsRead(this.groupId);
   }
 
@@ -231,18 +223,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this._transformHandler) {
       this._transformHandler.dispose();
     }
-  }
-
-  private async _prepareAllData(posts: Post[]) {
-    const itemService = ItemService.getInstance();
-    const itemIds = _(posts)
-      .map('item_ids')
-      .flatMap((i: number[]) => i.slice())
-      .value();
-    const items = await Promise.all(
-      itemIds.map(itemService.getById.bind(itemService)),
-    );
-    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+    const globalStore = storeManager.getGlobalStore();
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
   private async _loadPosts(
@@ -264,27 +247,26 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this.firstHistoryUnreadPostId;
   }
 
-  resetJumpToPostId = () => {
+  initialize = (groupId: number) => {
     const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-    this.jumpToPostId = 0;
-  }
-
-  resetAll = (groupId: number) => {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
+    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
     this.groupId = groupId;
-    this.dispose();
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (direction, pageSize, anchor) => {
         try {
           const postService: PostService = PostService.getInstance();
-          const { posts, hasMore } = await postService.getPostsByGroupId({
-            direction,
-            groupId,
-            postId: anchor && anchor.id,
-            limit: pageSize,
-          });
+          const { posts, hasMore, items } = await postService.getPostsByGroupId(
+            {
+              direction,
+              groupId,
+              postId: anchor && anchor.id,
+              limit: pageSize,
+            },
+          );
+          storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+          storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
           return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.API_NETWORK) {

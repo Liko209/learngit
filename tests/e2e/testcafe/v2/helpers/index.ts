@@ -1,5 +1,5 @@
 import 'testcafe';
-import { ClientFunction } from 'testcafe';
+import { ClientFunction, Role } from 'testcafe';
 import { getLogger } from 'log4js';
 
 import { DataHelper } from './data-helper'
@@ -12,6 +12,8 @@ import { AllureHelper } from './allure-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
+import { AppRoot } from '../page-models/AppRoot';
+import { SITE_URL } from '../../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -113,6 +115,25 @@ class Helper {
     await this.t
       .expect(selector)
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
+  }
+
+  async userRole(user: IUser, cb?:(appRoot) => Promise<any>) {
+    return await Role(SITE_URL, async (t) => {
+      const newApp = new AppRoot(t);
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await newApp.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
+      await newApp.homePage.ensureLoaded(); 
+      if (cb != undefined) {
+        await cb(newApp);
+      }
+    }, {
+      preserveUrl: true,
+    })
+  }
+
+  // a temporary method:  need time to wait back-end and front-end sync umi data.
+  async waitUmiDismiss(timeout: number = 1e3) {
+    await this.t.wait(timeout);
   }
 
   // misc

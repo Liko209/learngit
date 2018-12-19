@@ -126,18 +126,15 @@ class GroupService extends BaseService<Group> {
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-
+      const userId = profile ? profile.creator_id : undefined;
       result = await dao.queryGroups(
         offset,
         Infinity,
         groupType === GROUP_QUERY_TYPE.TEAM,
         excludeIds,
+        userId,
       );
-      result = await filterGroups(
-        result,
-        limit,
-        groupType === GROUP_QUERY_TYPE.GROUP,
-      );
+      result = await filterGroups(result, limit);
     }
     return result;
   }
@@ -599,10 +596,7 @@ class GroupService extends BaseService<Group> {
           ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
             (terms.length > 0 &&
               this.isFuzzyMatched(team.set_abbreviation, terms))) &&
-          (team.privacy === 'protected' ||
-            team.members.find((id: number) => {
-              return id === currentUserId;
-            }))
+          (team.privacy === 'protected' || team.members.includes(currentUserId))
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
