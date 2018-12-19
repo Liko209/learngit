@@ -33,7 +33,7 @@ const StyledJuiListItemIcon = styled(JuiListItemIcon)`
 
 const StyledMenuItem = styled(MuiMenuItem)`
   && {
-    ${typography('caption2')};
+    ${typography('caption1')};
     color: ${grey('700')};
     height: ${height(8)};
     min-width: ${width(28)};
