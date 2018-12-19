@@ -128,11 +128,7 @@ class GroupService extends BaseService<Group> {
         result = await this.getEntitiesFromCache((item: Group) =>
           this.isValid(item),
         );
-        result = _.orderBy(
-          result,
-          ['most_recent_post_created_at'],
-          ['desc'],
-        ).slice(offset, limit === Infinity ? result.length : limit);
+        result = this._getFromSortedByMostRectPost(result, offset, limit);
       } else {
         result = await dao.queryAllGroups(offset, limit);
       }
@@ -177,16 +173,19 @@ class GroupService extends BaseService<Group> {
       result = await this.getEntitiesFromCache((item: Group) =>
         this.isValid(item),
       );
-      result = _.orderBy(
-        result,
-        ['most_recent_post_created_at'],
-        ['desc'],
-      ).slice(0, n);
+      result = this._getFromSortedByMostRectPost(result, 0, n);
     } else {
       const dao = daoManager.getDao(GroupDao);
       result = await dao.getLastNGroups(n);
     }
     return result;
+  }
+
+  private _getFromSortedByMostRectPost(groups: Group[], offset: number, limit: number) {
+    return _.orderBy(groups, ['most_recent_post_created_at'], ['desc']).slice(
+      offset,
+      limit === Infinity ? groups.length : limit,
+    );
   }
 
   async getGroupsByIds(ids: number[]): Promise<Group[]> {

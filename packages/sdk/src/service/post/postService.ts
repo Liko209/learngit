@@ -473,7 +473,7 @@ class PostService extends BaseService<Post> {
   ): Promise<Result<Post>> {
     const post = await this.getById(postId);
     if (post) {
-      const likes = post.likes || [];
+      const likes = [...post.likes];
       const index = likes.indexOf(personId);
       if (toLike) {
         if (index === -1) {
