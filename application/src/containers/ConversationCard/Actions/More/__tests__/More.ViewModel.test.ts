@@ -248,6 +248,32 @@ describe('MoreVM', () => {
     });
   });
 
+  describe('_excludeBookmarksOrMentionsPage()', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+    it('should disable quote option for posts on Bookmarks/Mentions page [JPT-513]', () => {
+      (getGlobalValue as jest.Mock).mockImplementation((key: GLOBAL_KEYS) => {
+        if (key === GLOBAL_KEYS.CURRENT_CONVERSATION_ID) {
+          return 0;
+        }
+
+        if (key === GLOBAL_KEYS.CURRENT_USER_ID) {
+          return mockGlobalValue[key];
+        }
+        return null;
+      });
+      (getEntity as jest.Mock).mockImplementation((type: string) => {
+        if (type === ENTITY_NAME.POST) {
+          return { text: 'test' };
+        }
+        return null;
+      });
+      ViewModel = new MoreViewModel({ id: 1 });
+
+      expect(ViewModel._excludeBookmarksOrMentionsPage).toBe(false);
+    });
+  });
   describe('_isEventOrTask()', () => {
     beforeEach(() => {
       jest.resetAllMocks();
