@@ -15,12 +15,12 @@ import {
 
 const ToggleButton = styled(MuiSwitch)`
   && {
-    width: ${({ theme }) => spacing(9)};
+    width: ${spacing(9)};
   }
   .custom-switchBase {
-    width: ${({ theme }) => spacing(9)};
-    height: ${({ theme }) => spacing(5)};
-    transform: translateX(${({ theme }) => spacing(-2)});
+    width: ${spacing(9)};
+    height: ${spacing(5)};
+    transform: translateX(${spacing(-2)});
   }
   ${props =>
     !props.disabled
@@ -42,17 +42,17 @@ const ToggleButton = styled(MuiSwitch)`
     opacity: 1;
     background: ${palette('accent', 'ash')};
     border-radius: ${({ theme }) => theme.shape.borderRadius * 2.5}px;
-    padding: ${({ theme }) => spacing(1)({ theme })};
-    width: ${({ theme }) => width(9)({ theme })};
-    height: ${({ theme }) => height(5)({ theme })};
+    padding: ${spacing(1)};
+    width: 36px;
+    height: 18px;
     box-sizing: border-box;
     transform: translate(-50%, -50%);
     margin: 0;
   }
 
   .custom-icon {
-    width: ${({ theme }) => width(3)({ theme })};
-    height: ${({ theme }) => height(3)({ theme })};
+    width: ${width(3)};
+    height: ${height(3)};
     box-shadow: none;
   }
 
@@ -63,7 +63,7 @@ const ToggleButton = styled(MuiSwitch)`
   }
 
   .custom-checked {
-    transform: translateX(${({ theme }) => spacing(2)});
+    transform: translateX(${spacing(2)});
     .custom-icon {
       background: #fff;
     }
