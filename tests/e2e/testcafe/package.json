@@ -23,7 +23,7 @@
     "allure-js-commons": "^1.3.2",
     "attest-testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-testcafe-1.0.0.tgz",
     "axios": "0.18.0",
-    "bendapi": "https://git.ringcentral.com/james.xie/bendApi/uploads/94bd14d20d1f97395b4d19d1822828e3/bendapi-1.0.0.tgz",
+    "bendapi": "https://git.ringcentral.com/james.xie/bendApi/uploads/ebe001674d4cbfd151c105f6485062c9/bendapi-1.0.0.tgz",
     "dotenv": "^6.0.0",
     "faker": "^4.1.0",
     "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.1.tgz",
