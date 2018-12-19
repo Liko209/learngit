@@ -47,7 +47,6 @@ const transformFunc = (dataModel: Post) => ({
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _initialized = false;
-
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
