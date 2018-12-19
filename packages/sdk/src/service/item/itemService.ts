@@ -3,7 +3,7 @@
  * @Date: 2018-11-15 10:00:51
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import BaseService from '../../service/BaseService';
 import { daoManager, ItemDao } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
@@ -39,9 +39,8 @@ class ItemService extends BaseService<Item> {
     );
   }
 
-  async getItemVersion(itemId: number): Promise<number> {
-    const item = await this.getById(itemId);
-    return item ? item.versions.length : 0;
+  async getItemVersion(itemFile: ItemFile): Promise<number> {
+    return await this._getItemFileHandler().getUpdateItemVersion(itemFile);
   }
 
   async cancelUpload(itemId: number) {
@@ -67,7 +66,12 @@ class ItemService extends BaseService<Item> {
       return false;
     }
     const dao = daoManager.getDao(this.DaoClass) as ItemDao;
-    return await dao.isFileItemExist(groupId, fileName, true);
+    const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
+    return files.length > 0
+      ? files.some((x: Item) => {
+        return x.post_ids.length > 0;
+      })
+      : false;
   }
 
   getUploadProgress(itemId: number): Progress | undefined {

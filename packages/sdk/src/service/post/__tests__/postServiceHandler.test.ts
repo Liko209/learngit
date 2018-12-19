@@ -18,6 +18,7 @@ jest.mock('../../item');
 describe('PostServiceHandler', () => {
   const mockPostDao = new PostDao(null);
   const mockAccountDao = new AccountDao(null);
+  const mockItemService = new ItemService();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -26,6 +27,9 @@ describe('PostServiceHandler', () => {
 
     daoManager.getDao.mockReturnValue(mockPostDao);
     daoManager.getKVDao.mockReturnValue(mockAccountDao);
+
+    ItemService.getInstance = jest.fn().mockReturnValue(mockItemService);
+    mockItemService.getUploadItems.mockReturnValue([]);
   });
 
   describe('buildAtMentionsPeopleInfo()', () => {
@@ -91,6 +95,7 @@ describe('PostServiceHandler', () => {
     });
 
     it('params has itemsIds', async () => {
+      mockItemService.getUploadItems.mockReturnValue([]);
       const ret = await PostServiceHandler.buildPostInfo({
         atMentions: true,
         text: 'text',
@@ -122,12 +127,12 @@ describe('PostServiceHandler', () => {
     });
 
     it('should have item data and version map when has items to update', async () => {
-      const itemService = new ItemService();
-      ItemService.getInstance = jest.fn().mockReturnValueOnce(itemService);
-      itemService.getItemVersion
+      mockItemService.getItemVersion
         .mockResolvedValueOnce(3)
-        .mockResolvedValueOnce(3);
-      const versionData = { version_map: { 1: 3, 2: 3 } };
+        .mockResolvedValueOnce(4);
+      mockItemService.getUploadItems.mockReturnValue([{ id: 1 }, { id: 2 }]);
+
+      const versionData = { version_map: { 1: 3, 2: 4 } };
       const ret = await PostServiceHandler.buildPostInfo({
         text: 'text',
         groupId: 123,
@@ -140,7 +145,7 @@ describe('PostServiceHandler', () => {
         ],
         updateIds: [1, 2],
       });
-      expect(itemService.getItemVersion).toBeCalledTimes(2);
+      expect(mockItemService.getItemVersion).toBeCalledTimes(2);
       expect(ret.item_data).toEqual(versionData);
     });
   });
@@ -153,7 +158,7 @@ describe('PostServiceHandler', () => {
       mockAccountDao.get.mockReturnValue(123);
     });
 
-    it('has oldpost & has users', async () => {
+    it('has old post & has users', async () => {
       mockPostDao.get.mockReturnValue({
         id: 1,
         text: 'old text',

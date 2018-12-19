@@ -23,7 +23,7 @@ jest.mock('../../notificationCenter');
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 
-describe('ItemFileService', () => {
+describe('ItemFileUploadHandler', () => {
   let itemFileUploadHandler: ItemFileUploadHandler = undefined;
   beforeEach(() => {
     jest.clearAllMocks();
@@ -214,7 +214,6 @@ describe('ItemFileService', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
-        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
         expect(itemFileUploadHandler.getItemsSendStatus([fileItem.id])).toEqual(
           [SENDING_STATUS.FAIL],
         );
@@ -224,7 +223,7 @@ describe('ItemFileService', () => {
       },         1000);
     });
 
-    it('should not handle failed result when the request is failed because of the user canceled it.  ', async (done: jest.DoneCallback) => {
+    it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
       const errRes = new ApiResultErr(new BaseError(1, 'error'), {
         status: 403,
         statusText: NETWORK_FAIL_TYPE.CANCELLED,
@@ -232,10 +231,6 @@ describe('ItemFileService', () => {
       } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(errRes);
       itemService.handlePartialUpdate = jest.fn();
-
-      jest
-        .spyOn(itemFileUploadHandler, '_preSaveItemFile')
-        .mockImplementation(() => {});
 
       jest
         .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
@@ -285,7 +280,6 @@ describe('ItemFileService', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
-        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
         done();
       },         1000);
     });
@@ -640,20 +634,11 @@ describe('ItemFileService', () => {
       const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
 
       const itemId = 5;
-      itemFileUploadHandler.resendFailedFile(itemId);
+      await itemFileUploadHandler.resendFailedFile(itemId);
 
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(itemService.handlePartialUpdate).toBeCalledWith(
-          {
-            id: itemId,
-            _id: itemId,
-            status: SENDING_STATUS.FAIL,
-          },
-          undefined,
-          expect.anything(),
-        );
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
@@ -663,6 +648,18 @@ describe('ItemFileService', () => {
     });
 
     it('should notify upload failed when can not find the cache of the item', async (done: jest.DoneCallback) => {
+      const progressCaches = new Map();
+      const r: RequestHolder = { request: undefined };
+      const p: Progress = { id: 1, total: 3, loaded: 5, groupId: 1 };
+      const itemFileUploadStatus = {
+        progress: p,
+        requestHolder: r,
+      } as ItemFileUploadStatus;
+      progressCaches.set(5, itemFileUploadStatus);
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
       const itemId = 5;
       const item = { id: itemId, group_ids: [1], versions: [] };
       itemDao.get.mockResolvedValue(item);
@@ -672,17 +669,15 @@ describe('ItemFileService', () => {
       );
       const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
 
-      const spyHandleFileItemSendFailed = jest.spyOn(
-        itemFileUploadHandler,
-        '_handleItemFileSendFailed',
-      );
-      spyHandleFileItemSendFailed.mockImplementation(() => {});
-
       itemFileUploadHandler.resendFailedFile(itemId);
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(spyHandleFileItemSendFailed).toBeCalledWith(itemId);
+        expect(notificationCenter.emit).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(itemFileUploadHandler.getUploadProgress(5).loaded).toBe(-1);
         done();
       },         1000);
     });
