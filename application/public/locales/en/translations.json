@@ -161,5 +161,6 @@
   "ariaGoToMe": "Go to the workstation of yourself",
   "ariaGoToOther": "Go to the conversation with {{name}}",
   "locationTitle": "Location",
-  "viewYourProfile": "View Your Profile"
+  "viewYourProfile": "View Your Profile",
+  "deletePost": "Delete post"
 }
