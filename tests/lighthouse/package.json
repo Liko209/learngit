@@ -17,6 +17,7 @@
     "lighthouse": "^4.0.0-beta",
     "log4js": "^3.0.6",
     "mysql2": "^1.6.4",
+    "axios": "0.18.0",
     "puppeteer": "^1.10.0",
     "reflect-metadata": "^0.1.12",
     "sequelize": "^4.41.2",

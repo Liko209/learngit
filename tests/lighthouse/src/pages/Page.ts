@@ -64,6 +64,12 @@ class Page {
         return this._page;
     }
 
+    async newPage() {
+        let browser = await this.browser();
+        this._page = await browser.newPage();
+        return this._page;
+    }
+
     async waitForCompleted() {
     }
 }

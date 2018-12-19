@@ -5,7 +5,6 @@
 import { SceneConfig } from './config/SceneConfig';
 import * as puppeteer from 'puppeteer';
 import * as lighthouse from 'lighthouse';
-import * as url from 'url';
 import { logUtils } from '../utils/LogUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
@@ -38,6 +37,8 @@ class Scene {
             const startTime = new Date();
 
             await this.preHandle();
+
+            this.config.settings.url = this.url;
 
             await this.collectData();
 
@@ -100,7 +101,7 @@ class Scene {
             }, this.config.toLightHouseConfig());
 
             lhr['finalUrl'] = this.url;
-            lhr['uri'] = url.parse(this.url).pathname;
+            lhr['uri'] = new URL(this.url).pathname;
             lhr['aliasUri'] = lhr['uri'];
             lhr['requestedUrl'] = this.url;
 
