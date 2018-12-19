@@ -84,7 +84,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "node ./scripts/check-coverage && npm run lint-all && npm run test:changed",
+      "pre-push": "node ./scripts/check-coverage && npm run lint-all && npm run test:cover",
       "commit-msg": "node scripts/validate-commit-msg.js"
     }
   }
