@@ -29,6 +29,7 @@ const postService = {
 const groupService = {
   updateGroupDraft: jest.fn(),
 };
+
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
@@ -65,66 +66,71 @@ describe.skip('ActionsViewModel', () => {
   });
 });
 
-describe('ActionsViewModel send post', () => {
-  const mockThis = (content: string) => {
-    const that = {
-      quill: {
-        getText: jest.fn().mockReturnValue(content),
-        getContents: jest.fn(),
-      },
+describe('MessageInputViewModel', () => {
+  describe('_sendPost()', () => {
+    const mockThis = (content: string) => {
+      const that = {
+        quill: {
+          getText: jest.fn().mockReturnValue(content),
+          getContents: jest.fn(),
+        },
+      };
+      return that;
     };
-    return that;
-  };
 
-  const enterHandler = messageInputViewModel.keyboardEventHandler.enter.handler;
+    const enterHandler =
+      messageInputViewModel.keyboardEventHandler.enter.handler;
 
-  it.skip('send post should be success', () => {
-    const content = 'text';
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(messageInputViewModel.draft).toBe('');
-    expect(postService.sendPost).toBeCalled();
-  });
+    it.skip('should be success when has draft content', () => {
+      const content = 'text';
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(messageInputViewModel.draft).toBe('');
+      expect(postService.sendPost).toBeCalled();
+    });
 
-  it('send post content is empty should be not send', () => {
-    const content = '';
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(postService.sendPost).toBeCalledTimes(0);
-  });
+    it('should not send when empty draft content', () => {
+      const content = '';
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(postService.sendPost).toBeCalledTimes(0);
+    });
 
-  it('send post should be illegal error', () => {
-    const content = CONTENT_ILLEGAL;
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
-  });
+    it('should not send when draft contains illegal content', () => {
+      const content = CONTENT_ILLEGAL;
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
+    });
 
-  it('send post should be over length error', () => {
-    const content = _.pad('test', CONTENT_LENGTH + 1);
-    const that = mockThis(content);
-    // @ts-ignore
-    markdownFromDelta = jest.fn().mockReturnValue(content);
-    const handler = enterHandler.bind(that);
-    handler();
-    expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
-  });
+    it('should generate length error when draft.length > CONTENT_LENGTH', () => {
+      const content = _.pad('test', CONTENT_LENGTH + 1);
+      const that = mockThis(content);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(content);
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
+    });
 
-  it('send post should be service error', () => {
-    postService.sendPost = jest.fn().mockRejectedValueOnce(new Error('error'));
-    const content = 'text';
-    const that = mockThis(content);
-    const handler = enterHandler.bind(that);
-    const result = handler();
-    expect(result).toBeUndefined();
+    it('should handle error when post service fails', () => {
+      postService.sendPost = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('error'));
+      const content = 'text';
+      const that = mockThis(content);
+      const handler = enterHandler.bind(that);
+      const result = handler();
+      expect(result).toBeUndefined();
+    });
   });
 });

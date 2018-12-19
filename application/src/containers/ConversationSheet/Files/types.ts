@@ -15,7 +15,10 @@ type FilesViewProps = {
     [FileType.document]: ExtendFileItem[];
     [FileType.others]: ExtendFileItem[];
   };
+  progresses: Map<number, number>;
   ids: number[];
+  removeFile: (id: number) => void;
+  dispose: () => void;
 };
 
 export { FilesProps, FilesViewProps, FileType, ExtendFileItem };

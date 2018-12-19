@@ -14,6 +14,7 @@ export default function ({
   ids: number[];
   itemData: { version_map: { [key: number]: number } };
 }) {
+
   const version =
     itemData && itemData.version_map ? itemData.version_map[ids[0]] : 0;
   if (ids.length === 1) {

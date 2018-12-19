@@ -6,8 +6,12 @@
 
 import { action, observable, computed } from 'mobx';
 import { debounce, Cancelable } from 'lodash';
-import { MessageInputProps, MessageInputViewProps } from './types';
-import { GroupService, PostService } from 'sdk/service';
+import {
+  MessageInputProps,
+  MessageInputViewProps,
+  OnPostCallback,
+} from './types';
+import { GroupService, PostService, ItemService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -31,15 +35,22 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
+  private _itemService: ItemService;
   private _debounceUpdateGroupDraft: DebounceFunction & Cancelable;
+  private _onPostCallbacks: OnPostCallback[] = [];
   @computed
   get id() {
     return this.props.id;
+  }
+
+  get items() {
+    return this._itemService.getUploadItems(this.id);
   }
   @observable
   draft: string = '';
   @observable
   error: string = '';
+
   keyboardEventHandler = {
     enter: {
       key: 13,
@@ -51,6 +62,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
+    this._itemService = ItemService.getInstance();
     this._debounceUpdateGroupDraft = debounce<DebounceFunction>(
       this._groupService.updateGroupDraft.bind(this._groupService),
       500,
@@ -138,10 +150,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         return;
       }
       vm.error = '';
-      if (content.trim()) {
+      const items = vm.items;
+      if (content.trim() || items.length > 0) {
         vm._sendPost(content);
         const onPostHandler = vm.props.onPost;
         onPostHandler && onPostHandler();
+        vm._onPostCallbacks.forEach(callback => callback());
       }
     };
   }
@@ -149,16 +163,24 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private async _sendPost(content: string) {
     this.changeDraft('');
     const atMentions = isAtMentions(content);
+    const items = this.items;
     try {
       await this._postService.sendPost({
         atMentions,
         text: content,
         groupId: this.id,
         users: atMentions ? this._users : undefined,
+        itemIds: items.map(item => item.id),
       });
+      // clear context (attachments) after post
+      //
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
+  }
+
+  addOnPostCallback = (callback: OnPostCallback) => {
+    this._onPostCallbacks.push(callback);
   }
 }
 

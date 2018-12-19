@@ -18,11 +18,18 @@ import 'react-quill/dist/quill.snow.css';
 
 const Wrapper = styled.div<{
   isEditMode?: boolean;
+  isDragOver?: boolean;
 }>`
   position: relative;
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
-  padding: ${props => (props.isEditMode ? 0 : spacing(4))};
+  padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
+  border: ${({ theme, isDragOver }) =>
+    isDragOver
+      ? `2px dotted ${palette('secondary', '600')({ theme })}`
+      : 'none'};
+  background: ${({ isDragOver }) => (isDragOver ? grey('200') : 'transparent')};
+  opacity: ${({ isDragOver }) => (isDragOver ? 0.24 : 1)};
 `;
 
 const GlobalStyle = createGlobalStyle<{}>`
@@ -89,13 +96,18 @@ type Props = {
   error: string;
   children: React.ReactNode;
   modules: object;
+  toolbarNode?: React.ReactNode;
+  attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
+  didDropFile?: (file: File) => void;
 };
 
 class JuiMessageInput extends React.Component<Props> {
   private _changeSource: Sources = 'api';
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
-
+  state = {
+    isDragOver: false,
+  };
   componentDidMount() {
     const { isEditMode } = this.props;
     if (!isEditMode) {
@@ -134,9 +146,31 @@ class JuiMessageInput extends React.Component<Props> {
     onChange(content);
   }
 
+  private _handleDrop = (event: any) => {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      const { files } = event.dataTransfer;
+      const { didDropFile } = this.props;
+      didDropFile && files && didDropFile(files[0]);
+    }
+    this.setState({ isDragOver: false });
+  }
+  private _handleDragOver = (event: any) => {
+    event.preventDefault();
+  }
+  private _handleDragEnter = () => {
+    this.setState({ isDragOver: true });
+  }
+
+  private _handleDragLeave = () => {
+    this.setState({ isDragOver: false });
+  }
+
   render() {
     const {
       value,
+      toolbarNode,
+      attachmentsNode,
       defaultValue,
       error,
       children,
@@ -150,8 +184,17 @@ class JuiMessageInput extends React.Component<Props> {
       : {
         value,
       };
+    const { isDragOver } = this.state;
     return (
-      <Wrapper isEditMode={isEditMode}>
+      <Wrapper
+        isEditMode={isEditMode}
+        isDragOver={isDragOver}
+        onDrop={this._handleDrop}
+        onDragEnter={this._handleDragEnter}
+        onDragLeave={this._handleDragLeave}
+        onDragOver={this._handleDragOver}
+      >
+        {toolbarNode}
         <ReactQuill
           {...reactQuillValueProp}
           onChange={this.onChange}
@@ -162,6 +205,7 @@ class JuiMessageInput extends React.Component<Props> {
         {error ? <StyledError>{error}</StyledError> : null}
         {children}
         <GlobalStyle />
+        {attachmentsNode}
       </Wrapper>
     );
   }
