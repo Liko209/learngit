@@ -123,9 +123,9 @@ export function teardownCase() {
     }
 
     h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
-    await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
       await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
     }
+    await h(t).dataHelper.teardown();
   }
 }
