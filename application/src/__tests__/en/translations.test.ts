@@ -299,6 +299,6 @@ describe('i18next-en', () => {
     expect(i18next.t('due')).toEqual('Due');
     expect(i18next.t('edit')).toEqual('Edit post');
     expect(i18next.t('AboutRingCentral')).toEqual('About RingCentral');
-    expect(i18next.t('NewActions')).toEqual('New Actions');
+    expect(i18next.t('newActions')).toEqual('New actions');
   });
 });
