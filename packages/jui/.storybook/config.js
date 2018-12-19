@@ -3,17 +3,18 @@
  * @Date: 2018-08-30 08:41:05
  * Copyright © RingCentral. All rights reserved.
  */
-import "@babel/polyfill";
-import React from "react";
-import { configure, addDecorator } from "@storybook/react";
-import { withKnobs } from "@storybook/addon-knobs";
+import '@babel/polyfill';
+import React from 'react';
+import { configure, addDecorator } from '@storybook/react';
+import { withKnobs } from '@storybook/addon-knobs';
 
-import { ThemeProvider } from "../src/foundation/theme/index";
+import { ThemeProvider } from '../src/foundation/theme/index';
+import '../../../application/src/index.css';
 
 const ThemeDecorator = storyFn => {
   return (
     <ThemeProvider themeName="light">
-      <div style={{ paddingTop: "25px" }}>{storyFn()}</div>
+      <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
     </ThemeProvider>
   );
 };
@@ -23,7 +24,7 @@ function requireAll(requireContext) {
 }
 
 function loadStories() {
-  requireAll(require.context("../src", true, /\.story\.tsx?$/));
+  requireAll(require.context('../src', true, /\.story\.tsx?$/));
 }
 
 addDecorator(withKnobs);

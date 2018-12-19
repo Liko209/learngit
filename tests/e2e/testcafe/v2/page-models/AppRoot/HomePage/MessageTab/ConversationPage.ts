@@ -158,6 +158,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
 
+  get prompt() {
+    return this.getSelector('.tooltipPlacementBottom').textContent;
+  }
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }

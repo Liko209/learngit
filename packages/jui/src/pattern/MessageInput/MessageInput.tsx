@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
-import { Delta, Sources } from 'quill';
+import { Delta } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
 import {
   spacing,
@@ -11,7 +11,7 @@ import {
   primary,
   ellipsis,
 } from '../../foundation/utils/styles';
-import { markdownFromDelta } from './markdown';
+// import { markdownFromDelta } from './markdown';
 import { handleAtMention } from './Mention/handleAtMention';
 
 import 'react-quill/dist/quill.snow.css';
@@ -86,52 +86,43 @@ type Props = {
   value?: string | Delta;
   defaultValue?: string;
   onChange?: Function;
+  onBlur?: Function;
   error: string;
   children: React.ReactNode;
   modules: object;
   isEditMode?: boolean;
+  id?: number;
 };
 
 class JuiMessageInput extends React.Component<Props> {
-  private _changeSource: Sources = 'api';
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
 
   componentDidMount() {
-    const { isEditMode } = this.props;
-    if (!isEditMode) {
-      this.focusEditor(false);
+    setTimeout(this.focusEditor, 0);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.id !== this.props.id) {
+      this.focusEditor();
     }
   }
 
-  componentDidUpdate() {
-    this.focusEditor(true);
-  }
-
-  focusEditor(checkSource: boolean) {
-    if (checkSource && this._changeSource !== 'api') {
-      return;
-    }
-
+  focusEditor = () => {
     if (this._inputRef.current) {
       const quill = this._inputRef.current.getEditor();
-      const length = quill.getLength();
-      if (length > 1) {
-        setTimeout(() => quill.setSelection(length - 1, 0), 300);
-      }
+      setTimeout(() => quill.setSelection(999999, 0), 300);
     }
   }
 
-  onChange = (content: string, delta: Delta, source: Sources, editor: any) => {
-    this._changeSource = source;
+  onChange = (content: string, delta: Delta) => {
+    const { ops } = delta;
+    if (ops && ops[0].insert && ops[0].insert.mention) {
+      this.focusEditor();
+    }
     const { onChange } = this.props;
-    if (!onChange) {
-      return;
+    if (onChange) {
+      onChange(content);
     }
-    if (!markdownFromDelta(editor.getContents()).trim()) {
-      onChange('');
-      return;
-    }
-    onChange(content);
   }
 
   render() {
