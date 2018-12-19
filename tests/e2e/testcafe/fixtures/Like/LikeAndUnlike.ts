@@ -37,7 +37,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   const enterSpecifyTeam = async (app) => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-  } 
+  }
   const roleA = await h(t).userRole(userA, enterSpecifyTeam);
   const roleB = await h(t).userRole(userB, enterSpecifyTeam);
   const postCard = app.homePage.messageTab.conversationPage.postItemById(postId);
@@ -84,7 +84,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then M1 should appear "like" icon with number 1`, async () => {
-     await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -95,7 +95,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
     await postCard.ensureLoaded();
     await postCard.clickLikeOnActionBar();
   });
-  
+
   await h(t).withLog(`Then there is hollow "unlike" icon on M1 action bar and no like or unlike on M1 footer `, async () => {
     await t.hover(postCard.self);
     await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
@@ -144,7 +144,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
     await postCard.ensureLoaded();
     await postCard.clickLikeButtonOnFooter();
   });
-  
+
   await h(t).withLog(`Then there is hollow "unlike" icon on M1 action bar and no like or unlike on M1 footer `, async () => {
     await t.hover(postCard.self);
     await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
@@ -181,17 +181,17 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
       type: 'Team',
       members: [userA.rcId, userB.rcId, users[6].rcId],
     }).then(res => {
-      return res.data.id}
-    );
+      return res.data.id
+    });
     postId = await userA.sdk.platform.sendTextPost(
       `test "like" ${uuid()}`,
       teamId
-    ).then(res => {return res.data.id});
+    ).then(res => { return res.data.id });
   });
 
   const enterSpecifyTeam = async (app) => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-  } 
+  }
   const roleA = await h(t).userRole(userA, enterSpecifyTeam);
   const roleB = await h(t).userRole(userB, enterSpecifyTeam);
   const postCard = app.homePage.messageTab.conversationPage.postItemById(postId);
@@ -226,7 +226,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`Then there is a hollow "unlike" icon on Action Bar`, async () => {
     await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(1);
-  }); 
+  });
 
   // A click like on Action Bar
   await h(t).withLog(`When userA click "unlike" icon on Action Bar`, async () => {
@@ -237,7 +237,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumb_up');
     await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(2);
-  }); 
+  });
 
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
@@ -248,7 +248,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`Then there is a hollow "unlike" with number 2 on M1 footer`, async () => {
     await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(2);
-  }); 
+  });
 
   await h(t).withLog(`When userA click the solid "like" icon`, async () => {
     await t.useRole(roleA);
@@ -261,7 +261,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
     await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(1);
-  }); 
+  });
 
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
@@ -286,7 +286,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumb_up');
     await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(2);
-  }); 
+  });
 
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
@@ -297,7 +297,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`Then there is a hollow "unlike" with number 2 on M1 footer`, async () => {
     await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(2);
-  }); 
+  });
 
   await h(t).withLog(`When userA click the solid "like" icon on footer`, async () => {
     await t.useRole(roleA);
@@ -306,11 +306,11 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     await postCard.clickLikeButtonOnFooter();
   });
 
-  await h(t).withLog(`Then the solid hollow "unlike" icon change to hollow icon and the post Like number should be 1 `, async () => {
+  await h(t).withLog(`Then the both solid "unlike" icon change to hollow icon and the post Like number should be 1 `, async () => {
     await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
     await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
     await t.expect(await postCard.getLikeCount()).eql(1);
-  }); 
+  });
 
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);

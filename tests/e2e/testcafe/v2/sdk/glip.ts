@@ -182,8 +182,8 @@ export class GlipSdk {
     if (!teams) return [];
     const ids = teams.filter(team => team['_id']).map(team => team['_id']);
     return ids;
-  } 
-  
+  }
+
   async getInitRcTeamId() {
     const teams = (await this.getTeams()).data.teams;
     if (!teams) return [];
@@ -247,7 +247,7 @@ export class GlipSdk {
     });
   }
 
- updatePost(postId, data) {
+  updatePost(postId, data) {
     const uri = `api/post/${postId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
@@ -260,9 +260,9 @@ export class GlipSdk {
 
   async getPostLikesCount(PostId: string | number): Promise<number> {
     return await this.getPost(PostId).then(res => {
-      return res.data.likes ? res.data.likes : []; 
+      return res.data.likes ? res.data.likes : [];
     }).then(likes => {
-      return  likes.length;
+      return likes.length;
     });
   }
 
@@ -272,25 +272,25 @@ export class GlipSdk {
     const text = initData.text;
     const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
     let data = {};
-    if(likes.indexOf(personId) === -1) {
+    if (likes.indexOf(personId) === -1) {
       likes.push(personId);
       data = {
         _id: postId,
         likes,
         text,
       }
-      return await this.updatePost(postId, data);      
+      return await this.updatePost(postId, data);
     }
     return;
   }
-  
+
   async unlikePost(postId, rcId?: string) {
     const initData = await this.getPost(postId).then(res => { return res.data });
     const likes = initData.likes ? initData.likes : [];
     const text = initData.text;
     const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
     const index = likes.indexOf(personId);
-    if ( -1 < index) {
+    if (-1 < index) {
       likes.splice(index, 1);
       const data = {
         _id: postId,
@@ -346,7 +346,7 @@ export class GlipSdk {
       max_leftrail_group_tabs2: 20
     }
     const data = _.assign(
-      initData, 
+      initData,
       ...groupList.map(id => (
         { [`hide_group_${id}`]: false })
       )
@@ -395,7 +395,7 @@ export class GlipSdk {
     const params = _.assign(
       {},
       ...groupIds.filter(id => {
-        return readThrough[id]; 
+        return readThrough[id];
       }).map(id => ({
         [`unread_count:${id}`]: 0,
         [`unread_mentions_count:${id}`]: 0,
@@ -424,7 +424,7 @@ export class GlipSdk {
   }
 
   async clearAllUmi(rcId?: string) {
-    const unreadGroupIds = await this.getIdsOfGroupsWithUnreadMessages(rcId); 
+    const unreadGroupIds = await this.getIdsOfGroupsWithUnreadMessages(rcId);
     await this.markAsRead(rcId, unreadGroupIds);
   }
 
@@ -445,11 +445,11 @@ export class GlipSdk {
       {},
       ...groupList.map(id => {
         return { [`hide_group_${id}`]: false }
-      }) 
+      })
     )
     await this.updateProfile(rcId, data);
   }
-  
+
   async showGroups(rcId: string, groupIds: string[] | number[] | string | number) {
     let data;
     if (Object.prototype.toString.call(groupIds) === '[object Array]') {
@@ -457,7 +457,7 @@ export class GlipSdk {
         {},
         ...(groupIds as string[]).map(id => {
           return { [`hide_group_${id}`]: false }
-        }) 
+        })
       )
     } else {
       data = { [`hide_group_${groupIds}`]: false }
@@ -472,7 +472,7 @@ export class GlipSdk {
         {},
         ...(groupIds as string[]).map(id => {
           return { [`hde_group_${id}`]: true }
-        }) 
+        })
       )
     } else {
       data = { [`hide_group_${groupIds}`]: true }
@@ -484,9 +484,9 @@ export class GlipSdk {
     const data = {
       favorite_group_ids: groupIds
     }
-    await this.updateProfile(rcId, data); 
+    await this.updateProfile(rcId, data);
   }
-  
+
   async clearFavoriteGroups(rcId?: string) {
     const data = {
       favorite_group_ids: [],
@@ -496,10 +496,10 @@ export class GlipSdk {
 
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
     const meChatId = (await this.getPerson(rcId)).data.me_group_id;
-    await this.favoriteGroups(rcId, [ +meChatId ]);
+    await this.favoriteGroups(rcId, [+meChatId]);
   }
-  
-  async setMaxTeamDisplay(rcId: string, n: number) { 
+
+  async setMaxTeamDisplay(rcId: string, n: number) {
     await this.updateProfile(rcId, { max_leftrail_group_tabs2: n });
   }
 
