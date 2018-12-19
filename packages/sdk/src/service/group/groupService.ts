@@ -424,6 +424,18 @@ class GroupService extends BaseService<Group> {
   }
 
   // update partial group data, for message draft
+  async updateGroupPrivacy(params: {
+    id: number;
+    privacy: string;
+  }): Promise<boolean> {
+    const result = await this.updateGroupPartialData({
+      id: params.id,
+      privacy: params.privacy,
+    });
+    return result;
+  }
+
+  // update partial group data, for message draft
   async updateGroupDraft(params: {
     id: number;
     draft: string;

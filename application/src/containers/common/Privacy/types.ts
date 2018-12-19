@@ -5,7 +5,6 @@
  */
 
 import { IconButtonSize } from 'jui/components/Buttons';
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 
 type PrivacyProps = {
   id: number; // teamId
@@ -14,7 +13,9 @@ type PrivacyProps = {
 
 type PrivacyViewProps = PrivacyProps & {
   isPublic: boolean;
-  handlePrivacy: () => Promise<ServiceCommonErrorType>;
+  isAdmin: boolean;
+  isOffline: boolean;
+  handlePrivacy: () => Promise<boolean>;
 };
 
 export { PrivacyProps, PrivacyViewProps };

@@ -71,6 +71,10 @@
   "setStateUnFavorites": "Remove from Favorites",
   "setStatePublic": "Change to Public Team",
   "setStatePrivate": "Change to Private Team",
+  "privateTeam": "Private team",
+  "publicTeam": "Public team",
+  "teamNetError": "Sorry, we weren't able to update the team.",
+  "markPrivateServerErrorForTeam": "Sorry, we weren't able to update the team. Try again.",
   "markFavoriteServerErrorContent": "We weren't able to favorite this conversation. Try again.",
   "markUnFavoriteServerErrorContent": "We weren't able to remove this conversation from favorites. Try again.",
   "markPublicServerErrorContent": "We weren't able to public this conversation. Try again.",
@@ -161,7 +165,5 @@
   "ariaGoToMe": "Go to the workstation of yourself",
   "ariaGoToOther": "Go to the conversation with {{name}}",
   "locationTitle": "Location",
-  "viewYourProfile": "View Your Profile",
-  "deletePost": "Delete post",
-  "showMore": "Show more"
+  "viewYourProfile": "View Your Profile"
 }

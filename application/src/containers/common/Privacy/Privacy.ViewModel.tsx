@@ -8,19 +8,19 @@ import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { PrivacyProps, PrivacyViewProps } from './types';
 
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
 
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-// import { service } from 'sdk';
+import { service } from 'sdk';
 import { IconButtonSize } from 'jui/components/Buttons';
-// const { GroupService } = service;
+const { GroupService } = service;
 
 class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   implements PrivacyViewProps {
-  // private _groupService: service.GroupService = GroupService.getInstance();
+  private _groupService: service.GroupService = GroupService.getInstance();
 
   @computed
   get id() {
@@ -42,10 +42,22 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
     return this._group.isTeam ? this._group.privacy !== 'private' : true;
   }
 
-  handlePrivacy = async (): Promise<ServiceCommonErrorType> => {
-    // alert('The service is not currently supported');
-    // const result = await this._groupService.set(this.id);
-    return ServiceCommonErrorType.NONE;
+  @computed
+  get isAdmin() {
+    return this._group.isAdmin;
+  }
+
+  @computed
+  get isOffline() {
+    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
+  }
+
+  handlePrivacy = () => {
+    const newData = this._group.privacy === 'private' ? 'protected' : 'private';
+    return this._groupService.updateGroupPrivacy({
+      id: this.id,
+      privacy: newData,
+    });
   }
 }
 
