@@ -25,7 +25,8 @@ class NetworkBannerViewModel extends AbstractViewModel {
   @computed
   get banner() {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
-    return BANNER_MAP[status];
+    const id = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return id ? BANNER_MAP[status] : BANNER_MAP.online;
   }
 }
 

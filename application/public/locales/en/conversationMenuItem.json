@@ -5,7 +5,7 @@
   "closeConversation": "Close Conversation",
   "closeConversationFail": "Close Conversation Failed",
   "havingTroubleCloseConversation": "We are having trouble closing the conversation. Please try again later.",
-  "remove_from_favorite": "Remove from Favorite",
+  "remove_from_favorites": "Remove from Favorites",
   "favorite": "Favorite",
   "close": "Close",
   "markFavoriteServerErrorContent": "Unexpected error occurred. Try again later.",

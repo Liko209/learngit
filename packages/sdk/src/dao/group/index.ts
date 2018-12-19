@@ -19,10 +19,16 @@ class GroupDao extends BaseDao<Group> {
     limit: number,
     isTeam: boolean,
     excludeIds: number[] = [],
+    currentUserId?: number,
   ): Promise<Group[]> {
     mainLogger.debug(`queryGroup isTeam:${isTeam} excludeIds:${excludeIds}`);
     const query = this.createQuery()
-      .filter((item: Group) => !item.is_archived && item.is_team === isTeam)
+      .filter(
+        (item: Group) =>
+          !item.is_archived &&
+          item.is_team === isTeam &&
+          (currentUserId ? item.members.includes(currentUserId) : true),
+      )
       // .orderBy('most_recent_post_created_at', true)
       .offset(offset)
       .limit(limit);

@@ -19,11 +19,19 @@ describe('NetworkBannerViewModel', () => {
 
     it('should return offline config when offline [JPT-470] 1', () => {
       (getGlobalValue as jest.Mock).mockReturnValueOnce('offline');
+      (getGlobalValue as jest.Mock).mockReturnValueOnce('userId');
       const viewModel = new NetworkBannerViewModel();
       expect(viewModel.banner).toEqual({
         message: 'NoInternetConnection',
         type: 'error',
       });
+    });
+
+    it('should return NULL config when user has not login', () => {
+      (getGlobalValue as jest.Mock).mockReturnValueOnce('offline');
+      (getGlobalValue as jest.Mock).mockReturnValueOnce('');
+      const viewModel = new NetworkBannerViewModel();
+      expect(viewModel.banner).toBeNull();
     });
   });
 });

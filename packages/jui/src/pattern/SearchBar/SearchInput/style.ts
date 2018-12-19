@@ -16,6 +16,7 @@ import { JuiTextField } from '../../../components/Forms';
 
 type SearchWrapperType = {
   focus: boolean;
+  hasValue: string;
 };
 
 const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
@@ -27,8 +28,8 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   box-sizing: border-box;
   background: ${({ focus }) =>
       focus ? palette('common', 'white') : grey('100')}
-    ${({ focus }) => {
-      return focus
+    ${({ hasValue }) => {
+      return hasValue
         ? css`
             border-top-right-radius: ${spacing(1)};
             border-top-left-radius: ${spacing(1)};
@@ -43,7 +44,7 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
             border-bottom: 1px solid ${grey('200')};
           `
         : null};
-  z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
+  z-index: ${({ theme }) => theme.zIndex.drawer + 12};
   transition: all 0.3s ${({ theme }) => theme.transitions.easing.easeInOut};
   &:hover {
     background: ${({ focus }) =>

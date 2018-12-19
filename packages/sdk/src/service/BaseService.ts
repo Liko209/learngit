@@ -388,14 +388,18 @@ class BaseService<
   }
 
   getRollbackPartialModel(
-    partialModel: Partial<Raw<SubModel>>,
-    originalModel: SubModel,
+    partialEntity: Partial<Raw<SubModel>>,
+    originalEntity: SubModel,
   ): Partial<Raw<SubModel>> {
-    const rollbackPartialModel = _.pick(
-      originalModel,
-      Object.keys(partialModel),
-    );
-    return rollbackPartialModel as Partial<Raw<SubModel>>;
+    const keys = Object.keys(partialEntity);
+    const rollbackPartialEntity = _.pick(originalEntity, keys);
+
+    keys.forEach((key: string) => {
+      if (!rollbackPartialEntity.hasOwnProperty(key)) {
+        rollbackPartialEntity[key] = undefined;
+      }
+    });
+    return rollbackPartialEntity as Partial<Raw<SubModel>>;
   }
 
   getMergedModel(

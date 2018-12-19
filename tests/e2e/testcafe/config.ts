@@ -54,10 +54,12 @@ const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '10');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
-const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures);
+const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES  === 'true';
+const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
+const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -70,6 +72,7 @@ const RUNNER_OPTS = {
   INCLUDE_TAGS,
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
+  STOP_ON_FIRST_FAIL, 
 }
 
 // create electron configuration file
@@ -88,6 +91,11 @@ const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.r
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
 const RUN_NAME = process.env.RUN_NAME || uuid();
 
+enum ACCOUNT_TYPE_LIST {
+  "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
+  "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)"
+};
+
 export {
   APP_ROOT,
   TMPFILE_PATH,
@@ -101,4 +109,5 @@ export {
   ENABLE_REMOTE_DASHBOARD,
   DASHBOARD_URL,
   RUN_NAME,
+  ACCOUNT_TYPE_LIST
 };

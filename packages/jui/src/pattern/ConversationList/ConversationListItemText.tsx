@@ -27,6 +27,7 @@ const StyledTypography = styled(MuiTypography)`
 
 type ItemTextProps = {
   style?: CSSProperties;
+  disableTooltip?: boolean;
 };
 
 type ItemTextStates = {
@@ -51,31 +52,36 @@ class ConversationListItemText extends PureComponent<
   render() {
     const { tipOpen } = this.state;
 
-    return (
+    const { disableTooltip, children, ...rest } = this.props;
+    return disableTooltip ? (
+      <StyledTypography {...rest}>{children}</StyledTypography>
+    ) : (
       <JuiArrowTip
-        title={this.props.children}
+        title={children}
         disableFocusListener={false}
         disableHoverListener={false}
         disableTouchListener={false}
         open={tipOpen}
       >
         <StyledTypography
-          {...this.props}
+          {...rest}
           ref={this.textRef}
           onMouseOver={this._handleMouseEnter}
           onMouseLeave={this._handleMouseLeave}
         >
-          {this.props.children}
+          {children}
         </StyledTypography>
       </JuiArrowTip>
     );
   }
 
   componentDidMount() {
-    const textEl = ReactDOM.findDOMNode(this.textRef.current);
+    if (!this.props.disableTooltip) {
+      const textEl = ReactDOM.findDOMNode(this.textRef.current);
 
-    if (textEl && textEl instanceof HTMLElement) {
-      this.textEl = textEl;
+      if (textEl && textEl instanceof HTMLElement) {
+        this.textEl = textEl;
+      }
     }
   }
 
