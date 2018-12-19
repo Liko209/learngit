@@ -139,10 +139,20 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         isUpdate,
       );
       if (item) {
-        this.items.set(item.id, {
+        const info: AttachmentItem = {
           item,
           data,
-        } as AttachmentItem);
+        };
+        if (isUpdate) {
+          const values: AttachmentItem[] = Array.from(this.items.values());
+          const target = values.find(looper => looper.item.name === data.name);
+          if (target) {
+            this.items.delete(target.item.id);
+            this.items.set(item.id, info);
+          }
+        } else {
+          this.items.set(item.id, info);
+        }
       }
       return item;
     } catch (e) {
