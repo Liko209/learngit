@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/UMI.ts",
+      "./fixtures/ConversationList/CloseConversation.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
-import { h } from '../../../../helpers';
+import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
 
@@ -134,20 +134,11 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectUmi(n: number, waitTime: number = 10) {
-    let i = 0;
-    while (true) {
-      await this.t.wait(1e3);
-      try {
-        await this.t.expect(await this.getUmi()).eql(n);
-        return;
-      } catch (err) {
-        if (i >= waitTime) {
-          throw err;
-        }
-        i = i + 1;
-      }
-    }
+  async expectUmi(n: number) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.getUmi()
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n},but actual ${umi}`);
+    })
   }
 
   async openMoreMenu() {
@@ -183,7 +174,7 @@ class ConversationListSection extends BaseWebComponent {
     return this.self.find('.conversation-list-section-header');
   }
 
-  async getHeaderUmi() {
+  async getUmi() {
     const umi = this.header.find('.umi');
     if (!await umi.exists) {
       return 0;
@@ -199,19 +190,10 @@ class ConversationListSection extends BaseWebComponent {
   }
 
   async expectHeaderUmi(n: number, waitTime: number = 10) {
-    let i = 0;
-    while (true) {
-      await this.t.wait(1e3);
-      try {
-        await this.t.expect(await this.getHeaderUmi()).eql(n);
-        return;
-      } catch (err) {
-        if (i >= waitTime) {
-          throw err;
-        }
-        i = i + 1;
-      }
-    }
+    await H.retryUntilPass(async () => {
+      const umi = await this.getUmi();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }) 
   }
 
   get collapse() {

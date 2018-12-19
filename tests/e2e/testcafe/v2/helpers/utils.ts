@@ -39,10 +39,8 @@ export class H {
       } catch (err) {
         if (i < maxRetryTime && err instanceof assert.AssertionError) {
           i += 1;
-          console.log("xxxx")
-          await this.sleep(retryInterval)
+          await this.sleep(retryInterval);
         } else {
-          console.log("yyyy")
           throw err;
         }
       }
