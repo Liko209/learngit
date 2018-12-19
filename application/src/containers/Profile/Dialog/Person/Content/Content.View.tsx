@@ -29,7 +29,6 @@ import {
   JuiProfileDialogContentFormLabel as FormLabel,
   JuiProfileDialogContentFormValue as FormValue,
   JuiProfileDialogContentFormCopy as FormCopy,
-  JuiProfileDialogContentFormEmail as FormEmail,
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -108,17 +107,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderEmail(value: string) {
     const html = `<a href="mailto:${value}">${value}</a>`;
-    return <FormEmail dangerouslySetInnerHTML={{ __html: html }} />;
+    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
   renderHomepage(value: string) {
     const html = Markdown(value);
-    const FormHomepage = FormEmail;
-    return (
-      <FormHomepage>
-        <div dangerouslySetInnerHTML={{ __html: html }} />
-      </FormHomepage>
-    );
+    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
   render() {
