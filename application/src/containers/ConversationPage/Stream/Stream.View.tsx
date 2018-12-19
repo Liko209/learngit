@@ -216,29 +216,36 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _viewedPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(
-      this._handleFirstUnreadPostVisibilityChange,
+    return this._visibilityPostWrapper({
       streamItem,
-      true,
-    );
+      onChangeHandler: this._handleFirstUnreadPostVisibilityChange,
+    });
   }
 
   private _mostRecentPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(
-      this._handleMostRecentPostRead,
+    return this._visibilityPostWrapper({
       streamItem,
-      true,
-    );
+      onChangeHandler: this._handleMostRecentPostRead,
+    });
   }
 
   private _ordinaryPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(noop, streamItem);
+    return this._visibilityPostWrapper({
+      streamItem,
+      onChangeHandler: noop,
+      active: false,
+    });
   }
-  private _visibilityPostWrapper(
-    onChangeHandler: (isVisible: boolean) => void,
-    streamItem: StreamItem,
-    active = false,
-  ) {
+
+  private _visibilityPostWrapper({
+    onChangeHandler,
+    streamItem,
+    active,
+  }: {
+    onChangeHandler: (isVisible: boolean) => void;
+    streamItem: StreamItem;
+    active?: boolean;
+  }) {
     const { loading } = this.props;
     return (
       <VisibilitySensor
