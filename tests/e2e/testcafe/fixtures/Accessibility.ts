@@ -17,8 +17,9 @@ test(formalName('Accessibility', ['FIJI-1323']), async (t) => {
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('Then I can run accessibility check', async () => {
-    const result = await h(t).a11yHelper.attestCheck();
-    H.jsonDump('./a11y.json', result);
+  await h(t).withLog('Then I can run accessibility check', async (step) => {
+    const zipFile = await h(t).a11yHelper.accessibilityCheck("accessibility-check");
+    if (!step.attachments) step.attachments = [];
+    step.attachments.push(zipFile);
   })
 });
