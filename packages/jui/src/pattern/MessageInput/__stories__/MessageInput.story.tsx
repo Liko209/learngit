@@ -126,44 +126,10 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
       type: 'text/plain',
     },
   );
-  const files = [
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-    f1,
-    f2,
-    f3,
-  ];
+  const cell: File[] = [f1, f2, f3];
+  const files: File[] = Array(18)
+    .fill(cell)
+    .flat();
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>

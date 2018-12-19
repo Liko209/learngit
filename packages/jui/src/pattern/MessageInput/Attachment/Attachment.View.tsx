@@ -71,6 +71,28 @@ class AttachmentView extends Component<Props> {
     const { anchorEl } = this.state;
     const open = !!anchorEl;
     const viewBox = '0 0 16 16';
+    const menus = [
+      {
+        icon: <JuiGoogleDriveIcon viewBox={viewBox} />,
+        label: 'Google Drive',
+      },
+      {
+        icon: <JuiDropboxIcon viewBox={viewBox} />,
+        label: 'Dropbox',
+      },
+      {
+        icon: <JuiOneboxIcon viewBox={viewBox} />,
+        label: 'Box',
+      },
+      {
+        icon: <JuiEvernoteIcon viewBox={viewBox} />,
+        label: 'Evernote',
+      },
+      {
+        icon: <JuiOneDriveIcon viewBox={viewBox} />,
+        label: 'OneDrive',
+      },
+    ];
     return (
       <Fragment>
         <JuiIconButton
@@ -100,36 +122,11 @@ class AttachmentView extends Component<Props> {
               Upload files from
             </JuiMenuItem>
             <JuiMenuList>
-              <JuiMenuItem
-                disabled={true}
-                icon={<JuiGoogleDriveIcon viewBox={viewBox} />}
-              >
-                Google Drive
-              </JuiMenuItem>
-              <JuiMenuItem
-                disabled={true}
-                icon={<JuiDropboxIcon viewBox={viewBox} />}
-              >
-                Dropbox
-              </JuiMenuItem>
-              <JuiMenuItem
-                disabled={true}
-                icon={<JuiOneboxIcon viewBox={viewBox} />}
-              >
-                Box
-              </JuiMenuItem>
-              <JuiMenuItem
-                disabled={true}
-                icon={<JuiEvernoteIcon viewBox={viewBox} />}
-              >
-                Evernote
-              </JuiMenuItem>
-              <JuiMenuItem
-                disabled={true}
-                icon={<JuiOneDriveIcon viewBox={viewBox} />}
-              >
-                OneDrive
-              </JuiMenuItem>
+              {menus.map(({ icon, label }, idx) => (
+                <JuiMenuItem disabled={true} icon={icon} key={idx}>
+                  {label}
+                </JuiMenuItem>
+              ))}
             </JuiMenuList>
             <JuiDivider />
             <JuiMenuList>
