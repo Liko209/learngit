@@ -16,12 +16,14 @@ import {
   HandleByRingCentral,
   HandleByGlip2,
   HandleByUpload,
+  HandleByCustom,
 } from './handlers';
 const types = [
   HandleByGlip,
   HandleByRingCentral,
   HandleByGlip2,
   HandleByUpload,
+  HandleByCustom,
 ];
 class Api {
   static basePath = '';
@@ -88,6 +90,25 @@ class Api {
     return networkClient;
   }
 
+  static getCustomNetworkClient(host: string, type: IHandleType) {
+    let networkClient = this.httpSet.get(host);
+    if (!networkClient) {
+      const networkRequests: INetworkRequests = {
+        host,
+        handlerType: type,
+      };
+      networkClient = new NetworkClient(
+        networkRequests,
+        '',
+        type.defaultVia,
+        '',
+        this.networkManager,
+      );
+      this.httpSet.set(name, networkClient);
+    }
+    return networkClient;
+  }
+
   static get glipNetworkClient() {
     return this.getNetworkClient('glip', HandleByGlip);
   }
@@ -106,6 +127,10 @@ class Api {
 
   static get uploadNetworkClient() {
     return this.getNetworkClient('upload', HandleByUpload);
+  }
+
+  static customNetworkClient(host: string) {
+    return this.getCustomNetworkClient(host, HandleByCustom);
   }
 
   static getDataById<T>(id: number) {
