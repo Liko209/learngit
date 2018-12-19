@@ -30,13 +30,13 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   get permissionsMap() {
     return {
       [MENU_LIST_ITEM_TYPE.QUOTE]: {
-        permission: this._canPost,
+        permission: this._isText && this._canPost,
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
-        permission: this._canPost && this._isPostByMe,
+        permission: this._isText && this._canPost && this._isPostByMe,
       },
     };
   }
