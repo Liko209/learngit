@@ -334,6 +334,16 @@ class PostService extends BaseService<Post> {
           post.item_ids = post.item_ids.map((id: number) => {
             return id === preInsertId ? updatedId : id;
           });
+
+          if (post.item_data && post.item_data.version_map) {
+            const versionMap = post.item_data.version_map;
+            Object.keys(versionMap).forEach((strKey: string) => {
+              if (strKey === preInsertId.toString()) {
+                versionMap[updatedId] = versionMap[preInsertId];
+                delete versionMap[preInsertId];
+              }
+            });
+          }
         }
 
         await this._updatePost(post);

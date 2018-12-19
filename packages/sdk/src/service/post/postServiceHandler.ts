@@ -10,14 +10,11 @@ import {
 } from '../../dao/account/constants';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
-import { Post, ItemFile } from '../../models';
+import { Post, ItemFile, PostItemData } from '../../models';
 import { RawPostInfo } from './types';
 import { POST_STATUS } from '../constants';
 import ItemService from '../item';
 
-export type ItemData = {
-  version_map: { [key: number]: number };
-};
 // global_url_regex
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
@@ -79,12 +76,11 @@ class PostServiceHandler {
     return links;
   }
 
-  static buildVersionMap(
+  static async buildVersionMap(
     groupId: number,
     itemIds: number[],
-  ): ItemData | undefined {
+  ): Promise<PostItemData | undefined> {
     if (itemIds && itemIds.length > 0) {
-      const itemData: ItemData = { version_map: {} };
       const itemService: ItemService = ItemService.getInstance();
       const uploadFiles = itemService.getUploadItems(groupId);
       const needCheckItemFiles = _.intersectionWith(
@@ -95,13 +91,16 @@ class PostServiceHandler {
         },
       );
       if (needCheckItemFiles.length > 0) {
-        needCheckItemFiles.forEach((itemFile: ItemFile) => {
-          if (itemFile && !itemFile.is_new && itemFile.versions.length > 0) {
-            itemData.version_map[itemFile.id] = itemFile.versions.length;
-          }
-        });
+        const itemData: PostItemData = { version_map: {} };
+        const promises = needCheckItemFiles.map(itemFile =>
+          itemService.getItemVersion(itemFile),
+        );
+        const versions = await Promise.all(promises);
+        for (let i = 0; i < needCheckItemFiles.length; i++) {
+          itemData.version_map[needCheckItemFiles[i].id] = versions[i];
+        }
+        return itemData;
       }
-      return itemData;
     }
 
     return undefined;
@@ -143,7 +142,7 @@ class PostServiceHandler {
     };
 
     if (params.groupId && params.itemIds && params.itemIds.length > 0) {
-      const itemData = PostServiceHandler.buildVersionMap(
+      const itemData = await PostServiceHandler.buildVersionMap(
         params.groupId,
         params.itemIds,
       );

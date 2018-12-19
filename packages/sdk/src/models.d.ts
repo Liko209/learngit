@@ -183,6 +183,10 @@ export type GroupConfig = {
   is_newest_saved?: boolean;
 };
 
+export type PostItemData = {
+  version_map: { [key: number]: number };
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
@@ -197,7 +201,7 @@ export type Post = ExtendedBaseModel & {
   at_mention_non_item_ids?: number[];
   new_version?: number;
   from_group_id?: number;
-  item_data?: object;
+  item_data?: PostItemData;
   links?: object[];
   items?: object[];
   status?: POST_STATUS;

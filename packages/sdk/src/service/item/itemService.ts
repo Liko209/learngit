@@ -39,9 +39,8 @@ class ItemService extends BaseService<Item> {
     );
   }
 
-  async getItemVersion(itemId: number): Promise<number> {
-    const item = await this.getById(itemId);
-    return item ? item.versions.length : 0;
+  async getItemVersion(itemFile: ItemFile): Promise<number> {
+    return await this._getItemFileHandler().getUpdateItemVersion(itemFile);
   }
 
   async cancelUpload(itemId: number) {

@@ -24,7 +24,6 @@ import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
-
   async sendItemFile(
     groupId: number,
     file: FormData,
@@ -129,6 +128,23 @@ class ItemFileUploadHandler {
       }
     });
     return result;
+  }
+
+  public async getUpdateItemVersion(itemFile: ItemFile) {
+    let versionNumber = 0;
+    if (itemFile) {
+      if (itemFile.id > 0) {
+        versionNumber = itemFile.versions.length;
+      } else {
+        const existItemFile = await this._getOldestExistFile(
+          itemFile.group_ids[0],
+          itemFile.name,
+        );
+        versionNumber = existItemFile ? existItemFile.versions.length + 1 : 0;
+      }
+    }
+
+    return versionNumber;
   }
 
   private _updateFileProgress(failedItemId: number, status: SENDING_STATUS) {
@@ -500,7 +516,7 @@ class ItemFileUploadHandler {
   private _toItemFile(
     groupId: number,
     formFile: FormData,
-    isNew: boolean,
+    isUpdate: boolean,
   ): ItemFile {
     const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     const accountService: AccountService = AccountService.getInstance();
@@ -513,7 +529,7 @@ class ItemFileUploadHandler {
       created_at: now,
       modified_at: now,
       creator_id: userId,
-      is_new: isNew,
+      is_new: !isUpdate,
       deactivated: false,
       version: versionHash(),
       group_ids: [groupId],
