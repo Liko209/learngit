@@ -53,7 +53,7 @@ class AttachmentManagerViewComponent extends Component<
   }
 
   render() {
-    return <div>{this._showDuplicateFilesDialogIfNeeded()}</div>;
+    return this._showDuplicateFilesDialogIfNeeded();
   }
 }
 
