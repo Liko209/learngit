@@ -75,32 +75,23 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
   const removeAttachment = () => {};
-  const f2 = new File(['bar'], 'f2.txt', {
-    type: 'text/plain',
-  });
-  const f1 = new File(['bar'], 'f1.txt', {
-    type: 'text/plain',
-  });
-  const f3 = new File(
-    ['bar'],
-    'This is the name of attachment itemThis is the name of attachment item.txt',
-    {
-      type: 'text/plain',
-    },
-  );
+  const f2 = 'f2.txt';
+  const f1 = 'f1.txt';
+  const f3 =
+    'This is the name of attachment itemThis is the name of attachment item.txt';
   const files = [
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
-    { name: f1.name, status: 'normal' },
-    { name: f2.name, status: 'loading' },
-    { name: f3.name, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
+    { name: f1, status: 'normal' },
+    { name: f2, status: 'loading' },
+    { name: f3, status: 'error' },
   ];
   return (
     <div>
@@ -114,25 +105,19 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
 
 storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const removeAttachment = () => {};
-  const f2 = new File(['bar'], 'f2.txt', {
-    type: 'text/plain',
-  });
-  const f1 = new File(['bar'], 'f1.txt', {
-    type: 'text/plain',
-  });
-  const f3 = new File(
-    ['bar'],
-    'This is the name of attachment itemThis is the name of attachment item.txt',
-    {
-      type: 'text/plain',
-    },
-  );
-  const files = [f1, f2, f3];
+  const f2 = 'f2.txt';
+  const f1 = 'f1.txt';
+  const f3 =
+    'This is the name of attachment itemThis is the name of attachment item.txt';
+  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>
       <DuplicateAlert
-        duplicateFiles={files}
+        title="Updated Files?"
+        subtitle="The following files already exist."
+        footText="Do you want to update the existing files or do you wish to create new files?"
+        duplicateFiles={files as File[]}
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}
