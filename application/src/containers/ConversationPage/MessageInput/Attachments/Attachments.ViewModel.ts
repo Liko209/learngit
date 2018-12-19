@@ -13,7 +13,6 @@ import {
 } from './types';
 import {
   ItemService,
-  SENDING_STATUS,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
@@ -60,7 +59,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
           this.items.set(newItem.id, {
             item: newItem,
             data: record.data,
-            status: newItem.sendStatus,
           } as AttachmentItem);
         }
       });
@@ -99,7 +97,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       result.forEach((element: ItemFile) => {
         this.items.set(element.id, {
           item: element,
-          status: element.sendStatus,
         } as AttachmentItem);
       });
     } else {
@@ -145,7 +142,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         this.items.set(item.id, {
           item,
           data,
-          status: SENDING_STATUS.INPROGRESS,
         } as AttachmentItem);
       }
       return item;
