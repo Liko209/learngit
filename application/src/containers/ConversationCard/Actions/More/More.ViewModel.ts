@@ -81,8 +81,13 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  private get _hasAttachments() {
+    return this._post.itemIds.length > 0;
+  }
+
+  @computed
   get showMoreAction() {
-    return this._isText;
+    return this._isText || this._hasAttachments;
   }
 }
 
