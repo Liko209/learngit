@@ -318,26 +318,13 @@ describe('ItemService', () => {
         expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
       });
     });
-  });
 
-  describe('getItemVersion()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-    });
-
-    it('should return 0 when can not find the item', async () => {
-      jest.spyOn(itemService, 'getById').mockResolvedValueOnce(null);
-      const res = await itemService.getItemVersion(1);
-      expect(res).toBe(0);
-    });
-
-    it('should return version length when fine the item', async () => {
-      jest
-        .spyOn(itemService, 'getById')
-        .mockResolvedValueOnce({ versions: [123, 123, 123] });
-      const res = await itemService.getItemVersion(1);
-      expect(res).toBe(3);
+    describe('getItemVersion()', () => {
+      it('should call ItemFileUplaodHandler to get version', async () => {
+        itemFileUploadHandler.getUpdateItemVersion.mockResolvedValue(true);
+        await itemService.getItemVersion(1);
+        expect(itemFileUploadHandler.getUpdateItemVersion).toBeCalledWith(1);
+      });
     });
   });
 });
