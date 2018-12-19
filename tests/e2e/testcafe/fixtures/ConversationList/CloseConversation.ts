@@ -116,7 +116,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     });
 
     await h(t).withLog('Then the close button should be disabled', async () => {
-      await t.expect(app.homePage.messageTab.moreMenu.close.isDisable).ok();
+      await app.homePage.messageTab.moreMenu.close.shouldBeDisabled()
       await t.pressKey('esc');
     },
     );
