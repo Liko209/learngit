@@ -3,37 +3,26 @@ import notificationCenter, {
 } from '../../../sdk/src/service/notificationCenter';
 import { SOCKET } from '../../../sdk/src/service/eventKey';
 
-export enum RTCNetworkEVENT {
+enum RTCNetworkEVENT {
   NETWORK_CHANGE = 'RTCNetworkEVENT.NETWORK_CHANGE',
 }
 
-export class RTCNetworkNotificationCenter extends NotificationCenter {
+class RTCNetworkNotificationCenter extends NotificationCenter {
   private _isOnline: boolean = true;
-  private static instance: RTCNetworkNotificationCenter;
 
-  private constructor() {
+  constructor() {
     super();
     this._listenEvevt();
-  }
-
-  public static getInstance() {
-    if (!RTCNetworkNotificationCenter.instance) {
-      RTCNetworkNotificationCenter.instance = new RTCNetworkNotificationCenter();
-    }
-
-    return RTCNetworkNotificationCenter.instance;
   }
 
   private _onOnline() {
     this._isOnline = true;
     this.emit(RTCNetworkEVENT.NETWORK_CHANGE, { state: 'online' });
-    console.log('RTCNetworkNotificationCenter: network change to online');
   }
 
   private _onOffline() {
     this._isOnline = false;
     this.emit(RTCNetworkEVENT.NETWORK_CHANGE, { state: 'offline' });
-    console.log('RTCNetworkNotificationCenter: network change to offline');
   }
 
   private _listenEvevt() {
@@ -55,3 +44,8 @@ export class RTCNetworkNotificationCenter extends NotificationCenter {
     return this._isOnline;
   }
 }
+
+const rtcNetworkNotificationCenter: RTCNetworkNotificationCenter = new RTCNetworkNotificationCenter();
+
+export { RTCNetworkNotificationCenter, RTCNetworkEVENT };
+export default rtcNetworkNotificationCenter;
