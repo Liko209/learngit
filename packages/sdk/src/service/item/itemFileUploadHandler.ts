@@ -20,6 +20,7 @@ import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
 import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
+import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
@@ -281,10 +282,6 @@ class ItemFileUploadHandler {
     await this._uploadItem(groupId, preInsertItem, isUpdate);
   }
 
-  private _shouldUploadToAmazonS3() {
-    return false;
-  }
-
   private async _sendItemFile(
     groupId: number,
     preInsertItem: ItemFile,
@@ -312,7 +309,7 @@ class ItemFileUploadHandler {
       });
     }
 
-    if (this._shouldUploadToAmazonS3()) {
+    if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
       await this._uploadFileToAmazonS3(
         file,
         preInsertItem,
