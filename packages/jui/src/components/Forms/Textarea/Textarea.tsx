@@ -9,9 +9,10 @@ import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 
 import {
   typography,
-  spacing,
   grey,
-  shape,
+  spacing,
+  palette,
+  height,
 } from '../../../foundation/utils/styles';
 
 type State = {
@@ -30,17 +31,32 @@ const WrapperTextField = ({ hasValue, ...rest }: State) => {
 
 const Textarea = styled<Textarea>(WrapperTextField)`
   && {
-    background: ${props => (props.hasValue ? '#fff' : grey('100'))};
-    padding: ${({ theme }) => spacing(2)};
-    margin: ${spacing(2)} 0 0 0;
-    box-sizing: border-box;
-    border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-    border: ${props =>
-      props.hasValue ? shape('border3') : '1px solid transparent'};
+    textarea {
+      height: ${height(18)};
+      background: ${grey('100')};
+      margin: ${spacing(2)} 0 0 0;
+      box-sizing: border-box;
+      font-size: ${spacing(4)};
+      &:hover,
+      &:focus {
+        background: ${palette('common', 'white')};
+      }
+    }
   }
   .input-root {
     padding: 0;
     ${typography('body1')};
+    &.input-underline:after {
+      border-color: ${palette('primary', 'main')};
+    }
+  }
+  .form-label-root {
+    color: ${grey('500')};
+    top: ${spacing(1)};
+    z-index: 1;
+    &.form-label-focus {
+      color: ${palette('primary', 'main')};
+    }
   }
 `;
 
@@ -79,9 +95,15 @@ class JuiTextarea extends React.Component<Props, State> {
         hasValue={hasValue}
         onKeyDown={this.onKeyDown}
         InputProps={{
-          disableUnderline: true,
           classes: {
             root: 'input-root',
+            underline: 'input-underline',
+          },
+        }}
+        InputLabelProps={{
+          FormLabelClasses: {
+            root: 'form-label-root',
+            focused: 'form-label-focus',
           },
         }}
         rows={rows || 3}

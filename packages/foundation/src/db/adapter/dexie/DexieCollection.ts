@@ -73,10 +73,17 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
     if (cols.length === 1) {
       // single query
       const compute = async () => {
-        const result: T[] = [];
-        await col.each((item: T) => {
-          result.push(item);
-        });
+        let result: T[] = [];
+        try {
+          result = await col.toArray();
+        } catch (error) {
+          // if Maximum IPC message size > 127M, will throw "Maximum IPC message size exceeded" error
+          // Issue in github:https://github.com/dfahlander/Dexie.js/issues/468
+          // About this error in indexeddb source code: https://chromium.googlesource.com/chromium/src.git/+/master/content/browser/indexed_db/indexed_db_database.cc#1158
+          await col.each((item: T) => {
+            result.push(item);
+          });
+        }
         return result;
       };
 

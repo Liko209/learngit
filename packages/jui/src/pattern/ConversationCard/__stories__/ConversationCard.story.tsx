@@ -15,9 +15,9 @@ import {
   JuiConversationCardFooter,
 } from '..';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiButtonBar } from '../../../components/Buttons/ButtonBar/ButtonBar';
 import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton';
 import JuiConversationCardFrom from '../ConversationCardFrom';
+import JuiConversationCardBody from '../ConversationCardBody';
 
 storiesOf('Pattern', module)
   .addDecorator(withInfoDecorator(JuiConversationCard, { inline: true }))
@@ -26,33 +26,56 @@ storiesOf('Pattern', module)
   )
   .add('ConversationCard', () => {
     const name = text('name', 'John Smith');
+    const groupName = text('Group name', 'Team AAA');
+    const activity = text('activity', 'shared 22 files');
+    const status = text('status', '🏃 in the meeting');
     const mode = boolean('navigation', false) ? 'navigation' : null;
     const from = mode && (
-      <JuiConversationCardFrom name="Group" isGroup={true} />
+      <JuiConversationCardFrom
+        name={groupName}
+        isTeam={true}
+        onClick={() => {}}
+      />
+    );
+    const card = (
+      <JuiConversationCard
+        Avatar={
+          <JuiAvatar color="lake" size="medium">
+            SH
+          </JuiAvatar>
+        }
+        mode={mode}
+        key={1}
+      >
+        <JuiConversationCardHeader
+          name={name}
+          status={status}
+          time="3:15 PM"
+          from={from}
+          notification={<span>{activity}</span>}
+        />
+        <JuiConversationCardBody>any content</JuiConversationCardBody>
+        <JuiConversationCardFooter
+          likeCount={5}
+          Like={
+            <JuiIconButton
+              size="small"
+              tooltipTitle="like"
+              color="primary"
+              onClick={() => {}}
+              variant="plain"
+              data-name="actionBarLike"
+            >
+              thumb_up
+            </JuiIconButton>
+          }
+        />
+      </JuiConversationCard>
     );
     return (
-      <JuiConversationCard
-        Avatar={<JuiAvatar size="medium">SH</JuiAvatar>}
-        mode={mode}
-      >
-        <JuiConversationCardHeader name={name} time="3:15 PM" from={from}>
-          <JuiButtonBar size="small">
-            <JuiIconButton variant="plain" tooltipTitle="bookmark">
-              bookmark
-            </JuiIconButton>
-            <JuiIconButton variant="plain" tooltipTitle="like">
-              favorite
-            </JuiIconButton>
-            <JuiIconButton variant="plain" tooltipTitle="comment">
-              add_comment
-            </JuiIconButton>
-            <JuiIconButton variant="plain" tooltipTitle="settings">
-              settings
-            </JuiIconButton>
-          </JuiButtonBar>
-        </JuiConversationCardHeader>
-        <div>any content any content any content</div>
-        <JuiConversationCardFooter>footer</JuiConversationCardFooter>
-      </JuiConversationCard>
+      <>
+        {card}
+        {card}
+      </>
     );
   });

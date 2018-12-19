@@ -50,7 +50,7 @@ export async function getOrCreateRunId() {
         'SELENIUM_SERVER',
         'HOST_NAME',
         'BUILD_URL',
-        'appUrl',
+        'SITE_URL',
         'gitlabActionType',
         'gitlabBranch',
         'gitlabMergedByUser',
@@ -122,10 +122,10 @@ export function teardownCase() {
       errorConsoleLogNumber
     }
 
-    h(t).allureHelper.writeReport(consoleLogObj);
+    h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
     await h(t).dataHelper.teardown();
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogObj);
+      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
     }
   }
 }
