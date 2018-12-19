@@ -275,7 +275,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   });
 
   // A click like on footer
-  await h(t).withLog(`When userA click "unlike" icon on Action Bar`, async () => {
+  await h(t).withLog(`When userA click "unlike" icon on M1 footer`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
     await postCard.ensureLoaded();
@@ -299,7 +299,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     await t.expect(await postCard.getLikeCount()).eql(2);
   }); 
 
-  await h(t).withLog(`When userA click the solid "like" icon`, async () => {
+  await h(t).withLog(`When userA click the solid "like" icon on footer`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
     await postCard.ensureLoaded();
