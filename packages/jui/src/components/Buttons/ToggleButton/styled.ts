@@ -43,8 +43,8 @@ const ToggleButton = styled(MuiSwitch)`
     background: ${palette('accent', 'ash')};
     border-radius: ${({ theme }) => theme.shape.borderRadius * 2.5}px;
     padding: ${spacing(1)};
-    width: 36px;
-    height: 18px;
+    width: ${spacing(9)};
+    height: ${spacing(4.5)};
     box-sizing: border-box;
     transform: translate(-50%, -50%);
     margin: 0;
