@@ -20,7 +20,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   @observable
   postStatus?: POST_STATUS;
 
-  constructor(props: ProgressActionsViewProps) {
+  constructor(props: ProgressActionsProps) {
     super(props);
     this.autorun(() => {
       if (this.post.status === POST_STATUS.INPROGRESS) {
