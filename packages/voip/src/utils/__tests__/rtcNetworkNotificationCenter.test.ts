@@ -3,7 +3,6 @@ import {
   RTCNetworkNotificationCenter,
   RTCNetworkEVENT,
 } from '../rtcNetworkNotificationCenter';
-
 import notificationCenter from '../../../../sdk/src/service/notificationCenter';
 import { SOCKET } from '../../../../sdk/src/service/eventKey';
 
@@ -42,7 +41,7 @@ describe('Network Notification Center', async () => {
     jest.spyOn(nnc, '_onOnline');
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
     expect(nnc._onOnline).toHaveBeenCalled();
-    expect(nnc.isOnline() === true);
+    expect(nnc.isOnline()).toBe(true);
     expect(testListener.onOnline).toHaveBeenCalled();
   });
 
@@ -54,7 +53,7 @@ describe('Network Notification Center', async () => {
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
     expect(nnc._onOnline).toHaveBeenCalledTimes(3);
-    expect(nnc.isOnline() === true);
+    expect(nnc.isOnline()).toBe(true);
     expect(testListener.onOnline).toHaveBeenCalledTimes(2);
   });
 
@@ -65,7 +64,7 @@ describe('Network Notification Center', async () => {
     jest.spyOn(nnc, '_onOffline');
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
     expect(nnc._onOffline).toHaveBeenCalled();
-    expect(nnc.isOnline() === false);
+    expect(nnc.isOnline()).toBe(false);
     expect(testListener.onOffline).toHaveBeenCalled();
   });
 
@@ -77,7 +76,7 @@ describe('Network Notification Center', async () => {
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
     expect(nnc._onOffline).toHaveBeenCalledTimes(3);
-    expect(nnc.isOnline() === false);
+    expect(nnc.isOnline()).toBe(false);
     expect(testListener.onOffline).toHaveBeenCalledTimes(2);
   });
 });
