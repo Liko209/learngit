@@ -16,8 +16,9 @@ const getFileName = (filename: string) => {
 const truncateLongName = (name: string, maxLength: number) => {
   if (name && name.length > maxLength) {
     const length = maxLength;
-    const left = name.substr(0, length - 7 - 3);
-    const right = name.substr(-7);
+    const tailLength = 8;
+    const left = name.substr(0, length - tailLength - 3);
+    const right = name.substr(-tailLength);
     return `${left}... ${right}`;
   }
   return name;

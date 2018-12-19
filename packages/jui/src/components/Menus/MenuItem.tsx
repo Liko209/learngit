@@ -3,7 +3,7 @@
  * @Date: 2018-09-27 13:53:47
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
@@ -20,7 +20,7 @@ import {
 } from '../../foundation/utils';
 
 type JuiMenuItemProps = {
-  icon?: string;
+  icon?: string | ReactNode;
 } & MuiMenuItemProps;
 
 const StyledJuiListItemIcon = styled(JuiListItemIcon)`
@@ -59,13 +59,15 @@ const StyledMenuItem = styled(MuiMenuItem)`
 class JuiMenuItem extends React.Component<JuiMenuItemProps> {
   render() {
     const { icon, children, ...rest } = this.props;
+    let iconElement: any;
+    if (typeof icon !== 'string') {
+      iconElement = icon;
+    } else {
+      iconElement = <JuiIconography fontSize="inherit">{icon}</JuiIconography>;
+    }
     return (
       <StyledMenuItem {...rest}>
-        {icon && (
-          <StyledJuiListItemIcon>
-            <JuiIconography fontSize="inherit">{icon}</JuiIconography>
-          </StyledJuiListItemIcon>
-        )}
+        {icon && <StyledJuiListItemIcon>{iconElement}</StyledJuiListItemIcon>}
         {children}
       </StyledMenuItem>
     );

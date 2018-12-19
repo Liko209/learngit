@@ -114,10 +114,10 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   return (
     <div>
       <DuplicateAlert
-        title="Updated Files?"
+        title="Update Files?"
         subtitle="The following files already exist."
         footText="Do you want to update the existing files or do you wish to create new files?"
-        duplicateFiles={files as File[]}
+        duplicateFiles={files}
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}

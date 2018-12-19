@@ -22,7 +22,7 @@ import { JuiIconButton } from '../../components/Buttons';
 
 import defaultIcon from './default.svg';
 
-const MAX_TITLE_LENGTH = 36;
+const MAX_TITLE_LENGTH = 31;
 
 type IconProps = {
   icon?: string;
@@ -66,6 +66,7 @@ const Wrapper = styled.div`
 const Icon = styled.div<IconProps>`
   width: ${width(5)};
   height: ${height(5)};
+  min-width: ${width(5)};
   background-size: cover;
   background-image: url(${({ icon }) => icon || defaultIcon});
   overflow: hidden;
@@ -75,11 +76,15 @@ const NameArea = styled.div<StatusProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  white-space: nowrap;
   flex-grow: 1;
   height: ${height(5)};
   line-height: ${height(5)};
   max-height: ${height(5)};
   margin-left: ${spacing(2)};
+  margin-right: ${spacing(1)};
+  max-width: ${width(63)};
+  overflow-x: hidden;
   opacity: ${({ status }) => (status === 'loading' ? '0.26' : 1)};
   color: ${({ theme, status }) => StatusMap[status || 'normal'](theme)};
 `;
@@ -90,6 +95,7 @@ const ActionWrapper = styled.div`
   align-items: center;
   position: relative;
   width: ${width(6)};
+  min-width: ${width(6)};
   height: ${height(6)};
 `;
 
