@@ -2,7 +2,9 @@
   "on_merge": {
     "fixtures": [
       "./fixtures/ConversationList/UMI.ts",
-      "./fixtures/ConversationList/CloseConversation.ts"
+      "./fixtures/ConversationList/CloseConversation.ts",
+      "./fixtures/AtMention/AtMention.ts",
+      "./fixtures/Bookmarks/Bookmarks.ts"
     ],
     "browsers": [
       "selenium:chrome"

@@ -134,11 +134,11 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectUmi(n: number) {
+  async expectUmi(n: number, maxRetry = 5, interval = 5e3) {
     await H.retryUntilPass(async () => {
-      const umi = await this.getUmi()
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n},but actual ${umi}`);
-    })
+      const umi = await this.getUmi();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
   }
 
   async openMoreMenu() {
@@ -189,11 +189,11 @@ class ConversationListSection extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectHeaderUmi(n: number, waitTime: number = 10) {
+  async expectHeaderUmi(n: number, maxRetry = 5, interval = 5e3) {
     await H.retryUntilPass(async () => {
       const umi = await this.getUmi();
       assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }) 
+    }, maxRetry, interval);
   }
 
   get collapse() {
