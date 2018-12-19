@@ -1,3 +1,8 @@
+import { ENTITY } from 'sdk/service';
+import {
+  FetchSortableDataListHandler,
+  IFetchSortableDataProvider,
+} from '@/store/base/fetch/FetchSortableDataListHandler';
 import { ISeparatorHandler } from '../ISeparatorHandler';
 import { PostTransformHandler } from '../PostTransformHandler';
 import {
@@ -7,6 +12,45 @@ import {
   DateSeparator,
   Separator,
 } from '../types';
+import { ENTITY_NAME } from '@/store';
+import { Post } from 'sdk/models';
+
+const isMatchFunc = (groupId: number) => (dataModel: Post) =>
+  dataModel.group_id === Number(groupId);
+
+const transformFunc = (dataModel: Post) => ({
+  id: dataModel.id,
+  sortValue: dataModel.created_at,
+  data: dataModel,
+});
+
+function setup({ groupId }: { groupId: number }) {
+  const dataProvider: IFetchSortableDataProvider<Post> = {
+    async fetchData() {
+      return {
+        data: [],
+        hasMore: true,
+      };
+    },
+  };
+
+  const orderListHandler = new FetchSortableDataListHandler(dataProvider, {
+    transformFunc,
+    hasMoreUp: false,
+    hasMoreDown: false,
+    isMatchFunc: isMatchFunc(groupId),
+    entityName: ENTITY_NAME.POST,
+    eventName: ENTITY.POST,
+    dataChangeCallBack: () => {},
+  });
+
+  const transformHandler = new PostTransformHandler({
+    handler: orderListHandler,
+    separatorHandlers: [],
+  });
+
+  return { transformHandler };
+}
 
 class FakeSeparatorHandler implements ISeparatorHandler {
   priority: number = 1;
@@ -16,6 +60,27 @@ class FakeSeparatorHandler implements ISeparatorHandler {
 }
 
 describe('PostTransformHandler', () => {
+  describe('appendPosts()', () => {
+    it('should append posts', () => {
+      const { transformHandler } = setup({
+        groupId: 1,
+      });
+
+      transformHandler.appendPosts([
+        { id: 10, created_at: 10, group_id: 1 },
+        { id: 11, created_at: 11, group_id: 1 },
+        { id: 21, created_at: 21, group_id: 2 },
+        { id: 22, created_at: 22, group_id: 2 },
+      ] as Post[]);
+
+      expect(transformHandler.postIds).toEqual([10, 11]);
+      expect(transformHandler.items).toEqual([
+        { type: StreamItemType.POST, value: 10 },
+        { type: StreamItemType.POST, value: 11 },
+      ]);
+    });
+  });
+
   describe('#toStreamItems()', () => {
     it('should transform postIds+separatorMap into streamItems', () => {
       const postIds = [1000, 1001, 1002, 1003];

@@ -83,6 +83,10 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
     });
   }
 
+  appendPosts(posts: Post[]) {
+    this._orderListHandler.upsert(posts);
+  }
+
   static combineSeparatorHandlersMaps(handlers: ISeparatorHandler[]) {
     // key => postId
     const map = new Map<number, Separator>();
