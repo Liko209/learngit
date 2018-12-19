@@ -84,11 +84,10 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!process) {
         progress = this._itemService.getUploadProgress(id);
       }
-      let value = 0;
       if (progress) {
-        value = (progress.loaded / progress.total) * 100;
+        const value = (progress.loaded / progress.total) * 100;
+        result.set(id, value);
       }
-      result.set(id, value);
     });
     return result;
   }

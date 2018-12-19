@@ -32,6 +32,23 @@ class FilesView extends React.Component<FilesViewProps> {
   componentWillUnmount() {
     this.props.dispose();
   }
+  private _renderItem = (
+    id: number,
+    progresses: Map<number, number>,
+    name: string,
+  ) => {
+    const progress = progresses.get(id);
+    const status = typeof progress === 'undefined' ? 'error' : 'normal';
+    return (
+      <AttachmentItem
+        key={id}
+        name={name}
+        status={status}
+        progress={progress}
+        onClickDeleteButton={() => this.props.removeFile(id)}
+      />
+    );
+  }
   render() {
     const { files, progresses } = this.props;
     return (
@@ -40,14 +57,7 @@ class FilesView extends React.Component<FilesViewProps> {
           const { item, previewUrl } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
           if (id < 0) {
-            return (
-              <AttachmentItem
-                key={id}
-                name={name}
-                progress={progresses.get(id)}
-                onClickDeleteButton={() => this.props.removeFile(id)}
-              />
-            );
+            return this._renderItem(id, progresses, name);
           }
           return (
             <JuiPreviewImage
@@ -64,15 +74,7 @@ class FilesView extends React.Component<FilesViewProps> {
           const { size, type, id, name, downloadUrl } = item;
           const iconType = getFileIcon(type);
           if (id < 0) {
-            return (
-              <AttachmentItem
-                key={id}
-                name={name}
-                icon={iconType || undefined}
-                progress={progresses.get(id)}
-                onClickDeleteButton={() => this.props.removeFile(id)}
-              />
-            );
+            return this._renderItem(id, progresses, name);
           }
           return (
             <JuiFileWithPreview
@@ -90,15 +92,7 @@ class FilesView extends React.Component<FilesViewProps> {
           const { size, type, name, downloadUrl, id } = item;
           const iconType = getFileIcon(type);
           if (id < 0) {
-            return (
-              <AttachmentItem
-                key={id}
-                name={name}
-                icon={iconType || undefined}
-                progress={progresses.get(id)}
-                onClickDeleteButton={() => this.props.removeFile(id)}
-              />
-            );
+            return this._renderItem(id, progresses, name);
           }
           return (
             <JuiFileWithoutPreview
