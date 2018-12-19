@@ -20,21 +20,18 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   @observable
   postStatus?: POST_STATUS;
 
-  constructor(props: ProgressActionsProps) {
+  constructor(props: ProgressActionsViewProps) {
     super(props);
-    this.reaction(
-      () => this.post.status,
-      (status?: POST_STATUS) => {
-        if (status === POST_STATUS.INPROGRESS) {
-          clearTimeout(this._timer);
-          this._timer = setTimeout(() => {
-            this.postStatus = status;
-          },                       500);
-        } else {
-          this.postStatus = status;
-        }
-      },
-    );
+    this.autorun(() => {
+      if (this.post.status === POST_STATUS.INPROGRESS) {
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+          this.postStatus = this.post.status;
+        },                       500);
+      } else {
+        this.postStatus = this.post.status;
+      }
+    });
   }
 
   @computed
