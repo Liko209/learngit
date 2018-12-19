@@ -14,6 +14,14 @@ class LoggerImpl implements ILogger {
 
 describe('LoggerProxy', async () => {
   describe('info', () => {
+    it('Should empty due to not insert logger', async () => {
+      const loggerImpl = new LoggerImpl();
+      rtcLogger.info('VoIP', 'info');
+      expect(loggerImpl.doLog.mock.calls.length).toBe(0);
+    });
+  });
+
+  describe('info', () => {
     it('Should log info message', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
