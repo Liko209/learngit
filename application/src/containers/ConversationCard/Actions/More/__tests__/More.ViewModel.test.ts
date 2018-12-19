@@ -25,45 +25,7 @@ describe('MoreVM', () => {
     it('should display Quote option on more actions in Group [JPT-443]', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: false };
-        }
-        if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
-        }
-        return null;
-      });
-      ViewModel = new MoreViewModel({ id: 1 });
-
-      expect(
-        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
-      ).toBe(true);
-    });
-
-    it('should display Quote option on more actions in Team with admin permission [JPT-443]', () => {
-      (getEntity as jest.Mock).mockImplementation((type: string) => {
-        if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: true, isThePersonAdmin: () => true };
-        }
-        if (type === ENTITY_NAME.POST) {
-          return { creatorId: 1 };
-        }
-        return null;
-      });
-      ViewModel = new MoreViewModel({ id: 1 });
-
-      expect(
-        ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
-      ).toBe(true);
-    });
-
-    it('should display Quote option on more actions in Team with user permission [JPT-443]', () => {
-      (getEntity as jest.Mock).mockImplementation((type: string) => {
-        if (type === ENTITY_NAME.GROUP) {
-          return {
-            isTeam: true,
-            isThePersonAdmin: () => false,
-            permissions: { user: { level: 1 } },
-          };
+          return { canPost: true };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 1 };
@@ -81,9 +43,7 @@ describe('MoreVM', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
           return {
-            isTeam: true,
-            isThePersonAdmin: () => false,
-            permissions: { user: { level: 0 } },
+            canPost: false,
           };
         }
         if (type === ENTITY_NAME.POST) {
@@ -108,7 +68,7 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: false };
+          return { canPost: true };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 1 };
@@ -128,7 +88,7 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: false };
+          return { canPost: true };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 2 };
@@ -152,7 +112,7 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: false };
+          return { canPost: true };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 1 };
@@ -172,7 +132,7 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return { isTeam: true, isThePersonAdmin: () => true };
+          return { canPost: true };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 1 };
@@ -192,11 +152,7 @@ describe('MoreVM', () => {
       });
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return {
-            isTeam: true,
-            isThePersonAdmin: () => false,
-            permissions: { user: { level: 1 } },
-          };
+          return { canPost: true };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 1 };
@@ -213,11 +169,7 @@ describe('MoreVM', () => {
     it('should disable Edit option on more actions in Team with user permission [JPT-477]', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.GROUP) {
-          return {
-            isTeam: true,
-            isThePersonAdmin: () => false,
-            permissions: { user: { level: 0 } },
-          };
+          return { canPost: false };
         }
         if (type === ENTITY_NAME.POST) {
           return { creatorId: 1 };
