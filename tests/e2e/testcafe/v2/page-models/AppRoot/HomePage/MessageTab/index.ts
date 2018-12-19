@@ -58,7 +58,7 @@ class UnReadToggler extends BaseWebComponent {
   }
 }
 
-class MoreMenu extends BaseWebComponent {
+class MoreMenu extends Entry {
   get self() {
     return this.getSelector('*[role="document"]');
   }
@@ -81,7 +81,25 @@ class MoreMenu extends BaseWebComponent {
   }
 
   get close() {
-    return this.getEntry('Close');
+    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+  }
+}
+
+class MenuItem extends Entry {
+  async click() {
+    await this.t.click(this.self);
+  }
+
+  get  disabled(): Promise<string> {
+    return this.self.getAttribute("data-disabled");
+  }
+
+  async shouldBeDisabled() {
+    await this.t.expect(this.disabled).eql('true');
+  }
+
+  async shouldBeEnabled() {
+    await this.t.expect(this.disabled).eql('false');
   }
 }
 
