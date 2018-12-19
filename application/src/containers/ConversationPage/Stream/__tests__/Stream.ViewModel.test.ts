@@ -363,6 +363,8 @@ describe('StreamViewModel', () => {
 
       expect(itemService.getById).toBeCalled();
       expect(spy).toBeCalledWith(ENTITY_NAME.ITEM, ids);
+
+      spy.mockRestore();
     });
   });
 });
