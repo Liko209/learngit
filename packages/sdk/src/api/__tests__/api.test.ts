@@ -46,8 +46,8 @@ describe('Api', () => {
     });
   });
 
-  describe('custom network client', () => {
-    it('customNetworkClient()', () => {
+  describe('customNetworkClient', () => {
+    it('should be instance of NetworkClient()', () => {
       const host = 'www.rc.com';
       const customNetworkClient = Api.customNetworkClient(host);
       expect(customNetworkClient).toBeInstanceOf(NetworkClient);

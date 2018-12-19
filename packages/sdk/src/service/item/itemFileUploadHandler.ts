@@ -148,11 +148,11 @@ class ItemFileUploadHandler {
   }
 
   private _updateProgress(
-    e: ProgressEventInit,
+    event: ProgressEventInit,
     groupId: number,
     itemId: number,
   ) {
-    const { loaded, total } = e;
+    const { loaded, total } = event;
     if (loaded && total) {
       const progress = {
         total,
@@ -224,8 +224,8 @@ class ItemFileUploadHandler {
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         newFormData,
-        (e: ProgressEventInit) => {
-          this._updateProgress(e, groupId, itemId);
+        (event: ProgressEventInit) => {
+          this._updateProgress(event, groupId, itemId);
         },
         requestHolder,
       );
