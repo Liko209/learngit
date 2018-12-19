@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Like/LikeAndUnlike.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

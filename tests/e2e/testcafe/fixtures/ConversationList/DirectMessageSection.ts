@@ -30,6 +30,7 @@ test(formalName('Show the 1:1 conversation and group conversation in the Direct 
         type: 'Group', members: [user.rcId, users[5].rcId, users[6].rcId],
       });
       await user.sdk.glip.showGroups(user.rcId, [chat.data.id, group.data.id]);
+      await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
