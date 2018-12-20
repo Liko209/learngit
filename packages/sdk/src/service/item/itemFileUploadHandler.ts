@@ -35,7 +35,7 @@ class ItemFileUploadHandler {
     if (file.has(FILE_FORM_DATA_KEYS.FILE)) {
       const itemFile = this._toItemFile(groupId, file, isUpdate);
       await this._preSaveItemFile(itemFile, file);
-      this._sendItemFile(groupId, itemFile, file, isUpdate);
+      this._sendItemFile(itemFile, file);
       return itemFile;
     }
     return null;
@@ -115,7 +115,7 @@ class ItemFileUploadHandler {
       } else {
         const cacheItem = this._progressCaches.get(itemId);
         if (groupId && cacheItem && cacheItem.file) {
-          await this._sendItemFile(groupId, itemInDB, cacheItem.file, isUpdate);
+          await this._sendItemFile(itemInDB, cacheItem.file);
         } else {
           sendFailed = true;
         }
@@ -148,6 +148,8 @@ class ItemFileUploadHandler {
         }
       }
     });
+
+    this._emitItemFileStatus(SENDING_STATUS.CANCELED, itemId, itemId);
 
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.delete(itemId);
@@ -345,12 +347,7 @@ class ItemFileUploadHandler {
     return uploadInfo.requestHolder;
   }
 
-  private async _sendItemFile(
-    groupId: number,
-    preInsertItem: ItemFile,
-    file: FormData,
-    isUpdate: boolean,
-  ) {
+  private async _sendItemFile(preInsertItem: ItemFile, file: FormData) {
     const requestHolder = this._getRequestHolder(preInsertItem.id);
 
     if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
@@ -410,7 +407,7 @@ class ItemFileUploadHandler {
       _id: itemId,
       versions: [fileVersion],
     });
-    this._emitItemFileStatus(true, itemId, itemId);
+    this._emitItemFileStatus(SENDING_STATUS.INPROGRESS, itemId, itemId);
   }
 
   private _updateCachedFilesStatus(newItemFile: ItemFile) {
@@ -461,7 +458,7 @@ class ItemFileUploadHandler {
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
-    this._emitItemFileStatus(true, preInsertId, itemFile.id);
+    this._emitItemFileStatus(SENDING_STATUS.SUCCESS, preInsertId, itemFile.id);
   }
 
   private _handleItemFileSendFailed<T>(
@@ -475,7 +472,7 @@ class ItemFileUploadHandler {
 
     this._updateFileProgress(preInsertId, SENDING_STATUS.FAIL);
 
-    this._emitItemFileStatus(false, preInsertId, preInsertId);
+    this._emitItemFileStatus(SENDING_STATUS.FAIL, preInsertId, preInsertId);
   }
 
   private _partialUpdateItemFile(updateData: object) {
@@ -614,12 +611,12 @@ class ItemFileUploadHandler {
   }
 
   private _emitItemFileStatus(
-    success: boolean,
+    status: SENDING_STATUS,
     preInsertId: number,
     updatedId: number,
   ) {
     notificationCenter.emit(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, {
-      success,
+      status,
       preInsertId,
       updatedId,
     });
