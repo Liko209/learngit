@@ -319,16 +319,24 @@ class PostService extends BaseService<Post> {
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
     const listener = async (params: {
-      success: boolean;
+      status: SENDING_STATUS;
       preInsertId: number;
       updatedId: number;
     }) => {
-      const { success, preInsertId, updatedId } = params;
-      if (!post.item_ids.includes(preInsertId) || preInsertId === updatedId) {
+      const { status, preInsertId, updatedId } = params;
+      if (!post.item_ids.includes(preInsertId)) {
         return;
       }
 
-      if (success) {
+      if (status === SENDING_STATUS.CANCELED) {
+        _.remove(post.item_ids, (id: number) => {
+          return id === preInsertId;
+        });
+
+        if (post.item_ids.length === 0) {
+          this.deletePost(post.id);
+        }
+      } else if (status === SENDING_STATUS.SUCCESS) {
         // update post to db
         if (updatedId !== preInsertId) {
           post.item_ids = post.item_ids.map((id: number) => {

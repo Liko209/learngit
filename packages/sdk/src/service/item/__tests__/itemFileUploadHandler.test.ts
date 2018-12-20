@@ -84,59 +84,7 @@ describe('ItemFileUploadHandler', () => {
       versions: [storedFile],
     };
 
-    it.skip('should call go updateItem when group has the file before', async (done: jest.DoneCallback) => {
-      const existItems = [
-        { id: 1, created_at: 1, versions: [] },
-        { id: 4, created_at: 4, versions: [] },
-        { id: 5, created_at: 5, versions: [] },
-      ];
-
-      const mockItemFileRes = new ApiResultOk(itemFile, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
-      itemDao.get.mockResolvedValue(itemFile);
-      itemDao.getExistGroupFilesByName.mockResolvedValue(existItems);
-      handleData.mockResolvedValue(null);
-      ItemAPI.uploadFileItem.mockResolvedValue(mockStoredFileRes);
-      ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
-      itemService.handlePartialUpdate = jest.fn();
-
-      const file = new FormData();
-      file.append('file', { name: '1.ts', type: 'ts' } as File);
-      await itemFileUploadHandler.sendItemFile(groupId, file, true);
-
-      setTimeout(() => {
-        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
-        expect(ItemAPI.putItem).toBeCalledTimes(1);
-        expect(ItemAPI.sendFileItem).not.toHaveBeenCalled();
-        expect(ItemAPI.putItem).toBeCalled();
-        expect(ItemAPI.putItem).toBeCalledWith(
-          1,
-          'file',
-          expect.objectContaining({
-            _id: 1,
-            created_at: 1,
-            is_new: false,
-            modified_at: expect.any(Number),
-            versions: [
-              {
-                creator_id: 2588675,
-                date: 1542274244897,
-                download_url: 'url/123.pdf',
-                size: 1111,
-                stored_file_id: 123,
-                url: 'url/123',
-              },
-            ],
-          }),
-        );
-        expect(itemFileUploadHandler.getUploadItems).toHaveLength(1);
-        done();
-      },         1000);
-    });
-
-    it.skip('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
+    it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
       const mockItemFileRes = new ApiResultOk(itemFile, {
         status: 200,
         headers: {},
@@ -150,7 +98,6 @@ describe('ItemFileUploadHandler', () => {
           return Promise.resolve(mockStoredFileRes);
         },
       ); // mockResolvedValue(mockStoredFileRes);
-      ItemAPI.sendFileItem.mockResolvedValue(mockItemFileRes);
       itemService.handlePartialUpdate = jest.fn();
 
       const file = new FormData();
@@ -172,11 +119,9 @@ describe('ItemFileUploadHandler', () => {
 
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
-        expect(ItemAPI.sendFileItem).toBeCalledTimes(1);
-        expect(itemDao.put).toBeCalledTimes(2);
-        expect(itemDao.update).toBeCalledTimes(1);
-        expect(itemDao.delete).toBeCalledTimes(1);
-        expect(notificationCenter.emitEntityReplace).toBeCalled();
+        expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
+        expect(itemDao.put).toBeCalledTimes(1);
+
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
           [{ groupId: 1, id: expect.any(Number), loaded: 10, total: 100 }],
@@ -185,7 +130,7 @@ describe('ItemFileUploadHandler', () => {
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
-            success: true,
+            status: SENDING_STATUS.INPROGRESS,
             preInsertId: expect.any(Number),
             updatedId: expect.any(Number),
           },
@@ -220,8 +165,9 @@ describe('ItemFileUploadHandler', () => {
         expect(itemFileUploadHandler.getItemsSendStatus([fileItem.id])).toEqual(
           [SENDING_STATUS.FAIL],
         );
-        const progress = itemFileUploadHandler.getUploadProgress(fileItem.id);
-        expect(progress.loaded).toBe(-1);
+        expect(
+          itemFileUploadHandler.getUploadProgress(fileItem.id).loaded,
+        ).toBe(-1);
         done();
       },         1000);
     });
@@ -250,39 +196,6 @@ describe('ItemFileUploadHandler', () => {
         expect(notificationCenter.emit).not.toBeCalled();
         expect(itemService.handlePartialUpdate).not.toBeCalled();
 
-        done();
-      },         1000);
-    });
-
-    it.skip('should go to _handleItemFileSendFailed process when send item failed ', async (done: jest.DoneCallback) => {
-      const okRes = new ApiResultOk(itemFile, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
-      const errRes = new ApiResultErr(new BaseError(1, 'error'), {
-        status: 403,
-        headers: {},
-      } as BaseResponse);
-      ItemAPI.uploadFileItem.mockResolvedValue(okRes);
-      ItemAPI.putItem.mockResolvedValue(errRes);
-      itemService.handlePartialUpdate = jest.fn();
-
-      jest
-        .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
-        .mockImplementation(() => {});
-
-      const file = new FormData();
-      file.append('file', { name: '1.ts', type: 'ts' } as File);
-      await itemFileUploadHandler.sendItemFile(groupId, file, true);
-
-      setTimeout(() => {
-        expect(ItemAPI.uploadFileItem).toBeCalled();
-        expect(ItemAPI.sendFileItem).toBeCalled();
-
-        expect(notificationCenter.emit).toBeCalledWith(
-          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
-          expect.anything(),
-        );
         done();
       },         1000);
     });
@@ -616,12 +529,6 @@ describe('ItemFileUploadHandler', () => {
         expect(spyUploadItem).not.toHaveBeenCalled();
         expect(spyHandleFileItemSendFailed).not.toBeCalled();
         expect(spySendItemFile).toBeCalled();
-        expect(spySendItemFile).toBeCalledWith(
-          itemWithOutVersion.group_ids[0],
-          itemWithOutVersion,
-          f,
-          itemWithOutVersion.is_new,
-        );
         done();
       },         1000);
     });
