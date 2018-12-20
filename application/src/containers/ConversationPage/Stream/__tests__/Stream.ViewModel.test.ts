@@ -398,6 +398,10 @@ describe('StreamViewModel', () => {
       });
     }
 
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
     describe('when viewModel is initialized', () => {
       function hideUMIAndDisableMessageHandler() {
         expect(globalStore.set).toBeCalledWith(
