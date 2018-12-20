@@ -375,7 +375,7 @@ describe('ItemFileUploadHandler', () => {
 
       const spyHandleSuccess = jest.spyOn(
         itemFileUploadHandler,
-        '_onUploadFileSuccess',
+        '_handleFileUploadSuccess',
       );
       spyHandleSuccess.mockImplementationOnce(() => {});
 
@@ -407,7 +407,7 @@ describe('ItemFileUploadHandler', () => {
 
       const spyHandleSuccess = jest.spyOn(
         itemFileUploadHandler,
-        '_onUploadFileSuccess',
+        '_handleFileUploadSuccess',
       );
       spyHandleSuccess.mockImplementationOnce(() => {});
 

@@ -215,7 +215,7 @@ describe('ItemService', () => {
 
   describe('isFileExists()', () => {
     const itemDao = {
-      isFileItemExist: jest.fn(),
+      getExistGroupFilesByName: jest.fn(),
     };
     beforeAll(() => {
       handleData.mockClear();
@@ -229,21 +229,37 @@ describe('ItemService', () => {
     it('check file exists with invalid groupId', async () => {
       const result = await itemService.isFileExists(0, 'test.jpg');
       expect(result).toBe(false);
-      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+      expect(itemDao.getExistGroupFilesByName).not.toHaveBeenCalled();
     });
 
     it('check file exists with invalid name', async () => {
       const result = await itemService.isFileExists(1, '');
       expect(result).toBe(false);
-      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+      expect(itemDao.getExistGroupFilesByName).not.toHaveBeenCalled();
     });
 
-    it('should call ItemDao to check whether file exist', async () => {
-      const itemFiles = [{ id: 1, name: 'test.jpg' }];
-      itemDao.isFileItemExist.mockResolvedValue(itemFiles);
+    it('should return true when item has post_ids and length > 0', async () => {
+      const itemFiles = [{ id: 1, name: 'test.jpg', post_ids: [12] }];
+      itemDao.getExistGroupFilesByName.mockResolvedValueOnce(itemFiles);
       const result = await itemService.isFileExists(1, 'test.jpg');
-      expect(itemDao.isFileItemExist).toBeCalledWith(1, 'test.jpg', true);
-      expect(result).toBeTruthy;
+      expect(itemDao.getExistGroupFilesByName).toBeCalledWith(
+        1,
+        'test.jpg',
+        true,
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false when the item has no post_ids', async () => {
+      const itemFiles = [{ id: 1, name: 'test.jpg', post_ids: [] }];
+      itemDao.getExistGroupFilesByName.mockResolvedValueOnce(itemFiles);
+      const result = await itemService.isFileExists(1, 'test.jpg');
+      expect(itemDao.getExistGroupFilesByName).toBeCalledWith(
+        1,
+        'test.jpg',
+        true,
+      );
+      expect(result).toBeFalsy();
     });
   });
 

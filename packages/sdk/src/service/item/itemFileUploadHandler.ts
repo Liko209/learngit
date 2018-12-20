@@ -277,7 +277,6 @@ class ItemFileUploadHandler {
   private async _uploadFileToAmazonS3(
     formFile: FormData,
     preInsertItem: ItemFile,
-    isUpdate: boolean,
     requestHolder: RequestHolder,
   ) {
     const groupId = preInsertItem.group_ids[0];
@@ -299,10 +298,10 @@ class ItemFileUploadHandler {
         requestHolder,
       );
       if (uploadResponse.isOk()) {
-        this._onUploadFileSuccess(
+        this._handleFileUploadSuccess(
           extendFileData.stored_file,
+          groupId,
           preInsertItem,
-          isUpdate,
         );
       } else {
         this._handleItemFileSendFailed(itemId, uploadResponse);
@@ -315,7 +314,6 @@ class ItemFileUploadHandler {
   private async _uploadFileFileToGlip(
     file: FormData,
     preInsertItem: ItemFile,
-    isUpdate: boolean,
     requestHolder: RequestHolder,
   ) {
     const groupId = preInsertItem.group_ids[0];
@@ -329,25 +327,15 @@ class ItemFileUploadHandler {
     );
 
     if (uploadRes.isOk()) {
-      await this._onUploadFileSuccess(
+      await this._handleFileUploadSuccess(
         uploadRes.unwrap()[0],
+        groupId,
         preInsertItem,
-        isUpdate,
       );
     } else {
       this._handleItemFileSendFailed(preInsertItem.id, uploadRes);
       mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
     }
-  }
-
-  private async _onUploadFileSuccess(
-    storedFile: StoredFile,
-    preInsertItem: ItemFile,
-    isUpdate: boolean,
-  ) {
-    const groupId = preInsertItem.group_ids[0];
-    await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
-    // await this._uploadItem(groupId, preInsertItem, isUpdate);
   }
 
   private _getRequestHolder(preInsertItemId: number) {
@@ -366,19 +354,9 @@ class ItemFileUploadHandler {
     const requestHolder = this._getRequestHolder(preInsertItem.id);
 
     if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
-      await this._uploadFileToAmazonS3(
-        file,
-        preInsertItem,
-        isUpdate,
-        requestHolder,
-      );
+      await this._uploadFileToAmazonS3(file, preInsertItem, requestHolder);
     } else {
-      await this._uploadFileFileToGlip(
-        file,
-        preInsertItem,
-        isUpdate,
-        requestHolder,
-      );
+      await this._uploadFileFileToGlip(file, preInsertItem, requestHolder);
     }
   }
 
