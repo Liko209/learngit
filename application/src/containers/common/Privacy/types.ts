@@ -14,7 +14,6 @@ type PrivacyProps = {
 type PrivacyViewProps = PrivacyProps & {
   isPublic: boolean;
   isAdmin: boolean;
-  isOffline: boolean;
   handlePrivacy: () => Promise<boolean>;
 };
 

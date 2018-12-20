@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { PrivacyViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { ErrorTypes } from 'sdk/utils/';
 import { Notification } from '@/containers/Notification';
 
 type Props = PrivacyViewProps & WithNamespaces;
@@ -25,15 +26,15 @@ class PrivacyViewComponent extends Component<Props> {
   }
 
   onClickPrivacy = async () => {
-    const { handlePrivacy, t, isOffline } = this.props;
-    if (isOffline) {
-      this.flashToast(t('teamNetError'));
-      // if isoffline broken the function
-      return;
-    }
-    const result = await handlePrivacy();
-    if (!result || typeof (result) !== 'boolean') {
-      this.flashToast(t('markPrivateServerErrorForTeam'));
+    const { handlePrivacy, t } = this.props;
+    try {
+      await handlePrivacy();
+    } catch (error) {
+      if (error === ErrorTypes.API_NETWORK) {
+        this.flashToast(t('teamNetError'));
+      } else {
+        this.flashToast(t('markPrivateServerErrorForTeam'));
+      }
     }
   }
 

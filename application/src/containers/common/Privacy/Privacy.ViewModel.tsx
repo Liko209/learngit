@@ -8,11 +8,10 @@ import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { PrivacyProps, PrivacyViewProps } from './types';
 
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
 
 import { service } from 'sdk';
 import { IconButtonSize } from 'jui/components/Buttons';
@@ -45,11 +44,6 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   @computed
   get isAdmin() {
     return this._group.isAdmin;
-  }
-
-  @computed
-  get isOffline() {
-    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
   handlePrivacy = () => {

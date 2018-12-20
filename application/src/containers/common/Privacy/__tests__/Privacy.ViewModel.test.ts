@@ -6,7 +6,7 @@
 
 import { service } from 'sdk';
 import { ErrorTypes } from 'sdk/utils/';
-import { getEntity, getGlobalValue } from '../../../../store/utils';
+import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
 import { PrivacyProps } from '../types';
 
@@ -55,13 +55,6 @@ describe('Privacy view model', () => {
     expect(vm.isPublic).toEqual(true);
     mockEntity.privacy = 'private';
     expect(vm.isPublic).toEqual(false);
-  });
-
-  it('computed isOffline', () => {
-    (getGlobalValue as jest.Mock).mockReturnValue('offline');
-    expect(vm.isOffline).toBe(true);
-    (getGlobalValue as jest.Mock).mockReturnValue('online');
-    expect(vm.isOffline).toBe(false);
   });
 
   it('isAdmin', () => {
