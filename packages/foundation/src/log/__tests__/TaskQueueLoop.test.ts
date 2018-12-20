@@ -2,6 +2,7 @@ import { TaskQueueLoop } from '../TaskQueueLoop';
 import { TaskCompletedHandler, TaskErrorHandler } from '../types';
 import { Task } from '../task';
 describe('TaskQueueLoop', () => {
+
   describe('sleep()', () => {
     it('should sleep until timeout', async () => {
       const taskQueueLoop = new TaskQueueLoop();
@@ -13,6 +14,7 @@ describe('TaskQueueLoop', () => {
       });
       expect(taskQueueLoop.isAvailable()).toBeTruthy();
     });
+
     it('should not superposition sleep time', async () => {
       const taskQueueLoop = new TaskQueueLoop();
       // taskQueueLoop.addTail();
@@ -25,6 +27,7 @@ describe('TaskQueueLoop', () => {
       expect(taskQueueLoop.isAvailable()).toBeTruthy();
     });
   });
+
   describe('wake()', () => {
     it('should wake from sleep', async () => {
       const taskQueueLoop = new TaskQueueLoop();
@@ -34,6 +37,7 @@ describe('TaskQueueLoop', () => {
     });
 
   });
+
   describe('loop()', () => {
     it('should loop normal', async () => {
       const spyLoopCompleted = jest.fn();
@@ -78,10 +82,8 @@ describe('TaskQueueLoop', () => {
 
       expect(spyLoopCompleted).toBeCalledTimes(1);
     });
-    it('should call loopController.onLoopCompleted', async () => {
-
-    });
   });
+
   describe('createErrorHandler()', () => {
     it('should abort correctly when throw error: task1=>success, task2=>error, errorHandler.abort, task2.onAbort, task3=>task3.onExecute()', async () => {
       const taskQueueLoop = new TaskQueueLoop({
@@ -131,6 +133,7 @@ describe('TaskQueueLoop', () => {
       expect(tasks[2].onCompleted).toBeCalledTimes(1);
       expect(tasks[2].onIgnore).toBeCalledTimes(0);
     });
+
     it('should abortAll correctly when throw error: task1=>success, task2=>error, errorHandler.abortAll, task2.onAbort, task3=>task3.onAbort()', async () => {
       // const taskQueueLoop = new TaskQueueLoop();
       const taskQueueLoop = new TaskQueueLoop({
@@ -181,6 +184,7 @@ describe('TaskQueueLoop', () => {
       expect(tasks[2].onCompleted).toBeCalledTimes(0);
       expect(tasks[2].onIgnore).toBeCalledTimes(0);
     });
+
     it('should ignore correctly when throw error: task1=>success, task2=>error, errorHandler.ignore, task2.onIgnore, task3=>task3.onExecute()', async () => {
       // const taskQueueLoop = new TaskQueueLoop();
 
@@ -231,6 +235,7 @@ describe('TaskQueueLoop', () => {
       expect(tasks[2].onCompleted).toBeCalledTimes(1);
       expect(tasks[2].onIgnore).toBeCalledTimes(0);
     });
+
     it('should retry N times correctly when throw error', async () => {
       const taskQueueLoop = new TaskQueueLoop({
         onTaskError: async (error: Error, handler: TaskErrorHandler) => {
@@ -291,6 +296,7 @@ describe('TaskQueueLoop', () => {
       expect(tasks[2].onIgnore).toBeCalledTimes(0);
     });
   });
+
   describe('createCompletedHandler()', () => {
     it('should abortAll task', async () => {
       const taskQueueLoop = new TaskQueueLoop({
@@ -339,6 +345,7 @@ describe('TaskQueueLoop', () => {
       expect(tasks[2].onIgnore).toBeCalledTimes(0);
     });
   });
+
   describe('addHead()', () => {
     it('should work correctly with IDque api', () => {
       const taskQueueLoop = new TaskQueueLoop();

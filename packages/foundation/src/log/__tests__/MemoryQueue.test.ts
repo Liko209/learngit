@@ -1,8 +1,6 @@
 import { MemoryQueue } from '../MemoryQueue';
 
 describe('MemoryQueue', () => {
-  afterEach(() => {
-  });
 
   describe('addHead()', () => {
     it('should add to head correctly', () => {
@@ -20,12 +18,14 @@ describe('MemoryQueue', () => {
       expect(memoryQueue.peekHead()).toEqual('b');
       expect(memoryQueue.peekHead()).toEqual('a');
     });
+
     it('should return null when queue is empty', () => {
       const memoryQueue = new MemoryQueue<string>();
       expect(memoryQueue.peekHead()).toBeUndefined();
       expect(memoryQueue.peekHead()).toBeUndefined();
     });
   });
+
   describe('getHead()', () => {
     it('should get head correctly', () => {
       const memoryQueue = new MemoryQueue<string>();
@@ -44,6 +44,7 @@ describe('MemoryQueue', () => {
       expect(memoryQueue.peekAll()).toEqual(['a', 'b']);
     });
   });
+
   describe('peekTail()', () => {
     it('should peek tail correctly', () => {
       const memoryQueue = new MemoryQueue<string>();
@@ -52,12 +53,14 @@ describe('MemoryQueue', () => {
       expect(memoryQueue.peekTail()).toEqual('b');
       expect(memoryQueue.peekTail()).toEqual('a');
     });
+
     it('should return null when queue is empty', () => {
       const memoryQueue = new MemoryQueue<string>();
       expect(memoryQueue.peekTail()).toBeUndefined();
       expect(memoryQueue.peekTail()).toBeUndefined();
     });
   });
+
   describe('getTail()', () => {
     it('should get tail correctly', () => {
       const memoryQueue = new MemoryQueue<string>();
@@ -67,6 +70,7 @@ describe('MemoryQueue', () => {
       expect(memoryQueue.getTail()).toEqual('b');
     });
   });
+
   describe('size()', () => {
     it('should be correctly', () => {
       const memoryQueue = new MemoryQueue<string>();

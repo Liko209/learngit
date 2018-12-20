@@ -10,22 +10,27 @@ class Task {
   public onIgnore: () => Promise<void> = () => Promise.resolve();
   public onCompleted: () => Promise<void> = () => Promise.resolve();
   public retryCount: number = 0;
+
   setOnExecute(onExecute: () => Promise<void>): Task {
     this.onExecute = onExecute;
     return this;
   }
+
   setOnError(onError: (error: Error) => Promise<void>): Task {
     this.onError = onError;
     return this;
   }
+
   setOnAbort(onAbort: () => Promise<void>): Task {
     this.onAbort = onAbort;
     return this;
   }
+
   setOnIgnore(onIgnore: () => Promise<void>): Task {
     this.onIgnore = onIgnore;
     return this;
   }
+
   setOnCompleted(onCompleted: () => Promise<void>): Task {
     this.onCompleted = onCompleted;
     return this;

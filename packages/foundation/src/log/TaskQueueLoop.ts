@@ -16,14 +16,17 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
   private loopController: LoopController;
   private isLooping: boolean;
   private isSleeping: boolean;
-  private taskQueue: MemoryQueue<Task> = new MemoryQueue();
+  private taskQueue: MemoryQueue<Task>;
   private timeoutHandler: any;
   constructor(loopController?: LoopController) {
     this.loopController = loopController || TaskQueueLoop.DEFAULT_LOOP_CONTROLLER;
+    this.taskQueue = new MemoryQueue();
   }
+
   isAvailable(): boolean {
     return !this.isSleeping;
   }
+
   sleep(timeout: number): void {
     this.isSleeping = true;
     clearTimeout(this.timeoutHandler);
@@ -31,10 +34,12 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
       this.isSleeping = false;
     },                               timeout);
   }
+
   wake(): void {
     this.isSleeping = false;
     clearTimeout(this.timeoutHandler);
   }
+
   async loop() {
     if (this.isLooping || !this.isAvailable()) {
       return;
@@ -58,6 +63,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
     }
     await this.loopController.onLoopCompleted();
   }
+
   createErrorHandler(setTask: (task: Task) => void): TaskErrorHandler {
     return {
       retry: async () => {
@@ -86,6 +92,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
       },
     };
   }
+
   createCompletedHandler(setTask: (task: Task) => void): TaskCompletedHandler {
     return {
       next: async () => {
@@ -108,27 +115,35 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
       },
     };
   }
+
   addHead(e: Task): void {
     this.taskQueue.addHead(e);
   }
+
   peekHead(): Task {
     return this.taskQueue.peekHead();
   }
+
   getHead(): Task {
     return this.taskQueue.getHead();
   }
+
   addTail(e: Task): void {
     this.taskQueue.addTail(e);
   }
+
   peekTail(): Task {
     return this.taskQueue.peekTail();
   }
+
   getTail(): Task {
     return this.taskQueue.getTail();
   }
+
   peekAll(): Task[] {
     return this.taskQueue.peekAll();
   }
+
   size(): number {
     return this.taskQueue.size();
   }
