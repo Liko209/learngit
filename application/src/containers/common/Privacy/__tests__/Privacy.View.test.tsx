@@ -25,7 +25,7 @@ describe('PrivacyView', () => {
     it('Display flash toast notification when change team from public to private failed. [JPT-491]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
-        handlePrivacy: () => ErrorTypes.SERVICE_INVALID_MODEL_ID,
+        handlePrivacy: () => { throw ErrorTypes.SERVICE_INVALID_MODEL_ID; },
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
@@ -40,7 +40,7 @@ describe('PrivacyView', () => {
       const props: any = {
         ...someProps,
         isPublic: false,
-        handlePrivacy: () => ErrorTypes.SERVICE_INVALID_MODEL_ID,
+        handlePrivacy: () => { throw ErrorTypes.SERVICE_INVALID_MODEL_ID; },
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
@@ -54,7 +54,7 @@ describe('PrivacyView', () => {
     it('Display flash toast notification when change team from public to private without network. [JPT-520]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
-        handlePrivacy: () => ErrorTypes.API_NETWORK,
+        handlePrivacy: () => { throw ErrorTypes.API_NETWORK; },
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
@@ -69,7 +69,7 @@ describe('PrivacyView', () => {
       const props: any = {
         ...someProps,
         isPublic: false,
-        handlePrivacy: () => ErrorTypes.API_NETWORK,
+        handlePrivacy: () => { throw ErrorTypes.API_NETWORK; },
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
