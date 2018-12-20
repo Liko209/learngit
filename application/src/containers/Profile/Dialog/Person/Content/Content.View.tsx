@@ -91,7 +91,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     label,
     value,
     valueEmphasize = false,
-    copy,
+    copyValue,
   }: FormGroupType) => {
     return (
       <FormGroup>
@@ -100,7 +100,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copy && this.renderCopy(value)}
+        {copyValue && this.renderCopy(copyValue)}
       </FormGroup>
     );
   }
@@ -160,7 +160,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('ext'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copy: true,
+                  copyValue: info.phoneNumber,
                 });
               })}
               {directNumbers.map((info: PhoneNumberInfo, index: number) => {
@@ -172,7 +172,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('directNumber'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copy: true,
+                  copyValue: info.phoneNumber,
                 });
               })}
               {person.email &&
@@ -181,7 +181,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('email'),
                   value: this.renderEmail(person.email),
                   valueEmphasize: true,
-                  copy: true,
+                  copyValue: person.email,
                 })}
             </Grid>
           </Grid>
@@ -203,7 +203,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                       icon: 'link',
                       label: t('webpage'),
                       value: person.homepage,
-                      copy: true,
+                      copyValue: person.homepage,
                     })}
                 </Grid>
               </Grid>

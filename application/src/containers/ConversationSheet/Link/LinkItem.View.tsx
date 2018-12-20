@@ -7,19 +7,24 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
-import { LinkItem } from '@/store/models/Items';
+import LinkItemModal from '@/store/models/LinkItem';
 
 type Props = {
-  postItems: LinkItem[];
-  onLinkItemClick: (e: React.MouseEvent<HTMLSpanElement>) => void;
+  postItems: LinkItemModal[];
+  onLinkItemClose: Function;
 };
 @observer
 class LinkItemView extends React.Component<Props> {
+  onLinkItemClose = (id: number) => () => {
+    const { onLinkItemClose } = this.props;
+    onLinkItemClose(id);
+  }
   render() {
-    const { postItems, onLinkItemClick } = this.props;
+    const { postItems } = this.props;
     return (
       <>
-        {postItems.map((item: LinkItem) => {
+        {postItems.map((item: LinkItemModal) => {
+          // In Glip must has this key
           // hard code in order to show the current image
           const image = item.image
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
@@ -33,7 +38,7 @@ class LinkItemView extends React.Component<Props> {
               summary={item.summary}
               thumbnail={image}
               url={item.url}
-              onLinkItemClose={onLinkItemClick.bind(this, item.id)}
+              onLinkItemClose={this.onLinkItemClose(item.id)}
               favicon={
                 item.favicon
                   ? `${item.favicon}&key=4527f263d6e64d7a8251b007b1ba9972` // hard code in order to show the current image

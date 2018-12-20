@@ -17,7 +17,7 @@ type Props = {
 type ViewProps = {
   id: number;
   permissionsMap: {
-    [key: string]: { permission: boolean };
+    [key: string]: { permission: boolean; shouldShowAction?: boolean };
   };
   showMoreAction: boolean;
 };

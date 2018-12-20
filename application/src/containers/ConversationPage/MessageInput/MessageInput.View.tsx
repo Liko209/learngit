@@ -89,7 +89,7 @@ class MessageInputViewComponent extends Component<
   }
 
   render() {
-    const { draft, changeDraft, error, id, t } = this.props;
+    const { draft, contentChange, error, id, t } = this.props;
     const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
@@ -104,9 +104,10 @@ class MessageInputViewComponent extends Component<
     return (
       <JuiMessageInput
         value={draft}
-        onChange={changeDraft}
+        onChange={contentChange}
         error={error ? t(error) : error}
         modules={modules}
+        id={id}
         toolbarNode={toolbarNode}
         attachmentsNode={attachmentsNode}
       >

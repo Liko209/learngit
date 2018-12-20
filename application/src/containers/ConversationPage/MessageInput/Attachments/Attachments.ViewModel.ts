@@ -11,17 +11,23 @@ import {
   AttachmentItem,
   SelectFile,
 } from './types';
-import { ItemService, SENDING_STATUS } from 'sdk/service';
+import {
+  ItemService,
+  notificationCenter,
+  ENTITY,
+  EVENT_TYPES,
+} from 'sdk/service';
+import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
-import { ItemFile } from 'sdk/src/models';
+import { ItemFile } from 'sdk/models';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
   @observable
-  items: Map<string, AttachmentItem> = new Map<string, AttachmentItem>();
+  items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
   @observable
   selectedFiles: SelectFile[] = [];
 
@@ -34,6 +40,29 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         this.reloadFiles();
       },
     );
+
+    notificationCenter.on(ENTITY.ITEM, this._handleItemChanged);
+  }
+
+  private _handleItemChanged = (
+    payload: NotificationEntityPayload<ItemFile>,
+  ) => {
+    const { type } = payload;
+    if (type === EVENT_TYPES.REPLACE) {
+      const data: any = payload;
+      const { ids, entities } = data.body;
+      ids.forEach((looper: number) => {
+        const record = this.items.get(looper);
+        if (record && record.item.group_ids.includes(this.id)) {
+          this.items.delete(looper);
+          const newItem: ItemFile = entities.get(looper);
+          this.items.set(newItem.id, {
+            item: newItem,
+            data: record.data,
+          } as AttachmentItem);
+        }
+      });
+    }
   }
 
   @computed
@@ -44,7 +73,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   @computed
   get files() {
     const values: AttachmentItem[] = Array.from(this.items.values());
-    return values.map(({ item }) => ({ name: item.name } as ItemInfo));
+    return values.map(
+      ({ item }) => ({ name: item.name, id: item.id } as ItemInfo),
+    );
   }
 
   @computed
@@ -60,12 +91,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   reloadFiles = () => {
+    this.items.clear();
     const result: ItemFile[] = this._itemService.getUploadItems(this.id);
     if (result && result.length > 0) {
       result.forEach((element: ItemFile) => {
-        this.items.set(element.name, {
+        this.items.set(element.id, {
           item: element,
-          status: element.sendStatus,
         } as AttachmentItem);
       });
     } else {
@@ -108,10 +139,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         isUpdate,
       );
       if (item) {
-        this.items.set(data.name, {
+        this.items.set(item.id, {
           item,
           data,
-          status: SENDING_STATUS.INPROGRESS,
         } as AttachmentItem);
       }
       return item;
@@ -126,12 +156,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   cancelUploadFile = async (info: ItemInfo) => {
-    const { name } = info;
-    const record = this.items.get(name);
+    const { id } = info;
+    const record = this.items.get(id);
     if (record) {
       try {
-        await this._itemService.cancelUpload(record.item.id);
-        this.items.delete(name);
+        await this._itemService.cancelUpload(id);
+        this.items.delete(id);
       } catch (e) {}
     }
   }
@@ -157,6 +187,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   cleanFiles = () => {
     this.items.clear();
+  }
+
+  dispose = () => {
+    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
   }
 }
 

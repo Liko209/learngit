@@ -19,8 +19,8 @@ type MessageInputViewProps = {
   error: string;
   forceSaveDraft(): void;
   forceSendPost(): void;
-  changeDraft(value: any): void;
   addOnPostCallback(callback: OnPostCallback): void;
+  contentChange(draft: string): void;
   keyboardEventHandler: {
     enter: {
       key: number;

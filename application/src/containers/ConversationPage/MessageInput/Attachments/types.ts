@@ -5,12 +5,10 @@
  */
 import { Item } from 'sdk/models';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
-import { SENDING_STATUS } from 'sdk/service/constants';
 
 type AttachmentItem = {
   item: Item;
   data: File;
-  status: SENDING_STATUS;
 };
 
 type SelectFile = {
@@ -33,6 +31,7 @@ type AttachmentsViewProps = {
   updateDuplicateFiles: () => void;
   cleanFiles: () => void;
   reloadFiles: () => void;
+  dispose: () => void;
 };
 
 export { AttachmentsProps, AttachmentsViewProps, AttachmentItem, SelectFile };

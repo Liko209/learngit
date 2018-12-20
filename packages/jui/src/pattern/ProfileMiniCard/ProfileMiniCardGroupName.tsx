@@ -15,7 +15,7 @@ const JuiProfileMiniCardGroupName = styled('div')`
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  word-break: break-all;
+  word-break: break-word;
 `;
 
 JuiProfileMiniCardGroupName.displayName = 'JuiProfileMiniCardGroupName';

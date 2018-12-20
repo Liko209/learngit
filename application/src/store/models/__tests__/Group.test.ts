@@ -19,4 +19,67 @@ describe('GroupModel', () => {
       expect(gm.isThePersonGuest(personB.company_id)).toBeFalsy;
     });
   });
+  describe('canPost', () => {
+    it('should return true when the group is not term', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: false,
+      } as Group);
+      expect(gm.canPost).toBeTruthy();
+    });
+    it('should return true when the group is term and current user is admin', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+      } as Group);
+      gm.isThePersonAdmin = jest.fn().mockReturnValue(true);
+      expect(gm.canPost).toBeTruthy();
+    });
+    it('should return true when the group is term and current user is not admin and permissions is undefined', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        permissions: undefined,
+      } as Group);
+      gm.isThePersonAdmin = jest.fn().mockReturnValue(false);
+      expect(gm.canPost).toBeTruthy();
+    });
+    it('should return true when the group is term and current user is not admin and permissions.user is undefined', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        permissions: {
+          user: undefined,
+        },
+      } as Group);
+      gm.isThePersonAdmin = jest.fn().mockReturnValue(false);
+      expect(gm.canPost).toBeTruthy();
+    });
+    it('should return true when the group is term and current user is not admin and permissions.user.level is 0', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        permissions: {
+          user: {
+            level: 0,
+          },
+        },
+      } as Group);
+      gm.isThePersonAdmin = jest.fn().mockReturnValue(false);
+      expect(gm.canPost).toBeFalsy();
+    });
+    it('should return true when the group is term and current user is not admin and permissions.user.level is 13', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        permissions: {
+          user: {
+            level: 13,
+          },
+        },
+      } as Group);
+      gm.isThePersonAdmin = jest.fn().mockReturnValue(false);
+      expect(gm.canPost).toBeTruthy();
+    });
+  });
 });
