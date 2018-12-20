@@ -61,8 +61,7 @@ class ConversationPageViewComponent extends Component<
       const { files } = monitor.getItem();
       const { current } = this._attachmentManagerRef;
       if (current) {
-        current.directPostFiles &&
-          current.directPostFiles(files).then(() => console.log(999999999));
+        current.directPostFiles && current.directPostFiles(files);
       }
     }
   }

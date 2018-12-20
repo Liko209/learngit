@@ -166,10 +166,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       const values: AttachmentItem[] = Array.from(this.items.values());
       const ids = values.map(({ item }) => item.id);
       await this._postService.sendPost({
-        atMentions: false,
         text: '',
         groupId: this.id,
-        users: undefined,
         itemIds: ids,
       });
       this.items.clear();
