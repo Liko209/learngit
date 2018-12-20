@@ -22,8 +22,6 @@ import { JuiIconButton } from '../../components/Buttons';
 
 import defaultIcon from './default.svg';
 
-const MAX_TITLE_LENGTH = 31;
-
 type IconProps = {
   icon?: string;
 };
