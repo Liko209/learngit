@@ -13,7 +13,9 @@ import { RequestHolder } from '../../../api/requestHolder';
 import { SENDING_STATUS } from '../../constants';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { BaseError } from '../../../utils';
+import { isInBeta } from '../../account/clientConfig';
 
+jest.mock('../../account/clientConfig');
 jest.mock('../../../service/item');
 jest.mock('../../../service/account');
 jest.mock('../../../api/glip/item');
@@ -34,6 +36,7 @@ describe('ItemFileUploadHandler', () => {
   });
 
   describe('sendItemFile()', () => {
+    isInBeta.mockReturnValue(false);
     const groupId = 1;
     const userId = 2;
     const companyId = 3;
@@ -292,9 +295,7 @@ describe('ItemFileUploadHandler', () => {
     beforeEach(() => {
       itemFileUploadHandler = new ItemFileUploadHandler();
 
-      jest
-        .spyOn(itemFileUploadHandler, '_shouldUploadToAmazonS3')
-        .mockReturnValue(true);
+      isInBeta.mockReturnValue(true);
 
       const userId = 2;
       const companyId = 3;
