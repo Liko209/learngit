@@ -2,6 +2,35 @@ import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as _ from 'lodash';
 import { ClientFunction } from 'testcafe';
 
+class Entry extends BaseWebComponent {
+  async enter() {
+    await this.t.click(this.self);
+  }
+}
+class ActionBarMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="document"]');
+  }
+
+  private getEntry(name: string) {
+    this.warnFlakySelector();
+    return this.getComponent(Entry, this.self.find('li').withText(name));
+  }
+
+  get quoteItem() {
+    return this.getEntry('feedback');
+  }
+
+  get deletePost() {
+    return this.getEntry('delete');
+  }
+
+  get eidtPost() {
+    return this.getEntry('edit');
+  }
+}
+
+
 class BaseConversationPage extends BaseWebComponent {
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
@@ -110,6 +139,11 @@ export class BookmarkPage extends BaseConversationPage {
 }
 
 export class PostItem extends BaseWebComponent {
+
+  get actionBarMoreMenu() {
+    return this.getComponent(ActionBarMoreMenu);
+  }
+
   get avatar() {
     return this.self.find(`[data-name="avatar"]`);
   }
@@ -134,6 +168,18 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get editTextArea()
+  {
+    return this.self.find('[data-placeholder="Type new message"]');
+  }
+
+  async editMessage(message: string) {
+    await this.t
+      .typeText(this.editTextArea, message)
+      .click(this.editTextArea)
+      .pressKey('enter');
+  }
+
   imgTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
@@ -156,6 +202,10 @@ export class PostItem extends BaseWebComponent {
 
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
+  }
+
+  async clickMoreItemOnActionBar() {
+    await this.t.hover(this.self).click(this.moreMenu);
   }
 
   async clickLikeOnActionBar() {
