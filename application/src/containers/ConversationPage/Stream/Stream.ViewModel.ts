@@ -236,8 +236,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return await this._transformHandler.fetchData(direction, limit);
   }
 
-  private async _loadSiblingPosts(postId: number) {
-    const post = await this._loadPost(postId);
+  private async _loadSiblingPosts(anchorPostId: number) {
+    const post = await this._loadPost(anchorPostId);
     if (post) {
       await Promise.all([
         this._loadPosts(QUERY_DIRECTION.OLDER),
