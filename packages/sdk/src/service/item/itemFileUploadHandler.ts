@@ -2,6 +2,7 @@
  * @Author: Jerry Cai (jerry.cai@ringcentral.com)
  * @Date: 2018-12-05 09:30:00
  */
+import _ from 'lodash';
 import { NETWORK_FAIL_TYPE, mainLogger } from 'foundation';
 import { StoredFile, ItemFile, Item, Raw, Progress } from '../../models';
 import AccountService from '../account';
@@ -24,6 +25,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
+
   async sendItemFile(
     groupId: number,
     file: FormData,
@@ -38,6 +40,66 @@ class ItemFileUploadHandler {
     return null;
   }
 
+  private _getCachedItem(itemId: number) {
+    const cache = this._progressCaches.get(itemId);
+    return cache ? cache.itemFile : undefined;
+  }
+
+  async sendItemData(groupId: number, postItemIds: number[]) {
+    const needWaitItemIds: number[] = [];
+    postItemIds.forEach((id: number) => {
+      const itemStatus = this._progressCaches.get(id);
+      if (itemStatus && itemStatus.itemFile) {
+        const item = itemStatus.itemFile;
+        if (this._hasValidStoredFile(item)) {
+          this._uploadItem(groupId, item, !item.is_new);
+        } else {
+          needWaitItemIds.push(item.id);
+        }
+      }
+    });
+
+    if (needWaitItemIds.length > 0) {
+      this._waitUntilAllItemCreated(groupId, needWaitItemIds);
+    }
+  }
+
+  private _waitUntilAllItemCreated(
+    groupId: number,
+    uploadingItemFileIds: number[],
+  ) {
+    const listener = (params: {
+      success: boolean;
+      preInsertId: number;
+      updatedId: number;
+    }) => {
+      // handle item upload result.
+      const { success, preInsertId, updatedId } = params;
+      if (
+        !uploadingItemFileIds.includes(preInsertId) ||
+        updatedId !== preInsertId
+      ) {
+        return;
+      }
+      _.remove(uploadingItemFileIds, (id: number) => {
+        return id === preInsertId;
+      });
+
+      const item = this._getCachedItem(preInsertId);
+      if (success && item) {
+        this._uploadItem(groupId, item, !item.is_new);
+      }
+
+      if (uploadingItemFileIds.length === 0) {
+        notificationCenter.removeListener(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          listener,
+        );
+      }
+    };
+
+    notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+  }
   async resendFailedFile(itemId: number) {
     this._updateFileProgress(itemId, SENDING_STATUS.INPROGRESS);
 
@@ -47,12 +109,7 @@ class ItemFileUploadHandler {
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
       const isUpdate = itemInDB.is_new;
-      const version = itemInDB.versions[0];
-      if (
-        version &&
-        version.download_url.length > 0 &&
-        version.url.length > 0
-      ) {
+      if (this._hasValidStoredFile(itemInDB)) {
         await this._uploadItem(groupId, itemInDB, isUpdate);
       } else {
         const cacheItem = this._progressCaches.get(itemId);
@@ -299,7 +356,7 @@ class ItemFileUploadHandler {
   ) {
     const groupId = preInsertItem.group_ids[0];
     await this._handleFileUploadSuccess(storedFile, groupId, preInsertItem);
-    await this._uploadItem(groupId, preInsertItem, isUpdate);
+    // await this._uploadItem(groupId, preInsertItem, isUpdate);
   }
 
   private _shouldUploadToAmazonS3() {
@@ -379,13 +436,23 @@ class ItemFileUploadHandler {
     const fileVersion = this._toFileVersion(storedFile);
     preInsertItem.versions = [fileVersion];
     this._updateUploadingFiles(groupId, preInsertItem);
+    this._updateCachedFilesStatus(preInsertItem);
 
     itemDao.update(preInsertItem);
+    const itemId = preInsertItem.id;
     await this._partialUpdateItemFile({
-      id: preInsertItem.id,
-      _id: preInsertItem.id,
+      id: itemId,
+      _id: itemId,
       versions: [fileVersion],
     });
+    this._emitItemFileStatus(true, itemId, itemId);
+  }
+
+  private _updateCachedFilesStatus(newItemFile: ItemFile) {
+    const status = this._progressCaches.get(newItemFile.id);
+    if (status) {
+      status.itemFile = newItemFile;
+    }
   }
 
   private _updateUploadingFiles(groupId: number, newItemFile: ItemFile) {
@@ -468,10 +535,18 @@ class ItemFileUploadHandler {
     };
   }
 
+  private _isUpdateItem(itemFile: ItemFile) {
+    return !itemFile.is_new;
+  }
   private _saveItemFileToUploadingFiles(preInsertItem: ItemFile) {
     const groupId = preInsertItem.group_ids[0];
     let existFiles: ItemFile[] | undefined = this._uploadingFiles.get(groupId);
     if (existFiles && existFiles.length > 0) {
+      if (this._isUpdateItem(preInsertItem)) {
+        existFiles = existFiles.filter((item: ItemFile) => {
+          item.name !== preInsertItem.name;
+        });
+      }
       existFiles.push(preInsertItem);
     } else {
       existFiles = [preInsertItem];
@@ -496,11 +571,13 @@ class ItemFileUploadHandler {
       status.requestHolder = requestHolder;
       status.progress = progress;
       status.file = formFile;
+      status.itemFile = preInsertItem;
     } else {
       this._progressCaches.set(preInsertItemId, {
         requestHolder,
         progress,
         file: formFile,
+        itemFile: preInsertItem,
       });
     }
   }
@@ -567,6 +644,12 @@ class ItemFileUploadHandler {
     preInsertId: number,
     updatedId: number,
   ) {
+    console.warn(
+      ' private _emitItemFileStatus',
+      { success },
+      { preInsertId },
+      { updatedId },
+    );
     notificationCenter.emit(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, {
       success,
       preInsertId,
@@ -601,6 +684,11 @@ class ItemFileUploadHandler {
       return sorted[0];
     }
     return null;
+  }
+
+  private _hasValidStoredFile(itemFile: ItemFile) {
+    const version = itemFile.versions[0];
+    return version && version.download_url.length > 0 && version.url.length > 0;
   }
 }
 

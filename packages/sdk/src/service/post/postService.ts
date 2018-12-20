@@ -324,7 +324,8 @@ class PostService extends BaseService<Post> {
       updatedId: number;
     }) => {
       const { success, preInsertId, updatedId } = params;
-      if (!post.item_ids.includes(preInsertId)) {
+      console.warn('​post', post, post.item_ids, params);
+      if (!post.item_ids.includes(preInsertId) || preInsertId === updatedId) {
         return;
       }
 
@@ -344,16 +345,21 @@ class PostService extends BaseService<Post> {
               }
             });
           }
+          this._updatePost({
+            id: post.id,
+            _id: post._id,
+            item_data: post.item_data,
+            item_ids: post.item_ids,
+          });
         }
-
-        await this._updatePost(post);
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
           notificationCenter.removeListener(
             SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
             listener,
           );
-          this._sendPost(post);
+          debugger;
+          await this._sendPost(post);
         }
       }
 
@@ -373,13 +379,21 @@ class PostService extends BaseService<Post> {
     };
 
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.sendItemData(post.group_id, post.item_ids);
+
     return [];
   }
 
-  private async _updatePost(post: Post) {
-    const postDao = daoManager.getDao(PostDao);
-    await postDao.update(post);
-    notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
+  private async _updatePost(updateData: object) {
+    await this.handlePartialUpdate(
+      updateData,
+      undefined,
+      async (updatedPost: Post) => {
+        return updatedPost;
+      },
+    );
   }
 
   private _hasExpectedStatus(
@@ -401,7 +415,9 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPost(buildPost: Post): Promise<PostData[]> {
-    const { id: preInsertId } = buildPost;
+    debugger;
+    const preInsertId = buildPost.id;
+    console.warn('​buildPost', buildPost, preInsertId);
     delete buildPost.id;
     delete buildPost.status;
 

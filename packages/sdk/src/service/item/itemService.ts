@@ -39,6 +39,13 @@ class ItemService extends BaseService<Item> {
     );
   }
 
+  async sendItemData(groupId: number, itemIds: number[]) {
+    const fileItemIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    await this._getItemFileHandler().sendItemData(groupId, fileItemIds);
+  }
+
   async getItemVersion(itemFile: ItemFile): Promise<number> {
     return await this._getItemFileHandler().getUpdateItemVersion(itemFile);
   }

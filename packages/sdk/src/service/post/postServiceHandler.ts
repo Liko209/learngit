@@ -97,7 +97,9 @@ class PostServiceHandler {
         );
         const versions = await Promise.all(promises);
         for (let i = 0; i < needCheckItemFiles.length; i++) {
-          itemData.version_map[needCheckItemFiles[i].id] = versions[i];
+          if (versions[i]) {
+            itemData.version_map[needCheckItemFiles[i].id] = versions[i];
+          }
         }
         return itemData;
       }
