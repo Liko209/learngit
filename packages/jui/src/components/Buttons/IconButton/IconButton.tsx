@@ -121,8 +121,8 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
       }
     }
 
-    &.disabled {
-      pointer-events: ${({ alwaysEnableTooltip }) => alwaysEnableTooltip ? 'auto!important' : 'none' };
+    &&.disabled {
+      pointer-events: ${({ alwaysEnableTooltip }) => alwaysEnableTooltip ? 'auto' : 'none'};
       ${StyledIcon} {
         color: ${({ theme }) =>
           palette('action', 'disabledBackground')({ theme })};
