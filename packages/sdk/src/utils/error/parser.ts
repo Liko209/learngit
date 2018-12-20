@@ -41,7 +41,7 @@ class ErrorParser {
     /**
      * From resp.data
      */
-    if (data.error) {
+    if (data && data.error) {
       let httpErrorCode: string = '';
       let httpErrorMessage: string = '';
 
