@@ -117,17 +117,19 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
-  async userRole(user: IUser, cb?:(appRoot) => Promise<any>) {
+  get setLocalStorage(): (k: string, v: string) => Promise<any> {
+    return ClientFunction((key, val) => localStorage.setItem(key, val));
+  }
+
+  async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
     return await Role(SITE_URL, async (t) => {
       const newApp = new AppRoot(t);
       await newApp.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
-      await newApp.homePage.ensureLoaded(); 
-      if (cb != undefined) {
+      await newApp.homePage.ensureLoaded();
+      if (undefined !== cb) {
         await cb(newApp);
       }
-    }, {
-      preserveUrl: true,
-    })
+    }, { preserveUrl: true, });
   }
 
   // a temporary method:  need time to wait back-end and front-end sync umi data.
@@ -143,8 +145,11 @@ class Helper {
   }
 }
 
-function h(t: TestController) {
-  return new Helper(t);
+function h(t: TestController): Helper {
+  if (undefined == t.ctx.__helper) {
+    t.ctx.__helper = new Helper(t);
+  }
+  return t.ctx.__helper;
 }
 
 export { Helper, h, H };
