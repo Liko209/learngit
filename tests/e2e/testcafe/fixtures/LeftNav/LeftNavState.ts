@@ -33,27 +33,27 @@ test(
       await leftPanel.fold();
     });
     await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
-      await t.expect(leftPanel.self.offsetWidth).eql(minLeftPanelWidth);
+      await leftPanel.widthShouldBe(minLeftPanelWidth);
     });
     await h(t).withLog('When I refresh browser', async () => {
       await h(t).refresh();
       await leftPanel.ensureLoaded();
     });
     await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
-      await t.expect(leftPanel.self.offsetWidth).eql(minLeftPanelWidth);
+      await leftPanel.widthShouldBe(minLeftPanelWidth);
     });
     await h(t).withLog('When I expand left panel', async () => {
       await app.homePage.leftPanel.expand();
     });
     await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
-      await t.expect(leftPanel.self.offsetWidth).eql(maxLeftPanelWidth);
+      await leftPanel.widthShouldBe(maxLeftPanelWidth);
     });
     await h(t).withLog('When I refresh browser', async () => {
       await h(t).refresh();
       await leftPanel.ensureLoaded();
     });
     await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
-      await t.expect(leftPanel.self.offsetWidth).eql(maxLeftPanelWidth);
+      await leftPanel.widthShouldBe(maxLeftPanelWidth);
     });
 
   });

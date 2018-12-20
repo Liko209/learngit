@@ -48,14 +48,15 @@ class MessageInputViewComponent extends Component<
   }
 
   render() {
-    const { draft, changeDraft, error, id, t } = this.props;
+    const { draft, contentChange, error, id, t } = this.props;
     const { modules } = this.state;
     return (
       <JuiMessageInput
         value={draft}
-        onChange={changeDraft}
+        onChange={contentChange}
         error={error ? t(error) : error}
         modules={modules}
+        id={id}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>

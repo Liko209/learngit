@@ -27,7 +27,7 @@ class NewActions extends React.Component<NewActionsProps> {
     return (
       <JuiIconButton
         size="medium"
-        tooltipTitle={t('NewActions')}
+        tooltipTitle={t('newActions')}
         data-test-automation-id="addMenuBtn"
       >
         add_circle

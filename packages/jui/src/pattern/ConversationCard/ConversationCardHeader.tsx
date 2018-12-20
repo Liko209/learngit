@@ -9,7 +9,7 @@ import {
   typography,
   grey,
   ellipsis,
-  primary,
+  width,
 } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
 
@@ -19,18 +19,17 @@ const StyledLeftSection = styled('div')`
   min-width: 0;
   font-size: 0;
   align-items: center;
+  white-space: nowrap;
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
   ${typography('caption')} overflow: hidden;
-  flex-shrink: 1;
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
-  margin-left: ${spacing(1)};
+  padding-left: ${spacing(1)};
+  box-sizing: border-box;
   color: ${grey('600')};
-  flex-shrink: 1;
-  white-space: nowrap;
   ${typography('caption2')};
   ${ellipsis()};
 `;
@@ -38,15 +37,11 @@ const StyledTime = styled('div')`
   color: ${grey('500')};
   white-space: nowrap;
   ${typography('caption2')};
-`;
-const StyledFrom = styled('div')`
-  margin-left: ${spacing(1)};
-  margin-right: ${spacing(1)};
-  color: ${primary('700')};
-  font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
+  width: ${width(20)};
+  text-align: right;
 `;
 const RightSection = styled('div')`
-  margin-left: ${spacing(4)};
+  margin-left: ${spacing(1)};
   display: inline-flex;
 `;
 const StyledConversationCardHeader = styled('div')`
@@ -55,11 +50,11 @@ const StyledConversationCardHeader = styled('div')`
   align-items: center;
 `;
 const StyledNotification = styled.div`
-  div {
-    margin-left: ${spacing(2)};
-    font-size: ${({ theme }) => theme.typography.caption.fontSize};
-    color: ${grey('500')};
-  }
+  ${ellipsis()};
+  padding-left: ${spacing(1)};
+  box-sizing: border-box;
+  color: ${grey('500')};
+  ${typography('caption1')};
 `;
 
 type ConversationCardHeaderProps = {
@@ -71,26 +66,87 @@ type ConversationCardHeaderProps = {
   notification?: React.ReactNode;
 };
 
-const JuiConversationCardHeader = (props: ConversationCardHeaderProps) => (
-  <StyledConversationCardHeader>
-    <StyledLeftSection>
-      <StyledName data-name="name">{props.name}</StyledName>
-      {props.status ? (
-        <StyledStatus data-name="cardHeaderUserStatus">
-          {props.status}
-        </StyledStatus>
-      ) : null}
-      {props.notification ? (
-        <StyledNotification>{props.notification}</StyledNotification>
-      ) : null}
-      {props.from ? <StyledFrom>{props.from}</StyledFrom> : null}
-    </StyledLeftSection>
-    <RightSection>
-      <StyledTime data-name="time">{props.time}</StyledTime>
-      {props.children}
-    </RightSection>
-  </StyledConversationCardHeader>
-);
+class JuiConversationCardHeader extends React.Component<
+  ConversationCardHeaderProps,
+  { headerItemMaxWidth: null | number }
+> {
+  leftSection: HTMLDivElement | null;
+  constructor(props: ConversationCardHeaderProps) {
+    super(props);
+    this.state = {
+      headerItemMaxWidth: null,
+    };
+    this.leftSection = null;
+  }
+
+  setLeftSectionRef = (element: any) => {
+    this.leftSection = element;
+  }
+
+  setHeaderItemMaxWidth() {
+    if (!this.leftSection) {
+      return;
+    }
+    const width =
+      this.leftSection.clientWidth /
+      Array.from(this.leftSection.childNodes).filter(childNode =>
+        childNode.hasChildNodes(),
+      ).length;
+    if (this.state.headerItemMaxWidth !== width) {
+      this.setState({
+        headerItemMaxWidth: width,
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.setHeaderItemMaxWidth();
+    window.addEventListener('resize', this.setHeaderItemMaxWidth.bind(this));
+  }
+
+  componentDidUpdate() {
+    this.setHeaderItemMaxWidth();
+  }
+
+  render() {
+    const { name, status, notification, from, time, children } = this.props;
+    const inlineStyle = {
+      maxWidth: `${this.state.headerItemMaxWidth}px`,
+    };
+    return (
+      <StyledConversationCardHeader>
+        <StyledLeftSection ref={this.setLeftSectionRef}>
+          <StyledName data-name="name" style={inlineStyle}>
+            {name}
+          </StyledName>
+          {status ? (
+            <StyledStatus data-name="cardHeaderUserStatus" style={inlineStyle}>
+              {status}
+            </StyledStatus>
+          ) : null}
+          {notification ? (
+            <StyledNotification
+              data-name="cardHeaderNotification"
+              style={inlineStyle}
+            >
+              {notification}
+            </StyledNotification>
+          ) : null}
+          {from
+            ? React.cloneElement(from, {
+              style: inlineStyle,
+              'data-name': 'cardHeaderFrom',
+            })
+            : null}
+        </StyledLeftSection>
+        <RightSection>
+          <StyledTime data-name="time">{time}</StyledTime>
+          {children}
+        </RightSection>
+      </StyledConversationCardHeader>
+    );
+  }
+}
 
 export { JuiConversationCardHeader };
 export default JuiConversationCardHeader;
