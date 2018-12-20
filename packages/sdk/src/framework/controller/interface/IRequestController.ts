@@ -7,11 +7,11 @@
 import { BaseModel } from '../../../models';
 
 interface IRequestController<T extends BaseModel = BaseModel> {
-  getDataById(id: number): Promise<T | null>;
+  get(id: number): Promise<T | null>;
 
-  putData(data: Partial<T>): Promise<T>;
+  put(data: Partial<T>): Promise<T>;
 
-  postData(data: Partial<T>): Promise<T>;
+  post(data: Partial<T>): Promise<T>;
 }
 
 export { IRequestController };

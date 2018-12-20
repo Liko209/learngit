@@ -13,12 +13,12 @@ describe('RequestController', () => {
   let dao: BaseDao<TestEntity>;
   let deactivatedDao: DeactivatedDao;
   let requestController: RequestController<TestEntity>;
-  let controller: EntitySourceController<TestEntity>;
+  let entitySourceController: EntitySourceController<TestEntity>;
   beforeEach(() => {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new DeactivatedDao(new TestDatabase());
     requestController = new RequestController<TestEntity>(undefined);
-    controller = new EntitySourceController<TestEntity>(
+    entitySourceController = new EntitySourceController<TestEntity>(
       dao,
       deactivatedDao,
       requestController,
@@ -28,31 +28,35 @@ describe('RequestController', () => {
   describe('getEntity()', () => {
     it('should not call requestController.getDataById when local has', async () => {
       jest
-        .spyOn(controller, 'getEntityLocally')
+        .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
-      jest.spyOn(requestController, 'getDataById').mockImplementation(() => {});
+      jest.spyOn(requestController, 'get').mockImplementation(() => {});
 
-      const result = await controller.getEntity(1);
+      const result = await entitySourceController.getEntity(1);
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
-      expect(requestController.getDataById).not.toHaveBeenCalled();
+      expect(requestController.get).not.toHaveBeenCalled();
     });
 
     it('should call requestController.getDataById when local has not, remote has', async () => {
-      jest.spyOn(controller, 'getEntityLocally').mockResolvedValueOnce(null);
       jest
-        .spyOn(requestController, 'getDataById')
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      jest
+        .spyOn(requestController, 'get')
         .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
-      const result = await controller.getEntity(1);
+      const result = await entitySourceController.getEntity(1);
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
-      expect(requestController.getDataById).toHaveBeenCalled();
+      expect(requestController.get).toHaveBeenCalled();
     });
 
     it('should throw exception when local has not, entity id is invalid', async () => {
-      jest.spyOn(controller, 'getEntityLocally').mockResolvedValueOnce(null);
-      expect(controller.getEntity(-1)).resolves.toThrow();
+      jest
+        .spyOn(entitySourceController, 'getEntityLocally')
+        .mockResolvedValueOnce(null);
+      expect(entitySourceController.getEntity(-1)).resolves.toThrow();
     });
   });
 
@@ -61,7 +65,7 @@ describe('RequestController', () => {
       jest.spyOn(dao, 'get').mockResolvedValueOnce({ id: 1, name: 'jupiter' });
       jest.spyOn(deactivatedDao, 'get').mockImplementation(() => {});
 
-      const result = await controller.getEntityLocally(1);
+      const result = await entitySourceController.getEntityLocally(1);
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
       expect(deactivatedDao.get).not.toHaveBeenCalled();
@@ -73,19 +77,19 @@ describe('RequestController', () => {
         return { id: 1, name: 'jupiter' };
       });
 
-      const result = await controller.getEntityLocally(1);
+      const result = await entitySourceController.getEntityLocally(1);
 
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
       expect(deactivatedDao.get).toHaveBeenCalled();
     });
 
-    it('should return entity when deactivated db has not', async () => {
+    it('should return null when deactivated db has not', async () => {
       jest.spyOn(dao, 'get').mockResolvedValueOnce(null);
       jest.spyOn(deactivatedDao, 'get').mockImplementation(() => {
         return null;
       });
-      const result = await controller.getEntityLocally(1);
+      const result = await entitySourceController.getEntityLocally(1);
       expect(result).toBeNull();
       expect(deactivatedDao.get).toHaveBeenCalled();
     });
@@ -95,7 +99,7 @@ describe('RequestController', () => {
     it('should return entity when db has', async () => {
       jest.spyOn(dao, 'bulkUpdate').mockImplementation(() => {});
 
-      await controller.bulkUpdate([
+      await entitySourceController.bulkUpdate([
         { id: 1, name: 'jupiter1' },
         { id: 2, name: 'jupiter2' },
       ]);
@@ -109,13 +113,14 @@ describe('RequestController', () => {
         return [{ id: 1, name: 'jupiter1' }, { id: 2, name: 'jupiter2' }];
       });
 
-      const result = await controller.getEntitiesLocally([1, 2], true);
+      const result = await entitySourceController.getEntitiesLocally(
+        [1, 2],
+        true,
+      );
       expect(dao.batchGet).toHaveBeenCalledTimes(1);
       expect(result.length).toBe(2);
-      expect(result[0].id).toBe(1);
-      expect(result[0].name).toBe('jupiter1');
-      expect(result[1].id).toBe(2);
-      expect(result[1].name).toBe('jupiter2');
+      expect(result[0]).toEqual({ id: 1, name: 'jupiter1' });
+      expect(result[1]).toEqual({ id: 2, name: 'jupiter2' });
     });
 
     it('should return entities when part in db, part in deactivated db', async () => {
@@ -127,14 +132,15 @@ describe('RequestController', () => {
         return [{ id: 2, name: 'jupiter2' }];
       });
 
-      const result = await controller.getEntitiesLocally([1, 2], true);
+      const result = await entitySourceController.getEntitiesLocally(
+        [1, 2],
+        true,
+      );
       expect(dao.batchGet).toHaveBeenCalledTimes(1);
       expect(deactivatedDao.batchGet).toHaveBeenCalledTimes(1);
       expect(result.length).toBe(2);
-      expect(result[0].id).toBe(1);
-      expect(result[0].name).toBe('jupiter1');
-      expect(result[1].id).toBe(2);
-      expect(result[1].name).toBe('jupiter2');
+      expect(result[0]).toEqual({ id: 1, name: 'jupiter1' });
+      expect(result[1]).toEqual({ id: 2, name: 'jupiter2' });
     });
 
     it('should return entities all in deactivated db', async () => {
@@ -146,14 +152,15 @@ describe('RequestController', () => {
         return [{ id: 1, name: 'jupiter1' }, { id: 2, name: 'jupiter2' }];
       });
 
-      const result = await controller.getEntitiesLocally([1, 2], true);
+      const result = await entitySourceController.getEntitiesLocally(
+        [1, 2],
+        true,
+      );
       expect(dao.batchGet).toHaveBeenCalledTimes(1);
       expect(deactivatedDao.batchGet).toHaveBeenCalledTimes(1);
       expect(result.length).toBe(2);
-      expect(result[0].id).toBe(1);
-      expect(result[0].name).toBe('jupiter1');
-      expect(result[1].id).toBe(2);
-      expect(result[1].name).toBe('jupiter2');
+      expect(result[0]).toEqual({ id: 1, name: 'jupiter1' });
+      expect(result[1]).toEqual({ id: 2, name: 'jupiter2' });
     });
 
     it('should return empty all not in db', async () => {
@@ -165,7 +172,10 @@ describe('RequestController', () => {
         return [];
       });
 
-      const result = await controller.getEntitiesLocally([1, 2], true);
+      const result = await entitySourceController.getEntitiesLocally(
+        [1, 2],
+        true,
+      );
       expect(dao.batchGet).toHaveBeenCalledTimes(1);
       expect(deactivatedDao.batchGet).toHaveBeenCalledTimes(1);
       expect(result.length).toBe(0);
@@ -180,7 +190,10 @@ describe('RequestController', () => {
         return [{ id: 1, name: 'jupiter1' }, { id: 2, name: 'jupiter2' }];
       });
 
-      const result = await controller.getEntitiesLocally([1, 2], false);
+      const result = await entitySourceController.getEntitiesLocally(
+        [1, 2],
+        false,
+      );
       expect(dao.batchGet).toHaveBeenCalledTimes(1);
       expect(deactivatedDao.batchGet).not.toHaveBeenCalledTimes(1);
       expect(result.length).toBe(0);
@@ -189,7 +202,7 @@ describe('RequestController', () => {
 
   describe('getEntityKey()', () => {
     it('should return entity when db has', () => {
-      const result = controller.getEntityNotificationKey();
+      const result = entitySourceController.getEntityNotificationKey();
       expect(result).toBe('ENTITY.TESTENTITY');
     });
   });

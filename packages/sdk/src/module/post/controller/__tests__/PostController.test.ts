@@ -6,11 +6,11 @@
 
 import { PostController } from '../PostController';
 import { Post } from '../../../../models';
-import { ControllerFactory } from '../../../../framework/controller/ControllerFactory';
 import { PostActionController } from '../PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 import { BaseDao, daoManager } from '../../../../dao';
+import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
 
 jest.mock('../../../../api');
 
@@ -20,7 +20,7 @@ describe('PostController', () => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {
-      const controllerBuilder = ControllerFactory.getControllerBuilder<Post>();
+      const controllerBuilder = new ControllerBuilder<Post>();
       const controller = new PostController(controllerBuilder);
 
       const dao = new BaseDao('Post', new TestDatabase());

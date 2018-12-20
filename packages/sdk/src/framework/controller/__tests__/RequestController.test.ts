@@ -39,7 +39,7 @@ describe('RequestController', () => {
 
   describe('getDataById()', () => {
     it('should throw exception when id <= 0', async () => {
-      expect(controller.getDataById(-1)).resolves.toThrow();
+      expect(controller.get(-1)).resolves.toThrow();
     });
 
     it('should return entity when api result is ok', async () => {
@@ -50,7 +50,7 @@ describe('RequestController', () => {
         } as BaseResponse),
       );
 
-      const entity = await controller.getDataById(1);
+      const entity = await controller.get(1);
       expect(entity.id).toBe(1);
       expect(entity.name).toBe('jupiter');
     });
@@ -63,15 +63,13 @@ describe('RequestController', () => {
           headers: {},
         } as BaseResponse),
       );
-      expect(controller.getDataById(1)).resolves.toThrow();
+      expect(controller.get(1)).resolves.toThrow();
     });
   });
 
   describe('putData()', () => {
     it('should throw exception when id <= 0', async () => {
-      expect(
-        controller.putData({ _id: -1, name: 'jupiter' }),
-      ).resolves.toThrow();
+      expect(controller.put({ _id: -1, name: 'jupiter' })).resolves.toThrow();
     });
 
     it('should return entity when api success and has _id', async () => {
@@ -82,7 +80,7 @@ describe('RequestController', () => {
         } as BaseResponse),
       );
 
-      const result = await controller.putData({ _id: 1, name: 'jupiter' });
+      const result = await controller.put({ _id: 1, name: 'jupiter' });
 
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
@@ -96,10 +94,14 @@ describe('RequestController', () => {
         } as BaseResponse),
       );
 
-      const result = await controller.putData({ id: 1, name: 'jupiter' });
+      const result = await controller.put({ id: 1, name: 'jupiter' });
 
-      expect(result.id).toBe(1);
-      expect(result.name).toBe('jupiter');
+      expect(networkConfig.networkClient.put).toBeCalledWith('/basePath/1', {
+        _id: 1,
+        name: 'jupiter',
+      });
+
+      expect(result).toEqual({ id: 1, name: 'jupiter' });
     });
 
     it('should return entity when api success and has id, -id', async () => {
@@ -110,7 +112,7 @@ describe('RequestController', () => {
         } as BaseResponse),
       );
 
-      const result = await controller.putData({
+      const result = await controller.put({
         id: 1,
         _id: 1,
         name: 'jupiter',
@@ -129,7 +131,7 @@ describe('RequestController', () => {
         } as BaseResponse),
       );
       expect(
-        controller.putData({
+        controller.put({
           id: 1,
           _id: 1,
           name: 'jupiter',
@@ -148,9 +150,7 @@ describe('RequestController', () => {
         } as BaseResponse),
       );
 
-      expect(
-        controller.postData({ _id: -1, name: 'jupiter' }),
-      ).resolves.toThrow();
+      expect(controller.post({ _id: -1, name: 'jupiter' })).resolves.toThrow();
     });
 
     it('should return entity when api success', async () => {
@@ -160,7 +160,7 @@ describe('RequestController', () => {
           headers: {},
         } as BaseResponse),
       );
-      const result = await controller.postData({ _id: 1, name: 'jupiter' });
+      const result = await controller.post({ _id: 1, name: 'jupiter' });
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
     });

@@ -22,7 +22,7 @@ class EntitySourceController<T extends BaseModel = BaseModel>
   async getEntity(id: number): Promise<T | null> {
     const result = await this.getEntityLocally(id);
     if (!result) {
-      return this.requestController.getDataById(id);
+      return this.requestController.get(id);
     }
     return result;
   }

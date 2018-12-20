@@ -6,7 +6,7 @@
 
 import { AbstractService } from './AbstractService';
 import { BaseModel } from '../../models';
-import { ControllerFactory } from '../controller/ControllerFactory';
+import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
 
 class EntityBaseService<
   T extends BaseModel = BaseModel
@@ -18,7 +18,7 @@ class EntityBaseService<
   protected onStopped() {}
 
   getControllerBuilder() {
-    return ControllerFactory.getControllerBuilder<T>();
+    return new ControllerBuilder<T>();
   }
 }
 

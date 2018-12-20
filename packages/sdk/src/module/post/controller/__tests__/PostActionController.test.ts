@@ -16,9 +16,9 @@ class TestPartialModifyController implements IPartialModifyController<Post> {
 }
 
 class TestRequestController implements IRequestController<Post> {
-  getDataById = jest.fn();
-  putData = jest.fn();
-  postData = jest.fn();
+  get = jest.fn();
+  put = jest.fn();
+  post = jest.fn();
 }
 
 describe('PostController', () => {

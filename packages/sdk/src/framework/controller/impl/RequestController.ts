@@ -18,13 +18,13 @@ class RequestController<T extends BaseModel = BaseModel>
     public networkConfig: { basePath: string; networkClient: NetworkClient },
   ) {}
 
-  async getDataById(id: number): Promise<T | null> {
+  async get(id: number): Promise<T | null> {
     if (id <= 0) {
       const error = new ErrorHandlingController();
       error.throwInvalidParameterError('id', id);
     }
 
-    const result: ApiResult<any> = await this.get(id);
+    const result: ApiResult<any> = await this._get(id);
     const resultData = result.expect(
       `request can not get the entity of id: ${id}`,
     );
@@ -34,7 +34,7 @@ class RequestController<T extends BaseModel = BaseModel>
     return arr.length > 0 ? arr[0] : null;
   }
 
-  async putData(data: Partial<T>) {
+  async put(data: Partial<T>) {
     const id: number | undefined = this._validId(data);
 
     if (!id || id < 0) {
@@ -42,16 +42,16 @@ class RequestController<T extends BaseModel = BaseModel>
       error.throwInvalidParameterError('id', id);
     }
 
-    const result = await this.put<T>(id!, data);
+    const result = await this._put<T>(id!, data);
     const resultData = result.expect(
       `request can not put the entity of id: ${id}`,
     );
     return transform<T>(resultData);
   }
 
-  async postData(data: Partial<T>) {
+  async post(data: Partial<T>) {
     try {
-      const result = await this.post<T>(data);
+      const result = await this._post<T>(data);
       const resultData = result.expect(
         'request can not post the entity of data ',
       );
@@ -61,20 +61,20 @@ class RequestController<T extends BaseModel = BaseModel>
     }
   }
 
-  protected async get(id: number) {
+  private async _get(id: number) {
     return this.networkConfig.networkClient.get<Raw<T>>(
       `${this.networkConfig.basePath}/${id}`,
     );
   }
 
-  protected async post<T>(data: Partial<T>) {
+  private async _post<T>(data: Partial<T>) {
     return this.networkConfig.networkClient.post<Raw<T>>(
       `${this.networkConfig.basePath}`,
       data,
     );
   }
 
-  protected async put<T>(id: number, data: Partial<T>) {
+  private async _put<T>(id: number, data: Partial<T>) {
     return this.networkConfig.networkClient.put<Raw<T>>(
       `${this.networkConfig.basePath}/${id}`,
       data,

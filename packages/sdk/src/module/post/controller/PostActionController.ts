@@ -44,7 +44,7 @@ class PostActionController {
       postId,
       preHandlePartial,
       async (newPost: Post) => {
-        return this.requestController.putData(newPost);
+        return this.requestController.put(newPost);
       },
     );
   }
