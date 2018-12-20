@@ -8,15 +8,16 @@ import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { SITE_URL } from '../config';
+import { SITE_URL, ACCOUNT_TYPE_LIST } from '../config';
 
 fixture('Unified Login')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(ACCOUNT_TYPE_LIST.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
   const user = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
+  await t.debug();
 
   await h(t).withLog('Given I login Jupiter interactively', async () => {
     await t.navigateTo(SITE_URL);

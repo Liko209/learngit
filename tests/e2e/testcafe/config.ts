@@ -37,7 +37,7 @@ const ENV_OPTS = {
   'GLP-CI1-XMN': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
     ACCOUNT_POOL_FOR_DEBUG_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998',
-    ACCOUNT_POOL_ENV: 'GLP-CI1-XMN',
+    ACCOUNT_POOL_ENV: 'glpci1xmn',
     RC_PLATFORM_BASE_URL: 'https://api-glpci1xmn.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',

@@ -1,4 +1,5 @@
 import 'testcafe';
+import { Selector } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
@@ -62,5 +63,14 @@ export class JupiterHelper {
   async directLoginWithUser(url: string, user: IUser) {
     const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
     await this.t.navigateTo(urlWithAuthCode);
+  }
+
+  async selectEnvironment(url: string, env: string) {
+    const envSelect = Selector('select');
+    const envOption = envSelect.find('option');
+    await this.t
+      .navigateTo(url)
+      .click(envSelect)
+      .click(envOption.withText(env));
   }
 }

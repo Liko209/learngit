@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { SITE_URL, SITE_ENV, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
@@ -91,6 +91,7 @@ export function setupCase(accountType: string) {
     await h(t).logHelper.setup();
     await t.resizeWindow(1280, 720);
     await t.maximizeWindow();
+    await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
   }
 }
 
