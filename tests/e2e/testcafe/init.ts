@@ -65,7 +65,7 @@ export async function getOrCreateRunId() {
       name: runName,
       metadata,
     } as Run);
-    runId = run.id;
+    runId = run ? run.id : null;
     console.log(`a new Run Id is created: ${runId}`);
   }
   return runId;
@@ -124,7 +124,12 @@ export function teardownCase() {
 
     h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
+      let runId = await getOrCreateRunId();
+      if (runId) {
+        await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
+      } else {
+        console.error("Couldn't create Run for the test, please check the dashboard connection!")
+      }
     }
     await h(t).dataHelper.teardown();
   }
