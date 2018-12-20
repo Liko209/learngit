@@ -5,8 +5,8 @@
  */
 
 import { RTCAccount, IRTCAccountListener } from './rtcAccount';
-import { ILogger } from '../util/ILogger';
-import { rtcLogger } from '../util/LoggerProxy';
+import { ILogger } from '../utils/ILogger';
+import { rtcLogger } from '../utils/LoggerProxy';
 
 class RTCEngine {
   private static instance: RTCEngine;
