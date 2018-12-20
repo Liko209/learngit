@@ -1,62 +1,42 @@
 /*
  * @Author: Jerry Cai (jerry.cai@ringcentral.com)
- * @Date: 2018-14-13 09:10:00
+ * @Date: 2018-12-13 09:10:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { Post, Raw } from '../../../models';
-import { ControllerBuilder } from '../../../framework/controller/ControllerBuilder';
-
-import PostAPI from '../../../api/glip/post';
-import { transform } from '../../../service/utils';
+import { Post } from '../../../models';
 import _ from 'lodash';
-import { daoManager } from '../../../dao';
+import { Api } from '../../../api';
+import { PostActionController } from './PostActionController';
+import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
+import { daoManager, PostDao } from '../../../dao';
 
 class PostController {
-  constructor(public DAOClass?: any) {}
+  private _actionController: PostActionController;
 
-  async likePost(
-    postId: number,
-    personId: number,
-    toLike: boolean,
-  ): Promise<Post | null> {
-    const controller = ControllerBuilder.buildPartialModifyController<Post>(
-      daoManager.getDao(this.DAOClass),
-    );
-    const preHandlePartial = (
-      partialPost: Partial<Raw<Post>>,
-      originalPost: Post,
-    ): Partial<Raw<Post>> => {
-      const likes = _.cloneDeep(originalPost.likes) || [];
-      const index = likes.indexOf(personId);
-      if (toLike) {
-        if (index === -1) {
-          likes.push(personId);
-        }
-      } else {
-        if (index > -1) {
-          likes.splice(index, 1);
-        }
-      }
-      return {
-        ...partialPost,
-        likes,
-      };
-    };
-    return controller.updatePartially(
-      postId,
-      preHandlePartial,
-      this.requestUpdatePost.bind(this),
-    );
-  }
+  constructor(public controllerBuilder: IControllerBuilder<Post>) {}
 
-  async requestUpdatePost(newPost: Post): Promise<Post | null> {
-    newPost._id = newPost.id;
-    delete newPost.id;
-    const result = await PostAPI.putDataById<Post>(newPost._id, newPost);
-    if (result.isOk()) {
-      return transform<Post>(result.data);
+  getPostActionController(): PostActionController {
+    if (!this._actionController) {
+      const requestController = this.controllerBuilder.buildRequestController({
+        basePath: '/post',
+        networkClient: Api.glipNetworkClient,
+      });
+
+      const entitySourceController = this.controllerBuilder.buildEntitySourceController(
+        daoManager.getDao(PostDao),
+        requestController,
+      );
+
+      const partialModifyController = this.controllerBuilder.buildPartialModifyController(
+        entitySourceController,
+      );
+
+      this._actionController = new PostActionController(
+        partialModifyController,
+        requestController,
+      );
     }
-    return null;
+    return this._actionController;
   }
 }
 

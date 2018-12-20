@@ -1,32 +1,35 @@
 /*
  * @Author: Jerry Cai (jerry.cai@ringcentral.com)
- * @Date: 2018-14-13 09:10:00
+ * @Date: 2018-12-13 09:10:00
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../models';
-import { daoManager, DeactivatedDao, BaseDao } from '../../dao';
+import { BaseModel, Raw } from '../../../models';
+import { DeactivatedDao, BaseDao } from '../../../dao';
 import _ from 'lodash';
-import { transform } from '../../service/utils';
-import { RequestController } from './RequestController';
+import { transform } from '../../../service/utils';
+import { IRequestController } from '../interface/IRequestController';
+import { IEntitySourceController } from '../interface/IEntitySourceController';
 
-class EntitySourceController<T extends BaseModel = BaseModel> {
+class EntitySourceController<T extends BaseModel = BaseModel>
+  implements IEntitySourceController<T> {
   constructor(
     public dao: BaseDao<T>,
-    public requestController: RequestController<T>,
+    public deactivatedDao: DeactivatedDao,
+    public requestController: IRequestController<T>,
   ) {}
 
   async getEntity(id: number): Promise<T | null> {
     const result = await this.getEntityLocally(id);
     if (!result) {
-      return this.requestController.requestDataById(id);
+      return this.requestController.getDataById(id);
     }
     return result;
   }
 
   async getEntityLocally(id: number): Promise<T> {
     const result = await this.dao.get(id);
-    return result || (await this._getDeactivatedEntityLocally(id));
+    return result || (await this.deactivatedDao.get(id));
   }
 
   async bulkUpdate(partialModels: Partial<Raw<T>>[]) {
@@ -52,28 +55,16 @@ class EntitySourceController<T extends BaseModel = BaseModel> {
     if (includeDeactivated && models.length !== ids.length) {
       const modelIds = models.map(model => model.id);
       const diffIds = _.difference(ids, modelIds);
-      const deactivateModels = await this._getDeactivatedEntitiesLocally(
-        diffIds,
-      );
+      const deactivateModels = await this.deactivatedDao.batchGet(diffIds);
       models = _.concat(models, deactivateModels);
     }
     return models;
   }
 
-  getEntityKey() {
+  getEntityNotificationKey() {
     const modelName = this.dao.modelName.toUpperCase();
     const eventKey: string = `ENTITY.${modelName}`;
     return eventKey;
-  }
-
-  private async _getDeactivatedEntitiesLocally(ids: number[]): Promise<T[]> {
-    const deactivatedDao = daoManager.getDao(DeactivatedDao);
-    return await deactivatedDao.batchGet(ids);
-  }
-
-  private async _getDeactivatedEntityLocally(id: number): Promise<T> {
-    const deactivatedDao = daoManager.getDao(DeactivatedDao);
-    return await deactivatedDao.get(id);
   }
 }
 
