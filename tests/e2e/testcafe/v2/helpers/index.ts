@@ -72,7 +72,7 @@ class Helper {
     return await this.logHelper.log(step, takeScreenShot);
   }
 
-  async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
+  async withLog(step: IStep | string, cb: (step?: IStep) => Promise<any>, takeScreenShot: boolean = false) {
     return await this.logHelper.withLog(step, cb, takeScreenShot);
   }
 
