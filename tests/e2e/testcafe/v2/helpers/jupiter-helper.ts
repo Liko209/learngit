@@ -3,6 +3,7 @@ import { Selector } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
+import { SITE_ENV } from '../../config';
 
 export class JupiterHelper {
 
@@ -60,7 +61,8 @@ export class JupiterHelper {
     return response.data.redirectUri;
   }
 
-  async directLoginWithUser(url: string, user: IUser) {
+  async directLoginWithUser(url: string, user: IUser, env: string = SITE_ENV) {
+    await this.selectEnvironment(url, env);
     const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
     await this.t.navigateTo(urlWithAuthCode);
   }
