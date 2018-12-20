@@ -8,10 +8,10 @@ import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { SITE_URL, ACCOUNT_TYPE_LIST } from '../config';
+import { SITE_URL, BrandTire } from '../config';
 
 fixture('Unified Login')
-  .beforeEach(setupCase(ACCOUNT_TYPE_LIST.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
