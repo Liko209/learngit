@@ -344,12 +344,8 @@ class PostService extends BaseService<Post> {
               }
             });
           }
-          this._updatePost({
-            id: post.id,
-            _id: post._id,
-            item_data: post.item_data,
-            item_ids: post.item_ids,
-          });
+
+          this._updatePost(_.cloneDeep(post));
         }
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
@@ -384,14 +380,9 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  private async _updatePost(updateData: object) {
-    await this.handlePartialUpdate(
-      updateData,
-      undefined,
-      async (updatedPost: Post) => {
-        return updatedPost;
-      },
-    );
+  private async _updatePost(post: Post) {
+    const postDao = daoManager.getDao(PostDao);
+    await postDao.update(post);
   }
 
   private _hasExpectedStatus(
