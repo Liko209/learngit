@@ -9,7 +9,6 @@ import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL } from '../../config';
 import { setupCase, teardownCase } from '../../init';
-import { BackNForward } from '../../v2/page-models/AppRoot/HomePage/header';
 
 fixture('BackNForward/BackNForward')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))

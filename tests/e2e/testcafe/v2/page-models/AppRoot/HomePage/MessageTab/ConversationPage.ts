@@ -134,6 +134,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get mentions() {
+    return this.text.find('.at_mention_compose');
+  }
+
   imgTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
@@ -184,6 +188,7 @@ export class PostItem extends BaseWebComponent {
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
+
 
 
   // --- mention page only ---
