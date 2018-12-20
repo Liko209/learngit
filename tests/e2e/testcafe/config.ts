@@ -34,6 +34,15 @@ const ENV_OPTS = {
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
   },
+  'GLP-CI1-XMN': {
+    ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
+    ACCOUNT_POOL_FOR_DEBUG_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998',
+    ACCOUNT_POOL_ENV: 'GLP-CI1-XMN',
+    RC_PLATFORM_BASE_URL: 'https://api-glpci1xmn.lab.nordigy.ru',
+    GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
+    AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
+    JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
+  },
 }[SITE_ENV];
 
 ENV_OPTS.RC_PLATFORM_APP_KEY = process.env.RC_PLATFORM_APP_KEY || '';
@@ -54,7 +63,7 @@ const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '10');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
-const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES  === 'true';
+const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES === 'true';
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
 const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : configLoader.browsers;
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
@@ -72,7 +81,7 @@ const RUNNER_OPTS = {
   INCLUDE_TAGS,
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
-  STOP_ON_FIRST_FAIL, 
+  STOP_ON_FIRST_FAIL,
 }
 
 // create electron configuration file
