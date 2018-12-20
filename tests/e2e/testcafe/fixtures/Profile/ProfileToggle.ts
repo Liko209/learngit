@@ -3,11 +3,11 @@ import { v4 as uuid } from 'uuid';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 declare var test: TestFn;
 fixture('ProfileToggle')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 

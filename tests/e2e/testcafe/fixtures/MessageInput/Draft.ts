@@ -8,11 +8,11 @@ import { formalName } from '../../libs/filter';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
 import { v4 as uuid } from 'uuid';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import { setupCase, teardownCase } from '../../init';
 
 fixture('send messages draft')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 
