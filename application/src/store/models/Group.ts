@@ -15,6 +15,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
 import GroupService, { TeamPermission } from 'sdk/service/group';
+import { PERMISSION_ENUM } from 'sdk/service';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -197,6 +198,22 @@ export default class GroupModel extends Base<Group> {
       }
     }
     return false;
+  }
+
+  @computed
+  get canPost() {
+    if (this.isTeam) {
+      const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      if (!this.isThePersonAdmin(currentUserId)) {
+        if (this.permissions && this.permissions.user) {
+          const { level = 0 } = this.permissions.user;
+          return !!(level & PERMISSION_ENUM.TEAM_POST);
+        }
+        return true;
+      }
+      return true;
+    }
+    return true;
   }
 
   static fromJS(data: Group) {

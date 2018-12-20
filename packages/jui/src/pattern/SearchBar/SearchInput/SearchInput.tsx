@@ -67,7 +67,9 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
           }}
         />
         {showCloseBtn && (
-          <Jui.CloseBtn onClick={this.onClose}>close</Jui.CloseBtn>
+          <Jui.CloseBtn disableToolTip={true} variant="plain" onClick={this.onClose}>
+            close
+          </Jui.CloseBtn>
         )}
       </Jui.SearchWrapper>
     );
