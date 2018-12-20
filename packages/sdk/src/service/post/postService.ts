@@ -324,7 +324,6 @@ class PostService extends BaseService<Post> {
       updatedId: number;
     }) => {
       const { success, preInsertId, updatedId } = params;
-      console.warn('​post', post, post.item_ids, params);
       if (!post.item_ids.includes(preInsertId) || preInsertId === updatedId) {
         return;
       }
@@ -358,7 +357,6 @@ class PostService extends BaseService<Post> {
             SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
             listener,
           );
-          debugger;
           await this._sendPost(post);
         }
       }
@@ -415,9 +413,7 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPost(buildPost: Post): Promise<PostData[]> {
-    debugger;
     const preInsertId = buildPost.id;
-    console.warn('​buildPost', buildPost, preInsertId);
     delete buildPost.id;
     delete buildPost.status;
 

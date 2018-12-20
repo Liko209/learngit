@@ -264,12 +264,7 @@ class ItemFileUploadHandler {
     return newFormFile;
   }
 
-  private async _requestAmazonS3Policy(
-    formFile: FormData,
-    groupId: number,
-    itemId: number,
-    requestHolder: RequestHolder,
-  ) {
+  private async _requestAmazonS3Policy(formFile: FormData) {
     const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     return await ItemAPI.requestAmazonFilePolicy({
       size: file.size,
@@ -287,12 +282,7 @@ class ItemFileUploadHandler {
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    const policyResponse = await this._requestAmazonS3Policy(
-      formFile,
-      groupId,
-      itemId,
-      requestHolder,
-    );
+    const policyResponse = await this._requestAmazonS3Policy(formFile);
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
@@ -641,12 +631,6 @@ class ItemFileUploadHandler {
     preInsertId: number,
     updatedId: number,
   ) {
-    console.warn(
-      ' private _emitItemFileStatus',
-      { success },
-      { preInsertId },
-      { updatedId },
-    );
     notificationCenter.emit(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, {
       success,
       preInsertId,
