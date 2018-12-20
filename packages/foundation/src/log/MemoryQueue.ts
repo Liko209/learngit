@@ -6,43 +6,43 @@
 import { IDeque } from './types';
 
 export class MemoryQueue<E> implements IDeque<E> {
-  private queue: E[] = [];
+  private _queue: E[] = [];
 
   addHead(e: E): void {
-    this.queue = [e].concat(this.queue || []);
+    this._queue = [e].concat(this._queue || []);
   }
 
   peekHead(): E {
-    const head = this.queue[0];
-    this.queue = this.queue.slice(1);
+    const head = this._queue[0];
+    this._queue = this._queue.slice(1);
     return head;
   }
 
   getHead(): E {
-    return this.queue[0];
+    return this._queue[0];
   }
 
   addTail(e: E): void {
-    this.queue = this.queue.concat([e]);
+    this._queue = this._queue.concat([e]);
   }
 
   peekTail(): E {
-    const tail = this.queue[this.queue.length - 1];
-    this.queue = this.queue.slice(0, this.queue.length - 1);
+    const tail = this._queue[this._queue.length - 1];
+    this._queue = this._queue.slice(0, this._queue.length - 1);
     return tail;
   }
 
   getTail(): E {
-    return this.queue[this.queue.length - 1];
+    return this._queue[this._queue.length - 1];
   }
 
   peekAll(): E[] {
-    const all = this.queue;
-    this.queue = [];
+    const all = this._queue;
+    this._queue = [];
     return all;
   }
 
   size(): number {
-    return this.queue.length;
+    return this._queue.length;
   }
 }

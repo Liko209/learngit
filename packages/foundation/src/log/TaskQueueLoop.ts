@@ -13,38 +13,38 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
     onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
     onLoopCompleted: async () => { },
   };
-  private loopController: LoopController;
-  private isLooping: boolean;
-  private isSleeping: boolean;
-  private taskQueue: MemoryQueue<Task>;
-  private timeoutHandler: any;
-  constructor(loopController?: LoopController) {
-    this.loopController = loopController || TaskQueueLoop.DEFAULT_LOOP_CONTROLLER;
-    this.taskQueue = new MemoryQueue();
+  private _loopController: LoopController;
+  private _isLooping: boolean;
+  private _isSleeping: boolean;
+  private _taskQueue: MemoryQueue<Task>;
+  private _timeoutId: NodeJS.Timeout;
+  constructor(_loopController?: LoopController) {
+    this._loopController = _loopController || TaskQueueLoop.DEFAULT_LOOP_CONTROLLER;
+    this._taskQueue = new MemoryQueue();
   }
 
   isAvailable(): boolean {
-    return !this.isSleeping;
+    return !this._isSleeping;
   }
 
   sleep(timeout: number): void {
-    this.isSleeping = true;
-    clearTimeout(this.timeoutHandler);
-    this.timeoutHandler = setTimeout(() => {
-      this.isSleeping = false;
-    },                               timeout);
+    this._isSleeping = true;
+    clearTimeout(this._timeoutId);
+    this._timeoutId = setTimeout(() => {
+      this._isSleeping = false;
+    },                           timeout);
   }
 
   wake(): void {
-    this.isSleeping = false;
-    clearTimeout(this.timeoutHandler);
+    this._isSleeping = false;
+    clearTimeout(this._timeoutId);
   }
 
   async loop() {
-    if (this.isLooping || !this.isAvailable()) {
+    if (this._isLooping || !this.isAvailable()) {
       return;
     }
-    this.isLooping = true;
+    this._isLooping = true;
     let task = this.getHead();
     const setTask = (replaceTask: Task) => {
       task = replaceTask;
@@ -55,13 +55,13 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
     while (task) {
       try {
         await task.onExecute();
-        await this.loopController.onTaskCompleted(completedHandler);
+        await this._loopController.onTaskCompleted(completedHandler);
       } catch (error) {
         await task.onError(error);
-        await this.loopController.onTaskError(error, errorHandler);
+        await this._loopController.onTaskError(error, errorHandler);
       }
     }
-    await this.loopController.onLoopCompleted();
+    await this._loopController.onLoopCompleted();
   }
 
   createErrorHandler(setTask: (task: Task) => void): TaskErrorHandler {
@@ -117,35 +117,35 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
   }
 
   addHead(e: Task): void {
-    this.taskQueue.addHead(e);
+    this._taskQueue.addHead(e);
   }
 
   peekHead(): Task {
-    return this.taskQueue.peekHead();
+    return this._taskQueue.peekHead();
   }
 
   getHead(): Task {
-    return this.taskQueue.getHead();
+    return this._taskQueue.getHead();
   }
 
   addTail(e: Task): void {
-    this.taskQueue.addTail(e);
+    this._taskQueue.addTail(e);
   }
 
   peekTail(): Task {
-    return this.taskQueue.peekTail();
+    return this._taskQueue.peekTail();
   }
 
   getTail(): Task {
-    return this.taskQueue.getTail();
+    return this._taskQueue.getTail();
   }
 
   peekAll(): Task[] {
-    return this.taskQueue.peekAll();
+    return this._taskQueue.peekAll();
   }
 
   size(): number {
-    return this.taskQueue.size();
+    return this._taskQueue.size();
   }
 
 }
