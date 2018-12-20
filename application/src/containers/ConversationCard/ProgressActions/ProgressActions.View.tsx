@@ -19,7 +19,7 @@ type Props = ProgressActionsViewProps & WithNamespaces;
 
 @observer
 class ProgressActionsViewComponent extends Component<Props> {
-  delete = () => {
+  private _deletePost = () => {
     const { deletePost, t } = this.props;
     JuiModal.confirm({
       title: t('deletePostTitle'),
@@ -36,39 +36,61 @@ class ProgressActionsViewComponent extends Component<Props> {
     });
   }
 
-  resend = async () => {
+  private _resendPost = async () => {
     try {
       await this.props.resend();
     } catch (e) {}
   }
 
+  private _renderLoading = () => {
+    const { postStatus } = this.props;
+    if (postStatus === POST_STATUS.INPROGRESS) {
+      return <JuiCircularProgress size={12} />;
+    }
+    return null;
+  }
+
+  private _renderResend = () => {
+    const { postStatus, t } = this.props;
+    if (postStatus === POST_STATUS.FAIL) {
+      return (
+        <JuiIconButton
+          variant="plain"
+          tooltipTitle={t('resendPost')}
+          onClick={this._resendPost}
+          size="small"
+          color="semantic.negative"
+        >
+          refresh
+        </JuiIconButton>
+      );
+    }
+    return null;
+  }
+
+  private _renderDelete = () => {
+    const { postStatus, t } = this.props;
+    if (postStatus === POST_STATUS.FAIL) {
+      return (
+        <JuiIconButton
+          variant="plain"
+          tooltipTitle={t('deletePost')}
+          onClick={this._deletePost}
+          size="small"
+        >
+          delete
+        </JuiIconButton>
+      );
+    }
+    return null;
+  }
+
   render() {
-    const { t, post } = this.props;
-    const { status = POST_STATUS.SUCCESS } = post;
     return (
       <JuiActions>
-        {status === POST_STATUS.INPROGRESS && <JuiCircularProgress size={12} />}
-        {status === POST_STATUS.FAIL && (
-          <JuiIconButton
-            variant="plain"
-            tooltipTitle={t('resendPost')}
-            onClick={this.resend}
-            size="small"
-            color="semantic.negative"
-          >
-            refresh
-          </JuiIconButton>
-        )}
-        {status === POST_STATUS.FAIL && (
-          <JuiIconButton
-            variant="plain"
-            tooltipTitle={t('deletePost')}
-            onClick={this.delete}
-            size="small"
-          >
-            delete
-          </JuiIconButton>
-        )}
+        {this._renderLoading()}
+        {this._renderResend()}
+        {this._renderDelete()}
       </JuiActions>
     );
   }

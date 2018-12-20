@@ -76,7 +76,7 @@ class MessageInputViewComponent extends Component<
   }
 
   render() {
-    const { draft, changeDraft, error, id, t } = this.props;
+    const { draft, contentChange, error, id, t } = this.props;
     const { modules } = this.state;
     const toolbarNode = (
       <MessageActionBar>
@@ -89,19 +89,18 @@ class MessageInputViewComponent extends Component<
     const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
 
     return (
-      <>
-        <JuiMessageInput
-          value={draft}
-          onChange={changeDraft}
-          error={error ? t(error) : error}
-          modules={modules}
-          toolbarNode={toolbarNode}
-          attachmentsNode={attachmentsNode}
-          didDropFile={this._handleDropFile}
-        >
-          <Mention id={id} ref={this._mentionRef} />
-        </JuiMessageInput>
-      </>
+      <JuiMessageInput
+        value={draft}
+        onChange={contentChange}
+        error={error ? t(error) : error}
+        modules={modules}
+        id={id}
+        toolbarNode={toolbarNode}
+        attachmentsNode={attachmentsNode}
+        didDropFile={this._handleDropFile}
+      >
+        <Mention id={id} ref={this._mentionRef} />
+      </JuiMessageInput>
     );
   }
 }

@@ -11,30 +11,94 @@ jest.mock('../../../../../store/utils');
 
 let ViewModel: QuoteViewModel;
 
-describe('QuoteVM', () => {
-  beforeAll(() => {
-    jest.resetAllMocks();
-  });
+const mockExpectQuoteHead =
+  // tslint:disable-next-line
+  "<span class='mention' data-id='1' data-name='Shining' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>Shining</span></span> wrote:<br />";
 
+const mockOriginalText = (text: string) => {
+  (getEntity as jest.Mock).mockImplementation((type: string) => {
+    if (type === ENTITY_NAME.POST) {
+      return { text };
+    }
+    if (type === ENTITY_NAME.PERSON) {
+      return { userDisplayName: 'Shining', id: 1 };
+    }
+    return null;
+  });
+  ViewModel = new QuoteViewModel({ id: 1 });
+};
+
+describe('QuoteVM', () => {
   describe('quote()', () => {
     it('should quoteText and quoteHead with correct quote format. [JPT-447]', () => {
-      const expectQuoteHead =
-        // tslint:disable-next-line
-        "<span class='mention' data-id='1' data-name='Shining' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>Shining</span></span> wrote:<br />";
-      (getEntity as jest.Mock).mockImplementation((type: string) => {
-        if (type === ENTITY_NAME.POST) {
-          return { text: 'test' };
-        }
-        if (type === ENTITY_NAME.PERSON) {
-          return { userDisplayName: 'Shining', id: 1 };
-        }
-        return null;
-      });
-      ViewModel = new QuoteViewModel({ id: 1 });
+      mockOriginalText('test\n');
 
       ViewModel.quote();
-      expect(ViewModel._quoteText).toBe('> test<br/><br/><br/>');
-      expect(ViewModel._quoteHead).toBe(expectQuoteHead);
+      expect(ViewModel.getQuoteText()).toBe('> test<br/><br/><br/>');
+      expect(ViewModel.getQuoteHead()).toBe(mockExpectQuoteHead);
+    });
+  });
+  describe('getQuoteText()', () => {
+    beforeAll(() => {
+      jest.resetAllMocks();
+    });
+    it('should format with >>>\n', () => {
+      mockOriginalText('>>>\n');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> >>><br/><br/><br/>');
+    });
+    it('should format with >\n', () => {
+      mockOriginalText('>\n');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> ><br/><br/><br/>');
+    });
+    it('should format with \n\n\n', () => {
+      mockOriginalText('\n\n\n');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> <br/>> <br/>> <br/><br/><br/>');
+    });
+    it('should format with \n\n>', () => {
+      mockOriginalText('\n\n>');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> <br/>> <br/>><br/><br/>');
+    });
+    it('should format with 900900\n', () => {
+      mockOriginalText('900900\n');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> 900900<br/><br/><br/>');
+    });
+    it('should format with >>\n', () => {
+      mockOriginalText('>>\n');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> >><br/><br/><br/>');
+    });
+    it('should format with \n>\n>\n>', () => {
+      mockOriginalText('\n>\n>\n>');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> <br/>> ><br/>><br/><br/>');
+    });
+    it('should format with \n   >\n  >\n>', () => {
+      mockOriginalText('\n   >\n  >\n>');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe(
+        '> <br/>>    ><br/>>   ><br/>><br/><br/>',
+      );
+    });
+    it('should format with \n   \n  >\n>', () => {
+      mockOriginalText('\n   \n  >\n>');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe(
+        '> <br/>>    <br/>>   ><br/>><br/><br/>',
+      );
     });
   });
 });

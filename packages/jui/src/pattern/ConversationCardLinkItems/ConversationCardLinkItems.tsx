@@ -117,12 +117,16 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
   constructor(props: Props) {
     super(props);
   }
+  onLinkItemClose = (event: React.MouseEvent<HTMLElement>) => {
+    const { onLinkItemClose } = this.props;
+    event.stopPropagation();
+    onLinkItemClose && onLinkItemClose(event);
+  }
   render() {
     const {
       title,
       summary,
       thumbnail,
-      onLinkItemClose,
       url,
       favicon,
       faviconName,
@@ -145,7 +149,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
               <FaviconName>{faviconName}</FaviconName>
             </FaviconWrapper>
           </TitleWithSummary>
-          <JuiIconography onClick={onLinkItemClose}>close</JuiIconography>
+          <JuiIconography onClick={this.onLinkItemClose}>close</JuiIconography>
         </LinkItemContents>
       </LinkItemsWrapper>
     );

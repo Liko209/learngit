@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 19:18:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { TaskItem } from '@/store/models/Items';
+import TaskItemModal from '@/store/models/TaskItem';
 import { FileType, ExtendFileItem } from '@/store/models/FileItem';
 
 type ActivityData = {
@@ -19,13 +19,13 @@ type TaskUpdateProps = {
 } & Props;
 
 type ViewProps = {
-  task: TaskItem;
+  task: TaskItemModal;
   files: ExtendFileItem[];
 };
 
 type TaskUpdateViewProps = {
   activityData: ActivityData;
-  task: TaskItem;
+  task: TaskItemModal;
 };
 
 export {
