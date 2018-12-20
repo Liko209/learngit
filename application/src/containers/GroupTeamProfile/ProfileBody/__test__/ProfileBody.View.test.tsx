@@ -10,7 +10,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import {
   JuiGroupProfileMessageBtn,
 } from 'jui/pattern/GroupTeamProfile';
-import { goToConversation } from '../../../../common/goToConversation';
+import { goToConversationWithPerson } from '../../../../common/goToConversation';
 
 const dismiss = jest.fn();
 describe('ProfileBodyView', () => {
@@ -19,6 +19,6 @@ describe('ProfileBodyView', () => {
     expect(wrapper.find(JuiGroupProfileMessageBtn)).toHaveLength(1);
     wrapper.find(JuiGroupProfileMessageBtn).simulate('click');
     expect(dismiss).toHaveBeenCalledTimes(1);
-    expect(await goToConversation(47988738)).toBe(true);
+    expect(await goToConversationWithPerson(47988738)).toBe(true);
   });
 });

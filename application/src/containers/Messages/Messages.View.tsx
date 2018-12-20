@@ -13,7 +13,7 @@ import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithPerson } from '@/common/goToConversation';
 
 import { MessagesViewProps } from './types';
 import { PostListPage } from '../PostListPage';
@@ -70,7 +70,7 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
   retryMessage = () => {
     const { retryId } = this.state;
     if (!retryId) return;
-    goToConversation(retryId);
+    goToConversationWithPerson(retryId);
   }
 
   render() {

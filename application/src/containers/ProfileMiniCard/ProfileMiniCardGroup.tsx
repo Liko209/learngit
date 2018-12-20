@@ -18,7 +18,7 @@ import {
 import { ProfileMiniCardGroupHeader } from './ProfileMiniCardGroupHeader';
 import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithPerson } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
 
 type Props = WithNamespaces & {
@@ -32,7 +32,7 @@ class ProfileMiniCardGroupComponent extends Component<Props> {
 
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversation(id);
+    const result = goToConversationWithPerson(id);
     if (result) {
       MiniCard.dismissProfile();
     }

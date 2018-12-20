@@ -14,7 +14,7 @@ import {
 } from 'jui/pattern/ProfileMiniCard';
 import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithPerson } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
 
 @observer
@@ -23,7 +23,7 @@ class ProfileMiniCardPersonFooter extends Component<
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversation(id);
+    const result = goToConversationWithPerson(id);
     if (result) {
       MiniCard.dismissProfile();
     }

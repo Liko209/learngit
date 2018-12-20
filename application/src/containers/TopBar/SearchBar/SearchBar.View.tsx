@@ -16,7 +16,7 @@ import {
 import { HotKeys } from 'jui/hoc/HotKeys';
 // import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithPerson } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
@@ -138,7 +138,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
-    await goToConversation(id);
+    await goToConversationWithPerson(id);
   }
 
   searchItemClickHandler = (id: number) => async () => {

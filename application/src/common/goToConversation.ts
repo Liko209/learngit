@@ -26,7 +26,7 @@ const getConversationId = async (id: number) => {
   return null;
 };
 
-async function goToConversation(personId: number) {
+async function goToConversationWithPerson(personId: number) {
   history.push('/messages/loading');
   const conversationId = await getConversationId(personId);
   if (!conversationId) {
@@ -40,4 +40,4 @@ async function goToConversation(personId: number) {
   return true;
 }
 
-export { goToConversation, getConversationId };
+export { goToConversationWithPerson, getConversationId };
