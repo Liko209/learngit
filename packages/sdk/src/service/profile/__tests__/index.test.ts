@@ -399,6 +399,78 @@ describe('ProfileService', () => {
     });
   });
 
+  describe('reopenConversation()', () => {
+    function setupMock(profile: any, returnValue: any, ok: boolean = true) {
+      jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
+      jest.spyOn(profileService, 'getById').mockReturnValue(profile);
+      jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
+      jest
+        .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
+        .mockImplementation(() => {});
+
+      if (ok) {
+        ProfileAPI.putDataById.mockResolvedValueOnce(
+          new ApiResultOk(returnValue, {
+            status: 200,
+            headers: {},
+          } as BaseResponse),
+        );
+      } else {
+        ProfileAPI.putDataById.mockResolvedValueOnce(
+          new ApiResultErr(returnValue, {
+            status: 200,
+            headers: {},
+          } as BaseResponse),
+        );
+      }
+
+      handleData.mockResolvedValueOnce(returnValue);
+    }
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    it('should reopen the conversation', async () => {
+      expect.assertions(1);
+
+      const profile = {
+        id: 2,
+      };
+
+      const apiReturnedValue = {
+        id: 2,
+        hide_group_222233333: false,
+      };
+
+      setupMock(profile, apiReturnedValue, true);
+      const result = await profileService.reopenConversation(222233333);
+
+      if (result.isOk()) {
+        expect(result.data).toHaveProperty('hide_group_222233333', false);
+      }
+    });
+
+    it('should return error result when profile not found', async () => {
+      jest.spyOn(profileService, 'getById').mockImplementation(id => null);
+      const result = await profileService.reopenConversation(1);
+      expect(result.isErr()).toBeTruthy();
+    });
+
+    it('should return error result when api error occurred', async () => {
+      const profile = {
+        id: 10,
+      };
+      const apiError = new BaseError(403, '');
+
+      setupMock(profile, apiError, false);
+
+      const result = await profileService.reopenConversation(98);
+
+      expect(result.isErr()).toBeTruthy();
+    });
+  });
+
   describe('handleGroupIncomesNewPost()', () => {
     function setupMock(profile: any, apiReturnProfile: any) {
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
