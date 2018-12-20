@@ -148,6 +148,7 @@
   "linkedIn": "LinkedIn",
   "webpage": "Webpage",
   "copy": "Copy",
+  "ariaCopy": "Copy this {{value}}",
   "messageLoadingErrorTip": "We weren't able to open this conversation.",
   "tryAgain": "Try again.",
   "assignee": "Assignee",
