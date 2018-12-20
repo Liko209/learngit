@@ -57,7 +57,7 @@ describe('Privacy view model', () => {
     expect(vm.isPublic).toEqual(false);
   });
 
-  it('getGlobalValue offline', () => {
+  it('computed isOffline', () => {
     (getGlobalValue as jest.Mock).mockReturnValue('offline');
     expect(vm.isOffline).toBe(true);
     (getGlobalValue as jest.Mock).mockReturnValue('online');
