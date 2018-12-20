@@ -164,7 +164,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('ext'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copyAria: 'extension number',
+                  copyAria: t('ariaExt'),
                   copyValue: info.phoneNumber,
                 });
               })}
@@ -177,7 +177,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('directNumber'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copyAria: 'phone number',
+                  copyAria: t('ariaDirectNumber'),
                   copyValue: info.phoneNumber,
                 });
               })}
@@ -187,7 +187,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('email'),
                   value: this.renderEmail(person.email),
                   valueEmphasize: true,
-                  copyAria: 'email address',
+                  copyAria: t('ariaEmail'),
                   copyValue: person.email,
                 })}
             </Grid>
@@ -210,7 +210,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                       icon: 'link',
                       label: t('webpage'),
                       value: person.homepage,
-                      copyAria: 'web page',
+                      copyAria: t('ariaWebpage'),
                       copyValue: person.homepage,
                     })}
                 </Grid>
