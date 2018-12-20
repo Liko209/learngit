@@ -1,3 +1,4 @@
+
 import jenkins.model.*
 import java.net.URI
 
@@ -163,8 +164,8 @@ node(buildNode) {
         stage ('Install Dependencies') {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install typescript ts-node'
-                sh 'npm install'
+                sh 'npm install typescript ts-node --unsafe-perm'
+                sh 'npm install --unsafe-perm'
             }
         }
         parallel (
@@ -270,10 +271,13 @@ node(buildNode) {
             ]) {dir("tests/e2e/testcafe") {
                 sh 'env'
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
-                sh 'npm install'
-                sh 'npx ts-node create-run-id.ts'
-                report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl').trim()
-
+                sh 'npm install --unsafe-perm'
+                if ('true' == env.E2E_ENABLE_REMOTE_DASHBOARD){
+                    sh 'npx ts-node create-run-id.ts'
+                    report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl').trim()
+                } else {
+                    report.e2eUrl = 'beat dashboard is disabled'
+                }
                 withCredentials([usernamePassword(
                         credentialsId: rcCredentialId,
                         usernameVariable: 'RC_PLATFORM_APP_KEY',
