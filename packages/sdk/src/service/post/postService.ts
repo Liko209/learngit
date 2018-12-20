@@ -324,7 +324,7 @@ class PostService extends BaseService<Post> {
       updatedId: number;
     }) => {
       const { success, preInsertId, updatedId } = params;
-      if (!post.item_ids.includes(preInsertId)) {
+      if (!post.item_ids.includes(preInsertId) || preInsertId === updatedId) {
         return;
       }
 
@@ -334,16 +334,26 @@ class PostService extends BaseService<Post> {
           post.item_ids = post.item_ids.map((id: number) => {
             return id === preInsertId ? updatedId : id;
           });
-        }
 
-        await this._updatePost(post);
+          if (post.item_data && post.item_data.version_map) {
+            const versionMap = post.item_data.version_map;
+            Object.keys(versionMap).forEach((strKey: string) => {
+              if (strKey === preInsertId.toString()) {
+                versionMap[updatedId] = versionMap[preInsertId];
+                delete versionMap[preInsertId];
+              }
+            });
+          }
+
+          this._updatePost(_.cloneDeep(post));
+        }
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
           notificationCenter.removeListener(
             SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
             listener,
           );
-          this._sendPost(post);
+          await this._sendPost(post);
         }
       }
 
@@ -363,13 +373,16 @@ class PostService extends BaseService<Post> {
     };
 
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.sendItemData(post.group_id, post.item_ids);
+
     return [];
   }
 
   private async _updatePost(post: Post) {
     const postDao = daoManager.getDao(PostDao);
     await postDao.update(post);
-    notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
   }
 
   private _hasExpectedStatus(
@@ -391,7 +404,7 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPost(buildPost: Post): Promise<PostData[]> {
-    const { id: preInsertId } = buildPost;
+    const preInsertId = buildPost.id;
     delete buildPost.id;
     delete buildPost.status;
 
