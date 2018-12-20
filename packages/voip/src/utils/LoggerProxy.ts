@@ -45,8 +45,7 @@ class LoggerProxy {
   }
 
   private _formatMsg(tag: string, message: string): string {
-    const splitSymbol = ': ';
-    const formatMsg = tag + splitSymbol + message;
+    const formatMsg = `${tag}: ${message}`;
     return formatMsg;
   }
 }
