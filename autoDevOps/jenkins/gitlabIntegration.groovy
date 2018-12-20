@@ -1,6 +1,7 @@
 import jenkins.model.*
 import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
+import hudson.AbortException
 
 // cancel old build
 @NonCPS
@@ -122,6 +123,8 @@ String rcCredentialId = env.E2E_RC_CREDENTIAL
 
 // derivative value
 Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType
+Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
+
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 
@@ -135,7 +138,8 @@ def reportChannels = [
 Map report = [:]
 
 // start
-updateGitlabCommitStatus name: 'jenkins', state: 'pending'
+if (!skipUpdateGitlabStatus)
+    updateGitlabCommitStatus name: 'jenkins', state: 'pending'
 cancelOldBuildOfSameCause()
 
 node(buildNode) {
@@ -144,6 +148,7 @@ node(buildNode) {
     // install nodejs tool
     env.NODEJS_HOME = tool nodejsTool
     env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
+    env.TZ='UTC-8'
 
     try {
         // start to build
@@ -313,21 +318,23 @@ node(buildNode) {
                 }
             }}
         }
-        currentBuild.result = 'SUCCESS'
-        updateGitlabCommitStatus name: 'jenkins', state: 'success'
+        if (!skipUpdateGitlabStatus)
+            updateGitlabCommitStatus name: 'jenkins', state: 'success'
         safeMail(
                 reportChannels,
-                "Jenkins Pipeline ${currentBuild.result}: ${currentBuild.fullDisplayName}",
+                "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
                 buildReport(':white_check_mark: Success', env.BUILD_URL, report)
-
         )
     } catch (e) {
-        currentBuild.result = 'FAILURE'
-        updateGitlabCommitStatus name: 'jenkins', state: 'failed'
+        if (!skipUpdateGitlabStatus)
+            updateGitlabCommitStatus name: 'jenkins', state: 'failed'
+        String statusTitle = ':negative_squared_cross_mark: Failure'
+        if (e in AbortException  || e in InterruptedException)
+            statusTitle = ':no_entry: Aborted'
         safeMail(
                 reportChannels,
-                "Jenkins Pipeline ${currentBuild.result}: ${currentBuild.fullDisplayName}",
-                buildReport(':no_entry_sign: Failure', env.BUILD_URL, report),
+                "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
+                buildReport(statusTitle, env.BUILD_URL, report),
         )
         throw e
     }
