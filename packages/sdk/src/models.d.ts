@@ -271,7 +271,7 @@ export type EventItem = Item & {
   text: string;
 };
 
-export type FileItem = Item & {
+export type ItemFile = Item & {
   name: string;
 };
 
