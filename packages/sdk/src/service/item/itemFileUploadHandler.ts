@@ -53,7 +53,7 @@ class ItemFileUploadHandler {
       if (itemStatus && itemStatus.itemFile) {
         const item = itemStatus.itemFile;
         if (this._hasValidStoredFile(item)) {
-          this._uploadItem(groupId, item, !item.is_new);
+          this._uploadItem(groupId, item, this._isUpdateItem(item));
         } else {
           needWaitItemIds.push(item.id);
         }
@@ -88,7 +88,7 @@ class ItemFileUploadHandler {
 
       const item = this._getCachedItem(preInsertId);
       if (success && item) {
-        this._uploadItem(groupId, item, !item.is_new);
+        this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
       if (uploadingItemFileIds.length === 0) {
@@ -627,7 +627,7 @@ class ItemFileUploadHandler {
 
   private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile) {
     existItem.is_new = false;
-    existItem.versions = existItem.versions.concat(preInsertItem.versions);
+    existItem.versions = preInsertItem.versions.concat(existItem.versions);
     existItem.modified_at = Date.now();
     existItem._id = existItem.id;
     delete existItem.id;

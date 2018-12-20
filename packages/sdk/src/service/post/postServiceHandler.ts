@@ -87,7 +87,7 @@ class PostServiceHandler {
         uploadFiles,
         itemIds,
         (itemFile: ItemFile, id: number) => {
-          return id === itemFile.id;
+          return id === itemFile.id && !itemFile.is_new;
         },
       );
       if (needCheckItemFiles.length > 0) {
