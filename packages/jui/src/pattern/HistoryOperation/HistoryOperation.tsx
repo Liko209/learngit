@@ -4,21 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
 import { TowardIcons } from './TowardIcons';
 import { OPERATION } from './types';
 import styled from '../../foundation/styled-components';
-import {
-  height,
-  spacing,
-  ellipsis,
-  width,
-} from '../../foundation/utils/styles';
+import { spacing } from '../../foundation/utils/styles';
+import { JuiMenuItem, JuiPopover, JuiMenuList } from 'jui/src/components';
 
 type TowardsProps = {
   type: OPERATION;
@@ -33,24 +23,6 @@ const MenuListCompositionWrapper = styled.div`
   position: relative;
   display: flex;
   margin-right: ${spacing(1)};
-`;
-
-const MenuWrapper = styled(Popper)`
-  margin-top: ${spacing(2)};
-  margin-left: ${spacing(2)};
-`;
-const StyledMenuItem = styled(MenuItem)`
-  && {
-    min-width: ${width(20)};
-    max-width: ${width(72)};
-    ${ellipsis()};
-    display: block;
-    line-height: ${height(8)};
-    font-size: ${({ theme }) => theme.typography.caption2.fontSize};
-    padding-top: 0;
-    padding-bottom: 0;
-    height: ${height(8)};
-  }
 `;
 
 export class JuiHistoryOperation extends React.Component<
@@ -122,40 +94,34 @@ export class JuiHistoryOperation extends React.Component<
           onLongPress={this.handleToggle}
           type={type}
         />
-        <MenuWrapper
+        <JuiPopover
           open={open}
           anchorEl={anchorEl}
-          transition={true}
-          disablePortal={true}
+          onClose={this.handleClose}
+          onClick={this.handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
         >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === 'bottom' ? 'center top' : 'center bottom',
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  <MenuList>
-                    {menu.map(({ title, pathname }, index: number) => {
-                      const key = `${index} - ${pathname}`;
-                      return (
-                        <StyledMenuItem
-                          onClick={this.getClickMenuHander(key, type, index)}
-                          key={key}
-                        >
-                          {title}
-                        </StyledMenuItem>
-                      );
-                    })}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </MenuWrapper>
+          <JuiMenuList>
+            {menu.map(({ title, pathname }, index: number) => {
+              const key = `${index} - ${pathname}`;
+              return (
+                <JuiMenuItem
+                  onClick={this.getClickMenuHander(key, type, index)}
+                  key={key}
+                >
+                  {title}
+                </JuiMenuItem>
+              );
+            })}
+          </JuiMenuList>
+        </JuiPopover>
       </MenuListCompositionWrapper>
     );
   }
