@@ -1,6 +1,32 @@
-
 import jenkins.model.*
 import java.net.URI
+import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
+
+// cancel old build
+@NonCPS
+def cancelOldBuildOfSameCause() {
+    GitLabWebHookCause currentBuildCause = currentBuild.rawBuild.getCause(GitLabWebHookCause.class)
+    if (null == currentBuildCause)
+        return
+    def currentCauseData = currentBuildCause.getData()
+
+    currentBuild.rawBuild.getParent().getBuilds().each { build ->
+        if (!build.isBuilding() || currentBuild.rawBuild.getNumber() <= build.getNumber())
+            return
+        GitLabWebHookCause cause = build.getCause(GitLabWebHookCause.class)
+        if (null == cause)
+            return
+        def causeData = cause.getData()
+
+        if (currentCauseData.sourceBranch == causeData.sourceBranch
+                && currentCauseData.sourceRepoName == causeData.sourceRepoName
+                && currentCauseData.targetBranch == causeData.targetBranch
+                && currentCauseData.targetRepoName == causeData.targetRepoName) {
+            build.doStop()
+            println "build ${build.getFullDisplayName()} is canceled"
+        }
+    }
+}
 
 // conditional stage
 def condStage(Map args, Closure block) {
@@ -110,6 +136,7 @@ Map report = [:]
 
 // start
 updateGitlabCommitStatus name: 'jenkins', state: 'pending'
+cancelOldBuildOfSameCause()
 
 node(buildNode) {
     updateGitlabCommitStatus name: 'jenkins', state: 'running'
