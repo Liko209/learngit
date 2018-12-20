@@ -283,29 +283,4 @@ describe('MoreVM', () => {
       expect(ViewModel.showMoreAction).toBe(true);
     });
   });
-
-  describe('_isEventOrTask()', () => {
-    beforeEach(() => {
-      jest.resetAllMocks();
-    });
-    it('should not show quote option or edit option in task [JPT-514, JPT-535]', () => {
-      mockGetEntity({
-        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] } },
-      });
-
-      ViewModel = new MoreViewModel({ id: 1 });
-
-      expect(ViewModel._isEventOrTask).toBe(true);
-    });
-
-    it('should not show quote option or edit option in event [JPT-514, JPT-535]', () => {
-      mockGetEntity({
-        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] } },
-      });
-
-      ViewModel = new MoreViewModel({ id: 1 });
-
-      expect(ViewModel._isEventOrTask).toBe(true);
-    });
-  });
 });
