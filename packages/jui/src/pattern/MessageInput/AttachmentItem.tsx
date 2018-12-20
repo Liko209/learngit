@@ -30,16 +30,15 @@ type IconProps = {
 
 type ItemStatus = 'normal' | 'loading' | 'error';
 
-type StatusProps = {
-  status?: ItemStatus;
+type AttachmentItemProps = IconProps & {
+  progress?: number;
+  name: string;
+  onClickDeleteButton?: (event: MouseEvent) => void;
 };
 
-type AttachmentItemProps = IconProps &
-  StatusProps & {
-    progress?: number;
-    name: string;
-    onClickDeleteButton?: (event: MouseEvent) => void;
-  };
+type StatusProps = {
+  status: ItemStatus;
+};
 
 const StatusMap = {
   normal: (theme: any) => grey('900'),
@@ -114,7 +113,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     onClick={props.onClick}
     data-test-automation-id="attachment-action-button"
   >
-    {props.value && (
+    {typeof props.value !== 'undefined' && (
       <JuiCircularProgress variant="static" size={24} value={props.value} />
     )}
     <IconWrapper>
@@ -132,27 +131,33 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { icon, name, status, onClickDeleteButton, progress } = props;
+  const { icon, name, onClickDeleteButton, progress } = props;
   const fileName = truncateLongName(name, MAX_TITLE_LENGTH);
-  const loading = status === 'loading' || typeof progress !== 'undefined';
+  let realStatus: ItemStatus = 'normal';
+  if (typeof progress !== 'undefined') {
+    if (progress < 0) {
+      realStatus = 'error';
+    } else if (progress >= 0) {
+      realStatus = 'loading';
+    }
+  }
   return (
     <Wrapper>
       <Icon icon={icon} />
-      <NameArea status={status} data-test-automation-id="attachment-file-name">
+      <NameArea
+        status={realStatus}
+        data-test-automation-id="attachment-file-name"
+      >
         {fileName}
       </NameArea>
       <AttachmentItemAction
         onClick={onClickDeleteButton}
-        loading={loading}
+        loading={realStatus === 'loading'}
         value={progress}
         icon="close"
       />
     </Wrapper>
   );
-};
-
-AttachmentItem.defaultProps = {
-  status: 'normal',
 };
 
 export { AttachmentItem, ItemStatus, AttachmentItemAction };

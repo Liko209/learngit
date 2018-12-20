@@ -38,12 +38,10 @@ class FilesView extends React.Component<FilesViewProps> {
     name: string,
   ) => {
     const progress = progresses.get(id);
-    const status = typeof progress === 'undefined' ? 'error' : 'normal';
     return (
       <AttachmentItem
         key={id}
         name={name}
-        status={status}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
       />

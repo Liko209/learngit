@@ -41,34 +41,22 @@ storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
-  const status = select(
-    'status',
-    {
-      normal: 'normal',
-      loading: 'loading',
-      error: 'error',
-    },
-    'normal',
-  );
   const value = number('value', 0);
   const name = text('name', 'This is the name of attachment item');
 
   return (
     <div>
-      <AttachmentItem name="test" status="normal" />
+      <AttachmentItem name="test" />
       <br />
-      <AttachmentItem name="test" status="error" />
+      <AttachmentItem name="test" progress={-1} />
       <br />
       <AttachmentItem name="test" progress={value} />
       <br />
       <div>Long title example:</div>
-      <AttachmentItem
-        name="this is a really long title this is a really long title this is a really long title"
-        status="normal"
-      />
+      <AttachmentItem name="this is a really long title this is a really long title this is a really long title" />
       <br />
       <div>Property test</div>
-      <AttachmentItem name={name} status={status} />
+      <AttachmentItem name={name} />
     </div>
   );
 });

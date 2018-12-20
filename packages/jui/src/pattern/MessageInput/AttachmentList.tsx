@@ -37,7 +37,6 @@ const AttachmentList: React.SFC<AttachmentListProps> = (
     <Wrapper>
       {files.map((looper: ItemInfo, idx: number) => (
         <AttachmentItem
-          status={looper.status}
           name={looper.name}
           onClickDeleteButton={() => removeAttachment(looper)}
           key={idx}
