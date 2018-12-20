@@ -508,8 +508,17 @@ class ItemFileUploadHandler {
     let existFiles: ItemFile[] | undefined = this._uploadingFiles.get(groupId);
     if (existFiles && existFiles.length > 0) {
       if (this._isUpdateItem(preInsertItem)) {
+        const toCancelIds: number[] = [];
         existFiles = existFiles.filter((item: ItemFile) => {
-          item.name !== preInsertItem.name;
+          if (item.name === preInsertItem.name) {
+            toCancelIds.push(item.id);
+            return false;
+          }
+          return true;
+        });
+
+        toCancelIds.forEach((id: number) => {
+          this.cancelUpload(id);
         });
       }
       existFiles.push(preInsertItem);
