@@ -13,7 +13,7 @@ import { H } from './utils';
 
 import { IUser, IStep } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, SITE_ENV } from '../../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -123,11 +123,12 @@ class Helper {
 
   async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
     return await Role(SITE_URL, async (t) => {
-      const newApp = new AppRoot(t);
-      await newApp.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
-      await newApp.homePage.ensureLoaded();
+      const app = new AppRoot(t);
+      await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
+      await app.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
+      await app.homePage.ensureLoaded();
       if (undefined !== cb) {
-        await cb(newApp);
+        await cb(app);
       }
     }, { preserveUrl: true, });
   }

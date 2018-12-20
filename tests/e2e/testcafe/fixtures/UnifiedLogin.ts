@@ -8,7 +8,7 @@ import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { SITE_URL, BrandTire } from '../config';
+import { SITE_URL, BrandTire, SITE_ENV } from '../config';
 
 fixture('Unified Login')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -17,10 +17,9 @@ fixture('Unified Login')
 test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
   const user = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-  await t.debug();
 
   await h(t).withLog('Given I login Jupiter interactively', async () => {
-    await t.navigateTo(SITE_URL);
+    await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
     await app.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
   });
 

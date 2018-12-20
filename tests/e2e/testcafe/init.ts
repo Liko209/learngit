@@ -91,7 +91,6 @@ export function setupCase(accountType: string) {
     await h(t).logHelper.setup();
     await t.resizeWindow(1280, 720);
     await t.maximizeWindow();
-    await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
   }
 }
 

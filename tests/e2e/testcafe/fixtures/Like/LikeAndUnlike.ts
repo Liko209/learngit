@@ -9,9 +9,10 @@ import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
+import { BrandTire } from '../../config'
 
-fixture('Like/LikeAndUnlike')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+fixture('LikeAndUnlike')
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Operating a message that you first like then unlike', ['JPT-304', 'P2', 'Like', 'Potar.He']), async (t) => {
@@ -163,7 +164,6 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
     await t.expect(await postCard.getLikeCount()).eql(0);
   });
 });
-
 
 test(formalName('Like a message that you not first like then unlike', ['JPT-308', 'P2', 'Like', 'Potar.He']), async (t) => {
   const users = h(t).rcData.mainCompany.users
