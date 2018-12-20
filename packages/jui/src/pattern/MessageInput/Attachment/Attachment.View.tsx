@@ -16,7 +16,20 @@ import { observer } from 'mobx-react';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
-import { JuiMenu, JuiMenuItem, JuiMenuList } from '../../../components';
+import {
+  JuiMenu,
+  JuiMenuItem,
+  JuiMenuList,
+  JuiDivider,
+} from '../../../components';
+import {
+  JuiAttachmentIcon,
+  JuiGoogleDriveIcon,
+  JuiDropboxIcon,
+  JuiOneboxIcon,
+  JuiOneDriveIcon,
+  JuiEvernoteIcon,
+} from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
 type Props = AttachmentViewProps;
@@ -57,6 +70,29 @@ class AttachmentView extends Component<Props> {
     const { onFileChanged } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
+    const viewBox = '0 0 16 16';
+    const menus = [
+      {
+        icon: <JuiGoogleDriveIcon viewBox={viewBox} />,
+        label: 'Google Drive',
+      },
+      {
+        icon: <JuiDropboxIcon viewBox={viewBox} />,
+        label: 'Dropbox',
+      },
+      {
+        icon: <JuiOneboxIcon viewBox={viewBox} />,
+        label: 'Box',
+      },
+      {
+        icon: <JuiEvernoteIcon viewBox={viewBox} />,
+        label: 'Evernote',
+      },
+      {
+        icon: <JuiOneDriveIcon viewBox={viewBox} />,
+        label: 'OneDrive',
+      },
+    ];
     return (
       <Fragment>
         <JuiIconButton
@@ -65,7 +101,7 @@ class AttachmentView extends Component<Props> {
           onClick={this._handleClickEvent}
           size="medium"
         >
-          attachment
+          <JuiAttachmentIcon viewBox="-2 -2 24 24" />
         </JuiIconButton>
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (
@@ -86,8 +122,17 @@ class AttachmentView extends Component<Props> {
               Upload files from
             </JuiMenuItem>
             <JuiMenuList>
+              {menus.map(({ icon, label }, idx) => (
+                <JuiMenuItem disabled={true} icon={icon} key={idx}>
+                  {label}
+                </JuiMenuItem>
+              ))}
+            </JuiMenuList>
+            <JuiDivider />
+            <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
+                  disableGutters={true}
                   icon="computer"
                   data-test-automation-id="chatbar-attchment-selectfile"
                   onClick={this._hideMenuAndShowDialog}
