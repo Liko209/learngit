@@ -120,7 +120,6 @@ class Helper {
   async userRole(user: IUser, cb?:(appRoot) => Promise<any>) {
     return await Role(SITE_URL, async (t) => {
       const newApp = new AppRoot(t);
-      await h(t).directLoginWithUser(SITE_URL, user);
       await newApp.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
       await newApp.homePage.ensureLoaded(); 
       if (cb != undefined) {
