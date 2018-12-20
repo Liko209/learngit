@@ -21,7 +21,7 @@ describe('PostController', () => {
     });
     it('should call partial modify controller', async () => {
       const controllerBuilder = new ControllerBuilder<Post>();
-      const controller = new PostController(controllerBuilder);
+      const postController = new PostController(controllerBuilder);
 
       const dao = new BaseDao('Post', new TestDatabase());
       jest.spyOn(daoManager, 'getDao').mockImplementationOnce(() => {
@@ -50,7 +50,7 @@ describe('PostController', () => {
           return undefined;
         });
 
-      const result = controller.getPostActionController();
+      const result = postController.getPostActionController();
       expect(result instanceof PostActionController).toBe(true);
       expect(controllerBuilder.buildEntitySourceController).toBeCalledTimes(1);
       expect(controllerBuilder.buildPartialModifyController).toBeCalledTimes(1);

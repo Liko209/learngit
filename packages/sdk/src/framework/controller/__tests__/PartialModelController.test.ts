@@ -12,7 +12,7 @@ import { BaseDao, DeactivatedDao } from '../../../dao';
 import notificationCenter from '../../../service/notificationCenter';
 
 describe('PartialModelController', () => {
-  let controller: PartialModifyController;
+  let partialModifyController: PartialModifyController;
   let entitySourceController: EntitySourceController<TestEntity>;
   beforeEach(() => {
     const dao = new BaseDao<TestEntity>('TestEntity', new TestDatabase());
@@ -24,7 +24,9 @@ describe('PartialModelController', () => {
       undefined,
     );
 
-    controller = new PartialModifyController(entitySourceController);
+    partialModifyController = new PartialModifyController(
+      entitySourceController,
+    );
   });
 
   describe('partialUpdate()', () => {
@@ -63,7 +65,7 @@ describe('PartialModelController', () => {
         .spyOn(notificationCenter, 'emitEntityUpdate')
         .mockImplementationOnce(() => {});
 
-      const result = await controller.updatePartially(
+      const result = await partialModifyController.updatePartially(
         1,
         preHandlePartialFunc,
         doUpdateFunc,
@@ -99,7 +101,7 @@ describe('PartialModelController', () => {
         .spyOn(entitySourceController, 'bulkUpdate')
         .mockImplementation(() => {});
 
-      const result = await controller.updatePartially(
+      const result = await partialModifyController.updatePartially(
         1,
         preHandlePartialFunc,
         doUpdateFunc,
@@ -135,7 +137,11 @@ describe('PartialModelController', () => {
         .mockImplementation(() => {});
 
       expect(
-        controller.updatePartially(1, preHandlePartialFunc, doUpdateFunc),
+        partialModifyController.updatePartially(
+          1,
+          preHandlePartialFunc,
+          doUpdateFunc,
+        ),
       ).resolves.toThrow();
     });
   });
@@ -152,7 +158,7 @@ describe('PartialModelController', () => {
 
       const targetEntity = { id: 3, name: 'trump', sex: undefined };
 
-      const rollbackEntity = await controller.getRollbackPartialEntity(
+      const rollbackEntity = await partialModifyController.getRollbackPartialEntity(
         partialEntity,
         originalEntity,
       );
@@ -173,7 +179,7 @@ describe('PartialModelController', () => {
 
       const targetEntity = { id: 3, name: 'someone', note: 'a player' };
 
-      const mergedEntity = await controller.getMergedEntity(
+      const mergedEntity = await partialModifyController.getMergedEntity(
         partialEntity,
         originalEntity,
       );

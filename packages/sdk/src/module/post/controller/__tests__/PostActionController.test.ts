@@ -22,13 +22,13 @@ class TestRequestController implements IRequestController<Post> {
 }
 
 describe('PostController', () => {
-  let controller: PostActionController;
+  let postActionController: PostActionController;
   let testPartialModifyController: TestPartialModifyController;
   let testRequestController: TestRequestController;
   beforeEach(() => {
     testPartialModifyController = new TestPartialModifyController();
     testRequestController = new TestRequestController();
-    controller = new PostActionController(
+    postActionController = new PostActionController(
       testPartialModifyController,
       testRequestController,
     );
@@ -36,7 +36,7 @@ describe('PostController', () => {
 
   describe('likePost()', () => {
     it('should call partial modify controller', async () => {
-      await controller.likePost(1, 100, true);
+      await postActionController.likePost(1, 100, true);
       expect(testPartialModifyController.updatePartially).toBeCalled();
     });
   });
