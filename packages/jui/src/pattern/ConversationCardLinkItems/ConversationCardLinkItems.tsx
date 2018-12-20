@@ -6,17 +6,15 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons/IconButton';
+import { JuiCard } from '../../components/Cards';
 import { width, height, spacing, grey } from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
 
-const LinkItemsWrapper = styled.div`
+const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
   background-color: ${({ theme }) => theme.palette.common.white};
-  border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
-  box-shadow: ${({ theme }) => theme.boxShadow.val1};
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-  /* height: ${height(26)}; */
   overflow: hidden;
   padding: ${spacing(3)};
   box-sizing: border-box;

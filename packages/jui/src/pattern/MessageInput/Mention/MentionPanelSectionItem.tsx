@@ -6,6 +6,7 @@ import {
   palette,
   typography,
   grey,
+  ellipsis,
 } from '../../../foundation/utils/styles';
 
 const Wrapper = styled.div`
@@ -28,6 +29,7 @@ const Wrapper = styled.div`
 const DisplayName = styled.span`
   ${typography('body1')};
   margin-left: ${spacing(3)};
+  ${ellipsis()};
 `;
 
 type Props = {

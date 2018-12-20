@@ -20,12 +20,13 @@ class FromViewComponent extends Component<Props> {
     history.push(`/messages/${this.props.id}`);
   }
   render() {
-    const { displayName, isTeam } = this.props;
+    const { displayName, isTeam, ...rest } = this.props;
     return (
       <JuiConversationCardFrom
         name={displayName}
         isTeam={isTeam}
         onClick={this.jumpToConversation}
+        {...rest}
       />
     );
   }
