@@ -163,8 +163,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   sendFilesOnlyPost = async () => {
     try {
-      const values: AttachmentItem[] = Array.from(this.items.values());
-      const ids = values.map(({ item }) => item.id);
+      const ids: number[] = [];
+      this.items.forEach((value: AttachmentItem) => {
+        ids.push(value.item.id);
+      });
       await this._postService.sendPost({
         text: '',
         groupId: this.id,
