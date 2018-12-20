@@ -143,7 +143,8 @@ if (!skipUpdateGitlabStatus)
 cancelOldBuildOfSameCause()
 
 node(buildNode) {
-    updateGitlabCommitStatus name: 'jenkins', state: 'running'
+    if (!skipUpdateGitlabStatus)
+        updateGitlabCommitStatus name: 'jenkins', state: 'running'
 
     // install nodejs tool
     env.NODEJS_HOME = tool nodejsTool
