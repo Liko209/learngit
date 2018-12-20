@@ -3,13 +3,12 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService, ItemService, StateService } from 'sdk/service';
+import { PostService, StateService } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import { StreamItemType } from '../types';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-import { Post, Item } from 'sdk/models';
 
 jest.mock('sdk/service/post');
 jest.mock('@/store');
@@ -115,7 +114,7 @@ describe('StreamViewModel', () => {
         groupId: 1,
       });
       jest.spyOn(vm, 'dispose');
-      vm.onReceiveProps({ groupId: 1 });
+      vm.onReceiveProps({ groupId: 1 } as any);
       expect(vm.dispose).not.toHaveBeenCalled();
     });
   });
@@ -269,6 +268,7 @@ describe('StreamViewModel', () => {
       expect(vm.jumpToPostId).toBe(oldValue.jumpToPostId);
       expect(vm.groupId).toBe(oldValue.groupId);
       expect(vm._initialized).toBe(true);
+
       vm.initialize(groupId);
 
       expect(vm.groupId).toBe(groupId);
@@ -291,24 +291,178 @@ describe('StreamViewModel', () => {
 
   describe('loadPrevPosts()', () => {
     it('should get [] when hasMore is false', async () => {
+      const hasMore = jest.fn(() => false);
+      const fetchData = jest.fn(() => Promise.resolve([]));
+      const vm = setup({
+        _transformHandler: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      const posts = await vm.loadPrevPosts();
+      expect(hasMore).toBeCalledWith(QUERY_DIRECTION.OLDER);
+      expect(fetchData).not.toBeCalled();
+      expect(posts).toEqual([]);
+    });
+
+    it('should get data when hasMore is true', async () => {
       const data = [Math.random()];
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
         _transformHandler: {
-          fetchData,
           hasMore,
+          fetchData,
         },
       });
 
       const posts = await vm.loadPrevPosts();
-
-      expect(hasMore).toBeCalled();
-      expect(posts).toEqual([]);
+      expect(fetchData).toBeCalledWith(QUERY_DIRECTION.OLDER, undefined);
+      expect(posts).toEqual(data);
     });
   });
 
-  describe('loadNextPosts()', () => {});
+  describe('loadNextPosts()', () => {
+    it('should get [] when hasMore is false', async () => {
+      const hasMore = jest.fn(() => false);
+      const fetchData = jest.fn(() => Promise.resolve([]));
+      const vm = setup({
+        _transformHandler: {
+          hasMore,
+          fetchData,
+        },
+      });
 
-  describe('handleNewMessageSeparatorState()', () => {});
+      const posts = await vm.loadNextPosts();
+
+      expect(hasMore).toBeCalledWith(QUERY_DIRECTION.NEWER);
+      expect(fetchData).not.toBeCalled();
+      expect(posts).toEqual([]);
+    });
+
+    it('should get data when hasMore is true', async () => {
+      const data = [Math.random()];
+      const fetchData = jest.fn(() => Promise.resolve(data));
+      const hasMore = jest.fn(() => true);
+      const vm = setup({
+        _transformHandler: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      const posts = await vm.loadNextPosts();
+      expect(fetchData).toBeCalledWith(QUERY_DIRECTION.NEWER, undefined);
+      expect(posts).toEqual(data);
+    });
+  });
+
+  describe('handleNewMessageSeparatorState()', () => {
+    let _newMessageSeparatorHandler: any;
+    const globalStore = {
+      set: jest.fn(),
+    };
+    const atBottomEvent = {
+      target: {
+        scrollHeight: 0,
+        scrollTop: 0,
+        clientHeight: 0,
+      },
+    } as any;
+    const notAtBottomEvent = {
+      target: {
+        scrollHeight: 10,
+        scrollTop: 0,
+        clientHeight: 0,
+      },
+    } as any;
+
+    function mockStoreManager() {
+      jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(globalStore);
+    }
+
+    function mockDocumentFocus(hasFocus: boolean) {
+      jest.spyOn(document, 'hasFocus').mockReturnValue(hasFocus);
+    }
+
+    function localSetup(args: object, initialized: boolean = true) {
+      _newMessageSeparatorHandler = {
+        disable: jest.fn(),
+        enable: jest.fn(),
+      };
+      return setup({
+        _newMessageSeparatorHandler,
+        _initialized: initialized,
+        ...args,
+      });
+    }
+
+    describe('when viewModel is initialized', () => {
+      function hideUMIAndDisableMessageHandler() {
+        expect(globalStore.set).toBeCalledWith(
+          GLOBAL_KEYS.SHOULD_SHOW_UMI,
+          false,
+        );
+        expect(_newMessageSeparatorHandler.disable).toBeCalled();
+      }
+
+      function showUMIAndEnableMessageHandler() {
+        expect(globalStore.set).toBeCalledWith(
+          GLOBAL_KEYS.SHOULD_SHOW_UMI,
+          true,
+        );
+        expect(_newMessageSeparatorHandler.enable).toBeCalled();
+      }
+
+      it('should disable _newMessageSeparatorHandler when at bottom and document has focus', () => {
+        mockStoreManager();
+        mockDocumentFocus(true);
+        const vm = localSetup({});
+        vm.handleNewMessageSeparatorState(atBottomEvent);
+
+        hideUMIAndDisableMessageHandler();
+      });
+
+      it('should enable _newMessageSeparatorHandler when at bottom and document without focus', () => {
+        mockStoreManager();
+        mockDocumentFocus(false);
+        const vm = localSetup({});
+        vm.handleNewMessageSeparatorState(atBottomEvent);
+
+        showUMIAndEnableMessageHandler();
+      });
+
+      it('should enable _newMessageSeparatorHandler when not at bottom and document has focus', () => {
+        mockStoreManager();
+        mockDocumentFocus(true);
+        const vm = localSetup({});
+        vm.handleNewMessageSeparatorState(notAtBottomEvent);
+
+        showUMIAndEnableMessageHandler();
+      });
+
+      it('should enable _newMessageSeparatorHandler when not at bottom and document without focus', () => {
+        mockStoreManager();
+        mockDocumentFocus(false);
+        const vm = localSetup({});
+        vm.handleNewMessageSeparatorState(notAtBottomEvent);
+
+        showUMIAndEnableMessageHandler();
+      });
+    });
+
+    describe('when viewModel is not initialized', () => {
+      it('should enable _newMessageSeparatorHandler when at bottom and document has focus', () => {
+        mockStoreManager();
+        mockDocumentFocus(true);
+        const vm = localSetup({}, false);
+        vm.handleNewMessageSeparatorState(atBottomEvent);
+
+        expect(_newMessageSeparatorHandler.enable).toBeCalled();
+      });
+    });
+
+    jest.restoreAllMocks();
+  });
 });

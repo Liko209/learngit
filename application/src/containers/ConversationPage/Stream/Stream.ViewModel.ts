@@ -232,7 +232,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this._transformHandler.hasMore(direction)) return [];
+    if (!this._transformHandler.hasMore(direction)) {
+      return [];
+    }
     return await this._transformHandler.fetchData(direction, limit);
   }
 
