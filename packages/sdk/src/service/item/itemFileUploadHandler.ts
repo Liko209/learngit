@@ -20,6 +20,7 @@ import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
 import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
+import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
@@ -185,12 +186,7 @@ class ItemFileUploadHandler {
     return newFormFile;
   }
 
-  private async _requestAmazonS3Policy(
-    formFile: FormData,
-    groupId: number,
-    itemId: number,
-    requestHolder: RequestHolder,
-  ) {
+  private async _requestAmazonS3Policy(formFile: FormData) {
     const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     return await ItemAPI.requestAmazonFilePolicy({
       size: file.size,
@@ -208,12 +204,7 @@ class ItemFileUploadHandler {
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    const policyResponse = await this._requestAmazonS3Policy(
-      formFile,
-      groupId,
-      itemId,
-      requestHolder,
-    );
+    const policyResponse = await this._requestAmazonS3Policy(formFile);
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
@@ -281,10 +272,6 @@ class ItemFileUploadHandler {
     await this._uploadItem(groupId, preInsertItem, isUpdate);
   }
 
-  private _shouldUploadToAmazonS3() {
-    return false;
-  }
-
   private async _sendItemFile(
     groupId: number,
     preInsertItem: ItemFile,
@@ -312,7 +299,7 @@ class ItemFileUploadHandler {
       });
     }
 
-    if (this._shouldUploadToAmazonS3()) {
+    if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
       await this._uploadFileToAmazonS3(
         file,
         preInsertItem,
