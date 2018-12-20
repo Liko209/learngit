@@ -1,9 +1,8 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import rtcNetworkNotificationCenter, {
+import {
+  rtcNetworkNotificationCenter,
   RTCNetworkEVENT,
 } from '../rtcNetworkNotificationCenter';
-import notificationCenter from '../../../../sdk/src/service/notificationCenter';
-import { SOCKET } from '../../../../sdk/src/service/eventKey';
 
 describe('Network Notification Center', async () => {
   class TestListener {
@@ -33,50 +32,42 @@ describe('Network Notification Center', async () => {
     onOffline() {}
   }
   describe('should _isOnline chang to true when listen message', () => {
-    it('network evevt emit online', () => {
+    it('network evevt emit online JPT-540', () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOnline');
-      jest.spyOn(nnc, '_onOnline');
-      notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
-      expect(nnc._onOnline).toHaveBeenCalled();
+      nnc._onOnline();
       expect(nnc.isOnline()).toBe(true);
       expect(testListener.onOnline).toHaveBeenCalled();
     });
 
-    it('network evevt emit online twice', () => {
+    it('network evevt emit online twice JPT-542', () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOnline');
-      jest.spyOn(nnc, '_onOnline');
-      notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
-      notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
-      expect(nnc._onOnline).toHaveBeenCalledTimes(3);
+      nnc._onOnline();
+      nnc._onOnline();
       expect(nnc.isOnline()).toBe(true);
       expect(testListener.onOnline).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('should _isOnline chang to false when listen message', () => {
-    it('network event emit offline', async () => {
+    it('network event emit offline JPT-541', async () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOffline');
-      jest.spyOn(nnc, '_onOffline');
-      notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
-      expect(nnc._onOffline).toHaveBeenCalled();
+      nnc._onOffline();
       expect(nnc.isOnline()).toBe(false);
       expect(testListener.onOffline).toHaveBeenCalled();
     });
 
-    it('network event emit offline twice', async () => {
+    it('network event emit offline twice JPT-543', async () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOffline');
-      jest.spyOn(nnc, '_onOffline');
-      notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
-      notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
-      expect(nnc._onOffline).toHaveBeenCalledTimes(3);
+      nnc._onOffline();
+      nnc._onOffline();
       expect(nnc.isOnline()).toBe(false);
       expect(testListener.onOffline).toHaveBeenCalledTimes(2);
     });
