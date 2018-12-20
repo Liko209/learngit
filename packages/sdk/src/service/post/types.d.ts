@@ -11,7 +11,6 @@ export type RawPostInfo = {
   itemIds?: number[];
   postId?: number;
   itemId?: number;
-  updateIds?: number[];
 };
 
 export type RawFilePostInfo = RawPostInfo & {

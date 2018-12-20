@@ -39,9 +39,15 @@ class ItemService extends BaseService<Item> {
     );
   }
 
-  async getItemVersion(itemId: number): Promise<number> {
-    const item = await this.getById(itemId);
-    return item ? item.versions.length : 0;
+  async sendItemData(groupId: number, itemIds: number[]) {
+    const fileItemIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    await this._getItemFileHandler().sendItemData(groupId, fileItemIds);
+  }
+
+  async getItemVersion(itemFile: ItemFile): Promise<number> {
+    return await this._getItemFileHandler().getUpdateItemVersion(itemFile);
   }
 
   async cancelUpload(itemId: number) {
