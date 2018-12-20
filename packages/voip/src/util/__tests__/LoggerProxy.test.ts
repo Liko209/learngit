@@ -14,15 +14,15 @@ class LoggerImpl implements ILogger {
 
 describe('LoggerProxy', async () => {
   describe('info', () => {
-    it('Should empty due to not insert logger', async () => {
+    it('Should print empty when not insert logger [JPT-553]', async () => {
       const loggerImpl = new LoggerImpl();
-      rtcLogger.info('VoIP', 'info');
+      rtcLogger.info('VoIP', 'empty');
       expect(loggerImpl.doLog.mock.calls.length).toBe(0);
     });
   });
 
   describe('info', () => {
-    it('Should log info message', async () => {
+    it('Should print info log message insert logger [JPT-554]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
       rtcLogger.info('VoIP', 'info');
@@ -33,20 +33,8 @@ describe('LoggerProxy', async () => {
     });
   });
 
-  describe('debug', () => {
-    it('Should log debug message', async () => {
-      const loggerImpl = new LoggerImpl();
-      RTCEngine.setLogger(loggerImpl);
-      rtcLogger.debug('VoIP', 'debug');
-      expect(loggerImpl.doLog).toHaveBeenCalledWith(
-        LOG_LEVEL.DEBUG,
-        'VoIP: debug',
-      );
-    });
-  });
-
   describe('warn', () => {
-    it('Should log warn message', async () => {
+    it('Should print warn log message when insert logger [JPT-555]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
       rtcLogger.warn('VoIP', 'warn');
@@ -57,8 +45,20 @@ describe('LoggerProxy', async () => {
     });
   });
 
+  describe('debug', () => {
+    it('Should print debug log message when insert logger [JPT-556]', async () => {
+      const loggerImpl = new LoggerImpl();
+      RTCEngine.setLogger(loggerImpl);
+      rtcLogger.debug('VoIP', 'debug');
+      expect(loggerImpl.doLog).toHaveBeenCalledWith(
+        LOG_LEVEL.DEBUG,
+        'VoIP: debug',
+      );
+    });
+  });
+
   describe('error', () => {
-    it('Should log error message', async () => {
+    it('Should print error log message when insert logger [JPT-559]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
       rtcLogger.error('VoIP', 'error');
@@ -70,7 +70,7 @@ describe('LoggerProxy', async () => {
   });
 
   describe('fatal', () => {
-    it('Should log fatal message', async () => {
+    it('Should print fatal log message when insert logger [JPT-558]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
       rtcLogger.fatal('VoIP', 'fatal');
@@ -82,7 +82,7 @@ describe('LoggerProxy', async () => {
   });
 
   describe('trace', () => {
-    it('Should log trace message', async () => {
+    it('Should print trace log message when insert logger [JPT-557]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
       rtcLogger.trace('VoIP', 'trace');
