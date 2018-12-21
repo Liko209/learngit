@@ -20,6 +20,7 @@ type PopoverMenuProps = {
     horizontal: 'left' | 'center' | 'right';
   };
   automationId?: string;
+  className?: string;
 };
 
 const StyledAnchorWrapper = styled.div`
@@ -58,9 +59,10 @@ class JuiPopoverMenu extends React.Component<
       automationId,
       anchorOrigin,
       transformOrigin,
+      className,
     } = this.props;
     return (
-      <>
+      <div className={className}>
         <StyledAnchorWrapper onClick={this.handleToggle}>
           <Anchor />
         </StyledAnchorWrapper>
@@ -75,7 +77,7 @@ class JuiPopoverMenu extends React.Component<
         >
           {children}
         </JuiPopover>
-      </>
+      </div>
     );
   }
 }
