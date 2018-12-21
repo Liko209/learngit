@@ -33,6 +33,12 @@ import {
 } from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
+const Menu = styled(JuiMenu)`
+  .menu-list-root {
+    padding: 0;
+  }
+`;
+
 const MenuList = styled(JuiMenuList)`
   && {
     padding: 0;
@@ -112,7 +118,7 @@ class AttachmentView extends Component<Props> {
         </JuiIconButton>
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (
-          <JuiMenu
+          <Menu
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right',
@@ -123,6 +129,11 @@ class AttachmentView extends Component<Props> {
             }}
             data-test-automation-id="conversation-chatbar-attachment-menu"
             anchorEl={anchorEl}
+            MenuListProps={{
+              classes: {
+                root: 'menu-list-root',
+              },
+            }}
             open={open}
           >
             <JuiMenuItem disabled={true} divider={true}>
@@ -136,7 +147,7 @@ class AttachmentView extends Component<Props> {
               ))}
             </MenuList>
             <JuiDivider />
-            <MenuList>
+            <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
                   disableGutters={true}
@@ -147,8 +158,8 @@ class AttachmentView extends Component<Props> {
                   Computer
                 </JuiMenuItem>
               </ClickAwayListener>
-            </MenuList>
-          </JuiMenu>
+            </JuiMenuList>
+          </Menu>
         )}
       </Fragment>
     );

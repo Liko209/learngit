@@ -523,7 +523,7 @@ class ItemFileUploadHandler {
       if (this._isUpdateItem(preInsertItem)) {
         const toCancelIds: number[] = [];
         existFiles = existFiles.filter((item: ItemFile) => {
-          if (item.name === preInsertItem.name) {
+          if (!item.is_new && item.name === preInsertItem.name) {
             toCancelIds.push(item.id);
             return false;
           }
