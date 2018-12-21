@@ -1,9 +1,9 @@
 /// <reference path="../../__tests__/types.d.ts" />
 import {
-  SipCallSession,
+  RTCSipCallSession,
   SIP_CALL_SESSION_STATE,
   WEBPHONE_STATE,
-} from '../sipCallSession';
+} from '../RTCSipCallSession';
 
 import { EventEmitter2 } from 'eventemitter2';
 
@@ -28,23 +28,23 @@ describe('sip call session', () => {
     hangup() {}
   }
 
-  describe('should get session when ues setsession', () => {
-    it('session is null when initialization', () => {
-      const sipcallsession = new SipCallSession();
+  describe('setsession()', () => {
+    it('should _session is null when initialization', () => {
+      const sipcallsession = new RTCSipCallSession();
       expect(sipcallsession.getSession()).toBe(null);
     });
 
-    it('session is not null after setSession() be called', () => {
-      const sipcallsession = new SipCallSession();
+    it('should session is not null when setSession() be called', () => {
+      const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
       expect(sipcallsession.getSession()).toBe(vsession);
     });
   });
 
-  describe('should VirtueSession hangup be called when SipCallSession hangup be called', () => {
-    it('hangup be called', () => {
-      const sipcallsession = new SipCallSession();
+  describe('hangup()', () => {
+    it('should VirtueSession hangup be called when SipCallSession hangup be called', () => {
+      const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
       jest.spyOn(vsession, 'hangup');
@@ -53,9 +53,9 @@ describe('sip call session', () => {
     });
   });
 
-  describe('should SipCallSession listen function be called when VirtueSession emit event', () => {
-    it('_onSessionConfirmed be called', () => {
-      const sipcallsession = new SipCallSession();
+  describe('_onSession*******()', () => {
+    it('should _onSessionConfirmed be called when VirtueSession emit Confirmed', () => {
+      const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
       jest.spyOn(sipcallsession, '_onSessionConfirmed');
@@ -63,8 +63,8 @@ describe('sip call session', () => {
       expect(sipcallsession._onSessionConfirmed).toHaveBeenCalled();
     });
 
-    it('_onSessionDisconnected be called', () => {
-      const sipcallsession = new SipCallSession();
+    it('should _onSessionDisconnected be called when VirtueSession emit Disconnected', () => {
+      const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
       jest.spyOn(sipcallsession, '_onSessionDisconnected');
@@ -72,8 +72,8 @@ describe('sip call session', () => {
       expect(sipcallsession._onSessionDisconnected).toHaveBeenCalled();
     });
 
-    it('_onSessionError be called', () => {
-      const sipcallsession = new SipCallSession();
+    it('should _onSessionError be called when VirtueSession emit Error', () => {
+      const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
       jest.spyOn(sipcallsession, '_onSessionError');

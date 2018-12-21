@@ -1,5 +1,5 @@
 import { EventEmitter2 } from 'eventemitter2';
-import { IrtcCallSession } from './irtcCallSession';
+import { IRTCCallSession } from './IRTCCallSession';
 
 enum SIP_CALL_SESSION_STATE {
   CONFIRMED = 'sipcallsessionstate.confirmed',
@@ -13,7 +13,7 @@ enum WEBPHONE_STATE {
   FAILED = 'failed',
 }
 
-class SipCallSession extends EventEmitter2 implements IrtcCallSession {
+class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
   constructor() {
     super();
@@ -66,4 +66,4 @@ class SipCallSession extends EventEmitter2 implements IrtcCallSession {
   }
 }
 
-export { SipCallSession, SIP_CALL_SESSION_STATE, WEBPHONE_STATE };
+export { RTCSipCallSession, SIP_CALL_SESSION_STATE, WEBPHONE_STATE };
