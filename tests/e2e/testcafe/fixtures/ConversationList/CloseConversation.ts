@@ -3,11 +3,11 @@ import { v4 as uuid } from 'uuid';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 declare var test: TestFn;
 fixture('CloseConversation')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Close current conversation directly, and navigate to blank page (without UMI)',
@@ -54,7 +54,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
         await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, true);
-     },
+      },
     );
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -151,7 +151,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
       await user.sdk.glip.clearFavoriteGroups();
-      });
+    });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
@@ -245,7 +245,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     await h(t).withLog('And I clean all UMI before login',
       async () => {
         await user.sdk.glip.clearAllUmi();
-     },
+      },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',

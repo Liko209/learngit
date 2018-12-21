@@ -5,18 +5,16 @@
  */
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiIconography } from '../../foundation/Iconography';
+import { JuiIconButton } from '../../components/Buttons/IconButton';
+import { JuiCard } from '../../components/Cards';
 import { width, height, spacing, grey } from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
 
-const LinkItemsWrapper = styled.div`
+const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
   background-color: ${({ theme }) => theme.palette.common.white};
-  border: 1px solid rgba(0, 0, 0, 0.2);
   width: 100%;
-  box-shadow: ${({ theme }) => theme.boxShadow.val1};
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
-  /* height: ${height(26)}; */
   overflow: hidden;
   padding: ${spacing(3)};
   box-sizing: border-box;
@@ -123,14 +121,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     onLinkItemClose && onLinkItemClose(event);
   }
   render() {
-    const {
-      title,
-      summary,
-      thumbnail,
-      url,
-      favicon,
-      faviconName,
-    } = this.props;
+    const { title, summary, thumbnail, url, favicon, faviconName } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
@@ -149,7 +140,13 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
               <FaviconName>{faviconName}</FaviconName>
             </FaviconWrapper>
           </TitleWithSummary>
-          <JuiIconography onClick={this.onLinkItemClose}>close</JuiIconography>
+          <JuiIconButton
+            disableToolTip={true}
+            variant="plain"
+            onClick={this.onLinkItemClose}
+          >
+            close
+          </JuiIconButton>
         </LinkItemContents>
       </LinkItemsWrapper>
     );

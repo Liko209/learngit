@@ -8,10 +8,10 @@ import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
 import { h } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ContentPanel/PageHeader')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test.skip(
@@ -57,7 +57,7 @@ test.skip(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
