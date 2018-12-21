@@ -68,6 +68,7 @@ const WrappedMuiIconButton = ({
   color,
   colorName,
   colorScope,
+  alwaysEnableTooltip,
   ...rest
 }: StyledIconButtonProps) => (
   <MuiIconButton

@@ -26,14 +26,14 @@ class PrivacyViewComponent extends Component<Props> {
   }
 
   onClickPrivacy = async () => {
-    const { handlePrivacy, t } = this.props;
+    const { handlePrivacy } = this.props;
     try {
       await handlePrivacy();
     } catch (error) {
       if (error === ErrorTypes.API_NETWORK) {
-        this.flashToast(t('teamNetError'));
+        this.flashToast('teamNetError');
       } else {
-        this.flashToast(t('markPrivateServerErrorForTeam'));
+        this.flashToast('markPrivateServerErrorForTeam');
       }
     }
   }

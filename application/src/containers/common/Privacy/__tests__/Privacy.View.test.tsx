@@ -25,13 +25,17 @@ describe('PrivacyView', () => {
     it('Display flash toast notification when change team from public to private failed. [JPT-491]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
-        handlePrivacy: () => { throw ErrorTypes.SERVICE_INVALID_MODEL_ID; },
+        handlePrivacy: () => { throw ErrorTypes.API_SERVER_ERROR; },
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'markPrivateServerErrorForTeam',
+          }),
+        );
         done();
       },         0);
     });
@@ -40,13 +44,17 @@ describe('PrivacyView', () => {
       const props: any = {
         ...someProps,
         isPublic: false,
-        handlePrivacy: () => { throw ErrorTypes.SERVICE_INVALID_MODEL_ID; },
+        handlePrivacy: () => { throw ErrorTypes.API_SERVER_ERROR; },
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'markPrivateServerErrorForTeam',
+          }),
+        );
         done();
       },         0);
     });
@@ -60,7 +68,11 @@ describe('PrivacyView', () => {
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'teamNetError',
+          }),
+        );
         done();
       },         0);
     });
@@ -75,7 +87,11 @@ describe('PrivacyView', () => {
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'teamNetError',
+          }),
+        );
         done();
       },         0);
     });

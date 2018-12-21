@@ -23,7 +23,7 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser, BaseError } from '../../utils/error';
+import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -423,15 +423,39 @@ class GroupService extends BaseService<Group> {
     }
   }
 
+  async updateGroupPartialDataHttp(id: number, data: Partial<Group>): Promise<boolean> {
+    data.id = id;
+    const result = await this.handlePartialUpdate(
+      data,
+      undefined,
+      async (updatedModel: Group) => {
+        return await this.updateGroupPartialById(id, updatedModel);
+      },
+    );
+    if (result.isOk()) {
+      return true;
+    }
+    if (!result.apiError) {
+      throw ErrorTypes.UNDEFINED_ERROR;
+    }
+    throw result.apiError.code;
+  }
+
+  // update partial group data http
+  async updateGroupPartialById(id: number, group: Group): Promise<Group | BaseError> {
+    const apiResult = await GroupAPI.putTeamById(id, group);
+    if (apiResult.isOk()) {
+      return transform<Group>(apiResult.data);
+    }
+    return apiResult.error;
+  }
+
   // update partial group data, for message draft
   async updateGroupPrivacy(params: {
     id: number;
     privacy: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialData({
-      id: params.id,
-      privacy: params.privacy,
-    });
+    const result = await this.updateGroupPartialDataHttp(params.id, { privacy: params.privacy });
     return result;
   }
 
@@ -686,7 +710,7 @@ class GroupService extends BaseService<Group> {
         if (group.email_friendly_abbreviation) {
           email = `${
             group.email_friendly_abbreviation
-          }@${companyReplyDomain}.${envDomain}`;
+            }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {
