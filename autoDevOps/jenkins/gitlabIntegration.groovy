@@ -54,7 +54,6 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
     URI uri = new URI(remoteUri)
     sshCmd(remoteUri, "mkdir -p ${remoteDir}".toString())
     String rsyncRemoteUri = "${uri.getUserInfo()}@${uri.getHost()}:${remoteDir}".toString()
-    echo rsyncRemoteUri
     sh "rsync -azPq --delete --progress -e 'ssh -o StrictHostKeyChecking=no -p ${uri.getPort()}' ${sourceDir} ${rsyncRemoteUri}"
     sshCmd(remoteUri, "chmod -R 755 ${remoteDir}".toString())
 }
@@ -138,13 +137,11 @@ def reportChannels = [
 Map report = [:]
 
 // start
-if (!skipUpdateGitlabStatus)
-    updateGitlabCommitStatus name: 'jenkins', state: 'pending'
+skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'pending'
 cancelOldBuildOfSameCause()
 
 node(buildNode) {
-    if (!skipUpdateGitlabStatus)
-        updateGitlabCommitStatus name: 'jenkins', state: 'running'
+    skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'running'
 
     // install nodejs tool
     env.NODEJS_HOME = tool nodejsTool
@@ -280,7 +277,6 @@ node(buildNode) {
                             reportChannels,
                             "Jupiter Deployment Successful",
                             "**Jupiter deployment successful**: ${report.applicationUrl}"
-
                     )
                 }
         )
@@ -291,6 +287,7 @@ node(buildNode) {
             withEnv([
                     "HOST_NAME=${hostname}",
                     "SITE_URL=${applicationUrl}",
+                    "SITE_ENV=${env.E2E_SITE_ENV}",
                     "SCREENSHOTS_PATH=${env.E2E_SCREENSHOTS_PATH}",
                     "SELENIUM_SERVER=${env.E2E_SELENIUM_SERVER}",
                     "ENABLE_REMOTE_DASHBOARD=${env.E2E_ENABLE_REMOTE_DASHBOARD}",
@@ -328,10 +325,9 @@ node(buildNode) {
                 buildReport(':white_check_mark: Success', env.BUILD_URL, report)
         )
     } catch (e) {
-        if (!skipUpdateGitlabStatus)
-            updateGitlabCommitStatus name: 'jenkins', state: 'failed'
+        skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'failed'
         String statusTitle = ':negative_squared_cross_mark: Failure'
-        if (e in AbortException  || e in InterruptedException)
+        if (e in InterruptedException)
             statusTitle = ':no_entry: Aborted'
         safeMail(
                 reportChannels,
