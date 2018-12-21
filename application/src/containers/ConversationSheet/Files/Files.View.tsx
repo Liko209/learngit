@@ -15,6 +15,7 @@ import { AttachmentItem } from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
+import { POST_STATUS } from 'sdk/service';
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -37,7 +38,13 @@ class FilesView extends React.Component<FilesViewProps> {
     progresses: Map<number, number>,
     name: string,
   ) => {
-    const progress = progresses.get(id);
+    let progress = progresses.get(id);
+    if (
+      this.props.post.status !== POST_STATUS.SUCCESS &&
+      typeof progress === 'undefined'
+    ) {
+      progress = -1;
+    }
     return (
       <AttachmentItem
         key={id}
