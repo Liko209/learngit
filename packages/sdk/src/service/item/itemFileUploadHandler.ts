@@ -23,6 +23,9 @@ import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
+const MAX_UPLAODING_FILE_CNT = 10;
+const MAX_UPLOADING_FILE_SIZE = 10 * 1024 * 1024;
+
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
@@ -39,6 +42,67 @@ class ItemFileUploadHandler {
       return itemFile;
     }
     return null;
+  }
+
+  isExceedUploadLimit(groupId: number, newFiles: File[]): boolean {
+    let result = true;
+    do {
+      if (newFiles.length > MAX_UPLAODING_FILE_CNT) {
+        break;
+      }
+
+      const uploadingFileSize = _.sumBy(newFiles, (f: File) => {
+        return f.size;
+      });
+
+      if (uploadingFileSize > MAX_UPLAODING_FILE_CNT) {
+        break;
+      }
+
+      const currentUploadingInfo = this._getGroupUploadingFileStatus(groupId);
+      if (
+        currentUploadingInfo.fileCount + newFiles.length >
+        MAX_UPLAODING_FILE_CNT
+      ) {
+        break;
+      }
+
+      if (
+        currentUploadingInfo.filesSize + uploadingFileSize >
+        MAX_UPLOADING_FILE_SIZE
+      ) {
+        break;
+      }
+
+      result = false;
+    } while (false);
+
+    return result;
+  }
+
+  private _getGroupUploadingFileStatus(groupId: number) {
+    const files: ItemFile[] = [];
+    this._progressCaches.forEach((status: ItemFileUploadStatus) => {
+      if (
+        status.itemFile &&
+        status.itemFile.group_ids.includes(groupId) &&
+        status.progress.loaded > -1
+      ) {
+        files.push(status.itemFile);
+      }
+    });
+
+    const filesSize = _.sumBy(files, (itemFile: ItemFile) => {
+      return this._getItemFileSize(itemFile);
+    });
+    return {
+      filesSize,
+      fileCount: files.length,
+    };
+  }
+
+  private _getItemFileSize(itemFile: ItemFile) {
+    return itemFile.versions.length > 0 ? itemFile.versions[0].size : 0;
   }
 
   private _getCachedItem(itemId: number) {
