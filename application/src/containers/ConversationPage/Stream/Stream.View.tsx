@@ -41,6 +41,7 @@ class StreamViewComponent extends Component<Props> {
   private _scrollTop = 0;
   private _ro: ResizeObserver;
   private _globalStore = storeManager.getGlobalStore();
+  private _listLastWidth = 0;
   @observable
   private _jumpToFirstUnreadLoading = false;
 
@@ -132,13 +133,18 @@ class StreamViewComponent extends Component<Props> {
     this._ro.observe(el);
   }
 
-  private _heightChangedHandler = (entries: any) => {
+  private _heightChangedHandler = (entries: any[]) => {
     const listEl = this._listRef.current;
     if (!listEl) {
       return;
     }
     if (this._temporaryDisableAutoScroll) {
       this._temporaryDisableAutoScroll = false;
+      return;
+    }
+    const width = entries[0].contentRect.width;
+    if (this._listLastWidth !== width) {
+      this._listLastWidth = width;
       return;
     }
     const { hasMoreDown } = this.props;
