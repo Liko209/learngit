@@ -8,10 +8,10 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/UnreadToggle')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName(`Display a toggle that controls whether to show only new messages on the conversation list &
@@ -87,7 +87,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
       await directMessagesSection.conversationEntryById(groupId3).enter();
     });
 
-    // JPT-194 
+    // JPT-194
     await h(t).withLog('Then I Should find unread toggle and the default state is off', async () => {
       await t.expect(unreadToggler.exists).ok();
       await unreadToggler.shouldBeOff();

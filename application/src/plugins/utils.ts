@@ -2,7 +2,7 @@
  * @Author: Valor Lin (valor.lin@ringcentral.com)
  * @Date: 2018-09-18 10:07:39
  * Copyright © RingCentral. All rights reserved.
-*/
+ */
 import { IViewModel } from '@/base';
 
 type FunctionWrapDecoratorOptions = {
@@ -26,13 +26,13 @@ function createFunctionWrapDecorator(options: FunctionWrapDecoratorOptions) {
       // After function call
       if (result instanceof Promise) {
         // originalFn is async
-        return result.then(() => {
-          return options.after && options.after.apply(this, [this, args]);
+        return result.then((data: any) => {
+          options.after && options.after.apply(this, [this, args]);
+          return data;
         });
       }
       // originalFn is sync
       options.after && options.after.apply(this, [this, args]);
-
       return result;
     };
     return descriptor;
