@@ -220,14 +220,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
-  private async _loadPost(postId: number) {
-    const post = await this._postService.getById(postId);
-    if (post) {
-      this._transformHandler.appendPosts([post]);
-    }
-    return post;
-  }
-
   private async _loadPosts(
     direction: QUERY_DIRECTION,
     limit?: number,
@@ -237,8 +229,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   private async _loadSiblingPosts(anchorPostId: number) {
-    const post = await this._loadPost(anchorPostId);
+    const post = await this._postService.getById(anchorPostId);
     if (post) {
+      this._transformHandler.replaceAll([post]);
       await Promise.all([
         this._loadPosts(QUERY_DIRECTION.OLDER),
         this._loadPosts(QUERY_DIRECTION.NEWER),
