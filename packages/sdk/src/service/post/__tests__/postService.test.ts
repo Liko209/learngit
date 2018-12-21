@@ -1061,7 +1061,7 @@ describe('PostService', () => {
           expect.anything(),
         );
         expect(spyResendFailedItems).not.toBeCalled();
-        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
+        expect(itemService.cleanUploadingFiles).toBeCalled();
         expect(itemService.sendItemData).toBeCalled();
         done();
       });
