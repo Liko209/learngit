@@ -14,7 +14,7 @@ type Props = {
   otherText?: string;
 };
 
-const StyledTaskAvatarName = styled.div`
+const StyledTaskAvatarNames = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -27,13 +27,13 @@ const StyledTaskOther = styled.div`
   align-items: flex-end;
 `;
 
-const JuiTaskAvatarName = ({ children, otherText, count }: Props) => (
-  <StyledTaskAvatarName className="task-avatar-name">
+const JuiTaskAvatarNames = ({ children, otherText, count }: Props) => (
+  <StyledTaskAvatarNames className="task-avatar-name">
     {children}
     {otherText && count && (
       <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>
     )}
-  </StyledTaskAvatarName>
+  </StyledTaskAvatarNames>
 );
 
-export { JuiTaskAvatarName };
+export { JuiTaskAvatarNames };

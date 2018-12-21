@@ -44,7 +44,8 @@
       "grass": "#bdd655",
       "gold": "#edb63c",
       "persimmon": "#ff793d",
-      "tomato": "#ff3737"
+      "tomato": "#ff3737",
+      "lemon": "#ffd800"
     },
     "background": {
       "disabled": "rgba(255,55,55,.05)"
