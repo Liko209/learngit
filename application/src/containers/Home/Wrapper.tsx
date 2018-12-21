@@ -8,6 +8,7 @@ import styled from 'styled-components';
 
 const Wrapper: any = styled.div`
   width: 100%;
+  height: 100%; /* safari 10 compatibility */
   flex: 1;
   display: flex;
   flex-direction: column;
