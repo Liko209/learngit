@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { Markdown } from 'glipdown';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
@@ -28,7 +29,6 @@ import {
   JuiProfileDialogContentFormLabel as FormLabel,
   JuiProfileDialogContentFormValue as FormValue,
   JuiProfileDialogContentFormCopy as FormCopy,
-  JuiProfileDialogContentFormEmail as FormEmail,
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -38,7 +38,7 @@ import { JuiIconButton } from 'jui/components/Buttons';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogPersonContentViewProps
+WithNamespaces & ProfileDialogPersonContentViewProps
 > {
   renderPresence = () => {
     const { id } = this.props;
@@ -111,7 +111,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderEmail(value: string) {
     const html = `<a href="mailto:${value}">${value}</a>`;
-    return <FormEmail dangerouslySetInnerHTML={{ __html: html }} />;
+    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+
+  renderHomepage(value: string) {
+    const html = Markdown(value);
+    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
   render() {
@@ -209,7 +214,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                     this.renderFormGroup({
                       icon: 'link',
                       label: t('webpage'),
-                      value: person.homepage,
+                      value: this.renderHomepage(person.homepage),
                       copyAria: t('ariaWebpage'),
                       copyValue: person.homepage,
                     })}
