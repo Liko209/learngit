@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactQuill from 'react-quill';
-import { Delta, Sources } from 'quill';
+import { Delta } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
 import {
   spacing,
@@ -11,25 +11,18 @@ import {
   primary,
   ellipsis,
 } from '../../foundation/utils/styles';
-import { markdownFromDelta } from './markdown';
+// import { markdownFromDelta } from './markdown';
 import { handleAtMention } from './Mention/handleAtMention';
 
 import 'react-quill/dist/quill.snow.css';
 
 const Wrapper = styled.div<{
   isEditMode?: boolean;
-  isDragOver?: boolean;
 }>`
   position: relative;
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
   padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
-  border: ${({ theme, isDragOver }) =>
-    isDragOver
-      ? `2px dotted ${palette('secondary', '600')({ theme })}`
-      : 'none'};
-  background: ${({ isDragOver }) => (isDragOver ? grey('200') : 'transparent')};
-  opacity: ${({ isDragOver }) => (isDragOver ? 0.24 : 1)};
 `;
 
 const GlobalStyle = createGlobalStyle<{}>`
@@ -93,6 +86,7 @@ type Props = {
   value?: string | Delta;
   defaultValue?: string;
   onChange?: Function;
+  onBlur?: Function;
   error: string;
   children: React.ReactNode;
   modules: object;
@@ -100,70 +94,38 @@ type Props = {
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
   didDropFile?: (file: File) => void;
+  id?: number;
 };
 
 class JuiMessageInput extends React.Component<Props> {
-  private _changeSource: Sources = 'api';
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
-  state = {
-    isDragOver: false,
-  };
+
   componentDidMount() {
-    const { isEditMode } = this.props;
-    if (!isEditMode) {
-      this.focusEditor(false);
+    setTimeout(this.focusEditor, 0);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.id !== this.props.id) {
+      this.focusEditor();
     }
   }
 
-  componentDidUpdate() {
-    this.focusEditor(true);
-  }
-
-  focusEditor(checkSource: boolean) {
-    if (checkSource && this._changeSource !== 'api') {
-      return;
-    }
-
+  focusEditor = () => {
     if (this._inputRef.current) {
       const quill = this._inputRef.current.getEditor();
-      const length = quill.getLength();
-      if (length > 1) {
-        setTimeout(() => quill.setSelection(length - 1, 0), 300);
-      }
+      setTimeout(() => quill.setSelection(999999, 0), 300);
     }
   }
 
-  onChange = (content: string, delta: Delta, source: Sources, editor: any) => {
-    this._changeSource = source;
+  onChange = (content: string, delta: Delta) => {
+    const { ops } = delta;
+    if (ops && ops[0].insert && ops[0].insert.mention) {
+      this.focusEditor();
+    }
     const { onChange } = this.props;
-    if (!onChange) {
-      return;
+    if (onChange) {
+      onChange(content);
     }
-    if (!markdownFromDelta(editor.getContents()).trim()) {
-      onChange('');
-      return;
-    }
-    onChange(content);
-  }
-
-  private _handleDrop = (event: any) => {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      const { files } = event.dataTransfer;
-      const { didDropFile } = this.props;
-      didDropFile && files && didDropFile(files[0]);
-    }
-    this.setState({ isDragOver: false });
-  }
-  private _handleDragOver = (event: any) => {
-    event.preventDefault();
-  }
-  private _handleDragEnter = () => {
-    this.setState({ isDragOver: true });
-  }
-
-  private _handleDragLeave = () => {
-    this.setState({ isDragOver: false });
   }
 
   private _handlePaste = (event: any) => {
@@ -200,15 +162,9 @@ class JuiMessageInput extends React.Component<Props> {
       : {
         value,
       };
-    const { isDragOver } = this.state;
     return (
       <Wrapper
         isEditMode={isEditMode}
-        isDragOver={isDragOver}
-        onDrop={this._handleDrop}
-        onDragEnter={this._handleDragEnter}
-        onDragLeave={this._handleDragLeave}
-        onDragOver={this._handleDragOver}
         onPaste={this._handlePaste}
       >
         {toolbarNode}

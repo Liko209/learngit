@@ -16,8 +16,34 @@ import { observer } from 'mobx-react';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
-import { JuiMenu, JuiMenuItem, JuiMenuList } from '../../../components';
+import styled from '../../../foundation/styled-components';
+import {
+  JuiMenu,
+  JuiMenuItem,
+  JuiMenuList,
+  JuiDivider,
+} from '../../../components';
+import {
+  JuiAttachmentIcon,
+  JuiGoogleDriveIcon,
+  JuiDropboxIcon,
+  JuiOneboxIcon,
+  JuiOneDriveIcon,
+  JuiEvernoteIcon,
+} from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
+
+const Menu = styled(JuiMenu)`
+  .menu-list-root {
+    padding: 0;
+  }
+`;
+
+const MenuList = styled(JuiMenuList)`
+  && {
+    padding: 0;
+  }
+`;
 
 type Props = AttachmentViewProps;
 
@@ -57,6 +83,29 @@ class AttachmentView extends Component<Props> {
     const { onFileChanged } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
+    const viewBox = '0 0 16 16';
+    const menus = [
+      {
+        icon: <JuiGoogleDriveIcon viewBox={viewBox} />,
+        label: 'Google Drive',
+      },
+      {
+        icon: <JuiDropboxIcon viewBox={viewBox} />,
+        label: 'Dropbox',
+      },
+      {
+        icon: <JuiOneboxIcon viewBox={viewBox} />,
+        label: 'Box',
+      },
+      {
+        icon: <JuiEvernoteIcon viewBox={viewBox} />,
+        label: 'Evernote',
+      },
+      {
+        icon: <JuiOneDriveIcon viewBox={viewBox} />,
+        label: 'OneDrive',
+      },
+    ];
     return (
       <Fragment>
         <JuiIconButton
@@ -65,11 +114,11 @@ class AttachmentView extends Component<Props> {
           onClick={this._handleClickEvent}
           size="medium"
         >
-          attachment
+          <JuiAttachmentIcon viewBox="-2 -2 24 24" />
         </JuiIconButton>
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (
-          <JuiMenu
+          <Menu
             anchorOrigin={{
               vertical: 'top',
               horizontal: 'right',
@@ -80,14 +129,28 @@ class AttachmentView extends Component<Props> {
             }}
             data-test-automation-id="conversation-chatbar-attachment-menu"
             anchorEl={anchorEl}
+            MenuListProps={{
+              classes: {
+                root: 'menu-list-root',
+              },
+            }}
             open={open}
           >
             <JuiMenuItem disabled={true} divider={true}>
               Upload files from
             </JuiMenuItem>
+            <MenuList>
+              {menus.map(({ icon, label }, idx) => (
+                <JuiMenuItem disabled={true} icon={icon} key={idx}>
+                  {label}
+                </JuiMenuItem>
+              ))}
+            </MenuList>
+            <JuiDivider />
             <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
+                  disableGutters={true}
                   icon="computer"
                   data-test-automation-id="chatbar-attchment-selectfile"
                   onClick={this._hideMenuAndShowDialog}
@@ -96,7 +159,7 @@ class AttachmentView extends Component<Props> {
                 </JuiMenuItem>
               </ClickAwayListener>
             </JuiMenuList>
-          </JuiMenu>
+          </Menu>
         )}
       </Fragment>
     );

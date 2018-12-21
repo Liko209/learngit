@@ -5,25 +5,23 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
 import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 
 @observer
-class AttachmentsViewComponent extends Component<
-  AttachmentsViewProps & WithNamespaces
-> {
+class AttachmentsView extends Component<AttachmentsViewProps> {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles, showDuplicateFiles, t } = this.props;
+    const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
-          title={t('Updated Files?')}
+          title={t('updateFiles')}
           subtitle={t('The following files already exist.')}
           footText={t(
-            'Do you want to update the existing files or do you wish to create new files?',
+            'doYouWantToUpdateTheExistingFilesOrDoYouWishToCreateNewFiles',
           )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
@@ -41,6 +39,7 @@ class AttachmentsViewComponent extends Component<
 
   componentWillUnmount() {
     this.props.cleanFiles();
+    this.props.dispose();
   }
 
   didSelectFiles = (files: File[]) => {
@@ -61,7 +60,5 @@ class AttachmentsViewComponent extends Component<
     );
   }
 }
-
-const AttachmentsView = translate('Conversations')(AttachmentsViewComponent);
 
 export { AttachmentsView };

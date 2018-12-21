@@ -173,7 +173,12 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     return (
       <>
         {type.sortableModel.length > 0 && (
-          <JuiSearchTitle showMore={type.hasMore} title={title} />
+          <JuiSearchTitle
+            isShowMore={type.hasMore}
+            showMore={t('showMore')}
+            title={title}
+            data-test-automation-id={`search-${title}`}
+          />
         )}
         {type.sortableModel.map((item: any) => {
           const { id, displayName, entity } = item;
@@ -184,6 +189,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
               Avatar={this._Avatar(id)}
               value={displayName}
               terms={terms}
+              data-test-automation-id={`search-${title}-item`}
               // Actions={this._Actions()}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={

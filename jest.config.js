@@ -1,5 +1,6 @@
 process.env.APP =
-  process.env.APP || "<rootDir>/{application|packages/sdk|packages/foundation}";
+  process.env.APP ||
+  "<rootDir>/{application|packages/sdk|packages/foundation|packages/voip}";
 
 module.exports = {
   roots: ["application", "packages"],

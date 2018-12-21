@@ -10,6 +10,7 @@ import { AttachmentItem, ItemStatus } from './AttachmentItem';
 import { height, spacing } from '../../foundation/utils/styles';
 
 type ItemInfo = {
+  id: number;
   name: string;
   status: ItemStatus;
 };
@@ -33,7 +34,7 @@ const AttachmentList: React.SFC<AttachmentListProps> = (
 ) => {
   const { files = [], removeAttachment } = props;
   return (
-    <Wrapper>
+    <Wrapper data-test-automation-id="attachment-list">
       {files.map((looper: ItemInfo, idx: number) => (
         <AttachmentItem
           status={looper.status}

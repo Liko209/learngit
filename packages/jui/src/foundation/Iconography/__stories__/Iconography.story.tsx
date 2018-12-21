@@ -6,7 +6,15 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiIconography } from '..';
+import {
+  JuiIconography,
+  JuiGoogleDriveIcon,
+  JuiOneDriveIcon,
+  JuiAttachmentIcon,
+  JuiDropboxIcon,
+  JuiEvernoteIcon,
+  JuiOneboxIcon,
+} from '..';
 
 storiesOf('Foundation', module)
   .addDecorator(withInfoDecorator(JuiIconography, { inline: true }))
@@ -16,5 +24,11 @@ storiesOf('Foundation', module)
       <JuiIconography>people</JuiIconography>
       <JuiIconography>keyboard_arrow_up</JuiIconography>
       <JuiIconography>keyboard_arrow_down</JuiIconography>
+      <JuiGoogleDriveIcon color="primary" />
+      <JuiOneDriveIcon />
+      <JuiAttachmentIcon />
+      <JuiDropboxIcon />
+      <JuiEvernoteIcon />
+      <JuiOneboxIcon />
     </div>
   ));
