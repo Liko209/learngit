@@ -63,12 +63,12 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   @computed
-  get showClose() {
+  get closable() {
     const groupState = getEntity(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     ) as GroupStateModel;
-    return !groupState.unreadCount && !this.isFavorite;
+    return !(groupState.unreadCount || this.isFavorite);
   }
 
   @computed

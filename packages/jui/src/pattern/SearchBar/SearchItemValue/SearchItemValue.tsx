@@ -36,9 +36,14 @@ function highlight(value: string, terms: string[]) {
 }
 
 const JuiSearchItemValue = (props: JuiSearchItemValueProps) => {
-  const { value, terms } = props;
+  const { value, terms, ...rest } = props;
   const highlightValue = highlight(value, terms);
-  return <SearchItemValueWrapper dangerouslySetInnerHTML={highlightValue} />;
+  return (
+    <SearchItemValueWrapper
+      {...rest}
+      dangerouslySetInnerHTML={highlightValue}
+    />
+  );
 };
 
 export { JuiSearchItemValue, JuiSearchItemValueProps };

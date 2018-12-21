@@ -73,7 +73,7 @@ const JuiProfileDialogContentSummaryButtons = styled('div')`
   ${typography('body1')}
   display: flex;
   color: ${primary('700')};
-  margin-top: ${spacing(2.5)};
+  margin-top: ${spacing(3)};
 `;
 
 const JuiProfileDialogContentSummaryButton = styled('div')`
@@ -90,6 +90,7 @@ const JuiProfileDialogContentSummaryStatus = styled('div')`
   ${typography('body1')};
   ${ellipsis()};
   color: ${grey('500')};
+  margin-top: ${spacing(1)};
 `;
 
 const JuiProfileDialogContentSummaryTitle = styled(

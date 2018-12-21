@@ -22,11 +22,11 @@ export class AppRoot extends BaseWebComponent {
     get pagePath() {
         return this.t.eval(() => window.location.pathname);
     }
-    
+
     async reload() {
         await this.t.eval(() => location.reload(true));
     }
-    
+
     async openConversationByUrl(groupId: number | string) {
         const url = new URL(SITE_URL);
         const conversationUrl = `${url.protocol}//${url.hostname}/messages/${groupId}`;
