@@ -70,12 +70,12 @@ class ItemFileUploadHandler {
     uploadingItemFileIds: number[],
   ) {
     const listener = (params: {
-      success: boolean;
+      status: SENDING_STATUS;
       preInsertId: number;
       updatedId: number;
     }) => {
       // handle item upload result.
-      const { success, preInsertId, updatedId } = params;
+      const { status, preInsertId, updatedId } = params;
       if (
         !uploadingItemFileIds.includes(preInsertId) ||
         updatedId !== preInsertId
@@ -87,7 +87,7 @@ class ItemFileUploadHandler {
       });
 
       const item = this._getCachedItem(preInsertId);
-      if (success && item) {
+      if (status === SENDING_STATUS.INPROGRESS && item) {
         this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
