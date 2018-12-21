@@ -5,6 +5,7 @@
  */
 import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
+import moment from 'moment';
 
 jest.mock('../../../store/utils');
 
@@ -30,7 +31,7 @@ describe('ConversationCardViewModel', () => {
       createdAt: 1540279718268,
       creatorId: 107913219,
     });
-    expect(conversationCardVM.createTime).toBe('03:28 PM');
+    expect(conversationCardVM.createTime).toBe(moment(conversationCardVM.post.createdAt).format('hh:mm A'));
   });
   it('creator()', () => {
     (getEntity as jest.Mock).mockReturnValue({

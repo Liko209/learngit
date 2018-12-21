@@ -8,10 +8,10 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('CreateTeam')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(
@@ -140,7 +140,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
       await teamSection.expand();
       await t.expect(teamSection.conversations.withText(`${teamName}`).exists).ok();
       await t.expect(app.homePage.messageTab.conversationPage.title.withText(`${teamName}`).exists).ok();
-    },true);
+    }, true);
   },
 );
 

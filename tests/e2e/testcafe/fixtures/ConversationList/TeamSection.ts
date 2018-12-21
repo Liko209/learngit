@@ -8,14 +8,14 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/TeamSection')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Team section display the conversation which the login user as one of the team member',
-    ['P2', 'JPT-12', 'Team section']),
+  ['P2', 'JPT-12', 'Team section']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -55,7 +55,7 @@ test(formalName('Team section display the conversation which the login user as o
 );
 
 test(formalName('Each conversation should be represented by the team name.',
-    ['P0', 'JPT-13', 'Team section',]),
+  ['P0', 'JPT-13', 'Team section',]),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -107,7 +107,7 @@ test(formalName('Each conversation should be represented by the team name.',
 );
 
 test(formalName('Conversation that received post should be moved to top',
-    ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']),
+  ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -173,36 +173,36 @@ test(formalName('Conversation that received post should be moved to top',
 );
 
 test(formalName('Can expand and collapse the team section by clicking the section name.',
-    ['JPT-11', 'P2', 'ConversationList']),
+  ['JPT-11', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const user = h(t).rcData.mainCompany.users[0];
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    })
-    
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, user);
+        await app.homePage.ensureLoaded();
+      })
+
     let teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then Team section should be expanded by default', async () => {
       await t.expect(await teamSection.isExpand()).ok();
-    }); 
+    });
 
     const teamSectionName = teamSection.toggleButton.child().withExactText('Teams');
     await h(t).withLog('When I click the team section name', async () => {
       await t.click(teamSectionName);
-    }); 
+    });
     await h(t).withLog('Then the team section should be collapsed.', async () => {
       await t.expect(await teamSection.isExpand()).notOk();
-    }); 
+    });
 
     await h(t).withLog('When I click the team section name again', async () => {
       await t.click(teamSectionName);
-    }); 
+    });
 
     await h(t).withLog('Then the team section should be expanded.', async () => {
       await t.expect(await teamSection.isExpand()).ok();
-    }); 
+    });
   }
 );

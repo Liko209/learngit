@@ -16,7 +16,7 @@ const Wrapper = styled.div<{
   right: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};
   max-height: ${height(68)};
   box-shadow: ${props => props.theme.shadows[8]};
-  overflow: scroll;
+  overflow-y: auto;
   border-radius: ${shape('borderRadius')};
   background-color: ${palette('common', 'white')};
 `;

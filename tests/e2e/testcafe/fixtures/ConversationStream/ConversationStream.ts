@@ -4,16 +4,16 @@ import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
 import { h } from '../../v2/helpers';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 
 declare var test: TestFn;
 fixture('ConversationStream/ConversationStream')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('The posts in the conversation should be displayed in the order of recency (date/time)',
-    ['P1', 'JPT-52', 'ConversationStream']),
+  ['P1', 'JPT-52', 'ConversationStream']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -34,8 +34,8 @@ test(formalName('The posts in the conversation should be displayed in the order 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    });
+        await app.homePage.ensureLoaded();
+      });
 
     await h(t).withLog('Then I enter the conversation', async () => {
       const teamsSection = app.homePage.messageTab.teamsSection;
@@ -85,7 +85,7 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
-    });
+      });
 
     await h(t).withLog('Then I can enter the conversation', async () => {
       const teamsSection = app.homePage.messageTab.teamsSection;
@@ -102,7 +102,7 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
 );
 
 test(formalName('Should be able to read the newest posts once open a conversation',
-    ['P0', 'JPT-65', 'ConversationStream']),
+  ['P0', 'JPT-65', 'ConversationStream']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -130,7 +130,7 @@ test(formalName('Should be able to read the newest posts once open a conversatio
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
-    });
+      });
 
     await h(t).withLog('And enter the team conversation', async () => {
       const teamsSection = app.homePage.messageTab.teamsSection;
