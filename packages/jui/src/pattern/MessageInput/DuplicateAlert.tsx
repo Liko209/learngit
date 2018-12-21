@@ -41,6 +41,7 @@ const NameList = styled.ul`
   overflow-y: auto;
   background: ${grey('50')};
   padding: ${spacing(2)};
+  box-sizing: border-box;
   ${typography('body2')}
 `;
 

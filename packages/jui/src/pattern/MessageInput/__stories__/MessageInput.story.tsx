@@ -109,7 +109,18 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const f1 = 'f1.txt';
   const f3 =
     'This is the name of attachment itemThis is the name of attachment item.txt';
-  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
+  const files = [
+    { name: f1 },
+    { name: f2 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+  ];
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>
