@@ -29,7 +29,7 @@ export class SdkManager {
     let platform: RcPlatformSdk = this.platforms[user.rcId];
     if (platform === undefined) {
       platform = this.createPlatform(user);
-      await platform.auth();
+      await platform.init();
       this.platforms[user.rcId] = platform;
     }
     return platform;

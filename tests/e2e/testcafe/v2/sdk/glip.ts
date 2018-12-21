@@ -119,8 +119,8 @@ export class GlipSdk {
   }
 
   async authByRcToken(forMobile: boolean = false) {
-    if (undefined === this.platform.token){
-      await this.platform.auth();
+    if (undefined === this.platform.token) {
+      await this.platform.init();
     }
     const encodedToken = Buffer.from(
       JSON.stringify(this.platform.token),

@@ -31,12 +31,12 @@ export class RcPlatformSdk {
     return this.sdk._token;
   }
 
-  async auth() {
+  async init() {
     await this.sdk.authorize(this.credential);
   }
 
   async refresh() {
-    return await this.auth();
+    return await this.init();
   }
 
   async createExtension(data: object, accountId: string = '~') {
