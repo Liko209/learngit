@@ -23,6 +23,7 @@ const Footer = styled.div`
 
 const Content = styled.div`
   color: ${grey('700')};
+
   ${typography('body1')}
 `;
 
@@ -48,6 +49,7 @@ const NameList = styled.ul`
 const Item = styled.li`
   list-style: none;
   line-height: ${height(5)};
+  word-break: break-word;
 `;
 
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {

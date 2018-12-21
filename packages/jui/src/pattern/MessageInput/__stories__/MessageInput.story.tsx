@@ -108,7 +108,7 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =
-    'This is the name of attachment itemThis is the name of attachment item.txt';
+    'This is the name of attachment itemThis is the name of attachment item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf';
   const files = [
     { name: f1 },
     { name: f2 },
