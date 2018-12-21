@@ -1,6 +1,6 @@
-interface IrtcCallSession {
+interface IRTCCallSession {
   setSession(session: any): void;
   hangup(): void;
 }
 
-export { IrtcCallSession };
+export { IRTCCallSession };
