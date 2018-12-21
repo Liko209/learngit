@@ -29,12 +29,12 @@ describe('sip call session', () => {
   }
 
   describe('setsession()', () => {
-    it('should _session is null when initialization', () => {
+    it('should _session is null when initialization JPT-573', () => {
       const sipcallsession = new RTCSipCallSession();
       expect(sipcallsession.getSession()).toBe(null);
     });
 
-    it('should session is not null when setSession() be called', () => {
+    it('should session is not null when setSession() be called .JPT-574', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
@@ -43,7 +43,7 @@ describe('sip call session', () => {
   });
 
   describe('hangup()', () => {
-    it('should VirtueSession hangup be called when SipCallSession hangup be called', () => {
+    it('should VirtueSession hangup be called when SipCallSession hangup be called .JPT-575', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
@@ -51,10 +51,18 @@ describe('sip call session', () => {
       sipcallsession.hangup();
       expect(vsession.hangup).toHaveBeenCalled();
     });
+
+    it('should no exception when hangup() is called if setSession() not called JPT-577', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtueSession();
+      jest.spyOn(sipcallsession, 'hangup');
+      sipcallsession.hangup();
+      expect(sipcallsession.hangup).toHaveBeenCalled();
+    });
   });
 
   describe('_onSession*******()', () => {
-    it('should _onSessionConfirmed be called when VirtueSession emit Confirmed', () => {
+    it('should _onSessionConfirmed be called when VirtueSession emit Confirmed JPT-576', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
@@ -63,7 +71,7 @@ describe('sip call session', () => {
       expect(sipcallsession._onSessionConfirmed).toHaveBeenCalled();
     });
 
-    it('should _onSessionDisconnected be called when VirtueSession emit Disconnected', () => {
+    it('should _onSessionDisconnected be called when VirtueSession emit Disconnected JPT-578', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
@@ -72,7 +80,7 @@ describe('sip call session', () => {
       expect(sipcallsession._onSessionDisconnected).toHaveBeenCalled();
     });
 
-    it('should _onSessionError be called when VirtueSession emit Error', () => {
+    it('should _onSessionError be called when VirtueSession emit Error JPT-579', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtueSession();
       sipcallsession.setSession(vsession);
