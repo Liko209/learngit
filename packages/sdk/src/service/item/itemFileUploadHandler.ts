@@ -462,7 +462,7 @@ class ItemFileUploadHandler {
     const uploadingFiles = this._uploadingFiles.get(groupId);
     if (uploadingFiles) {
       const filteredRes = uploadingFiles.filter((e: ItemFile) => {
-        return e.id !== preInsertId && e.id !== itemFile.id;
+        return e.id !== preInsertId;
       });
 
       filteredRes.push(itemFile);

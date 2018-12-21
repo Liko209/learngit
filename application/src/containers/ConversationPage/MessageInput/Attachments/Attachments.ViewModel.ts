@@ -145,7 +145,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         };
         if (isUpdate) {
           const values: AttachmentItem[] = Array.from(this.items.values());
-          const target = values.find(looper => looper.item.name === data.name);
+          const target = values.find(
+            looper => looper.item.name === data.name && !looper.item.is_new,
+          );
           if (target) {
             this.items.delete(target.item.id);
           }
