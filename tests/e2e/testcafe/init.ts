@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { SITE_URL, SITE_ENV, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
@@ -50,7 +50,7 @@ export async function getOrCreateRunId() {
         'SELENIUM_SERVER',
         'HOST_NAME',
         'BUILD_URL',
-        'appUrl',
+        'SITE_URL',
         'gitlabActionType',
         'gitlabBranch',
         'gitlabMergedByUser',
@@ -65,7 +65,7 @@ export async function getOrCreateRunId() {
       name: runName,
       metadata,
     } as Run);
-    runId = run.id;
+    runId = run ? run.id : null;
     console.log(`a new Run Id is created: ${runId}`);
   }
   return runId;
@@ -122,10 +122,15 @@ export function teardownCase() {
       errorConsoleLogNumber
     }
 
-    h(t).allureHelper.writeReport(consoleLogObj);
-    await h(t).dataHelper.teardown();
+    h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
     if (ENABLE_REMOTE_DASHBOARD) {
-      await h(t).dashboardHelper.teardown(beatsClient, await getOrCreateRunId(), consoleLogObj);
+      let runId = await getOrCreateRunId();
+      if (runId) {
+        await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
+      } else {
+        console.error("Couldn't create Run for the test, please check the dashboard connection!")
+      }
     }
+    await h(t).dataHelper.teardown();
   }
 }

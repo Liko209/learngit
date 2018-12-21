@@ -1035,10 +1035,14 @@ describe('PostService', () => {
 
       const spySendPost = jest.spyOn(postService, '_sendPost');
       spySendPost.mockImplementation(() => {});
-
+      itemService.sendItemData.mockImplementationOnce(() => {});
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
-          listener({ success: true, preInsertId: -1, updatedId: 1 });
+          listener({
+            status: SENDING_STATUS.SUCCESS,
+            preInsertId: -1,
+            updatedId: 1,
+          });
         },
       );
 
@@ -1057,7 +1061,8 @@ describe('PostService', () => {
           expect.anything(),
         );
         expect(spyResendFailedItems).not.toBeCalled();
-        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
+        expect(itemService.cleanUploadingFiles).toBeCalled();
+        expect(itemService.sendItemData).toBeCalled();
         done();
       });
     });

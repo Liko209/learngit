@@ -274,7 +274,7 @@ class PostService extends BaseService<Post> {
 
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
     if (!isResend && buildPost.item_ids.length > 0) {
-      this._cleanUploadingFiles(buildPost.group_id);
+      this._cleanUploadingFiles(buildPost.group_id, buildPost.item_ids);
     }
 
     await this._handlePreInsertProcess(buildPost);
@@ -303,9 +303,9 @@ class PostService extends BaseService<Post> {
     await itemService.resendFailedItems(pseudoItemIds);
   }
 
-  private async _cleanUploadingFiles(groupId: number) {
+  private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
     const itemService: ItemService = ItemService.getInstance();
-    itemService.cleanUploadingFiles(groupId);
+    itemService.cleanUploadingFiles(groupId, itemIds);
   }
 
   private _getPseudoItemStatusInPost(post: Post) {
@@ -319,16 +319,24 @@ class PostService extends BaseService<Post> {
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
     const listener = async (params: {
-      success: boolean;
+      status: SENDING_STATUS;
       preInsertId: number;
       updatedId: number;
     }) => {
-      const { success, preInsertId, updatedId } = params;
+      const { status, preInsertId, updatedId } = params;
       if (!post.item_ids.includes(preInsertId)) {
         return;
       }
 
-      if (success) {
+      if (status === SENDING_STATUS.CANCELED) {
+        _.remove(post.item_ids, (id: number) => {
+          return id === preInsertId;
+        });
+
+        if (post.item_ids.length === 0) {
+          this.deletePost(post.id);
+        }
+      } else if (status === SENDING_STATUS.SUCCESS) {
         // update post to db
         if (updatedId !== preInsertId) {
           post.item_ids = post.item_ids.map((id: number) => {
@@ -344,16 +352,16 @@ class PostService extends BaseService<Post> {
               }
             });
           }
-        }
 
-        await this._updatePost(post);
+          this._updatePost(_.cloneDeep(post));
+        }
 
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
           notificationCenter.removeListener(
             SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
             listener,
           );
-          this._sendPost(post);
+          await this._sendPost(post);
         }
       }
 
@@ -373,13 +381,16 @@ class PostService extends BaseService<Post> {
     };
 
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.sendItemData(post.group_id, post.item_ids);
+
     return [];
   }
 
   private async _updatePost(post: Post) {
     const postDao = daoManager.getDao(PostDao);
     await postDao.update(post);
-    notificationCenter.emitEntityUpdate(ENTITY.POST, [post]);
   }
 
   private _hasExpectedStatus(
@@ -401,7 +412,7 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPost(buildPost: Post): Promise<PostData[]> {
-    const { id: preInsertId } = buildPost;
+    const preInsertId = buildPost.id;
     delete buildPost.id;
     delete buildPost.status;
 

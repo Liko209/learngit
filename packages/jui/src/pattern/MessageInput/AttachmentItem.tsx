@@ -22,8 +22,6 @@ import { JuiIconButton } from '../../components/Buttons';
 
 import defaultIcon from './default.svg';
 
-const MAX_TITLE_LENGTH = 31;
-
 type IconProps = {
   icon?: string;
 };
@@ -74,10 +72,7 @@ const Icon = styled.div<IconProps>`
 
 const NameArea = styled.div<StatusProps>`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  white-space: nowrap;
-  flex-grow: 1;
+  flex: 1;
   height: ${height(5)};
   line-height: ${height(5)};
   max-height: ${height(5)};
@@ -88,6 +83,14 @@ const NameArea = styled.div<StatusProps>`
   opacity: ${({ status }) => (status === 'loading' ? '0.26' : 1)};
   color: ${({ theme, status }) => StatusMap[status || 'normal'](theme)};
 `;
+
+const NameHead = styled.span`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+
+const NameTail = styled.span``;
 
 const ActionWrapper = styled.div`
   display: flex;
@@ -139,13 +142,14 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
   const { icon, name, status, onClickDeleteButton, progress } = props;
-  const fileName = truncateLongName(name, MAX_TITLE_LENGTH);
+  const [left, right] = truncateLongName(name);
   const loading = status === 'loading' || typeof progress !== 'undefined';
   return (
     <Wrapper>
       <Icon icon={icon} />
       <NameArea status={status} data-test-automation-id="attachment-file-name">
-        {fileName}
+        <NameHead>{left}</NameHead>
+        <NameTail>{right}</NameTail>
       </NameArea>
       <AttachmentItemAction
         onClick={onClickDeleteButton}

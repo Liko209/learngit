@@ -12,7 +12,7 @@ type Props = {
 };
 
 const StyledTimeMessage = styled.div`
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
   ${typography('body1')};
   color: ${grey('900')};
 `;

@@ -16,6 +16,7 @@ import { observer } from 'mobx-react';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { AttachmentViewProps } from './types';
 import { JuiIconButton } from '../../../components/Buttons';
+import styled from '../../../foundation/styled-components';
 import {
   JuiMenu,
   JuiMenuItem,
@@ -31,6 +32,12 @@ import {
   JuiEvernoteIcon,
 } from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
+
+const MenuList = styled(JuiMenuList)`
+  && {
+    padding: 0;
+  }
+`;
 
 type Props = AttachmentViewProps;
 
@@ -121,15 +128,15 @@ class AttachmentView extends Component<Props> {
             <JuiMenuItem disabled={true} divider={true}>
               Upload files from
             </JuiMenuItem>
-            <JuiMenuList>
+            <MenuList>
               {menus.map(({ icon, label }, idx) => (
                 <JuiMenuItem disabled={true} icon={icon} key={idx}>
                   {label}
                 </JuiMenuItem>
               ))}
-            </JuiMenuList>
+            </MenuList>
             <JuiDivider />
-            <JuiMenuList>
+            <MenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
                   disableGutters={true}
@@ -140,7 +147,7 @@ class AttachmentView extends Component<Props> {
                   Computer
                 </JuiMenuItem>
               </ClickAwayListener>
-            </JuiMenuList>
+            </MenuList>
           </JuiMenu>
         )}
       </Fragment>

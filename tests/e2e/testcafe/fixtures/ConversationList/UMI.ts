@@ -8,11 +8,11 @@ import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import { ClientFunction } from 'testcafe';
 
 fixture('ConversationStream/ConversationStream')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 
@@ -65,14 +65,8 @@ test(formalName('UMI should be added received messages count in conversations', 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog(`And make preconditions: group ${group.data.id} and team ${team.data.id} both with UMI=1`, async () => {
-      await user5Platform.createPost(
-        { text: `![:Person](${user.rcId}), ${uuid()}` },
-        group.data.id,
-      );
-      await user5Platform.createPost(
-        { text: `![:Person](${user.rcId}), ${uuid()}` },
-        team.data.id,
-      );
+      await user5Platform.sendTextPost(`![:Person](${user.rcId}), ${uuid()}`, group.data.id);
+      await user5Platform.sendTextPost(`![:Person](${user.rcId}), ${uuid()}`, team.data.id);
       await t.wait(3e3);
       await directMessagesSection.expand();
       groupConversation = directMessagesSection.conversationEntryById(group.data.id);
@@ -83,10 +77,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog('When other user send a post with @mention to the group', async () => {
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        group.data.id,
-      );
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, group.data.id);
       await t.wait(3e3);
     });
 
@@ -95,10 +86,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog('When other user send a post with @mention to the team', async () => {
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        team.data.id,
-      );
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, team.data.id);
       await t.wait(3e3);
     });
 
@@ -107,10 +95,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog('When other user send a post without @mention to the group', async () => {
-      await user5Platform.createPost(
-        { text: `${uuid()}` },
-        group.data.id,
-      );
+      await user5Platform.sendTextPost(`${uuid()}`, group.data.id);
       await t.wait(3e3);
     });
 
@@ -119,10 +104,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     });
 
     await h(t).withLog('When other user send a post without @mention to the team', async () => {
-      await user5Platform.createPost(
-        { text: `${uuid()}` },
-        team.data.id,
-      );
+      await user5Platform.sendTextPost(`${uuid()}`, team.data.id);
       await t.wait(3e3);
     });
 
@@ -170,10 +152,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
     await h(t).withLog('Have other user send a post with mention to the team before I login', async () => {
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        team.data.id,
-      );
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, team.data.id);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -209,7 +188,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
       const item = teamsSection.conversationEntryById(team.data.id);
       const text = item.self.find('p');
 
-      await item.expectUmi(0, 20);
+      await item.expectUmi(0);
       const textFontWeight = (await text.style)['font-weight'];
       await t.expect(textFontWeight).match(/400|normal/);
     });
@@ -267,14 +246,12 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     });
 
     await h(t).withLog('When I receive a new message from other user in the private chat ', async () => {
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        pvtChatId,
-      )
+      await user5Platform.sendTextPost('TestGroupUMI', pvtChatId)
     });
 
     // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
     await h(t).withLog('Then I should not have UMI in the private chat', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
 
@@ -285,6 +262,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     });
 
     await h(t).withLog('Then I should not have UMI in the private chat too', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
   },
@@ -373,30 +351,12 @@ test(formalName('Should not display UMI when section is expended & Should displa
 
     const user5Platform = await h(t).getPlatform(users[5]);
     await h(t).withLog('When other user send normal posts to all other conversations', async () => {
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        favPrivateChat.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        favTeam.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        group1.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        group2.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        team1.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        team2.data.id,
-      );
+      await user5Platform.sendTextPost('TestGroupUMI', favPrivateChat.data.id);
+      await user5Platform.sendTextPost('TestGroupUMI', favTeam.data.id);
+      await user5Platform.sendTextPost('TestGroupUMI', group1.data.id);
+      await user5Platform.sendTextPost('TestGroupUMI', group2.data.id);
+      await user5Platform.sendTextPost('TestGroupUMI', team1.data.id);
+      await user5Platform.sendTextPost('TestGroupUMI', team2.data.id);
       await t.wait(3e3);
     });
 
@@ -431,18 +391,9 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('When other user send posts with mention to specified conversations', async () => {
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        favPrivateChat.data.id,
-      );
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        group1.data.id,
-      );
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        team1.data.id,
-      );
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, favPrivateChat.data.id);
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, group1.data.id);
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, team1.data.id);
       await t.wait(3e3);
     });
 
@@ -456,27 +407,14 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
-      const count = await teamsSection.getHeaderUmi();
-      await t.expect(count).eql(1);
+      await teamsSection.expectHeaderUmi(1);
     });
 
     await h(t).withLog('When other user send normal posts to specified conversations', async () => {
-      await user5Platform.createPost(
-        { text: 'test' },
-        favPrivateChat.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'test' },
-        favTeam.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'test' },
-        group1.data.id,
-      );
-      await user5Platform.createPost(
-        { text: 'test' },
-        team1.data.id,
-      );
+      await user5Platform.sendTextPost('test', favPrivateChat.data.id);
+      await user5Platform.sendTextPost('test', favTeam.data.id);
+      await user5Platform.sendTextPost('test', group1.data.id);
+      await user5Platform.sendTextPost('test', team1.data.id);
       await t.wait(3e3);
     });
 
@@ -562,14 +500,8 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
 
     const user5Platform = await h(t).sdkHelper.sdkManager.getPlatform(users[5]);
     await h(t).withLog('Send posts to conversations', async () => {
-      await user5Platform.createPost(
-        { text: 'TestGroupUMI' },
-        group1.data.id,
-      );
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
-        team1.data.id,
-      );
+      await user5Platform.sendTextPost('TestGroupUMI', group1.data.id);
+      await user5Platform.sendTextPost(`Hi, ![:Person](${user.rcId})`, team1.data.id);
       await t.wait(1e3);
     });
 
@@ -659,12 +591,10 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
         members: [user.rcId, users[5].rcId]
       });
       for (var i = 0; i < 10; i++) {
-        await user5Platform.createPost(
-          { text: 'test' },
-          pvtChat.data.id,
-        );
+        await user5Platform.sendTextPost('test', pvtChat.data.id);
       };
       await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
+      await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
@@ -674,16 +604,13 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
-      await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
     });
 
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
+      await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
       await t.wait(3e3);
       await app.homePage.messageTab.conversationPage.scrollToMiddle();
-      await user5Platform.createPost(
-        { text: 'test again' },
-        pvtChat.data.id,
-      );
+      await user5Platform.sendTextPost('test again', pvtChat.data.id);
     });
 
     await h(t).withLog('Then show UMI', async () => {
@@ -695,6 +622,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Then UMI dismiss', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
     });
   },
@@ -722,11 +650,9 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId]
       });
-      await user5Platform.createPost(
-        { text: 'test' },
-        pvtChat.data.id
-      );
+      await user5Platform.sendTextPost('test', pvtChat.data.id);
       await user.sdk.glip.showGroups(user.rcId, pvtChat.data.id);
+      await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
@@ -740,13 +666,11 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
 
     await h(t).withLog('When Open a conversation and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChat.data.id).enter();
-      await user5Platform.createPost(
-        { text: postContent },
-        pvtChat.data.id,
-      );
+      await user5Platform.sendTextPost(postContent, pvtChat.data.id);
     });
 
     await h(t).withLog(`Then should not show UMI and scroll up automatically`, async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await directMessagesSection.conversationEntryById(pvtChat.data.id).expectUmi(0);
       const posts = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(posts.nth(-1).withText(postContent).exists).ok();
@@ -772,13 +696,8 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId]
       });
-      await user5Platform.createPost(
-        { text: 'test' },
-        pvtChat.data.id
-      );
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChat.data.id}`]: false,
-      });
+      await user5Platform.sendTextPost('test', pvtChat.data.id);
+      await user.sdk.glip.showGroups(user.rcId, pvtChat.chat.id);
     });
 
     await h(t).withLog(`Given I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -802,10 +721,7 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
 
     await h(t).withLog('When receive messages',
       async () => {
-        await user5Platform.createPost(
-          { text: 'test' },
-          pvtChat.data.id,
-        );
+        await user5Platform.sendTextPost('test', pvtChat.data.id);
       },
     );
 

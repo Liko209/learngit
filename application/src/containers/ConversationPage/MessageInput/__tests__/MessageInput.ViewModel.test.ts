@@ -45,12 +45,6 @@ describe.skip('ActionsViewModel', () => {
     expect(messageInputViewModel.draft).toBe(mockGroupEntityData.draft);
   });
 
-  it('method changeDraft', () => {
-    const draft = 'test';
-    messageInputViewModel.changeDraft(draft);
-    expect(messageInputViewModel.draft).toBe(draft);
-  });
-
   it('method forceSaveDraft', () => {
     messageInputViewModel.forceSaveDraft();
     expect(groupService.updateGroupDraft).toBeCalled();

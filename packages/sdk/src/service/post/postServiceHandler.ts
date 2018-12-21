@@ -87,7 +87,7 @@ class PostServiceHandler {
         uploadFiles,
         itemIds,
         (itemFile: ItemFile, id: number) => {
-          return id === itemFile.id;
+          return id === itemFile.id && !itemFile.is_new;
         },
       );
       if (needCheckItemFiles.length > 0) {
@@ -97,7 +97,9 @@ class PostServiceHandler {
         );
         const versions = await Promise.all(promises);
         for (let i = 0; i < needCheckItemFiles.length; i++) {
-          itemData.version_map[needCheckItemFiles[i].id] = versions[i];
+          if (versions[i]) {
+            itemData.version_map[needCheckItemFiles[i].id] = versions[i];
+          }
         }
         return itemData;
       }

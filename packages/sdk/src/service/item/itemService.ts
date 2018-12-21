@@ -39,6 +39,13 @@ class ItemService extends BaseService<Item> {
     );
   }
 
+  async sendItemData(groupId: number, itemIds: number[]) {
+    const fileItemIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    await this._getItemFileHandler().sendItemData(groupId, fileItemIds);
+  }
+
   async getItemVersion(itemFile: ItemFile): Promise<number> {
     return await this._getItemFileHandler().getUpdateItemVersion(itemFile);
   }
@@ -96,8 +103,8 @@ class ItemService extends BaseService<Item> {
     );
   }
 
-  cleanUploadingFiles(groupId: number) {
-    this._getItemFileHandler().cleanUploadingFiles(groupId);
+  cleanUploadingFiles(groupId: number, itemIds: number[]) {
+    this._getItemFileHandler().cleanUploadingFiles(groupId, itemIds);
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
