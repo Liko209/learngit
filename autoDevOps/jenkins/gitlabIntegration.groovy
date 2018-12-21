@@ -56,7 +56,7 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
     String rsyncRemoteUri = "${uri.getUserInfo()}@${uri.getHost()}:${remoteDir}".toString()
     echo rsyncRemoteUri
     sh "rsync -azPq --delete --progress -e 'ssh -o StrictHostKeyChecking=no -p ${uri.getPort()}' ${sourceDir} ${rsyncRemoteUri}"
-    sshCmd(remoteUri, "chown -R root:root ${remoteDir}".toString())
+    sshCmd(remoteUri, "chmod -R 755 ${remoteDir}".toString())
 }
 
 static String getSubDomain(String sourceBranch, String targetBranch) {
