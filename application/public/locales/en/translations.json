@@ -170,5 +170,5 @@
   "deletePost": "Delete post",
   "showMore": "Show more",
   "updateFiles": "Update File(s)?",
-  "doYouWantToUpdateTheExistingFilesOrDoYouWishToCreateNewFiles?": "Do you want to update the existing files or do you wish to create new files?"
+  "doYouWantToUpdateTheExistingFilesOrDoYouWishToCreateNewFiles": "Do you want to update the existing files or do you wish to create new files?"
 }
