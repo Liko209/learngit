@@ -148,8 +148,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
           const target = values.find(looper => looper.item.name === data.name);
           if (target) {
             this.items.delete(target.item.id);
-            this.items.set(item.id, info);
           }
+          this.items.set(item.id, info);
         } else {
           this.items.set(item.id, info);
         }
