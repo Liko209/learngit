@@ -306,10 +306,11 @@ describe('ItemService', () => {
     describe('cleanUploadingFiles()', () => {
       it('should call cleanUploadingFiles ', () => {
         const groupId = 1;
-        itemService.cleanUploadingFiles(groupId);
+        itemService.cleanUploadingFiles(groupId, [123]);
         expect(itemFileUploadHandler.cleanUploadingFiles).toBeCalledTimes(1);
         expect(itemFileUploadHandler.cleanUploadingFiles).toBeCalledWith(
           groupId,
+          [123],
         );
       });
     });

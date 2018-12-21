@@ -165,8 +165,23 @@ class ItemFileUploadHandler {
     return status ? status.progress : undefined;
   }
 
-  cleanUploadingFiles(groupId: number) {
-    this._uploadingFiles.delete(groupId);
+  cleanUploadingFiles(groupId: number, toRemoveItemIds: number[]) {
+    let itemFiles = this._uploadingFiles.get(groupId);
+    if (itemFiles) {
+      itemFiles = _.differenceWith(
+        itemFiles,
+        toRemoveItemIds,
+        (item: ItemFile, id: number) => {
+          return id === item.id;
+        },
+      );
+
+      if (itemFiles.length === 0) {
+        this._uploadingFiles.delete(groupId);
+      } else {
+        this._uploadingFiles.set(groupId, itemFiles);
+      }
+    }
   }
 
   getItemsSendStatus(itemIds: number[]): SENDING_STATUS[] {

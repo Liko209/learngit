@@ -274,7 +274,7 @@ class PostService extends BaseService<Post> {
 
   async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
     if (!isResend && buildPost.item_ids.length > 0) {
-      this._cleanUploadingFiles(buildPost.group_id);
+      this._cleanUploadingFiles(buildPost.group_id, buildPost.item_ids);
     }
 
     await this._handlePreInsertProcess(buildPost);
@@ -303,9 +303,9 @@ class PostService extends BaseService<Post> {
     await itemService.resendFailedItems(pseudoItemIds);
   }
 
-  private async _cleanUploadingFiles(groupId: number) {
+  private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
     const itemService: ItemService = ItemService.getInstance();
-    itemService.cleanUploadingFiles(groupId);
+    itemService.cleanUploadingFiles(groupId, itemIds);
   }
 
   private _getPseudoItemStatusInPost(post: Post) {
