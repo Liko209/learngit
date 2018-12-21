@@ -15,6 +15,10 @@ import {
   NoteItem,
 } from '../../models';
 import { RequestHolder } from '../requestHolder';
+import {
+  AmazonFilePolicyRequestModel,
+  AmazonFileUploadPolicyData,
+} from './types';
 
 interface IRightRailItemModel extends BaseModel {
   items: Raw<Item>[];
@@ -52,6 +56,37 @@ class ItemAPI extends Api {
   static basePath = '/item';
   static sendFileItem(data: object) {
     return this.glipNetworkClient.post<Raw<ItemFile>>('/file', data);
+  }
+
+  static requestAmazonFilePolicy(fileInfo: AmazonFilePolicyRequestModel) {
+    return this.glipNetworkClient.post<AmazonFileUploadPolicyData>(
+      '/s3/v1/post-policy',
+      fileInfo,
+    );
+  }
+
+  static uploadFileToAmazonS3(
+    host: string,
+    formFile: FormData,
+    callback: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    return this.customNetworkClient(host).http<string>(
+      {
+        path: '',
+        method: NETWORK_METHOD.POST,
+        via: NETWORK_VIA.HTTP,
+        data: formFile,
+        requestConfig: {
+          onUploadProgress(event: ProgressEventInit): void {
+            if (callback) {
+              callback(event);
+            }
+          },
+        },
+      },
+      requestHolder,
+    );
   }
 
   static uploadFileItem(

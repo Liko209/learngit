@@ -173,7 +173,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     return (
       <>
         {type.sortableModel.length > 0 && (
-          <JuiSearchTitle showMore={type.hasMore} title={title} />
+          <JuiSearchTitle
+            isShowMore={type.hasMore}
+            showMore={t('showMore')}
+            title={title}
+          />
         )}
         {type.sortableModel.map((item: any) => {
           const { id, displayName, entity } = item;

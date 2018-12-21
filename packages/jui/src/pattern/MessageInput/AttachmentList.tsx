@@ -10,6 +10,7 @@ import { AttachmentItem, ItemStatus } from './AttachmentItem';
 import { height, spacing } from '../../foundation/utils/styles';
 
 type ItemInfo = {
+  id: number;
   name: string;
   status: ItemStatus;
 };

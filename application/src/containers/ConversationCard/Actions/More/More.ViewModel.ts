@@ -7,36 +7,33 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MENU_LIST_ITEM_TYPE } from './types';
-// import { service } from 'sdk';
 import { Post, Group } from 'sdk/models';
+import { TypeDictionary } from 'sdk/utils';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import GroupModel from '@/store/models/Group';
 
-// @TODO should get the permission by service
-enum PERMISSION_ENUM {
-  TEAM_POST,
-  TEAM_ADD_MEMBER,
-  TEAM_ADD_INTEGRATIONS,
-  TEAM_PIN_POST,
-}
-
 class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  // use currentGroupId === 0 to judge is on Bookmarks/Mentions page
+  private _currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
 
   @computed
   get permissionsMap() {
     return {
       [MENU_LIST_ITEM_TYPE.QUOTE]: {
-        permission: this._canPost,
+        permission: this._canPost && this._excludeBookmarksOrMentionsPage,
+        shouldShowAction: !this._isEventOrTask,
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
+        shouldShowAction: true,
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
+        shouldShowAction: true,
       },
     };
   }
@@ -57,22 +54,28 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  private get _isEventOrTask() {
+    const { itemTypeIds } = this._post;
+    return (
+      itemTypeIds &&
+      (!!itemTypeIds[TypeDictionary.TYPE_ID_TASK] ||
+        !!itemTypeIds[TypeDictionary.TYPE_ID_EVENT])
+    );
+  }
+
+  @computed
   private get _isPostByMe() {
     return this._currentUserId === this._post.creatorId;
   }
 
   @computed
   private get _canPost() {
-    if (this._group.isTeam) {
-      if (!this._group.isThePersonAdmin(this._currentUserId)) {
-        if (this._group.permissions && this._group.permissions.user) {
-          const { level = 0 } = this._group.permissions.user;
-          return !!(level & (1 << PERMISSION_ENUM.TEAM_POST));
-        }
-      }
-      return true;
-    }
-    return true;
+    return this._group.canPost;
+  }
+
+  @computed
+  private get _excludeBookmarksOrMentionsPage() {
+    return this._currentGroupId !== 0;
   }
 
   @computed
@@ -81,8 +84,13 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  private get _hasAttachments() {
+    return this._post.itemIds.length > 0;
+  }
+
+  @computed
   get showMoreAction() {
-    return this._isText;
+    return this._isText || this._hasAttachments;
   }
 }
 

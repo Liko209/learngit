@@ -25,7 +25,7 @@ type FormGroupType = {
   label: string;
   value: any;
   valueEmphasize?: boolean;
-  copy?: boolean;
+  copyValue?: string;
 };
 
 export {
