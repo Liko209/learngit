@@ -13,10 +13,13 @@ class LoggerImpl implements IRTCLogger {
 }
 
 describe('LoggerProxy', async () => {
+  const voipTag = 'VoIP';
+  const formatVoipTag = 'VoIP:';
+
   describe('info', () => {
     it('Should print empty when not insert logger [JPT-553]', async () => {
       const loggerImpl = new LoggerImpl();
-      rtcLogger.info('VoIP', 'empty');
+      rtcLogger.info(voipTag, 'empty');
       expect(loggerImpl.doLog.mock.calls.length).toBe(0);
     });
   });
@@ -25,10 +28,10 @@ describe('LoggerProxy', async () => {
     it('Should print info log message insert logger [JPT-554]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
-      rtcLogger.info('VoIP', 'info');
+      rtcLogger.info(voipTag, 'info');
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.INFO,
-        'VoIP: info',
+        `${formatVoipTag} info`,
       );
     });
   });
@@ -37,10 +40,10 @@ describe('LoggerProxy', async () => {
     it('Should print warn log message when insert logger [JPT-555]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
-      rtcLogger.warn('VoIP', 'warn');
+      rtcLogger.warn(voipTag, 'warn');
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.WARN,
-        'VoIP: warn',
+        `${formatVoipTag} warn`,
       );
     });
   });
@@ -49,10 +52,10 @@ describe('LoggerProxy', async () => {
     it('Should print debug log message when insert logger [JPT-556]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
-      rtcLogger.debug('VoIP', 'debug');
+      rtcLogger.debug(voipTag, 'debug');
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.DEBUG,
-        'VoIP: debug',
+        `${formatVoipTag} debug`,
       );
     });
   });
@@ -61,10 +64,10 @@ describe('LoggerProxy', async () => {
     it('Should print error log message when insert logger [JPT-559]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
-      rtcLogger.error('VoIP', 'error');
+      rtcLogger.error(voipTag, 'error');
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.ERROR,
-        'VoIP: error',
+        `${formatVoipTag} error`,
       );
     });
   });
@@ -73,10 +76,10 @@ describe('LoggerProxy', async () => {
     it('Should print fatal log message when insert logger [JPT-558]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
-      rtcLogger.fatal('VoIP', 'fatal');
+      rtcLogger.fatal(voipTag, 'fatal');
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.FATAL,
-        'VoIP: fatal',
+        `${formatVoipTag} fatal`,
       );
     });
   });
@@ -85,10 +88,10 @@ describe('LoggerProxy', async () => {
     it('Should print trace log message when insert logger [JPT-557]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
-      rtcLogger.trace('VoIP', 'trace');
+      rtcLogger.trace(voipTag, 'trace');
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.TRACE,
-        'VoIP: trace',
+        `${formatVoipTag} trace`,
       );
     });
   });
