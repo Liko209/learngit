@@ -25,10 +25,16 @@ const JuiProfileDialogContentGrid = styled(JuiGrid)``;
 
 const JuiProfileDialogContentFormCopy = styled('div')`
   color: ${grey('500')};
-  position: absolute;
-  right: ${width(3)};
-  top: ${width(3)};
   cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: ${width(10)};
+  background-color: ${grey('100')};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const JuiProfileDialogContentForm = styled('div')`
@@ -50,7 +56,7 @@ const JuiProfileDialogContentFormGroup = styled('div')`
   &:hover {
     background-color: ${grey('100')};
     ${JuiProfileDialogContentFormCopy} {
-      display: block;
+      display: flex;
     }
   }
   ${JuiProfileDialogContentFormCopy} {
@@ -81,7 +87,7 @@ const JuiProfileDialogContentFormLabel = styled('div')`
 const JuiProfileDialogContentFormValue = styled<PropsFormValue, 'div'>('div')`
   ${typography('body2')};
   ${ellipsis()};
-  padding-right: ${spacing(2)};
+  padding-right: ${spacing(4)};
   color: ${({ emphasize }: PropsFormValue) =>
     emphasize ? primary('700') : grey('900')};
 `;

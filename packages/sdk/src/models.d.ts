@@ -94,7 +94,7 @@ export type Profile = ExtendedBaseModel & {
 
 export type Company = ExtendedBaseModel & {
   name: string;
-  domain: string;
+  domain: string | string[];
   admins: number[];
   custom_emoji: { [index: string]: { data: string } };
   _delta?: { add_keys?: object; remove_keys: object };
@@ -239,6 +239,39 @@ export type Item = ExtendedBaseModel & {
   do_not_render?: boolean;
 };
 
+export type TaskItem = Item & {
+  color: string;
+  complete: boolean;
+  notes: string;
+  start: number;
+  end: number;
+  section: string;
+  repeat: string;
+  repeat_ending: string;
+  repeat_ending_after: string;
+  repeat_ending_on: string;
+  text: string;
+  due: number;
+  complete_type: string;
+  assigned_to_ids: number[];
+  complete_people_ids: number[];
+  attachment_ids: number[];
+  complete_percentage: number;
+};
+
+export type EventItem = Item & {
+  color: string;
+  description: string;
+  start: number;
+  end: number;
+  location: string;
+  repeat: string;
+  repeat_ending: string;
+  repeat_ending_after: string;
+  repeat_ending_on: string;
+  text: string;
+};
+
 export type FileItem = Item & {
   name: string;
 };
@@ -246,6 +279,20 @@ export type FileItem = Item & {
 export type NoteItem = Item & {
   body: string;
   title: string;
+  summary: string;
+};
+
+export type LinkItem = Item & {
+  favicon: string;
+  providerName: string;
+  summary: string;
+  title: string;
+  url: string;
+  image: string;
+  deactivated: boolean;
+  data: {
+    provider_name: string;
+  };
 };
 
 export type StoredFile = Raw<ExtendedBaseModel> & {

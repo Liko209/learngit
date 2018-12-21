@@ -24,7 +24,7 @@ const mockPostEntityData = {
 
 const mockGroupEntityData = {
   id: 1,
-  membersExcludeMe: [1],
+  members: [1],
 };
 
 const mockPersonEntityData = {
@@ -83,10 +83,10 @@ describe('EditMessageInputViewModel', () => {
       expect(editMessageInputViewModel._group).toBe(mockGroupEntityData);
     });
   });
-  describe('_membersExcludeMe', () => {
-    it('should return membersExcludeMe', () => {
-      expect(editMessageInputViewModel._membersExcludeMe).toBe(
-        mockGroupEntityData.membersExcludeMe,
+  describe('_members', () => {
+    it('should return members', () => {
+      expect(editMessageInputViewModel._members).toBe(
+        mockGroupEntityData.members,
       );
     });
   });

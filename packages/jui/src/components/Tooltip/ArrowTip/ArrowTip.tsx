@@ -11,14 +11,13 @@ import styled, {
   css,
   createGlobalStyle,
 } from '../../../foundation/styled-components';
-import { palette } from '../../../foundation/utils/styles';
 
 type JuiTooltipProps = {
   placement?: string;
   show?: boolean;
 } & MuiTooltipProps;
 
-const TooltipArrow = styled.span<{ placement: string }>`
+const TooltipArrow = styled.span`
   position: absolute;
   font-size: 7px;
   width: 3em;
@@ -31,22 +30,21 @@ const TooltipArrow = styled.span<{ placement: string }>`
     height: 0;
     border-style: solid;
   }
-  ${({ placement }) => arrowStyles[placement]};
 `;
+
+const tooltipColor = ({ theme }: any) => theme.palette['tooltip']['dark'];
+
 const bottom = css`
   top: 0;
   left: 0;
   margin-top: -0.9em;
-  width: 3em;
   height: 1em;
   &::before {
     border-width: 0 1em 1em 1em;
-    border-color: transparent transparent ${palette(
-      'tooltip',
-      'dark',
-    )} transparent;
-  },
+    border-color: transparent transparent ${tooltipColor} transparent;
+  }
 `;
+
 const top = css`
   bottom: -1em;
   left: 0;
@@ -55,8 +53,8 @@ const top = css`
   height: 1em;
   &::before {
     border-width: 1em 1em 1em;
-    border-color: ${palette('tooltip', 'dark')} transparent transparent;
-  },
+    border-color: ${tooltipColor} transparent transparent;
+  }
 `;
 
 const right = css`
@@ -67,37 +65,39 @@ const right = css`
   width: 1em;
   &::before {
     border-width: 0.6em 0.6em 0.6em 0;
-    border-color: transparent ${palette(
-      'tooltip',
-      'dark',
-    )} transparent transparent;
-  },
+    border-color: transparent ${tooltipColor} transparent transparent;
+  }
 `;
-const arrowStyles = {
-  bottom,
-  top,
-  right,
-};
-const GlobalToolTip = createGlobalStyle`
-  .popper .tooltipPlacementRight {
+
+const GlobalToolTipStyle = createGlobalStyle`
+  .popper[x-placement='right'] ${TooltipArrow}{
     margin: 0 2px;
+    ${right}
   }
-  .popper .tooltipPlacementBottom {
-    margin: '12px 0',
+
+  .popper[x-placement='top'] ${TooltipArrow}{
+    margin: '16px 0';
+    ${top}
   }
-  .popper .tooltipPlacementTop {
-    margin: '16px 0'
+
+  .popper[x-placement='bottom'] ${TooltipArrow}{
+    margin: '12px 0';
+    ${bottom}
   }
 `;
 export class JuiArrowTip extends React.Component<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
-  state = {
-    arrowRef: null,
-  };
+  arrowRef: React.RefObject<any>;
+
+  constructor(props: any) {
+    super(props);
+    this.arrowRef = React.createRef();
+  }
+
   handleArrowRef = (ele: any) => {
-    this.setState({
-      arrowRef: ele,
-    });
+    this.arrowRef = ele;
+    // parse arrow ref to tooltip
+    this.forceUpdate();
   }
 
   render() {
@@ -110,7 +110,7 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
           title={
             <React.Fragment>
               {title}
-              <TooltipArrow placement={placement} ref={this.handleArrowRef} />
+              <TooltipArrow ref={this.handleArrowRef} />
             </React.Fragment>
           }
           classes={{
@@ -123,8 +123,8 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
             popperOptions: {
               modifiers: {
                 arrow: {
-                  enabled: Boolean(this.state.arrowRef),
-                  element: this.state.arrowRef,
+                  enabled: Boolean(this.arrowRef),
+                  element: this.arrowRef,
                 },
               },
             },
@@ -132,7 +132,7 @@ export class JuiArrowTip extends React.Component<JuiTooltipProps> {
         >
           {children}
         </MuiTooltip>
-        <GlobalToolTip />
+        <GlobalToolTipStyle />
       </React.Fragment>
     );
   }

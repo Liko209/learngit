@@ -208,6 +208,10 @@ export class PostItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.moreMenu);
   }
 
+  get prompt() {
+    return this.getSelector('.tooltipPlacementBottom').textContent;
+  }
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }

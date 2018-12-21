@@ -28,7 +28,7 @@ class Mention {
   private _options: Options = {
     onMention: () => {},
     mentionDenotationChars: ['@'],
-    allowedChars: /^[a-zA-Z0-9_\s]*$/,
+    allowedChars: /^[a-zA-Z0-9_ ]*$/,
     minChars: 0,
     maxChars: 31,
     isolateCharacter: true,
@@ -79,7 +79,7 @@ class Mention {
     });
   }
 
-  onSomethingChange() {
+  onSomethingChange = () => {
     const range = this._quill.getSelection();
     if (range == null) return;
     this._cursorPos = range.index;
@@ -136,11 +136,18 @@ class Mention {
 
   onTextChange(delta: DeltaStatic, oldContents: DeltaStatic, source: Sources) {
     if (source === 'user') {
-      this.onSomethingChange();
+      requestAnimationFrame(this.onSomethingChange);
     }
   }
 
-  onSelectionChange(range: RangeStatic) {
+  onSelectionChange(
+    range: RangeStatic,
+    oldRange: RangeStatic,
+    source: Sources,
+  ) {
+    if (source !== 'user') {
+      return;
+    }
     if (range && range.length === 0) {
       this.onSomethingChange();
     } else {

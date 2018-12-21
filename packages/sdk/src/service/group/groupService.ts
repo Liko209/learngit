@@ -126,12 +126,13 @@ class GroupService extends BaseService<Group> {
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-
+      const userId = profile ? profile.creator_id : undefined;
       result = await dao.queryGroups(
         offset,
         Infinity,
         groupType === GROUP_QUERY_TYPE.TEAM,
         excludeIds,
+        userId,
       );
       result = await filterGroups(result, limit);
     }

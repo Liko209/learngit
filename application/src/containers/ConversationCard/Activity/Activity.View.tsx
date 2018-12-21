@@ -16,7 +16,7 @@ class Activity extends Component<Props> {
     const { activity, t } = this.props;
     if (Object.keys(activity).length) {
       const { key, parameter } = activity;
-      return <div>{t(key, parameter)}</div>;
+      return <span>{t(key, parameter)}</span>;
     }
     return null;
   }
