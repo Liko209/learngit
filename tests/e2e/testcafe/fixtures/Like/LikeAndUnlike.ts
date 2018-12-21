@@ -18,22 +18,26 @@ fixture('LikeAndUnlike')
 test(formalName('Operating a message that you first like then unlike', ['JPT-304', 'P2', 'Like', 'Potar.He']), async (t) => {
   const users = h(t).rcData.mainCompany.users
   const userA = users[4];
-  userA.sdk = await h(t).getSdk(userA);
   const userB = users[5];
   const app = new AppRoot(t);
+  await h(t).platform(userA).init();
 
   let teamId, postId;
   await h(t).withLog(`Given I 1 team chat (T1) have members userA(${userA.company.number}#${userA.extension}) and userB(${userB.company.number}#${userB.extension}) and 1 post (M1) in T1.`, async () => {
-    teamId = (await userA.sdk.platform.createGroup({
+    teamId = await h(t).platform(userA).createGroup({
       isPublic: true,
       name: uuid(),
       type: 'Team',
       members: [userA.rcId, userB.rcId],
-    })).data.id;
-    postId = (await userA.sdk.platform.sendTextPost(
+    }).then(res => {
+      return res.data.id
+    });
+    postId = await h(t).platform(userA).sendTextPost(
       `test "like" ${uuid()}`,
       teamId
-    )).data.id
+    ).then(res => {
+      return res.data.id
+    });
   });
 
   const enterSpecifyTeam = async (app) => {
@@ -168,14 +172,13 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 test(formalName('Like a message that you not first like then unlike', ['JPT-308', 'P2', 'Like', 'Potar.He']), async (t) => {
   const users = h(t).rcData.mainCompany.users
   const userA = users[4];
-  userA.sdk = await h(t).getSdk(userA);
   const userB = users[5];
-  const otherGlip = await h(t).getGlip(users[6]);
+
   const app = new AppRoot(t);
 
   let teamId, postId;
   await h(t).withLog(`Given I 1 team chat (T1) have members userA(${userA.company.number}#${userA.extension}) and userB(${userB.company.number}#${userB.extension}) and 1 post (M1) in T1.`, async () => {
-    teamId = await userA.sdk.platform.createGroup({
+    teamId = await h(t).platform(userA).createGroup({
       isPublic: true,
       name: uuid(),
       type: 'Team',
@@ -183,7 +186,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     }).then(res => {
       return res.data.id
     });
-    postId = await userA.sdk.platform.sendTextPost(
+    postId = await h(t).platform(userA).sendTextPost(
       `test "like" ${uuid()}`,
       teamId
     ).then(res => { return res.data.id });
@@ -197,8 +200,10 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   const postCard = app.homePage.messageTab.conversationPage.postItemById(postId);
 
   await h(t).withLog(`And userC like the M1`, async () => {
-    await otherGlip.likePost(postId);
+    await h(t).glip(users[6]).init();
+    await h(t).glip(users[6]).likePost(postId);
   })
+
   await h(t).withLog(`When userA open T1`, async () => {
     await t.useRole(roleA);
   })

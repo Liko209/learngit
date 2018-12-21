@@ -55,7 +55,7 @@ export class RcPlatformSdk {
 
   async sendTextPost(text: string, groupId: string) {
     const data = { text };
-     return await this.createPost(data, groupId);
+    return await this.createPost(data, groupId);
   }
 
   async createGroup(data: object) {
