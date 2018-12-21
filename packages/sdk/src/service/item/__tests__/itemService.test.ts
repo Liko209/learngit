@@ -215,7 +215,7 @@ describe('ItemService', () => {
 
   describe('isFileExists()', () => {
     const itemDao = {
-      isFileItemExist: jest.fn(),
+      getExistGroupFilesByName: jest.fn(),
     };
     beforeAll(() => {
       handleData.mockClear();
@@ -229,21 +229,37 @@ describe('ItemService', () => {
     it('check file exists with invalid groupId', async () => {
       const result = await itemService.isFileExists(0, 'test.jpg');
       expect(result).toBe(false);
-      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+      expect(itemDao.getExistGroupFilesByName).not.toHaveBeenCalled();
     });
 
     it('check file exists with invalid name', async () => {
       const result = await itemService.isFileExists(1, '');
       expect(result).toBe(false);
-      expect(itemDao.isFileItemExist).not.toHaveBeenCalled();
+      expect(itemDao.getExistGroupFilesByName).not.toHaveBeenCalled();
     });
 
-    it('should call ItemDao to check whether file exist', async () => {
-      const itemFiles = [{ id: 1, name: 'test.jpg' }];
-      itemDao.isFileItemExist.mockResolvedValue(itemFiles);
+    it('should return true when item has post_ids and length > 0', async () => {
+      const itemFiles = [{ id: 1, name: 'test.jpg', post_ids: [12] }];
+      itemDao.getExistGroupFilesByName.mockResolvedValueOnce(itemFiles);
       const result = await itemService.isFileExists(1, 'test.jpg');
-      expect(itemDao.isFileItemExist).toBeCalledWith(1, 'test.jpg', true);
-      expect(result).toBeTruthy;
+      expect(itemDao.getExistGroupFilesByName).toBeCalledWith(
+        1,
+        'test.jpg',
+        true,
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false when the item has no post_ids', async () => {
+      const itemFiles = [{ id: 1, name: 'test.jpg', post_ids: [] }];
+      itemDao.getExistGroupFilesByName.mockResolvedValueOnce(itemFiles);
+      const result = await itemService.isFileExists(1, 'test.jpg');
+      expect(itemDao.getExistGroupFilesByName).toBeCalledWith(
+        1,
+        'test.jpg',
+        true,
+      );
+      expect(result).toBeFalsy();
     });
   });
 
@@ -290,10 +306,11 @@ describe('ItemService', () => {
     describe('cleanUploadingFiles()', () => {
       it('should call cleanUploadingFiles ', () => {
         const groupId = 1;
-        itemService.cleanUploadingFiles(groupId);
+        itemService.cleanUploadingFiles(groupId, [123]);
         expect(itemFileUploadHandler.cleanUploadingFiles).toBeCalledTimes(1);
         expect(itemFileUploadHandler.cleanUploadingFiles).toBeCalledWith(
           groupId,
+          [123],
         );
       });
     });
@@ -318,26 +335,13 @@ describe('ItemService', () => {
         expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
       });
     });
-  });
 
-  describe('getItemVersion()', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-    });
-
-    it('should return 0 when can not find the item', async () => {
-      jest.spyOn(itemService, 'getById').mockResolvedValueOnce(null);
-      const res = await itemService.getItemVersion(1);
-      expect(res).toBe(0);
-    });
-
-    it('should return version length when fine the item', async () => {
-      jest
-        .spyOn(itemService, 'getById')
-        .mockResolvedValueOnce({ versions: [123, 123, 123] });
-      const res = await itemService.getItemVersion(1);
-      expect(res).toBe(3);
+    describe('getItemVersion()', () => {
+      it('should call ItemFileUplaodHandler to get version', async () => {
+        itemFileUploadHandler.getUpdateItemVersion.mockResolvedValue(true);
+        await itemService.getItemVersion(1);
+        expect(itemFileUploadHandler.getUpdateItemVersion).toBeCalledWith(1);
+      });
     });
   });
 });
