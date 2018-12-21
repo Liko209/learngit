@@ -13,6 +13,7 @@
     "eg2.tslint",
     "orta.vscode-jest",
     "editorconfig.editorconfig",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "visualstudioexptteam.vscodeintellicode"
   ]
 }

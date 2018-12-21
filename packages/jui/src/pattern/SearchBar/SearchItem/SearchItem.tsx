@@ -80,18 +80,38 @@ type JuiSearchItemProps = {
 };
 
 const JuiSearchItem = (props: JuiSearchItemProps) => {
-  const { Avatar, Actions, value, terms, isPrivate, isJoined, onClick } = props;
+  const {
+    Avatar,
+    Actions,
+    value,
+    terms,
+    isPrivate,
+    isJoined,
+    onClick,
+    ...rest
+  } = props;
   return (
     <SearchItemWrapper
       onClick={onClick}
       className="search-items"
       disableRipple={true}
+      {...rest}
     >
-      <SearchItemAvatar>{Avatar}</SearchItemAvatar>
+      <SearchItemAvatar data-test-automation-id="search-item-avatar">
+        {Avatar}
+      </SearchItemAvatar>
       <SearchItemValueWrapper>
-        <JuiSearchItemValue value={value} terms={terms} />
-        {isPrivate && <PrivateIcon />}
-        {isJoined && <Joined>Joined</Joined>}
+        <JuiSearchItemValue
+          value={value}
+          terms={terms}
+          data-test-automation-id="search-item-text"
+        />
+        {isPrivate && (
+          <PrivateIcon data-test-automation-id="search-item-private" />
+        )}
+        {isJoined && (
+          <Joined data-test-automation-id="search-item-joined">Joined</Joined>
+        )}
       </SearchItemValueWrapper>
       {Actions && <SearchItemActions>{Actions}</SearchItemActions>}
     </SearchItemWrapper>

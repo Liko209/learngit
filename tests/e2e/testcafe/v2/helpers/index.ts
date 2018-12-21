@@ -13,7 +13,7 @@ import { H } from './utils';
 
 import { IUser, IStep } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, SITE_ENV } from '../../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -72,7 +72,7 @@ class Helper {
     return await this.logHelper.log(step, takeScreenShot);
   }
 
-  async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
+  async withLog(step: IStep | string, cb: (step?: IStep) => Promise<any>, takeScreenShot: boolean = false) {
     return await this.logHelper.withLog(step, cb, takeScreenShot);
   }
 
@@ -117,18 +117,20 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
-  async userRole(user: IUser, cb?:(appRoot) => Promise<any>) {
+  get setLocalStorage(): (k: string, v: string) => Promise<any> {
+    return ClientFunction((key, val) => localStorage.setItem(key, val));
+  }
+
+  async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
     return await Role(SITE_URL, async (t) => {
-      const newApp = new AppRoot(t);
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await newApp.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
-      await newApp.homePage.ensureLoaded(); 
-      if (cb != undefined) {
-        await cb(newApp);
+      const app = new AppRoot(t);
+      await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
+      await app.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
+      await app.homePage.ensureLoaded();
+      if (undefined !== cb) {
+        await cb(app);
       }
-    }, {
-      preserveUrl: true,
-    })
+    }, { preserveUrl: true, });
   }
 
   // a temporary method:  need time to wait back-end and front-end sync umi data.
@@ -144,8 +146,11 @@ class Helper {
   }
 }
 
-function h(t: TestController) {
-  return new Helper(t);
+function h(t: TestController): Helper {
+  if (undefined == t.ctx.__helper) {
+    t.ctx.__helper = new Helper(t);
+  }
+  return t.ctx.__helper;
 }
 
 export { Helper, h, H };

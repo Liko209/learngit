@@ -305,6 +305,21 @@ class ProfileService extends BaseService<Profile> {
     return false;
   }
 
+  async reopenConversation(groupId: number) {
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      const partialProfile = {
+        ...partialModel,
+        [`hide_group_${groupId}`]: false,
+      };
+      return partialProfile;
+    };
+
+    return this._updateProfileGroupStatus(preHandlePartialModel);
+  }
+
   private async _updateProfileGroupStatus(
     preHandlePartialModel?: (
       partialModel: Partial<Raw<Profile>>,
