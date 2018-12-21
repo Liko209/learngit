@@ -46,44 +46,85 @@ class BackNForward extends BaseWebComponent {
 
 class Search extends BaseWebComponent {
   get icon() {
-    return this.self.find('.material-icons').withText('search');
+    return this.getSelectorByAutomationId('search-icon');
   }
 
   get inputArea() {
-    this.warnFlakySelector();
-    return this.self.find('input');
+    return this.getSelectorByAutomationId('search-input');
   }
-  
+
   async typeText(text: string, options?: TypeActionOptions) {
     await this.t.typeText(this.inputArea, text, options)
   }
   
   get closeButton() {
+    this.warnFlakySelector();
     return this.self.find('.material-icons').withText('close');
   }
 
   async close() {
     await this.t.click(this.closeButton);
   }
-  
-}
 
-class SearchResult extends BaseWebComponent {
-  get items() {
-    return this.self.find('li[.search-items]');
+  get allresultItems() {
+    return this.getSelector('.search-items');
+  }
+  
+  get peoples() {
+    return this.getSelectorByAutomationId('search-People-item');
   }
 
-  nthItem(n) {
-    return this.items.nth(n);
+  get groups() {
+    return this.getSelectorByAutomationId('search-Groups-item');
+  }
+
+  get teams() {
+    return this.getSelectorByAutomationId('search-Teams-item');
+  }
+  
+  nthPeople(n: number) {
+    return this.getComponent(SearchItem, this.peoples.nth(n));
+  }
+  
+  nthGroup(n: number) {
+    return this.getComponent(SearchItem, this.peoples.nth(n));
+  }
+
+  nthTeam(n: number) {
+    return this.getComponent(SearchItem, this.teams.nth(n));
   }
 }
 
 class SearchItem extends BaseWebComponent {
-  avatar() {
-    return this.self.find('div').hasAttribute('uid');
+  
+  get avatar() {
+    return this.getSelectorByAutomationId('search-item-avatar', this.self);
   }
   
-  text() {
-    return this.self.child('div').nth(1);
+  get name() {
+    return this.getSelectorByAutomationId('search-item-text', this.self);
   }
+
+  // people
+  get uid() {
+    return this.avatar.find("*").withAttribute('uid').getAttribute('uid');
+  }
+ 
+  // group or team
+  get cid() {
+    return this.avatar.find("*").withAttribute('cid').getAttribute('cid');
+  }
+
+  async enter() {
+    await this.t.click(this.self);
+  }
+
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
+  async clickName() {
+    await this.t.click(this.name);
+  }
+
 }
