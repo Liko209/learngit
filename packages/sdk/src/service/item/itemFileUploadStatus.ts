@@ -3,12 +3,13 @@
  * @Date: 2018-12-07 14:35:00
  */
 
-import { Progress } from '../../models';
+import { Progress, ItemFile } from '../../models';
 import { RequestHolder } from '../../api/requestHolder';
 
 type ItemFileUploadStatus = {
   progress: Progress;
   requestHolder: RequestHolder;
+  itemFile?: ItemFile;
   file?: FormData;
 };
 
