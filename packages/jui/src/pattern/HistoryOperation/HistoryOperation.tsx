@@ -8,7 +8,7 @@ import { TowardIcons } from './TowardIcons';
 import { OPERATION } from './types';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
-import { JuiMenuItem, JuiPopover, JuiMenuList } from 'jui/components';
+import { JuiMenuItem, JuiPopover, JuiMenuList } from '../../components';
 
 type TowardsProps = {
   type: OPERATION;
