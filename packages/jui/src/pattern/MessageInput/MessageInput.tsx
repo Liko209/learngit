@@ -93,7 +93,7 @@ type Props = {
   toolbarNode?: React.ReactNode;
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
-  didDropFile?: (file: File) => void;
+  didDropFile?: (file: File[]) => void;
   id?: number;
 };
 
@@ -139,7 +139,7 @@ class JuiMessageInput extends React.Component<Props> {
           result.push(file);
         }
         const { didDropFile } = this.props;
-        didDropFile && files && didDropFile(files[0]);
+        didDropFile && files && didDropFile(result);
         event.preventDefault();
       }
     }
@@ -163,10 +163,7 @@ class JuiMessageInput extends React.Component<Props> {
         value,
       };
     return (
-      <Wrapper
-        isEditMode={isEditMode}
-        onPaste={this._handlePaste}
-      >
+      <Wrapper isEditMode={isEditMode} onPaste={this._handlePaste}>
         {toolbarNode}
         <ReactQuill
           {...reactQuillValueProp}

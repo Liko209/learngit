@@ -110,6 +110,7 @@ class MessageInputViewComponent extends Component<
         id={id}
         toolbarNode={toolbarNode}
         attachmentsNode={attachmentsNode}
+        didDropFile={this.handleDropFile}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>
