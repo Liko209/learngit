@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 13:56:11
  * Copyright © RingCentral. All rights reserved.
  */
-import MuiIcon from '@material-ui/core/Icon';
+import { JuiIconButton } from '../../../components/Buttons/IconButton';
 import styled, { css } from '../../../foundation/styled-components';
 import {
   spacing,
@@ -52,7 +52,7 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   }
 `;
 
-const SearchIcon = styled(MuiIcon)`
+const SearchIcon = styled(JuiIconButton)`
   color: ${grey('500')};
 `;
 

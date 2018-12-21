@@ -700,15 +700,22 @@ describe('ItemFileUploadHandler', () => {
     beforeEach(() => {
       uploadingFiles = new Map();
       itemFileUploadHandler = new ItemFileUploadHandler();
-      const itemFiles = { id: 1 } as ItemFile;
-      uploadingFiles.set(1, [itemFiles]);
-      uploadingFiles.set(2, [itemFiles]);
+      const itemFiles = [{ id: 1 } as ItemFile, { id: 2 } as ItemFile];
+      uploadingFiles.set(1, itemFiles);
+      uploadingFiles.set(2, itemFiles);
       Object.assign(itemFileUploadHandler, {
         _uploadingFiles: uploadingFiles,
       });
     });
-    it('should clean recorded uploading files by groupid', () => {
-      itemFileUploadHandler.cleanUploadingFiles(1);
+    it('should clean recorded uploading files by groupid and itemId', () => {
+      itemFileUploadHandler.cleanUploadingFiles(1, [1]);
+      expect(uploadingFiles.get(1)).toHaveLength(1);
+      expect(uploadingFiles.get(1)[0].id).toBe(2);
+      expect(uploadingFiles.get(2)).not.toBeUndefined();
+    });
+
+    it('should clean group when no item left after clean', () => {
+      itemFileUploadHandler.cleanUploadingFiles(1, [1, 2]);
       expect(uploadingFiles.get(1)).toBeUndefined();
       expect(uploadingFiles.get(2)).not.toBeUndefined();
     });
