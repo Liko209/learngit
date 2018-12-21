@@ -5,7 +5,14 @@ class SipCallSession extends EventEmitter2 {
   constructor() {
     super();
   }
-  private _prepareSipSession() {}
+  private _prepareSipSession() {
+    if (this._session == null) {
+      return;
+    }
+    this._session.on('accepted', this._onSessionConfirmed.bind(this));
+    this._session.on('accepted', this._onSessionDisconnected.bind(this));
+    this._session.on('failed', this._onSessionError.bind(this));
+  }
 
   private _onSessionConfirmed() {}
 
@@ -14,4 +21,11 @@ class SipCallSession extends EventEmitter2 {
   private _onSessionError() {}
 
   hangup() {}
+
+  setSession(session: any) {
+    if (session != null) {
+      this._session = session;
+      this._prepareSipSession();
+    }
+  }
 }
