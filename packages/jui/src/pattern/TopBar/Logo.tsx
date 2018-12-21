@@ -13,8 +13,10 @@ const JuiLogo = styled(JuiTypography)`
     color: ${({ theme }) => `${theme.palette.primary.main}`};
     ${typography('headline')};
     margin-left: ${spacing(4)};
-    margin-right: ${spacing(9)};
-    width: ${width(41)};
+    /* padding-right: ${spacing(5)}; */
+    /* ie compatibility for Topbar width less than 1100px */
+    min-width: ${width(50)};
+    width: ${width(50)};
   }
 `;
 
