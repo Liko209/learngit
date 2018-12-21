@@ -73,6 +73,7 @@ function mockDependencies() {
     .fn()
     .mockImplementation(() => mockedGlobalStore);
   history.push = jest.fn().mockImplementation(jest.fn());
+  history.replace = jest.fn().mockImplementation(jest.fn());
 }
 
 describe('MessageRouterChangeHelper', () => {
@@ -162,7 +163,10 @@ describe('ensureGroupOpened', () => {
   it('should call service to reopen', (done: any) => {
     mockedProfileService.isConversationHidden = jest
       .fn()
-      .mockResolvedValue(true);
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockResolvedValueOnce({ isErr: () => false });
     MessageRouterChangeHelper.handleSourceOfRouter(110);
     setTimeout(() => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
@@ -175,5 +179,22 @@ describe('ensureGroupOpened', () => {
       .mockResolvedValue(false);
     MessageRouterChangeHelper.handleSourceOfRouter(110);
     expect(mockedProfileService.reopenConversation).not.toHaveBeenCalled();
+  });
+  it('should show loading page with error when reopen failed', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockResolvedValueOnce({ isErr: () => true });
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      expect(history.replace).toBeCalledWith('/messages/loading', {
+        error: true,
+        id: 110,
+      });
+      done();
+    });
   });
 });
