@@ -31,12 +31,12 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
       group = await userPlatform.createGroup({
         type: 'Group', members: [user.rcId, users[5].rcId, users[6].rcId],
       });
-      await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
+      await user5Platform.sendTextPost(
+        `Hi, ![:Person](${user.rcId})`,
         group.data.id,
       );
-      await user5Platform.createPost(
-        { text: `Hi again, ![:Person](${user.rcId})` },
+      await user5Platform.sendTextPost(
+        `Hi again, ![:Person](${user.rcId})`,
         group.data.id,
       );
     });
@@ -53,8 +53,8 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
     let newPost;
     await h(t).withLog('Then I send a new post to user with mention', async () => {
-      newPost = await user5Platform.createPost(
-        { text: `Test add a mention, ![:Person](${user.rcId})` },
+      newPost = await user5Platform.sendTextPost(
+        `Test add a mention, ![:Person](${user.rcId})`,
         group.data.id,
       );
     });
@@ -104,16 +104,16 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
         name: `Team ${uuid()}`,
         members: [user.rcId, users[5].rcId],
       });
-      chatPost = await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
+      chatPost = await user5Platform.sendTextPost(
+        `Hi, ![:Person](${user.rcId})`,
         chat.data.id,
       );
-      groupPost = await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
+      groupPost = await user5Platform.sendTextPost(
+        `Hi, ![:Person](${user.rcId})`,
         group.data.id,
       );
-      teamPost = await user5Platform.createPost(
-        { text: `Hi, ![:Person](${user.rcId})` },
+      teamPost = await user5Platform.sendTextPost(
+        `Hi, ![:Person](${user.rcId})`,
         team.data.id,
       );
     });
@@ -196,8 +196,8 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
 
     let newPost;
     await h(t).withLog('And I have an AtMention post', async () => {
-      newPost = await user5Platform.createPost(
-        { text: `Hi AtMention, ![:Person](${user.rcId})` },
+      newPost = await user5Platform.sendTextPost(
+        `Hi AtMention, ![:Person](${user.rcId})`,
         group.data.id,
       );
     }, true);
@@ -263,15 +263,15 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
       type: 'Group', members: [user.rcId, users[5].rcId],
     });
     await user.sdk.glip.showGroups(user.rcId, group.data.id);
-    newPost = await user5Platform.createPost(
-      { text: `First AtMention, ![:Person](${user.rcId})`},
+    newPost = await user5Platform.sendTextPost(
+      `First AtMention, ![:Person](${user.rcId})`,
       group.data.id,
     );
   });
 
   await h(t).withLog('And I also have 20 non AtMention messages in conversation', async () => {
     for (const msg of msgList) {
-      await userPlatform.createPost({ text: msg }, group.data.id);
+      await userPlatform.sendTextPost(msg, group.data.id);
       await t.wait(1e3);
     }
   });
@@ -289,8 +289,8 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   }, true);
 
   await h(t).withLog('Then I received new AtMention post should 1 UMI', async () => {
-    await user5Platform.createPost(
-      { text: `Just for UMI, ![:Person](${user.rcId})` },
+    await user5Platform.sendTextPost(
+      `Just for UMI, ![:Person](${user.rcId})`,
       group.data.id,
     );
     await directMessagesSection.fold();
@@ -338,12 +338,14 @@ test(formalName('Jump to post position when click button or clickable area of po
     })).data.id;
 
     await user.sdk.glip.showGroups(user.rcId, [teamId, pvChatId]);
-    atMentionPostTeam = await user5Platform.createPost(
-      { text: verifyTextTeam + `, ![:Person](${user.rcId})` },
+    await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
+
+    atMentionPostTeam = await user5Platform.sendTextPost(
+      verifyTextTeam + `, ![:Person](${user.rcId})`,
       teamId,
     );
-    atMentionPostChat = await user5Platform.createPost(
-      { text: verifyTextChat + `, ![:Person](${user.rcId})` },
+    atMentionPostChat = await user5Platform.sendTextPost(
+      verifyTextChat + `, ![:Person](${user.rcId})`,
       pvChatId,
     );
 

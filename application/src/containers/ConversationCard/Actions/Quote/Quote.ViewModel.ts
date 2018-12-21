@@ -50,27 +50,29 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     return this._post.groupId;
   }
 
-  @computed
-  private get _quoteText() {
+  getQuoteText = () => {
     let quoteText = this._text;
+    // quoteText = quoteText.split('\n').reduce((qt, t) => {
+    //   // filter empty line
+    //   if (t.length) {
+    //     // add '>' before last quote message
+    //     if (t.charAt(0) === '>') {
+    //       return `${qt}${t}<br/>`;
+    //     }
+    //     return `${qt}> ${t}<br/>`;
+    //   }
+    //   return `${qt}${t}`;
+    // },                                       '');
 
-    quoteText = quoteText.split('\n').reduce((qt, t) => {
-      // filter empty line
-      if (t.length) {
-        // add '>' before last quote message
-        if (t.charAt(0) === '>') {
-          return `${qt}${t}<br/>`;
-        }
-        return `${qt}> ${t}<br/>`;
-      }
-      return `${qt}${t}`;
-    },                                       '');
+    quoteText = quoteText.replace(
+      /^(>\s)?(.*?)\n/gim,
+      ($0, $1, $2) => `> ${$2}<br/>`,
+    );
 
     return `${quoteText}<br/><br/>`;
   }
 
-  @computed
-  private get _quoteHead() {
+  getQuoteHead = () => {
     const { userDisplayName: name, id } = this._creator;
     // tslint:disable-next-line
     const quoteHead = `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span> wrote:<br />`;
@@ -79,7 +81,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   private get _renderedText() {
-    return `${this._quoteHead}${this._quoteText}`;
+    return `${this.getQuoteHead()}${this.getQuoteText()}`;
   }
 
   quote = () => {
