@@ -114,7 +114,10 @@ class Config {
   getAllEnv() {
     return parseConfigFiles()
       .keys.filter(arr => arr[0] === 'api')
-      .map(arr => arr[1]);
+      .map(arr => arr[1])
+      .filter((env: string) => {
+        return process.env.JUPITER_ENV === 'release' || env !== 'release';
+      });
   }
 
   get(property: string) {

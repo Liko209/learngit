@@ -8,7 +8,7 @@ case "$1" in
         echo 'Which ID do you want to upload? (Only the number, FIJI-${ID})'
         read ID
         echo $ID
-        npm run build:app
+        npm run build:release
         rsync -azPv \
         --delete --progress \
         ./application/build/ $theServer:$theFolder/feature-fiji-$ID
