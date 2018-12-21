@@ -4,23 +4,38 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Task } from './task';
-import { IDeque, IQueueLoop, LoopController, TaskCompletedHandler, TaskErrorHandler } from './types';
+import { IDeque, IQueueLoop, OnTaskCompletedController, OnTaskErrorController } from './types';
 import { MemoryQueue } from './MemoryQueue';
 
 export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
-  static DEFAULT_LOOP_CONTROLLER: LoopController = {
-    onTaskError: async (error: Error, handler: TaskErrorHandler) => await handler.abort(),
-    onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
-    onLoopCompleted: async () => { },
-  };
-  private _loopController: LoopController;
   private _isLooping: boolean;
   private _isSleeping: boolean;
   private _taskQueue: MemoryQueue<Task>;
   private _timeoutId: NodeJS.Timeout;
-  constructor(_loopController?: LoopController) {
-    this._loopController = _loopController || TaskQueueLoop.DEFAULT_LOOP_CONTROLLER;
+  private _onTaskError: (task: Task, error: Error, handler: OnTaskErrorController) => Promise<void>;
+  private _onTaskCompleted: (task: Task, loopController: OnTaskCompletedController) => Promise<void>;
+  private _onLoopCompleted: () => Promise<void>;
+
+  constructor() {
     this._taskQueue = new MemoryQueue();
+    this.setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abort());
+    this.setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next());
+    this.setOnLoopCompleted(async () => { });
+  }
+
+  setOnTaskError(callback: (task: Task, error: Error, OnTaskErrorController: OnTaskErrorController) => Promise<void>): TaskQueueLoop {
+    this._onTaskError = callback;
+    return this;
+  }
+
+  setOnTaskCompleted(callback: (task: Task, loopController: OnTaskCompletedController) => Promise<void>): TaskQueueLoop {
+    this._onTaskCompleted = callback;
+    return this;
+  }
+
+  setOnLoopCompleted(callback: () => Promise<void>): TaskQueueLoop {
+    this._onLoopCompleted = callback;
+    return this;
   }
 
   isAvailable(): boolean {
@@ -41,7 +56,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
   }
 
   async loop() {
-    if (this._isLooping || !this.isAvailable()) {
+    if (this._isLooping || this._isSleeping) {
       return;
     }
     this._isLooping = true;
@@ -49,22 +64,23 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
     const setTask = (replaceTask: Task) => {
       task = replaceTask;
     };
-    const errorHandler: TaskErrorHandler = this.createErrorHandler(setTask);
-    const completedHandler: TaskCompletedHandler = this.createCompletedHandler(setTask);
+    const errorController: OnTaskErrorController = this.createErrorController(setTask);
+    const completedController: OnTaskCompletedController = this.createCompletedHandler(setTask);
 
     while (task) {
       try {
         await task.onExecute();
-        await this._loopController.onTaskCompleted(completedHandler);
+        await this._onTaskCompleted(task, completedController);
       } catch (error) {
         await task.onError(error);
-        await this._loopController.onTaskError(error, errorHandler);
+        await this._onTaskError(task, error, errorController);
       }
     }
-    await this._loopController.onLoopCompleted();
+    this._isLooping = false;
+    await this._onLoopCompleted();
   }
 
-  createErrorHandler(setTask: (task: Task) => void): TaskErrorHandler {
+  createErrorController(setTask: (task: Task) => void): OnTaskErrorController {
     return {
       retry: async () => {
         setTask(this.getHead());
@@ -87,13 +103,10 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
         }
         setTask(task);
       },
-      sleep: (timeout: number) => {
-        this.sleep(timeout);
-      },
     };
   }
 
-  createCompletedHandler(setTask: (task: Task) => void): TaskCompletedHandler {
+  createCompletedHandler(setTask: (task: Task) => void): OnTaskCompletedController {
     return {
       next: async () => {
         const task = this.peekHead();
@@ -109,9 +122,6 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task>{
           task = this.peekHead();
         }
         setTask(task);
-      },
-      sleep: (timeout: number) => {
-        this.sleep(timeout);
       },
     };
   }

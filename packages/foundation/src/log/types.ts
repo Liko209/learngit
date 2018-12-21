@@ -54,23 +54,21 @@ interface IQueueLoop {
   wake(): void;
 }
 
-type TaskErrorHandler = {
+type OnTaskErrorController = {
   retry: () => Promise<void>,
   ignore: () => Promise<void>,
   abort: () => Promise<void>,
   abortAll: () => Promise<void>,
-  sleep: (timeout: number) => void,
 };
 
-type TaskCompletedHandler = {
+type OnTaskCompletedController = {
   next: () => Promise<void>,
   abortAll: () => Promise<void>,
-  sleep: (timeout: number) => void,
 };
 
-type LoopController = {
-  onTaskError: (error: Error, handler: TaskErrorHandler) => Promise<void>,
-  onTaskCompleted: (handler: TaskCompletedHandler) => Promise<void>,
+type LoopProgressCallback = {
+  onTaskError: (error: Error, loopController: OnTaskErrorController) => Promise<void>,
+  onTaskCompleted: (loopController: OnTaskCompletedController) => Promise<void>,
   onLoopCompleted: () => Promise<void>,
 };
 
@@ -96,8 +94,8 @@ export {
   IDeque,
   IAccessor,
   IQueueLoop,
-  LoopController,
-  TaskErrorHandler,
-  TaskCompletedHandler,
+  LoopProgressCallback,
+  OnTaskErrorController,
+  OnTaskCompletedController,
   LogEntity,
 };

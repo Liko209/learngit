@@ -1,5 +1,5 @@
 import { TaskQueueLoop } from '../TaskQueueLoop';
-import { TaskCompletedHandler, TaskErrorHandler } from '../types';
+import { OnTaskCompletedController, OnTaskErrorController } from '../types';
 import { Task } from '../task';
 describe('TaskQueueLoop', () => {
 
@@ -41,11 +41,10 @@ describe('TaskQueueLoop', () => {
   describe('loop()', () => {
     it('should loop normal', async () => {
       const spyLoopCompleted = jest.fn();
-      const taskQueueLoop = new TaskQueueLoop({
-        onTaskError: async (error: Error, handler: TaskErrorHandler) => await handler.abort(),
-        onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
-        onLoopCompleted: spyLoopCompleted,
-      });
+      const taskQueueLoop = new TaskQueueLoop()
+        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abort())
+        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnLoopCompleted(spyLoopCompleted);
       const tasks = [
         new Task()
           .setOnExecute(jest.fn())
@@ -86,11 +85,10 @@ describe('TaskQueueLoop', () => {
 
   describe('createErrorHandler()', () => {
     it('should abort correctly when throw error: task1=>success, task2=>error, errorHandler.abort, task2.onAbort, task3=>task3.onExecute()', async () => {
-      const taskQueueLoop = new TaskQueueLoop({
-        onTaskError: async (error: Error, handler: TaskErrorHandler) => await handler.abort(),
-        onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
-        onLoopCompleted: async () => { },
-      });
+      const taskQueueLoop = new TaskQueueLoop()
+        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abort())
+        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnLoopCompleted(async () => { });
       const tasks = [
         new Task()
           .setOnExecute(jest.fn())
@@ -135,12 +133,10 @@ describe('TaskQueueLoop', () => {
     });
 
     it('should abortAll correctly when throw error: task1=>success, task2=>error, errorHandler.abortAll, task2.onAbort, task3=>task3.onAbort()', async () => {
-      // const taskQueueLoop = new TaskQueueLoop();
-      const taskQueueLoop = new TaskQueueLoop({
-        onTaskError: async (error: Error, handler: TaskErrorHandler) => await handler.abortAll(),
-        onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
-        onLoopCompleted: async () => { },
-      });
+      const taskQueueLoop = new TaskQueueLoop()
+        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abortAll())
+        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnLoopCompleted(async () => { });
       const tasks = [
         new Task()
           .setOnExecute(jest.fn())
@@ -186,13 +182,10 @@ describe('TaskQueueLoop', () => {
     });
 
     it('should ignore correctly when throw error: task1=>success, task2=>error, errorHandler.ignore, task2.onIgnore, task3=>task3.onExecute()', async () => {
-      // const taskQueueLoop = new TaskQueueLoop();
-
-      const taskQueueLoop = new TaskQueueLoop({
-        onTaskError: async (error: Error, handler: TaskErrorHandler) => await handler.ignore(),
-        onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
-        onLoopCompleted: async () => { },
-      });
+      const taskQueueLoop = new TaskQueueLoop()
+        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.ignore())
+        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnLoopCompleted(async () => { });
       const tasks = [
         new Task()
           .setOnExecute(jest.fn())
@@ -237,19 +230,19 @@ describe('TaskQueueLoop', () => {
     });
 
     it('should retry N times correctly when throw error', async () => {
-      const taskQueueLoop = new TaskQueueLoop({
-        onTaskError: async (error: Error, handler: TaskErrorHandler) => {
+      const taskQueueLoop = new TaskQueueLoop()
+        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => {
+
           const curTask = taskQueueLoop.getHead();
           if (curTask.retryCount < 3) {
             curTask.retryCount++;
-            await handler.retry();
+            await loopController.retry();
           } else {
-            await handler.abort();
+            await loopController.abort();
           }
-        },
-        onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.next(),
-        onLoopCompleted: async () => { },
-      });
+        })
+        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnLoopCompleted(async () => { });
       const mockExecute = jest.fn();
       const tasks = [
         new Task()
@@ -299,11 +292,10 @@ describe('TaskQueueLoop', () => {
 
   describe('createCompletedHandler()', () => {
     it('should abortAll task', async () => {
-      const taskQueueLoop = new TaskQueueLoop({
-        onTaskError: async (error: Error, handler: TaskErrorHandler) => await handler.abortAll(),
-        onTaskCompleted: async (handler: TaskCompletedHandler) => await handler.abortAll(),
-        onLoopCompleted: async () => { },
-      });
+      const taskQueueLoop = new TaskQueueLoop()
+        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abortAll())
+        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.abortAll())
+        .setOnLoopCompleted(async () => { });
       const tasks = [
         new Task()
           .setOnExecute(jest.fn())
