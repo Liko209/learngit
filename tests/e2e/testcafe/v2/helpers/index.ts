@@ -90,6 +90,14 @@ class Helper {
     return { glip, platform };
   }
 
+  glip(user: IUser) {
+    return  this.sdkHelper.sdkManager.glip(user);
+  }
+
+  platform(user: IUser) {
+    return this.sdkHelper.sdkManager.platform(user);
+  }
+
   // testcafe extend
   get href() {
     return ClientFunction(() => document.location.href)();

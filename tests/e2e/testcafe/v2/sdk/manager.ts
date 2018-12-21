@@ -35,18 +35,40 @@ export class SdkManager {
     return platform;
   }
 
-  private async createGlip(user: IUser) {
-    return new GlipSdk(this.glipUrl, await this.getPlatform(user), this.glipDb);
+  private createGlip(user: IUser ) {
+    return new GlipSdk(this.glipUrl, this.platform(user), this.glipDb);
   }
-
+  
   async getGlip(user: IUser) {
     assert(user);
     let glip: GlipSdk = this.glips[user.rcId];
     if (glip === undefined) {
-      glip = await this.createGlip(user);
+      glip = this.createGlip(user);
       await glip.auth();
       this.glips[user.rcId] = glip;
     }
     return glip;
   }
+
+  platform(user: IUser) {
+    assert(user);
+    let platform: RcPlatformSdk = this.platforms[user.rcId];
+    if (platform === undefined) {
+      platform = this.createPlatform(user);
+      this.platforms[user.rcId] = platform;
+    }
+    return platform;
+  }
+
+
+  glip(user: IUser) {
+    assert(user);
+    let glip: GlipSdk = this.glips[user.rcId];
+    if (glip === undefined) {
+      glip = this.createGlip(user);
+      this.glips[user.rcId] = glip;
+    }
+    return glip;
+  }
+
 }
