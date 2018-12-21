@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { MessageProps, MessageViewProps } from './types';
-import { goToConversationWithPerson } from '@/common/goToConversation';
+import { goToConversation } from '@/common/goToConversation';
 
 type Props = MessageProps & MessageViewProps;
 
@@ -17,7 +17,7 @@ class MessageView extends Component<Props> {
 
   onClickMessage = async () => {
     const { id, dismiss } = this.props;
-    const result = await goToConversationWithPerson(id);
+    const result = await goToConversation(id);
     if (result) {
       dismiss();
     }

@@ -92,8 +92,10 @@ export class MessageRouterChangeHelper {
     const { state } = window.history.state || { state: {} };
     if (!state || !state.source || state.source !== 'leftRail') {
       const handler = SectionGroupHandler.getInstance();
-      GroupHandler.ensureGroupOpened(id);
-      handler.onReady(() => GroupHandler.accessGroup(id));
+      handler.onReady(() => {
+        GroupHandler.ensureGroupOpened(id);
+        GroupHandler.accessGroup(id);
+      });
     }
   }
 }
