@@ -7,10 +7,10 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('SendNewMessage')
-    .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+    .beforeEach(setupCase(BrandTire.RCOFFICE))
     .afterEach(teardownCase());
 
 test(formalName('JPT-285 Check New Message popup can be opened and closed', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-285']), async t => {

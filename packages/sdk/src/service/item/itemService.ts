@@ -103,8 +103,8 @@ class ItemService extends BaseService<Item> {
     );
   }
 
-  cleanUploadingFiles(groupId: number) {
-    this._getItemFileHandler().cleanUploadingFiles(groupId);
+  cleanUploadingFiles(groupId: number, itemIds: number[]) {
+    this._getItemFileHandler().cleanUploadingFiles(groupId, itemIds);
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
