@@ -1,4 +1,6 @@
 interface IrtcCallSession {
-  setsession(session: any): void;
+  setSession(session: any): void;
   hangup(): void;
 }
+
+export { IrtcCallSession };

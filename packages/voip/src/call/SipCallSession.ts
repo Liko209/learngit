@@ -1,6 +1,19 @@
 import { EventEmitter2 } from 'eventemitter2';
+import { IrtcCallSession } from './irtcCallSession';
 
-class SipCallSession extends EventEmitter2 {
+enum SIP_CALL_SESSION_STATE {
+  CONFIRMED = 'sipcallsessionstate.confirmed',
+  DISCONNECTED = 'sipcallsessionstate.disconnected',
+  ERROR = 'sipcallsessionstate.error',
+}
+
+enum WEBPHONE_STATE {
+  ACCEPTED = 'accepted',
+  BYE = 'bye',
+  FAILED = 'failed',
+}
+
+class SipCallSession extends EventEmitter2 implements IrtcCallSession {
   private _session: any = null;
   constructor() {
     super();
@@ -9,18 +22,37 @@ class SipCallSession extends EventEmitter2 {
     if (this._session == null) {
       return;
     }
-    this._session.on('accepted', this._onSessionConfirmed.bind(this));
-    this._session.on('accepted', this._onSessionDisconnected.bind(this));
-    this._session.on('failed', this._onSessionError.bind(this));
+
+    this._session.on(WEBPHONE_STATE.ACCEPTED, () => {
+      this._onSessionConfirmed();
+    });
+
+    this._session.on(WEBPHONE_STATE.BYE, () => {
+      this._onSessionDisconnected();
+    });
+
+    this._session.on(WEBPHONE_STATE.FAILED, () => {
+      this._onSessionError();
+    });
   }
 
-  private _onSessionConfirmed() {}
+  private _onSessionConfirmed() {
+    this.emit(SIP_CALL_SESSION_STATE.CONFIRMED);
+  }
 
-  private _onSessionDisconnected() {}
+  private _onSessionDisconnected() {
+    this.emit(SIP_CALL_SESSION_STATE.DISCONNECTED);
+  }
 
-  private _onSessionError() {}
+  private _onSessionError() {
+    this.emit(SIP_CALL_SESSION_STATE.ERROR);
+  }
 
-  hangup() {}
+  hangup() {
+    if (this._session != null) {
+      this._session.hangup();
+    }
+  }
 
   setSession(session: any) {
     if (session != null) {
@@ -28,4 +60,10 @@ class SipCallSession extends EventEmitter2 {
       this._prepareSipSession();
     }
   }
+
+  getSession() {
+    return this._session;
+  }
 }
+
+export { SipCallSession, SIP_CALL_SESSION_STATE, WEBPHONE_STATE };
