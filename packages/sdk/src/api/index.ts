@@ -13,8 +13,14 @@ import { ITokenRefreshDelegate } from './ringcentral/ITokenRefreshDelegate';
 import { loginGlip, indexData, initialData, remainingData } from './glip/user';
 export { default as Api } from './api';
 export {
-    loginRCByPassword, loginGlip2ByPassword,
-    refreshToken, loginGlip, indexData, initialData, remainingData, ITokenRefreshDelegate,
-    ITokenModel,
+  loginRCByPassword,
+  loginGlip2ByPassword,
+  refreshToken,
+  loginGlip,
+  indexData,
+  initialData,
+  remainingData,
+  ITokenRefreshDelegate,
+  ITokenModel,
 };
 export * from './handlers';
