@@ -13,8 +13,8 @@ class LoggerImpl implements IRTCLogger {
 }
 
 describe('LoggerProxy', async () => {
-  const voipTag = 'VoIP';
-  const formatVoipTag = 'VoIP:';
+  const voipTag: string = 'VoIP';
+  const formatVoipTag: string = 'VoIP:';
 
   describe('info', () => {
     it('Should print empty when not insert logger [JPT-553]', async () => {
@@ -92,6 +92,51 @@ describe('LoggerProxy', async () => {
       expect(loggerImpl.doLog).toHaveBeenCalledWith(
         LOG_LEVEL.TRACE,
         `${formatVoipTag} trace`,
+      );
+    });
+  });
+
+  describe('loggerConnector', () => {
+    const category: string = 'sip-ua';
+    const label: string = 'undefined';
+    const formatSipTag: string = `VoiP-Sip: ${category} [${label}]:`;
+    it('Should print debug log message when get debug level [JPT-571]', async () => {
+      const loggerImpl = new LoggerImpl();
+      RTCEngine.setLogger(loggerImpl);
+      rtcLogger.loggerConnector('debug', category, label, 'debug');
+      expect(loggerImpl.doLog).toHaveBeenCalledWith(
+        LOG_LEVEL.DEBUG,
+        `${formatSipTag} debug`,
+      );
+    });
+
+    it('Should print info log message when get log level [JPT-570]', async () => {
+      const loggerImpl = new LoggerImpl();
+      RTCEngine.setLogger(loggerImpl);
+      rtcLogger.loggerConnector('log', category, label, 'info');
+      expect(loggerImpl.doLog).toHaveBeenCalledWith(
+        LOG_LEVEL.INFO,
+        `${formatSipTag} info`,
+      );
+    });
+
+    it('Should print warn log message when get warn level [JPT-569]', async () => {
+      const loggerImpl = new LoggerImpl();
+      RTCEngine.setLogger(loggerImpl);
+      rtcLogger.loggerConnector('warn', category, label, 'warn');
+      expect(loggerImpl.doLog).toHaveBeenCalledWith(
+        LOG_LEVEL.WARN,
+        `${formatSipTag} warn`,
+      );
+    });
+
+    it('Should print error log message when get error level [JPT-572]', async () => {
+      const loggerImpl = new LoggerImpl();
+      RTCEngine.setLogger(loggerImpl);
+      rtcLogger.loggerConnector('error', category, label, 'error');
+      expect(loggerImpl.doLog).toHaveBeenCalledWith(
+        LOG_LEVEL.ERROR,
+        `${formatSipTag} error`,
       );
     });
   });
