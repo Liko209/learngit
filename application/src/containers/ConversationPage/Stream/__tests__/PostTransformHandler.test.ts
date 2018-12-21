@@ -60,13 +60,13 @@ class FakeSeparatorHandler implements ISeparatorHandler {
 }
 
 describe('PostTransformHandler', () => {
-  describe('appendPosts()', () => {
+  describe('upsert()', () => {
     it('should append posts', () => {
       const { transformHandler } = setup({
         groupId: 1,
       });
 
-      transformHandler.appendPosts([
+      transformHandler.upsert([
         { id: 10, created_at: 10, group_id: 1 },
         { id: 11, created_at: 11, group_id: 1 },
         { id: 21, created_at: 21, group_id: 2 },
