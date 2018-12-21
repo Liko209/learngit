@@ -10,14 +10,15 @@ import { getFileName } from '../../../foundation/utils/getFileName';
 
 type FileNameProps = {
   filename: string;
+  color?: string;
 };
 
-const FileNameWrapper = styled.div`
+const FileNameWrapper = styled('div')<{ color?: string }>`
   display: flex;
   min-width: 0;
   align-items: center;
   font-weight: 400;
-  color: ${palette('grey', '700')};
+  color: ${({ color }) => (color ? color : palette('grey', '700'))};
   ${ellipsis};
 `;
 
@@ -26,11 +27,11 @@ const LeftName = styled.span`
 `;
 
 const FileName = (Props: FileNameProps) => {
-  const { filename } = Props;
+  const { filename, color } = Props;
   const [left, right] = getFileName(filename);
 
   return (
-    <FileNameWrapper data-test-automation-id="file-name">
+    <FileNameWrapper color={color} data-test-automation-id="file-name">
       <LeftName>{left}</LeftName>
       <span>{right}</span>
     </FileNameWrapper>

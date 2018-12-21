@@ -8,7 +8,6 @@ import React, { MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
 import { t } from 'i18next';
 import {
-  shape,
   spacing,
   height,
   width,
@@ -38,9 +37,9 @@ type AttachmentItemProps = IconProps &
   };
 
 const StatusMap = {
-  normal: (theme: any) => grey('900'),
-  loading: (theme: any) => grey('900'),
-  error: (theme: any) => palette('semantic', 'negative'),
+  normal: grey('900'),
+  loading: grey('900'),
+  error: palette('semantic', 'negative'),
 };
 
 const Wrapper = styled.div`
@@ -118,7 +117,11 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   );
   return (
     <Wrapper>
-      <JuiFileWithExpand fileName={name} Actions={action} />
+      <JuiFileWithExpand
+        fileNameColor={StatusMap[status || '']}
+        fileName={name}
+        Actions={action}
+      />
     </Wrapper>
   );
 };

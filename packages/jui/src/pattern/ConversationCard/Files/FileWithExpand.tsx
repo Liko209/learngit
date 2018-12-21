@@ -12,6 +12,7 @@ import { spacing } from '../../../foundation/utils';
 
 type JuiFileWithExpandProps = {
   fileName: string;
+  fileNameColor?: string;
   Actions: JSX.Element;
   expand?: boolean;
   children?: React.ReactNode;
@@ -32,7 +33,7 @@ const ActionWrapper = styled.div`
 const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
   props: JuiFileWithExpandProps,
 ) => {
-  const { fileName, Actions, children, expand } = props;
+  const { fileName, Actions, children, expand, fileNameColor } = props;
 
   return (
     <Jui.FileExpandItemWrapper>
@@ -40,7 +41,7 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
         <Jui.FileExpandItem>
           <Jui.FileIcon size="small" />
           <NameWithActions>
-            <FileName filename={fileName} />
+            <FileName color={fileNameColor} filename={fileName} />
             <ActionWrapper>{Actions}</ActionWrapper>
           </NameWithActions>
         </Jui.FileExpandItem>
