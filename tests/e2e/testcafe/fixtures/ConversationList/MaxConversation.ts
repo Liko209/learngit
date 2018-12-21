@@ -6,16 +6,16 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import * as _ from 'lodash';
 
 fixture('ConversationList/maxConversation')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 const DEFAULT_MAX_NUMBER = 20;
 test(formalName('JPT-58 Show conversations with limit count conversations, older unread and current opened;JPT-344 The conversation will disappear when removing one older conversation from Fav and the section shows >= limit count conversations',
-    ['JPT-58', 'JPT-344', 'P2', 'P1', 'ConversationList', 'Mia.Cai']),
+  ['JPT-58', 'JPT-344', 'P2', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const createdNum = 6;
     const MAX_NUMBER = 3;
@@ -47,7 +47,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
     });
 
     const newTeamIds = [];
-    const umiIds = [1, 5 ,6];
+    const umiIds = [1, 5, 6];
     await h(t).withLog(`And I create ${createdNum} new teams`, async () => {
       for (let i = createdNum; i > 0; i--) {
         const newTeam = await user.sdk.platform.createGroup({
@@ -66,7 +66,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded(); 
+      await app.homePage.ensureLoaded();
     }, true);
 
     await h(t).withLog('And Make sure current opened conversation isn\'t older team)', async () => {
@@ -124,7 +124,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
     await h(t).withLog('Then All new teams except the conversation.3/4 should be found in the team section', async () => {
       const expectNewTeamIds = Array.from(newTeamIds);
-      expectNewTeamIds.splice(2, 2); 
+      expectNewTeamIds.splice(2, 2);
       for (let i = 0; i < expectNewTeamIds.length; i++) {
         await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok(newTeamIds.indexOf(expectNewTeamIds[i]) + " : " + expectNewTeamIds[i]);
       }
@@ -148,7 +148,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
 
 test(formalName('JPT-353 maxConversation=limit conversation count(without unread); JPT-310 Shouldn\'t automatically bring up an older conversation when remove one conversation;JPT-342 The conversation will be back to the section when removing one conversation from Fav and it isn\'t older than the conversation list',
-    ['JPT-353', 'JPT-310', 'JPT-342', 'P2', 'ConversationList', , 'Mia.Cai']),
+  ['JPT-353', 'JPT-310', 'JPT-342', 'P2', 'ConversationList', , 'Mia.Cai']),
   async (t: TestController) => {
     const MAX_NUMBER = 3;
     let realNum = MAX_NUMBER;
@@ -168,14 +168,14 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
       await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: MAX_NUMBER })
     });
 
-    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {skip_close_conversation_confirmation: true,});
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
+      await user.sdk.glip.updateProfile(user.rcId, { skip_close_conversation_confirmation: true, });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-        await t.wait(5e3);
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+      await t.wait(5e3);
     });
 
     const newTeamIds = [];
@@ -197,7 +197,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     // case JPT-353
     await h(t).withLog(`Then max conversation count should be limited, total number should be ${realNum}`, async () => {
-      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 10e3});
+      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 10e3 });
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
@@ -206,7 +206,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     });
 
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 10e3});
+      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 10e3 });
     });
 
     // case JPT-310
@@ -220,7 +220,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = MAX_NUMBER - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3});
+      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3 });
     });
 
     await h(t).withLog("When I click conversation.2's favorite buttom", async () => {
@@ -230,7 +230,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum - 1;
     await h(t).withLog(`Then max conversation count = ${realNum}`, async () => {
-      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3});
+      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3 });
     });
 
     // case JPT-342
@@ -246,7 +246,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     realNum = realNum + 1;
     await h(t).withLog(`And max conversation count = ${realNum}`, async () => {
-      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3});
+      await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3 });
       await user.sdk.glip.updateProfile(user.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
     });
   }

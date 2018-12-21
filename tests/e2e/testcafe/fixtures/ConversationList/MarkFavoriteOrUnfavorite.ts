@@ -8,14 +8,14 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/MarkFavoriteOrUnfavorite')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Display Favorite button when user tap more button of a conversation in DM/Teams & When user mark a conversation as favorite, move the conversation to favorite section.',
-    ['P1', 'P2', 'JPT-181', 'JPT-183', 'ConversationList']),
+  ['P1', 'P2', 'JPT-181', 'JPT-183', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -92,13 +92,13 @@ test(formalName('Display Favorite button when user tap more button of a conversa
 );
 
 test(formalName('Display Unfavorite button when user tap more button of a conversation in favorite section. & When user mark a conversation as unfavorite, remove the conversation from favorite section.',
-    ['P1', 'P2', 'JPT-182', 'JPT-184', 'ConversationList']),
+  ['P1', 'P2', 'JPT-182', 'JPT-184', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[4];
     user.sdk = await h(t).getSdk(user);
-   
+
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
 
@@ -122,7 +122,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
       },
     );
 
-    await h(t).withLog( `When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
@@ -173,7 +173,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 );
 
 test(formalName('When Me conversation is removed favorite mark, it should be displayed in DM section.',
-    ['P2', 'JPT-185', 'ConversationList']),
+  ['P2', 'JPT-185', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -189,7 +189,7 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
       async () => {
         await user.sdk.glip.showGroups(user.rcId, [meChatId]);
         await user.sdk.glip.favoriteGroups(user.rcId, [+meChatId]);
- 
+
       },
     );
 

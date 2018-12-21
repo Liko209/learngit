@@ -2,17 +2,17 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 
 fixture('Profile/ViewYourProfile')
-    .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+    .beforeEach(setupCase(BrandTire.RCOFFICE))
     .afterEach(teardownCase());
 
-test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460','JPT-453', 'P1','zack']), async (t) => {
+test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'JPT-453', 'P1', 'zack']), async (t) => {
     const user = h(t).rcData.mainCompany.users[4];
     const app = new AppRoot(t);
-    const viewProfile= app.homePage.viewProfile;
+    const viewProfile = app.homePage.viewProfile;
     const conversationSection = app.homePage.messageTab.conversationPage;
 
     await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
@@ -30,10 +30,10 @@ test(formalName('Open personal profile via top bar avatar then open conversation
         await viewProfile.shouldExistviewProfile('Profile');
     }, true);
     await h(t).withLog('When I click messasge link in Profile', async () => {
-      await t.click(viewProfile.messageLink);
-     }, true);
-     await h(t).withLog('And I can jump to Me Conversation', async () => {
-      await t.expect(conversationSection.title.withText(/\(me\)$/).exists).ok();
-     }, true);
+        await t.click(viewProfile.messageLink);
+    }, true);
+    await h(t).withLog('And I can jump to Me Conversation', async () => {
+        await t.expect(conversationSection.title.withText(/\(me\)$/).exists).ok();
+    }, true);
 
 });

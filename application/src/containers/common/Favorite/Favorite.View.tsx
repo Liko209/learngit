@@ -56,6 +56,7 @@ class FavoriteViewComponent extends Component<Props> {
         color="accent.gold"
         onClick={this.onClickFavorite}
         tooltipTitle={t(tooltipKey)}
+        ariaLabel={t(tooltipKey)}
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>

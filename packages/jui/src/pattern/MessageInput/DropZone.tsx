@@ -36,6 +36,7 @@ class TargetBox extends Component<
         : 'none',
       background: isOver ? grey('200')({ theme }) : 'transparent',
       opacity: isOver ? theme.palette.action.hoverOpacity * 2 : 1,
+      minHeight: 0 /* firefox compatibility */,
       ...dropzoneClass,
     };
     return connectDropTarget(<div style={style}>{children}</div>);
