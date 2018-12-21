@@ -5,7 +5,8 @@
   "main": "src",
   "dependencies": {
     "lodash": "4.17.11",
-    "ts-javascript-state-machine": "3.1.3"
+    "ts-javascript-state-machine": "3.1.3",
+    "eventemitter2": "5.0.1"
   },
   "devDependencies": {
     "@types/lodash": "4.14.117",

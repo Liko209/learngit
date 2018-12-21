@@ -44,10 +44,10 @@ type JuiSearchTitleProps = {
 };
 
 const JuiSearchTitle = (props: JuiSearchTitleProps) => {
-  const { title, isShowMore, showMore } = props;
+  const { title, isShowMore, showMore, ...rest } = props;
 
   return (
-    <SearchTitleWrapper>
+    <SearchTitleWrapper {...rest}>
       <SearchTitleText>{title}</SearchTitleText>
       {isShowMore && <ShowMoreBtn>{showMore}</ShowMoreBtn>}
     </SearchTitleWrapper>

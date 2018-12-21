@@ -58,9 +58,9 @@ const StyledMenuItem = styled(MuiMenuItem)`
 
 class JuiMenuItem extends React.Component<JuiMenuItemProps> {
   render() {
-    const { icon, children, ...rest } = this.props;
+    const { icon, children, disabled, ...rest } = this.props;
     return (
-      <StyledMenuItem {...rest}>
+      <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>
         {icon && (
           <StyledJuiListItemIcon>
             <JuiIconography fontSize="inherit">{icon}</JuiIconography>
