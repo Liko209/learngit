@@ -16,11 +16,9 @@ import {
   palette,
 } from '../../foundation/utils/styles';
 // import { JuiIconography } from '../../foundation/Iconography';
-import { truncateLongName } from '../../foundation/utils/getFileName';
 import { JuiCircularProgress } from '../../components/Progress';
 import { JuiIconButton } from '../../components/Buttons';
-
-import defaultIcon from './default.svg';
+import { JuiFileWithExpand } from '../ConversationCard/Files/FileWithExpand';
 
 type IconProps = {
   icon?: string;
@@ -55,42 +53,9 @@ const Wrapper = styled.div`
   min-width: ${width(77)};
   max-width: ${width(77)};
   padding: ${spacing(4, 3, 4, 4)};
-  border-radius: ${shape('borderRadius', 1)};
-  box-shadow: ${props => props.theme.shadows[1]};
   margin-right: ${spacing(4)};
   margin-bottom: ${spacing(2)};
 `;
-
-const Icon = styled.div<IconProps>`
-  width: ${width(5)};
-  height: ${height(5)};
-  min-width: ${width(5)};
-  background-size: cover;
-  background-image: url(${({ icon }) => icon || defaultIcon});
-  overflow: hidden;
-`;
-
-const NameArea = styled.div<StatusProps>`
-  display: flex;
-  flex: 1;
-  height: ${height(5)};
-  line-height: ${height(5)};
-  max-height: ${height(5)};
-  margin-left: ${spacing(2)};
-  margin-right: ${spacing(1)};
-  max-width: ${width(63)};
-  overflow-x: hidden;
-  opacity: ${({ status }) => (status === 'loading' ? '0.26' : 1)};
-  color: ${({ theme, status }) => StatusMap[status || 'normal'](theme)};
-`;
-
-const NameHead = styled.span`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-`;
-
-const NameTail = styled.span``;
 
 const ActionWrapper = styled.div`
   display: flex;
@@ -123,7 +88,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     onClick={props.onClick}
     data-test-automation-id="attachment-action-button"
   >
-    {props.value && (
+    {typeof props.value !== 'undefined' && (
       <JuiCircularProgress variant="static" size={24} value={props.value} />
     )}
     <IconWrapper>
@@ -141,22 +106,19 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { icon, name, status, onClickDeleteButton, progress } = props;
-  const [left, right] = truncateLongName(name);
+  const { name, status, onClickDeleteButton, progress } = props;
   const loading = status === 'loading' || typeof progress !== 'undefined';
+  const action = (
+    <AttachmentItemAction
+      onClick={onClickDeleteButton}
+      loading={loading}
+      value={progress}
+      icon="close"
+    />
+  );
   return (
     <Wrapper>
-      <Icon icon={icon} />
-      <NameArea status={status} data-test-automation-id="attachment-file-name">
-        <NameHead>{left}</NameHead>
-        <NameTail>{right}</NameTail>
-      </NameArea>
-      <AttachmentItemAction
-        onClick={onClickDeleteButton}
-        loading={loading}
-        value={progress}
-        icon="close"
-      />
+      <JuiFileWithExpand fileName={name} Actions={action} />
     </Wrapper>
   );
 };
