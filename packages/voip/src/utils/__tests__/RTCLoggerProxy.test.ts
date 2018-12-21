@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcLogger } from '../LoggerProxy';
+import { rtcLogger } from '../RTCLoggerProxy';
 import { RTCEngine } from '../../api/rtcEngine';
-import { LOG_LEVEL, ILogger } from '../ILogger';
+import { LOG_LEVEL, IRTCLogger } from '../IRTCLogger';
 
-class LoggerImpl implements ILogger {
+class LoggerImpl implements IRTCLogger {
   doLog = jest.fn();
 }
 

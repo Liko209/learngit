@@ -5,8 +5,8 @@
  */
 
 import { RTCAccount, IRTCAccountListener } from './rtcAccount';
-import { ILogger } from '../utils/ILogger';
-import { rtcLogger } from '../utils/LoggerProxy';
+import { IRTCLogger } from '../utils/IRTCLogger';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 class RTCEngine {
   private static instance: RTCEngine;
@@ -24,7 +24,7 @@ class RTCEngine {
     return new RTCAccount(listener);
   }
 
-  public static setLogger(logger: ILogger): void {
+  public static setLogger(logger: IRTCLogger): void {
     rtcLogger.setLogger(logger);
   }
 }

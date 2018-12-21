@@ -13,7 +13,7 @@ enum LOG_LEVEL {
   TRACE = 5000,
 }
 
-interface ILogger {
+interface IRTCLogger {
   doLog(level: LOG_LEVEL, message: string): void;
 }
-export { LOG_LEVEL, ILogger };
+export { LOG_LEVEL, IRTCLogger };

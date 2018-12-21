@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { LOG_LEVEL, ILogger } from './ILogger';
-class LoggerProxy {
-  private _logger: ILogger;
+import { LOG_LEVEL, IRTCLogger } from './IRTCLogger';
+class RTCLoggerProxy {
+  private _logger: IRTCLogger;
 
-  public setLogger(logger: ILogger): void {
+  public setLogger(logger: IRTCLogger): void {
     this._logger = logger;
   }
 
@@ -50,6 +50,6 @@ class LoggerProxy {
   }
 }
 
-const rtcLogger = new LoggerProxy();
+const rtcLogger = new RTCLoggerProxy();
 
 export { rtcLogger };
