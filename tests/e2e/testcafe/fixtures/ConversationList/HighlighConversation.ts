@@ -7,18 +7,13 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/HighlightConversation')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(
-  formalName('Open last conversation when login', [
-    'JPT-144',
-    'P2',
-    'ConversationList',
-  ]),
+test(formalName('Open last conversation when login and group show in the top of conversation list', ['JPT-144', 'JPT-463', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -55,7 +50,7 @@ test(
 
     await h(t).withLog(
       `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
+      user.extension
       }`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
@@ -77,17 +72,14 @@ test(
       await t.expect(textStyle.color).eql('rgb(6, 132, 189)');
     });
 
+    await h(t).withLog('And the group should display in the top of conversation list', async () => {
+      await directMessageSection.nthConversationEntry(0).groupIdShouldBe(group.data.id);
+    });
+
     await h(t).withLog(
       'And the content is shown on the conversation page',
       async () => {
-        await t
-          .expect(
-            app.homePage.messageTab.conversationPage.self.withAttribute(
-              'data-group-id',
-              group.data.id,
-            ).exists,
-          )
-          .ok();
+        await app.homePage.messageTab.conversationPage.groupIdShouldBe(group.data.id);
       },
     );
   },

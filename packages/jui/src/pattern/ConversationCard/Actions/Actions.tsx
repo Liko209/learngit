@@ -9,7 +9,7 @@ import styled from '../../../foundation/styled-components';
 import { spacing, width, height } from '../../../foundation/utils/styles';
 
 type Props = {
-  children?: (boolean | JSX.Element)[] | boolean | JSX.Element;
+  children?: (null | JSX.Element)[] | null | JSX.Element;
 };
 
 const Wrapper = styled.span`

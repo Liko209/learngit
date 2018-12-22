@@ -96,16 +96,27 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =
-    'This is the name of attachment itemThis is the name of attachment item.txt';
-  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
+    'This is the name of attachment itemThis is the name of attachment item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf';
+  const files = [
+    { name: f1 },
+    { name: f2 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+    { name: f3 },
+  ];
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>
       <DuplicateAlert
-        title="Updated Files?"
+        title="Update Files?"
         subtitle="The following files already exist."
         footText="Do you want to update the existing files or do you wish to create new files?"
-        duplicateFiles={files as File[]}
+        duplicateFiles={files}
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}

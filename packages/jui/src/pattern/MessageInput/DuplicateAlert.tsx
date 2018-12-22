@@ -7,17 +7,25 @@ import React from 'react';
 import { JuiButton } from '../../components/Buttons/Button';
 import { JuiModal } from '../../components/Dialog';
 import styled from '../../foundation/styled-components';
+import {
+  height,
+  grey,
+  spacing,
+  typography,
+} from '../../foundation/utils/styles';
 
 const Footer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
 `;
 
-const Right = styled.div``;
+const Content = styled.div`
+  color: ${grey('700')};
 
-const Content = styled.div``;
+  ${typography('body1')}
+`;
 
 type Props = {
   title: string;
@@ -28,6 +36,21 @@ type Props = {
   onCreate: () => void;
   duplicateFiles: File[];
 };
+
+const NameList = styled.ul`
+  max-height: ${height(44.5)};
+  overflow-y: auto;
+  background: ${grey('50')};
+  padding: ${spacing(2)};
+  box-sizing: border-box;
+  ${typography('body2')}
+`;
+
+const Item = styled.li`
+  list-style: none;
+  line-height: ${height(5)};
+  word-break: break-word;
+`;
 
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {
   const {
@@ -44,18 +67,34 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
     const content = (
       <Content data-test-automation-id="messageinput-duplicate-modal-title">
         {subtitle}
-        <br />
-        <ul>
+        <NameList>
           {duplicateFiles.map((file: File, index: number) => (
-            <li key={index}>{file.name}</li>
+            <Item key={index}>{file.name}</Item>
           ))}
-        </ul>
-        <br />
+        </NameList>
         {footText}
       </Content>
     );
     const footer = (
       <Footer data-test-automation-id="messageinput-duplicate-footer">
+        <JuiButton
+          onClick={onCancel}
+          color="primary"
+          variant="text"
+          autoFocus={true}
+          data-test-automation-id="messageinput-duplicate-cancel-button"
+        >
+          {'Cancel'}
+        </JuiButton>
+        <JuiButton
+          onClick={onUpdate}
+          color="primary"
+          variant="contained"
+          autoFocus={true}
+          data-test-automation-id="messageinput-duplicate-update-button"
+        >
+          {'Update'}
+        </JuiButton>
         <JuiButton
           onClick={onCreate}
           color="primary"
@@ -65,26 +104,6 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
         >
           {'Create'}
         </JuiButton>
-        <Right>
-          <JuiButton
-            onClick={onCancel}
-            color="primary"
-            variant="text"
-            autoFocus={true}
-            data-test-automation-id="messageinput-duplicate-cancel-button"
-          >
-            {'Cancel'}
-          </JuiButton>
-          <JuiButton
-            onClick={onUpdate}
-            color="primary"
-            variant="contained"
-            autoFocus={true}
-            data-test-automation-id="messageinput-duplicate-update-button"
-          >
-            {'Update'}
-          </JuiButton>
-        </Right>
       </Footer>
     );
     return (

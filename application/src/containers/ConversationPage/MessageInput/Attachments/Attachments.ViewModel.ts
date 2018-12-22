@@ -13,7 +13,6 @@ import {
 } from './types';
 import {
   ItemService,
-  SENDING_STATUS,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
@@ -21,7 +20,6 @@ import {
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
-import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
 import { ItemFile } from 'sdk/models';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
@@ -60,7 +58,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
           this.items.set(newItem.id, {
             item: newItem,
             data: record.data,
-            status: newItem.sendStatus,
           } as AttachmentItem);
         }
       });
@@ -99,7 +96,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       result.forEach((element: ItemFile) => {
         this.items.set(element.id, {
           item: element,
-          status: element.sendStatus,
         } as AttachmentItem);
       });
     } else {
@@ -133,24 +129,21 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   uploadFile = async (info: SelectFile, isUpdate: boolean) => {
     try {
       const { data } = info;
-      const form = new FormData();
-      form.append(FILE_FORM_DATA_KEYS.FILE_NAME, data.name);
-      form.append(FILE_FORM_DATA_KEYS.FILE, data);
       const item = await this._itemService.sendItemFile(
         this.props.id,
-        form,
+        data,
         isUpdate,
       );
       if (item) {
         this.items.set(item.id, {
           item,
           data,
-          status: SENDING_STATUS.INPROGRESS,
         } as AttachmentItem);
       }
       return item;
     } catch (e) {
       // TODO
+      console.log(146, e);
       return null;
     }
   }

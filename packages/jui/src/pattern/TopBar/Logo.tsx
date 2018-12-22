@@ -6,12 +6,12 @@
 
 import styled from '../../foundation/styled-components';
 import { JuiTypography } from '../../foundation/Typography';
-import { spacing, width } from '../../foundation/utils';
+import { spacing, width, typography } from '../../foundation/utils';
 
 const JuiLogo = styled(JuiTypography)`
   && {
     color: ${({ theme }) => `${theme.palette.primary.main}`};
-    font-size: 26px;
+    ${typography('headline')};
     margin-left: ${spacing(4)};
     margin-right: ${spacing(9)};
     width: ${width(41)};

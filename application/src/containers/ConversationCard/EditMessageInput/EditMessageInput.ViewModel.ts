@@ -74,13 +74,13 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   }
 
   @computed
-  private get _membersExcludeMe() {
-    return this._group.membersExcludeMe;
+  private get _members() {
+    return this._group.members;
   }
 
   @computed
   private get _users() {
-    return this._membersExcludeMe.map((id: number) => {
+    return this._members.map((id: number) => {
       const { userDisplayName } = getEntity(
         ENTITY_NAME.PERSON,
         id,

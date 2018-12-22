@@ -67,7 +67,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <JuiIconography fontSize="small">{key}</JuiIconography>;
   }
 
-  renderCopy = (value: string) => {
+  renderCopy = (value: string, aria?: string) => {
     const { t } = this.props;
     return (
       <FormCopy>
@@ -75,6 +75,9 @@ class ProfileDialogPersonContentViewComponent extends Component<
           size="small"
           onClick={this.onClickCopy.bind(this, value)}
           tooltipTitle={t('copy')}
+          ariaLabel={t('ariaCopy', {
+            value: aria || value,
+          })}
         >
           file_copy
         </JuiIconButton>
@@ -91,7 +94,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
     label,
     value,
     valueEmphasize = false,
-    copy,
+    copyAria,
+    copyValue,
   }: FormGroupType) => {
     return (
       <FormGroup>
@@ -100,7 +104,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copy && this.renderCopy(value)}
+        {copyValue && this.renderCopy(copyValue, copyAria)}
       </FormGroup>
     );
   }
@@ -160,7 +164,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('ext'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copy: true,
+                  copyAria: t('ariaExt'),
+                  copyValue: info.phoneNumber,
                 });
               })}
               {directNumbers.map((info: PhoneNumberInfo, index: number) => {
@@ -172,7 +177,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('directNumber'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copy: true,
+                  copyAria: t('ariaDirectNumber'),
+                  copyValue: info.phoneNumber,
                 });
               })}
               {person.email &&
@@ -181,7 +187,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('email'),
                   value: this.renderEmail(person.email),
                   valueEmphasize: true,
-                  copy: true,
+                  copyAria: t('ariaEmail'),
+                  copyValue: person.email,
                 })}
             </Grid>
           </Grid>
@@ -203,7 +210,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
                       icon: 'link',
                       label: t('webpage'),
                       value: person.homepage,
-                      copy: true,
+                      copyAria: t('ariaWebpage'),
+                      copyValue: person.homepage,
                     })}
                 </Grid>
               </Grid>

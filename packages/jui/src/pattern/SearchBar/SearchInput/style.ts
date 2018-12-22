@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 13:56:11
  * Copyright © RingCentral. All rights reserved.
  */
-import MuiIcon from '@material-ui/core/Icon';
+import { JuiIconButton } from '../../../components/Buttons/IconButton';
 import styled, { css } from '../../../foundation/styled-components';
 import {
   spacing,
@@ -16,6 +16,7 @@ import { JuiTextField } from '../../../components/Forms';
 
 type SearchWrapperType = {
   focus: boolean;
+  hasValue: string;
 };
 
 const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
@@ -27,8 +28,8 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   box-sizing: border-box;
   background: ${({ focus }) =>
       focus ? palette('common', 'white') : grey('100')}
-    ${({ focus }) => {
-      return focus
+    ${({ hasValue }) => {
+      return hasValue
         ? css`
             border-top-right-radius: ${spacing(1)};
             border-top-left-radius: ${spacing(1)};
@@ -51,7 +52,7 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   }
 `;
 
-const SearchIcon = styled(MuiIcon)`
+const SearchIcon = styled(JuiIconButton)`
   color: ${grey('500')};
 `;
 

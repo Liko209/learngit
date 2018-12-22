@@ -3,11 +3,11 @@ import { v4 as uuid } from 'uuid';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 declare var test: TestFn;
 fixture('CloseConversation')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Close current conversation directly, and navigate to blank page (without UMI)',
@@ -54,7 +54,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
         await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, true);
-     },
+      },
     );
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
@@ -87,9 +87,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`,
         async () => {
           await item.enter();
-          currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
-            'data-group-id',
-          );
+          currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
           await item.expectUmi(0);
           await item.openMoreMenu();
           await app.homePage.messageTab.moreMenu.close.enter();
@@ -153,13 +151,11 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     await h(t).withLog('All conversations should not be hidden before login', async () => {
       await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
       await user.sdk.glip.clearFavoriteGroups();
-      });
+    });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: true,
-        });
+        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, true);
       },
     );
 
@@ -180,9 +176,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
-      currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
-        'data-group-id',
-      );
+      currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
     });
 
     await h(t).withLog('When I open conversation B and close conversation A', async () => {
@@ -251,14 +245,12 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     await h(t).withLog('And I clean all UMI before login',
       async () => {
         await user.sdk.glip.clearAllUmi();
-     },
+      },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: false,
-        });
+        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, false);
       },
     );
 
@@ -279,6 +271,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     }, true);
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
 
@@ -371,9 +364,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: false,
-        });
+        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, false);
       },
     );
 
@@ -395,6 +386,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     }, true);
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
 

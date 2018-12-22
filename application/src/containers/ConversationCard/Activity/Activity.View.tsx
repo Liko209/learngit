@@ -17,9 +17,9 @@ class Activity extends Component<Props> {
     if (Object.keys(activity).length) {
       const { key, parameter } = activity;
       return (
-        <div data-test-automation-id="conversation-card-activity">
+        <span data-test-automation-id="conversation-card-activity">
           {t(key, parameter)}
-        </div>
+        </span>
       );
     }
     return null;
