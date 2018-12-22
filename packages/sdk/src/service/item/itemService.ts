@@ -29,7 +29,7 @@ class ItemService extends BaseService<Item> {
 
   async sendItemFile(
     groupId: number,
-    file: FormData,
+    file: File,
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
     return await this._getItemFileHandler().sendItemFile(
