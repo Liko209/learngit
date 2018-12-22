@@ -6,7 +6,7 @@
 
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { AttachmentItem } from './AttachmentItem';
+import { AttachmentItem, ITEM_STATUS } from './AttachmentItem';
 import { height, spacing } from '../../foundation/utils/styles';
 
 type ItemInfo = {
@@ -36,6 +36,7 @@ const AttachmentList: React.SFC<AttachmentListProps> = (
     <Wrapper data-test-automation-id="attachment-list">
       {files.map((looper: ItemInfo, idx: number) => (
         <AttachmentItem
+          status={ITEM_STATUS.NORMAL}
           name={looper.name}
           onClickDeleteButton={() => removeAttachment(looper)}
           key={idx}

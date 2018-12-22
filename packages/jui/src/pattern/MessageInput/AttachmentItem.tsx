@@ -32,16 +32,16 @@ enum ITEM_STATUS {
   ERROR,
 }
 
-type AttachmentItemProps = IconProps & {
-  defaultStatus?: ITEM_STATUS;
-  progress?: number;
-  name: string;
-  onClickDeleteButton?: (event: MouseEvent) => void;
-};
-
 type StatusProps = {
   status: ITEM_STATUS;
 };
+
+type AttachmentItemProps = StatusProps &
+  IconProps & {
+    progress?: number;
+    name: string;
+    onClickDeleteButton?: (event: MouseEvent) => void;
+  };
 
 const StatusMap = {
   [ITEM_STATUS.NORMAL]: (theme: any) => grey('900'),
@@ -147,33 +147,19 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { icon, name, onClickDeleteButton, progress } = props;
+  const { icon, name, status, onClickDeleteButton, progress } = props;
   const [left, right] = truncateLongName(name);
-  let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
-  console.log(147, realStatus, progress);
-  if (typeof progress !== 'undefined') {
-    if (progress < 0) {
-      realStatus = ITEM_STATUS.ERROR;
-    } else if (progress >= 0 && progress < 100) {
-      realStatus = ITEM_STATUS.LOADING;
-    } else {
-      realStatus = ITEM_STATUS.NORMAL;
-    }
-  }
   return (
     <Wrapper>
       <Icon icon={icon} />
-      <NameArea
-        status={realStatus}
-        data-test-automation-id="attachment-file-name"
-      >
+      <NameArea status={status} data-test-automation-id="attachment-file-name">
         <NameHead>{left}</NameHead>
         <NameTail>{right}</NameTail>
       </NameArea>
       <AttachmentItemAction
-        status={realStatus}
+        status={status}
         onClick={onClickDeleteButton}
-        loading={realStatus === ITEM_STATUS.LOADING}
+        loading={status === ITEM_STATUS.LOADING}
         value={progress}
         icon="close"
       />

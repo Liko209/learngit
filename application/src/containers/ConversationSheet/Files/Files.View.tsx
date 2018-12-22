@@ -11,7 +11,10 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { AttachmentItem } from 'jui/pattern/MessageInput/AttachmentItem';
+import {
+  AttachmentItem,
+  ITEM_STATUS,
+} from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
@@ -38,8 +41,21 @@ class FilesView extends React.Component<FilesViewProps> {
     name: string,
   ) => {
     const progress = progresses.get(id);
+    let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
+    if (typeof progress !== 'undefined') {
+      if (progress < 0) {
+        realStatus = ITEM_STATUS.ERROR;
+      } else if (progress >= 0 && progress < 100) {
+        realStatus = ITEM_STATUS.LOADING;
+      } else {
+        realStatus = ITEM_STATUS.NORMAL;
+      }
+    } else if (id < 0) {
+      realStatus = ITEM_STATUS.ERROR;
+    }
     return (
       <AttachmentItem
+        status={realStatus}
         key={id}
         name={name}
         progress={progress}
