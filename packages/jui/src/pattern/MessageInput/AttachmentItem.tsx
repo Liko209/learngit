@@ -36,6 +36,7 @@ type AttachmentItemProps = IconProps &
   StatusProps & {
     progress?: number;
     name: string;
+    hideRemoveButton?: boolean;
     onClickDeleteButton?: (event: MouseEvent) => void;
   };
 
@@ -113,6 +114,7 @@ type AttachmentItemActionProps = {
   onClick?: (event: MouseEvent) => void;
   loading?: boolean;
   value?: number;
+  hideRemoveButton?: boolean;
   icon?: string | JSX.Element;
 };
 
@@ -123,17 +125,17 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     onClick={props.onClick}
     data-test-automation-id="attachment-action-button"
   >
-    {props.value && (
+    {typeof props.value !== 'undefined' && (
       <JuiCircularProgress variant="static" size={24} value={props.value} />
     )}
     <IconWrapper>
-      {typeof props.icon === 'string' ? (
-        <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
-          close
-        </JuiIconButton>
-      ) : (
-        props.icon
-      )}
+      {typeof props.icon === 'string'
+        ? !props.hideRemoveButton && (
+            <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
+              close
+            </JuiIconButton>
+          )
+        : props.icon}
     </IconWrapper>
   </ActionWrapper>
 );
@@ -141,7 +143,14 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { icon, name, status, onClickDeleteButton, progress } = props;
+  const {
+    icon,
+    name,
+    status,
+    hideRemoveButton,
+    onClickDeleteButton,
+    progress,
+  } = props;
   const [left, right] = truncateLongName(name);
   const loading = status === 'loading' || typeof progress !== 'undefined';
   return (
@@ -155,6 +164,7 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
         onClick={onClickDeleteButton}
         loading={loading}
         value={progress}
+        hideRemoveButton={hideRemoveButton}
         icon="close"
       />
     </Wrapper>

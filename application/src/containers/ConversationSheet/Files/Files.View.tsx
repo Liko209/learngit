@@ -42,6 +42,7 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return (
               <AttachmentItem
+                hideRemoveButton={true}
                 key={id}
                 name={name}
                 progress={progresses.get(id)}
@@ -66,6 +67,7 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return (
               <AttachmentItem
+                hideRemoveButton={true}
                 key={id}
                 name={name}
                 icon={iconType || undefined}
@@ -92,6 +94,7 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return (
               <AttachmentItem
+                hideRemoveButton={true}
                 key={id}
                 name={name}
                 icon={iconType || undefined}
