@@ -442,8 +442,6 @@ class ItemFileUploadHandler {
         .indexOf(newItemFile.id);
       if (pos >= 0) {
         files[pos] = newItemFile;
-      } else {
-        files.push(newItemFile);
       }
       this._uploadingFiles.set(groupId, files);
     }
@@ -457,16 +455,6 @@ class ItemFileUploadHandler {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.delete(preInsertId);
     await itemDao.put(itemFile);
-
-    const groupId = preInsertItem.group_ids[0];
-    const uploadingFiles = this._uploadingFiles.get(groupId);
-    if (uploadingFiles) {
-      const filteredRes = uploadingFiles.filter((e: ItemFile) => {
-        return e.id !== preInsertId;
-      });
-      filteredRes.push(itemFile);
-      this._uploadingFiles.set(groupId, filteredRes);
-    }
 
     this._progressCaches.delete(preInsertId);
 
