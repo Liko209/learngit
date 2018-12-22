@@ -160,22 +160,9 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async uploadFilesToMessageAttachment(filesPath: Array<string>) {
-    await this.change();
     await this.uploadFiles(this.uploadFileInput, filesPath);
   }
 
-  async change() {
-    const buttonElement = this.uploadFileInput;
-    const display = ClientFunction(() => {
-        buttonElement().style['display'] = "inline-block";
-        buttonElement().style['width'] = "500";
-        buttonElement().style['height'] = "40";
-    }, {
-        dependencies: { buttonElement }
-      }
-    );
-    await display();
-  }
 
   async clickCancelButton(){
     await this.t.click(this.duplicateCancelButton);
