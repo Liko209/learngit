@@ -6,7 +6,6 @@
 
 import { service } from 'sdk';
 import { ItemFile } from 'sdk/models';
-import { FILE_FORM_DATA_KEYS } from 'sdk/service/item';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
@@ -48,11 +47,11 @@ const itemService = {
   sendItemFile: jest
     .fn()
     .mockImplementation(
-      (groupId: number, file: FormData, isUpdate: boolean) => {
+      (groupId: number, file: File, isUpdate: boolean) => {
         const itemfile = {
           file,
           isUpdate,
-          name: file.get(FILE_FORM_DATA_KEYS.FILE_NAME),
+          name: file.name,
           id: fileIDs,
           group_ids: [groupId],
         };

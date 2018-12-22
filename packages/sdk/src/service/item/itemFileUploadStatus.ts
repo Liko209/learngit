@@ -10,7 +10,7 @@ type ItemFileUploadStatus = {
   progress: Progress;
   requestHolder: RequestHolder;
   itemFile?: ItemFile;
-  file?: FormData;
+  file?: File;
 };
 
 export { ItemFileUploadStatus };

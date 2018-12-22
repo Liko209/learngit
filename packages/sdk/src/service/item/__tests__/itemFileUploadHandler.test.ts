@@ -55,7 +55,7 @@ describe('ItemFileUploadHandler', () => {
     });
 
     it('should return null when no file in fromData', async () => {
-      const file = new FormData();
+      const file = undefined as File;
       const result = await itemFileUploadHandler.sendItemFile(
         groupId,
         file,
@@ -100,10 +100,7 @@ describe('ItemFileUploadHandler', () => {
       ); // mockResolvedValue(mockStoredFileRes);
       itemService.handlePartialUpdate = jest.fn();
 
-      const file = new FormData();
-      const info = { name: '1.ts', type: 'ts' };
-      file.append('file', info as File);
-
+      const file = { name: '1.ts', type: 'ts', size: 123 } as File;
       const res = await itemFileUploadHandler.sendItemFile(
         groupId,
         file,
