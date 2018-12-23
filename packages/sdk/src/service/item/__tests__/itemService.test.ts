@@ -270,6 +270,18 @@ describe('ItemService', () => {
     });
   });
 
+  describe('_getItemFileHandler()', () => {
+    it('should not create new _itemFileUploadHandler when already has one', () => {
+      const itemFileUploadHandler = new ItemFileUploadHandler();
+      Object.assign(itemService, {
+        _itemFileUploadHandler: itemFileUploadHandler,
+      });
+      const ids = [250052362250, -250052378634, 3];
+      itemService.getItemsSendingStatus(ids);
+      expect(itemFileUploadHandler.getItemsSendStatus).toBeCalledTimes(1);
+    });
+  });
+
   describe('ItemService should call functions in ItemFileUploadHandler', () => {
     const itemFileUploadHandler = new ItemFileUploadHandler();
     beforeEach(() => {
@@ -325,6 +337,17 @@ describe('ItemService', () => {
           undefined,
           false,
         );
+      });
+    });
+
+    describe('sendItemData', () => {
+      it('should call sendItemData in file uplaod handler', async () => {
+        const groupId = 10;
+        const itemIds = [10, 11, 12];
+        await itemService.sendItemData(groupId, itemIds);
+        expect(itemFileUploadHandler.sendItemData).toBeCalledWith(groupId, [
+          10,
+        ]);
       });
     });
 

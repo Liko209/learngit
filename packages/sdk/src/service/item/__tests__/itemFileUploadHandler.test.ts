@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile, Progress } from '../../../models';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
@@ -25,37 +26,87 @@ jest.mock('../../notificationCenter');
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('ItemFileUploadHandler', () => {
+  const itemService = new ItemService();
+  const accountService = new AccountService();
+  const itemDao = new ItemDao(null);
   let itemFileUploadHandler: ItemFileUploadHandler = undefined;
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
+
+  function setup() {
+    const userId = 2;
+    const companyId = 3;
+    daoManager.getDao.mockReturnValue(itemDao);
+    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+
+    itemService.handlePartialUpdate = jest.fn();
+
+    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+    accountService.getCurrentCompanyId.mockReturnValue(companyId);
+    accountService.getCurrentUserId.mockReturnValue(userId);
+
+    itemDao.put.mockImplementation(() => {});
+    itemDao.update.mockImplementation(() => {});
+    itemDao.delete.mockImplementation(() => {});
+
+    notificationCenter.emitEntityReplace.mockImplementation(() => {});
+    notificationCenter.emit.mockImplementation(() => {});
+    notificationCenter.removeListener.mockImplementation(() => {});
 
     itemFileUploadHandler = new ItemFileUploadHandler();
+  }
+
+  beforeEach(() => {
+    clearMocks();
   });
 
   describe('sendItemFile()', () => {
-    isInBeta.mockReturnValue(false);
     const groupId = 1;
     const userId = 2;
     const companyId = 3;
-    const itemService = new ItemService();
-    const accountService = new AccountService();
+
     const itemDao = new ItemDao(null);
     beforeEach(() => {
-      daoManager.getDao.mockReturnValue(itemDao);
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentCompanyId.mockReturnValue(companyId);
-      accountService.getCurrentUserId.mockReturnValue(userId);
-      itemDao.put.mockImplementation(() => {});
-      itemDao.update.mockImplementation(() => {});
-      itemDao.delete.mockImplementation(() => {});
+      clearMocks();
+      setup();
     });
 
-    it('should return null when no file in fromData', async () => {
-      const file = new FormData();
+    it('should update local upload file record', async () => {
+      jest
+        .spyOn(itemFileUploadHandler, '_sendItemFile')
+        .mockImplementation(() => {});
+      const spy_cancelUpload = jest.spyOn(
+        itemFileUploadHandler,
+        'cancelUpload',
+      );
+
+      const uploadingFiles = new Map();
+      const itemFiles = [
+        { id: -1, name: 'name', is_new: true } as ItemFile,
+        { id: -2, name: 'name', is_new: false } as ItemFile,
+      ];
+      uploadingFiles.set(1, itemFiles);
+      uploadingFiles.set(2, itemFiles);
+      Object.assign(itemFileUploadHandler, {
+        _uploadingFiles: uploadingFiles,
+      });
+
+      const file = { name: 'name', type: 'ts', size: 123 } as File;
+      await itemFileUploadHandler.sendItemFile(1, file, true);
+
+      expect(uploadingFiles.get(1).length).toBe(2);
+      expect(uploadingFiles.get(1)[0].id).toBe(-1);
+      expect(uploadingFiles.get(1)[0].id).not.toBe(-2);
+      expect(spy_cancelUpload).toBeCalledWith(-2);
+    });
+
+    it('should return null when no valid file', async () => {
+      const file = undefined as File;
       const result = await itemFileUploadHandler.sendItemFile(
         groupId,
         file,
@@ -85,10 +136,6 @@ describe('ItemFileUploadHandler', () => {
     };
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
-      const mockItemFileRes = new ApiResultOk(itemFile, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
       itemDao.get.mockResolvedValue(itemFile);
       handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockImplementation(
@@ -97,13 +144,10 @@ describe('ItemFileUploadHandler', () => {
           callback({ lengthComputable: false, loaded: 10, total: 100 });
           return Promise.resolve(mockStoredFileRes);
         },
-      ); // mockResolvedValue(mockStoredFileRes);
+      );
       itemService.handlePartialUpdate = jest.fn();
 
-      const file = new FormData();
-      const info = { name: '1.ts', type: 'ts' };
-      file.append('file', info as File);
-
+      const file = { name: '1.ts', type: 'ts', size: 123 } as File;
       const res = await itemFileUploadHandler.sendItemFile(
         groupId,
         file,
@@ -121,7 +165,6 @@ describe('ItemFileUploadHandler', () => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
         expect(itemDao.put).toBeCalledTimes(1);
-
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
           [{ groupId: 1, id: expect.any(Number), loaded: 10, total: 100 }],
@@ -141,7 +184,7 @@ describe('ItemFileUploadHandler', () => {
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
       const errResponse = new ApiResultErr(new BaseError(1, 'error'), {
-        status: 200,
+        status: 403,
         headers: {},
       } as BaseResponse);
 
@@ -201,34 +244,288 @@ describe('ItemFileUploadHandler', () => {
     });
   });
 
-  describe('uploadFileToAmazonS3', () => {
-    const itemDao = new ItemDao(null);
-    const accountService = new AccountService();
-
+  describe('getUpdateItemVersion()', () => {
     beforeEach(() => {
-      itemFileUploadHandler = new ItemFileUploadHandler();
-
-      isInBeta.mockReturnValue(true);
-
-      const userId = 2;
-      const companyId = 3;
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentCompanyId.mockReturnValue(companyId);
-      accountService.getCurrentUserId.mockReturnValue(userId);
-
-      daoManager.getDao.mockReturnValue(itemDao);
-      itemDao.put.mockImplementation(() => {});
-      itemDao.update.mockImplementation(() => {});
-      itemDao.delete.mockImplementation(() => {});
+      clearMocks();
+      setup();
     });
 
-    function uploadFileToAmazonS3_setUp() {
-      const formFile = new FormData();
-      formFile.append('file', {
+    function setup_getUpdateItemVersion() {
+      const realItemFile = {
+        created_at: 10,
+        id: 10,
+        group_ids: [1],
+        name: '10',
+        versions: [{ id: 1 }, { id: 2 }],
+      };
+      const pseudoItemFile = {
+        id: -10,
+        group_ids: [1],
+        name: '10',
+        versions: [{ id: 1 }],
+      };
+      return { realItemFile, pseudoItemFile };
+    }
+
+    it('should just return number of versions in the itemFile when its id > 0', async () => {
+      const { realItemFile } = setup_getUpdateItemVersion();
+      const result = await itemFileUploadHandler.getUpdateItemVersion(
+        realItemFile as ItemFile,
+      );
+      expect(result).toBe(realItemFile.versions.length);
+    });
+
+    it('should return version number base on the history item in the group', async () => {
+      const { pseudoItemFile, realItemFile } = setup_getUpdateItemVersion();
+
+      const realItemFile2 = _.cloneDeep(realItemFile);
+      realItemFile2.created_at = 9;
+      itemDao.getExistGroupFilesByName.mockResolvedValue([
+        realItemFile,
+        realItemFile2,
+      ]);
+      const result = await itemFileUploadHandler.getUpdateItemVersion(
+        pseudoItemFile as ItemFile,
+      );
+      expect(result).toBe(realItemFile.versions.length + 1);
+    });
+
+    it('should return 0 when can not find history item in the group', async () => {
+      const { pseudoItemFile } = setup_getUpdateItemVersion();
+      itemDao.getExistGroupFilesByName.mockResolvedValue([]);
+      const result = await itemFileUploadHandler.getUpdateItemVersion(
+        pseudoItemFile as ItemFile,
+      );
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('sendItemData()', () => {
+    function sendItemData_setUp() {
+      const validStoredFile = {
+        _id: 123,
+        creator_id: 2588675,
+        last_modified: 1542274244897,
+        download_url: 'url/123.pdf',
+        url: 'url/123',
+        stored_file_id: 5701644,
+        size: 1111,
+      };
+
+      const invalidStoredFile = {
+        _id: 123,
+        creator_id: 2588675,
+        last_modified: 1542274244897,
+        download_url: '',
+        url: '',
+        stored_file_id: 5701644,
+        size: 1111,
+      };
+
+      const progressCaches = new Map();
+      const fileItem = {
+        id: -3,
+        is_new: true,
+        versions: [validStoredFile],
+      } as ItemFile;
+
+      const r: RequestHolder = { request: undefined };
+      const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
+      const file = {
         name: '1.ts',
         type: 'ts',
         size: 123123,
-      } as File);
+      } as File;
+      const itemFileUploadStatus = {
+        file,
+        progress: p,
+        requestHolder: r,
+        itemFile: fileItem,
+      } as ItemFileUploadStatus;
+      progressCaches.set(-3, itemFileUploadStatus);
+      const itemFileUploadStatus2 = _.cloneDeep(itemFileUploadStatus);
+      itemFileUploadStatus2.itemFile.id = -4;
+      itemFileUploadStatus2.itemFile.versions = [invalidStoredFile];
+      progressCaches.set(-4, itemFileUploadStatus2);
+
+      const itemFileUploadStatus3 = _.cloneDeep(itemFileUploadStatus);
+      itemFileUploadStatus3.itemFile.id = -5;
+      itemFileUploadStatus3.itemFile.versions = [invalidStoredFile];
+      progressCaches.set(-5, itemFileUploadStatus3);
+
+      const groupId = 3;
+
+      const okRes = new ApiResultOk({ id: 10 }, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+
+      const errRes = new ApiResultErr<ItemFile>(new BaseError(1, 'error'), {
+        status: 403,
+        headers: {},
+      } as BaseResponse);
+
+      return { progressCaches, groupId, validStoredFile, errRes, okRes };
+    }
+
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      isInBeta.mockReturnValue(false);
+    });
+
+    it('should just send item to server when all file has beed uploaded and has stored file', async (done: jest.DoneCallback) => {
+      const { progressCaches, groupId, okRes } = sendItemData_setUp();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      const spy_waitUntilAllItemCreated = jest.spyOn(
+        itemFileUploadHandler,
+        '_waitUntilAllItemCreated',
+      );
+
+      ItemAPI.putItem.mockResolvedValue(okRes);
+      ItemAPI.sendFileItem.mockResolvedValue(okRes);
+
+      itemDao.getExistGroupFilesByName.mockResolvedValue([]);
+
+      await itemFileUploadHandler.sendItemData(groupId, [-3]);
+
+      setTimeout(() => {
+        expect(ItemAPI.putItem).not.toBeCalled();
+        expect(ItemAPI.sendFileItem).toBeCalled();
+        expect(notificationCenter.emit).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          {
+            status: SENDING_STATUS.SUCCESS,
+            preInsertId: -3,
+            updatedId: 10,
+          },
+        );
+        expect(progressCaches.get(-3)).toBeUndefined;
+        expect(spy_waitUntilAllItemCreated).not.toBeCalled();
+        expect(notificationCenter.emitEntityReplace).toBeCalled();
+        done();
+      });
+    });
+
+    it('should update item when user want to update the file item', async (done: jest.DoneCallback) => {
+      const { progressCaches, groupId, okRes } = sendItemData_setUp();
+      progressCaches.get(-3).itemFile.is_new = false;
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      const spy_handleItemUploadSuccess = jest.spyOn(
+        itemFileUploadHandler,
+        '_handleItemUploadSuccess',
+      );
+
+      ItemAPI.putItem.mockResolvedValue(okRes);
+      ItemAPI.sendFileItem.mockResolvedValue(okRes);
+      itemDao.getExistGroupFilesByName.mockResolvedValue([{ id: 99 }]);
+
+      await itemFileUploadHandler.sendItemData(groupId, [-3]);
+
+      setTimeout(() => {
+        expect(ItemAPI.putItem).toBeCalled();
+        expect(ItemAPI.sendFileItem).not.toBeCalled();
+        expect(spy_handleItemUploadSuccess).toBeCalled();
+        done();
+      });
+    });
+
+    it('should send failed notification when send item failed', async (done: jest.DoneCallback) => {
+      const { progressCaches, groupId, errRes } = sendItemData_setUp();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      ItemAPI.sendFileItem.mockResolvedValue(errRes);
+      itemDao.getExistGroupFilesByName.mockResolvedValue([]);
+
+      await itemFileUploadHandler.sendItemData(groupId, [-3]);
+
+      setTimeout(() => {
+        expect(progressCaches.get(-3).progress.loaded).toBe(-1);
+        expect(notificationCenter.emit).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          {
+            status: SENDING_STATUS.FAIL,
+            preInsertId: -3,
+            updatedId: -3,
+          },
+        );
+        expect(ItemAPI.putItem).not.toBeCalled();
+        expect(ItemAPI.sendFileItem).toBeCalled();
+        done();
+      });
+    });
+
+    it('should send item data to server until all file has beed sent to server ', async (done: jest.DoneCallback) => {
+      const { progressCaches, groupId, validStoredFile } = sendItemData_setUp();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      notificationCenter.on.mockImplementation(
+        (event: string | string[], listener: Listener) => {
+          listener({
+            status: SENDING_STATUS.INPROGRESS,
+            preInsertId: -6,
+            updatedId: -6,
+          });
+
+          progressCaches.get(-5).itemFile.versions = [validStoredFile];
+          listener({
+            status: SENDING_STATUS.FAIL,
+            preInsertId: -5,
+            updatedId: -5,
+          });
+
+          progressCaches.get(-4).itemFile.versions = [validStoredFile];
+          listener({
+            status: SENDING_STATUS.INPROGRESS,
+            preInsertId: -4,
+            updatedId: -4,
+          });
+        },
+      );
+
+      const spy_uploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
+
+      await itemFileUploadHandler.sendItemData(groupId, [-4, -5]);
+
+      setTimeout(() => {
+        expect(progressCaches.get(-3)).toBeUndefined;
+        expect(notificationCenter.on).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(notificationCenter.removeListener).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(spy_uploadItem).toBeCalled();
+        done();
+      });
+    });
+  });
+
+  describe('uploadFileToAmazonS3', () => {
+    beforeEach(() => {
+      clearMocks();
+      isInBeta.mockReturnValue(true);
+      setup();
+    });
+
+    function uploadFileToAmazonS3_setUp() {
+      const file = {
+        name: '1.ts',
+        type: 'ts',
+        size: 123123,
+      } as File;
 
       const policy = {
         post_url: 'https://glipdev-qa.s3-accelerate.amazonaws.com/',
@@ -251,7 +548,7 @@ describe('ItemFileUploadHandler', () => {
 
       return {
         groupId,
-        formFile,
+        file,
         okRes,
         errRes,
       };
@@ -259,22 +556,18 @@ describe('ItemFileUploadHandler', () => {
 
     it('should go to handle send file failed when request amazon s3 policy failed', async (done: jest.DoneCallback) => {
       expect.assertions(3);
-      const { groupId, errRes, okRes, formFile } = uploadFileToAmazonS3_setUp();
+      const { groupId, errRes, okRes, file } = uploadFileToAmazonS3_setUp();
 
       const spyHandleFailed = jest.spyOn(
         itemFileUploadHandler,
         '_handleItemFileSendFailed',
       );
-      spyHandleFailed.mockImplementationOnce(() => {});
+      spyHandleFailed.mockImplementation(() => {});
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(errRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
 
-      const result = await itemFileUploadHandler.sendItemFile(
-        groupId,
-        formFile,
-        false,
-      );
+      await itemFileUploadHandler.sendItemFile(groupId, file, false);
       setTimeout(() => {
         expect(ItemAPI.requestAmazonFilePolicy).toBeCalled();
         expect(ItemAPI.uploadFileToAmazonS3).not.toBeCalled();
@@ -284,28 +577,24 @@ describe('ItemFileUploadHandler', () => {
     });
 
     it('should notify send file failed when upload file to amazon s3 failed', async (done: jest.DoneCallback) => {
-      const { groupId, errRes, okRes, formFile } = uploadFileToAmazonS3_setUp();
+      const { groupId, errRes, okRes, file } = uploadFileToAmazonS3_setUp();
 
       const spyHandleSuccess = jest.spyOn(
         itemFileUploadHandler,
         '_handleFileUploadSuccess',
       );
-      spyHandleSuccess.mockImplementationOnce(() => {});
+      spyHandleSuccess.mockImplementation(() => {});
 
       const spyHandleFailed = jest.spyOn(
         itemFileUploadHandler,
         '_handleItemFileSendFailed',
       );
-      spyHandleFailed.mockImplementationOnce(() => {});
+      spyHandleFailed.mockImplementation(() => {});
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(errRes);
 
-      const result = await itemFileUploadHandler.sendItemFile(
-        groupId,
-        formFile,
-        false,
-      );
+      await itemFileUploadHandler.sendItemFile(groupId, file, false);
       setTimeout(() => {
         expect(ItemAPI.requestAmazonFilePolicy).toBeCalled();
         expect(ItemAPI.uploadFileToAmazonS3).toBeCalled();
@@ -316,7 +605,7 @@ describe('ItemFileUploadHandler', () => {
     });
 
     it('should handle send file success when request policy and upload are both success', async (done: jest.DoneCallback) => {
-      const { groupId, okRes, formFile } = uploadFileToAmazonS3_setUp();
+      const { groupId, okRes, file } = uploadFileToAmazonS3_setUp();
 
       const spyHandleSuccess = jest.spyOn(
         itemFileUploadHandler,
@@ -333,11 +622,7 @@ describe('ItemFileUploadHandler', () => {
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
 
-      const result = await itemFileUploadHandler.sendItemFile(
-        groupId,
-        formFile,
-        false,
-      );
+      await itemFileUploadHandler.sendItemFile(groupId, file, false);
 
       setTimeout(() => {
         expect(spyHandleFailed).not.toBeCalled();
@@ -355,10 +640,9 @@ describe('ItemFileUploadHandler', () => {
 
     const itemDao = new ItemDao(null);
     beforeEach(() => {
-      daoManager.getDao.mockReturnValue(itemDao);
-      itemDao.put.mockImplementation(() => {});
-      itemDao.update.mockImplementation(() => {});
-      itemDao.delete.mockImplementation(() => {});
+      clearMocks();
+      setup();
+
       ItemAPI.cancelUploadRequest.mockImplementation(() => {});
 
       progressCaches = new Map();
@@ -421,27 +705,9 @@ describe('ItemFileUploadHandler', () => {
   });
 
   describe('resendFailedFile', () => {
-    const userId = 2;
-    const companyId = 3;
-    const itemService = new ItemService();
-    const accountService = new AccountService();
-    const itemDao = new ItemDao(null);
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.restoreAllMocks();
-
-      itemFileUploadHandler = new ItemFileUploadHandler();
-      daoManager.getDao.mockReturnValue(itemDao);
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentCompanyId.mockReturnValue(companyId);
-      accountService.getCurrentUserId.mockReturnValue(userId);
-
-      daoManager.getDao.mockReturnValue(itemDao);
-      itemDao.put.mockImplementation(() => {});
-      itemDao.update.mockImplementation(() => {});
-      itemDao.delete.mockImplementation(() => {});
-      itemService.handlePartialUpdate = jest.fn();
+      clearMocks();
+      setup();
     });
 
     it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
@@ -594,6 +860,9 @@ describe('ItemFileUploadHandler', () => {
   describe('getUploadItems()', () => {
     let uploadingFiles: Map<number, ItemFile[]> = null;
     beforeEach(() => {
+      clearMocks();
+      setup();
+
       uploadingFiles = new Map();
       itemFileUploadHandler = new ItemFileUploadHandler();
       const itemFiles = { id: 1 } as ItemFile;
@@ -621,9 +890,10 @@ describe('ItemFileUploadHandler', () => {
   describe('getUploadProgress()', () => {
     let progressCaches: Map<number, ItemFileUploadStatus> = undefined;
     beforeEach(() => {
-      itemFileUploadHandler = new ItemFileUploadHandler();
-      progressCaches = new Map();
+      clearMocks();
+      setup();
 
+      progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: 1, total: 3, loaded: 5, groupId: 1 };
       const itemFileUploadStatus = {
@@ -650,7 +920,9 @@ describe('ItemFileUploadHandler', () => {
 
   describe('getItemsSendStatus()', () => {
     beforeEach(() => {
-      itemFileUploadHandler = new ItemFileUploadHandler();
+      clearMocks();
+      setup();
+
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
       progressCaches.set(-3, {
@@ -701,6 +973,9 @@ describe('ItemFileUploadHandler', () => {
   describe('cleanUploadingFiles()', () => {
     let uploadingFiles: Map<number, ItemFile[]> = null;
     beforeEach(() => {
+      clearMocks();
+      setup();
+
       uploadingFiles = new Map();
       itemFileUploadHandler = new ItemFileUploadHandler();
       const itemFiles = [{ id: 1 } as ItemFile, { id: 2 } as ItemFile];

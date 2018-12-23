@@ -32,10 +32,10 @@ class ItemFileUploadHandler {
 
   async sendItemFile(
     groupId: number,
-    file: FormData,
+    file: File,
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
-    if (file.has(FILE_FORM_DATA_KEYS.FILE)) {
+    if (file) {
       const itemFile = this._toItemFile(groupId, file, isUpdate);
       await this._preSaveItemFile(itemFile, file);
       this._sendItemFile(itemFile, file);
@@ -151,7 +151,11 @@ class ItemFileUploadHandler {
       });
 
       const item = this._getCachedItem(preInsertId);
-      if (status === SENDING_STATUS.INPROGRESS && item) {
+      if (
+        status === SENDING_STATUS.INPROGRESS &&
+        item &&
+        this._hasValidStoredFile(item)
+      ) {
         this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
@@ -330,7 +334,7 @@ class ItemFileUploadHandler {
   }
 
   private _createFromDataWithPolicyData(
-    formFile: FormData,
+    file: File,
     extendFileData: AmazonFileUploadPolicyData,
   ) {
     const newFormFile = new FormData();
@@ -339,14 +343,12 @@ class ItemFileUploadHandler {
       newFormFile.append(val, storedPostForm[val]);
     });
 
-    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     newFormFile.append(FILE_FORM_DATA_KEYS.CONTENT_TYPE, file.type);
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
   }
 
-  private async _requestAmazonS3Policy(formFile: FormData) {
-    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
+  private async _requestAmazonS3Policy(file: File) {
     return await ItemAPI.requestAmazonFilePolicy({
       size: file.size,
       filename: file.name,
@@ -356,23 +358,20 @@ class ItemFileUploadHandler {
   }
 
   private async _uploadFileToAmazonS3(
-    formFile: FormData,
+    file: File,
     preInsertItem: ItemFile,
     requestHolder: RequestHolder,
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    const policyResponse = await this._requestAmazonS3Policy(formFile);
+    const policyResponse = await this._requestAmazonS3Policy(file);
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
-      const newFormData = this._createFromDataWithPolicyData(
-        formFile,
-        extendFileData,
-      );
+      const formData = this._createFromDataWithPolicyData(file, extendFileData);
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
-        newFormData,
+        formData,
         (event: ProgressEventInit) => {
           this._updateProgress(event, groupId, itemId);
         },
@@ -393,14 +392,16 @@ class ItemFileUploadHandler {
   }
 
   private async _uploadFileFileToGlip(
-    file: FormData,
+    file: File,
     preInsertItem: ItemFile,
     requestHolder: RequestHolder,
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
+    const formData = new FormData();
+    formData.append(FILE_FORM_DATA_KEYS.FILE, file);
     const uploadRes = await ItemAPI.uploadFileItem(
-      file,
+      formData,
       (e: ProgressEventInit) => {
         this._updateProgress(e, groupId, itemId);
       },
@@ -426,7 +427,7 @@ class ItemFileUploadHandler {
     return uploadInfo.requestHolder;
   }
 
-  private async _sendItemFile(preInsertItem: ItemFile, file: FormData) {
+  private async _sendItemFile(preInsertItem: ItemFile, file: File) {
     const requestHolder = this._getRequestHolder(preInsertItem.id);
 
     if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
@@ -456,7 +457,7 @@ class ItemFileUploadHandler {
       result = await this._newItem(groupId, preInsertItem);
     }
 
-    if (result && result.isOk) {
+    if (result && result.isOk()) {
       const data = result.unwrap();
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
@@ -479,7 +480,7 @@ class ItemFileUploadHandler {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    itemDao.update(preInsertItem);
+    await itemDao.update(preInsertItem);
     const itemId = preInsertItem.id;
     await this._partialUpdateItemFile({
       id: itemId,
@@ -506,8 +507,6 @@ class ItemFileUploadHandler {
         .indexOf(newItemFile.id);
       if (pos >= 0) {
         files[pos] = newItemFile;
-      } else {
-        files.push(newItemFile);
       }
       this._uploadingFiles.set(groupId, files);
     }
@@ -521,16 +520,6 @@ class ItemFileUploadHandler {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.delete(preInsertId);
     await itemDao.put(itemFile);
-
-    const groupId = preInsertItem.group_ids[0];
-    const uploadingFiles = this._uploadingFiles.get(groupId);
-    if (uploadingFiles) {
-      const filteredRes = uploadingFiles.filter((e: ItemFile) => {
-        return e.id !== preInsertId;
-      });
-      filteredRes.push(itemFile);
-      this._uploadingFiles.set(groupId, filteredRes);
-    }
 
     this._progressCaches.delete(preInsertId);
 
@@ -604,10 +593,7 @@ class ItemFileUploadHandler {
     this._uploadingFiles.set(groupId, existFiles);
   }
 
-  private _saveItemFileToProgressCache(
-    preInsertItem: ItemFile,
-    formFile: FormData,
-  ) {
+  private _saveItemFileToProgressCache(preInsertItem: ItemFile, file: File) {
     const requestHolder: RequestHolder = { request: undefined };
     const progress = {
       id: preInsertItem.id,
@@ -620,21 +606,21 @@ class ItemFileUploadHandler {
     if (status) {
       status.requestHolder = requestHolder;
       status.progress = progress;
-      status.file = formFile;
+      status.file = file;
       status.itemFile = preInsertItem;
     } else {
       this._progressCaches.set(preInsertItemId, {
         requestHolder,
         progress,
-        file: formFile,
+        file,
         itemFile: preInsertItem,
       });
     }
   }
 
-  private async _preSaveItemFile(newItemFile: ItemFile, formFile: FormData) {
+  private async _preSaveItemFile(newItemFile: ItemFile, file: File) {
     this._saveItemFileToUploadingFiles(newItemFile);
-    this._saveItemFileToProgressCache(newItemFile, formFile);
+    this._saveItemFileToProgressCache(newItemFile, file);
 
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(newItemFile);
@@ -642,10 +628,9 @@ class ItemFileUploadHandler {
 
   private _toItemFile(
     groupId: number,
-    formFile: FormData,
+    file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const file = formFile.get(FILE_FORM_DATA_KEYS.FILE) as File;
     const accountService: AccountService = AccountService.getInstance();
     const userId = accountService.getCurrentUserId() as number;
     const companyId = accountService.getCurrentCompanyId() as number;
