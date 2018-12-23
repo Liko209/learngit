@@ -317,6 +317,10 @@ class PostService extends BaseService<Post> {
     return this._getPseudoItemStatusInPost(post).indexOf(status) > -1;
   }
 
+  private _isValidPost(post: Post) {
+    return post && (post.text.length > 0 || post.item_ids.length > 0);
+  }
+
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
     const listener = async (params: {
       status: SENDING_STATUS;
@@ -332,10 +336,6 @@ class PostService extends BaseService<Post> {
         _.remove(post.item_ids, (id: number) => {
           return id === preInsertId;
         });
-
-        if (post.item_ids.length === 0) {
-          this.deletePost(post.id);
-        }
       } else if (status === SENDING_STATUS.SUCCESS) {
         // update post to db
         if (updatedId !== preInsertId) {
@@ -355,21 +355,21 @@ class PostService extends BaseService<Post> {
 
           this._updatePost(_.cloneDeep(post));
         }
+      }
 
+      if (this._isValidPost(post)) {
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
-          notificationCenter.removeListener(
-            SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
-            listener,
-          );
           await this._sendPost(post);
         }
+      } else {
+        await this.deletePost(post.id);
       }
 
       const itemStatuses = this._getPseudoItemStatusInPost(post);
       // remove listener if item files are not in progress
-      if (!this._hasExpectedStatus(SENDING_STATUS.INPROGRESS, itemStatuses)) {
+      if (!itemStatuses.includes(SENDING_STATUS.INPROGRESS)) {
         // has failed
-        if (this._hasExpectedStatus(SENDING_STATUS.FAIL, itemStatuses)) {
+        if (itemStatuses.includes(SENDING_STATUS.FAIL)) {
           this.handleSendPostFail(post.id);
         }
 
@@ -391,13 +391,6 @@ class PostService extends BaseService<Post> {
   private async _updatePost(post: Post) {
     const postDao = daoManager.getDao(PostDao);
     await postDao.update(post);
-  }
-
-  private _hasExpectedStatus(
-    targetStatus: SENDING_STATUS,
-    statusArr: SENDING_STATUS[],
-  ) {
-    return statusArr.indexOf(targetStatus) > -1;
   }
 
   private _getPseudoItemIdsFromPost(post: Post) {

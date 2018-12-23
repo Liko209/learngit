@@ -87,7 +87,11 @@ class ItemFileUploadHandler {
       });
 
       const item = this._getCachedItem(preInsertId);
-      if (status === SENDING_STATUS.INPROGRESS && item) {
+      if (
+        status === SENDING_STATUS.INPROGRESS &&
+        item &&
+        this._hasValidStoredFile(item)
+      ) {
         this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
@@ -300,10 +304,7 @@ class ItemFileUploadHandler {
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
-      const formData = this._createFromDataWithPolicyData(
-        file,
-        extendFileData,
-      );
+      const formData = this._createFromDataWithPolicyData(file, extendFileData);
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
@@ -392,7 +393,7 @@ class ItemFileUploadHandler {
       result = await this._newItem(groupId, preInsertItem);
     }
 
-    if (result && result.isOk) {
+    if (result && result.isOk()) {
       const data = result.unwrap();
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
@@ -415,7 +416,7 @@ class ItemFileUploadHandler {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    itemDao.update(preInsertItem);
+    await itemDao.update(preInsertItem);
     const itemId = preInsertItem.id;
     await this._partialUpdateItemFile({
       id: itemId,
