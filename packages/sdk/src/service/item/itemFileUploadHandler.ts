@@ -23,8 +23,8 @@ import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
-const MAX_UPLAODING_FILE_CNT = 10;
-const MAX_UPLOADING_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_UPLOADING_FILE_CNT = 10;
+const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
 
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
@@ -44,10 +44,14 @@ class ItemFileUploadHandler {
     return null;
   }
 
-  isExceedUploadLimit(groupId: number, newFiles: File[]): boolean {
-    let result = true;
+  canUploadFiles(
+    groupId: number,
+    newFiles: File[],
+    includeUnSendFiles: boolean,
+  ): boolean {
+    let result = false;
     do {
-      if (newFiles.length > MAX_UPLAODING_FILE_CNT) {
+      if (newFiles.length > MAX_UPLOADING_FILE_CNT) {
         break;
       }
 
@@ -55,14 +59,15 @@ class ItemFileUploadHandler {
         return f.size;
       });
 
-      if (uploadingFileSize > MAX_UPLAODING_FILE_CNT) {
+      if (uploadingFileSize > MAX_UPLOADING_FILE_SIZE) {
         break;
       }
 
       const currentUploadingInfo = this._getGroupUploadingFileStatus(groupId);
       if (
+        includeUnSendFiles &&
         currentUploadingInfo.fileCount + newFiles.length >
-        MAX_UPLAODING_FILE_CNT
+          MAX_UPLOADING_FILE_CNT
       ) {
         break;
       }
@@ -74,7 +79,7 @@ class ItemFileUploadHandler {
         break;
       }
 
-      result = false;
+      result = true;
     } while (false);
 
     return result;

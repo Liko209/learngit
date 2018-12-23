@@ -244,6 +244,95 @@ describe('ItemFileUploadHandler', () => {
     });
   });
 
+  describe('canUploadFiles()', () => {
+    const oneGB = 1024 * 1024 * 1024;
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    function setUp_canUploadFiles() {
+      const groupId = 123;
+      const progressCaches = new Map();
+      for (let i = 1; i < 9; i++) {
+        progressCaches.set(-i, {
+          itemFile: { group_ids: [groupId], versions: [{ size: 0.1 * oneGB }] },
+          progress: { loaded: 10 },
+        } as ItemFileUploadStatus);
+
+        progressCaches.set(-5 * i, {
+          itemFile: {
+            group_ids: [groupId + 1],
+            versions: [{ size: 0.1 * oneGB }],
+          },
+          progress: { loaded: 10 },
+        } as ItemFileUploadStatus);
+      }
+
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      return { progressCaches, groupId };
+    }
+
+    const smallFile = { size: 1 } as File;
+    const bigFile = { size: 0.5 * oneGB } as File;
+    const tenFiles: File[] = [];
+    for (let i = 0; i < 10; i++) {
+      tenFiles.push(smallFile);
+    }
+
+    const threeSmallFile = [smallFile, smallFile, smallFile];
+    const twoSmallFile = [smallFile, smallFile];
+    const twoBigFile = [bigFile, bigFile];
+    it.each`
+      files                         | includeUnSendFiles | expectRes | comment
+      ${tenFiles}                   | ${false}           | ${true}   | ${' file count === 10, size <= 1GB, not includeUnSendFiles'}
+      ${tenFiles}                   | ${true}            | ${false}  | ${' file count === 10, size <= 1GB, includeUnSendFiles'}
+      ${[smallFile, ...tenFiles]}   | ${false}           | ${false}  | ${'fileCount > 10, size <= 1GB, not includeUnSendFiles'}
+      ${[smallFile, ...tenFiles]}   | ${true}            | ${false}  | ${'fileCount > 10, size <= 1GB, includeUnSendFiles'}
+      ${twoSmallFile}               | ${false}           | ${true}   | ${' file count <= 10, size <= 1GB, not includeUnSendFiles'}
+      ${twoSmallFile}               | ${true}            | ${true}   | ${' file count <= 10, size <= 1GB, includeUnSendFiles'}
+      ${threeSmallFile}             | ${false}           | ${true}   | ${' file count == 10, size <= 1GB, not includeUnSendFiles'}
+      ${threeSmallFile}             | ${true}            | ${false}  | ${' file count <= 10, size <= 1GB, includeUnSendFiles'}
+      ${[smallFile, ...twoBigFile]} | ${false}           | ${false}  | ${' file count <= 10, size > 1GB, not includeUnSendFiles'}
+      ${twoBigFile}                 | ${true}            | ${false}  | ${' file count <= 10, size > 1GB, includeUnSendFiles'}
+      ${twoBigFile}                 | ${false}           | ${false}  | ${' file count <= 10, size > 1GB, not includeUnSendFiles'}
+      ${[bigFile]}                  | ${true}            | ${false}  | ${' file count <= 10, size > 1GB, includeUnSendFiles'}
+      ${[bigFile]}                  | ${false}           | ${false}  | ${' file count <= 10, size > 1GB, not includeUnSendFiles'}
+    `(
+      'should return true when file size and count matched: $comment',
+      ({ files, includeUnSendFiles, expectRes }) => {
+        const { groupId } = setUp_canUploadFiles();
+        const result = itemFileUploadHandler.canUploadFiles(
+          groupId,
+          files,
+          includeUnSendFiles,
+        );
+        expect(result).toEqual(expectRes);
+      },
+    );
+
+    const oneGBFile = { size: oneGB };
+    const oneGBMinusOne = { size: oneGB - 1 };
+    const oneGBPlusOne = { size: oneGB + 1 };
+
+    it.each`
+      files              | includeUnSendFiles | expectRes | comment
+      ${[oneGBFile]}     | ${false}           | ${true}   | ${' size === 1GB'}
+      ${[oneGBMinusOne]} | ${false}           | ${true}   | ${' size < 1GB'}
+      ${[oneGBPlusOne]}  | ${false}           | ${false}  | ${' size > 1GB'}
+    `('border test: $comment', ({ files, includeUnSendFiles, expectRes }) => {
+      const result = itemFileUploadHandler.canUploadFiles(
+        1,
+        files,
+        includeUnSendFiles,
+      );
+      expect(result).toEqual(expectRes);
+    });
+  });
+
   describe('getUpdateItemVersion()', () => {
     beforeEach(() => {
       clearMocks();
