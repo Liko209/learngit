@@ -174,6 +174,19 @@ class ItemFileUploadHandler {
 
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
   }
+
+  private _isValidFile(file: File) {
+    return file && file.size > 0;
+  }
+
+  private async _onFileInvalid(itemId: number, file: File) {
+    await this._partialUpdateItemFile({
+      id: itemId,
+      _id: itemId,
+      versions: [{ download_url: '', size: 0, url: '' }],
+    });
+  }
+
   async resendFailedFile(itemId: number) {
     this._updateFileProgress(itemId, SENDING_STATUS.INPROGRESS);
 
@@ -187,8 +200,13 @@ class ItemFileUploadHandler {
         await this._uploadItem(groupId, itemInDB, isUpdate);
       } else {
         const cacheItem = this._progressCaches.get(itemId);
-        if (groupId && cacheItem && cacheItem.file) {
-          await this._sendItemFile(itemInDB, cacheItem.file);
+        if (cacheItem && cacheItem.file) {
+          if (this._isValidFile(cacheItem.file)) {
+            await this._sendItemFile(itemInDB, cacheItem.file);
+          } else {
+            await this._onFileInvalid(itemId, cacheItem.file);
+            sendFailed = true;
+          }
         } else {
           sendFailed = true;
         }

@@ -15,6 +15,7 @@ import { SENDING_STATUS } from '../../constants';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { BaseError } from '../../../utils';
 import { isInBeta } from '../../account/clientConfig';
+import { async } from 'q';
 
 jest.mock('../../account/clientConfig');
 jest.mock('../../../service/item');
@@ -799,6 +800,58 @@ describe('ItemFileUploadHandler', () => {
       setup();
     });
 
+    it('should notify failed when cached file has no size', async (done: jest.DoneCallback) => {
+      const itemWithOutVersion = {
+        id: -3,
+        group_ids: [1],
+        is_new: true,
+        name: 'name',
+        versions: [],
+      };
+      itemDao.get.mockResolvedValue(itemWithOutVersion);
+      const spySendItemFile = jest.spyOn(
+        itemFileUploadHandler,
+        '_sendItemFile',
+      );
+      spySendItemFile.mockImplementation(() => {});
+      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
+      const spyHandleFileItemSendFailed = jest.spyOn(
+        itemFileUploadHandler,
+        '_handleItemFileSendFailed',
+      );
+      const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
+      const r: RequestHolder = { request: undefined };
+      const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
+      const f = { size: 0, name: 'name', type: 'ts' } as File;
+      const itemFileUploadStatus = {
+        progress: p,
+        requestHolder: r,
+        file: f,
+      } as ItemFileUploadStatus;
+      progressCaches.set(-3, itemFileUploadStatus);
+      progressCaches.set(-4, itemFileUploadStatus);
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      itemFileUploadHandler.resendFailedFile(itemWithOutVersion.id);
+      setTimeout(() => {
+        expect(spyUploadItem).not.toHaveBeenCalled();
+        expect(spyHandleFileItemSendFailed).toBeCalled();
+        expect(spySendItemFile).not.toBeCalled();
+        expect(itemService.handlePartialUpdate).toBeCalledWith(
+          {
+            id: itemWithOutVersion.id,
+            _id: itemWithOutVersion.id,
+            versions: [{ download_url: '', size: 0, url: '' }],
+          },
+          undefined,
+          expect.anything(),
+        );
+        done();
+      },         1000);
+    });
+
     it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
       const itemWithVersion = {
         id: -10,
@@ -867,7 +920,7 @@ describe('ItemFileUploadHandler', () => {
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
-      const f = new FormData();
+      const f = { size: 10, name: 'name', type: 'ts' } as File;
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
