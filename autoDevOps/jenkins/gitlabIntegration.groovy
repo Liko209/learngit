@@ -128,7 +128,7 @@ Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
 
-String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
+String subDomain = 'debug-' + getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 
 // glip channel
@@ -139,15 +139,14 @@ def reportChannels = [
 
 // report
 Map report = [:]
-report.description = currentBuild.descritpion
 report.buildUrl = env.BUILD_URL
 
 // start
-skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'pending'
+skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
 cancelOldBuildOfSameCause()
 
 node(buildNode) {
-    skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'running'
+    skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
     // install nodejs tool
     env.NODEJS_HOME = tool nodejsTool
@@ -326,15 +325,14 @@ node(buildNode) {
                 }
             }}
         }
-        if (!skipUpdateGitlabStatus)
-            updateGitlabCommitStatus name: 'jenkins', state: 'success'
+        skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'success')
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
                 buildReport(':white_check_mark: Success', env.BUILD_URL, report)
         )
     } catch (e) {
-        skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'failed'
+        skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
         String statusTitle = ':negative_squared_cross_mark: Failure'
         if (e in InterruptedException)
             statusTitle = ':no_entry: Aborted'
