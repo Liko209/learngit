@@ -17,7 +17,9 @@ const mockGroup = {
 const { GroupService } = service;
 const groupService = {
   getLocalGroup: jest.fn().mockResolvedValue(mockGroup),
-  updateGroupPrivacy: jest.fn().mockResolvedValue(ErrorTypes.SERVICE_INVALID_MODEL_ID),
+  updateGroupPrivacy: jest
+    .fn()
+    .mockResolvedValue(ErrorTypes.SERVICE_INVALID_MODEL_ID),
 };
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
@@ -30,9 +32,9 @@ const props: PrivacyProps = {
   id: 1,
   size: 'medium',
 };
-const vm = new PrivacyViewModel(props);
 
 describe('Privacy view model', () => {
+  const vm = new PrivacyViewModel(props);
   beforeAll(() => {
     (getEntity as jest.Mock).mockReturnValue(mockEntity);
   });
@@ -41,24 +43,20 @@ describe('Privacy view model', () => {
     jest.clearAllMocks();
   });
 
-  describe('size', () => {
-    it('should size equal', () => {
-      vm.props.size = 'small';
-      expect(vm.size).toEqual('small');
-      vm.props.size = 'medium';
-      expect(vm.size).toEqual('medium');
-      vm.props.size = 'large';
-      expect(vm.size).toEqual('large');
-    });
+  it('computed size', () => {
+    vm.props.size = 'small';
+    expect(vm.size).toEqual('small');
+    vm.props.size = 'medium';
+    expect(vm.size).toEqual('medium');
+    vm.props.size = 'large';
+    expect(vm.size).toEqual('large');
   });
 
-  describe('isPublic', () => {
-    it('should isPublic equal', () => {
-      mockEntity.privacy = 'protect';
-      expect(vm.isPublic).toEqual(true);
-      mockEntity.privacy = 'private';
-      expect(vm.isPublic).toEqual(false);
-    });
+  it('computed isPublic', () => {
+    mockEntity.privacy = 'protect';
+    expect(vm.isPublic).toEqual(true);
+    mockEntity.privacy = 'private';
+    expect(vm.isPublic).toEqual(false);
   });
 
   describe('isAdmin', () => {
@@ -76,5 +74,4 @@ describe('Privacy view model', () => {
       expect(result).toEqual(ErrorTypes.SERVICE_INVALID_MODEL_ID);
     });
   });
-
 });
