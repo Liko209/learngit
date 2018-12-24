@@ -1,6 +1,6 @@
 /*
  * @Author: Mia.Cai
- * @Date: 2018-12-17 20:47:52
+ * @Date: 2018-12-22 20:47:52
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseWebComponent } from '../../../BaseWebComponent';
@@ -135,6 +135,59 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
+//   get duplicateModal(){
+//     return this.getSelectorByAutomationId('messageinput-duplicate-footer');
+//   }
+
+//   get duplicateContent(){
+//     return this.getSelectorByAutomationId('messageinput-duplicate-modal-title');
+//   }
+
+//   get duplicateCreateButton(){
+//     return this.getSelectorByAutomationId('messageinput-duplicate-create-button');
+//   }
+
+//   get duplicateCancelButton(){
+//     return this.getSelectorByAutomationId('messageinput-duplicate-cancel-button');
+//   }
+
+//   get duplicateUpdateButton(){
+//     return this.getSelectorByAutomationId('messageinput-duplicate-update-button');
+//   }
+
+  private uploadFiles(selector: Selector, filesPath: Array<string>) {
+    return this.t.setFilesToUpload(selector, filesPath);
+  }
+
+  async uploadFilesToMessageAttachment(filesPath: Array<string>) {
+    await this.uploadFiles(this.uploadFileInput, filesPath);
+  }
+
+
+//   async clickCancelButton(){
+//     await this.t.click(this.duplicateCancelButton);
+//   }
+
+//   async clickUpdateButton(){
+//     await this.t.click(this.duplicateUpdateButton);
+//   }
+
+//   async clickCreateButton(){
+//     await this.t.click(this.duplicateCreateButton);
+//   }
+
+  async clickRemoveButton(){
+    await this.t.click(this.removeButton);
+  }
+
+}
+
+export class DuplicatePromptPage extends BaseConversationPage{
+  // self
+  get self(){
+    return this.getSelector('');
+  }
+
   get duplicateModal(){
     return this.getSelectorByAutomationId('messageinput-duplicate-footer');
   }
@@ -155,15 +208,6 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('messageinput-duplicate-update-button');
   }
 
-  private uploadFiles(selector: Selector, filesPath: Array<string>) {
-    return this.t.setFilesToUpload(selector, filesPath);
-  }
-
-  async uploadFilesToMessageAttachment(filesPath: Array<string>) {
-    await this.uploadFiles(this.uploadFileInput, filesPath);
-  }
-
-
   async clickCancelButton(){
     await this.t.click(this.duplicateCancelButton);
   }
@@ -174,10 +218,6 @@ export class ConversationPage extends BaseConversationPage {
 
   async clickCreateButton(){
     await this.t.click(this.duplicateCreateButton);
-  }
-
-  async clickRemoveButton(){
-    await this.t.click(this.removeButton);
   }
 
 }
