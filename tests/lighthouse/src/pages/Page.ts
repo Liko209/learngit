@@ -23,10 +23,7 @@ class Page {
 
         let driver = this.passContext.driver;
         let ws = await driver.wsEndpoint();
-        this._browser = await puppeteer.connect({
-            defaultViewport: null,
-            browserWSEndpoint: ws
-        });
+        this._browser = await this.utils.connect(ws);
         return this._browser;
     }
 

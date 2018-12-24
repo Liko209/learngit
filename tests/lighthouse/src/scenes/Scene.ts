@@ -3,9 +3,9 @@
  * @Date: 2018-12-11 11:59:55
  */
 import { SceneConfig } from './config/SceneConfig';
-import * as puppeteer from 'puppeteer';
 import * as lighthouse from 'lighthouse';
 import { logUtils } from '../utils/LogUtils';
+import { puppeteerUtils } from '../utils/PuppeteerUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
 import { metriceService } from '../services/MetricService';
@@ -84,9 +84,7 @@ class Scene {
      * @description: collect performance metrics
      */
     async collectData() {
-        const browser = await puppeteer.launch({
-            headless: false,
-            defaultViewport: null,
+        const browser = await puppeteerUtils.launch({
             args: [
                 `--disable-extensions-except=${EXTENSION_PATH}`,
                 `--load-extension=${EXTENSION_PATH}`,
