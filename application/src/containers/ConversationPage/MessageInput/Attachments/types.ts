@@ -21,11 +21,16 @@ type AttachmentsProps = {
   viewRef?: React.RefObject<any>;
 };
 
+type DidUploadFileCallback = () => Promise<void>;
+
 type AttachmentsViewProps = {
   files: ItemInfo[];
   duplicateFiles: File[];
   showDuplicateFiles: boolean;
-  autoUploadFiles: (files: File[]) => Promise<void>;
+  autoUploadFiles: (
+    files: File[],
+    callback?: DidUploadFileCallback,
+  ) => Promise<void>;
   cancelUploadFile: (info: ItemInfo) => void;
   cancelDuplicateFiles: () => void;
   uploadDuplicateFiles: () => void;
@@ -36,4 +41,10 @@ type AttachmentsViewProps = {
   dispose: () => void;
 };
 
-export { AttachmentsProps, AttachmentsViewProps, AttachmentItem, SelectFile };
+export {
+  AttachmentsProps,
+  AttachmentsViewProps,
+  AttachmentItem,
+  SelectFile,
+  DidUploadFileCallback,
+};

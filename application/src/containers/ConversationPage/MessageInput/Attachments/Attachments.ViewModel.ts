@@ -10,6 +10,7 @@ import {
   AttachmentsViewProps,
   AttachmentItem,
   SelectFile,
+  DidUploadFileCallback,
 } from './types';
 
 import {
@@ -28,6 +29,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
   private _postService: PostService;
+  private _didUploadFileCallback?: DidUploadFileCallback;
   @observable
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
   @observable
@@ -107,7 +109,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     }
   }
 
-  autoUploadFiles = async (files: File[]) => {
+  autoUploadFiles = async (files: File[], callback?: DidUploadFileCallback) => {
     if (files.length > 0) {
       const exists = await Promise.all(
         files.map(file => this.isFileExists(file)),
@@ -123,6 +125,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       } else {
         this.selectedFiles = result;
       }
+      this._didUploadFileCallback = callback;
     }
   }
 
@@ -179,11 +182,19 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   uploadDuplicateFiles = async () => {
     await this._uploadFiles(this.selectedFiles, false);
     this._clearUpSelectedFiles();
+    if (this._didUploadFileCallback) {
+      await this._didUploadFileCallback();
+    }
+    this._didUploadFileCallback = undefined;
   }
 
   updateDuplicateFiles = async () => {
     await this._uploadFiles(this.selectedFiles, true);
     this._clearUpSelectedFiles();
+    if (this._didUploadFileCallback) {
+      await this._didUploadFileCallback();
+    }
+    this._didUploadFileCallback = undefined;
   }
 
   cleanFiles = () => {
