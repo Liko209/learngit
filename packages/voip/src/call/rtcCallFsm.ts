@@ -1,5 +1,6 @@
 import { RtcCallFsmTable } from './rtcCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
+import queue from 'async/queue';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -11,34 +12,43 @@ const CallFsmEvent = {
 };
 
 class RtcCallFsm extends EventEmitter2 {
-  private _emitter: EventEmitter2;
   private _callFsmTable: RtcCallFsmTable;
+  private _eventQueue: any;
 
   constructor() {
     super();
-    this._emitter = new EventEmitter2();
     this._callFsmTable = new RtcCallFsmTable();
-    // Send Events in FSM
-    this._emitter.on(CallFsmEvent.HANGUP, () => {
-      this._onHangup();
-    });
-    this._emitter.on(CallFsmEvent.ACCOUNT_READY, () => {
-      this._onAccountReady();
-    });
-    this._emitter.on(CallFsmEvent.ACCOUNT_NOT_READY, () => {
-      this._onAccountNotReady();
-    });
-    this._emitter.on(CallFsmEvent.SESSION_CONFIRMED, () => {
-      this._onSessionConfirmed();
-    });
-    this._emitter.on(CallFsmEvent.SESSION_DISCONNECTED, () => {
-      this._onSessionDisconnected();
-    });
-    this._emitter.on(CallFsmEvent.SESSION_ERROR, () => {
-      this._onSessionError();
+    this._eventQueue = new queue((task: any, callback: any) => {
+      switch (task.name) {
+        case CallFsmEvent.HANGUP: {
+          this._onHangup();
+          break;
+        }
+        case CallFsmEvent.ACCOUNT_READY: {
+          this._onAccountReady();
+          break;
+        }
+        case CallFsmEvent.ACCOUNT_NOT_READY: {
+          this._onAccountNotReady();
+          break;
+        }
+        case CallFsmEvent.SESSION_CONFIRMED: {
+          this._onSessionConfirmed();
+          break;
+        }
+        case CallFsmEvent.SESSION_DISCONNECTED: {
+          this._onSessionDisconnected();
+          break;
+        }
+        case CallFsmEvent.SESSION_ERROR: {
+          this._onSessionError();
+        }
+      }
+      callback();
     });
     // Observer FSM State
-    this._callFsmTable.observe('onPending', () => this._onEnterPending());
+    // enter pending state will also report connecting for now
+    this._callFsmTable.observe('onPending', () => this._onEnterConnecting());
     this._callFsmTable.observe('onConnecting', () => this._onEnterConnecting());
     this._callFsmTable.observe('onConnected', () => this._onEnterConnected());
     this._callFsmTable.observe('onDisconnected', () =>
@@ -51,27 +61,30 @@ class RtcCallFsm extends EventEmitter2 {
   }
 
   public hangup() {
-    this._emitter.emit(CallFsmEvent.HANGUP);
+    this._eventQueue.push({ name: CallFsmEvent.HANGUP }, () => {});
   }
 
   public accountReady() {
-    this._emitter.emit(CallFsmEvent.ACCOUNT_READY);
+    this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
   }
 
   public accountNotReady() {
-    this._emitter.emit(CallFsmEvent.ACCOUNT_NOT_READY);
+    this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_NOT_READY }, () => {});
   }
 
   public sessionConfirmed() {
-    this._emitter.emit(CallFsmEvent.SESSION_CONFIRMED);
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_CONFIRMED }, () => {});
   }
 
   public sessionDisconnected() {
-    this._emitter.emit(CallFsmEvent.SESSION_DISCONNECTED);
+    this._eventQueue.push(
+      { name: CallFsmEvent.SESSION_DISCONNECTED },
+      () => {},
+    );
   }
 
   public sessionError() {
-    this._emitter.emit(CallFsmEvent.SESSION_ERROR);
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {});
   }
 
   private _onHangup() {
@@ -117,6 +130,10 @@ class RtcCallFsm extends EventEmitter2 {
   // Only for unit test
   private _fsmGoto(state: string) {
     this._callFsmTable.goto(state);
+  }
+
+  private _tailTask(name: string): boolean {
+    return this._eventQueue._tasks.tail.data.name === name;
   }
 }
 

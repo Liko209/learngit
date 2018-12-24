@@ -71,7 +71,33 @@ class RtcCallFsmTable extends StateMachine {
           },
         },
       ],
-      methods: {},
+      methods: {
+        onTransition(lifecycle) {
+          console.log(
+            'Call FSM: Transition: %s from: %s to: %s',
+            String(lifecycle.transition),
+            String(lifecycle.from),
+            String(lifecycle.to),
+          );
+          return true;
+        },
+        onInvalidTransition(transition: any, from: any, to: any) {
+          console.log(
+            'Call FSM: Invalid transition: %s from: %s to: %s',
+            String(transition),
+            String(from),
+            String(to),
+          );
+        },
+        onPendingTransition(transition: any, from: any, to: any) {
+          console.log(
+            'Call FSM: Pending transition: %s from: %s to: %s',
+            String(transition),
+            String(from),
+            String(to),
+          );
+        },
+      },
     });
   }
 }

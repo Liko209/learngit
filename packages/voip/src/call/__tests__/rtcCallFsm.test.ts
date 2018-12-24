@@ -36,109 +36,140 @@ describe('Call FSM UT', async () => {
     return ret;
   }
 
-  describe('Idle state transitions', async () => {
-    it('Account not ready event => Pending state', async () => {
+  describe('Call Fsm queue Test', async () => {
+    it('Trigger account ready', async () => {
       const fsm = createFsm();
-      const listener = new MockCallFsmLisener(fsm);
-      jest.spyOn(listener, 'onEnterPending');
-      fsm.accountNotReady();
-      expect(fsm.state()).toBe('pending');
-      expect(listener.onEnterPending).toBeCalled();
+      fsm.accountReady();
+      expect(fsm._tailTask('accountReadyEvent'));
     });
+    it('Trigge account not ready', async () => {
+      const fsm = createFsm();
+      fsm.accountNotReady();
+      expect(fsm._tailTask('accountNotReadyEvent'));
+    });
+    it('Trigger hang up', async () => {
+      const fsm = createFsm();
+      fsm.hangup();
+      expect(fsm._tailTask('hangupEvent'));
+    });
+    it('Trigger session confirmed', async () => {
+      const fsm = createFsm();
+      fsm.sessionConfirmed();
+      expect(fsm._tailTask('sessionConfirmedEvent'));
+    });
+    it('Trigger session disconnected', async () => {
+      const fsm = createFsm();
+      fsm.accountReady();
+      expect(fsm._tailTask('sessionDisconnectedEvent'));
+    });
+    it('Trigger session error', async () => {
+      const fsm = createFsm();
+      fsm.sessionError();
+      expect(fsm._tailTask('sessionErrorEvent'));
+    });
+  });
 
-    it('Account ready event => Connecting state', async () => {
+  describe('Idle state transitions', async () => {
+    it("State transition from Idle to Pending when receive 'Account not ready' event [JPT-580]", async () => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterConnecting');
-      fsm.accountReady();
+      fsm._onAccountNotReady();
+      expect(fsm.state()).toBe('pending');
+      expect(listener.onEnterConnecting).toBeCalled();
+    });
+
+    it("State transition from Idle to Connecting when receive 'Account ready' event [JPT-581]", async () => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterConnecting');
+      fsm._onAccountReady();
       expect(fsm.state()).toBe('connecting');
       expect(listener.onEnterConnecting).toBeCalled();
     });
 
-    it('Hangup event => Disconnected state', async () => {
+    it("State transition from Idle to Disconnected when receive 'Hang up' event [JPT-582]", async () => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');
-      fsm.hangup();
+      fsm._onHangup();
       expect(fsm.state()).toBe('disconnected');
       expect(listener.onEnterDisconnected).toBeCalled();
     });
   });
 
   describe('Pending state transitions', async () => {
-    it('Account ready event => Connecting state', async () => {
+    it("State transition from Pending to Connecting when receive 'Account ready' event [JPT-583]", async () => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       fsm._fsmGoto('pending');
       jest.spyOn(listener, 'onEnterConnecting');
-      fsm.accountReady();
+      fsm._onAccountReady();
       expect(fsm.state()).toBe('connecting');
       expect(listener.onEnterConnecting).toBeCalled();
     });
 
-    it('Hangup event => Disconnected state', async () => {
+    it("State transition from Pending to Disconnected when receive 'Hang up' event [JPT-584]", async () => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       fsm._fsmGoto('pending');
       jest.spyOn(listener, 'onEnterDisconnected');
-      fsm.hangup();
+      fsm._onHangup();
       expect(fsm.state()).toBe('disconnected');
       expect(listener.onEnterDisconnected).toBeCalled();
     });
   });
 
   describe('Connecting state transitions', async () => {
-    it('Session confirmed event => Connected state', async () => {
+    it("State transition from Connecting to Connected when receive 'Session confirmed' event [JPT-585]", async () => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterConnected');
       fsm._fsmGoto('connecting');
-      fsm.sessionConfirmed();
+      fsm._onSessionConfirmed();
       expect(fsm.state()).toBe('connected');
       expect(listener.onEnterConnected).toBeCalled();
     });
 
-    it('Hangup event => Disconnected state', async () => {
+    it("State transition from Connecting to Disconnected when receive 'Hang up' event [JPT-586]", async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connecting');
-      fsm.hangup();
+      fsm._onHangup();
       expect(fsm.state()).toBe('disconnected');
     });
 
-    it('Session error event => Disconnected state', async () => {
+    it("State transition from Connecting to Disconnected when receive 'Session disconnected' event [JPT-587]", async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connecting');
-      fsm.sessionError();
+      fsm._onSessionDisconnected();
       expect(fsm.state()).toBe('disconnected');
     });
 
-    it('Session disconnected event => Disconnected state', async () => {
+    it("State transition from Connecting to Disconnected when receive 'Session error' event [JPT-588]", async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connecting');
-      fsm.sessionDisconnected();
+      fsm._onSessionError();
       expect(fsm.state()).toBe('disconnected');
     });
   });
 
   describe('Connected state transitions', async () => {
-    it('Hangup event => Disconnected state', async () => {
+    it("State transition from Connected to Disconnected when receive 'Hang up' event [JPT-589]", async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connected');
-      fsm.hangup();
+      fsm._onHangup();
       expect(fsm.state()).toBe('disconnected');
     });
-
-    it('Session error event => Disconnected state', async () => {
+    it("State transition from Connected to Disconnected when receive 'Session disconnected' event [JPT-590]", async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connected');
-      fsm.sessionError();
+      fsm._onSessionDisconnected();
       expect(fsm.state()).toBe('disconnected');
     });
-
-    it('Session disconnected event => Disconnected state', async () => {
+    it("State transition from Connected to Disconnected when receive 'Session error' event [JPT-591]", async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connected');
-      fsm.sessionDisconnected();
+      fsm._onSessionError();
       expect(fsm.state()).toBe('disconnected');
     });
   });
