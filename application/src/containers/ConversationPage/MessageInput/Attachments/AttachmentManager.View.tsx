@@ -48,7 +48,7 @@ class AttachmentManagerViewComponent extends Component<
   }
 
   directPostFiles = async (files: File[]) => {
-    await this.props.autoUploadFiles(files, async () => await this.props.sendFilesOnlyPost());
+    await this.props.autoUploadFiles(files, this.props.sendFilesOnlyPost);
   }
 
   render() {
