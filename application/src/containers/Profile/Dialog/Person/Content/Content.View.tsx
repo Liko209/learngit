@@ -38,7 +38,7 @@ import { JuiIconButton } from 'jui/components/Buttons';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
-WithNamespaces & ProfileDialogPersonContentViewProps
+  WithNamespaces & ProfileDialogPersonContentViewProps
 > {
   renderPresence = () => {
     const { id } = this.props;
@@ -132,21 +132,30 @@ WithNamespaces & ProfileDialogPersonContentViewProps
     } = this.props;
     return (
       <>
-        <Summary emphasize={isMe}>
+        <Summary
+          emphasize={isMe}
+          data-test-automation-id="profileDialogSummary"
+        >
           <Left>
             <Avatar uid={id} size="xlarge" presence={this.renderPresence()} />
           </Left>
           <Right>
-            <Name>{person.userDisplayName}</Name>
-            <Status>{person.awayStatus}</Status>
-            <Title>{person.jobTitle}</Title>
+            <Name data-test-automation-id="profileDialogSummaryName">
+              {person.userDisplayName}
+            </Name>
+            <Status data-test-automation-id="profileDialogSummaryStatus">
+              {person.awayStatus}
+            </Status>
+            <Title data-test-automation-id="profileDialogSummaryTitle">
+              {person.jobTitle}
+            </Title>
             <Buttons>
               <Message id={id} dismiss={dismiss} render={this.renderMessage} />
             </Buttons>
           </Right>
         </Summary>
         <JuiDivider />
-        <Form>
+        <Form data-test-automation-id="profileDialogForm">
           <Grid container={true}>
             <Grid item={true} xs={12} sm={6}>
               {company.name &&

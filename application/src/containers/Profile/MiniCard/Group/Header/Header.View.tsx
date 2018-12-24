@@ -30,7 +30,7 @@ class ProfileMiniCardGroupHeaderView extends Component<
           <GroupAvatar cid={id} size="large" />
         </JuiProfileMiniCardHeaderLeft>
         <JuiProfileMiniCardHeaderMiddle>
-          <JuiProfileMiniCardGroupName>
+          <JuiProfileMiniCardGroupName data-test-automation-id="profileMiniCardGroupName">
             {displayName}
           </JuiProfileMiniCardGroupName>
         </JuiProfileMiniCardHeaderMiddle>

@@ -34,13 +34,13 @@ class ProfileMiniCardPersonHeaderView extends Component<
           <Avatar uid={id} size="large" presence={presence} />
         </JuiProfileMiniCardHeaderLeft>
         <JuiProfileMiniCardHeaderMiddle>
-          <JuiProfileMiniCardPersonName>
+          <JuiProfileMiniCardPersonName data-test-automation-id="profileMiniCardPersonName">
             {userDisplayName}
           </JuiProfileMiniCardPersonName>
-          <JuiProfileMiniCardPersonStatus>
+          <JuiProfileMiniCardPersonStatus data-test-automation-id="profileMiniCardPersonState">
             {awayStatus}
           </JuiProfileMiniCardPersonStatus>
-          <JuiProfileMiniCardPersonTitle>
+          <JuiProfileMiniCardPersonTitle data-test-automation-id="profileMiniCardPersonTitle">
             {jobTitle}
           </JuiProfileMiniCardPersonTitle>
         </JuiProfileMiniCardHeaderMiddle>

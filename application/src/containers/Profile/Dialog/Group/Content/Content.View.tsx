@@ -55,13 +55,20 @@ class ProfileDialogGroupContentViewComponent extends Component<
     const { id, group, showMessage, dismiss } = this.props;
     return (
       <>
-        <Summary>
+        <Summary data-test-automation-id="profileDialogSummary">
           <Left>
             <GroupAvatar cid={id} size="xlarge" />
           </Left>
           <Right>
-            <Name needEllipsis={!group.isTeam}>{group.displayName}</Name>
-            <Description>{group.description}</Description>
+            <Name
+              needEllipsis={!group.isTeam}
+              data-test-automation-id="profileDialogSummaryName"
+            >
+              {group.displayName}
+            </Name>
+            <Description data-test-automation-id="profileDialogSummaryDescription">
+              {group.description}
+            </Description>
             <Buttons>
               {showMessage && (
                 <Message
