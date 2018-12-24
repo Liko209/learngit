@@ -29,7 +29,7 @@ class ItemService extends BaseService<Item> {
 
   async sendItemFile(
     groupId: number,
-    file: FormData,
+    file: File,
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
     return await this._getItemFileHandler().sendItemFile(
@@ -79,6 +79,18 @@ class ItemService extends BaseService<Item> {
         return x.post_ids.length > 0;
       })
       : false;
+  }
+
+  canUploadFiles(
+    groupId: number,
+    newFiles: File[],
+    includeUnSendFiles: boolean,
+  ): boolean {
+    return this._getItemFileHandler().canUploadFiles(
+      groupId,
+      newFiles,
+      includeUnSendFiles,
+    );
   }
 
   getUploadProgress(itemId: number): Progress | undefined {

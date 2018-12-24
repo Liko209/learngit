@@ -18,18 +18,11 @@ import 'react-quill/dist/quill.snow.css';
 
 const Wrapper = styled.div<{
   isEditMode?: boolean;
-  isDragOver?: boolean;
 }>`
   position: relative;
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
   padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
-  border: ${({ theme, isDragOver }) =>
-    isDragOver
-      ? `2px dotted ${palette('secondary', '600')({ theme })}`
-      : 'none'};
-  background: ${({ isDragOver }) => (isDragOver ? grey('200') : 'transparent')};
-  opacity: ${({ isDragOver }) => (isDragOver ? 0.24 : 1)};
 `;
 
 const GlobalStyle = createGlobalStyle<{}>`
@@ -106,9 +99,7 @@ type Props = {
 
 class JuiMessageInput extends React.Component<Props> {
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
-  state = {
-    isDragOver: false,
-  };
+
   componentDidMount() {
     setTimeout(this.focusEditor, 0);
   }
@@ -137,26 +128,6 @@ class JuiMessageInput extends React.Component<Props> {
     }
   }
 
-  private _handleDrop = (event: any) => {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      const { files } = event.dataTransfer;
-      const { didDropFile } = this.props;
-      didDropFile && files && didDropFile(files[0]);
-    }
-    this.setState({ isDragOver: false });
-  }
-  private _handleDragOver = (event: any) => {
-    event.preventDefault();
-  }
-  private _handleDragEnter = () => {
-    this.setState({ isDragOver: true });
-  }
-
-  private _handleDragLeave = () => {
-    this.setState({ isDragOver: false });
-  }
-
   render() {
     const {
       value,
@@ -175,16 +146,8 @@ class JuiMessageInput extends React.Component<Props> {
       : {
         value,
       };
-    const { isDragOver } = this.state;
     return (
-      <Wrapper
-        isEditMode={isEditMode}
-        isDragOver={isDragOver}
-        onDrop={this._handleDrop}
-        onDragEnter={this._handleDragEnter}
-        onDragLeave={this._handleDragLeave}
-        onDragOver={this._handleDragOver}
-      >
+      <Wrapper isEditMode={isEditMode}>
         {toolbarNode}
         <ReactQuill
           {...reactQuillValueProp}

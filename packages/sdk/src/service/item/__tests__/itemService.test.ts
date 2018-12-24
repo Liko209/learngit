@@ -270,6 +270,18 @@ describe('ItemService', () => {
     });
   });
 
+  describe('_getItemFileHandler()', () => {
+    it('should not create new _itemFileUploadHandler when already has one', () => {
+      const itemFileUploadHandler = new ItemFileUploadHandler();
+      Object.assign(itemService, {
+        _itemFileUploadHandler: itemFileUploadHandler,
+      });
+      const ids = [250052362250, -250052378634, 3];
+      itemService.getItemsSendingStatus(ids);
+      expect(itemFileUploadHandler.getItemsSendStatus).toBeCalledTimes(1);
+    });
+  });
+
   describe('ItemService should call functions in ItemFileUploadHandler', () => {
     const itemFileUploadHandler = new ItemFileUploadHandler();
     beforeEach(() => {
@@ -328,11 +340,36 @@ describe('ItemService', () => {
       });
     });
 
+    describe('sendItemData', () => {
+      it('should call sendItemData in file uplaod handler', async () => {
+        const groupId = 10;
+        const itemIds = [10, 11, 12];
+        await itemService.sendItemData(groupId, itemIds);
+        expect(itemFileUploadHandler.sendItemData).toBeCalledWith(groupId, [
+          10,
+        ]);
+      });
+    });
+
     describe('cancelUpload()', () => {
       it('should call cancel upload', async () => {
         itemFileUploadHandler.cancelUpload.mockResolvedValue(true);
         await itemService.cancelUpload(1);
         expect(itemFileUploadHandler.cancelUpload).toBeCalledTimes(1);
+      });
+    });
+
+    describe('canUploadFiles()', () => {
+      it('should canUploadFiles in the handler', () => {
+        itemFileUploadHandler.canUploadFiles.mockResolvedValue(true);
+        expect(
+          itemService.canUploadFiles(1, [{ size: 10 } as File], false),
+        ).toBeTruthy();
+        expect(itemFileUploadHandler.canUploadFiles).toBeCalledWith(
+          1,
+          [{ size: 10 } as File],
+          false,
+        );
       });
     });
 

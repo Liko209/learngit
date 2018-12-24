@@ -5,26 +5,22 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
 import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 
 @observer
-class AttachmentsViewComponent extends Component<
-  AttachmentsViewProps & WithNamespaces
-> {
+class AttachmentsView extends Component<AttachmentsViewProps> {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles, showDuplicateFiles, t } = this.props;
+    const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
-          title={t('Update Files?')}
-          subtitle={t('The following files already exist.')}
-          footText={t(
-            'Do you want to update the existing files or do you wish to create new files?',
-          )}
+          title={t('updateFiles')}
+          subtitle={t('theFollowingFilesAlreadyExist')}
+          footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
@@ -62,7 +58,5 @@ class AttachmentsViewComponent extends Component<
     );
   }
 }
-
-const AttachmentsView = translate('Conversations')(AttachmentsViewComponent);
 
 export { AttachmentsView };

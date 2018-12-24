@@ -14,6 +14,7 @@ import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { Attachments } from './Attachments';
+import { extractView } from 'jui/hoc/extractView';
 
 @observer
 class MessageInputViewComponent extends Component<
@@ -50,7 +51,10 @@ class MessageInputViewComponent extends Component<
       modules: {
         toolbar: false,
         keyboard: {
-          bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
+          bindings: {
+            ...keyboardEventHandler,
+            ...keyboardEventDefaultHandler,
+          },
         },
         mention: mention.vm.mentionOptions,
       },
@@ -68,10 +72,19 @@ class MessageInputViewComponent extends Component<
     }
   }
 
-  private _handleDropFile = (file: File) => {
+  handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
-    if (current && file) {
-      current.vm.autoUploadFiles([file]);
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files);
+    }
+  }
+
+  directPostFiles = (files: File[]) => {
+    const { current } = this._attachmentsRef;
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files).then(() => {
+        this.props.forceSendPost();
+      });
     }
   }
 
@@ -97,7 +110,6 @@ class MessageInputViewComponent extends Component<
         id={id}
         toolbarNode={toolbarNode}
         attachmentsNode={attachmentsNode}
-        didDropFile={this._handleDropFile}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>
@@ -105,6 +117,9 @@ class MessageInputViewComponent extends Component<
   }
 }
 
-const MessageInputView = translate('Conversations')(MessageInputViewComponent);
+const view = extractView<WithNamespaces & MessageInputViewProps>(
+  MessageInputViewComponent,
+);
+const MessageInputView = translate('Conversations')(view);
 
-export { MessageInputView };
+export { MessageInputView, MessageInputViewComponent };

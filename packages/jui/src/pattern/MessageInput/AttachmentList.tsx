@@ -31,7 +31,7 @@ const AttachmentList: React.SFC<AttachmentListProps> = (
 ) => {
   const { files = [], removeAttachment } = props;
   return (
-    <Wrapper>
+    <Wrapper data-test-automation-id="attachment-list">
       {files.map((looper: ItemInfo, idx: number) => (
         <AttachmentItem
           status={looper.status}
