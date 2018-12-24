@@ -33,7 +33,7 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
-        shouldShowAction: true,
+        shouldShowAction: !this._isEventOrTask,
       },
     };
   }

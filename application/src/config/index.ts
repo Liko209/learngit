@@ -112,14 +112,15 @@ class Config {
   }
 
   getAllEnv() {
-    return parseConfigFiles()
-      .keys.filter(arr => arr[0] === 'api')
+    return _(parseConfigFiles().keys)
+      .filter(arr => arr[0] === 'api')
       .map(arr => arr[1])
+      .filter((env: string) => !env.startsWith('default'))
       .filter((env: string) => {
         return process.env.JUPITER_ENV === 'release' || env !== 'release';
-      });
+      })
+      .value();
   }
-
   get(property: string) {
     return get(this._config, property);
   }

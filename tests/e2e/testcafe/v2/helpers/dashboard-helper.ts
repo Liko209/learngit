@@ -5,7 +5,7 @@ import { IStep, Status, IConsoleLog } from "../models";
 import { BeatsClient, Step, Test, Attachment } from 'bendapi';
 import { MiscUtils } from '../utils';
 import { getTmtId, parseFormalName } from '../../libs/filter';
-import { ACCOUNT_TYPE_LIST } from '../../config';
+import { BrandTire } from '../../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -55,7 +55,7 @@ export class DashboardHelper {
     const tmtId = getTmtId(tags);
     // FIXME: remove user-agent from case name when dashboard is ready
     const beatsTest = await this.beatsClient.createTest({
-      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${_.findKey(ACCOUNT_TYPE_LIST, (value) => value === accountType)})`,
+      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${_.findKey(BrandTire, (value) => value === accountType)})`,
       status: StatusMap[status],
       metadata: {
         user_agent: testRun.browserConnection.browserInfo.userAgent,

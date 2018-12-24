@@ -5,10 +5,10 @@
  */
 
 import styled from '../../foundation/styled-components';
-import { JuiMenuListComposition } from '../MenuListComposition';
+import { JuiPopoverMenu } from '../PopoverMenu';
 
-const JuiAvatarMenu = styled(JuiMenuListComposition)``;
+const JuiAvatarActions = styled(JuiPopoverMenu)``;
 
-JuiAvatarMenu.displayName = 'JuiAvatarMenu';
+JuiAvatarActions.displayName = 'JuiAvatarActions';
 
-export { JuiAvatarMenu };
+export { JuiAvatarActions };

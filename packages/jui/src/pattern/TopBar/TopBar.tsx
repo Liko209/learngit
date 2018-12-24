@@ -11,7 +11,7 @@ import { StyledMenuWithLogo } from './StyledMenuWithLogo';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
-import { StyledMoreIconButton } from './StyledMoreIconButton';
+// import { StyledMoreIconButton } from './StyledMoreIconButton';
 import { JuiIconButtonProps } from '../../components/Buttons/IconButton';
 // import { MenuListCompositionProps } from '../MenuListComposition';
 
@@ -19,8 +19,8 @@ type Props = {
   MainMenu: ComponentType<JuiIconButtonProps>;
   Logo: ComponentType;
   // Search: ComponentType,
-  AddMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
-  AvatarMenu: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
+  NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward?: ComponentType<any>;
   SearchBar: ComponentType<any>;
 };
@@ -48,8 +48,8 @@ class JuiTopBar extends React.Component<Props, States> {
     const {
       MainMenu,
       Logo,
-      AddMenu,
-      AvatarMenu,
+      AvatarActions,
+      NewActions,
       BackNForward,
       SearchBar,
     } = this.props;
@@ -75,11 +75,11 @@ class JuiTopBar extends React.Component<Props, States> {
             </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
-            <AddMenu />
-            <AvatarMenu />
-            <StyledMoreIconButton tooltipTitle="More" size="medium">
+            <NewActions />
+            <AvatarActions />
+            {/* <StyledMoreIconButton tooltipTitle="More" size="medium">
               more_vert
-            </StyledMoreIconButton>
+            </StyledMoreIconButton> */}
           </StyledRight>
         </StyledToolbar>
       </StyledAppBar>

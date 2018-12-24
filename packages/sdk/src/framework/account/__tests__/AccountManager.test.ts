@@ -8,6 +8,7 @@ import {
 } from '../IAuthenticator';
 import { AbstractAccount } from '../AbstractAccount';
 import * as helper from '../helper';
+import * as dao from '../../../dao';
 class MyAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {}
 }
@@ -215,6 +216,47 @@ describe('AccountManager', () => {
       jest.spyOn(account, 'getSupportedServices').mockReturnValue(['AService']);
 
       expect(accountManager.isSupportedService('AService')).toBeTruthy();
+    });
+  });
+  describe('sanitizeUser()', () => {
+    const mockedConfigDao = {
+      getEnv: jest.fn().mockReturnValue('release'),
+    };
+    const mockedAccountInfo = [
+      {
+        type: 'RC',
+        data: {
+          owner_id: '110',
+        },
+      },
+    ];
+    const accountManager = new AccountManager(null);
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.spyOn(dao.daoManager, 'getKVDao').mockImplementation(() => {
+        return mockedConfigDao;
+      });
+    });
+    it('should return true when the env is not restricted in the white list', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        Chris_sandbox: [],
+      });
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      expect(permitted).toBeTruthy();
+    });
+    it('should return true when the env is in the white list', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        release: ['110'],
+      });
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      expect(permitted).toBeTruthy();
+    });
+    it('should return false when the env is not in the white list', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        release: ['123'],
+      });
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      expect(permitted).toBeFalsy();
     });
   });
 });
