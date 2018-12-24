@@ -263,7 +263,7 @@ node(buildNode) {
                     condStage(name: 'Build Application') {
                         // FIXME: move this part to build script
                         sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
-                        sh 'mv commitInfo.ts application/src/containers/VersionInfo/GitRepo.ts'
+                        sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
                         if (buildRelease) {
                             sh 'npm run build:release'
                         } else {
