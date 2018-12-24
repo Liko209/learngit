@@ -166,6 +166,18 @@ export class PostItem extends BaseWebComponent {
     return this.getSelector('.tooltipPlacementBottom').textContent;
   }
 
+  async getAvatarTop() {
+    return await this.avatar.getBoundingClientRectProperty('top');
+  }
+
+  async getAvatarLeft() {
+    return await this.avatar.getBoundingClientRectProperty('left');
+  }
+
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }

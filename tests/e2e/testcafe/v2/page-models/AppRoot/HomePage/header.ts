@@ -1,4 +1,5 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { ClientFunction } from "testcafe";
 
 export class Header extends BaseWebComponent {
   get self() {
@@ -87,7 +88,7 @@ class Search extends BaseWebComponent {
   }
   
   nthGroup(n: number) {
-    return this.getComponent(SearchItem, this.peoples.nth(n));
+    return this.getComponent(SearchItem, this.groups.nth(n));
   }
 
   nthTeam(n: number) {
@@ -103,6 +104,14 @@ class SearchItem extends BaseWebComponent {
   
   get name() {
     return this.getSelectorByAutomationId('search-item-text', this.self);
+  }
+
+  async getAvatarTop() {
+    return this.avatar.getBoundingClientRectProperty("top");
+  }
+
+  async getAvatarLeft() {
+    return this.avatar.getBoundingClientRectProperty("left");
   }
 
   // people

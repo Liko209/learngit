@@ -18,3 +18,25 @@ export class ViewProfile extends BaseWebComponent {
   }
 
 }
+
+class MiniProfile extends BaseWebComponent {
+  get closeButton() {
+    return this.self.find('button').find('span').withText('close');
+  }
+
+  get messageButton() {
+    return this.self.find('span').find('span').withText('chat_bubble');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  async message() {
+    await this.t.click(this.messageButton);
+  }
+}
+
+class ProfileModal {
+  
+}
