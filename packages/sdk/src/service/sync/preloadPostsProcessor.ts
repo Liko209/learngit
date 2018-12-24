@@ -10,8 +10,8 @@ import PostAPI from '../../api/glip/post';
 import { baseHandleData } from '../post/handleData';
 import itemHandleData from '../item/handleData';
 import { mainLogger } from 'foundation';
+import StateService from '../state';
 
-const DEFAULT_LIMIT: number = 20;
 const DEFAULT_DIRECTION: string = 'order';
 class PreloadPostsProcessor implements IProcessor {
   private _name: string;
@@ -24,31 +24,26 @@ class PreloadPostsProcessor implements IProcessor {
   }
 
   async process(): Promise<boolean> {
-    try {
-      const needPreload = await this._needPreload();
-      mainLogger.info(
-        `group id: ${this._group.id}, needPreload: ${needPreload}`,
-      );
-      if (needPreload) {
-        const params: any = {
-          limit: DEFAULT_LIMIT,
-          direction: DEFAULT_DIRECTION,
-          group_id: this._group.id,
-        };
-        const requestResult = await PostAPI.requestPosts(params);
-        if (requestResult.status && requestResult.status >= 500) {
-          this._canContinue = false;
-          return false;
-        }
-        if (requestResult.data) {
-          baseHandleData(requestResult.data.posts || []);
-          itemHandleData(requestResult.data.items || []);
-        }
+    const result = await this.needPreload();
+    mainLogger.info(
+      `group id: ${this._group.id}, needPreload: ${
+        result.shouldPreload
+      } count:${result.unread_count}`,
+    );
+    if (result.shouldPreload) {
+      const params: any = {
+        limit: result.unread_count,
+        direction: DEFAULT_DIRECTION,
+        group_id: this._group.id,
+      };
+      const requestResult = await PostAPI.requestPosts(params);
+
+      if (requestResult.isOk()) {
+        baseHandleData(requestResult.data.posts || [], true);
+        itemHandleData(requestResult.data.items || []);
       }
-      return true;
-    } catch (error) {
-      return false;
     }
+    return true;
   }
   canContinue(): boolean {
     return this._canContinue;
@@ -58,13 +53,34 @@ class PreloadPostsProcessor implements IProcessor {
     return this._name;
   }
 
-  private async _needPreload(): Promise<boolean> {
+  async needPreload(): Promise<{
+    unread_count: number;
+    shouldPreload: boolean;
+  }> {
+    let shouldPreload = false;
+    let unread_count = 0;
     if (this._group.most_recent_post_id) {
-      const postService: PostService = PostService.getInstance();
-      const inLocal = await postService.groupHasPostInLocal(this._group.id);
-      return !inLocal;
+      const stateService: StateService = StateService.getInstance();
+      const state = await stateService.getById(this._group.id);
+      if (state) {
+        if (
+          state.unread_count &&
+          state.unread_count > 0 &&
+          state.unread_count <= 100
+        ) {
+          const postService: PostService = PostService.getInstance();
+          const post = await postService.getByIdFromDao(
+            state.read_through || 0,
+          );
+          shouldPreload = !(post && !post.deactivated);
+          unread_count = state.unread_count;
+        }
+      }
     }
-    return false;
+    return {
+      unread_count,
+      shouldPreload,
+    };
   }
 }
 
