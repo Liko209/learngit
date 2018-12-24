@@ -41,31 +41,40 @@ describe('Privacy view model', () => {
     jest.clearAllMocks();
   });
 
-  it('computed size', () => {
-    vm.props.size = 'small';
-    expect(vm.size).toEqual('small');
-    vm.props.size = 'medium';
-    expect(vm.size).toEqual('medium');
-    vm.props.size = 'large';
-    expect(vm.size).toEqual('large');
+  describe('size', () => {
+    it('should size equal', () => {
+      vm.props.size = 'small';
+      expect(vm.size).toEqual('small');
+      vm.props.size = 'medium';
+      expect(vm.size).toEqual('medium');
+      vm.props.size = 'large';
+      expect(vm.size).toEqual('large');
+    });
   });
 
-  it('computed isPublic', () => {
-    mockEntity.privacy = 'protect';
-    expect(vm.isPublic).toEqual(true);
-    mockEntity.privacy = 'private';
-    expect(vm.isPublic).toEqual(false);
+  describe('isPublic', () => {
+    it('should isPublic equal', () => {
+      mockEntity.privacy = 'protect';
+      expect(vm.isPublic).toEqual(true);
+      mockEntity.privacy = 'private';
+      expect(vm.isPublic).toEqual(false);
+    });
   });
 
-  it('isAdmin', () => {
-    mockEntity.isAdmin = true;
-    expect(vm.isAdmin).toBe(true);
-    mockEntity.isAdmin = false;
-    expect(vm.isAdmin).toBe(false);
+  describe('isAdmin', () => {
+    it('should isAdmin equal', () => {
+      mockEntity.isAdmin = true;
+      expect(vm.isAdmin).toBe(true);
+      mockEntity.isAdmin = false;
+      expect(vm.isAdmin).toBe(false);
+    });
   });
 
-  it('request service for handler privacy', async () => {
-    const result = await vm.handlePrivacy();
-    expect(result).toEqual(ErrorTypes.SERVICE_INVALID_MODEL_ID);
+  describe('privacy', () => {
+    it('should return error when service error', async () => {
+      const result = await vm.handlePrivacy();
+      expect(result).toEqual(ErrorTypes.SERVICE_INVALID_MODEL_ID);
+    });
   });
+
 });
