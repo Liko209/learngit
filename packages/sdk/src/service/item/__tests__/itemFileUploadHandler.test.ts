@@ -15,7 +15,6 @@ import { SENDING_STATUS } from '../../constants';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { BaseError } from '../../../utils';
 import { isInBeta } from '../../account/clientConfig';
-import { async } from 'q';
 
 jest.mock('../../account/clientConfig');
 jest.mock('../../../service/item');
@@ -800,58 +799,6 @@ describe('ItemFileUploadHandler', () => {
       setup();
     });
 
-    it('should notify failed when cached file has no size', async (done: jest.DoneCallback) => {
-      const itemWithOutVersion = {
-        id: -3,
-        group_ids: [1],
-        is_new: true,
-        name: 'name',
-        versions: [],
-      };
-      itemDao.get.mockResolvedValue(itemWithOutVersion);
-      const spySendItemFile = jest.spyOn(
-        itemFileUploadHandler,
-        '_sendItemFile',
-      );
-      spySendItemFile.mockImplementation(() => {});
-      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
-      const spyHandleFileItemSendFailed = jest.spyOn(
-        itemFileUploadHandler,
-        '_handleItemFileSendFailed',
-      );
-      const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
-      const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
-      const f = { size: 0, name: 'name', type: 'ts' } as File;
-      const itemFileUploadStatus = {
-        progress: p,
-        requestHolder: r,
-        file: f,
-      } as ItemFileUploadStatus;
-      progressCaches.set(-3, itemFileUploadStatus);
-      progressCaches.set(-4, itemFileUploadStatus);
-      Object.assign(itemFileUploadHandler, {
-        _progressCaches: progressCaches,
-      });
-
-      itemFileUploadHandler.resendFailedFile(itemWithOutVersion.id);
-      setTimeout(() => {
-        expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(spyHandleFileItemSendFailed).toBeCalled();
-        expect(spySendItemFile).not.toBeCalled();
-        expect(itemService.handlePartialUpdate).toBeCalledWith(
-          {
-            id: itemWithOutVersion.id,
-            _id: itemWithOutVersion.id,
-            versions: [{ download_url: '', size: 0, url: '' }],
-          },
-          undefined,
-          expect.anything(),
-        );
-        done();
-      },         1000);
-    });
-
     it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
       const itemWithVersion = {
         id: -10,
@@ -920,7 +867,7 @@ describe('ItemFileUploadHandler', () => {
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
-      const f = { size: 10, name: 'name', type: 'ts' } as File;
+      const f = new FormData();
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -1109,6 +1056,117 @@ describe('ItemFileUploadHandler', () => {
         SENDING_STATUS.INPROGRESS,
         SENDING_STATUS.INPROGRESS,
       ]);
+    });
+  });
+
+  describe('canResendFailedFile', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should return true when has valid store file', async () => {
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        versions: [
+          {
+            _id: 123,
+            creator_id: 2588675,
+            last_modified: 1542274244897,
+            download_url: 'url/123.pdf',
+            url: 'url/123',
+            stored_file_id: 5701644,
+            size: 1111,
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeTruthy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return true input id > 0', async () => {
+      expect(await itemFileUploadHandler.canResendFailedFile(1)).toBeTruthy();
+      expect(itemDao.get).not.toBeCalled();
+    });
+
+    it('should return false when can not find item in db', async () => {
+      itemDao.get.mockResolvedValue(null);
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return true when has valid file', async () => {
+      const progressCaches = new Map();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      progressCaches.set(-1, {
+        itemFile: { group_ids: [1], versions: [{ size: 1 }] },
+        progress: { loaded: 10 },
+        file: { size: 1, name: 'name' } as File,
+      } as ItemFileUploadStatus);
+
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        group_ids: [1],
+        versions: [
+          {
+            _id: 123,
+            download_url: '',
+            url: '',
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeTruthy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return false when the cached file has no size', async () => {
+      const progressCaches = new Map();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      progressCaches.set(-1, {
+        itemFile: { group_ids: [1], versions: [{ size: 1 }] },
+        progress: { loaded: 10 },
+        file: { size: 0, name: 'name' } as File,
+      } as ItemFileUploadStatus);
+
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        group_ids: [1],
+        versions: [
+          {
+            _id: 123,
+            download_url: '',
+            url: '',
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return false when can not find file cache', async () => {
+      const progressCaches = new Map();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        group_ids: [1],
+        versions: [
+          {
+            _id: 123,
+            download_url: '',
+            url: '',
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(itemDao.get).toBeCalledWith(-1);
     });
   });
 

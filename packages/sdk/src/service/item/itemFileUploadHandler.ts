@@ -175,16 +175,27 @@ class ItemFileUploadHandler {
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
   }
 
-  private _isValidFile(file: File) {
-    return file && file.size > 0;
-  }
-
-  private async _onFileInvalid(itemId: number, file: File) {
-    await this._partialUpdateItemFile({
-      id: itemId,
-      _id: itemId,
-      versions: [{ download_url: '', size: 0, url: '' }],
-    });
+  async canResendFailedFile(itemId: number) {
+    let canResend = false;
+    if (itemId < 0) {
+      const itemDao = daoManager.getDao(ItemDao);
+      const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+      if (itemInDB) {
+        if (this._hasValidStoredFile(itemInDB)) {
+          canResend = true;
+        } else {
+          const cacheItem = this._progressCaches.get(itemId);
+          canResend = !!(
+            cacheItem &&
+            cacheItem.file &&
+            cacheItem.file.size > 0
+          );
+        }
+      }
+    } else {
+      canResend = true;
+    }
+    return canResend;
   }
 
   async resendFailedFile(itemId: number) {
@@ -200,13 +211,8 @@ class ItemFileUploadHandler {
         await this._uploadItem(groupId, itemInDB, isUpdate);
       } else {
         const cacheItem = this._progressCaches.get(itemId);
-        if (cacheItem && cacheItem.file) {
-          if (this._isValidFile(cacheItem.file)) {
-            await this._sendItemFile(itemInDB, cacheItem.file);
-          } else {
-            await this._onFileInvalid(itemId, cacheItem.file);
-            sendFailed = true;
-          }
+        if (groupId && cacheItem && cacheItem.file) {
+          await this._sendItemFile(itemInDB, cacheItem.file);
         } else {
           sendFailed = true;
         }

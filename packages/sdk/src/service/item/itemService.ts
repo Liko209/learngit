@@ -58,6 +58,20 @@ class ItemService extends BaseService<Item> {
     return this._getItemFileHandler().getUploadItems(groupId);
   }
 
+  async canResendFailedItems(itemIds: number[]) {
+    const fileItemsIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    for (let i = 0; i < fileItemsIds.length; i++) {
+      if (
+        !(await this._getItemFileHandler().canResendFailedFile(fileItemsIds[i]))
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async resendFailedItems(itemIds: number[]) {
     await Promise.all(
       itemIds.map((id: number) => {

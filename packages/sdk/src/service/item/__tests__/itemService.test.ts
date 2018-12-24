@@ -359,6 +359,21 @@ describe('ItemService', () => {
       });
     });
 
+    describe('canResendFailedItems', async () => {
+      it('should call canResendFailedItem in the handler', async () => {
+        itemFileUploadHandler.canResendFailedFile
+          .mockResolvedValueOnce(true)
+          .mockResolvedValueOnce(false);
+        const res = await itemService.canResendFailedItems([
+          -2078572554,
+          -801456138,
+          -1,
+        ]);
+        expect(itemFileUploadHandler.canResendFailedFile).toBeCalledTimes(2);
+        expect(res).toBe(false);
+      });
+    });
+
     describe('canUploadFiles()', () => {
       it('should canUploadFiles in the handler', () => {
         itemFileUploadHandler.canUploadFiles.mockResolvedValue(true);
