@@ -13,7 +13,7 @@ import { ErrorTypes } from 'sdk/utils/';
 jest.mock('@/containers/Notification');
 
 const someProps = {
-  t: (str: string) => { },
+  t: (str: string) => {},
   isPublic: true,
   isAdmin: true,
   id: 123,
@@ -22,12 +22,14 @@ const someProps = {
 
 describe('PrivacyView', () => {
   describe('render()', () => {
-    it('Display flash toast notification when change team from public to private failed. [JPT-491]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when change team from public to private failed. [JPT-491]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
-        handlePrivacy: () => { throw ErrorTypes.API_SERVER_ERROR; },
+        handlePrivacy: () => {
+          throw ErrorTypes.API_SERVER_ERROR;
+        },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -40,13 +42,15 @@ describe('PrivacyView', () => {
       },         0);
     });
 
-    it('Display flash toast notification when change team from private to public failed. [JPT-492]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when change team from private to public failed. [JPT-492]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
         isPublic: false,
-        handlePrivacy: () => { throw ErrorTypes.API_SERVER_ERROR; },
+        handlePrivacy: () => {
+          throw ErrorTypes.API_SERVER_ERROR;
+        },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -59,12 +63,14 @@ describe('PrivacyView', () => {
       },         0);
     });
 
-    it('Display flash toast notification when change team from public to private without network. [JPT-520]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when change team from public to private without network. [JPT-520]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
-        handlePrivacy: () => { throw ErrorTypes.API_NETWORK; },
+        handlePrivacy: () => {
+          throw ErrorTypes.API_NETWORK;
+        },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -77,13 +83,15 @@ describe('PrivacyView', () => {
       },         0);
     });
 
-    it('Display flash toast notification when change team from private to public without network. [JPT-521]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when change team from private to public without network. [JPT-521]', (done: jest.DoneCallback) => {
       const props: any = {
         ...someProps,
         isPublic: false,
-        handlePrivacy: () => { throw ErrorTypes.API_NETWORK; },
+        handlePrivacy: () => {
+          throw ErrorTypes.API_NETWORK;
+        },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
