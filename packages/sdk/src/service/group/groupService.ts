@@ -423,13 +423,16 @@ class GroupService extends BaseService<Group> {
     }
   }
 
-  async updateGroupPartialDataHttp(id: number, data: Partial<Group>): Promise<boolean> {
+  private async _updateGroup(
+    id: number,
+    data: Partial<Group>,
+  ): Promise<boolean> {
     data.id = id;
     const result = await this.handlePartialUpdate(
       data,
       undefined,
       async (updatedModel: Group) => {
-        return await this.updateGroupPartialById(id, updatedModel);
+        return await this._doUpdateGroup(id, updatedModel);
       },
     );
     if (result.isOk()) {
@@ -442,7 +445,10 @@ class GroupService extends BaseService<Group> {
   }
 
   // update partial group data http
-  async updateGroupPartialById(id: number, group: Group): Promise<Group | BaseError> {
+  private async _doUpdateGroup(
+    id: number,
+    group: Group,
+  ): Promise<Group | BaseError> {
     const apiResult = await GroupAPI.putTeamById(id, group);
     if (apiResult.isOk()) {
       return transform<Group>(apiResult.data);
@@ -455,7 +461,9 @@ class GroupService extends BaseService<Group> {
     id: number;
     privacy: string;
   }): Promise<boolean> {
-    const result = await this.updateGroupPartialDataHttp(params.id, { privacy: params.privacy });
+    const result = await this._updateGroup(params.id, {
+      privacy: params.privacy,
+    });
     return result;
   }
 
@@ -710,7 +718,7 @@ class GroupService extends BaseService<Group> {
         if (group.email_friendly_abbreviation) {
           email = `${
             group.email_friendly_abbreviation
-            }@${companyReplyDomain}.${envDomain}`;
+          }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {

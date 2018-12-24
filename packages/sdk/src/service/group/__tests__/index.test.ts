@@ -510,6 +510,23 @@ describe('GroupService', () => {
       expect(groupService.handleRawGroup).toHaveBeenCalled();
     });
 
+    it('updateGroupPrivacy({id, privacy}) is update success', async () => {
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.putTeamById.mockResolvedValue(
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
+      );
+      const result = groupService.updateGroupPrivacy({
+        id: 1,
+        privacy: 'privacy',
+      });
+      result.then((bool) => {
+        expect(bool).toEqual(true);
+      });
+    });
+
     it('data should have correct permission level if passed in options', async () => {
       jest.spyOn(groupService, 'handleRawGroup');
       groupService.handleRawGroup.mockImplementationOnce(() => {});
