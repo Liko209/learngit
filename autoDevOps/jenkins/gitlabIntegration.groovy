@@ -3,6 +3,10 @@ import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
 import hudson.AbortException
 
+final String SUCCESS_EMOJI = ':white_check_mark:'
+final String FAILURE_EMOJI = ':negative_squared_cross_mark:'
+final String ABORTED_EMOJI = ':no_entry:'
+
 // cancel old build
 @NonCPS
 def cancelOldBuildOfSameCause() {
@@ -106,7 +110,6 @@ def buildReport(result, buildUrl, report) {
     return lines.join(' \n')
 }
 
-
 // params
 String jobName = env.JOB_BASE_NAME
 String buildNode = env.BUILD_NODE
@@ -123,6 +126,7 @@ String rcCredentialId = env.E2E_RC_CREDENTIAL
 // derivative value
 Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
+Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
 
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
@@ -135,6 +139,8 @@ def reportChannels = [
 
 // report
 Map report = [:]
+report.description = currentBuild.descritpion
+report.buildUrl = env.BUILD_URL
 
 // start
 skipUpdateGitlabStatus || updateGitlabCommitStatus name: 'jenkins', state: 'pending'
@@ -152,7 +158,6 @@ node(buildNode) {
         // start to build
         stage ('Collect Facts') {
             sh 'env'
-            sh 'ifconfig'
             sh 'df -h'
             sh 'uptime'
             sh 'git --version'
@@ -212,11 +217,10 @@ node(buildNode) {
                             ].each {
                                 sh "npx tslint --project ${it[0]} --out ${it[1]}"
                             }
-                            report.saReport = 'no tslint error'
+                            report.saReport = "${SUCCESS_EMOJI} no tslint error"
                         } catch (e) {
-                            report.saReport = 'tslint error is detect'
-                        } finally {
-                            archiveArtifacts artifacts: 'lint/*.txt'
+                            String saErrorMessage = sh(returnStdout: true, script: 'cat lint/*.txt').trim()
+                            report.saReport = "${FAILURE_EMOJI} ${saErrorMessage}"
                         }
                     }
                 },
@@ -261,10 +265,15 @@ node(buildNode) {
                         // FIXME: move this part to build script
                         sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
                         sh 'mv commitInfo.ts application/src/containers/VersionInfo/GitRepo.ts'
-                        dir('application') {
-                            sh 'npm run build'
+                        if (buildRelease) {
+                            sh 'npm run build:release'
+                        } else {
+                            dir('application') {
+                                sh 'npm run build'
+                            }
                         }
                     }
+
                     condStage(name: 'Deploy Application') {
                         String sourceDir = "application/build/"  // !!! don't forget trailing '/'
                         String deployDir = "${deployBaseDir}/${subDomain}".toString()
