@@ -359,6 +359,20 @@ describe('ItemService', () => {
       });
     });
 
+    describe('canUploadFiles()', () => {
+      it('should canUploadFiles in the handler', () => {
+        itemFileUploadHandler.canUploadFiles.mockResolvedValue(true);
+        expect(
+          itemService.canUploadFiles(1, [{ size: 10 } as File], false),
+        ).toBeTruthy();
+        expect(itemFileUploadHandler.canUploadFiles).toBeCalledWith(
+          1,
+          [{ size: 10 } as File],
+          false,
+        );
+      });
+    });
+
     describe('getItemVersion()', () => {
       it('should call ItemFileUplaodHandler to get version', async () => {
         itemFileUploadHandler.getUpdateItemVersion.mockResolvedValue(true);
