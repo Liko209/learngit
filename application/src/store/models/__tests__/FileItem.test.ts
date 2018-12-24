@@ -9,22 +9,20 @@ import FileItemModel from '../FileItem';
 
 describe('FileItemModel', () => {
   describe('new FileItem', () => {
-    const linkItemModal = FileItemModel.fromJS({
+    const fileItemModel = FileItemModel.fromJS({
       type: 'type',
       name: 'name',
-      url: 'url',
       isNew: true,
       isDocument: true,
       deactivated: true,
       versions: [],
     } as any);
-    expect(linkItemModal.type).toBe('type');
-    expect(linkItemModal.name).toBe('name');
-    expect(linkItemModal.url).toBe('url');
-    expect(linkItemModal.isNew).toBe(true);
-    expect(linkItemModal.deactivated).toBe(true);
-    expect(linkItemModal.isDocument).toBe(true);
-    expect(linkItemModal.versions).toEqual([]);
+    expect(fileItemModel.type).toBe('type');
+    expect(fileItemModel.name).toBe('name');
+    expect(fileItemModel.isNew).toBe(true);
+    expect(fileItemModel.deactivated).toBe(true);
+    expect(fileItemModel.isDocument).toBe(true);
+    expect(fileItemModel.versions).toEqual([]);
   });
   describe('hasVersions()', () => {
     it('should return true if has versions', () => {
