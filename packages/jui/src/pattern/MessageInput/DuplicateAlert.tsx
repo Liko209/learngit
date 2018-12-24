@@ -12,6 +12,7 @@ import {
   grey,
   spacing,
   typography,
+  ellipsis,
 } from '../../foundation/utils/styles';
 
 const Footer = styled.div`
@@ -41,12 +42,17 @@ const NameList = styled.ul`
   overflow-y: auto;
   background: ${grey('50')};
   padding: ${spacing(2)};
+  box-sizing: border-box;
   ${typography('body2')}
 `;
 
 const Item = styled.li`
   list-style: none;
   line-height: ${height(5)};
+  &:not(:last-child) {
+    margin: 0 0 ${spacing(2)} 0;
+  }
+  ${ellipsis};
 `;
 
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {
