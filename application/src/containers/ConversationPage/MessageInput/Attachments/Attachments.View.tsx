@@ -20,9 +20,7 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
         <DuplicateAlert
           title={t('updateFiles')}
           subtitle={t('The following files already exist.')}
-          footText={t(
-            'doYouWantToUpdateTheExistingFilesOrDoYouWishToCreateNewFiles',
-          )}
+          footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
