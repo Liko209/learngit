@@ -12,7 +12,8 @@ fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check the posts display and the order', ['P1', 'JPT-52', 'ConversationStream']),
+test(formalName('The posts in the conversation should be displayed in the order of recency (date/time)',
+  ['P1', 'JPT-52', 'ConversationStream']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -36,13 +37,13 @@ test(formalName('Check the posts display and the order', ['P1', 'JPT-52', 'Conve
         await app.homePage.ensureLoaded();
       });
 
-    await h(t).withLog('And I enter the conversation', async () => {
+    await h(t).withLog('Then I enter the conversation', async () => {
       const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
     });
 
-    await h(t).withLog('And I send 3 posts in order via API', async () => {
+    await h(t).withLog('When I send 3 posts in order via API', async () => {
       for (const msg of msgList) {
         await userPlatform.createPost({ text: msg }, teamId);
         await t.wait(1e3)
@@ -60,10 +61,6 @@ test(formalName('Check the posts display and the order', ['P1', 'JPT-52', 'Conve
         await t.expect(posts.nth(-msgList.length + i).withText(msgList[i]).exists).ok();
       }
     });
-
-    await h(t).withLog('And the posts is at the bottom of conversationStream',async ()=>{
-       await app.homePage.messageTab.conversationPage.expectStreamScrollToBottom()
-    })
   }
 );
 
@@ -154,10 +151,5 @@ test(formalName('Should be able to read the newest posts once open a conversatio
       const posts = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(posts.nth(-1).withText(msgAfterLogin).exists).ok();
     });
-
-    await h(t).withLog('And the post is at the bottom of conversationStream',async ()=>{
-       await app.homePage.messageTab.conversationPage.expectStreamScrollToBottom()
-    })
-
   }
 );
