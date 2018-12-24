@@ -31,7 +31,12 @@ class ProfileMiniCardPersonHeaderView extends Component<
     return (
       <JuiProfileMiniCardHeader>
         <JuiProfileMiniCardHeaderLeft>
-          <Avatar uid={id} size="large" presence={presence} />
+          <Avatar
+            uid={id}
+            size="large"
+            presence={presence}
+            automationId="profileAvatar"
+          />
         </JuiProfileMiniCardHeaderLeft>
         <JuiProfileMiniCardHeaderMiddle>
           <JuiProfileMiniCardPersonName data-test-automation-id="profileMiniCardPersonName">

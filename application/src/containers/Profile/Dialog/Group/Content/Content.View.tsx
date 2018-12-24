@@ -57,7 +57,11 @@ class ProfileDialogGroupContentViewComponent extends Component<
       <>
         <Summary data-test-automation-id="profileDialogSummary">
           <Left>
-            <GroupAvatar cid={id} size="xlarge" />
+            <GroupAvatar
+              cid={id}
+              size="xlarge"
+              data-test-automation-id="profileAvatar"
+            />
           </Left>
           <Right>
             <Name

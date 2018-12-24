@@ -137,7 +137,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
           data-test-automation-id="profileDialogSummary"
         >
           <Left>
-            <Avatar uid={id} size="xlarge" presence={this.renderPresence()} />
+            <Avatar
+              uid={id}
+              size="xlarge"
+              presence={this.renderPresence()}
+              automationId="profileAvatar"
+            />
           </Left>
           <Right>
             <Name data-test-automation-id="profileDialogSummaryName">
