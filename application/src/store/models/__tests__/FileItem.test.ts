@@ -8,6 +8,24 @@ import FileItemModel from '../FileItem';
 // import { Item } from 'sdk/src/models';
 
 describe('FileItemModel', () => {
+  describe('new FileItem', () => {
+    const linkItemModal = FileItemModel.fromJS({
+      type: 'type',
+      name: 'name',
+      url: 'url',
+      isNew: true,
+      isDocument: true,
+      deactivated: true,
+      versions: [],
+    } as any);
+    expect(linkItemModal.type).toBe('type');
+    expect(linkItemModal.name).toBe('name');
+    expect(linkItemModal.url).toBe('url');
+    expect(linkItemModal.isNew).toBe(true);
+    expect(linkItemModal.deactivated).toBe(true);
+    expect(linkItemModal.isDocument).toBe(true);
+    expect(linkItemModal.versions).toEqual([]);
+  });
   describe('hasVersions()', () => {
     it('should return true if has versions', () => {
       const fileItemModel = FileItemModel.fromJS({

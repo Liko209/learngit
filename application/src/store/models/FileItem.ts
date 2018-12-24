@@ -25,15 +25,18 @@ export default class FileItemModal extends ItemModel {
   @observable isDocument?: boolean;
   @observable isNew: boolean;
   @observable versions: Item['versions'];
+  @observable deactivated: Item['deactivated'];
 
   constructor(data: Item) {
     super(data);
-    const { type, name, versions, is_document, is_new } = data;
+    const { type, name, versions, is_document, is_new, deactivated } = data;
+    console.log('nello----', data);
     this.type = type;
     this.name = name;
     this.isDocument = is_document;
     this.isNew = is_new;
     this.versions = versions;
+    this.deactivated = deactivated;
   }
 
   hasVersions() {
