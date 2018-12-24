@@ -421,7 +421,7 @@ export class GlipSdk {
       data = _.assign(
         {},
         ...(groupIds as string[]).map(id => {
-          return { [`hde_group_${id}`]: true }
+          return { [`hide_group_${id}`]: true }
         }) 
       )
     } else {
