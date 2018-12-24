@@ -130,13 +130,7 @@ test(formalName('Shouldn not display in conversation list when last conversation
     });
 
     await h(t).withLog('The conversation should be last conversation', async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-      await teamsSection.conversationEntryById(teamId).enter();
-      await t.wait(3000);
-      await app.homePage.openSettingMenu();
-      await app.homePage.settingMenu.ensureLoaded();
-      await app.homePage.settingMenu.clickLogout();
+      await user.sdk.glip.setLastGroupId(user.rcId, teamId);
     });
 
     await h(t).withLog('The last conversation should be closed before login', async () => {
