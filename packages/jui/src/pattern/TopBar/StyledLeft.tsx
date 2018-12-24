@@ -7,6 +7,7 @@
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
+import { StyledMenuWithLogo } from './StyledMenuWithLogo';
 import { JuiLogo } from './Logo';
 
 type Props = {
@@ -24,6 +25,10 @@ const StyledLeft = styled<Props, 'div'>('div')`
   }
   @media (max-width: 1100px) {
     flex: 1;
+    /* ie compatibility for Topbar width less than 1100px */
+    ${StyledMenuWithLogo} {
+      flex-shrink: 0;
+    }
   }
   @media (max-width: 600px) {
     justify-content: space-between;
