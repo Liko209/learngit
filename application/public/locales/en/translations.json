@@ -171,5 +171,6 @@
   "showMore": "Show more",
   "updateFiles": "Update File(s)?",
   "theFollowingFilesAlreadyExist": "The following file(s) already exist",
-  "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?"
+  "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
+  "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed."
 }
