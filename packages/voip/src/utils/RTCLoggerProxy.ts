@@ -48,6 +48,29 @@ class RTCLoggerProxy {
     const formatMsg = `${tag}: ${message}`;
     return formatMsg;
   }
+
+  public loggerConnector(
+    level: string,
+    category: string,
+    label: string,
+    content: string,
+  ): void {
+    const tag = `VoIP-Sip: ${category} [${label}]`;
+    switch (level) {
+      case 'debug':
+        this.debug(tag, content);
+        break;
+      case 'log':
+        this.info(tag, content);
+        break;
+      case 'warn':
+        this.warn(tag, content);
+        break;
+      case 'error':
+        this.error(tag, content);
+        break;
+    }
+  }
 }
 
 const rtcLogger = new RTCLoggerProxy();
