@@ -122,10 +122,13 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
       if (!hasDuplicate) {
         await this._uploadFiles(result, false);
+        if (callback) {
+          await callback();
+        }
       } else {
         this.selectedFiles = result;
+        this._didUploadFileCallback = callback;
       }
-      this._didUploadFileCallback = callback;
     }
   }
 
