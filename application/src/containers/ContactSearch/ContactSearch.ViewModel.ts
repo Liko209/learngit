@@ -24,9 +24,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
     return this.props.label;
   }
 
-  @computed
-  get onChange() {
-    return this.props.onChange;
+  onChange = (...args: any[]) => {
+    this.suggestions = [];
+    return this.props.onChange(args);
   }
 
   @computed

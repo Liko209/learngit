@@ -116,12 +116,10 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       !inputValue.length &&
       keycode(event) === 'backspace'
     ) {
-      this.setState(
-        { selectedItem: selectedItem.slice(0, selectedItem.length - 1) },
-        () => {
-          this.props.onChange(this.state.selectedItem);
-        },
-      );
+      this.setState({
+        selectedItem: selectedItem.slice(0, selectedItem.length - 1),
+      });
+      this.props.onChange(this.state.selectedItem);
     }
   }
 
@@ -154,22 +152,18 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       emailRegExp.test(value) &&
       selectedItem.findIndex(item => item.email === value) === -1
     ) {
-      this.setState(
-        {
-          selectedItem: [
-            ...selectedItem,
-            {
-              label: value,
-              email: value,
-            },
-          ],
-          inputValue: '',
-        },
-        () => {
-          this.props.onChange(this.state.selectedItem);
-        },
-      );
+      this.setState({
+        selectedItem: [
+          ...selectedItem,
+          {
+            label: value,
+            email: value,
+          },
+        ],
+        inputValue: '',
+      });
     }
+    this.props.onChange(this.state.selectedItem);
     this.props.inputChange(value);
   }
 
@@ -180,30 +174,21 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       selectedItem = [...selectedItem, item];
     }
 
-    this.setState(
-      {
-        selectedItem,
-        inputValue: '',
-      },
-      () => {
-        this.props.onChange(this.state.selectedItem);
-      },
-    );
+    this.setState({
+      selectedItem,
+      inputValue: '',
+    });
+    this.props.onChange(this.state.selectedItem);
   }
 
   handleDelete = (item: TSuggestion) => () => {
-    this.setState(
-      (state: State) => {
-        const selectedItem = [...state.selectedItem];
-        selectedItem.splice(selectedItem.indexOf(item), 1);
-        const shrink =
-          selectedItem.length !== 0 || state.inputValue.length !== 0;
-        return { selectedItem, shrink };
-      },
-      () => {
-        this.props.onChange(this.state.selectedItem);
-      },
-    );
+    this.setState((state: State) => {
+      const selectedItem = [...state.selectedItem];
+      selectedItem.splice(selectedItem.indexOf(item), 1);
+      const shrink = selectedItem.length !== 0 || state.inputValue.length !== 0;
+      return { selectedItem, shrink };
+    });
+    this.props.onChange(this.state.selectedItem);
   }
 
   render() {
