@@ -100,13 +100,20 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
 const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
-  const { name, status, onClickDeleteButton, progress } = props;
+  const {
+    name,
+    status,
+    hideRemoveButton,
+    onClickDeleteButton,
+    progress,
+  } = props;
   const loading = status === 'loading' || typeof progress !== 'undefined';
   const action = (
     <AttachmentItemAction
       onClick={onClickDeleteButton}
       loading={loading}
       value={progress}
+      hideRemoveButton={hideRemoveButton}
       icon="close"
     />
   );
