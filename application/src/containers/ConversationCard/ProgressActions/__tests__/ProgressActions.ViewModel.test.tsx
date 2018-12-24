@@ -4,22 +4,32 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PostService, POST_STATUS } from 'sdk/service';
+import { PostService, ItemService, POST_STATUS } from 'sdk/service';
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 import { getEntity } from '../../../../store/utils';
+import { Notification } from '@/containers/Notification';
 
 jest.mock('../../../../store/utils');
 jest.mock('sdk/service');
+jest.mock('@/containers/Notification');
+
+Notification.flashToast = jest.fn();
 
 const postService = {
   reSendPost: jest.fn(),
   deletePost: jest.fn(),
 };
+const itemService = {
+  canResendFailedItems: jest.fn().mockReturnValue(true),
+};
+
 PostService.getInstance = jest.fn().mockReturnValue(postService);
+ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 const mockPostData = {
   id: 123,
   status: POST_STATUS.SUCCESS,
+  itemIds: [1],
 };
 
 const props = {
@@ -64,6 +74,14 @@ describe('ProgressActionsViewModel', () => {
     it('should be called on post service method when invoke it', async () => {
       await vm.resend();
       expect(postService.reSendPost).toBeCalled();
+    });
+
+    it('should not call resend when has failed items', async () => {
+      (itemService.canResendFailedItems as jest.Mock).mockReturnValueOnce(
+        false,
+      );
+      await vm.resend();
+      expect(postService.reSendPost).toBeCalledTimes(0);
     });
   });
 
