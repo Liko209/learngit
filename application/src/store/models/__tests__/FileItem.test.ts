@@ -12,8 +12,8 @@ describe('FileItemModel', () => {
     const fileItemModel = FileItemModel.fromJS({
       type: 'type',
       name: 'name',
-      isNew: true,
-      isDocument: true,
+      is_new: true,
+      is_document: true,
       deactivated: true,
       versions: [],
     } as any);

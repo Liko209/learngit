@@ -30,7 +30,6 @@ export default class FileItemModal extends ItemModel {
   constructor(data: Item) {
     super(data);
     const { type, name, versions, is_document, is_new, deactivated } = data;
-    console.log('nello----', data);
     this.type = type;
     this.name = name;
     this.isDocument = is_document;
