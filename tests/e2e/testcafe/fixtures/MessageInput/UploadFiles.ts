@@ -24,7 +24,6 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
     const user = users[0];
     user.sdk = await h(t).getSdk(user);
     const teamsSection = app.homePage.messageTab.teamsSection;
-    const duplicatePromptPage = app.homePage.messageTab.duplicatePromptPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
     const filesNames = ['1.txt', '3.txt',];
     const filesSize = ['0.4Kb', '2.0Kb'];
@@ -54,12 +53,12 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
         await conversationPage.uploadFilesToMessageAttachment(filesPath);
     });
 
-    await h(t).withLog('Then I can send message to this conversation', async () => {
+    await h(t).withLog('And I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
 
-    await h(t).withLog('And I can read this message with files from post list', async () => {
+    await h(t).withLog('Then I can read this message with files from post list', async () => {
         await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
         for (let i = 0; i < filesNames.length; i++) {
             await t.expect((await conversationPage.fileNameOnPost).withText(filesNames[i]).exists).ok();
@@ -72,7 +71,7 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
         }
     });
 
-    await h(t).withLog(`Then the sent post\'s conversationCard shows ${NOTIFICATIONS}`, async () => {
+    await h(t).withLog(`And the sent post\'s conversationCard shows ${NOTIFICATIONS}`, async () => {
         await t.expect(conversationPage.conversationCard.withText(NOTIFICATIONS).exists).ok();
     });
 });
@@ -115,7 +114,7 @@ test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing fi
         await t.expect((await conversationPage.attachmentFileName).withText(fileName).exists).ok();
     });
 
-    await h(t).withLog('And upload the same name file to the message attachment in the created conversation ', async () => {
+    await h(t).withLog('When upload the same name file to the message attachment in the created conversation ', async () => {
         await t.wait(WAIT_FOR_POST_SENT);
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
     });
@@ -242,7 +241,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
         await t.expect(conversationPage.previewFileSize.nth(0).withText(files1Size).exists).ok();
     });
 
-    await h(t).withLog(`And upload the same name file to the conversation,size=${files2Size} `, async () => {
+    await h(t).withLog(`When upload the same name file to the conversation,size=${files2Size} `, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
     });
 
@@ -258,7 +257,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
         await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).ok();
     });
 
-    await h(t).withLog('When I can send message to this conversation', async () => {
+    await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
@@ -317,7 +316,7 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
         await t.expect((await conversationPage.attachmentFileName).withText(fileName).count).eql(1);
     });
 
-    await h(t).withLog('When I can send message to this conversation', async () => {
+    await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
@@ -355,7 +354,7 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
     //     await t.expect(duplicatePromptPage.attachmentFileName.withText(fileName).count).eql(1);
     //   });
   
-    await h(t).withLog('When I can send message to this conversation', async () => {
+    await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
     });
   
@@ -407,7 +406,7 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
         await conversationPage.uploadFilesToMessageAttachment(filesPath1);
     });
 
-    await h(t).withLog('Then I can send message to this conversation', async () => {
+    await h(t).withLog('And I can send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
@@ -428,12 +427,12 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
         await t.expect((await conversationPage.attachmentFileName).withText(fileName).exists).ok();
     });
 
-    await h(t).withLog('Then I can send message to this conversation', async () => {
+    await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
      });
 
-    await h(t).withLog(`And the previous sent file size = ${file1Size} `, async () => {
+    await h(t).withLog(`Then the previous sent file size = ${file1Size} `, async () => {
         await t.expect((await conversationPage.previewFileSize).nth(0).withText(file1Size).exists).ok();
     });
 
@@ -483,7 +482,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
     });
 
-    await h(t).withLog('When I can send message to this conversation', async () => {
+    await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
     });
 
@@ -521,12 +520,12 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(2);
     });
   
-    await h(t).withLog('Then I can send message to this conversation', async () => {
+    await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
   
-    await h(t).withLog(`And the sent files size should have ${filesSize}`, async () => {
+    await h(t).withLog(`Then the sent files size should have ${filesSize}`, async () => {
         filesSize.forEach(async (size) => {
             await t.expect((await conversationPage.previewFileSize).withText(size).exists).ok();
         });     
@@ -571,7 +570,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
         await conversationPage.uploadFilesToMessageAttachment(filesPath1);
    });
 
-    await h(t).withLog('And I can send the file to this conversation', async () => {
+    await h(t).withLog('And I send the file to this conversation', async () => {
        await conversationPage.sendMessageWithoutText();
        await t.wait(WAIT_FOR_POST_SENT);
     });
@@ -601,7 +600,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
         await conversationPage.uploadFilesToMessageAttachment(filesPath3);
     });
 
-     await h(t).withLog('When click update button in the duplicate prompt', async () => {
+     await h(t).withLog('And click update button in the duplicate prompt', async () => {
         await duplicatePromptPage.clickUpdateButton();
     });
 
@@ -707,7 +706,7 @@ test(formalName('JPT-515 The selected files shouldn\'t be in the other conversat
         await teamsSection.conversationEntryById(teamId[0]).enter();
     });
 
-    await h(t).withLog('And upload one file to the message attachment in the created conversation ', async () => {
+    await h(t).withLog('And upload one file to the message attachment in the first conversation ', async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath);
     });
 
