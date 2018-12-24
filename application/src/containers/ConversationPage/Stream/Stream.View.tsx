@@ -23,6 +23,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { mainLogger } from 'sdk';
 import RO from 'resize-observer-polyfill';
+import { noop } from 'jui/foundation/utils';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -221,41 +222,43 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _viewedPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(
-      this._handleFirstUnreadPostVisibilityChange,
+    return this._visibilityPostWrapper({
       streamItem,
-    );
+      onChangeHandler: this._handleFirstUnreadPostVisibilityChange,
+    });
   }
 
   private _mostRecentPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(
-      this._handleMostRecentPostRead,
+    return this._visibilityPostWrapper({
       streamItem,
-    );
+      onChangeHandler: this._handleMostRecentPostRead,
+    });
   }
 
   private _ordinaryPostFactory(streamItem: StreamItem) {
-    const { loading } = this.props;
-
-    return (
-      <ConversationPost
-        id={streamItem.value}
-        key={`ConversationPost${streamItem.value}`}
-        ref={this._setPostRef}
-        highlight={streamItem.value === this.state._jumpToPostId && !loading}
-      />
-    );
+    return this._visibilityPostWrapper({
+      streamItem,
+      onChangeHandler: noop,
+      active: false,
+    });
   }
-  private _visibilityPostWrapper(
-    onChangeHandler: (isVisible: boolean) => void,
-    streamItem: StreamItem,
-  ) {
+
+  private _visibilityPostWrapper({
+    onChangeHandler,
+    streamItem,
+    active,
+  }: {
+    onChangeHandler: (isVisible: boolean) => void;
+    streamItem: StreamItem;
+    active?: boolean;
+  }) {
     const { loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={onChangeHandler}
+        active={active}
       >
         <ConversationPost
           ref={this._setPostRef}
