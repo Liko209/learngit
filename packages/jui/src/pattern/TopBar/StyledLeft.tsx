@@ -7,7 +7,6 @@
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
-import { StyledMenuWithLogo } from './StyledMenuWithLogo';
 import { JuiLogo } from './Logo';
 
 type Props = {
