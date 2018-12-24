@@ -8,11 +8,11 @@ import React, { MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
 import { t } from 'i18next';
 import {
-  spacing,
   height,
   width,
   grey,
   palette,
+  spacing,
 } from '../../foundation/utils/styles';
 // import { JuiIconography } from '../../foundation/Iconography';
 import { JuiCircularProgress } from '../../components/Progress';
@@ -46,14 +46,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: ${height(5)};
-  max-height: ${height(5)};
-  width: ${width(77)};
-  min-width: ${width(77)};
-  max-width: ${width(77)};
-  padding: ${spacing(4, 3, 4, 4)};
-  margin-right: ${spacing(4)};
-  margin-bottom: ${spacing(2)};
+  margin: ${spacing(0, 4, 2, 0)};
 `;
 
 const ActionWrapper = styled.div`
