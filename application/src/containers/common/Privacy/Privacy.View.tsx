@@ -42,6 +42,7 @@ class PrivacyViewComponent extends Component<Props> {
         className="privacy"
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
+        ariaLabel={t(tooltipKey)}
       >
         {isPublic ? 'lock_open' : 'lock'}
       </JuiIconButton>

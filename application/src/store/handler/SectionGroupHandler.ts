@@ -75,6 +75,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   @observable
   private _lastGroupId: number = 0;
   private _dataLoader: Promise<any>;
+  private _lastClosedGroupId: number;
   constructor() {
     super();
     this._dataLoader = this._initHandlerMap();
@@ -284,12 +285,19 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
+    const currentGroupId = storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (type === EVENT_TYPES.DELETE) {
-      const currentGroupId = storeManager
-        .getGlobalStore()
-        .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
       if (ids.includes(currentGroupId)) {
         history.replace('/messages');
+        this._lastClosedGroupId = currentGroupId;
+      }
+    }
+    if (type === EVENT_TYPES.UPDATE) {
+      if (this._lastClosedGroupId && !currentGroupId) {
+        history.replace(`/messages/${this._lastClosedGroupId}`);
+        delete this._lastClosedGroupId;
       }
     }
   }
