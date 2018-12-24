@@ -16,14 +16,14 @@ class AvatarView extends React.Component<AvatarViewProps> {
       headShotUrl,
       shouldShowShortName,
       shortName,
-      autoMationId,
+      automationId,
       presence,
       ...rest
     } = this.props;
     return !shouldShowShortName ? (
       <JuiAvatar
         src={headShotUrl}
-        data-test-automation-id={autoMationId}
+        data-test-automation-id={automationId}
         color=""
         presence={presence}
         {...rest}
@@ -31,7 +31,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
     ) : (
       <JuiAvatar
         color={bgColor}
-        data-test-automation-id={autoMationId}
+        data-test-automation-id={automationId}
         presence={presence}
         {...rest}
       >

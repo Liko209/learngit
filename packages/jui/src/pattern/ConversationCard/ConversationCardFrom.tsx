@@ -26,12 +26,11 @@ const StyledName = styled('div')`
   ${ellipsis()};
   box-sizing: border-box;
   padding-left: ${spacing(2)};
+  display: flex;
+  align-items: center;
   .preposition {
     margin-right: ${spacing(2)};
     color: ${grey('900')};
-  }
-  span {
-    vertical-align: middle;
   }
 `;
 
