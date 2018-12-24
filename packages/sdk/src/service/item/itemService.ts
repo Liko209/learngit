@@ -81,6 +81,18 @@ class ItemService extends BaseService<Item> {
       : false;
   }
 
+  canUploadFiles(
+    groupId: number,
+    newFiles: File[],
+    includeUnSendFiles: boolean,
+  ): boolean {
+    return this._getItemFileHandler().canUploadFiles(
+      groupId,
+      newFiles,
+      includeUnSendFiles,
+    );
+  }
+
   getUploadProgress(itemId: number): Progress | undefined {
     return this._getItemFileHandler().getUploadProgress(itemId);
   }

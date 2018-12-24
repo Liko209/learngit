@@ -55,6 +55,7 @@ class FilesView extends React.Component<FilesViewProps> {
     }
     return (
       <AttachmentItem
+        hideRemoveButton={true}
         status={realStatus}
         key={id}
         name={name}

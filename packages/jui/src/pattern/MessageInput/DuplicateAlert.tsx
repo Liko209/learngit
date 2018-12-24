@@ -12,7 +12,9 @@ import {
   grey,
   spacing,
   typography,
+  ellipsis,
 } from '../../foundation/utils/styles';
+import { FileName } from '../ConversationCard/Files/FileName';
 
 const Footer = styled.div`
   display: flex;
@@ -23,7 +25,6 @@ const Footer = styled.div`
 
 const Content = styled.div`
   color: ${grey('700')};
-
   ${typography('body1')}
 `;
 
@@ -49,7 +50,10 @@ const NameList = styled.ul`
 const Item = styled.li`
   list-style: none;
   line-height: ${height(5)};
-  word-break: break-word;
+  &:not(:last-child) {
+    margin: 0 0 ${spacing(2)} 0;
+  }
+  ${ellipsis};
 `;
 
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {
@@ -69,7 +73,9 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
         {subtitle}
         <NameList>
           {duplicateFiles.map((file: File, index: number) => (
-            <Item key={index}>{file.name}</Item>
+            <Item key={file.name}>
+              <FileName filename={file.name} />
+            </Item>
           ))}
         </NameList>
         {footText}
