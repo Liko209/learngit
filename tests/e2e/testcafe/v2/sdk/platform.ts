@@ -64,4 +64,16 @@ export class RcPlatformSdk {
       return await this.sdk.post(url, data);
     });
   }
+
+  async createAndGetGroupId(data: object) {
+    return await this.createGroup(data).then(res =>{
+      return res.data.id;
+    });
+  }
+
+  async sentAndGetTextPostId(text: string, groupId: string) {
+    return await this.sendTextPost(text, groupId).then(res => {
+      return res.data.id;
+    });
+  }
 }
