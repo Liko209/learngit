@@ -135,26 +135,6 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
-//   get duplicateModal(){
-//     return this.getSelectorByAutomationId('messageinput-duplicate-footer');
-//   }
-
-//   get duplicateContent(){
-//     return this.getSelectorByAutomationId('messageinput-duplicate-modal-title');
-//   }
-
-//   get duplicateCreateButton(){
-//     return this.getSelectorByAutomationId('messageinput-duplicate-create-button');
-//   }
-
-//   get duplicateCancelButton(){
-//     return this.getSelectorByAutomationId('messageinput-duplicate-cancel-button');
-//   }
-
-//   get duplicateUpdateButton(){
-//     return this.getSelectorByAutomationId('messageinput-duplicate-update-button');
-//   }
-
   private uploadFiles(selector: Selector, filesPath: Array<string>) {
     return this.t.setFilesToUpload(selector, filesPath);
   }
@@ -163,19 +143,6 @@ export class ConversationPage extends BaseConversationPage {
     await this.uploadFiles(this.uploadFileInput, filesPath);
   }
 
-
-//   async clickCancelButton(){
-//     await this.t.click(this.duplicateCancelButton);
-//   }
-
-//   async clickUpdateButton(){
-//     await this.t.click(this.duplicateUpdateButton);
-//   }
-
-//   async clickCreateButton(){
-//     await this.t.click(this.duplicateCreateButton);
-//   }
-
   async clickRemoveButton(){
     await this.t.click(this.removeButton);
   }
@@ -183,7 +150,6 @@ export class ConversationPage extends BaseConversationPage {
 }
 
 export class DuplicatePromptPage extends BaseConversationPage{
-  // self
   get self(){
     return this.getSelector('');
   }

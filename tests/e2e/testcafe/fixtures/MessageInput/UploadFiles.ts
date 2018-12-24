@@ -18,7 +18,7 @@ fixture('UploadFiles')
 
 const WAIT_FOR_POST_SENT = 5e3;
 
-test.only(formalName('JPT-448 The post is sent successfully when sending a post with uploaded files',['P0', 'UploadFiles', 'Mia.Cai', 'JPT-448']), async t => {
+test(formalName('JPT-448 The post is sent successfully when sending a post with uploaded files',['P0', 'UploadFiles', 'Mia.Cai', 'JPT-448']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
