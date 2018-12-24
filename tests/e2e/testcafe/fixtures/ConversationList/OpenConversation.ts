@@ -85,8 +85,8 @@ test(formalName('Should display in the top when open a closed conversation from 
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension} and URL contain ${teamId}`, async () => {
-      NEW_URL = `${SITE_URL} + 'messages/' + ${teamId}`;
-      await h(t).directLoginWithUser(SITE_URL, user);
+      NEW_URL = `${SITE_URL}/messages/${teamId}`;
+      await h(t).directLoginWithUser(NEW_URL, user);
       await app.homePage.ensureLoaded();
     });
 
@@ -106,7 +106,7 @@ test(formalName('Should display in the top when open a closed conversation from 
   },
 );
 
-test.only(formalName('Shouldn not display in conversation list when last conversation was closed', ['P2', 'JPT-566', 'ConversationList', 'Yilia Hong']),
+test(formalName('Shouldn not display in conversation list when last conversation was closed', ['P2', 'JPT-566', 'ConversationList', 'Yilia Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -128,6 +128,7 @@ test.only(formalName('Shouldn not display in conversation list when last convers
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
       await teamsSection.conversationEntryById(teamId).enter();
+      await t.wait(3000);
       await app.homePage.openSettingMenu();
       await app.homePage.settingMenu.ensureLoaded();
       await app.homePage.settingMenu.clickLogout();
@@ -140,13 +141,12 @@ test.only(formalName('Shouldn not display in conversation list when last convers
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
-      await t.debug()
     });
 
     await h(t).withLog('Then the conversation should not display in conversation list', async () => {
       await t.expect(teamsSection.conversationEntryById(teamId).exists).notOk();
       const url = await h(t).href;
-      await t.expect(url).eql(`${SITE_URL} + 'messages/'`);
+      await t.expect(url).eql(`${SITE_URL}/messages/`);
     });
   },
 );
