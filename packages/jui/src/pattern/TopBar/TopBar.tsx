@@ -75,8 +75,8 @@ class JuiTopBar extends React.Component<Props, States> {
             </StyledSearchIconButton>
           </StyledLeft>
           <StyledRight>
-            <AvatarActions />
             <NewActions />
+            <AvatarActions />
             {/* <StyledMoreIconButton tooltipTitle="More" size="medium">
               more_vert
             </StyledMoreIconButton> */}
