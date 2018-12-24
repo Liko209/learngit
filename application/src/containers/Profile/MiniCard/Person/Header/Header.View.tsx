@@ -31,16 +31,21 @@ class ProfileMiniCardPersonHeaderView extends Component<
     return (
       <JuiProfileMiniCardHeader>
         <JuiProfileMiniCardHeaderLeft>
-          <Avatar uid={id} size="large" presence={presence} />
+          <Avatar
+            uid={id}
+            size="large"
+            presence={presence}
+            automationId="profileAvatar"
+          />
         </JuiProfileMiniCardHeaderLeft>
         <JuiProfileMiniCardHeaderMiddle>
-          <JuiProfileMiniCardPersonName>
+          <JuiProfileMiniCardPersonName data-test-automation-id="profileMiniCardPersonName">
             {userDisplayName}
           </JuiProfileMiniCardPersonName>
-          <JuiProfileMiniCardPersonStatus>
+          <JuiProfileMiniCardPersonStatus data-test-automation-id="profileMiniCardPersonState">
             {awayStatus}
           </JuiProfileMiniCardPersonStatus>
-          <JuiProfileMiniCardPersonTitle>
+          <JuiProfileMiniCardPersonTitle data-test-automation-id="profileMiniCardPersonTitle">
             {jobTitle}
           </JuiProfileMiniCardPersonTitle>
         </JuiProfileMiniCardHeaderMiddle>

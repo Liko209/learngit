@@ -20,10 +20,10 @@ class ProfileDialogPersonView extends Component<ProfileDialogPersonViewProps> {
     const { id, dismiss } = this.props;
     return (
       <>
-        <JuiDialogTitleWithAction>
+        <JuiDialogTitleWithAction data-test-automation-id="profileDialogTitle">
           <ProfileDialogPersonTitle id={id} dismiss={dismiss} />
         </JuiDialogTitleWithAction>
-        <JuiDialogContentWithFill>
+        <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
           <ProfileDialogPersonContent id={id} dismiss={dismiss} />
         </JuiDialogContentWithFill>
       </>
