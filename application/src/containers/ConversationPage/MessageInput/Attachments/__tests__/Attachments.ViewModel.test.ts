@@ -247,4 +247,12 @@ describe('AttachmentsViewModel', () => {
       expect(vm.duplicateFiles.length).toBe(0);
     });
   });
+
+  describe('sendFilesOnlyPost()', () => {
+    it('should send files only post', async () => {
+      await vm.autoUploadFiles([file]);
+      await vm.sendFilesOnlyPost();
+      expect(postService.sendPost).toBeCalledTimes(1);
+    });
+  });
 });
