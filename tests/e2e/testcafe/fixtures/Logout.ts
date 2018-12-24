@@ -6,9 +6,9 @@ import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { SITE_URL, ACCOUNT_TYPE_LIST } from '../config';
+import { SITE_URL, BrandTire } from '../config';
 
-Object.keys(ACCOUNT_TYPE_LIST).map((accountType) => ACCOUNT_TYPE_LIST[accountType]).forEach(accountType => {
+Object.keys(BrandTire).map((accountType) => BrandTire[accountType]).forEach(accountType => {
   fixture('Logout')
     .beforeEach(setupCase(accountType))
     .afterEach(teardownCase());

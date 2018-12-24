@@ -20,7 +20,7 @@ import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { goToConversationWithPerson } from '@/common/goToConversation';
+import { goToConversation } from '@/common/goToConversation';
 import { MiniCard } from '@/containers/MiniCard';
 import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
 
@@ -35,7 +35,7 @@ class ProfileMiniCardPersonComponent extends Component<Props> {
 
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversationWithPerson(id);
+    const result = goToConversation(id);
     if (result) {
       MiniCard.dismissProfile();
     }

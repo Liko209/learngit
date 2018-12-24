@@ -50,8 +50,14 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
 
     return (
       <Jui.SearchWrapper hasValue={value} focus={focus}>
-        <Jui.SearchIcon>search</Jui.SearchIcon>
+        <Jui.SearchIcon
+          data-test-automation-id="search-icon"
+          disableToolTip={true}
+        >
+          search
+        </Jui.SearchIcon>
         <Jui.SearchInput
+          data-test-automation-id="search-input"
           onChange={this.onChange}
           onFocus={onFocus}
           onBlur={this.onBlur}
@@ -67,7 +73,11 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
           }}
         />
         {showCloseBtn && (
-          <Jui.CloseBtn disableToolTip={true} variant="plain" onClick={this.onClose}>
+          <Jui.CloseBtn
+            disableToolTip={true}
+            variant="plain"
+            onClick={this.onClose}
+          >
             close
           </Jui.CloseBtn>
         )}

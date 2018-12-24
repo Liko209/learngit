@@ -13,7 +13,7 @@ import {
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Avatar } from '@/containers/Avatar';
 import { ProfileHeaderViewProps } from './types';
-import { goToConversationWithPerson } from '@/common/goToConversation';
+import { goToConversation } from '@/common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { accessHandler } from '../AccessHandler';
 import { Presence } from '@/containers/Presence';
@@ -27,7 +27,7 @@ class ProfileBody extends React.Component<Props> {
   OnMessageClick = async () => {
     const { id, dismiss } = this.props;
     dismiss();
-    await goToConversationWithPerson(id);
+    await goToConversation(id);
   }
   private _presence = (id: number) => {
     return <Presence uid={id} borderSize="xlarge" size="xlarge" />;

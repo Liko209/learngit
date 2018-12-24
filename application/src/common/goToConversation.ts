@@ -26,9 +26,12 @@ const getConversationId = async (id: number) => {
   return null;
 };
 
-async function goToConversationWithPerson(personId: number) {
+/**
+ * @param id: groupId or personId for 1:1 conversation
+ */
+async function goToConversation(id: number) {
   history.push('/messages/loading');
-  const conversationId = await getConversationId(personId);
+  const conversationId = await getConversationId(id);
   if (!conversationId) {
     history.replace('/messages/loading', {
       id: conversationId,
@@ -40,4 +43,4 @@ async function goToConversationWithPerson(personId: number) {
   return true;
 }
 
-export { goToConversationWithPerson, getConversationId };
+export { goToConversation, getConversationId };

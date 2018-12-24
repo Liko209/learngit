@@ -51,10 +51,12 @@ const StyledConversationCardHeader = styled('div')`
 `;
 const StyledNotification = styled.div`
   ${ellipsis()};
-  padding-left: ${spacing(1)};
   box-sizing: border-box;
   color: ${grey('500')};
   ${typography('caption1')};
+  :first-child {
+    padding-left: ${spacing(1)};
+  }
 `;
 
 type ConversationCardHeaderProps = {
