@@ -25,10 +25,6 @@ const StyledLeft = styled<Props, 'div'>('div')`
   }
   @media (max-width: 1100px) {
     flex: 1;
-    /* ie compatibility for Topbar width less than 1100px */
-    ${StyledMenuWithLogo} {
-      flex-shrink: 0;
-    }
   }
   @media (max-width: 600px) {
     justify-content: space-between;
