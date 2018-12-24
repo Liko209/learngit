@@ -14,6 +14,7 @@ import {
   typography,
   ellipsis,
 } from '../../foundation/utils/styles';
+import { FileName } from '../ConversationCard/Files/FileName';
 
 const Footer = styled.div`
   display: flex;
@@ -72,7 +73,9 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
         {subtitle}
         <NameList>
           {duplicateFiles.map((file: File, index: number) => (
-            <Item key={index}>{file.name}</Item>
+            <Item key={file.name}>
+              <FileName filename={file.name} />
+            </Item>
           ))}
         </NameList>
         {footText}
