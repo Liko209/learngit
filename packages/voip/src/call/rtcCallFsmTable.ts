@@ -17,7 +17,7 @@ const CallFsmEvent = {
   SESSION_ERROR: 'sessionError',
 };
 
-class RtcCallFsmTable extends StateMachine {
+class RTCCallFsmTable extends StateMachine {
   constructor() {
     super({
       init: CallFsmState.IDLE,
@@ -102,4 +102,4 @@ class RtcCallFsmTable extends StateMachine {
   }
 }
 
-export { RtcCallFsmTable };
+export { RTCCallFsmTable };

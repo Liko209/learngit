@@ -1,4 +1,4 @@
-import { RtcCallFsmTable } from './rtcCallFsmTable';
+import { RTCCallFsmTable } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import queue from 'async/queue';
 
@@ -11,13 +11,13 @@ const CallFsmEvent = {
   SESSION_ERROR: 'sessionErrorEvent',
 };
 
-class RtcCallFsm extends EventEmitter2 {
-  private _callFsmTable: RtcCallFsmTable;
+class RTCCallFsm extends EventEmitter2 {
+  private _callFsmTable: RTCCallFsmTable;
   private _eventQueue: any;
 
   constructor() {
     super();
-    this._callFsmTable = new RtcCallFsmTable();
+    this._callFsmTable = new RTCCallFsmTable();
     this._eventQueue = new queue((task: any, callback: any) => {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
@@ -137,4 +137,4 @@ class RtcCallFsm extends EventEmitter2 {
   }
 }
 
-export { RtcCallFsm };
+export { RTCCallFsm };

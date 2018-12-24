@@ -1,12 +1,12 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RtcCallFsm } from '../rtcCallFsm';
+import { RTCCallFsm } from '../RTCCallFsm';
 import { async } from 'q';
 import { create } from 'domain';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {
-    private _fsm: RtcCallFsm;
-    constructor(fsm: RtcCallFsm) {
+    private _fsm: RTCCallFsm;
+    constructor(fsm: RTCCallFsm) {
       this._fsm = fsm;
       fsm.on('enterPending', () => {
         this.onEnterPending();
@@ -32,7 +32,7 @@ describe('Call FSM UT', async () => {
   }
 
   function createFsm() {
-    const ret = new RtcCallFsm();
+    const ret = new RTCCallFsm();
     return ret;
   }
 
