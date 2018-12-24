@@ -1016,9 +1016,73 @@ describe('PostService', () => {
       });
     });
 
+    it('should delete post and end listening when post has no valid data', async (done: jest.DoneCallback) => {
+      const info = _.cloneDeep(postMockInfo);
+      info.item_ids = [-1];
+      info.text = '';
+      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
+
+      const spyDeletePost = jest
+        .spyOn(postService, 'deletePost')
+        .mockImplementation(() => {});
+
+      const spyResendFailedItems = jest.spyOn(
+        postService,
+        '_resendFailedItems',
+      );
+      spyResendFailedItems.mockImplementation(() => {});
+
+      const spyHandlePreInsertProcess = jest.spyOn(
+        postService,
+        '_handlePreInsertProcess',
+      );
+
+      spyHandlePreInsertProcess.mockImplementation(() => {});
+      const spySendPost = jest.spyOn(postService, '_sendPost');
+      spySendPost.mockImplementation(() => {});
+      itemService.sendItemData.mockImplementationOnce(() => {});
+      notificationCenter.on.mockImplementationOnce(
+        (event: string | string[], listener: Listener) => {
+          listener({
+            status: SENDING_STATUS.CANCELED,
+            preInsertId: -1,
+            updatedId: -1,
+          });
+        },
+      );
+
+      itemService.getItemsSendingStatus
+        .mockReturnValueOnce([SENDING_STATUS.INPROGRESS])
+        .mockReturnValueOnce([]);
+
+      await postService.sendPost(info);
+
+      setTimeout(() => {
+        expect(spyDeletePost).toBeCalledWith(info.id);
+        expect(spySendPost).not.toBeCalledTimes(1);
+        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+        expect(notificationCenter.removeListener).toBeCalled();
+        expect(notificationCenter.on).toBeCalledWith(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          expect.anything(),
+        );
+        expect(spyResendFailedItems).not.toBeCalled();
+        expect(itemService.cleanUploadingFiles).toBeCalled();
+        expect(itemService.sendItemData).toBeCalled();
+        done();
+      });
+    });
+
     it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
       const info = _.cloneDeep(postMockInfo);
-      info.item_ids = [-1, 3];
+      info.item_ids = [-1, -2, -3, 1];
+      const itemData = {
+        version_map: {
+          '-1': 2,
+        },
+      };
+      info.item_data = itemData;
+
       PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
       const spyResendFailedItems = jest.spyOn(
@@ -1032,12 +1096,35 @@ describe('PostService', () => {
         '_handlePreInsertProcess',
       );
       spyHandlePreInsertProcess.mockImplementation(() => {});
-
       const spySendPost = jest.spyOn(postService, '_sendPost');
       spySendPost.mockImplementation(() => {});
       itemService.sendItemData.mockImplementationOnce(() => {});
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
+          listener({
+            status: SENDING_STATUS.SUCCESS,
+            preInsertId: -999,
+            updatedId: 1,
+          });
+
+          listener({
+            status: SENDING_STATUS.CANCELED,
+            preInsertId: -2,
+            updatedId: 1,
+          });
+
+          listener({
+            status: SENDING_STATUS.SUCCESS,
+            preInsertId: -3,
+            updatedId: 3,
+          });
+
+          listener({
+            status: SENDING_STATUS.INPROGRESS,
+            preInsertId: -1,
+            updatedId: -1,
+          });
+
           listener({
             status: SENDING_STATUS.SUCCESS,
             preInsertId: -1,
@@ -1046,9 +1133,14 @@ describe('PostService', () => {
         },
       );
 
-      itemService.getItemsSendingStatus.mockReturnValue([
-        SENDING_STATUS.INPROGRESS,
-      ]);
+      itemService.getItemsSendingStatus.mockImplementation(
+        (itemIds: number[]) => {
+          const status = itemIds.map((id: number) => {
+            return id < 0 ? SENDING_STATUS.INPROGRESS : SENDING_STATUS.SUCCESS;
+          });
+          return Array.isArray(status) ? status : [status];
+        },
+      );
 
       await postService.sendPost(info);
 
@@ -1095,7 +1187,7 @@ describe('PostService', () => {
 
       itemService.getItemsSendingStatus.mockReturnValue([SENDING_STATUS.FAIL]);
 
-      await postService.sendPost(info);
+      await postService.sendPost({ text: 'test' });
 
       setTimeout(() => {
         expect(spyHandleSendPostFail).toBeCalled();

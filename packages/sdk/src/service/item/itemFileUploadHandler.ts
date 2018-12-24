@@ -23,6 +23,9 @@ import { SENDING_STATUS } from '../constants';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
+const MAX_UPLOADING_FILE_CNT = 10;
+const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
+
 class ItemFileUploadHandler {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
@@ -39,6 +42,72 @@ class ItemFileUploadHandler {
       return itemFile;
     }
     return null;
+  }
+
+  canUploadFiles(
+    groupId: number,
+    newFiles: File[],
+    includeUnSendFiles: boolean,
+  ): boolean {
+    let result = false;
+    do {
+      if (newFiles.length > MAX_UPLOADING_FILE_CNT) {
+        break;
+      }
+
+      const uploadingFileSize = _.sumBy(newFiles, (f: File) => {
+        return f.size;
+      });
+
+      if (uploadingFileSize > MAX_UPLOADING_FILE_SIZE) {
+        break;
+      }
+
+      const currentUploadingInfo = this._getGroupUploadingFileStatus(groupId);
+      if (
+        includeUnSendFiles &&
+        currentUploadingInfo.fileCount + newFiles.length >
+          MAX_UPLOADING_FILE_CNT
+      ) {
+        break;
+      }
+
+      if (
+        currentUploadingInfo.filesSize + uploadingFileSize >
+        MAX_UPLOADING_FILE_SIZE
+      ) {
+        break;
+      }
+
+      result = true;
+    } while (false);
+
+    return result;
+  }
+
+  private _getGroupUploadingFileStatus(groupId: number) {
+    const files: ItemFile[] = [];
+    this._progressCaches.forEach((status: ItemFileUploadStatus) => {
+      if (
+        status.itemFile &&
+        status.itemFile.group_ids.includes(groupId) &&
+        status.progress.loaded > -1
+      ) {
+        files.push(status.itemFile);
+      }
+    });
+
+    const filesSize = _.sumBy(files, (itemFile: ItemFile) => {
+      return this._getItemFileSize(itemFile);
+    });
+    return {
+      filesSize,
+      fileCount: files.length,
+    };
+  }
+
+  private _getItemFileSize(itemFile: ItemFile) {
+    return itemFile.versions.length > 0 ? itemFile.versions[0].size : 0;
   }
 
   private _getCachedItem(itemId: number) {
@@ -87,7 +156,11 @@ class ItemFileUploadHandler {
       });
 
       const item = this._getCachedItem(preInsertId);
-      if (status === SENDING_STATUS.INPROGRESS && item) {
+      if (
+        status === SENDING_STATUS.INPROGRESS &&
+        item &&
+        this._hasValidStoredFile(item)
+      ) {
         this._uploadItem(groupId, item, this._isUpdateItem(item));
       }
 
@@ -300,10 +373,14 @@ class ItemFileUploadHandler {
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
+<<<<<<< HEAD
       const formData = this._createFromDataWithPolicyData(
         file,
         extendFileData,
       );
+=======
+      const formData = this._createFromDataWithPolicyData(file, extendFileData);
+>>>>>>> feature/FIJI-1637
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
@@ -392,7 +469,7 @@ class ItemFileUploadHandler {
       result = await this._newItem(groupId, preInsertItem);
     }
 
-    if (result && result.isOk) {
+    if (result && result.isOk()) {
       const data = result.unwrap();
       const fileItem = transform<ItemFile>(data);
       this._handleItemUploadSuccess(preInsertItem, fileItem);
@@ -415,7 +492,7 @@ class ItemFileUploadHandler {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    itemDao.update(preInsertItem);
+    await itemDao.update(preInsertItem);
     const itemId = preInsertItem.id;
     await this._partialUpdateItemFile({
       id: itemId,
