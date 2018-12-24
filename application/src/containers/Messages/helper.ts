@@ -35,6 +35,15 @@ class GroupHandler {
     const _profileService: ProfileService = ProfileService.getInstance();
     return _profileService.isConversationHidden(id);
   }
+
+  static async ensureGroupOpened(id: number) {
+    const isHidden = await this.isGroupHidden(id);
+    if (!isHidden) {
+      return;
+    }
+    const _profileService: ProfileService = ProfileService.getInstance();
+    await _profileService.reopenConversation(id);
+  }
 }
 
 export class MessageRouterChangeHelper {
@@ -93,7 +102,10 @@ export class MessageRouterChangeHelper {
     const { state } = window.history.state || { state: {} };
     if (!state || !state.source || state.source !== 'leftRail') {
       const handler = SectionGroupHandler.getInstance();
-      handler.onReady(() => GroupHandler.accessGroup(id));
+      handler.onReady(() => {
+        GroupHandler.ensureGroupOpened(id);
+        GroupHandler.accessGroup(id);
+      });
     }
   }
 }
