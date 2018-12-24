@@ -240,6 +240,7 @@ class ItemFileUploadHandler {
           break;
       }
       info.progress.loaded = loaded;
+      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [info.progress]);
     }
   }
 
@@ -300,10 +301,7 @@ class ItemFileUploadHandler {
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
-      const formData = this._createFromDataWithPolicyData(
-        file,
-        extendFileData,
-      );
+      const formData = this._createFromDataWithPolicyData(file, extendFileData);
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
