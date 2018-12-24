@@ -27,27 +27,21 @@ test(formalName('Close current conversation directly, and navigate to blank page
     let pvtChatId, favChatId, teamId, currentGroupId;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat and I team chat',
       async () => {
-        pvtChatId = await h(t).platform(user).createGroup({
+        pvtChatId = await h(t).platform(user).createAndGetGroupId({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
-        }).then(res => {
-          return res.data.id;
         });
 
-        favChatId = await h(t).platform(user).createGroup({
+        favChatId = await h(t).platform(user).createAndGetGroupId({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => {
-          return res.data.id
         });
 
-        teamId = await h(t).platform(user).createGroup({
+        teamId = await h(t).platform(user).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => {
-          return res.data.id;
         });
 
       },
@@ -141,26 +135,23 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
     await h(t).platform(user).init();
+    await h(t).glip(user).init();
 
     const dmSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, teamId, urlBeforeClose, urlAfterClose, currentGroupId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B', async () => {
-      pvtChatId = await h(t).platform(user).createGroup({
+      pvtChatId = await h(t).platform(user).createAndGetGroupId({
         type: 'PrivateChat',
         members: [user.rcId, users[5].rcId],
-      }).then(res => {
-        return res.data.id
       });
 
-      teamId = await h(t).platform(user).createGroup({
+      teamId = await h(t).platform(user).createAndGetGroupId({
         isPublic: true,
         name: uuid(),
         type: 'Team',
         members: [user.rcId, users[5].rcId, users[6].rcId],
-      }).then(res => {
-        return res.data.id;
       });
     });
 
@@ -242,20 +233,16 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     let pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
       async () => {
-        pvtChatId = await h(t).platform(user).createGroup({
+        pvtChatId = await h(t).platform(user).createAndGetGroupId({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
-        }).then(res => {
-          return res.data.id;
         });
 
-        teamId = await h(t).platform(user).createGroup({
+        teamId = await h(t).platform(user).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => {
-          return res.data.id;
         });
       },
     );
@@ -361,19 +348,15 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     let pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
       async () => {
-        pvtChatId = await h(t).platform(user).createGroup({
+        pvtChatId = await h(t).platform(user).createAndGetGroupId({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
-        }).then(res => {
-          return res.data.id;
         });
-        teamId = await h(t).platform(user).createGroup({
+        teamId = await h(t).platform(user).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => {
-          return res.data.id;
         });
       },
     );
@@ -479,26 +462,26 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     let favGroupId, pvtChatId, teamId1, teamId2;
     await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group team',
       async () => {
-        pvtChatId = await h(t).platform(user).createGroup({
+        pvtChatId = await h(t).platform(user).createAndGetGroupId({
           type: 'PrivateChat',
           members: [user.rcId, users[5].rcId],
-        }).then(res => { return res.data.id; });
-        favGroupId = await h(t).platform(user).createGroup({
+        });
+        favGroupId = await h(t).platform(user).createAndGetGroupId({
           type: 'Group',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => { return res.data.id; });
-        teamId1 = await h(t).platform(user).createGroup({
+        });
+        teamId1 = await h(t).platform(user).createAndGetGroupId({
           isPublic: true,
           name: `Team ${uuid()}`,
           type: 'Team',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => { return res.data.id; });
-        teamId2 = await h(t).platform(user).createGroup({
+        });
+        teamId2 = await h(t).platform(user).createAndGetGroupId({
           isPublic: true,
           name: `Team ${uuid()}`,
           type: 'Team',
           members: [user.rcId, users[5].rcId, users[6].rcId],
-        }).then(res => { return res.data.id; });
+        });
       },
     );
 
@@ -559,7 +542,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       );
 
       await h(t).withLog('Then the close button should not be show', async () => {
-        await t.expect(closeButton.exists).notOk();
+        await closeButton.shouldBeDisabled();
         await t.pressKey('esc');
       });
     }

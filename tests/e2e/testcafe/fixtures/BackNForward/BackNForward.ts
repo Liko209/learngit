@@ -9,7 +9,6 @@ import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { setupCase, teardownCase } from '../../init';
-import { BackNForward } from '../../v2/page-models/AppRoot/HomePage/header';
 
 fixture('BackNForward/BackNForward')
   .beforeEach(setupCase(BrandTire.RCOFFICE))

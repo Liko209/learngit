@@ -24,20 +24,16 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   let teamId, postId;
   await h(t).withLog(`Given I 1 team chat (T1) have members userA(${userA.company.number}#${userA.extension}) and userB(${userB.company.number}#${userB.extension}) and 1 post (M1) in T1.`, async () => {
-    teamId = await h(t).platform(userA).createGroup({
+    teamId = await h(t).platform(userA).createAndGetGroupId({
       isPublic: true,
       name: uuid(),
       type: 'Team',
       members: [userA.rcId, userB.rcId],
-    }).then(res => {
-      return res.data.id
     });
-    postId = await h(t).platform(userA).sendTextPost(
+    postId = await h(t).platform(userA).sentAndGetTextPostId(
       `test "like" ${uuid()}`,
       teamId
-    ).then(res => {
-      return res.data.id
-    });
+    );
   });
 
   const enterSpecifyTeam = async (app) => {
@@ -178,18 +174,16 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
 
   let teamId, postId;
   await h(t).withLog(`Given I 1 team chat (T1) have members userA(${userA.company.number}#${userA.extension}) and userB(${userB.company.number}#${userB.extension}) and 1 post (M1) in T1.`, async () => {
-    teamId = await h(t).platform(userA).createGroup({
+    teamId = await h(t).platform(userA).createAndGetGroupId({
       isPublic: true,
       name: uuid(),
       type: 'Team',
       members: [userA.rcId, userB.rcId, users[6].rcId],
-    }).then(res => {
-      return res.data.id
     });
-    postId = await h(t).platform(userA).sendTextPost(
+    postId = await h(t).platform(userA).sentAndGetTextPostId(
       `test "like" ${uuid()}`,
       teamId
-    ).then(res => { return res.data.id });
+    );
   });
 
   const enterSpecifyTeam = async (app) => {
