@@ -122,7 +122,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
   props: AttachmentItemActionProps,
 ) => (
   <ActionWrapper
-    onClick={props.onClick}
+    onClick={!props.hideRemoveButton ? props.onClick : undefined}
     data-test-automation-id="attachment-action-button"
   >
     {typeof props.value !== 'undefined' && (
