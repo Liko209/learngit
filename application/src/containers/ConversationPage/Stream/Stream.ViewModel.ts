@@ -46,6 +46,7 @@ const transformFunc = (dataModel: Post) => ({
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _initialized = false;
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -154,16 +155,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @loading
   async loadInitialPosts() {
     if (this.jumpToPostId) {
-      const post = await PostService.getInstance<PostService>().getById(
-        this.jumpToPostId,
-      );
-      if (post) {
-        this._transformHandler.orderListStore.append([transformFunc(post)]);
-        await Promise.all([
-          this._loadPosts(QUERY_DIRECTION.OLDER),
-          this._loadPosts(QUERY_DIRECTION.NEWER),
-        ]);
-      }
+      await this._loadSiblingPosts(this.jumpToPostId);
     } else {
       await this._loadPosts(QUERY_DIRECTION.OLDER);
     }
@@ -235,6 +227,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       return [];
     }
     return await this._transformHandler.fetchData(direction, limit);
+  }
+
+  private async _loadSiblingPosts(anchorPostId: number) {
+    const post = await this._postService.getById(anchorPostId);
+    if (post) {
+      this._transformHandler.replaceAll([post]);
+      await Promise.all([
+        this._loadPosts(QUERY_DIRECTION.OLDER),
+        this._loadPosts(QUERY_DIRECTION.NEWER),
+      ]);
+    } else {
+      // TODO error handing
+    }
   }
 
   loadPostUntilFirstUnread = async () => {
