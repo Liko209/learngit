@@ -1,6 +1,5 @@
 import EntityCacheManager from '../entityCacheManager';
 import { BaseModel, Raw } from '../../models';
-import { number } from '@storybook/addon-knobs';
 
 type EntityCacheTestModel = BaseModel & {
   name: string;
@@ -113,5 +112,16 @@ describe('Entity Cache Manager', () => {
     entity = manager.getEntity(entityC.id);
     expect(entity.name).toBe(entityD.name);
     expect(entity.age).toBe(entityC.age);
+  });
+
+  it('should return not initialized when just new entityCacheManager', async () => {
+    expect(manager.isInitialized()).toEqual(false);
+    expect(manager.isStartInitial()).toEqual(false);
+  });
+
+  it('should return initialized after initialized entityCacheManager', async () => {
+    manager.initialize([]);
+    expect(manager.isInitialized()).toEqual(true);
+    expect(manager.isStartInitial()).toEqual(true);
   });
 });

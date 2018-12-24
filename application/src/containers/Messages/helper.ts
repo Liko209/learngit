@@ -10,6 +10,7 @@ import { StateService } from 'sdk/service/state';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
+import { Action } from 'history';
 
 class GroupHandler {
   static accessGroup(id: number) {
@@ -34,6 +35,15 @@ class GroupHandler {
     const _profileService: ProfileService = ProfileService.getInstance();
     return _profileService.isConversationHidden(id);
   }
+
+  static async ensureGroupOpened(id: number) {
+    const isHidden = await this.isGroupHidden(id);
+    if (!isHidden) {
+      return;
+    }
+    const _profileService: ProfileService = ProfileService.getInstance();
+    await _profileService.reopenConversation(id);
+  }
 }
 
 export class MessageRouterChangeHelper {
@@ -49,11 +59,20 @@ export class MessageRouterChangeHelper {
 
   static async goToLastOpenedGroup() {
     const lastGroupId = await this.getLastGroupId();
-    this.goToConversation(lastGroupId);
+    this.goToConversation(lastGroupId, 'REPLACE');
   }
 
-  static async goToConversation(id: string) {
-    history.push(`/messages/${id}`);
+  static async goToConversation(id: string, action?: Action) {
+    switch (action) {
+      case 'REPLACE':
+        history.replace(`/messages/${id}`);
+        break;
+      default:
+        history.push(`/messages/${id}`, {
+          source: 'reload',
+        });
+        break;
+    }
     this.updateCurrentConversationId(id);
   }
 
@@ -83,7 +102,10 @@ export class MessageRouterChangeHelper {
     const { state } = window.history.state || { state: {} };
     if (!state || !state.source || state.source !== 'leftRail') {
       const handler = SectionGroupHandler.getInstance();
-      handler.onReady(() => GroupHandler.accessGroup(id));
+      handler.onReady(() => {
+        GroupHandler.ensureGroupOpened(id);
+        GroupHandler.accessGroup(id);
+      });
     }
   }
 }

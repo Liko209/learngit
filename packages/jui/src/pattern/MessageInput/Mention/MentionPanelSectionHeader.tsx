@@ -11,11 +11,13 @@ const Wrapper = styled.div`
   height: ${height(8)};
   ${typography('caption1')};
   color: ${grey('500')};
+  margin-top: ${spacing(-2)};
   padding: ${spacing(0, 5)};
   display: flex;
   align-items: center;
   border-bottom: 1px solid ${grey('200')};
   text-transform: uppercase;
+  box-sizing: border-box;
 `;
 
 type Props = {
