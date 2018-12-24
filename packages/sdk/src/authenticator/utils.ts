@@ -1,6 +1,7 @@
 import { AuthDao, daoManager, ConfigDao } from '../dao';
 import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from '../dao/auth/constants';
 import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
+import { ITokenModel } from '../api';
 
 const setAccountType = async (type: any) => {
   const configDao = daoManager.getKVDao(ConfigDao);
@@ -8,7 +9,10 @@ const setAccountType = async (type: any) => {
   return true;
 };
 
-const setRcToken = async (token: object) => {
+const setRcToken = async (token: ITokenModel) => {
+  if (token.timestamp === undefined) {
+    token.timestamp = Date.now();
+  }
   const authDao = daoManager.getKVDao(AuthDao);
   await authDao.put(AUTH_RC_TOKEN, token);
   return true;

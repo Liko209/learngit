@@ -8,7 +8,7 @@
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
-export interface IAuthModel {}
+import { ITokenModel } from '../ringcentral/login';
 
 export interface IAuthCodeModel {
   code: string;
@@ -28,7 +28,7 @@ function oauthTokenViaAuthCode(params: object, headers?: object) {
     data: model,
     authFree: true,
   };
-  return Api.glip2NetworkClient.http<IAuthModel>(query);
+  return Api.glip2NetworkClient.http<ITokenModel>(query);
 }
 
 function generateCode(clientId: string, redirectUri: string) {

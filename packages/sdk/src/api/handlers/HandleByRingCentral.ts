@@ -55,14 +55,9 @@ const HandleByRingCentral = new class extends AbstractHandleType {
         if (this.tokenRefreshDelegate) {
           const refreshedToken = await this.tokenRefreshDelegate.refreshRCToken();
           if (refreshedToken) {
-            token.access_token = refreshedToken.access_token;
-            token.accessTokenExpireIn = refreshedToken.accessTokenExpireIn;
-            token.refreshToken = refreshedToken.refreshToken;
-            token.refreshTokenExpireIn = refreshedToken.refreshTokenExpireIn;
-            token.timestamp = refreshedToken.timestamp;
-            resolve(token);
+            resolve(refreshedToken);
           } else {
-            reject(token);
+            reject(refreshedToken);
           }
         } else {
           reject(token);

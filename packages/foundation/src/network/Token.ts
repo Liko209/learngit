@@ -9,14 +9,14 @@ import { IToken } from '..';
 class Token implements IToken {
   timestamp: number;
   access_token?: string;
-  accessTokenExpireIn: number = 1;
-  refreshTokenExpireIn: number = 1;
-  refreshToken?: string;
+  expires_in: number = 1;
+  refresh_token_expires_in: number = 1;
+  refresh_token?: string;
 
   constructor(access_token: string, refreshToken?: string) {
     this.access_token = access_token;
     this.timestamp = Date.now();
-    this.refreshToken = refreshToken;
+    this.refresh_token = refreshToken;
   }
 }
 
