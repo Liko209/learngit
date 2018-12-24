@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { ellipsis, palette } from '../../../foundation/utils/styles';
+import { ellipsis, palette, spacing } from '../../../foundation/utils/styles';
 import { getFileName } from '../../../foundation/utils/getFileName';
 
 type FileNameProps = {
@@ -20,6 +20,10 @@ const FileNameWrapper = styled('div')<{ color?: string }>`
   font-weight: 400;
   color: ${({ color }) => (color ? color : palette('grey', '700'))};
   ${ellipsis};
+  font-size: 0;
+  & > span {
+    font-size: ${spacing(3.5)};
+  }
 `;
 
 const LeftName = styled.span`
