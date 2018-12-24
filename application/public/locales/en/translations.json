@@ -170,5 +170,6 @@
   "deletePost": "Delete post",
   "showMore": "Show more",
   "updateFiles": "Update File(s)?",
+  "theFollowingFilesAlreadyExist": "The following file(s) already exist",
   "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?"
 }

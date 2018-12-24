@@ -50,6 +50,9 @@ const Item = styled.li`
   list-style: none;
   line-height: ${height(5)};
   word-break: break-word;
+  &:not(:last-child) {
+    margin: 0 0 ${spacing(2)} 0;
+  }
 `;
 
 const DuplicateAlert: React.SFC<Props> = (props: Props) => {
