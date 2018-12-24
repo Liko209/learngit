@@ -22,7 +22,7 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps> {
   render() {
     const { memberIds, id } = this.props;
     return (
-      <JuiProfileDialogContentMemberList>
+      <JuiProfileDialogContentMemberList data-test-automation-id="profileDialogMemberList">
         {memberIds.map((pid: number) => {
           return <MemberListItem key={pid} cid={id} pid={pid} />;
         })}

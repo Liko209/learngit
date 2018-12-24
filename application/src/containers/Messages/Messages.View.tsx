@@ -62,7 +62,7 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
     if (state && state.error) {
       this.setState({
         messageError: true,
-        retryId: state.conversationId,
+        retryId: state.id,
       });
     }
   }

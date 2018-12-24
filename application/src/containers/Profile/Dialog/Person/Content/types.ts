@@ -25,6 +25,7 @@ type FormGroupType = {
   label: string;
   value: any;
   valueEmphasize?: boolean;
+  copyAria?: string;
   copyValue?: string;
 };
 
