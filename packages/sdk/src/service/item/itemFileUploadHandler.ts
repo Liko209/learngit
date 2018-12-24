@@ -373,14 +373,7 @@ class ItemFileUploadHandler {
 
     if (policyResponse.isOk()) {
       const extendFileData = policyResponse.unwrap();
-<<<<<<< HEAD
-      const formData = this._createFromDataWithPolicyData(
-        file,
-        extendFileData,
-      );
-=======
       const formData = this._createFromDataWithPolicyData(file, extendFileData);
->>>>>>> feature/FIJI-1637
       const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
