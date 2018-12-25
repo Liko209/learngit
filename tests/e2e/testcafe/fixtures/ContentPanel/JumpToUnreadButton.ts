@@ -33,7 +33,6 @@ test.only(formalName('Conversation list scrolling when sending massage', ['JPT-1
     })).data.id;
   });
 
-  const msgList = _.range(100).map(i => `${i} ${uuid()}`);
   await h(t).withLog('And this conversation 20 message',
     async () => {
       await Promise.all(
@@ -60,7 +59,24 @@ test.only(formalName('Conversation list scrolling when sending massage', ['JPT-1
 
   await h(t).withLog('And scroll to middle',
     async () => {
-      await app.homePage.messageTab.conversationPage.scrollToMiddle()
+      await t.wait(3e3)
+      await app.homePage.messageTab.conversationPage.scrollToY(0)
+    }
+  )
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const message = `message ${uuid()}`
+  await h(t).withLog('When I can send message to this conversation', async () => {
+    await conversationPage.sendMessage(message);
+  });
+
+  await h(t).withLog('Then I should see the newest post in bottom of stream section',
+    async () => {
+      await t.wait(3e3)
+      const posts = await app.homePage.messageTab.conversationPage.posts;
+
+      await conversationPage.expectStreamScrollToBottom()
+      await t.expect(posts.nth(-1).withText(message).exists).ok()
     }
   )
 })
