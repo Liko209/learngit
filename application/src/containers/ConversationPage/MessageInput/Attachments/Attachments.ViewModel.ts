@@ -119,6 +119,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         messageAlign: 'left',
         fullWidth: false,
         dismissible: false,
+        autoHideDuration: 3000,
       });
       return;
     }
