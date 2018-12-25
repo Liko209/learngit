@@ -46,21 +46,19 @@ function mockUpload() {
 const itemService = {
   sendItemFile: jest
     .fn()
-    .mockImplementation(
-      (groupId: number, file: File, isUpdate: boolean) => {
-        const itemfile = {
-          file,
-          isUpdate,
-          name: file.name,
-          id: fileIDs,
-          group_ids: [groupId],
-        };
-        --fileIDs;
-        _uploadingItems.push(itemfile as any);
-        mockUpload();
-        return itemfile as any;
-      },
-    ),
+    .mockImplementation((groupId: number, file: File, isUpdate: boolean) => {
+      const itemfile = {
+        file,
+        isUpdate,
+        name: file.name,
+        id: fileIDs,
+        group_ids: [groupId],
+      };
+      --fileIDs;
+      _uploadingItems.push(itemfile as any);
+      mockUpload();
+      return itemfile as any;
+    }),
 
   cancelUpload: jest.fn().mockImplementation((itemId: number) => {
     if (itemId >= 0) {
@@ -253,6 +251,21 @@ describe('AttachmentsViewModel', () => {
       await vm.autoUploadFiles([file]);
       await vm.sendFilesOnlyPost();
       expect(postService.sendPost).toBeCalledTimes(1);
+    });
+  });
+
+  describe('showDuplicateFiles()', () => {
+    it('should showDuplicateFiles when duplicate upload files', async () => {
+      await vm.autoUploadFiles([file]);
+      await vm.autoUploadFiles([file]);
+      expect(vm.showDuplicateFiles).toBe(true);
+    });
+
+    it('should not showDuplicateFiles when duplicate upload files in different conversation JPT-452', async () => {
+      await vm.autoUploadFiles([file]);
+      const vm2 = new AttachmentsViewModel({ id: 789 });
+      await vm2.autoUploadFiles([file]);
+      expect(vm.showDuplicateFiles).toBe(false);
     });
   });
 });
