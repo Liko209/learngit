@@ -162,6 +162,9 @@ node(buildNode) {
             sh 'git --version'
             sh 'node -v'
             sh 'rsync --version'
+            sh 'grep --version'
+            sh 'which tr'
+            sh 'which xargs'
         }
 
         stage ('Checkout') {
