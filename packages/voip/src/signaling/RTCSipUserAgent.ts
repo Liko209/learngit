@@ -4,32 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCUserAgent } from './IRTCUserAgent';
+import { IRTCUserAgent, UA_EVENT } from './IRTCUserAgent';
 import { WebPhone } from './WebPhone';
 
-enum EVENT_TAG {
-  REG_SUCCESS = 'uaRegisterSuccess',
-  REG_FAILED = 'uaRegisterFailed',
-}
-
-enum REGISTER_EVENT {
-  REG = 'registered',
+enum WEBPHONE_REGISTER_EVENT {
+  REG_SUCCESS = 'registered',
   REG_FAILED = 'registrationFailed',
 }
 
 class RTCSipUserAgent implements IRTCUserAgent {
-  private _userAgent: any = null;
+  private _userAgent: WebPhone = null;
   private _eventEmitter: EventEmitter2;
 
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
     // to be modify when import ringcentral-web-phone library
     this._userAgent = new WebPhone(provisionData, options);
     this._eventEmitter = eventEmitter;
-    this._prepareListener();
+    this._initListener();
   }
 
   public register(options?: any): any {
-    this._prepareListener();
     return this._userAgent.register(options);
   }
 
@@ -37,25 +31,25 @@ class RTCSipUserAgent implements IRTCUserAgent {
     return this._userAgent.invite(phoneNumber, options);
   }
 
-  private _prepareListener(): void {
-    this._onRegistered();
-    this._onRegistrationFailed();
+  private _initListener(): void {
+    this._subscribeRegEvent();
+    this._subscribeRegFailedEvent();
   }
 
-  private _onRegistered(): void {
-    this._userAgent.on(REGISTER_EVENT.REG, () => {
-      this._eventEmitter.emit(EVENT_TAG.REG_SUCCESS);
+  private _subscribeRegEvent(): void {
+    this._userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
+      this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
     });
   }
 
-  private _onRegistrationFailed(): void {
+  private _subscribeRegFailedEvent(): void {
     this._userAgent.on(
-      REGISTER_EVENT.REG_FAILED,
+      WEBPHONE_REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
-        this._eventEmitter.emit(EVENT_TAG.REG_FAILED, response, cause);
+        this._eventEmitter.emit(UA_EVENT.REG_FAILED, response, cause);
       },
     );
   }
 }
 
-export { RTCSipUserAgent, EVENT_TAG };
+export { RTCSipUserAgent };

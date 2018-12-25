@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { RTCSipUserAgent, EVENT_TAG } from '../RTCSipUserAgent';
+import { RTCSipUserAgent } from '../RTCSipUserAgent';
+import { UA_EVENT } from '../IRTCUserAgent';
 
 describe('RTCSipUserAgent', async () => {
   describe('register', () => {
@@ -17,7 +18,7 @@ describe('RTCSipUserAgent', async () => {
         eventEmitter,
       );
       userAgent.register('1');
-      expect(eventEmitter.emit).toHaveBeenCalledWith(EVENT_TAG.REG_SUCCESS);
+      expect(eventEmitter.emit).toHaveBeenCalledWith(UA_EVENT.REG_SUCCESS);
     });
 
     it('Should emit registrationFailed event with cause and response when register failed [JPT-600]', async () => {
@@ -30,7 +31,7 @@ describe('RTCSipUserAgent', async () => {
       );
       userAgent.register();
       expect(eventEmitter.emit).toBeCalledWith(
-        EVENT_TAG.REG_FAILED,
+        UA_EVENT.REG_FAILED,
         'response',
         500,
       );
