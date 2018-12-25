@@ -8,8 +8,8 @@ import {
   RTCRegistrationFSM,
   IConditionalHandler,
   RegistrationState,
-} from './rtcRegistrationFSM';
-import { IRTCAccountListener, AccountState } from '../api/rtcAccount';
+} from './RTCRegistrationFSM';
+import { IRTCAccountListener, AccountState } from '../api/RTCAccount';
 
 class RTCRegistrationManager implements IConditionalHandler {
   private _fsm: RTCRegistrationFSM;
