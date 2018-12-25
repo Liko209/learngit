@@ -174,6 +174,30 @@ class ItemFileUploadHandler {
 
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
   }
+
+  async canResendFailedFile(itemId: number) {
+    let canResend = false;
+    if (itemId < 0) {
+      const itemDao = daoManager.getDao(ItemDao);
+      const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+      if (itemInDB) {
+        if (this._hasValidStoredFile(itemInDB)) {
+          canResend = true;
+        } else {
+          const cacheItem = this._progressCaches.get(itemId);
+          canResend = !!(
+            cacheItem &&
+            cacheItem.file &&
+            cacheItem.file.size > 0
+          );
+        }
+      }
+    } else {
+      canResend = true;
+    }
+    return canResend;
+  }
+
   async resendFailedFile(itemId: number) {
     this._updateFileProgress(itemId, SENDING_STATUS.INPROGRESS);
 
@@ -313,6 +337,7 @@ class ItemFileUploadHandler {
           break;
       }
       info.progress.loaded = loaded;
+      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [info.progress]);
     }
   }
 

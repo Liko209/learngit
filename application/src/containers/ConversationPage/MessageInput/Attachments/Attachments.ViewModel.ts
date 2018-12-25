@@ -10,9 +10,12 @@ import {
   AttachmentsViewProps,
   AttachmentItem,
   SelectFile,
+  DidUploadFileCallback,
 } from './types';
+
 import {
   ItemService,
+  PostService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
@@ -21,10 +24,13 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { ItemFile } from 'sdk/models';
+import { Notification } from '@/containers/Notification';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
+  private _postService: PostService;
+  private _didUploadFileCallback?: DidUploadFileCallback;
   @observable
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
   @observable
@@ -33,6 +39,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
+    this._postService = PostService.getInstance();
     this.reaction(
       () => this.id,
       (id: number) => {
@@ -103,7 +110,19 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     }
   }
 
-  autoUploadFiles = async (files: File[]) => {
+  autoUploadFiles = async (files: File[], callback?: DidUploadFileCallback) => {
+    const canUpload = await this.canUploadFiles(files);
+    if (!canUpload) {
+      Notification.flashToast({
+        message: 'uploadFailedMessageThereIsAlreadyAFileBeingUploaded',
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+        autoHideDuration: 3000,
+      });
+      return;
+    }
     if (files.length > 0) {
       const exists = await Promise.all(
         files.map(file => this.isFileExists(file)),
@@ -116,10 +135,21 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
       if (!hasDuplicate) {
         await this._uploadFiles(result, false);
+        if (callback) {
+          await callback();
+        }
       } else {
         this.selectedFiles = result;
+        this._didUploadFileCallback = callback;
       }
     }
+  }
+
+  canUploadFiles = async (files: File[]) => {
+    if (files.length === 0) {
+      return true;
+    }
+    return this._itemService.canUploadFiles(this.id, files, true); // TODO: The third parameter should be false for drag and drop files.
   }
 
   private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {
@@ -187,15 +217,38 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   uploadDuplicateFiles = async () => {
     await this._uploadFiles(this.selectedFiles, false);
     this._clearUpSelectedFiles();
+    if (this._didUploadFileCallback) {
+      await this._didUploadFileCallback();
+    }
+    this._didUploadFileCallback = undefined;
   }
 
   updateDuplicateFiles = async () => {
     await this._uploadFiles(this.selectedFiles, true);
     this._clearUpSelectedFiles();
+    if (this._didUploadFileCallback) {
+      await this._didUploadFileCallback();
+    }
+    this._didUploadFileCallback = undefined;
   }
 
   cleanFiles = () => {
     this.items.clear();
+  }
+
+  sendFilesOnlyPost = async () => {
+    try {
+      const ids: number[] = [];
+      this.items.forEach((value: AttachmentItem) => {
+        ids.push(value.item.id);
+      });
+      await this._postService.sendPost({
+        text: '',
+        groupId: this.id,
+        itemIds: ids,
+      });
+      this.items.clear();
+    } catch (e) {}
   }
 
   dispose = () => {

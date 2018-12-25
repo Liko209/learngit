@@ -1059,6 +1059,117 @@ describe('ItemFileUploadHandler', () => {
     });
   });
 
+  describe('canResendFailedFile', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should return true when has valid store file', async () => {
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        versions: [
+          {
+            _id: 123,
+            creator_id: 2588675,
+            last_modified: 1542274244897,
+            download_url: 'url/123.pdf',
+            url: 'url/123',
+            stored_file_id: 5701644,
+            size: 1111,
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeTruthy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return true input id > 0', async () => {
+      expect(await itemFileUploadHandler.canResendFailedFile(1)).toBeTruthy();
+      expect(itemDao.get).not.toBeCalled();
+    });
+
+    it('should return false when can not find item in db', async () => {
+      itemDao.get.mockResolvedValue(null);
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return true when has valid file', async () => {
+      const progressCaches = new Map();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      progressCaches.set(-1, {
+        itemFile: { group_ids: [1], versions: [{ size: 1 }] },
+        progress: { loaded: 10 },
+        file: { size: 1, name: 'name' } as File,
+      } as ItemFileUploadStatus);
+
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        group_ids: [1],
+        versions: [
+          {
+            _id: 123,
+            download_url: '',
+            url: '',
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeTruthy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return false when the cached file has no size', async () => {
+      const progressCaches = new Map();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      progressCaches.set(-1, {
+        itemFile: { group_ids: [1], versions: [{ size: 1 }] },
+        progress: { loaded: 10 },
+        file: { size: 0, name: 'name' } as File,
+      } as ItemFileUploadStatus);
+
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        group_ids: [1],
+        versions: [
+          {
+            _id: 123,
+            download_url: '',
+            url: '',
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+
+    it('should return false when can not find file cache', async () => {
+      const progressCaches = new Map();
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+      itemDao.get.mockResolvedValue({
+        id: -1,
+        group_ids: [1],
+        versions: [
+          {
+            _id: 123,
+            download_url: '',
+            url: '',
+          },
+        ],
+      });
+      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(itemDao.get).toBeCalledWith(-1);
+    });
+  });
+
   describe('cleanUploadingFiles()', () => {
     let uploadingFiles: Map<number, ItemFile[]> = null;
     beforeEach(() => {

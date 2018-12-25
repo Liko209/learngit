@@ -23,14 +23,18 @@ type IconProps = {
   icon?: string;
 };
 
-type ItemStatus = 'normal' | 'loading' | 'error';
+enum ITEM_STATUS {
+  NORMAL,
+  LOADING,
+  ERROR,
+}
 
 type StatusProps = {
-  status?: ItemStatus;
+  status: ITEM_STATUS;
 };
 
-type AttachmentItemProps = IconProps &
-  StatusProps & {
+type AttachmentItemProps = StatusProps &
+  IconProps & {
     progress?: number;
     name: string;
     hideRemoveButton?: boolean;
@@ -38,9 +42,9 @@ type AttachmentItemProps = IconProps &
   };
 
 const StatusMap = {
-  normal: grey('900'),
-  loading: grey('900'),
-  error: palette('semantic', 'negative'),
+  [ITEM_STATUS.NORMAL]: grey('900'),
+  [ITEM_STATUS.LOADING]: grey('900'),
+  [ITEM_STATUS.ERROR]: palette('semantic', 'negative'),
 };
 
 const Wrapper = styled.div`
@@ -67,7 +71,7 @@ const IconWrapper = styled.div`
   height: ${height(5)};
 `;
 
-type AttachmentItemActionProps = {
+type AttachmentItemActionProps = StatusProps & {
   onClick?: (event: MouseEvent) => void;
   loading?: boolean;
   value?: number;
@@ -82,9 +86,10 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     onClick={!props.hideRemoveButton ? props.onClick : undefined}
     data-test-automation-id="attachment-action-button"
   >
-    {typeof props.value !== 'undefined' && (
-      <JuiCircularProgress variant="static" size={24} value={props.value} />
-    )}
+    {typeof props.value !== 'undefined' &&
+      props.status === ITEM_STATUS.LOADING && (
+        <JuiCircularProgress variant="static" size={24} value={props.value} />
+      )}
     <IconWrapper>
       {typeof props.icon === 'string'
         ? !props.hideRemoveButton && (
@@ -107,11 +112,11 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
     onClickDeleteButton,
     progress,
   } = props;
-  const loading = status === 'loading' || typeof progress !== 'undefined';
   const action = (
     <AttachmentItemAction
+      status={status}
       onClick={onClickDeleteButton}
-      loading={loading}
+      loading={status === ITEM_STATUS.LOADING}
       value={progress}
       hideRemoveButton={hideRemoveButton}
       icon="close"
@@ -128,8 +133,4 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   );
 };
 
-AttachmentItem.defaultProps = {
-  status: 'normal',
-};
-
-export { AttachmentItem, ItemStatus, AttachmentItemAction };
+export { AttachmentItem, ITEM_STATUS, AttachmentItemAction };

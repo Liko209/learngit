@@ -5,16 +5,18 @@
  */
 
 import React, { Component } from 'react';
-import { t } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
-import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
 import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
+import { extractView } from 'jui/hoc/extractView';
 
 @observer
-class AttachmentsView extends Component<AttachmentsViewProps> {
+class AttachmentManagerViewComponent extends Component<
+  AttachmentsViewProps & WithNamespaces
+> {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles, showDuplicateFiles } = this.props;
+    const { duplicateFiles, showDuplicateFiles, t } = this.props;
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
@@ -37,26 +39,24 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
 
   componentWillUnmount() {
     this.props.cleanFiles();
-    this.props.dispose();
   }
 
-  didSelectFiles = async (files: File[]) => {
+  didSelectFiles = (files: File[]) => {
     this.props.autoUploadFiles(files);
   }
 
+  directPostFiles = async (files: File[]) => {
+    await this.props.autoUploadFiles(files, this.props.sendFilesOnlyPost);
+  }
+
   render() {
-    const { files, cancelUploadFile } = this.props;
-    return (
-      <>
-        <AttachmentList
-          files={files}
-          removeAttachment={cancelUploadFile}
-          data-test-automation-id="message-attachment-node"
-        />
-        {this._showDuplicateFilesDialogIfNeeded()}
-      </>
-    );
+    return this._showDuplicateFilesDialogIfNeeded();
   }
 }
 
-export { AttachmentsView };
+const view = extractView<WithNamespaces & AttachmentsViewProps>(
+  AttachmentManagerViewComponent,
+);
+const AttachmentManagerView = translate('Conversations')(view);
+
+export { AttachmentManagerView, AttachmentManagerViewComponent };

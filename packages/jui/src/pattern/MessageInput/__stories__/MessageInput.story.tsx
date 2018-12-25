@@ -9,7 +9,7 @@ import { boolean, number, select, text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
-import { AttachmentItem } from '../AttachmentItem';
+import { AttachmentItem, ITEM_STATUS } from '../AttachmentItem';
 import { AttachmentList, ItemInfo } from '../AttachmentList';
 import { DuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
@@ -41,34 +41,29 @@ storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
-  const status = select(
-    'status',
-    {
-      normal: 'normal',
-      loading: 'loading',
-      error: 'error',
-    },
-    'normal',
-  );
   const value = number('value', 0);
   const name = text('name', 'This is the name of attachment item');
 
   return (
     <div>
-      <AttachmentItem name="test" status="normal" />
+      <AttachmentItem name="test" status={ITEM_STATUS.NORMAL} />
       <br />
-      <AttachmentItem name="test" status="error" />
+      <AttachmentItem name="test" progress={-1} status={ITEM_STATUS.ERROR} />
       <br />
-      <AttachmentItem name="test" progress={value} />
+      <AttachmentItem
+        name="test"
+        progress={value}
+        status={ITEM_STATUS.LOADING}
+      />
       <br />
       <div>Long title example:</div>
       <AttachmentItem
         name="this is a really long title this is a really long title this is a really long title"
-        status="normal"
+        status={ITEM_STATUS.NORMAL}
       />
       <br />
       <div>Property test</div>
-      <AttachmentItem name={name} status={status} />
+      <AttachmentItem name={name} status={ITEM_STATUS.NORMAL} />
     </div>
   );
 });
@@ -79,24 +74,14 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
   const f1 = 'f1.txt';
   const f3 =
     'This is the name of attachment itemThis is the name of attachment item.txt';
-  const files = [
-    { name: f1, status: 'normal' },
-    { name: f2, status: 'loading' },
-    { name: f3, status: 'error' },
-    { name: f1, status: 'normal' },
-    { name: f2, status: 'loading' },
-    { name: f3, status: 'error' },
-    { name: f1, status: 'normal' },
-    { name: f2, status: 'loading' },
-    { name: f3, status: 'error' },
-    { name: f1, status: 'normal' },
-    { name: f2, status: 'loading' },
-    { name: f3, status: 'error' },
-  ];
+  const files = [{ name: f1, id: 1 }, { name: f2, id: 2 }, { name: f3, id: 3 }];
+  const array = Array(18)
+    .fill(files)
+    .flat();
   return (
     <div>
       <AttachmentList
-        files={files as ItemInfo[]}
+        files={array as ItemInfo[]}
         removeAttachment={removeAttachment}
       />
     </div>
@@ -109,18 +94,10 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const f1 = 'f1.txt';
   const f3 =
     'This is the name of attachment itemThis is the name of attachment item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf';
-  const files = [
-    { name: f1 },
-    { name: f2 },
-    { name: f3 },
-    { name: f3 },
-    { name: f3 },
-    { name: f3 },
-    { name: f3 },
-    { name: f3 },
-    { name: f3 },
-    { name: f3 },
-  ];
+  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
+  const array = Array(18)
+    .fill(files)
+    .flat();
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>
@@ -128,7 +105,7 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
         title="Update Files?"
         subtitle="The following files already exist."
         footText="Do you want to update the existing files or do you wish to create new files?"
-        duplicateFiles={files}
+        duplicateFiles={array}
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}
