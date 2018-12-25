@@ -14,7 +14,6 @@ import { Notification } from '@/containers/Notification';
 type Props = PrivacyViewProps & WithNamespaces;
 
 class PrivacyViewComponent extends Component<Props> {
-
   flashToast = (message: string) => {
     Notification.flashToast({
       message,
@@ -43,7 +42,7 @@ class PrivacyViewComponent extends Component<Props> {
     if (isAdmin) {
       return isPublic ? 'setStatePrivate' : 'setStatePublic';
     }
-    return isPublic ? 'privateTeam' : 'publicTeam';
+    return isPublic ? 'publicTeam' : 'privateTeam';
   }
 
   render() {
