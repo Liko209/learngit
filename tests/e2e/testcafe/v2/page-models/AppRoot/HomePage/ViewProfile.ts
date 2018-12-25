@@ -93,8 +93,37 @@ class ProfileModal extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogTitle');
   }
 
+  get publicIcon() {
+    return this.getSelectorByIcon("lock_open", this.profileTitle);
+  }
+
+  // todo
+  get privateIcon() {
+    return
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.profileTitle);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.profileTitle);
+  }
+
+  get moreIcon() {
+    return this.getSelectorByIcon("more_horiz", this.profileTitle);
+  }
+
+  async openMoreMenu() {
+    await this.t.click(this.moreIcon);
+  }
+
+  get moreMenu() {
+    return this.getComponent(MoreMenu);
+  }
+
   async shouldBePopUp() {
-    this.t.expect(this.profileTitle.withText('Profile')).ok();
+    this.t.expect(this.profileTitle.find('div').nth(0).withText('Profile')).ok();
   }
 
   get closeButton() {
@@ -133,13 +162,13 @@ class ProfileModal extends BaseWebComponent {
   async goToMessages() {
     await this.t.click(this.messageButton);
   }
-  
-  get form() {
+
+  get formArea() {
     return this.getSelectorByAutomationId('profileDialogForm');
   }
 
   get companyIcon() {
-    return this.getSelectorByIcon('work', this.form);
+    return this.getSelectorByIcon('work', this.formArea);
   }
 
   get companyName() {
@@ -147,7 +176,7 @@ class ProfileModal extends BaseWebComponent {
   }
 
   get extensionIcon() {
-    return this.getSelectorByIcon('call', this.form);
+    return this.getSelectorByIcon('call', this.formArea);
   }
 
   get extension() {
@@ -155,7 +184,7 @@ class ProfileModal extends BaseWebComponent {
   }
 
   get emailIcon() {
-    return this.getSelectorByIcon('email', this.form);
+    return this.getSelectorByIcon('email', this.formArea);
   }
 
   get emailAddress() {
@@ -167,9 +196,74 @@ class ProfileModal extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberHeader');
   }
 
-  async getMemberCount() {
+  async getMemberCount(): Promise<number> {
     const text = await this.memberHeader.textContent;
-    
+    const count = text.match(/\((\d+)\)/).pop().replace("(", "").replace(")", "");
+    return Number(count);
   }
 
+  get memberList() {
+    return this.getSelectorByAutomationId('profileDialogMemberList');
+  }
+
+  memberEntryById(id: string) {
+    return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
+  }
+
+}
+
+class Member extends BaseWebComponent {
+  get uid() {
+    return this.self.getAttribute('data-id');
+  }
+
+  get avatar() {
+    return this.self.find('div').filter((el) => el.hasAttribute('uid'))
+  }
+  
+  get personName() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName', this.self);
+  }
+
+  get admin() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self); 
+  }
+
+  isAdmin(): Promise<boolean> {
+    return this.admin.exists
+  }
+  
+  async shouldBeAdmin() {
+    await this.t.expect(this.isAdmin).ok();
+  }
+
+  async shouldBeMemberOnly() {
+    await this.t.expect(this.isAdmin).notOk();
+  }
+
+}
+
+class MoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('div[role="document"]');
+  }
+
+  get copyUrlMenuItem() {
+    return this.self.find('li[role="menuitem"]').withText('Copy URL');
+  }
+
+  get copyEmailMenuItem() {
+    return this.self.find('li[role="menuitem"]').withText('Copy Email');
+  }
+
+  async clickCopyUrl() {
+    await this.t.click(this.copyUrlMenuItem);
+  }
+  async clickCopyEmail() {
+    await this.t.click(this.copyEmailMenuItem);
+  }
+
+  async quit() {
+    await this.t.pressKey('ESC');
+  }
 }

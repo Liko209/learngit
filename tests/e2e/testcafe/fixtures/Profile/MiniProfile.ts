@@ -186,7 +186,7 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
 });
 
 
-test(formalName('Open mini profile via @mention', ['JPT-4369', 'P2', 'Potar.He', 'Profile']), async (t) => {
+test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
