@@ -42,6 +42,10 @@ class RTCCallFsm extends EventEmitter2 {
         }
         case CallFsmEvent.SESSION_ERROR: {
           this._onSessionError();
+          break;
+        }
+        default: {
+          break;
         }
       }
       callback();

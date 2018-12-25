@@ -35,32 +35,32 @@ describe('Call FSM UT', async () => {
   }
 
   describe('Call Fsm queue Test', async () => {
-    it('Trigger account ready', async () => {
+    it('Account ready event should be in tasks when account ready is called', async () => {
       const fsm = createFsm();
       fsm.accountReady();
       expect(fsm._tailTask('accountReadyEvent'));
     });
-    it('Trigge account not ready', async () => {
+    it('Account not ready event should be in tasks when account not ready is called', async () => {
       const fsm = createFsm();
       fsm.accountNotReady();
       expect(fsm._tailTask('accountNotReadyEvent'));
     });
-    it('Trigger hang up', async () => {
+    it('Hangup event should be in tasks when hangup is called', async () => {
       const fsm = createFsm();
       fsm.hangup();
       expect(fsm._tailTask('hangupEvent'));
     });
-    it('Trigger session confirmed', async () => {
+    it('sessionConfirmed event should be in tasks when sessionConfirmed is called', async () => {
       const fsm = createFsm();
       fsm.sessionConfirmed();
       expect(fsm._tailTask('sessionConfirmedEvent'));
     });
-    it('Trigger session disconnected', async () => {
+    it('sessionDisconnected event should be in tasks when sessionDisconnected is called', async () => {
       const fsm = createFsm();
       fsm.accountReady();
       expect(fsm._tailTask('sessionDisconnectedEvent'));
     });
-    it('Trigger session error', async () => {
+    it('sessionError event should be in tasks when sessionError is called', async () => {
       const fsm = createFsm();
       fsm.sessionError();
       expect(fsm._tailTask('sessionErrorEvent'));

@@ -24,18 +24,13 @@ class RTCCallFsmTable extends StateMachine {
       transitions: [
         {
           name: CallFsmEvent.ACCOUNT_READY,
-          from: CallFsmState.IDLE,
+          from: [CallFsmState.IDLE, CallFsmState.PENDING],
           to: CallFsmState.CONNECTING,
         },
         {
           name: CallFsmEvent.ACCOUNT_NOT_READY,
           from: CallFsmState.IDLE,
           to: CallFsmState.PENDING,
-        },
-        {
-          name: CallFsmEvent.ACCOUNT_READY,
-          from: CallFsmState.PENDING,
-          to: CallFsmState.CONNECTING,
         },
         {
           name: CallFsmEvent.HANGUP,
