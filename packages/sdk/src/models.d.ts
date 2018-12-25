@@ -64,7 +64,7 @@ export type GroupCommon = {
   permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
-  trigger_ids?: number[];
+  __trigger_ids?: number[];
   deactivated_post_cursor?: number;
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
@@ -154,7 +154,7 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  trigger_ids?: number[];
+  __trigger_ids?: number[];
   last_group_id: number;
   at_mentioning_post_ids?: number[];
 };
@@ -172,7 +172,7 @@ export type GroupState = {
   unread_deactivated_count?: number;
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
-  trigger_ids?: number[];
+  __trigger_ids?: number[];
 };
 
 export type GroupConfig = {
