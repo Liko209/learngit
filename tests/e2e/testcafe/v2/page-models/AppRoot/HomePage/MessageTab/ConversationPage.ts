@@ -152,7 +152,8 @@ export class ConversationPage extends BaseConversationPage {
 
 export class DuplicatePromptPage extends BaseConversationPage{
   get self(){
-    return this.getSelector('');
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
   }
 
   get duplicateModal(){
