@@ -13,6 +13,7 @@ const Actions = buildContainer<
   ActionsProps & {
     onFocus: (value: boolean) => void;
     onBlur: (value: boolean) => void;
+    tabIndex: number;
   }
 >({
   View: ActionsView,

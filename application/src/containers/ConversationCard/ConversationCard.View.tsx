@@ -24,6 +24,7 @@ import { EditMessageInput } from './EditMessageInput';
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
+  private timer: number;
   state = {
     isHover: false,
     isFocusActions: false,
@@ -44,16 +45,19 @@ export class ConversationCard extends React.Component<
     }
   }
 
-  handleFocus = (value: boolean) => {
+  handleActionsFocus = (value: boolean) => {
     this.setState({
       isFocusActions: value,
     });
+    clearTimeout(this.timer);
   }
 
-  handleBlur = (value: boolean) => {
-    this.setState({
-      isFocusActions: value,
-      isHover: false,
+  handleActionsBlur = (value: boolean) => {
+    this.timer = setTimeout(() => {
+      this.setState({
+        isFocusActions: value,
+        isHover: false,
+      });
     });
   }
 
@@ -130,8 +134,9 @@ export class ConversationCard extends React.Component<
             {showProgressActions ? <ProgressActions id={id} /> : null}
             {!showProgressActions && isHover ? (
               <Actions
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
+                onFocus={this.handleActionsFocus}
+                onBlur={this.handleActionsBlur}
+                tabIndex={0}
                 id={id}
               />
             ) : null}

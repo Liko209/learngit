@@ -14,6 +14,7 @@ type Props = {
   Bookmark: React.ReactNode;
   onFocus: (value: boolean) => void;
   onBlur: (value: boolean) => void;
+  tabIndex: number;
 };
 
 const StyledWrapper = styled('div')`
@@ -59,12 +60,13 @@ class JuiConversationActionBar extends PureComponent<Props> {
   }
 
   render() {
-    const { More, Like, Bookmark } = this.props;
+    const { More, Like, Bookmark, tabIndex } = this.props;
     return (
       <StyledWrapper
         onClick={this.clickHandler}
         onBlur={this.handleBlur}
         onFocus={this.handleFocus}
+        tabIndex={tabIndex}
       >
         {Like}
         {Bookmark}

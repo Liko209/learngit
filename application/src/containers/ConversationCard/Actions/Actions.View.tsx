@@ -20,10 +20,11 @@ class ActionsViewComponent extends Component<
   Props & {
     onFocus: (value: boolean) => void;
     onBlur: (value: boolean) => void;
+    tabIndex: number;
   }
 > {
   render() {
-    const { id, onFocus, onBlur } = this.props;
+    const { id, onFocus, onBlur, tabIndex } = this.props;
 
     const props = {
       Like: <Like id={id} />,
@@ -31,7 +32,12 @@ class ActionsViewComponent extends Component<
       More: <More id={id} />,
     };
     return (
-      <JuiConversationActionBar onFocus={onFocus} onBlur={onBlur} {...props} />
+      <JuiConversationActionBar
+        onFocus={onFocus}
+        onBlur={onBlur}
+        tabIndex={tabIndex}
+        {...props}
+      />
     );
   }
 }
