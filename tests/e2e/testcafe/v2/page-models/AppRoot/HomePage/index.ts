@@ -9,7 +9,7 @@ import { MessageTab } from './MessageTab';
 import { Header } from './header';
 import { LeftRail } from './LeftRail';
 import { RightRail } from './RightRail';
-
+import {ViewProfile} from './ViewProfile';
 
 export class HomePage extends BaseWebComponent {
     async ensureLoaded() {
@@ -56,6 +56,10 @@ export class HomePage extends BaseWebComponent {
     get sendNewMessageModal() {
         return this.getComponent(SendNewMessageModal);
     }
+
+    get viewProfile() {
+      return this.getComponent(ViewProfile);
+  }
 
     get topBarAvatar() {
         return this.getSelectorByAutomationId('topBarAvatar');

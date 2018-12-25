@@ -166,7 +166,7 @@ class ProfileService extends BaseService<Profile> {
         originalModel: Profile,
       ): Partial<Raw<Profile>> => {
         const favIds = originalModel.favorite_group_ids || [];
-        if (favIds.indexOf(currentId) === -1) {
+        if (!favIds.includes(me_group_id)) {
           partialModel['favorite_group_ids'] = [me_group_id].concat(favIds);
         }
         partialModel['me_tab'] = true;
@@ -192,7 +192,7 @@ class ProfileService extends BaseService<Profile> {
   ): Promise<ServiceResult<Profile>> {
     const profile = await this.getProfile();
     if (profile) {
-      let oldFavPostIds = profile.favorite_post_ids || [];
+      let oldFavPostIds = _.cloneDeep(profile.favorite_post_ids) || [];
       const shouldDoNothing =
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);
@@ -303,6 +303,21 @@ class ProfileService extends BaseService<Profile> {
       return profile[key];
     }
     return false;
+  }
+
+  async reopenConversation(groupId: number) {
+    const preHandlePartialModel = (
+      partialModel: Partial<Raw<Profile>>,
+      originalModel: Profile,
+    ): Partial<Raw<Profile>> => {
+      const partialProfile = {
+        ...partialModel,
+        [`hide_group_${groupId}`]: false,
+      };
+      return partialProfile;
+    };
+
+    return this._updateProfileGroupStatus(preHandlePartialModel);
   }
 
   private async _updateProfileGroupStatus(

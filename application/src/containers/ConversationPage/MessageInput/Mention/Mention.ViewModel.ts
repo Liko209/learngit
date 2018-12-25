@@ -78,7 +78,6 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         this._canDoFuzzySearch = false;
         this.open = false;
         this.currentIndex = 0;
-        this.searchTerm = undefined;
         this.members = [];
       },
     );
@@ -105,7 +104,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     searchTerm: string,
     denotationChar: string,
   ) => {
-    this.searchTerm = searchTerm;
+    if (searchTerm !== undefined) {
+      this.searchTerm =
+        this.searchTerm === searchTerm ? `${searchTerm} ` : searchTerm;
+    }
     if (!match) {
       this.open = false;
       return;

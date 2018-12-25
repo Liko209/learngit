@@ -1,9 +1,11 @@
+import * as _ from 'lodash';
 import 'testcafe';
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog } from "../models";
-import { BeatsClient, Step, Attachment } from 'bendapi';
+import { BeatsClient, Step, Test, Attachment } from 'bendapi';
 import { MiscUtils } from '../utils';
 import { getTmtId, parseFormalName } from '../../libs/filter';
+import { BrandTire } from '../../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -45,7 +47,7 @@ export class DashboardHelper {
     }
   }
 
-  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog) {
+  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog, accountType: string) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
@@ -53,12 +55,14 @@ export class DashboardHelper {
     const tmtId = getTmtId(tags);
     // FIXME: remove user-agent from case name when dashboard is ready
     const beatsTest = await this.beatsClient.createTest({
-      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})`,
+      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${_.findKey(BrandTire, (value) => value === accountType)})`,
       status: StatusMap[status],
       metadata: {
         user_agent: testRun.browserConnection.browserInfo.userAgent,
       },
-      tmtId: tmtId[0]
+      tmtId: tmtId.toString(),
+      startTime: testRun.startTime,
+      endTime: new Date(Date.now()).toISOString()
     } as any, runId);
     for (const step of this.t.ctx.logs) {
       await this.createStepInDashboard(step, beatsTest.id);
@@ -87,11 +91,11 @@ export class DashboardHelper {
     await this.createStepInDashboard(detailStep, beatsTest.id);
   }
 
-  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog) {
+  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog, accountType: string) {
     this.beatsClient = beatsClient;
     const ts = Date.now();
     try {
-      await this.createTestInDashboard(runId, consoleLog);
+      await this.createTestInDashboard(runId, consoleLog, accountType);
     } catch (error) {
       logger.error('fail to create test in dashboard', error);
     }
