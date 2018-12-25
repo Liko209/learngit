@@ -6,8 +6,9 @@
 
 import React from 'react';
 import styled from '../../foundation/styled-components';
+
 import { AttachmentItem, ITEM_STATUS } from './AttachmentItem';
-import { height, spacing } from '../../foundation/utils/styles';
+import { spacing } from '../../foundation/utils/styles';
 
 type ItemInfo = {
   id: number;
@@ -21,11 +22,8 @@ type AttachmentListProps = {
 
 const Wrapper = styled.div`
   display: flex;
-  max-height: ${height(45)};
-  overflow-y: scroll;
   flex-wrap: wrap;
-  padding-left: ${spacing(1)};
-  padding-top: ${spacing(1)};
+  margin: ${spacing(2, 0, 0)};
 `;
 
 const AttachmentList: React.SFC<AttachmentListProps> = (

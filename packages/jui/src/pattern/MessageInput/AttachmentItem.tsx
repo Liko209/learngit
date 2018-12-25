@@ -8,19 +8,16 @@ import React, { MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
 import { t } from 'i18next';
 import {
-  shape,
-  spacing,
   height,
   width,
   grey,
   palette,
+  spacing,
 } from '../../foundation/utils/styles';
 // import { JuiIconography } from '../../foundation/Iconography';
-import { truncateLongName } from '../../foundation/utils/getFileName';
 import { JuiCircularProgress } from '../../components/Progress';
 import { JuiIconButton } from '../../components/Buttons';
-
-import defaultIcon from './default.svg';
+import { JuiFileWithExpand } from '../ConversationCard/Files/FileWithExpand';
 
 type IconProps = {
   icon?: string;
@@ -45,58 +42,17 @@ type AttachmentItemProps = StatusProps &
   };
 
 const StatusMap = {
-  [ITEM_STATUS.NORMAL]: (theme: any) => grey('900'),
-  [ITEM_STATUS.LOADING]: (theme: any) => grey('900'),
-  [ITEM_STATUS.ERROR]: (theme: any) => palette('semantic', 'negative'),
+  [ITEM_STATUS.NORMAL]: grey('900'),
+  [ITEM_STATUS.LOADING]: grey('900'),
+  [ITEM_STATUS.ERROR]: palette('semantic', 'negative'),
 };
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: ${height(5)};
-  max-height: ${height(5)};
-  width: ${width(77)};
-  min-width: ${width(77)};
-  max-width: ${width(77)};
-  padding: ${spacing(4, 3, 4, 4)};
-  border-radius: ${shape('borderRadius', 1)};
-  box-shadow: ${props => props.theme.shadows[1]};
-  margin-right: ${spacing(4)};
-  margin-bottom: ${spacing(2)};
+  margin: ${spacing(0, 4, 2, 0)};
 `;
-
-const Icon = styled.div<IconProps>`
-  width: ${width(5)};
-  height: ${height(5)};
-  min-width: ${width(5)};
-  background-size: cover;
-  background-image: url(${({ icon }) => icon || defaultIcon});
-  overflow: hidden;
-`;
-
-const NameArea = styled.div<StatusProps>`
-  display: flex;
-  flex: 1;
-  height: ${height(5)};
-  line-height: ${height(5)};
-  max-height: ${height(5)};
-  margin-left: ${spacing(2)};
-  margin-right: ${spacing(1)};
-  max-width: ${width(63)};
-  overflow-x: hidden;
-  opacity: ${({ status }) => (status === ITEM_STATUS.LOADING ? '0.26' : 1)};
-  color: ${({ theme, status }) =>
-    StatusMap[status || ITEM_STATUS.NORMAL](theme)};
-`;
-
-const NameHead = styled.span`
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-`;
-
-const NameTail = styled.span``;
 
 const ActionWrapper = styled.div`
   display: flex;
@@ -150,28 +106,28 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   props: AttachmentItemProps,
 ) => {
   const {
-    icon,
     name,
     status,
     hideRemoveButton,
     onClickDeleteButton,
     progress,
   } = props;
-  const [left, right] = truncateLongName(name);
+  const action = (
+    <AttachmentItemAction
+      status={status}
+      onClick={onClickDeleteButton}
+      loading={status === ITEM_STATUS.LOADING}
+      value={progress}
+      hideRemoveButton={hideRemoveButton}
+      icon="close"
+    />
+  );
   return (
     <Wrapper>
-      <Icon icon={icon} />
-      <NameArea status={status} data-test-automation-id="attachment-file-name">
-        <NameHead>{left}</NameHead>
-        <NameTail>{right}</NameTail>
-      </NameArea>
-      <AttachmentItemAction
-        status={status}
-        onClick={onClickDeleteButton}
-        loading={status === ITEM_STATUS.LOADING}
-        value={progress}
-        hideRemoveButton={hideRemoveButton}
-        icon="close"
+      <JuiFileWithExpand
+        fileNameColor={StatusMap[status || '']}
+        fileName={name}
+        Actions={action}
       />
     </Wrapper>
   );
