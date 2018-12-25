@@ -69,7 +69,6 @@ export type GroupCommon = {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
-  has_no_more_post?: boolean;
   __send_failure_post_ids?: number[];
   __draft?: string;
   __last_accessed_at?: number;
