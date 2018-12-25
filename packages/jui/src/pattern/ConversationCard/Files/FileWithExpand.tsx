@@ -9,10 +9,12 @@ import * as Jui from './style';
 import { FileName } from './FileName';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
+import { Theme } from '../../../foundation/theme/theme';
 
 type JuiFileWithExpandProps = {
   fileName: string;
-  fileNameColor?: string;
+  fileNameColor?: ({ theme }: { theme: Theme }) => any;
+  fileNameOpacity?: number;
   Actions: JSX.Element;
   expand?: boolean;
   children?: React.ReactNode;
@@ -33,7 +35,14 @@ const ActionWrapper = styled.div`
 const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
   props: JuiFileWithExpandProps,
 ) => {
-  const { fileName, Actions, children, expand, fileNameColor } = props;
+  const {
+    fileName,
+    Actions,
+    children,
+    expand,
+    fileNameColor,
+    fileNameOpacity,
+  } = props;
 
   return (
     <Jui.FileExpandItemWrapper>
@@ -41,7 +50,11 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
         <Jui.FileExpandItem>
           <Jui.FileIcon size="small" />
           <NameWithActions>
-            <FileName color={fileNameColor} filename={fileName} />
+            <FileName
+              statusColor={fileNameColor}
+              filename={fileName}
+              opacity={fileNameOpacity}
+            />
             <ActionWrapper>{Actions}</ActionWrapper>
           </NameWithActions>
         </Jui.FileExpandItem>
