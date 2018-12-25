@@ -337,6 +337,7 @@ class ItemFileUploadHandler {
           break;
       }
       info.progress.loaded = loaded;
+      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [info.progress]);
     }
   }
 
