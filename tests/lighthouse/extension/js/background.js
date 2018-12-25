@@ -11,4 +11,4 @@ chrome.processes.onUpdatedWithMemory.addListener(function (processes) {
     processMap = processes;
 });
 
-console.log('reload extention');
+console.log('reload extension');

@@ -798,7 +798,7 @@ class GroupService extends BaseService<Group> {
   }
 
   public isValid(group: Group) {
-    return !group.is_archived && !group.deactivated && group.members.length > 0;
+    return !group.is_archived && !group.deactivated && !!group.members;
   }
 
   private _getTeamAdmins(permission?: TeamPermission) {

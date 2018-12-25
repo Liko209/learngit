@@ -23,8 +23,8 @@ class JuiMiniCard extends PureComponent<JuiMiniCardProps> {
   }
 
   render() {
-    const { children } = this.props;
-    return <StyledMiniCard>{children}</StyledMiniCard>;
+    const { children, ...rest } = this.props;
+    return <StyledMiniCard {...rest}>{children}</StyledMiniCard>;
   }
 }
 

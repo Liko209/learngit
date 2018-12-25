@@ -42,7 +42,13 @@ class GroupHandler {
       return;
     }
     const _profileService: ProfileService = ProfileService.getInstance();
-    await _profileService.reopenConversation(id);
+    const result = await _profileService.reopenConversation(id);
+    if (result.isErr()) {
+      history.replace('/messages/loading', {
+        id,
+        error: true,
+      });
+    }
   }
 }
 
