@@ -5,7 +5,7 @@
  */
 import NoteItemModel from '../NoteItem';
 
-describe('NoteItemModal', () => {
+describe('NoteItemModel', () => {
   it('new NoteItemModel', () => {
     const noteItemModel = NoteItemModel.fromJS({
       title: 'title',

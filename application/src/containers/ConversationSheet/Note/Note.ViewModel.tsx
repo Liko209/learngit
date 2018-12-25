@@ -9,7 +9,7 @@ import { AbstractViewModel } from '@/base';
 import { NoteProps, NoteViewProps } from './types';
 
 import { Item } from 'sdk/models';
-import NoteItemModal from '@/store/models/NoteItem';
+import NoteItemModel from '@/store/models/NoteItem';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
@@ -23,18 +23,18 @@ class NoteViewModel extends AbstractViewModel<NoteProps>
   @computed
   get _items() {
     return this._ids.map((id: number) => {
-      return getEntity<Item, NoteItemModal>(ENTITY_NAME.NOTE_ITEM, id);
+      return getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, id);
     });
   }
 
   @computed
   get title() {
-    return this._items.map((item: NoteItemModal) => item.title).join('');
+    return this._items.map((item: NoteItemModel) => item.title).join('');
   }
 
   @computed
   get summary() {
-    return this._items.map((item: NoteItemModal) => item.summary).join('');
+    return this._items.map((item: NoteItemModel) => item.summary).join('');
   }
 }
 

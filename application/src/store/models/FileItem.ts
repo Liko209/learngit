@@ -14,12 +14,12 @@ enum FileType {
 }
 
 type ExtendFileItem = {
-  item: FileItemModal;
+  item: FileItemModel;
   type: number;
   previewUrl: string;
 };
 
-export default class FileItemModal extends ItemModel {
+export default class FileItemModel extends ItemModel {
   @observable type: string;
   @observable name: string;
   @observable isDocument?: boolean;
@@ -90,7 +90,7 @@ export default class FileItemModal extends ItemModel {
   }
 
   static fromJS(data: Item) {
-    return new FileItemModal(data);
+    return new FileItemModel(data);
   }
 }
 
