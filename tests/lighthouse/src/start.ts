@@ -4,16 +4,19 @@
  */
 require('dotenv').config();
 import { initModel } from './models';
-import { dbUtils } from './utils/DbUtils';
 import { metriceService } from './services/MetricService';
 import { fileService } from './services/FileService';
 import { Scene, LoginScene, RefreshScene, OfflineScene } from './scenes';
 import { logUtils } from './utils/LogUtils';
+import { dbUtils } from './utils/DbUtils';
 import { puppeteerUtils } from './utils/PuppeteerUtils';
 
 const logger = logUtils.getLogger(__filename);
 
-initModel().then(async () => {
+(async () => {
+    // init
+    await initModel();
+})().then(async () => {
     try {
         let startTime = Date.now();
 

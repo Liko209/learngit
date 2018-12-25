@@ -1,5 +1,3 @@
-import * as lighthouse from 'lighthouse';
-import * as core from 'core-js';
 /*
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30

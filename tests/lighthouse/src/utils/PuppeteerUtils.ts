@@ -6,6 +6,7 @@ import * as puppeteer from 'puppeteer';
 import { Page } from 'puppeteer/lib/Page';
 import { Browser } from 'puppeteer/lib/Browser';
 import { logUtils } from './LogUtils';
+import { mockHelper } from '../mock/MockHelper';
 
 const MAX_TRY_COUNT = 10;
 
@@ -129,7 +130,19 @@ class PuppeteerUtils {
     }
 
     async launch(options = {}): Promise<Browser> {
-        let opt = Object.assign({ headless: false, defaultViewport: null }, options);
+        let defaultArgs = [
+            '--ignore-certificate-errors'
+        ];
+        if (options['args']) {
+            defaultArgs.concat(options['args']);
+        }
+
+        options['args'] = Array.from(new Set(defaultArgs));
+        let opt = Object.assign({
+            headless: false,
+            defaultViewport: null,
+            ignoreHTTPSErrors: true
+        }, options);
 
         let browser = await puppeteer.launch(opt);
 
@@ -137,6 +150,9 @@ class PuppeteerUtils {
         this.logger.info(`launch chrome success, wsEndpoint: ${wsEndpoint}, options: ${JSON.stringify(opt)}`);
 
         this._browsers.push(wsEndpoint);
+
+        // inject mock
+        await mockHelper.register(browser);
 
         return browser;
     }
@@ -146,7 +162,8 @@ class PuppeteerUtils {
             let browser = await puppeteer.connect({
                 headless: false,
                 defaultViewport: null,
-                browserWSEndpoint: wsEndpoint
+                browserWSEndpoint: wsEndpoint,
+                ignoreHTTPSErrors: true
             });
 
             if (this._browsers.indexOf(wsEndpoint) < 0) {
@@ -154,6 +171,9 @@ class PuppeteerUtils {
             }
 
             this.logger.info(`connect chrome success, wsEndpoint: ${wsEndpoint}`);
+
+            // inject mock
+            // await mockHelper.register(browser);
 
             return browser;
         } catch (err) {
