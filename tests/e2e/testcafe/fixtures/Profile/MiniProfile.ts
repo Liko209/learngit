@@ -278,7 +278,7 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
     });
 
     await h(t).withLog('Then the mini profile dialog should be showed', async () => {
-      await miniProfile.shouldBePopUp();      
+      await miniProfile.shouldBePopUp();
       await H.retryUntilPass(async () => {
         const mentionName = await post.mentions.textContent
         const miniProfileName = await miniProfile.getName();

@@ -70,7 +70,7 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   async getName() {
-    if (await this.personName.exists){
+    if (await this.personName.exists) {
       return await this.personName.textContent
     }
     return await this.groupName.textContent;
@@ -232,19 +232,19 @@ class Member extends BaseWebComponent {
   get avatar() {
     return this.self.find('div').filter((el) => el.hasAttribute('uid'))
   }
-  
+
   get personName() {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName', this.self);
   }
 
   get admin() {
-    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self); 
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
   }
 
   isAdmin(): Promise<boolean> {
     return this.admin.exists
   }
-  
+
   async shouldBeAdmin() {
     await this.t.expect(this.isAdmin).ok();
   }

@@ -90,7 +90,7 @@ class MenuItem extends Entry {
     await this.t.click(this.self);
   }
 
-  get  disabled(): Promise<string> {
+  get disabled(): Promise<string> {
     return this.self.getAttribute("data-disabled");
   }
 
