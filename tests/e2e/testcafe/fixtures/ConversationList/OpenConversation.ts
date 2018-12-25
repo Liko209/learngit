@@ -13,29 +13,30 @@ test(formalName('Should remains where it is when click a conversation in the con
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+   
     const teamName1 = `Team 1 ${uuid()}`;
     const teamName2 = `Team 2 ${uuid()}`
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let teamId, nth;
     await h(t).withLog('Given I have an extension with two conversation', async () => {
-      await user.sdk.platform.createGroup({
+      await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: teamName1,
-        members: [user.rcId, users[5].rcId],
+        members: [loginUser.rcId, users[5].rcId],
       });
 
-      await user.sdk.platform.createGroup({
+      await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: teamName2,
-        members: [user.rcId, users[6].rcId],
+        members: [loginUser.rcId, users[6].rcId],
       });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 

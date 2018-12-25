@@ -183,34 +183,36 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    await h(t).resetGlipAccount(user);
-    const userPlatform = await h(t).getPlatform(user);
-    const user5Platform = await h(t).getPlatform(users[5]);
+    const loginUser = users[4];
+    const otherUser = users[5];
+    await h(t).resetGlipAccount(loginUser);
+    await h(t).platform(loginUser).init();
+    await h(t).platform(otherUser).init();
+
+
     const mentionsEntry = app.homePage.messageTab.mentionsEntry;
     const mentionPage = app.homePage.messageTab.mentionPage;
     const postMentionPage = app.homePage.messageTab.mentionPage;
-    user.sdk = await h(t).getSdk(user);
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
     let group;
     await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-      group = await userPlatform.createGroup({
-        type: 'Group', members: [user.rcId, users[5].rcId],
+      group = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
-      await user.sdk.glip.showGroups(user.rcId, group.data.id);
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, group.data.id);
     });
 
     let newPost;
     await h(t).withLog('And I have an AtMention post', async () => {
-      newPost = await user5Platform.sendTextPost(
-        `Hi AtMention, ![:Person](${user.rcId})`,
+      newPost = await h(t).platform(otherUser).sendTextPost(
+        `Hi AtMention, ![:Person](${loginUser.rcId})`,
         group.data.id,
       );
     }, true);
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
@@ -254,38 +256,43 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[4];
-  await h(t).resetGlipAccount(user);
-  const userPlatform = await h(t).getPlatform(user);
-  const user5Platform = await h(t).getPlatform(users[5]);
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).resetGlipAccount(loginUser);
+
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+
+  await h(t).platform(otherUser).init();
+
   const mentionsEntry = app.homePage.messageTab.mentionsEntry;
   const postMentionPage = app.homePage.messageTab.mentionPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  user.sdk = await h(t).getSdk(user);
+
   const msgList = _.range(20).map(i => `${i} ${uuid()}`);
 
   let group;
   let newPost;
   await h(t).withLog('Given I have an AtMention message from the conversation', async () => {
-    group = await userPlatform.createGroup({
-      type: 'Group', members: [user.rcId, users[5].rcId],
+    group = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await user.sdk.glip.showGroups(user.rcId, group.data.id);
-    newPost = await user5Platform.sendTextPost(
-      `First AtMention, ![:Person](${user.rcId})`,
+    await h(t).glip(loginUser).showGroups(loginUser.rcId, group.data.id);
+    newPost = await h(t).platform(otherUser).sendTextPost(
+      `First AtMention, ![:Person](${loginUser.rcId})`,
       group.data.id,
     );
   });
 
   await h(t).withLog('And I also have 20 non AtMention messages in conversation', async () => {
     for (const msg of msgList) {
-      await userPlatform.sendTextPost(msg, group.data.id);
+      await h(t).platform(loginUser).sendTextPost(msg, group.data.id);
       await t.wait(1e3);
     }
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
@@ -297,8 +304,8 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
   }, true);
 
   await h(t).withLog('Then I received new AtMention post should 1 UMI', async () => {
-    await user5Platform.sendTextPost(
-      `Just for UMI, ![:Person](${user.rcId})`,
+    await h(t).platform(otherUser).sendTextPost(
+      `Just for UMI, ![:Person](${loginUser.rcId})`,
       group.data.id,
     );
     await directMessagesSection.fold();

@@ -17,23 +17,24 @@ test(formalName('The posts in the conversation should be displayed in the order 
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+
     const msgList = _.range(3).map(i => `${i} ${uuid()}`);
-    const userPlatform = await h(t).getPlatform(user);
 
     let teamId;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
-      teamId = (await userPlatform.createGroup({
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
         isPublic: true,
         name: `Team ${uuid()}`,
         type: 'Team',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       });
 
@@ -45,7 +46,7 @@ test(formalName('The posts in the conversation should be displayed in the order 
 
     await h(t).withLog('When I send 3 posts in order via API', async () => {
       for (const msg of msgList) {
-        await userPlatform.createPost({ text: msg }, teamId);
+        await h(t).platform(loginUser).createPost({ text: msg }, teamId);
         await t.wait(1e3)
       }
     });
@@ -68,22 +69,23 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+
     let teamId;
-    const userPlatform = await h(t).getPlatform(user);
 
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
-      teamId = (await userPlatform.createGroup({
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
         isPublic: true,
         name: `Team ${uuid()}`,
         type: 'Team',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       });
 
@@ -106,29 +108,29 @@ test(formalName('Should be able to read the newest posts once open a conversatio
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    const userPlatform = await h(t).getPlatform(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
 
     const msgBeforeLogin = `send before login ${uuid()}`;
     const msgAfterLogin = `send after login ${uuid()}`;
 
     let teamId;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
-      teamId = (await userPlatform.createGroup({
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
         isPublic: true,
         name: `Team ${uuid()}`,
         type: 'Team',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
     });
 
     await h(t).withLog(`And a post "${msgBeforeLogin}" is sent before login`, async () => {
-      await userPlatform.createPost({ text: msgBeforeLogin }, teamId);
+      await h(t).platform(loginUser).createPost({ text: msgBeforeLogin }, teamId);
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       });
 
@@ -144,7 +146,7 @@ test(formalName('Should be able to read the newest posts once open a conversatio
     })
 
     await h(t).withLog(`When I send another post: "${msgAfterLogin}"`, async () => {
-      await userPlatform.createPost({ text: msgAfterLogin }, teamId);
+      await h(t).platform(loginUser).createPost({ text: msgAfterLogin }, teamId);
     });
 
     await h(t).withLog(`Then I should find this post "${msgAfterLogin}" at the end of conversation`, async () => {
