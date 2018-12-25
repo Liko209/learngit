@@ -44,9 +44,9 @@ describe('StreamViewModel', () => {
       });
       (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
         posts: [
-          { id: 1, item_ids: [] },
-          { id: 2, item_ids: [] },
-          { id: 3, item_ids: [] },
+          { id: 1, item_ids: [], created_at: 1 },
+          { id: 2, item_ids: [], created_at: 2 },
+          { id: 3, item_ids: [], created_at: 3 },
         ],
         items: [{ id: 1 }],
       });
