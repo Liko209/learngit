@@ -269,6 +269,8 @@ describe('AttachmentsViewModel', () => {
       await vm.autoUploadFiles([file]);
       await vm.autoUploadFiles([file]);
       expect(vm.showDuplicateFiles).toBe(true);
+      expect(vm.duplicateFiles.length).toBe(1);
+      expect(vm.duplicateFiles[0].name).toEqual(file.name);
     });
 
     it('should not showDuplicateFiles when duplicate upload files in different conversation JPT-452', async () => {
