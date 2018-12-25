@@ -115,8 +115,8 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await favChat.openMoreMenu();
     });
 
-    await h(t).withLog('Then the close button should not be show', async () => {
-      await t.expect(app.homePage.messageTab.moreMenu.close.exists).notOk();
+    await h(t).withLog('Then the close button should be disabled', async () => {
+      await app.homePage.messageTab.moreMenu.close.shouldBeDisabled()
       await t.pressKey('esc');
     },
     );

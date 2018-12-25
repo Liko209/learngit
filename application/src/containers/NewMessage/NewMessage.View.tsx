@@ -112,7 +112,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
         cancelText={t('Cancel')}
       >
         <ContactSearch
-          onChange={handleSearchContactChange}
+          onSelectChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}

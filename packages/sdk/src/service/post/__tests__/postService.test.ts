@@ -61,10 +61,15 @@ describe('PostService', () => {
     from_group_id: 4,
   });
 
-  beforeEach(() => {
+  function clearMocks() {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
+  }
+
+  beforeEach(() => {
+    clearMocks();
+
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
@@ -633,19 +638,23 @@ describe('PostService', () => {
   });
 
   describe('like post', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       postService.getById = jest.fn();
+      jest.spyOn(postService, '_doDefaultPartialNotify').mockResolvedValue();
     });
+
     it('should return null when post id is negative', async () => {
       postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(-1, 101, true);
       expect(result.isErr()).toBe(true);
     });
+
     it('should return null when post is not exist', async () => {
       postService.getById.mockResolvedValueOnce(null);
       const result = await postService.likePost(100, 101, true);
       expect(result.isErr()).toBe(true);
     });
+
     it('should return old post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
@@ -653,12 +662,14 @@ describe('PostService', () => {
       PostAPI.putDataById.mockResolvedValueOnce(
         new ApiResultOk(data, { status: 200, headers: {} } as BaseResponse),
       );
+
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
       expect(result.isOk()).toBe(true);
       expect(result.data.likes).toEqual([101]);
       // expect(post.likes).toEqual([101]);
     });
+
     it('should return old post if person id is not in post likes when to unlike', async () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
@@ -668,6 +679,10 @@ describe('PostService', () => {
     it('should return new post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
+      const data = { _id: 100, likes: [101] };
+      PostAPI.putDataById.mockResolvedValueOnce(
+        new ApiResultOk(data, { status: 200, headers: {} } as BaseResponse),
+      );
       const result = await postService.likePost(100, 101, true);
       expect(result.data.likes).toEqual([101]);
     });
@@ -676,9 +691,9 @@ describe('PostService', () => {
       const postInDao = { id: 100, likes: [101, 102] };
       const postInApi = { _id: 100, likes: [102] };
       postService.getById.mockResolvedValue(postInDao);
-      PostAPI.putDataById.mockResolvedValueOnce({
-        data: postInApi,
-      });
+      PostAPI.putDataById.mockResolvedValueOnce(
+        new ApiResultOk(postInApi, { status: 200, headers: {} } as BaseResponse),
+      );
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);

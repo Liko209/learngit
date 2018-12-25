@@ -7,9 +7,9 @@
 type IToken = {
   timestamp: number;
   access_token?: string;
-  accessTokenExpireIn: number;
-  refreshTokenExpireIn: number;
-  refreshToken?: string;
+  expires_in: number;
+  refresh_token_expires_in: number;
+  refresh_token?: string;
 };
 interface IHandleType {
   survivalModeSupportable: boolean;

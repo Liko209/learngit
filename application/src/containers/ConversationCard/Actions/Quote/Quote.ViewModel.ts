@@ -52,17 +52,6 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
 
   getQuoteText = () => {
     let quoteText = this._text;
-    // quoteText = quoteText.split('\n').reduce((qt, t) => {
-    //   // filter empty line
-    //   if (t.length) {
-    //     // add '>' before last quote message
-    //     if (t.charAt(0) === '>') {
-    //       return `${qt}${t}<br/>`;
-    //     }
-    //     return `${qt}> ${t}<br/>`;
-    //   }
-    //   return `${qt}${t}`;
-    // },                                       '');
 
     quoteText = quoteText.replace(
       /^(>\s)?(.*?)\n/gim,

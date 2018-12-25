@@ -173,7 +173,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
-          onChange={handleSearchContactChange}
+          onSelectChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
