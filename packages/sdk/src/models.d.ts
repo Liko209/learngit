@@ -195,7 +195,7 @@ export type Post = ExtendedBaseModel & {
   activity_data?: object;
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
-  new_version?: number;
+  new_version?: number; // This field should be moved to base model?
   from_group_id?: number;
   item_data?: object;
   links?: object[];
@@ -225,7 +225,6 @@ export type Item = ExtendedBaseModel & {
   group_ids: number[];
   post_ids: number[];
   company_id: number;
-  is_new: boolean;
   is_document?: boolean;
   name: string; // file name
   type_id: number; // file type
@@ -233,9 +232,7 @@ export type Item = ExtendedBaseModel & {
   versions: ItemVersions[];
   summary?: string;
   title?: string;
-  url: string;
   image?: string;
-  deactivated: boolean;
   do_not_render?: boolean;
 };
 
@@ -289,7 +286,6 @@ export type LinkItem = Item & {
   title: string;
   url: string;
   image: string;
-  deactivated: boolean;
   data: {
     provider_name: string;
   };
