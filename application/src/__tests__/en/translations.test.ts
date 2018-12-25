@@ -313,4 +313,10 @@ describe('i18next-en', () => {
       'Would you like to update the existing file(s) or create a new one?',
     );
   });
+
+  it('should check file no longer exist JPT-617', () => {
+    expect(i18next.t('fileNoLongerExists')).toEqual(
+      'The file no longer exists.',
+    );
+  });
 });
