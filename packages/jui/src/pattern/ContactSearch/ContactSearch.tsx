@@ -180,11 +180,15 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       selectedItem = [...selectedItem, item];
     }
 
-    this.setState({
-      selectedItem,
-      inputValue: '',
-    });
-    this.props.onSelectChange(this.state.selectedItem);
+    this.setState(
+      {
+        selectedItem,
+        inputValue: '',
+      },
+      () => {
+        this.props.onSelectChange(this.state.selectedItem);
+      },
+    );
   }
 
   handleDelete = (item: Suggestion) => () => {
