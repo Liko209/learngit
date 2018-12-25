@@ -16,14 +16,12 @@ type Props = {
 const StyledAvatarName = styled.div`
   display: flex;
   align-items: flex-end;
-  margin: ${spacing(0, 4, 1, 0)};
+  margin: ${spacing(0, 4, 0, 0)};
 `;
 
 const StyledName = styled.span`
   margin-left: ${spacing(1)};
 `;
-
-// const StyledName = styled.div``
 
 const JuiAvatarName = (props: Props) => (
   <StyledAvatarName>

@@ -19,6 +19,7 @@ class MemberHeader extends React.Component<
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
+        data-test-automation-id="profileDialogMemberHeader"
       >
         {`${t(key)} (${group.members && group.members.length})`}
       </JuiProfileDialogContentMemberHeader>
