@@ -182,7 +182,7 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
     }
   )
 
-  // TODO: enable after bug resolved
+  // TODO: enable after FIJI-2466 resolved
   // await h(t).withLog('When I enter the teamB conversation',
   //   async () => {
   //     await teamsSection.expand();
