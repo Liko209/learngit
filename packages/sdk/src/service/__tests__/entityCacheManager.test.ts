@@ -114,6 +114,31 @@ describe('Entity Cache Manager', () => {
     expect(entity.age).toBe(entityC.age);
   });
 
+  it('should not change key update', async () => {
+    const entityC = {
+      id: 1,
+      name: 'fish',
+      age: 3,
+    };
+
+    const eMap = new Map<number, EntityCacheTestModel>();
+    eMap.set(entityC.id, entityC);
+
+    const entityD = {
+      id: 1,
+      name: 'fish two',
+      __additionalKey: 'additionalKey',
+    };
+    const eMap2 = new Map<number, Partial<Raw<EntityCacheTestModel>>>();
+    eMap2.set(entityA.id, entityD);
+    await manager.update(eMap, eMap2);
+
+    const entity = manager.getEntity(entityC.id);
+    expect(entity.name).toBe(entityD.name);
+    expect(entity['__additionalKey']).toBe(entityD.__additionalKey);
+    expect(entity.age).toBe(entityC.age);
+  });
+
   it('should return not initialized when just new entityCacheManager', async () => {
     expect(manager.isInitialized()).toEqual(false);
     expect(manager.isStartInitial()).toEqual(false);
