@@ -192,7 +192,7 @@ class ProfileService extends BaseService<Profile> {
   ): Promise<ServiceResult<Profile>> {
     const profile = await this.getProfile();
     if (profile) {
-      let oldFavPostIds = profile.favorite_post_ids || [];
+      let oldFavPostIds = _.cloneDeep(profile.favorite_post_ids) || [];
       const shouldDoNothing =
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);

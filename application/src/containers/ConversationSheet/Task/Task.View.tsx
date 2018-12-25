@@ -12,7 +12,7 @@ import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationIt
 import {
   JuiTaskSection,
   JuiTaskNotes,
-  JuiTaskAvatarName,
+  JuiTaskAvatarNames,
   JuiTaskContent,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
@@ -140,19 +140,23 @@ class Task extends React.Component<taskViewProps> {
         )}
         {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskContent title={t('assignee')}>
-            <JuiTaskAvatarName
+            <JuiTaskAvatarNames
               count={assignedToIds && assignedToIds.length}
               otherText={t('avatarnamesWithOthers', {
                 count: assignedToIds.length - 2,
               })}
             >
               {this._taskAvatarNames}
-            </JuiTaskAvatarName>
+            </JuiTaskAvatarNames>
           </JuiTaskContent>
         )}
-        {(section || notes) && (
-          <JuiTaskContent>
+        {section && (
+          <JuiTaskContent title={t('section')}>
             <JuiTaskSection section={section} />
+          </JuiTaskContent>
+        )}
+        {notes && (
+          <JuiTaskContent title={t('descriptionNotes')}>
             <JuiTaskNotes notes={notes} />
           </JuiTaskContent>
         )}
