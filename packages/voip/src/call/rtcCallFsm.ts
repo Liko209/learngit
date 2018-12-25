@@ -112,19 +112,19 @@ class RTCCallFsm extends EventEmitter2 {
   }
 
   private _onEnterPending() {
-    super.emit('enterPending');
+    this.emit('enterPending');
   }
 
   private _onEnterConnecting() {
-    super.emit('enterConnecting');
+    this.emit('enterConnecting');
   }
 
   private _onEnterConnected() {
-    super.emit('enterConnected');
+    this.emit('enterConnected');
   }
 
   private _onEnterDisconnected() {
-    super.emit('enterDisconnected');
+    this.emit('enterDisconnected');
   }
 
   // Only for unit test

@@ -1,7 +1,5 @@
 /// <reference path="../../__tests__/types.d.ts" />
 import { RTCCallFsm } from '../RTCCallFsm';
-import { async } from 'q';
-import { create } from 'domain';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {
