@@ -199,7 +199,7 @@ export type Post = ExtendedBaseModel & {
   item_data?: object;
   links?: object[];
   items?: object[];
-  status?: POST_STATUS;
+  __status?: POST_STATUS;
   source?: string;
   parent_id?: number;
 };
