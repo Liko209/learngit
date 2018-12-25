@@ -10,14 +10,21 @@ import PostService from '../../../service/post';
 import StateService from '../../../service/state';
 import PostAPI from '../../../api/glip/post';
 import { baseHandleData } from '../../post/handleData';
-import { ApiResultErr, ApiResultOk } from '../../../api/ApiResult';
-import { BaseResponse } from 'foundation/src/network';
-import { BaseError } from '../../../utils/error';
+import GroupService from '../../../service/group';
 
-jest.mock('../../../service/post');
-jest.mock('../../../api/glip/post');
 jest.mock('../../../service/state');
+jest.mock('../../../service/post');
 jest.mock('../../post/handleData');
+jest.mock('../../../service/group');
+
+const postService = new PostService();
+const stateService = new StateService();
+const groupService = new GroupService();
+beforeEach(() => {
+  PostService.getInstance = jest.fn().mockReturnValue(postService);
+  StateService.getInstance = jest.fn().mockReturnValue(stateService);
+  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+});
 
 describe('PreloadPostsProcessor', () => {
   function getGroup({ most_recent_post_id = 0 } = {}) {
@@ -39,11 +46,6 @@ describe('PreloadPostsProcessor', () => {
     return group;
   }
 
-  const postService = new PostService();
-  const stateService = new StateService();
-  PostService.getInstance = jest.fn().mockReturnValue(postService);
-  StateService.getInstance = jest.fn().mockReturnValue(stateService);
-
   describe('name', () => {
     it('should return "name1" when pass "name1" as name', () => {
       const processor = new PreloadPostsProcessor('name1', getGroup());
@@ -60,6 +62,9 @@ describe('PreloadPostsProcessor', () => {
   });
 
   describe('needPreload', async () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
     it('should return false if group has not most_recent_post_id', async () => {
       const processor = new PreloadPostsProcessor('3', getGroup());
       const result = await processor.needPreload();
@@ -97,6 +102,7 @@ describe('PreloadPostsProcessor', () => {
         creator_id: 3,
         group_id: 2,
       });
+
       const processor = new PreloadPostsProcessor(
         '3',
         getGroup({ most_recent_post_id: 4 }),
@@ -154,23 +160,20 @@ describe('PreloadPostsProcessor', () => {
         unread_count: 0,
       });
       await p.process();
-      expect(PostAPI.requestPosts).toBeCalledTimes(0);
+      expect(postService.getPostsFromRemote).toBeCalledTimes(0);
     });
-    it('should not call baseHandleData if requestPosts failed', async () => {
+    it('should not call baseHandleData if getPostsFromRemote has not data', async () => {
       const p = getProcessorInstance();
       p.needPreload.mockResolvedValueOnce({
         shouldPreload: true,
         unread_count: 10,
       });
-      const error = new BaseError(404, 'Not Found');
-      PostAPI.requestPosts.mockResolvedValueOnce(
-        new ApiResultErr(error, {
-          status: 500,
-          headers: {},
-        } as BaseResponse),
-      );
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [],
+        items: [],
+        has_more: false,
+      });
       await p.process();
-      expect(PostAPI.requestPosts).toBeCalledTimes(1);
       expect(baseHandleData).toBeCalledTimes(0);
     });
     it('should call baseHandleData if need preload post and requestPosts success', async () => {
@@ -179,14 +182,12 @@ describe('PreloadPostsProcessor', () => {
         shouldPreload: true,
         unread_count: 10,
       });
-      PostAPI.requestPosts.mockResolvedValueOnce(
-        new ApiResultOk({ posts: [], items: [] }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      postService.getPostsFromRemote.mockResolvedValueOnce({
+        posts: [{ _id: 4 }],
+        items: [],
+        has_more: false,
+      });
       await p.process();
-      expect(PostAPI.requestPosts).toBeCalledTimes(1);
       expect(baseHandleData).toBeCalledTimes(1);
     });
   });

@@ -6,13 +6,13 @@
 import { Group } from '../../models';
 import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
-import PostAPI from '../../api/glip/post';
 import { baseHandleData } from '../post/handleData';
 import itemHandleData from '../item/handleData';
 import { mainLogger } from 'foundation';
 import StateService from '../state';
 
 const DEFAULT_DIRECTION: string = 'order';
+const MAX_UNREAD_COUNT: number = 100;
 class PreloadPostsProcessor implements IProcessor {
   private _name: string;
   private _canContinue: boolean;
@@ -36,12 +36,12 @@ class PreloadPostsProcessor implements IProcessor {
         direction: DEFAULT_DIRECTION,
         group_id: this._group.id,
       };
-      const requestResult = await PostAPI.requestPosts(params);
-
-      if (requestResult.isOk()) {
-        baseHandleData(requestResult.data.posts || [], true);
-        itemHandleData(requestResult.data.items || []);
-      }
+      const postService: PostService = PostService.getInstance();
+      const requestResult = await postService.getPostsFromRemote(params);
+      console.log('-----requestResult', requestResult);
+      requestResult.posts.length &&
+        (await baseHandleData(requestResult.posts, true));
+      requestResult.items.length && (await itemHandleData(requestResult.items));
     }
     return true;
   }
@@ -62,17 +62,13 @@ class PreloadPostsProcessor implements IProcessor {
     if (this._group.most_recent_post_id) {
       const stateService: StateService = StateService.getInstance();
       const state = await stateService.getById(this._group.id);
-      if (state) {
-        if (
-          state.unread_count &&
-          state.unread_count > 0 &&
-          state.unread_count <= 100
-        ) {
+      if (state.unread_count) {
+        if (state.unread_count > 0 && state.unread_count <= MAX_UNREAD_COUNT) {
           const postService: PostService = PostService.getInstance();
           const post = await postService.getByIdFromDao(
             state.read_through || 0,
           );
-          shouldPreload = !(post && !post.deactivated);
+          shouldPreload = !post || !!post.deactivated;
           unread_count = state.unread_count;
         }
       }
