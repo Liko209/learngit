@@ -124,11 +124,11 @@ String deployBaseDir = env.DEPLOY_BASE_DIR
 String rcCredentialId = env.E2E_RC_CREDENTIAL
 
 // derivative value
-Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType
+Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
 
-String subDomain = 'debug-' + getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
+String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 
 // glip channel
@@ -329,13 +329,13 @@ node(buildNode) {
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
-                buildReport(':white_check_mark: Success', env.BUILD_URL, report)
+                buildReport("${SUCCESS_EMOJI} Success", env.BUILD_URL, report)
         )
     } catch (e) {
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
-        String statusTitle = ':negative_squared_cross_mark: Failure'
+        String statusTitle = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
-            statusTitle = ':no_entry: Aborted'
+            statusTitle = ":no_entry: Aborted"
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
