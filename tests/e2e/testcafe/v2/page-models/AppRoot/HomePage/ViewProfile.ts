@@ -1,7 +1,8 @@
 
 import { BaseWebComponent } from '../../BaseWebComponent';
-import * as _ from 'lodash';
 
+
+// todo: delete after e2e/FIJI-2395 merge;
 export class ViewProfile extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
@@ -19,7 +20,11 @@ export class ViewProfile extends BaseWebComponent {
 
 }
 
-class MiniProfile extends BaseWebComponent {
+export class MiniProfile extends BaseWebComponent {
+  async shouldBePopUp() {
+    await this.t.expect(this.self.exists).ok();
+  }
+
   get self() {
     return this.getSelectorByAutomationId('profileMiniCard');
   }
@@ -64,6 +69,13 @@ class MiniProfile extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileMiniCardFooter');
   }
 
+  async getName() {
+    if (await this.personName.exists){
+      return await this.personName.textContent
+    }
+    return await this.groupName.textContent;
+  }
+
   get viewProfileButton() {
     this.warnFlakySelector();
     return this.footer.find('span').withText('Profile').parent('button');
@@ -83,7 +95,7 @@ class MiniProfile extends BaseWebComponent {
   }
 }
 
-class ProfileModal extends BaseWebComponent {
+export class ProfileDialog extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
@@ -123,7 +135,7 @@ class ProfileModal extends BaseWebComponent {
   }
 
   async shouldBePopUp() {
-    this.t.expect(this.profileTitle.find('div').nth(0).withText('Profile')).ok();
+    await this.t.expect(this.profileTitle.exists).ok();
   }
 
   get closeButton() {

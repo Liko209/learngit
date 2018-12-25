@@ -5,25 +5,23 @@
 */
 
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers'
+import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
 import { SITE_URL, BrandTire } from '../../config';
-
+import * as assert from 'assert';
 
 fixture('Profile/MiniProfile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
-  
+
 test(formalName('Open mini profile via post avatar then open conversation', ['JPT-449', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
   const otherUserPlatform = await h(t).getPlatform(users[5]);
   const app = new AppRoot(t);
-  console.log(loginUser.rcId);
-
 
   let teamId, myPost, otherUserPost;
   await h(t).withLog('Given I have one team, one post which I send, one post which other user send ', async () => {
@@ -55,20 +53,45 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
   let top, left;
   await h(t).withLog('When I enter the create team and then click my avatar on my post', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-    top = await myPost.getAvatarLeft();
-    left = await myPost.getAvatarLeft();
+    top = await myPost.avatar.getBoundingClientRectProperty('top');
+    left = await myPost.avatar.getBoundingClientRectProperty('left');
     await myPost.clickAvatar()
   });
 
+  const miniProfile = app.homePage.miniProfile;
   await h(t).withLog('Then the mini profile dialog should be showed', async () => {
-
-
-  }, true);
+    await miniProfile.shouldBePopUp();
+  });
 
   await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the listed people', async () => {
-
+    await H.retryUntilPass(async () => {
+      const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+      const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+      assert.strictEqual(top, minTop);
+      assert.strictEqual(left, minLeft);
+    })
+    await t.click(otherUserPost.self);
   }, true);
 
+  await h(t).withLog('When I click the avatar on other user post', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    top = await otherUserPost.avatar.getBoundingClientRectProperty('top');
+    left = await otherUserPost.avatar.getBoundingClientRectProperty('left');
+    await otherUserPost.clickAvatar()
+  });
+
+  await h(t).withLog('Then the mini profile dialog should be showed', async () => {
+    await miniProfile.shouldBePopUp();
+  });
+
+  await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the listed people', async () => {
+    await H.retryUntilPass(async () => {
+      const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+      const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+      assert.strictEqual(top, minTop);
+      assert.strictEqual(left, minLeft);
+    });
+  }, true);
 });
 
 
@@ -92,7 +115,6 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
       isPublic: true,
       members: [loginUser.rcId, users[5].rcId, users[6].rcId],
     });
-
     await loginUser.sdk.platform.createGroup({
       type: 'Group',
       isPublic: true,
@@ -118,6 +140,7 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
     GroupCount = await search.groups.count;
   }, true);
 
+  const miniProfile = app.homePage.miniProfile;
   for (let i = 0; i < peopleCount; i++) {
     let top, left
     await h(t).withLog(`When I click the avatar of (${i + 1}) / ${peopleCount} people result`, async () => {
@@ -127,37 +150,39 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
     });
 
     await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      console.log(top, left);
-      //todo mini profile
-
+      await H.retryUntilPass(async () => {
+        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+        assert.strictEqual(top, minTop);
+        assert.strictEqual(left, minLeft);
+      });
     }, true);
 
     await h(t).withLog('And I can cancel Mini Profile', async () => {
-      //todo mini profile
-
       await t.click(search.inputArea);
-    }, true);
+    });
   }
 
   for (let i = 0; i < GroupCount; i++) {
     let top, left
-    await h(t).withLog(`When I click the avatar of (${i + 1}) / ${GroupCount} groups result`, async () => {
+    await h(t).withLog(`When I click the avatar of(${i + 1} / ${GroupCount} groups result`, async () => {
       top = await search.nthGroup(i).getAvatarTop();
       left = await search.nthGroup(i).getAvatarLeft();
       await search.nthGroup(i).clickAvatar();
     });
 
     await h(t).withLog('Then the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      console.log(top, left);
-      //todo mini profile
-
+      await H.retryUntilPass(async () => {
+        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+        assert.strictEqual(top, minTop);
+        assert.strictEqual(left, minLeft);
+      });
     }, true);
 
     await h(t).withLog('And I can cancel Mini Profile', async () => {
-      //todo mini profile
-
       await t.click(search.inputArea);
-    }, true);
+    });
   };
 
   await h(t).withLog(`When I type teamName: ${teamName} in search input area`, async () => {
@@ -179,9 +204,13 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
     });
 
     await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      console.log(top, left);
-      //todo mini profile
-    }, true);
+      await H.retryUntilPass(async () => {
+        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+        assert.strictEqual(top, minTop);
+        assert.strictEqual(left, minLeft);
+      });
+    });
   }
 });
 
@@ -192,10 +221,10 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
   loginUser.sdk = await h(t).getSdk(loginUser);
   const otherUserPlatform = await h(t).getPlatform(users[5]);
   const app = new AppRoot(t);
-  console.log(loginUser.rcId);
+  const miniProfile = app.homePage.miniProfile;
+  const conversationPage = app.homePage.messageTab.conversationPage
 
-
-  let teamId, meMentionPost, contactMentionPost;
+  let teamId, meMentionPost, contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I have one team with some mention posts ', async () => {
     teamId = await loginUser.sdk.platform.createGroup({
       isPublic: true,
@@ -204,34 +233,62 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
       members: [loginUser.rcId, users[5].rcId],
     }).then(res => {
       return res.data.id;
-    })
-    const meMentionPostId = await otherUserPlatform.sendTextPost(`Hi AtMention, ![:Person](${loginUser.rcId})`, teamId).then(res => {
+    });
+    const meMentionPostId = await otherUserPlatform.sendTextPost(
+      `Hi AtMention, ![:Person](${loginUser.rcId})`,
+      teamId
+    ).then(res => {
       return res.data.id;
     });
-    meMentionPost = app.homePage.messageTab.conversationPage.postItemById(meMentionPostId);
+    meMentionPost = conversationPage.postItemById(meMentionPostId);
 
-    const contactMentionPostId = await loginUser.sdk.platform.sendTextPost(`Hi AtMention, ![:Person](${users[5].rcId})`, teamId).then(res => {
+    const contactMentionPostId = await loginUser.sdk.platform.sendTextPost(
+      `Hi AtMention, ![:Person](${users[5].rcId})`,
+      teamId
+    ).then(res => {
       return res.data.id;
     });
-    contactMentionPost = app.homePage.messageTab.conversationPage.postItemById(contactMentionPostId);
+    contactMentionPost = conversationPage.postItemById(contactMentionPostId);
+
+    const teamMentionPostId = await loginUser.sdk.platform.sendTextPost(
+      `Hi AtMention, ![:Team](${teamId})`,
+      teamId
+    ).then(res => {
+      return res.data.id;
+    });
+    teamMentionPost = conversationPage.postItemById(teamMentionPostId);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  const postList = {
+    meMention: meMentionPost,
+    contactMention: contactMentionPost,
+    teamMention: teamMentionPost,
+  }
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}, and enter the created team`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('When I enter the create team and click the me mention', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-    await t.click(meMentionPost.mentions);
   });
 
-  await h(t).withLog('Then the mini profile dialog should be showed', async () => {
+  for (let key in postList) {
+    const post = postList[key];
+    await h(t).withLog(`When I click the ${key}`, async () => {
+      await t.click(post.mentions);
+    });
 
-  }, true);
+    await h(t).withLog('Then the mini profile dialog should be showed', async () => {
+      await miniProfile.shouldBePopUp();      
+      await H.retryUntilPass(async () => {
+        const mentionName = await post.mentions.textContent
+        const miniProfileName = await miniProfile.getName();
+        assert.strictEqual(mentionName, miniProfileName);
+      });
+    }, true);
 
-  await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the listed people', async () => {
-
-  }, true);
+    await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
+      await t.click(conversationPage.messageInputArea);
+    });
+  }
 
 });

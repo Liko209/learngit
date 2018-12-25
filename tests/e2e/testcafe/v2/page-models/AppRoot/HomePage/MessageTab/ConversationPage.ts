@@ -138,6 +138,10 @@ export class PostItem extends BaseWebComponent {
     return this.text.find('.at_mention_compose');
   }
 
+  getMentionByName(name: string) {
+    return this.mentions.filter((el) => el.textContent === name);
+  }
+
   imgTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
@@ -164,14 +168,6 @@ export class PostItem extends BaseWebComponent {
 
   get prompt() {
     return this.getSelector('.tooltipPlacementBottom').textContent;
-  }
-
-  async getAvatarTop() {
-    return await this.avatar.getBoundingClientRectProperty('top');
-  }
-
-  async getAvatarLeft() {
-    return await this.avatar.getBoundingClientRectProperty('left');
   }
 
   async clickAvatar() {
