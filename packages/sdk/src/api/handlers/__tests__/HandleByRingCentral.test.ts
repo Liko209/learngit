@@ -137,8 +137,8 @@ describe('HandleByRingCentral', () => {
       };
       const originToken = {
         timestamp: 0,
-        accessTokenExpireIn: 6000,
-        refreshTokenExpireIn: 6000,
+        expires_in: 6000,
+        refresh_token_expires_in: 6000,
       };
       const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
       return expect(refreshToken).rejects.toEqual(originToken);

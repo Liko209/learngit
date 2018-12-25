@@ -54,11 +54,7 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       try {
         if (this.tokenRefreshDelegate) {
           const refreshedToken = await this.tokenRefreshDelegate.refreshRCToken();
-          if (refreshedToken) {
-            resolve(refreshedToken);
-          } else {
-            reject(refreshedToken);
-          }
+          refreshedToken ? resolve(refreshedToken) : reject(refreshedToken);
         } else {
           reject(token);
         }

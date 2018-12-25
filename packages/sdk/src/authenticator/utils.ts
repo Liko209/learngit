@@ -10,7 +10,7 @@ const setAccountType = async (type: any) => {
 };
 
 const setRcToken = async (token: ITokenModel) => {
-  if (token.timestamp === undefined) {
+  if (!token.timestamp) {
     token.timestamp = Date.now();
   }
   const authDao = daoManager.getKVDao(AuthDao);
