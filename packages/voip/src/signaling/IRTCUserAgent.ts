@@ -6,7 +6,7 @@
 
 interface IRTCUserAgent {
   register(options: any): any;
-  makeCall(target, [options, modifiers]): any;
+  makeCall(phoneNumber: string, options?: any): any;
 }
 
 export { IRTCUserAgent };
