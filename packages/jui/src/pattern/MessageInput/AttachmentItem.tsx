@@ -112,11 +112,12 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
     onClickDeleteButton,
     progress,
   } = props;
+  const loading = status === ITEM_STATUS.LOADING;
   const action = (
     <AttachmentItemAction
       status={status}
       onClick={onClickDeleteButton}
-      loading={status === ITEM_STATUS.LOADING}
+      loading={loading}
       value={progress}
       hideRemoveButton={hideRemoveButton}
       icon="close"
@@ -125,7 +126,8 @@ const AttachmentItem: React.SFC<AttachmentItemProps> = (
   return (
     <Wrapper>
       <JuiFileWithExpand
-        fileNameColor={StatusMap[status || '']}
+        fileNameColor={StatusMap[status]}
+        fileNameOpacity={loading ? 0.26 : 1}
         fileName={name}
         Actions={action}
       />

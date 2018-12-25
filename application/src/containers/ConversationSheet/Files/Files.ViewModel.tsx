@@ -83,16 +83,16 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   get progresses() {
     const result = new Map<number, number>();
     this._ids.forEach((id: number) => {
-      let progress = this._progressMap.get(id);
-      if (typeof progress === 'undefined') {
-        progress = this._itemService.getUploadProgress(id);
-      }
-      if (typeof progress !== 'undefined') {
-        let value = 0;
-        if (progress.total > 0) {
-          value = (progress.loaded / progress.total) * 100;
+      if (id < 0) {
+        const progress =
+          this._progressMap.get(id) || this._itemService.getUploadProgress(id);
+        if (progress) {
+          const { loaded = 0, total } = progress;
+          const value = (loaded / Math.max(total, 1)) * 100;
+          result.set(id, value);
         }
-        result.set(id, value);
+      } else {
+        result.set(id, 100);
       }
     });
     return result;

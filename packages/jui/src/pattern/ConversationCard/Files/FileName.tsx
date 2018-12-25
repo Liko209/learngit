@@ -7,19 +7,26 @@ import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { ellipsis, palette, spacing } from '../../../foundation/utils/styles';
 import { getFileName } from '../../../foundation/utils/getFileName';
+import { Theme } from '../../../foundation/theme/theme';
 
 type FileNameProps = {
   filename: string;
-  color?: string;
+  statusColor?: ({ theme }: { theme: Theme }) => any;
+  opacity?: number;
 };
 
-const FileNameWrapper = styled('div')<{ color?: string }>`
+const FileNameWrapper = styled('div')<{
+  statusColor?: ({ theme }: { theme: Theme }) => any;
+  opacity?: number;
+}>`
   display: flex;
   min-width: 0;
   align-items: center;
   font-weight: 400;
-  color: ${({ color }) => (color ? color : palette('grey', '700'))};
+  color: ${({ statusColor }) =>
+    statusColor ? statusColor : palette('grey', '700')};
   ${ellipsis};
+  opacity: ${({ opacity }) => opacity};
   font-size: 0;
   & > span {
     font-size: ${spacing(3.5)};
@@ -31,11 +38,15 @@ const LeftName = styled.span`
 `;
 
 const FileName = (Props: FileNameProps) => {
-  const { filename, color } = Props;
+  const { filename, statusColor, opacity } = Props;
   const [left, right] = getFileName(filename);
 
   return (
-    <FileNameWrapper color={color} data-test-automation-id="file-name">
+    <FileNameWrapper
+      statusColor={statusColor}
+      opacity={opacity}
+      data-test-automation-id="file-name"
+    >
       <LeftName>{left}</LeftName>
       <span>{right}</span>
     </FileNameWrapper>
