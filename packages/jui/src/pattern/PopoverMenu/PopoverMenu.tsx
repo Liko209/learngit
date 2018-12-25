@@ -20,16 +20,11 @@ type PopoverMenuProps = {
     horizontal: 'left' | 'center' | 'right';
   };
   automationId?: string;
+  className?: string;
 };
 
 const StyledAnchorWrapper = styled.div`
   display: inline-flex;
-`;
-
-const StyledPopoverMenuWrapper = styled.div`
-  .popper-backdrop {
-    position: relative;
-  }
 `;
 
 class JuiPopoverMenu extends React.Component<
@@ -49,8 +44,7 @@ class JuiPopoverMenu extends React.Component<
     });
   }
 
-  handleClose = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(event, '=--------------event---------');
+  handleClose = () => {
     this.setState({
       anchorEl: null,
     });
@@ -65,9 +59,10 @@ class JuiPopoverMenu extends React.Component<
       automationId,
       anchorOrigin,
       transformOrigin,
+      className,
     } = this.props;
     return (
-      <StyledPopoverMenuWrapper>
+      <div className={className}>
         <StyledAnchorWrapper onClick={this.handleToggle}>
           <Anchor />
         </StyledAnchorWrapper>
@@ -83,7 +78,7 @@ class JuiPopoverMenu extends React.Component<
         >
           {children}
         </JuiPopover>
-      </StyledPopoverMenuWrapper>
+      </div>
     );
   }
 }

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
-import { h } from '../../../../helpers';
+import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
 
@@ -58,7 +58,7 @@ class UnReadToggler extends BaseWebComponent {
   }
 }
 
-class MoreMenu extends BaseWebComponent {
+class MoreMenu extends Entry {
   get self() {
     return this.getSelector('*[role="document"]');
   }
@@ -76,8 +76,30 @@ class MoreMenu extends BaseWebComponent {
     return this.getToggler('favToggler');
   }
 
+  get profile() {
+    return this.getEntry('Profile');
+  }
+
   get close() {
-    return this.getEntry('Close');
+    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+  }
+}
+
+class MenuItem extends Entry {
+  async click() {
+    await this.t.click(this.self);
+  }
+
+  get  disabled(): Promise<string> {
+    return this.self.getAttribute("data-disabled");
+  }
+
+  async shouldBeDisabled() {
+    await this.t.expect(this.disabled).eql('true');
+  }
+
+  async shouldBeEnabled() {
+    await this.t.expect(this.disabled).eql('false');
   }
 }
 
@@ -130,20 +152,11 @@ class ConversationEntry extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectUmi(n: number, waitTime: number = 10) {
-    let i = 0;
-    while (true) {
-      await this.t.wait(1e3);
-      try {
-        await this.t.expect(await this.getUmi()).eql(n);
-        return;
-      } catch (err) {
-        if (i >= waitTime) {
-          throw err;
-        }
-        i = i + 1;
-      }
-    }
+  async expectUmi(n: number, maxRetry = 5, interval = 5e3) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.getUmi();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
   }
 
   async openMoreMenu() {
@@ -179,7 +192,7 @@ class ConversationListSection extends BaseWebComponent {
     return this.self.find('.conversation-list-section-header');
   }
 
-  async getHeaderUmi() {
+  async getUmi() {
     const umi = this.header.find('.umi');
     if (!await umi.exists) {
       return 0;
@@ -194,20 +207,11 @@ class ConversationListSection extends BaseWebComponent {
     return Number(text);
   }
 
-  async expectHeaderUmi(n: number, waitTime: number = 10) {
-    let i = 0;
-    while (true) {
-      await this.t.wait(1e3);
-      try {
-        await this.t.expect(await this.getHeaderUmi()).eql(n);
-        return;
-      } catch (err) {
-        if (i >= waitTime) {
-          throw err;
-        }
-        i = i + 1;
-      }
-    }
+  async expectHeaderUmi(n: number, maxRetry = 5, interval = 5e3) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.getUmi();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
   }
 
   get collapse() {
@@ -278,6 +282,31 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
+class ProfileModal extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').find('span').withText('close');
+  }
+
+  get messageButton() {
+    this.warnFlakySelector();
+    return this.self.find('span').find('span').withText('chat_bubble');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  async message() {
+    await this.t.click(this.messageButton);
+  }
+}
+
 export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
@@ -323,7 +352,7 @@ export class MessageTab extends BaseWebComponent {
 
   get bookmarksEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
-    }
+  }
 
   get bookmarkPage() {
     return this.getComponent(BookmarkPage);
@@ -335,6 +364,10 @@ export class MessageTab extends BaseWebComponent {
 
   get closeConversationModal() {
     return this.getComponent(CloseConversationModal);
+  }
+
+  get profileModal() {
+    return this.getComponent(ProfileModal);
   }
 
   get conversationListSections() {

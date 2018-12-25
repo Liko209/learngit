@@ -9,7 +9,7 @@ import { getEntity } from '@/store/utils';
 import { Item } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import { ItemService } from 'sdk/service';
-import { LinkItem } from '@/store/models/Items';
+import LinkItemModal from '@/store/models/LinkItem';
 
 class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   private _itemService: ItemService = ItemService.getInstance();
@@ -20,8 +20,8 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   }
   @computed
   get postItems() {
-    return this._ids.map((item) => {
-      return getEntity<Item, LinkItem>(ENTITY_NAME.ITEM, item);
+    return this._ids.map((id: number) => {
+      return getEntity<Item, LinkItemModal>(ENTITY_NAME.LINK_ITEM, id);
     });
   }
   @action

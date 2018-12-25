@@ -49,9 +49,13 @@ class More extends React.Component<MoreViewProps> {
       <JuiPopperMenu Anchor={this._Anchor} placement="bottom-start">
         <JuiMenuList>
           {Object.keys(menuItems).map((key: string) => {
-            const { permission } = permissionsMap[key];
+            const { permission, shouldShowAction } = permissionsMap[key];
             const Component = menuItems[key];
-            return <Component id={id} key={key} disabled={!permission} />;
+            return (
+              shouldShowAction && (
+                <Component id={id} key={key} disabled={!permission} />
+              )
+            );
           })}
         </JuiMenuList>
       </JuiPopperMenu>

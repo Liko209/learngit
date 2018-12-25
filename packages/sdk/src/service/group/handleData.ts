@@ -140,11 +140,16 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
+  const accountService: AccountService = AccountService.getInstance();
+  const currentUserId = accountService.getCurrentUserId();
   const normalData = groups.filter(
-    (group: Group) => hiddenGroupIds.indexOf(group.id) === -1,
+    (group: Group) =>
+      hiddenGroupIds.indexOf(group.id) === -1 &&
+      (group.members ? group.members.includes(currentUserId) : true),
   );
 
-  notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
+  normalData.length &&
+    notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
   const archivedGroups = normalData.filter((item: Group) => item.is_archived);
@@ -415,13 +420,13 @@ async function filterGroups(groups: Group[], limit: number) {
   const accountService: AccountService = AccountService.getInstance();
   const currentUserId = accountService.getCurrentUserId();
   sortedGroups = groups.filter((model: Group) => {
-    if (model.creator_id === currentUserId) {
+    if (model.is_team) {
       return true;
     }
-    if (model.is_team) {
-      return model.members.includes(currentUserId);
-    }
-    return model.most_recent_post_created_at !== undefined;
+    return (
+      model.creator_id === currentUserId ||
+      model.most_recent_post_created_at !== undefined
+    );
   });
   sortedGroups = sortedGroups.sort(
     (group1: Group, group2: Group) =>

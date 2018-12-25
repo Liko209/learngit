@@ -9,15 +9,25 @@ import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
 
+const itemTitleColor = {
+  black: 'common.black',
+  red: 'accent.tomato',
+  orange: 'secondary.main',
+  yellow: 'accent.lemon',
+  green: 'accent.olive',
+  blue: 'primary.main',
+  indigo: 'accent.cateye',
+  violet: 'accent.grass',
+};
+
 const ItemCardWrapper = styled(JuiCard)`
-  word-break: break-all;
+  word-break: break-word;
   margin-bottom: ${spacing(3)};
 `;
 
 const ItemIcon = styled(MuiIcon)`
   && {
     font-size: ${spacing(5)};
-    margin: ${spacing(0.5)} 0 0;
   }
 `;
 
@@ -31,8 +41,14 @@ const ItemCardHeader = styled.div`
   margin: ${spacing(0, 0, 0, -6)};
   display: flex;
   ${typography('body1')};
-  color: ${({ color }) => color || palette('primary', 'main')};
-  word-break: break-all;
+  color: ${({ color }) => {
+    const itemTitleColorArr = itemTitleColor[`${color}`]
+      ? itemTitleColor[`${color}`].split('.')
+      : ['primary', 'main'];
+    return palette(itemTitleColorArr[0], itemTitleColorArr[1]);
+  }}
+
+  word-break: break-word;
   svg {
     font-size: ${spacing(5)};
     margin: ${spacing(0.5)} 0 0;

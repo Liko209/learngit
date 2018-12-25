@@ -22,11 +22,11 @@ class ProfileMiniCardGroupView extends Component<
   render() {
     const { id } = this.props;
     return (
-      <JuiMiniCard>
-        <JuiMiniCardHeader>
+      <JuiMiniCard data-test-automation-id="profileMiniCard">
+        <JuiMiniCardHeader data-test-automation-id="profileMiniCardHeader">
           <ProfileMiniCardGroupHeader id={id} />
         </JuiMiniCardHeader>
-        <JuiMiniCardFooter>
+        <JuiMiniCardFooter data-test-automation-id="profileMiniCardFooter">
           <ProfileMiniCardGroupFooter id={id} />
         </JuiMiniCardFooter>
       </JuiMiniCard>

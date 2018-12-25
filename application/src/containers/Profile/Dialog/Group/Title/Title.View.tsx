@@ -12,7 +12,8 @@ import {
   JuiDialogTitleWithActionLeft,
   JuiDialogTitleWithActionRight,
 } from 'jui/components/Dialog';
-import { Favorite, Privacy } from '@/containers/common';
+import { Favorite } from '@/containers/common/Favorite';
+import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 
@@ -31,7 +32,11 @@ class ProfileDialogGroupTitleViewComponent extends Component<
           {group.isTeam && <Privacy id={id} size="medium" />}
           <Favorite id={id} size="medium" />
           {group.isTeam && <More id={id} size="medium" />}
-          <JuiIconButton onClick={dismiss} tooltipTitle={t('close')}>
+          <JuiIconButton
+            onClick={dismiss}
+            tooltipTitle={t('close')}
+            ariaLabel={t('close')}
+          >
             close
           </JuiIconButton>
         </JuiDialogTitleWithActionRight>

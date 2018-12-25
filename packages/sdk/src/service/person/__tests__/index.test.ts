@@ -384,6 +384,7 @@ describe('PersonService', () => {
       jest
         .spyOn(personService, 'getMultiEntitiesFromCache')
         .mockResolvedValueOnce(persons);
+      jest.spyOn(personService, 'isCacheInitialized').mockReturnValueOnce(true);
 
       personDao.getPersonsByIds.mockResolvedValueOnce(persons);
       groupService.getGroupById.mockResolvedValueOnce(group);
@@ -408,7 +409,7 @@ describe('PersonService', () => {
       expect(res).toMatchObject(persons);
       expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
       expect(groupService.getGroupById).toBeCalledWith(group.id);
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toBeCalledTimes(0);
     });
 
     it('should return null when no group exist', async () => {

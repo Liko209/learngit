@@ -21,10 +21,10 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
     const { id, dismiss } = this.props;
     return (
       <>
-        <JuiDialogTitleWithAction>
+        <JuiDialogTitleWithAction data-test-automation-id="profileDialogTitle">
           <ProfileDialogGroupTitle id={id} dismiss={dismiss} />
         </JuiDialogTitleWithAction>
-        <JuiDialogContentWithFill>
+        <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
           <ProfileDialogGroupContent id={id} dismiss={dismiss} />
         </JuiDialogContentWithFill>
         <JuiProfileDialogContentMemberShadow />

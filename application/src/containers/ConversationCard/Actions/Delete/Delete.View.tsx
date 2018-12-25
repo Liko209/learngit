@@ -35,7 +35,7 @@ class DeleteView extends React.Component<ViewProps> {
         disabled={disabled}
         icon="delete"
       >
-        {t('DeletePost')}
+        {t('deletePost')}
       </JuiMenuItem>
     );
   }
