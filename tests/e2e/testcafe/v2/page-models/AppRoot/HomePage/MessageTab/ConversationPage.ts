@@ -1,8 +1,9 @@
 /*
  * @Author: Mia.Cai
- * @Date: 2018-12-22 20:47:52
+ * @Date: 2018-12-25 10:47:23
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as _ from 'lodash';
 import { ClientFunction } from 'testcafe';
