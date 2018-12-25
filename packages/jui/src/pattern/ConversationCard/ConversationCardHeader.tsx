@@ -54,8 +54,9 @@ const StyledNotification = styled.div`
   box-sizing: border-box;
   color: ${grey('500')};
   ${typography('caption1')};
-  :first-child {
+  span:first-child {
     padding-left: ${spacing(1)};
+    display: inline-block;
   }
 `;
 

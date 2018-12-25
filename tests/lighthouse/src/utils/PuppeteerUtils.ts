@@ -2,11 +2,16 @@
  * @Author: doyle.wu
  * @Date: 2018-12-08 18:07:46
  */
+import * as puppeteer from 'puppeteer';
 import { Page } from 'puppeteer/lib/Page';
+import { Browser } from 'puppeteer/lib/Browser';
+import { logUtils } from './LogUtils';
 
 const MAX_TRY_COUNT = 10;
 
 class PuppeteerUtils {
+    private _browsers = new Array<string>();
+    private logger = logUtils.getLogger(__filename);
 
     /**
      * @description: wait for element appear by selector
@@ -121,6 +126,53 @@ class PuppeteerUtils {
         });
 
         return text;
+    }
+
+    async launch(options = {}): Promise<Browser> {
+        let opt = Object.assign({ headless: false, defaultViewport: null }, options);
+
+        let browser = await puppeteer.launch(opt);
+
+        const wsEndpoint = browser.wsEndpoint();
+        this.logger.info(`launch chrome success, wsEndpoint: ${wsEndpoint}, options: ${JSON.stringify(opt)}`);
+
+        this._browsers.push(wsEndpoint);
+
+        return browser;
+    }
+
+    async connect(wsEndpoint: string): Promise<Browser> {
+        try {
+            let browser = await puppeteer.connect({
+                headless: false,
+                defaultViewport: null,
+                browserWSEndpoint: wsEndpoint
+            });
+
+            if (this._browsers.indexOf(wsEndpoint) < 0) {
+                this._browsers.push(wsEndpoint);
+            }
+
+            this.logger.info(`connect chrome success, wsEndpoint: ${wsEndpoint}`);
+
+            return browser;
+        } catch (err) {
+        }
+        return null;
+    }
+
+    async closeAll(): Promise<Browser> {
+        for (let wsEndpoint of this._browsers) {
+            try {
+                let browser = await this.connect(wsEndpoint);
+                if (browser) {
+                    await browser.close();
+                }
+            } catch (err) {
+                this.logger.error(err);
+            }
+        }
+        this.logger.info('chrome connection closed.');
     }
 }
 
