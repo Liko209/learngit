@@ -23,6 +23,7 @@ import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware, ErrorTypes } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
 import ProfileService from '../profile/index';
+import { setRcToken } from '../../authenticator';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 class AccountService extends BaseService implements ITokenRefreshDelegate {
@@ -123,8 +124,8 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     try {
       const oldRcToken = authDao.get(AUTH_RC_TOKEN);
       const refreshResult = await refreshToken(oldRcToken);
-      const newRcToken = refreshResult.expect('Failed to refresh rcTOken');
-      authDao.put(AUTH_RC_TOKEN, newRcToken);
+      const newRcToken = refreshResult.expect('Failed to refresh rcToken');
+      setRcToken(newRcToken);
       notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
       return newRcToken;
     } catch (err) {
