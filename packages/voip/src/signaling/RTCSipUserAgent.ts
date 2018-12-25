@@ -7,7 +7,10 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
 import { WebPhone } from './WebPhone';
 
-const EVENT_TAG: string = 'RTC_UA_';
+enum EVENT_TAG {
+  REG_SUCCESS = 'uaRegisterSuccess',
+  REG_FAILED = 'uaRegisterFailed',
+}
 
 enum REGISTER_EVENT {
   REG = 'registered',
@@ -16,7 +19,7 @@ enum REGISTER_EVENT {
 
 class RTCSipUserAgent implements IRTCUserAgent {
   private _userAgent: any = null;
-  private _eventEmitter: EventEmitter2 = null;
+  private _eventEmitter: EventEmitter2;
 
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
     // to be modify when import ringcentral-web-phone library
@@ -41,7 +44,7 @@ class RTCSipUserAgent implements IRTCUserAgent {
 
   private _onRegistered(): void {
     this._userAgent.on(REGISTER_EVENT.REG, () => {
-      this._eventEmitter.emit(`${EVENT_TAG}${REGISTER_EVENT.REG}`);
+      this._eventEmitter.emit(EVENT_TAG.REG_SUCCESS);
     });
   }
 
@@ -49,14 +52,10 @@ class RTCSipUserAgent implements IRTCUserAgent {
     this._userAgent.on(
       REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
-        this._eventEmitter.emit(
-          `${EVENT_TAG}${REGISTER_EVENT.REG_FAILED}`,
-          response,
-          cause,
-        );
+        this._eventEmitter.emit(EVENT_TAG.REG_FAILED, response, cause);
       },
     );
   }
 }
 
-export { RTCSipUserAgent, REGISTER_EVENT };
+export { RTCSipUserAgent, EVENT_TAG };

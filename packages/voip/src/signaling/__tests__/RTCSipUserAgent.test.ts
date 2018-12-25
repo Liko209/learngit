@@ -4,32 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { RTCSipUserAgent } from '../RTCSipUserAgent';
+import { RTCSipUserAgent, EVENT_TAG } from '../RTCSipUserAgent';
 
 describe('RTCSipUserAgent', async () => {
   describe('register', () => {
     it('Should emit registered event when register success [JPT-599]', () => {
       const eventEmitter = new EventEmitter2();
+      jest.spyOn(eventEmitter, 'emit');
       const userAgent = new RTCSipUserAgent(
         'provisionData',
         'options',
         eventEmitter,
       );
-      jest.spyOn(userAgent, '_onRegistered');
       userAgent.register('1');
-      expect(userAgent._onRegistered).toHaveBeenCalled();
+      expect(eventEmitter.emit).toHaveBeenCalledWith(EVENT_TAG.REG_SUCCESS);
     });
 
-    it('Should emit registrationFailed event when register failed [JPT-600]', async () => {
+    it('Should emit registrationFailed event with cause and response when register failed [JPT-600]', async () => {
       const eventEmitter = new EventEmitter2();
+      jest.spyOn(eventEmitter, 'emit');
       const userAgent = new RTCSipUserAgent(
         'provisionData',
         'options',
         eventEmitter,
       );
-      jest.spyOn(userAgent, '_onRegistrationFailed');
       userAgent.register();
-      expect(userAgent._onRegistrationFailed).toHaveBeenCalled();
+      expect(eventEmitter.emit).toBeCalledWith(
+        EVENT_TAG.REG_FAILED,
+        'response',
+        500,
+      );
     });
   });
 
