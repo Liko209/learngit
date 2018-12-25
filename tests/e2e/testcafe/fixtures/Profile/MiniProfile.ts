@@ -41,7 +41,7 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
     });
     myPost = await app.homePage.messageTab.conversationPage.postItemById(myPostId);
 
-    const otherUserPostId = await loginUser.sdk.platform.sendTextPost(`Other post ${uuid()}`, teamId).then(res => {
+    const otherUserPostId = await otherUserPlatform.sendTextPost(`Other post ${uuid()}`, teamId).then(res => {
       return res.data.id;
     });
     otherUserPost = app.homePage.messageTab.conversationPage.postItemById(otherUserPostId);
@@ -71,7 +71,8 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
 
 });
 
-test.only(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
+
+test(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);

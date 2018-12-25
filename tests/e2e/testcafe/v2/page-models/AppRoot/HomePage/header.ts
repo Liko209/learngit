@@ -59,15 +59,14 @@ class Search extends BaseWebComponent {
   }
   
   get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('.material-icons').withText('close');
+    return this.getSelectorByIcon('close');
   }
 
   async close() {
     await this.t.click(this.closeButton);
   }
 
-  get allresultItems() {
+  get allResultItems() {
     return this.getSelector('.search-items');
   }
   
