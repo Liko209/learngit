@@ -23,6 +23,9 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
   const otherUserPlatform = await h(t).getPlatform(users[5]);
   const app = new AppRoot(t);
 
+  const miniProfile = app.homePage.miniProfile;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   let teamId, myPost, otherUserPost;
   await h(t).withLog('Given I have one team, one post which I send, one post which other user send ', async () => {
     teamId = await loginUser.sdk.platform.createGroup({
@@ -34,64 +37,66 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
       return res.data.id;
     });
 
-    const myPostId = await loginUser.sdk.platform.sendTextPost(`My post ${uuid()}`, teamId).then(res => {
+    const myPostId = await loginUser.sdk.platform.sendTextPost(
+      `My post ${uuid()}`,
+      teamId
+    ).then(res => {
       return res.data.id;
     });
-    myPost = await app.homePage.messageTab.conversationPage.postItemById(myPostId);
+    myPost = await conversationPage.postItemById(myPostId);
 
-    const otherUserPostId = await otherUserPlatform.sendTextPost(`Other post ${uuid()}`, teamId).then(res => {
+    const otherUserPostId = await otherUserPlatform.sendTextPost(
+      `Other post ${uuid()}`,
+      teamId
+    ).then(res => {
       return res.data.id;
     });
-    otherUserPost = app.homePage.messageTab.conversationPage.postItemById(otherUserPostId);
+    otherUserPost = conversationPage.postItemById(otherUserPostId);
   });
+
+  const postList = {
+    myPost: myPost,
+    otherPost: otherUserPost
+  }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  let top, left;
-  await h(t).withLog('When I enter the create team and then click my avatar on my post', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-    top = await myPost.avatar.getBoundingClientRectProperty('top');
-    left = await myPost.avatar.getBoundingClientRectProperty('left');
-    await myPost.clickAvatar()
-  });
-
-  const miniProfile = app.homePage.miniProfile;
-  await h(t).withLog('Then the mini profile dialog should be showed', async () => {
-    await miniProfile.shouldBePopUp();
-  });
-
-  await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the listed people', async () => {
-    await H.retryUntilPass(async () => {
-      const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-      const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-      assert.strictEqual(top, minTop);
-      assert.strictEqual(left, minLeft);
-    })
-    await t.click(otherUserPost.self);
-  }, true);
-
-  await h(t).withLog('When I click the avatar on other user post', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-    top = await otherUserPost.avatar.getBoundingClientRectProperty('top');
-    left = await otherUserPost.avatar.getBoundingClientRectProperty('left');
-    await otherUserPost.clickAvatar()
-  });
-
-  await h(t).withLog('Then the mini profile dialog should be showed', async () => {
-    await miniProfile.shouldBePopUp();
-  });
-
-  await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the listed people', async () => {
-    await H.retryUntilPass(async () => {
-      const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-      const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-      assert.strictEqual(top, minTop);
-      assert.strictEqual(left, minLeft);
+  for (let key in postList) {
+    const post = postList[key];
+    let top, left, postUserName;
+    await h(t).withLog(`When I enter the create team and then click ${key} avatar`, async () => {
+      await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+      top = await post.avatar.getBoundingClientRectProperty('top');
+      left = await post.avatar.getBoundingClientRectProperty('left');
+      postUserName = await post.name.textContent;
+      await post.clickAvatar()
     });
-  }, true);
+
+    await h(t).withLog('Then the mini profile card should be showed', async () => {
+      await miniProfile.shouldBePopUp();
+      await miniProfile.shouldBeName(postUserName);
+    });
+
+    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the listed people', async () => {
+      await H.retryUntilPass(async () => {
+        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+        assert.strictEqual(top, minTop);
+        assert.strictEqual(left, minLeft);
+      })
+    }, true);
+
+    await h(t).withLog('When I click "Profile" button of the mini profile', async () => {
+      await miniProfile.goToMessages();
+    });
+
+    await h(t).withLog(`Then the "${postUserName}" conversation should be open`, async () => {
+      await t.expect(conversationPage.title.textContent).contains(postUserName);
+    });
+  }
 });
 
 
@@ -101,9 +106,45 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
   loginUser.sdk = await h(t).getSdk(loginUser);
   const app = new AppRoot(t);
   const teamName = uuid();
-  const keyword = 'John';
+  const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
+    .then(res => {
+      return res.data.display_name;
+    });
 
-  await h(t).withLog('Given I have a team, a group, a privateChat ', async () => {
+  const steps = async (i: number, count: number, searchItem, type: string) => {
+    const top = await searchItem.avatar.getBoundingClientRectProperty('top');
+    const left = await searchItem.avatar.getBoundingClientRectProperty('left');
+    const id = await searchItem.getId();
+    await h(t).withLog(`When I click the avatar of ${i + 1}/${count}  ${type} result`, async () => {
+      await searchItem.clickAvatar();
+    });
+    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
+      await H.retryUntilPass(async () => {
+        const miniTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+        const miniLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+        await t.expect(top).eql(miniTop);
+        await t.expect(left).eql(miniLeft);
+      });
+    });
+    await h(t).withLog(`And the mini profile id should be ${id}`, async () => {
+      const miniProfileId = await miniProfile.getId();
+      await t.expect(miniProfileId).eql(id);
+    });
+
+    await h(t).withLog('When I click "Profile" button on MiniProfile', async () => {
+      await miniProfile.openProfile();
+    });
+    await h(t).withLog('Then the profile dialog should be popup', async () => {
+      await profileDialog.shouldBePopUp();
+    });
+    await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${id}`, async () => {
+      const profileDialogId = await profileDialog.getId();
+      await t.expect(profileDialogId).eql(id)
+      await profileDialog.close();
+    });
+  }
+
+  await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
     await loginUser.sdk.platform.createGroup({
       isPublic: true,
       name: teamName,
@@ -112,12 +153,10 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
     });
     await loginUser.sdk.platform.createGroup({
       type: 'Group',
-      isPublic: true,
       members: [loginUser.rcId, users[5].rcId, users[6].rcId],
     });
     await loginUser.sdk.platform.createGroup({
-      type: 'Group',
-      isPublic: true,
+      type: 'PrivateChat',
       members: [loginUser.rcId, users[5].rcId],
     });
   });
@@ -128,8 +167,8 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
   });
 
   const search = app.homePage.header.search;
-  await h(t).withLog(`When I type people keyword ${keyword} in search input area`, async () => {
-    await search.typeText(keyword);
+  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
+    await search.typeText(otherUserName);
   });
 
   let peopleCount: number, GroupCount;
@@ -141,76 +180,29 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
   }, true);
 
   const miniProfile = app.homePage.miniProfile;
+  const profileDialog = app.homePage.profileDialog;
+
   for (let i = 0; i < peopleCount; i++) {
-    let top, left
-    await h(t).withLog(`When I click the avatar of (${i + 1}) / ${peopleCount} people result`, async () => {
-      top = await search.nthPeople(i).getAvatarTop();
-      left = await search.nthPeople(i).getAvatarLeft();
-      await search.nthPeople(i).clickAvatar();
-    });
-
-    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      await H.retryUntilPass(async () => {
-        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-        assert.strictEqual(top, minTop);
-        assert.strictEqual(left, minLeft);
-      });
-    }, true);
-
-    await h(t).withLog('And I can cancel Mini Profile', async () => {
-      await t.click(search.inputArea);
-    });
+    await steps(i, peopleCount, search.nthPeople(i), "People");
   }
 
   for (let i = 0; i < GroupCount; i++) {
-    let top, left
-    await h(t).withLog(`When I click the avatar of(${i + 1} / ${GroupCount} groups result`, async () => {
-      top = await search.nthGroup(i).getAvatarTop();
-      left = await search.nthGroup(i).getAvatarLeft();
-      await search.nthGroup(i).clickAvatar();
-    });
-
-    await h(t).withLog('Then the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      await H.retryUntilPass(async () => {
-        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-        assert.strictEqual(top, minTop);
-        assert.strictEqual(left, minLeft);
-      });
-    }, true);
-
-    await h(t).withLog('And I can cancel Mini Profile', async () => {
-      await t.click(search.inputArea);
-    });
+    await steps(i, peopleCount, search.nthGroup(i), "Group");
   };
+
 
   await h(t).withLog(`When I type teamName: ${teamName} in search input area`, async () => {
     await search.typeText(teamName, { replace: true });
   });
 
   let teamCount
-  await h(t).withLog('Then I should find at least one people and group result', async () => {
+  await h(t).withLog('Then I should find at least team result', async () => {
     await t.expect(search.teams.count).gte(1);
     teamCount = await search.teams.count;
   }, true);
 
   for (let i = 0; i < teamCount; i++) {
-    let top, left;
-    await h(t).withLog(`When I click the avatar of (${i + 1})/${teamCount}  teams result`, async () => {
-      top = await search.nthTeam(i).getAvatarTop();
-      left = await search.nthTeam(i).getAvatarLeft();
-      await search.nthTeam(i).clickAvatar();
-    });
-
-    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      await H.retryUntilPass(async () => {
-        const minTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-        const minLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-        assert.strictEqual(top, minTop);
-        assert.strictEqual(left, minLeft);
-      });
-    });
+    await steps(i, teamCount, search.nthTeam(i), "Team")
   }
 });
 

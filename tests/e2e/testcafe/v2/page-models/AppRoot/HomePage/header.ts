@@ -105,22 +105,23 @@ class SearchItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('search-item-text', this.self);
   }
 
-  async getAvatarTop() {
-    return this.avatar.getBoundingClientRectProperty("top");
-  }
-
-  async getAvatarLeft() {
-    return this.avatar.getBoundingClientRectProperty("left");
-  }
-
   // people
   get uid() {
-    return this.avatar.find("*").withAttribute('uid').getAttribute('uid');
+    return this.avatar.find("div").withAttribute('uid').getAttribute('uid');  
   }
- 
+
   // group or team
   get cid() {
-    return this.avatar.find("*").withAttribute('cid').getAttribute('cid');
+    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');;  
+  }
+
+  async getId() {
+    if (await this.avatar.find('div').withAttribute('uid').exists) {
+      console.log("uid:", await this.uid)
+      return await this.uid;
+    }
+    console.log("cid:", await this.cid)
+    return await this.cid;
   }
 
   async enter() {

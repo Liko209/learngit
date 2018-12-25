@@ -76,13 +76,25 @@ export class MiniProfile extends BaseWebComponent {
     return await this.groupName.textContent;
   }
 
-  get viewProfileButton() {
+  async getId() {
+    if (await this.avatar.hasAttribute('cid')) {
+      return await this.avatar.getAttribute('cid');
+    }
+    return await this.avatar.getAttribute('uid');
+  }
+
+  async shouldBeName(name: string | Promise<string>) {
+    const currentName = await this.getName();
+    await this.t.expect(currentName).eql(name);
+  }
+
+  get profileButton() {
     this.warnFlakySelector();
     return this.footer.find('span').withText('Profile').parent('button');
   }
 
-  async viewProfile() {
-    await this.t.click(this.viewProfileButton);
+  async openProfile() {
+    await this.t.click(this.profileButton);
   }
 
   get messageButton() {
@@ -220,6 +232,18 @@ export class ProfileDialog extends BaseWebComponent {
 
   memberEntryById(id: string) {
     return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
+  }
+
+
+  async getId() {
+    if (await this.avatar.hasAttribute('cid')) {
+      return await this.avatar.getAttribute('cid');
+    }
+    return await this.avatar.getAttribute('uid');
+  }
+  
+  async close() {
+    await this.t.click(this.closeButton);
   }
 
 }
