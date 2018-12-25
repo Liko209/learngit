@@ -31,22 +31,23 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
   }
 
+  private _getDisplayName(id: number) {
+    const type = GlipTypeUtil.extractTypeId(id);
+    const mapping = {
+      [TypeDictionary.TYPE_ID_GROUP]: this._getGroup(id).displayName,
+      [TypeDictionary.TYPE_ID_TEAM]: this._getGroup(id).displayName,
+      [TypeDictionary.TYPE_ID_PERSON]: this._getPerson(id).userDisplayName,
+    };
+    return mapping[type];
+  }
+
   @computed
   private get _atMentions() {
     const post = this._post;
     const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
     const kv = {};
     atMentionNonItemIds.forEach((id: number) => {
-      const type = GlipTypeUtil.extractTypeId(id);
-      if (
-        type === TypeDictionary.TYPE_ID_GROUP ||
-        type === TypeDictionary.TYPE_ID_TEAM
-      ) {
-        kv[id] = this._getGroup(id).displayName;
-      }
-      if (type === TypeDictionary.TYPE_ID_PERSON) {
-        kv[id] = this._getPerson(id).userDisplayName;
-      }
+      kv[id] = this._getDisplayName(id);
     });
     return kv;
   }
