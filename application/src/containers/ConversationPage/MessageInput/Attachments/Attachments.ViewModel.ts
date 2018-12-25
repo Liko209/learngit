@@ -24,6 +24,7 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { ItemFile } from 'sdk/models';
+import { Notification } from '@/containers/Notification';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
@@ -110,6 +111,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   autoUploadFiles = async (files: File[], callback?: DidUploadFileCallback) => {
+    const canUpload = await this.canUploadFiles(files);
+    if (!canUpload) {
+      Notification.flashToast({
+        message: 'uploadFailedMessageThereIsAlreadyAFileBeingUploaded',
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+        autoHideDuration: 3000,
+      });
+      return;
+    }
     if (files.length > 0) {
       const exists = await Promise.all(
         files.map(file => this.isFileExists(file)),
@@ -130,6 +143,13 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         this._didUploadFileCallback = callback;
       }
     }
+  }
+
+  canUploadFiles = async (files: File[]) => {
+    if (files.length === 0) {
+      return true;
+    }
+    return this._itemService.canUploadFiles(this.id, files, true); // TODO: The third parameter should be false for drag and drop files.
   }
 
   private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {

@@ -40,7 +40,7 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
     this.props.dispose();
   }
 
-  didSelectFiles = (files: File[]) => {
+  didSelectFiles = async (files: File[]) => {
     this.props.autoUploadFiles(files);
   }
 
