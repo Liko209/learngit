@@ -73,7 +73,7 @@ describe('PostServiceHandler', () => {
       links: [],
       company_id: 123,
       deactivated: false,
-      status: 2,
+      __status: 2,
       activity_data: {},
     });
     beforeEach(() => {
@@ -190,7 +190,7 @@ describe('PostServiceHandler', () => {
       });
 
       model = PostServiceHandler.buildResendPostInfo(model);
-      expect(model.status).toBe(POST_STATUS.INPROGRESS);
+      expect(model.__status).toBe(POST_STATUS.INPROGRESS);
     });
   });
 });

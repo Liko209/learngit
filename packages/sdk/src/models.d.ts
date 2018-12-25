@@ -231,6 +231,7 @@ export type Item = ExtendedBaseModel & {
   versions: ItemVersions[];
   summary?: string;
   title?: string;
+  url?: string;
   image?: string;
   do_not_render?: boolean;
 };
