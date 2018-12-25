@@ -58,7 +58,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
         type: 'error',
         messageAlign: 'left',
         fullWidth: false,
-        dismissible: true,
+        dismissible: false,
       });
     }
   }
