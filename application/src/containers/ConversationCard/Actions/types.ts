@@ -6,14 +6,10 @@
 
 type ActionsProps = {
   id: number; // post id
-  onFocus: (value: boolean) => void;
-  onBlur: (value: boolean) => void;
 };
 
 type ActionsViewProps = {
   id: number;
-  onFocus: (value: boolean) => void;
-  onBlur: (value: boolean) => void;
 };
 
 export { ActionsProps, ActionsViewProps };

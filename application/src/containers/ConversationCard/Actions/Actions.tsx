@@ -9,7 +9,12 @@ import { ActionsView } from './Actions.View';
 import { ActionsViewModel } from './Actions.ViewModel';
 import { ActionsProps } from './types';
 
-const Actions = buildContainer<ActionsProps>({
+const Actions = buildContainer<
+  ActionsProps & {
+    onFocus: (value: boolean) => void;
+    onBlur: (value: boolean) => void;
+  }
+>({
   View: ActionsView,
   ViewModel: ActionsViewModel,
 });

@@ -16,7 +16,12 @@ import { ActionsViewProps } from './types';
 type Props = ActionsViewProps & WithNamespaces;
 
 @observer
-class ActionsViewComponent extends Component<Props> {
+class ActionsViewComponent extends Component<
+  Props & {
+    onFocus: (value: boolean) => void;
+    onBlur: (value: boolean) => void;
+  }
+> {
   render() {
     const { id, onFocus, onBlur } = this.props;
 
