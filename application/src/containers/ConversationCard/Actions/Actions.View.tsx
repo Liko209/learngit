@@ -18,14 +18,16 @@ type Props = ActionsViewProps & WithNamespaces;
 @observer
 class ActionsViewComponent extends Component<Props> {
   render() {
-    const { id } = this.props;
+    const { id, onFocus, onBlur } = this.props;
 
     const props = {
       Like: <Like id={id} />,
       Bookmark: <Bookmark id={id} />,
       More: <More id={id} />,
     };
-    return <JuiConversationActionBar {...props} />;
+    return (
+      <JuiConversationActionBar onFocus={onFocus} onBlur={onBlur} {...props} />
+    );
   }
 }
 

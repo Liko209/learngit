@@ -14,6 +14,9 @@ class ActionsViewModel extends StoreViewModel<ActionsProps>
   get id() {
     return this.props.id;
   }
+
+  onBlur = this.props.onBlur;
+  onFocus = this.props.onFocus;
 }
 
 export { ActionsViewModel };

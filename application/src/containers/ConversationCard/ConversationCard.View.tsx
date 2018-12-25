@@ -26,7 +26,9 @@ export class ConversationCard extends React.Component<
 > {
   state = {
     isHover: false,
+    isFocusActions: false,
   };
+
   handleMouseEnter = () => {
     this.setState({
       isHover: true,
@@ -34,7 +36,23 @@ export class ConversationCard extends React.Component<
   }
 
   handleMouseLeave = () => {
+    const { isFocusActions } = this.state;
+    if (!isFocusActions) {
+      this.setState({
+        isHover: false,
+      });
+    }
+  }
+
+  handleFocus = (value: boolean) => {
     this.setState({
+      isFocusActions: value,
+    });
+  }
+
+  handleBlur = (value: boolean) => {
+    this.setState({
+      isFocusActions: value,
       isHover: false,
     });
   }
@@ -110,7 +128,13 @@ export class ConversationCard extends React.Component<
             notification={activity}
           >
             {showProgressActions ? <ProgressActions id={id} /> : null}
-            {!showProgressActions && isHover ? <Actions id={id} /> : null}
+            {!showProgressActions && isHover ? (
+              <Actions
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                id={id}
+              />
+            ) : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
             {hideText || isEditMode ? null : <TextMessage id={id} />}
