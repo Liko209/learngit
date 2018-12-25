@@ -39,7 +39,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
         uid={currentUserId}
         presence={this._presence}
         size="large"
-        autoMationId="topBarAvatar"
+        automationId="topBarAvatar"
       />
     );
   }
