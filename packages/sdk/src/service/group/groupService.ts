@@ -181,7 +181,11 @@ class GroupService extends BaseService<Group> {
     return result;
   }
 
-  private _getFromSortedByMostRectPost(groups: Group[], offset: number, limit: number) {
+  private _getFromSortedByMostRectPost(
+    groups: Group[],
+    offset: number,
+    limit: number,
+  ) {
     return _.orderBy(groups, ['most_recent_post_created_at'], ['desc']).slice(
       offset,
       limit === Infinity ? groups.length : limit,
@@ -782,7 +786,7 @@ class GroupService extends BaseService<Group> {
   }
 
   public isValid(group: Group) {
-    return !group.is_archived && !group.deactivated && group.members.length > 0;
+    return !group.is_archived && !group.deactivated && !!group.members.length;
   }
 
   private _getTeamAdmins(permission?: TeamPermission) {
