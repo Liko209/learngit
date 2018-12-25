@@ -12,7 +12,7 @@ const Wrapper: any = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  z-index: 1;
+  -ms-z-index: ${({ theme }) => theme.zIndex.makeZIndexStackingContext};
 `;
 
 export default Wrapper;
