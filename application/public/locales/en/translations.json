@@ -168,5 +168,7 @@
   "locationTitle": "Location",
   "viewYourProfile": "View Your Profile",
   "deletePost": "Delete post",
-  "showMore": "Show more"
+  "showMore": "Show more",
+  "section": "Section",
+  "descriptionNotes": "Description"
 }

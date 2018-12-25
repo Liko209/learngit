@@ -21,11 +21,16 @@ const isLocalhost = Boolean(
     ),
 );
 
-export default function register(
+export default async function register(
   registeredHandler: (swURL: string) => void,
   updateInstalledHandler: VoidFunction,
 ) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    // TODO: this should be removed after backend has fixed CORS on static resources.
+    const { quota = 0, usage = 0 } = await navigator.storage.estimate();
+    if (quota - usage < 5e8) {
+      return;
+    }
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(
       process.env.PUBLIC_URL!,

@@ -83,6 +83,18 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
     });
   }
 
+  removeByIds(ids: number[]) {
+    this._orderListHandler.removeByIds(ids);
+  }
+
+  upsert(posts: Post[]) {
+    this._orderListHandler.upsert(posts);
+  }
+
+  replaceAll(posts: Post[]) {
+    this._orderListHandler.replaceAll(posts);
+  }
+
   static combineSeparatorHandlersMaps(handlers: ISeparatorHandler[]) {
     // key => postId
     const map = new Map<number, Separator>();
