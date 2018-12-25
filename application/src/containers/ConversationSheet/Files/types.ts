@@ -4,12 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FileType, ExtendFileItem } from '@/store/models/FileItem';
+import { Post } from 'sdk/models';
 
 type FilesProps = {
   ids: number[];
+  postId: number;
 };
 
 type FilesViewProps = {
+  postId: number;
+  post: Post;
   files: {
     [FileType.image]: ExtendFileItem[];
     [FileType.document]: ExtendFileItem[];

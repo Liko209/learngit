@@ -5,11 +5,12 @@
  */
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item, Progress } from 'sdk/models';
+import { Item, Progress, Post } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
+  PostService,
   ItemService,
   notificationCenter,
   ENTITY,
@@ -19,15 +20,18 @@ import FileItemModal from '@/store/models/FileItem';
 
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
+import PostModel from '@/store/models/Post';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
+  private _postService: PostService;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
 
   constructor(props: FilesViewProps) {
     super(props);
     this._itemService = ItemService.getInstance();
+    this._postService = PostService.getInstance();
     notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
   }
 
@@ -80,20 +84,32 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const result = new Map<number, number>();
     this._ids.forEach((id: number) => {
       let progress = this._progressMap.get(id);
-      if (!process) {
+      if (typeof progress === 'undefined') {
         progress = this._itemService.getUploadProgress(id);
       }
-      let value = 0;
-      if (progress) {
-        value = (progress.loaded / progress.total) * 100;
+      if (typeof progress !== 'undefined') {
+        let value = 0;
+        if (progress.total > 0) {
+          value = (progress.loaded / progress.total) * 100;
+        }
+        result.set(id, value);
       }
-      result.set(id, value);
     });
     return result;
   }
 
+  @computed
+  get _postId() {
+    return this.props.postId;
+  }
+
+  @computed
+  get post() {
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+  }
+
   removeFile = async (id: number) => {
-    await this._itemService.cancelUpload(id);
+    await this._postService.cancelUpload(this._postId, id);
   }
 }
 

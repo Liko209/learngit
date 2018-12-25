@@ -4,14 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { Notification } from '@/containers/Notification';
 import { service } from 'sdk';
 import { ItemFile } from 'sdk/models';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
-import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
+import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
+import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 
+jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
   draft: 'draft',
 };
@@ -46,21 +48,19 @@ function mockUpload() {
 const itemService = {
   sendItemFile: jest
     .fn()
-    .mockImplementation(
-      (groupId: number, file: File, isUpdate: boolean) => {
-        const itemfile = {
-          file,
-          isUpdate,
-          name: file.name,
-          id: fileIDs,
-          group_ids: [groupId],
-        };
-        --fileIDs;
-        _uploadingItems.push(itemfile as any);
-        mockUpload();
-        return itemfile as any;
-      },
-    ),
+    .mockImplementation((groupId: number, file: File, isUpdate: boolean) => {
+      const itemfile = {
+        file,
+        isUpdate,
+        name: file.name,
+        id: fileIDs,
+        group_ids: [groupId],
+      };
+      --fileIDs;
+      _uploadingItems.push(itemfile as any);
+      mockUpload();
+      return itemfile as any;
+    }),
 
   cancelUpload: jest.fn().mockImplementation((itemId: number) => {
     if (itemId >= 0) {
@@ -92,6 +92,7 @@ const itemService = {
   getUploadItems: jest.fn().mockImplementation(() => {
     return _uploadingItems.concat(_uploadedItems);
   }),
+  canUploadFiles: jest.fn().mockImplementation(() => true),
 };
 
 PostService.getInstance = jest.fn().mockReturnValue(postService);
@@ -149,6 +150,13 @@ describe('AttachmentsViewModel', () => {
   });
 
   describe('autoUploadFiles()', () => {
+    it('should show flashToast if can not upload files', async () => {
+      itemService.canUploadFiles.mockResolvedValueOnce(false);
+      Notification.flashToast = jest.fn();
+      await vm.autoUploadFiles([file]);
+      expect(itemService.sendItemFile).toBeCalledTimes(0);
+      expect(Notification.flashToast).toBeCalledTimes(1);
+    });
     it('should do nothing if no files', async () => {
       await vm.autoUploadFiles([]);
       expect(itemService.sendItemFile).toBeCalledTimes(0);
@@ -253,6 +261,21 @@ describe('AttachmentsViewModel', () => {
       await vm.autoUploadFiles([file]);
       await vm.sendFilesOnlyPost();
       expect(postService.sendPost).toBeCalledTimes(1);
+    });
+  });
+
+  describe('showDuplicateFiles()', () => {
+    it('should showDuplicateFiles when duplicate upload files', async () => {
+      await vm.autoUploadFiles([file]);
+      await vm.autoUploadFiles([file]);
+      expect(vm.showDuplicateFiles).toBe(true);
+    });
+
+    it('should not showDuplicateFiles when duplicate upload files in different conversation JPT-452', async () => {
+      await vm.autoUploadFiles([file]);
+      const vm2 = new AttachmentsViewModel({ id: 789 });
+      await vm2.autoUploadFiles([file]);
+      expect(vm.showDuplicateFiles).toBe(false);
     });
   });
 });
