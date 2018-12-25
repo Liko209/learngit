@@ -4,7 +4,7 @@
  */
 import { Scene } from './Scene';
 import { SceneConfig } from './config/SceneConfig';
-import { LoginPage } from '../pages/LoginPage';
+import { jupiterUtils } from '../utils/JupiterUtils';
 import { HomePageGatherer } from '../gatherers/HomePageGatherer';
 
 class LoginScene extends Scene {
@@ -17,8 +17,7 @@ class LoginScene extends Scene {
             instance: new HomePageGatherer()
         });
 
-        let loginPage = new LoginPage();
-        this._finallyUrl = await loginPage.authUrl();
+        this._finallyUrl = await jupiterUtils.getAuthUrl(this.url);
     }
 
     finallyUrl(): string {
