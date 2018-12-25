@@ -76,12 +76,13 @@ describe('ProgressActionsViewModel', () => {
       expect(postService.reSendPost).toBeCalled();
     });
 
-    it('should not call resend when has failed items', async () => {
+    it('should not call resend when has failed items JPT-617', async () => {
       (itemService.canResendFailedItems as jest.Mock).mockReturnValueOnce(
         false,
       );
       await vm.resend();
       expect(postService.reSendPost).toBeCalledTimes(0);
+      expect(Notification.flashToast).toBeCalled();
     });
   });
 
