@@ -244,14 +244,14 @@ describe('AccountManager', () => {
       const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
       expect(permitted).toBeTruthy();
     });
-    it('should return true when the env is in the white list', async () => {
+    it('should return true when the user is in the white list', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['110'],
       });
       const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
       expect(permitted).toBeTruthy();
     });
-    it('should return false when the env is not in the white list', async () => {
+    it('should return false when the user is not in the white list', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['123'],
       });
