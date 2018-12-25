@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage} from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 
 
 class Entry extends BaseWebComponent {
@@ -239,7 +239,7 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(MentionPage);
   }
 
-  get duplicatePromptPage(){
+  get duplicatePromptPage() {
     return this.getComponent(DuplicatePromptPage);
   }
 
@@ -249,11 +249,11 @@ export class MessageTab extends BaseWebComponent {
 
   get bookmarksEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
-    }
+  }
 
-    get bookmarkPage() {
+  get bookmarkPage() {
     return this.getComponent(BookmarkPage);
-    }
+  }
 
   get moreMenu() {
     return this.getComponent(MoreMenu);

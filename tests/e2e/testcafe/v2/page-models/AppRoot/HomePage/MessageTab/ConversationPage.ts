@@ -109,30 +109,30 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('attachment-list');
   }
 
-  get uploadFileInput(){
+  get uploadFileInput() {
     return this.getSelectorByAutomationId('upload-file-input');
   }
-  get removeButton(){
+  get removeButton() {
     return this.getSelectorByAutomationId('attachment-action-button');
   }
 
-  get attachmentFileName(){
+  get attachmentFileName() {
     return this.getSelectorByAutomationId('attachment-file-name');
   }
-  
-  get fileNameOnPost(){
+
+  get fileNameOnPost() {
     return this.getSelectorByAutomationId('file-name');
   }
 
-  get fileSize(){
+  get fileSize() {
     return this.getSelectorByAutomationId('file-size');
   }
 
-  get previewFileSize(){
+  get previewFileSize() {
     return this.getSelectorByAutomationId('file-no-preview-size');
   }
 
-  get conversationCard(){
+  get conversationCard() {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
@@ -144,47 +144,47 @@ export class ConversationPage extends BaseConversationPage {
     await this.uploadFiles(this.uploadFileInput, filesPath);
   }
 
-  async clickRemoveButton(){
+  async clickRemoveButton() {
     await this.t.click(this.removeButton);
   }
 
 }
 
-export class DuplicatePromptPage extends BaseConversationPage{
-  get self(){
+export class DuplicatePromptPage extends BaseConversationPage {
+  get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
   }
 
-  get duplicateModal(){
+  get duplicateModal() {
     return this.getSelectorByAutomationId('messageinput-duplicate-footer');
   }
 
-  get duplicateContent(){
+  get duplicateContent() {
     return this.getSelectorByAutomationId('messageinput-duplicate-modal-title');
   }
 
-  get duplicateCreateButton(){
+  get duplicateCreateButton() {
     return this.getSelectorByAutomationId('messageinput-duplicate-create-button');
   }
 
-  get duplicateCancelButton(){
+  get duplicateCancelButton() {
     return this.getSelectorByAutomationId('messageinput-duplicate-cancel-button');
   }
 
-  get duplicateUpdateButton(){
+  get duplicateUpdateButton() {
     return this.getSelectorByAutomationId('messageinput-duplicate-update-button');
   }
 
-  async clickCancelButton(){
+  async clickCancelButton() {
     await this.t.click(this.duplicateCancelButton);
   }
 
-  async clickUpdateButton(){
+  async clickUpdateButton() {
     await this.t.click(this.duplicateUpdateButton);
   }
 
-  async clickCreateButton(){
+  async clickCreateButton() {
     await this.t.click(this.duplicateCreateButton);
   }
 
@@ -295,7 +295,7 @@ export class PostItem extends BaseWebComponent {
   async clickConversationByButton() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
-        buttonElement().style["opacity"] = "1";
+      buttonElement().style["opacity"] = "1";
     }, {
         dependencies: { buttonElement }
       }
