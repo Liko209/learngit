@@ -49,7 +49,7 @@ def condStage(Map args, Closure block) {
 // ssh helper
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
-    GString sshCmd = "ssh -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
+    GString sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
     sh "${sshCmd} ${cmd}"
 }
 
@@ -326,21 +326,25 @@ node(buildNode) {
             }}
         }
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'success')
+        def description = currentBuild.getDescription() + '\n' + buildReport("${SUCCESS_EMOJI} Success", env.BUILD_URL, report)
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
-                buildReport("${SUCCESS_EMOJI} Success", env.BUILD_URL, report)
+                description,
         )
+        currentBuild.setDescription(description)
     } catch (e) {
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
         String statusTitle = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
             statusTitle = ":no_entry: Aborted"
+        def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, env.BUILD_URL, report)
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
-                buildReport(statusTitle, env.BUILD_URL, report),
+                description,
         )
+        currentBuild.setDescription(description)
         throw e
     }
 }
