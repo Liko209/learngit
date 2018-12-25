@@ -17,6 +17,54 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
+test.only(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const user = users[6];
+  const userPlatform = await h(t).getPlatform(user);
+
+  let conversation;
+  await h(t).withLog('Given I have an extension with a conversation', async () => {
+    conversation = (await userPlatform.createGroup({
+      isPublic: true,
+      name: `Team ${uuid()}`,
+      type: 'Team',
+      members: [user.rcId, users[5].rcId, users[6].rcId],
+    })).data.id;
+  });
+
+  const msgList = _.range(100).map(i => `${i} ${uuid()}`);
+  await h(t).withLog('And this conversation 20 message',
+    async () => {
+      await Promise.all(
+        _ .range(20)
+          .map(i => userPlatform.createPost({ text: `${i} ${uuid()}` }, conversation))
+      )
+    }
+  )
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+  });
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog('And enter the team conversation',
+    async () => {
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(conversation).enter();
+      await teamsSection.ensureLoaded();
+    }
+  );
+
+  await h(t).withLog('And scroll to middle',
+    async () => {
+      await app.homePage.messageTab.conversationPage.scrollToMiddle()
+    }
+  )
+})
+
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
