@@ -1171,7 +1171,7 @@ describe('GroupService', () => {
 
   describe('handleMarkGroupHasMoreAsTrue', () => {
     it('should do nothing when ids is empty', async () => {
-      await groupService.handleMarkGroupHasMoreAsTrue(
+      await groupService.setAsTrue4HasMoreConfigByDirection(
         [],
         QUERY_DIRECTION.OLDER,
       );
@@ -1179,7 +1179,7 @@ describe('GroupService', () => {
     });
     it('should update group config has_more_older as true', async () => {
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
-      await groupService.handleMarkGroupHasMoreAsTrue(
+      await groupService.setAsTrue4HasMoreConfigByDirection(
         [2],
         QUERY_DIRECTION.OLDER,
       );
@@ -1192,7 +1192,7 @@ describe('GroupService', () => {
     });
     it('should update group config has_more_newer as true', async () => {
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
-      await groupService.handleMarkGroupHasMoreAsTrue(
+      await groupService.setAsTrue4HasMoreConfigByDirection(
         [2],
         QUERY_DIRECTION.NEWER,
       );

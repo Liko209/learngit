@@ -73,9 +73,9 @@ const handleTeamsRemovedFrom = async (ids: number[]) => {
   service.removeTeamsByIds(ids, true);
 };
 
-const handleMarkGroupHasMoreOrderAsTrue = async (ids: number[]) => {
+const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
   const service: GroupService = GroupService.getInstance();
-  service.handleMarkGroupHasMoreAsTrue(ids, QUERY_DIRECTION.OLDER);
+  service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
 };
 
 class GroupService extends BaseService<Group> {
@@ -90,7 +90,7 @@ class GroupService extends BaseService<Group> {
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
       [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
       [SERVICE.POST_SERVICE
-        .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: handleMarkGroupHasMoreOrderAsTrue,
+        .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
@@ -817,7 +817,7 @@ class GroupService extends BaseService<Group> {
     groupConfigDao.bulkDelete(ids);
   }
 
-  async handleMarkGroupHasMoreAsTrue(
+  async setAsTrue4HasMoreConfigByDirection(
     ids: number[],
     direction: QUERY_DIRECTION,
   ) {
