@@ -114,7 +114,7 @@ describe('Entity Cache Manager', () => {
     expect(entity.age).toBe(entityC.age);
   });
 
-  it('should not change key update', async () => {
+  it('should not change key when update', async () => {
     const entityC = {
       id: 1,
       name: 'fish',
