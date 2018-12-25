@@ -55,7 +55,7 @@ class RTCLoggerProxy {
     label: string,
     content: string,
   ): void {
-    const tag = `VoiP-Sip: ${category} [${label}]`;
+    const tag = `VoIP-Sip: ${category} [${label}]`;
     switch (level) {
       case 'debug':
         this.debug(tag, content);

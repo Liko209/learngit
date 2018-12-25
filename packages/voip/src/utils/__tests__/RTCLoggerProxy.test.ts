@@ -99,7 +99,7 @@ describe('LoggerProxy', async () => {
   describe('loggerConnector', () => {
     const category: string = 'sip-ua';
     const label: string = 'undefined';
-    const formatSipTag: string = `VoiP-Sip: ${category} [${label}]:`;
+    const formatSipTag: string = `VoIP-Sip: ${category} [${label}]:`;
     it('Should print debug log message when get debug level [JPT-571]', async () => {
       const loggerImpl = new LoggerImpl();
       RTCEngine.setLogger(loggerImpl);
