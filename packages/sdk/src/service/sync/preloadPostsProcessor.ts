@@ -34,11 +34,10 @@ class PreloadPostsProcessor implements IProcessor {
       const params: any = {
         limit: result.unread_count,
         direction: DEFAULT_DIRECTION,
-        group_id: this._group.id,
+        groupId: this._group.id,
       };
       const postService: PostService = PostService.getInstance();
       const requestResult = await postService.getPostsFromRemote(params);
-      console.log('-----requestResult', requestResult);
       requestResult.posts.length &&
         (await baseHandleData(requestResult.posts, true));
       requestResult.items.length && (await itemHandleData(requestResult.items));
