@@ -179,7 +179,6 @@ skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'pend
 cancelOldBuildOfSameCause()
 
 node(buildNode) {
-    cleanWs()
     skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
     // install nodejs tool
