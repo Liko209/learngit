@@ -10,13 +10,14 @@ import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
+import { t } from 'i18next';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
   AttachmentsViewProps & WithNamespaces
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
-    const { duplicateFiles, showDuplicateFiles, t } = this.props;
+    const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
       return (
         <DuplicateAlert
