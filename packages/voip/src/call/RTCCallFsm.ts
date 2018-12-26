@@ -12,12 +12,12 @@ const CallFsmEvent = {
 };
 
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
-  private _callFsmTable: RTCCallFsmTable;
+  private _callFsmTable: RTCCallFsmTable = new RTCCallFsmTable(this);
   private _eventQueue: any;
 
   constructor() {
     super();
-    this._callFsmTable = new RTCCallFsmTable(this);
+    // this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = new queue((task: any, callback: any) => {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {

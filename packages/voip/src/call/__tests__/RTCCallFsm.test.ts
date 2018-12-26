@@ -50,9 +50,7 @@ describe('Call FSM UT', async () => {
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterPending');
       fsm.accountNotReady();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('pending');
         expect(listener.onEnterPending).toBeCalled();
         done();
@@ -65,9 +63,8 @@ describe('Call FSM UT', async () => {
       jest.spyOn(listener, 'onEnterConnecting');
       jest.spyOn(listener, 'onCreateOutCallSession');
       fsm.accountReady();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+
+      setImmediate(() => {
         expect(fsm.state()).toBe('connecting');
         expect(listener.onEnterConnecting).toBeCalled();
         expect(listener.onCreateOutCallSession).toBeCalled();
@@ -81,9 +78,7 @@ describe('Call FSM UT', async () => {
       jest.spyOn(listener, 'onEnterDisconnected');
       jest.spyOn(listener, 'onHangupAction');
       fsm.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onEnterDisconnected).toBeCalled();
         expect(listener.onHangupAction).toBeCalled();
@@ -100,9 +95,7 @@ describe('Call FSM UT', async () => {
       jest.spyOn(listener, 'onEnterConnecting');
       jest.spyOn(listener, 'onCreateOutCallSession');
       fsm.accountReady();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('connecting');
         expect(listener.onEnterConnecting).toBeCalled();
         expect(listener.onCreateOutCallSession).toBeCalled();
@@ -116,9 +109,7 @@ describe('Call FSM UT', async () => {
       fsm._fsmGoto('pending');
       jest.spyOn(listener, 'onEnterDisconnected');
       fsm.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onEnterDisconnected).toBeCalled();
         done();
@@ -133,9 +124,7 @@ describe('Call FSM UT', async () => {
       jest.spyOn(listener, 'onEnterConnected');
       fsm._fsmGoto('connecting');
       fsm.sessionConfirmed();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('connected');
         expect(listener.onEnterConnected).toBeCalled();
         done();
@@ -149,9 +138,7 @@ describe('Call FSM UT', async () => {
       jest.spyOn(listener, 'onHangupAction');
       fsm._fsmGoto('connecting');
       fsm.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onEnterDisconnected).toBeCalled();
         expect(listener.onHangupAction).toBeCalled();
@@ -163,9 +150,7 @@ describe('Call FSM UT', async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connecting');
       fsm.sessionDisconnected();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
       });
@@ -175,9 +160,7 @@ describe('Call FSM UT', async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connecting');
       fsm.sessionError();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
       });
@@ -191,9 +174,7 @@ describe('Call FSM UT', async () => {
       jest.spyOn(listener, 'onHangupAction');
       fsm._fsmGoto('connected');
       fsm.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onHangupAction).toBeCalled();
         done();
@@ -203,9 +184,7 @@ describe('Call FSM UT', async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connected');
       fsm.sessionDisconnected();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
       });
@@ -214,9 +193,7 @@ describe('Call FSM UT', async () => {
       const fsm = createFsm();
       fsm._fsmGoto('connected');
       fsm.sessionError();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
       });

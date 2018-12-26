@@ -29,15 +29,23 @@ describe('RTC call', () => {
     }
   }
 
+  describe('setCallSession()', async () => {
+    it('should call._callSession.setSession() is called when ues setCallSession() ', async () => {
+      const vAccount = new VirturlAccountAndCallObserver();
+      const call = new RTCCall('123', vAccount, vAccount);
+      jest.spyOn(call._callSession, 'setSession');
+      call.setCallSession();
+      expect(call._callSession.setSession).toBeCalled();
+    });
+  });
+
   describe('Idle state transitions', async () => {
     it('should state transition from Idle to Pending when account not ready [JPT-601]', done => {
       const vAccount = new VirturlAccountAndCallObserver();
       jest.spyOn(vAccount, 'createOutCallSession');
       vAccount.isReadyReturnValue = false;
       const call = new RTCCall('123', vAccount, vAccount);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
         expect(vAccount.callState).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
         expect(vAccount.createOutCallSession).not.toBeCalled();
@@ -50,9 +58,7 @@ describe('RTC call', () => {
       jest.spyOn(vAccount, 'createOutCallSession');
       vAccount.isReadyReturnValue = true;
       const call = new RTCCall('123', vAccount, vAccount);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
         expect(vAccount.callState).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
         expect(vAccount.toNum).toBe('123');
@@ -69,9 +75,7 @@ describe('RTC call', () => {
       const call = new RTCCall('123', vAccount, vAccount);
       call._fsm._fsmGoto('pending');
       call.onAccountReady();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
         expect(vAccount.callState).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
         expect(vAccount.toNum).toBe('123');
@@ -87,9 +91,7 @@ describe('RTC call', () => {
       jest.spyOn(call._callSession, 'hangup');
       call._fsm._fsmGoto('pending');
       call.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
@@ -106,9 +108,7 @@ describe('RTC call', () => {
       const call = new RTCCall('', vAccount, vAccount);
       call._fsm._fsmGoto('connecting');
       call._callSession.emit(CALL_SESSION_STATE.CONFIRMED);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTED);
         expect(vAccount.callState).toBe(RTCCALL_STATE_IN_OBSERVER.CONNECTED);
         done();
@@ -121,14 +121,12 @@ describe('RTC call', () => {
       jest.spyOn(call._callSession, 'hangup');
       call._fsm._fsmGoto('connecting');
       call.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
         expect(vAccount.callState).toBe(RTCCALL_STATE_IN_OBSERVER.DISCONNECTED);
-        expect(call._callSession.hangup).toBeCalled;
+        expect(call._callSession.hangup).toBeCalled();
         done();
       });
     });
@@ -138,9 +136,7 @@ describe('RTC call', () => {
       const call = new RTCCall('', vAccount, vAccount);
       call._fsm._fsmGoto('connecting');
       call._callSession.emit(CALL_SESSION_STATE.DISCONNECTED);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
@@ -154,9 +150,7 @@ describe('RTC call', () => {
       const call = new RTCCall('', vAccount, vAccount);
       call._fsm._fsmGoto('connecting');
       call._callSession.emit(CALL_SESSION_STATE.ERROR);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
@@ -173,9 +167,7 @@ describe('RTC call', () => {
       jest.spyOn(call._callSession, 'hangup');
       call._fsm._fsmGoto('connected');
       call.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
@@ -184,14 +176,13 @@ describe('RTC call', () => {
         done();
       });
     });
+
     it("should state transition from Connected to Disconnected when receive 'Session disconnected' event [JPT-610]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
       const call = new RTCCall('', vAccount, vAccount);
       call._fsm._fsmGoto('connected');
       call._callSession.emit(CALL_SESSION_STATE.DISCONNECTED);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
@@ -204,9 +195,7 @@ describe('RTC call', () => {
       const call = new RTCCall('', vAccount, vAccount);
       call._fsm._fsmGoto('connected');
       call._callSession.emit(CALL_SESSION_STATE.ERROR);
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 0);
-      }).then(() => {
+      setImmediate(() => {
         expect(call.getCallState()).toBe(
           RTCCALL_STATE_IN_OBSERVER.DISCONNECTED,
         );
