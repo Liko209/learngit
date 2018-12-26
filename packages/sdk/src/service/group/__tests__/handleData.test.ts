@@ -14,6 +14,7 @@ import handleData, {
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
   handleHiddenGroupsChanged,
+  saveDataAndDoNotification,
 } from '../handleData';
 import { toArrayOf } from '../../../__tests__/utils';
 import StateService from '../../state';
@@ -75,7 +76,13 @@ type GenerateFakeGroupOptions = {
 
 function generateFakeGroups(
   count: number,
-  { hasPost = true, creator_id = 0, members = [], is_team = false } = {},
+  {
+    hasPost = true,
+    creator_id = 0,
+    members = [],
+    is_team = false,
+    deactivated = false,
+  } = {},
 ) {
   const groups: Group[] = [];
 
@@ -83,12 +90,13 @@ function generateFakeGroups(
     const group: Group = {
       is_team,
       members,
+      deactivated,
       id: i,
       created_at: i,
       modified_at: i,
       creator_id: creator_id || i,
       is_new: false,
-      deactivated: false,
+
       version: i,
       company_id: i,
       set_abbreviation: '',
@@ -468,22 +476,6 @@ describe('filterGroups()', () => {
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(LIMIT);
   });
-  // before pass value to filterGroup function, the groups are created by me or include me
-  // it('should not return teams which does not created by me or includes me', async () => {
-  //   const LIMIT = 2;
-  //   const TOTAL_GROUPS = 5;
-
-  //   const teams = generateFakeGroups(TOTAL_GROUPS, {
-  //     hasPost: false,
-  //     is_team: true,
-  //   });
-  //   accountService.getCurrentUserId.mockReturnValue(99);
-  //   stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-
-  //   const filteredGroups = await filterGroups(teams, LIMIT);
-  //   expect(filteredGroups.length).toBe(0);
-  // });
-
   it('should return team which includes me', async () => {
     const LIMIT = 2;
     const TOTAL_GROUPS = 5;
@@ -588,5 +580,22 @@ describe('handleHiddenGroupsChanged', () => {
   it('handleHiddenGroupsChanged, less hidden', async () => {
     await handleHiddenGroupsChanged([1, 2], []);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe('saveDataAndDoNotification()', () => {
+  describe('doNotification()', () => {
+    it('should not call notificationCenter.emit when normal group is empty', async () => {
+      const groups = generateFakeGroups(1, { members: [3, 4] });
+      accountService.getCurrentUserId.mockReturnValue(4);
+      await saveDataAndDoNotification(groups);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call notificationCenter.emit when normal group is not empty', async () => {
+      const groups = generateFakeGroups(1);
+      await saveDataAndDoNotification(groups);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+    });
   });
 });

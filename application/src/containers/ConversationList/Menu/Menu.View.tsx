@@ -17,6 +17,7 @@ import {
   ProfileDialogGroup,
   ProfileDialogPerson,
 } from '@/containers/Profile/Dialog';
+import { TranslationFunction } from 'i18next';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -35,19 +36,16 @@ class MenuViewComponent extends Component<Props, State> {
     this._checkboxChange = this._checkboxChange.bind(this);
   }
 
-  renderCloseMenuItem() {
-    const { t } = this.props;
-    if (this.props.showClose) {
-      return (
-        <JuiMenuItem
-          data-test-automation-id="closeConversation"
-          onClick={this._handleCloseConversation}
-        >
-          {t('conversationMenuItem:close')}
-        </JuiMenuItem>
-      );
-    }
-    return null;
+  renderCloseMenuItem(t: TranslationFunction, closable: boolean) {
+    return (
+      <JuiMenuItem
+        data-test-automation-id="closeConversation"
+        onClick={this._handleCloseConversation}
+        disabled={!closable}
+      >
+        {t('conversationMenuItem:close')}
+      </JuiMenuItem>
+    );
   }
 
   private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
@@ -157,7 +155,7 @@ class MenuViewComponent extends Component<Props, State> {
     });
   }
   render() {
-    const { anchorEl, onClose, favoriteText, t } = this.props;
+    const { anchorEl, onClose, favoriteText, t, closable } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -174,7 +172,7 @@ class MenuViewComponent extends Component<Props, State> {
         <JuiMenuItem onClick={this._handleProfileDialog}>
           {t('viewProfile')}
         </JuiMenuItem>
-        {this.renderCloseMenuItem()}
+        {this.renderCloseMenuItem(t, closable)}
       </JuiMenu>
     );
   }

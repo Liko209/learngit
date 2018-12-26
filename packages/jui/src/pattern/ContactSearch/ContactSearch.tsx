@@ -16,10 +16,10 @@ type State = {
   inputValue: string;
   showPlaceholder: boolean;
   shrink: boolean;
-  selectedItem: TSuggestion[];
+  selectedItem: Suggestion[];
 };
 
-type TSuggestion = {
+type Suggestion = {
   label: string;
   id?: number;
   email?: string;
@@ -27,8 +27,8 @@ type TSuggestion = {
 
 export type Props = {
   classes?: any;
-  suggestions: TSuggestion[];
-  onChange: (item: any) => void;
+  suggestions: Suggestion[];
+  onSelectChange: (item: any) => void;
   inputChange: (value: string) => void;
   label: string;
   placeholder: string;
@@ -119,7 +119,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       this.setState(
         { selectedItem: selectedItem.slice(0, selectedItem.length - 1) },
         () => {
-          this.props.onChange(this.state.selectedItem);
+          this.props.onSelectChange(this.state.selectedItem);
         },
       );
     }
@@ -166,14 +166,14 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
           inputValue: '',
         },
         () => {
-          this.props.onChange(this.state.selectedItem);
+          this.props.onSelectChange(this.state.selectedItem);
         },
       );
     }
     this.props.inputChange(value);
   }
 
-  handleChange = (item: TSuggestion) => {
+  handleChange = (item: Suggestion) => {
     let { selectedItem } = this.state;
 
     if (selectedItem.indexOf(item) === -1) {
@@ -186,12 +186,12 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         inputValue: '',
       },
       () => {
-        this.props.onChange(this.state.selectedItem);
+        this.props.onSelectChange(this.state.selectedItem);
       },
     );
   }
 
-  handleDelete = (item: TSuggestion) => () => {
+  handleDelete = (item: Suggestion) => () => {
     this.setState(
       (state: State) => {
         const selectedItem = [...state.selectedItem];
@@ -201,7 +201,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         return { selectedItem, shrink };
       },
       () => {
-        this.props.onChange(this.state.selectedItem);
+        this.props.onSelectChange(this.state.selectedItem);
       },
     );
   }
@@ -256,7 +256,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   fullWidth: true,
                   InputProps: getInputProps({
                     startAdornment: selectedItem.map(
-                      (item: TSuggestion, index: number) => {
+                      (item: Suggestion, index: number) => {
                         return Chip ? (
                           <Chip
                             key={index}
@@ -304,7 +304,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                     square={true}
                     data-test-automation-id={automationId}
                   >
-                    {filterSuggestions.map((suggestion: TSuggestion, index) =>
+                    {filterSuggestions.map((suggestion: Suggestion, index) =>
                       this.renderSuggestion({
                         ContactSearchItem,
                         suggestion,

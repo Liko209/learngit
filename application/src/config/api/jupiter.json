@@ -5,8 +5,5 @@
   },
   "glip": {
     "apiPlatform": "/api"
-  },
-  "upload": {
-    "apiPlatform": "/api"
   }
 }

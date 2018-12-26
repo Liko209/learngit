@@ -7,30 +7,30 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/LeftRail')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('The default view of conversation list.', ['P0', 'JPT-2', 'Chris.Zhan', 'DefaultView',]),
- async (t: TestController) => {
+  async (t: TestController) => {
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${ user.extension }`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
 
-   await h(t).withLog('The I can find the conversation sections in correct order', async () => {
-     const order = ['Favorites', 'Direct Messages', 'Teams'];
-     for (let i = 0; i < order.length; i++) {
-       await t
-         .expect(app.homePage.messageTab.conversationListSections.nth(i).getAttribute('data-name'))
-         .eql(order[i]);
+    await h(t).withLog('The I can find the conversation sections in correct order', async () => {
+      const order = ['Favorites', 'Direct Messages', 'Teams'];
+      for (let i = 0; i < order.length; i++) {
+        await t
+          .expect(app.homePage.messageTab.conversationListSections.nth(i).getAttribute('data-name'))
+          .eql(order[i]);
       }
     });
   },

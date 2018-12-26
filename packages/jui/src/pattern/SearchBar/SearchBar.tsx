@@ -14,6 +14,7 @@ const JuiSearchBarWrapper = styled.div`
   width: 100%;
   max-width: ${width(327)};
   margin: ${spacing(0, 5)};
+  outline: none;
 `;
 
 const StyledBackdrop = styled<JuiBackdropProps>(JuiBackdrop)`
@@ -26,13 +27,16 @@ const StyledBackdrop = styled<JuiBackdropProps>(JuiBackdrop)`
 type Props = {
   focus: boolean;
   onClose?: () => void;
+  onBlur?: () => void;
+  onFocus?: () => void;
+  tabIndex?: number;
 };
 
 class JuiSearchBar extends React.Component<Props, {}> {
   render() {
-    const { children, focus, onClose } = this.props;
+    const { children, focus, onClose, ...rest } = this.props;
     return (
-      <JuiSearchBarWrapper className="search-bar">
+      <JuiSearchBarWrapper className="search-bar" {...rest}>
         <StyledBackdrop onClick={onClose} open={focus} />
         {children}
       </JuiSearchBarWrapper>

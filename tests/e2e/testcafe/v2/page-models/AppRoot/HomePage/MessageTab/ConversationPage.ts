@@ -53,7 +53,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   async scrollToMiddle() {
     const scrollHeight = await this.streamWrapper.clientHeight;
-    this.scrollToY(scrollHeight/2);
+    await this.scrollToY(scrollHeight/2);
   }
 
   async scrollToBottom() {
@@ -156,6 +156,10 @@ export class PostItem extends BaseWebComponent {
 
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
+  }
+
+  get prompt() {
+    return this.getSelector('.tooltipPlacementBottom').textContent;
   }
 
   async clickLikeOnActionBar() {

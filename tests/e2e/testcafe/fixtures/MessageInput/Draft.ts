@@ -8,11 +8,11 @@ import { formalName } from '../../libs/filter';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
 import { v4 as uuid } from 'uuid';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import { setupCase, teardownCase } from '../../init';
 
 fixture('send messages draft')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 
@@ -20,31 +20,32 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
   async (t) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
 
     let teamId1, teamId2, conversation1, conversation2;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
-      teamId1 = (await user.sdk.platform.createGroup({
+      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: `1 ${uuid()}`,
-        members: [user.rcId, users[5].rcId]
-      })).data.id;
-      teamId2 = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId]
+      });
+      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: `2 ${uuid()}`,
-        members: [user.rcId, users[5].rcId, users[6].rcId]
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId]
+      });
     });
 
     await h(t).withLog('Both conversation should not be hidden before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [teamId1, teamId2]);
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId1, teamId2]);
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );

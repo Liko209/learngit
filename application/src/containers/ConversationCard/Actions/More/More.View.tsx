@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 import { JuiMenuList } from 'jui/components';
-import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
+import { JuiPopperMenu } from 'jui/pattern/PopperMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Quote } from '../Quote';
 import { Delete } from '../Delete';
@@ -46,25 +46,19 @@ class More extends React.Component<MoreViewProps> {
     }
 
     return (
-      <JuiPopoverMenu
-        Anchor={this._Anchor}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      >
+      <JuiPopperMenu Anchor={this._Anchor} placement="bottom-start">
         <JuiMenuList>
           {Object.keys(menuItems).map((key: string) => {
-            const { permission } = permissionsMap[key];
+            const { permission, shouldShowAction } = permissionsMap[key];
             const Component = menuItems[key];
-            return <Component id={id} key={key} disabled={!permission} />;
+            return (
+              shouldShowAction && (
+                <Component id={id} key={key} disabled={!permission} />
+              )
+            );
           })}
         </JuiMenuList>
-      </JuiPopoverMenu>
+      </JuiPopperMenu>
     );
   }
 }

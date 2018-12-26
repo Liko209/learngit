@@ -10,7 +10,7 @@ type SelectedMember = {
 };
 
 type ContactSearchProps = {
-  onChange: (item: any) => void;
+  onSelectChange: (item: any) => void;
   label: string;
   placeholder: string;
   error: boolean;
@@ -22,7 +22,7 @@ type ContactSearchProps = {
 type ViewProps = {
   searchMembers: (value: string) => void;
   suggestions: SelectedMember[];
-  onChange: (item: any) => void;
+  onSelectChange: (item: any) => void;
   label: string;
   placeholder: string;
   error: boolean;

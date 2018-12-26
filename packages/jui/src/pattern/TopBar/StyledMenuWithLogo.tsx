@@ -9,6 +9,8 @@ import styled from '../../foundation/styled-components';
 const StyledMenuWithLogo = styled('div')`
   display: flex;
   align-items: center;
+  /* ie compatibility for Topbar width less than 1100px */
+  flex-shrink: 0;
 `;
 
 StyledMenuWithLogo.displayName = 'StyledMenuWithLogo';
