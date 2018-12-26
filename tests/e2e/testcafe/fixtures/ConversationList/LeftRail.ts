@@ -16,11 +16,11 @@ fixture('ConversationList/LeftRail')
 test(formalName('The default view of conversation list.', ['P0', 'JPT-2', 'Chris.Zhan', 'DefaultView',]),
   async (t: TestController) => {
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
