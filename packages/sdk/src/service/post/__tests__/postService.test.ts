@@ -1162,7 +1162,15 @@ describe('PostService', () => {
         expect(spyResendFailedItems).not.toBeCalled();
         expect(itemService.cleanUploadingFiles).toBeCalled();
         expect(itemService.sendItemData).toBeCalled();
-        expect(spyPartialUpdate).toBeCalled();
+        expect(spyPartialUpdate).toBeCalledWith(
+          {
+            _id: -1,
+            id: -1,
+            item_ids: [1, 3, 1],
+          },
+          undefined,
+          expect.anything(),
+        );
         done();
       });
     });
