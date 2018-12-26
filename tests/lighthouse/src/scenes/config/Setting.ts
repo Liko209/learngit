@@ -7,7 +7,7 @@ import { Throttling, MOBILE_3G } from './Throttling';
 class Setting {
     public output: string = 'html';
     public maxWaitForLoad: number = 45 * 1000;
-    public throttlingMethod: string = 'simulate'; // 'simulate' || 'devtools' || 'provided'
+    public throttlingMethod: string = 'devtools'; // 'simulate' || 'devtools' || 'provided'
     public throttling: Throttling = MOBILE_3G;
     public auditMode: boolean = false;
     public gatherMode: boolean = false;
