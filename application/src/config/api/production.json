@@ -1,21 +1,16 @@
 {
   "rc": {
     "server": "https://platform.ringcentral.com",
-    "apiPlatform": "/restapi",
-    "clientId": "FVKGRbLRTxGxPempqg5f9g",
-    "clientSecret": "bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ",
-    "redirectUri": "glip://rclogin"
+    "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
+    "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
   },
   "glip2": {
     "server": "https://platform.ringcentral.com",
-    "apiPlatform": "/restapi",
-    "clientId": "dQPxFL6KTWWnolcs74LM4Q",
-    "clientSecret": "TT0X369AQ_q8-rUaT8NGzAg5KP_VrFSaGctmkvb4bNEQ",
-    "redirectUri": "http://localhost:5000/unified-login/"
+    "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
+    "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
   },
   "glip": {
     "server": "https://app.glip.com",
-    "apiPlatform": "/api",
     "cacheServer": "https://cache.glip.com"
   },
   "glip_desktop": {
