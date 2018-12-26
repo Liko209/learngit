@@ -98,7 +98,7 @@ type Props = {
   toolbarNode?: React.ReactNode;
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
-  didDropFile?: (file: File) => void;
+  didDropFile?: (file: File[]) => void;
   id?: number;
 };
 
@@ -133,6 +133,22 @@ class JuiMessageInput extends React.Component<Props> {
     }
   }
 
+  private _handlePaste = (event: any) => {
+    if (event.clipboardData) {
+      const files: FileList = event.clipboardData.files;
+      if (files && files.length > 0) {
+        // access data directly
+        const result: File[] = [];
+        for (let i = 0; i < files.length; ++i) {
+          const file = files[i];
+          result.push(file);
+        }
+        const { didDropFile } = this.props;
+        didDropFile && files && didDropFile(result);
+        event.preventDefault();
+      }
+    }
+  }
   render() {
     const {
       value,
@@ -152,7 +168,7 @@ class JuiMessageInput extends React.Component<Props> {
         value,
       };
     return (
-      <Wrapper isEditMode={isEditMode}>
+      <Wrapper isEditMode={isEditMode} onPaste={this._handlePaste}>
         {toolbarNode}
         <ReactQuill
           {...reactQuillValueProp}
