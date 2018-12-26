@@ -9,9 +9,13 @@ import { TextMessageViewModel } from '../TextMessage.ViewModel';
 
 jest.mock('../../../../store/utils');
 
+// const GROUP_ID = 52994050;
+// const TEAM_ID = 11370502;
+// const PERSON_ID = 2514947;
+
 const mockPostData = {
   text: 'Post text',
-  atMentionNonItemIds: [1],
+  atMentionNonItemIds: [11370502],
 };
 
 const mockGroupData = {
@@ -60,6 +64,60 @@ describe('TextMessageViewModel', () => {
     it('should be get bold font format text when there are two asterisks before and after', () => {
       mockPostData.text = '**awesome**';
       expect(vm.html).toBe('<b>awesome</b>');
+    });
+  });
+
+  describe('at mentions for person', () => {
+    const atMentionNonItemIds = [2514947];
+    const text =
+      "<a class='at_mention_compose' rel='{\"id\":2514947}'>@Thomas Yang</a>";
+
+    it('should be get person name link when at mention a person', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+      expect(vm.html).toBe(
+        `<a class='at_mention_compose' href='javascript:void(0)' id='2514947'>${
+          mockPersonData.userDisplayName
+        }</a>`,
+      );
+    });
+
+    it('should be get new person name link when person name be changed', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+      mockPersonData.userDisplayName = 'New person name';
+      expect(vm.html).toBe(
+        `<a class='at_mention_compose' href='javascript:void(0)' id='2514947'>${
+          mockPersonData.userDisplayName
+        }</a>`,
+      );
+    });
+  });
+
+  describe('at mentions for team', () => {
+    const atMentionNonItemIds = [11370502];
+    const text =
+      "<a class='at_mention_compose' rel='{\"id\":11370502}'>@Jupiter profile mini card</a>";
+
+    it('should be get team name link when at mention a team', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+      expect(vm.html).toBe(
+        `<a class='at_mention_compose' href='javascript:void(0)' id='11370502'>${
+          mockGroupData.displayName
+        }</a>`,
+      );
+    });
+
+    it('should be get new team name link when team name be changed', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+      mockGroupData.displayName = 'New team name';
+      expect(vm.html).toBe(
+        `<a class='at_mention_compose' href='javascript:void(0)' id='11370502'>${
+          mockGroupData.displayName
+        }</a>`,
+      );
     });
   });
 });
