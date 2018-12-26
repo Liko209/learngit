@@ -14,7 +14,7 @@ fixture('ConversationList/MarkPrivateOrProtected')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1', 'Public/PrivateTeam']), async (t) => {
+test(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
@@ -99,7 +99,7 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
 
 });
 
-test(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1', 'Public/PrivateTeam']), async (t) => {
+test(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
@@ -190,7 +190,7 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
 
 });
 
-test(formalName('Public/Private team icon is disabled for team member.', ['JPT-519', 'P1', , 'Public/PrivateTeam']), async (t) => {
+test(formalName('Public/Private team icon is disabled for team member.', ['JPT-519', 'P1']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const adminUser = users[5];
