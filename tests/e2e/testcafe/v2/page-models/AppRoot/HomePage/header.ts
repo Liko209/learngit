@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { ClientFunction } from "testcafe";
 
 export class Header extends BaseWebComponent {
   get self() {
