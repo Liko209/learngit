@@ -36,7 +36,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
 
   await h(t).withLog('And another user send 10 message in the conversation',
     async ()=>{
-      const msgs = _.range(10)
+      const msgs = _.range(5)
       for (let msg of msgs){
         await anotherUserPlatform.createPost({text: `${msg} ${uuid()}`}, conversation)
       }
@@ -51,7 +51,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
 
   await h(t).withLog(`And I resize window size`,
     async () => {
-      await t.resizeWindow(1920, 500)
+      await t.resizeWindow(1280, 360)
     }
   )
 
@@ -73,7 +73,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
 
   await h(t).withLog('When I maximize the window',
     async ()=>{
-      await t.maximizeWindow()
+      await t.resizeWindow(1280, 720);
     }
   )
 
@@ -102,9 +102,7 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
       );
  })
 
-  let teamA;
-  let teamB;
-  let msgList = _.range(30).map(i => `${i} ${uuid()}`);
+  let teamA, teamB, msgList = _.range(30).map(i => `${i} ${uuid()}`);
 
   await h(t).withLog('Given I have an extension with 2 team chat', async () => {
     teamA = (await userPlatform.createGroup({
