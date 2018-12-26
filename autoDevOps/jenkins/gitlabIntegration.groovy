@@ -63,7 +63,8 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
 }
 
 def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
-    // the reason here using stdout instead of return code is, by return code we can not tell is the error of ssh itself or remote command
+    // the reason to use stdout instead of return code is,
+    // by return code we can not tell the error of ssh itself or dir not exists
     return 'true' == sshCmd(remoteUri, "[[ -d ${remoteDir} ]] && echo 'true' || echo 'false'")
 }
 
@@ -104,8 +105,8 @@ def buildReport(result, buildUrl, report) {
     lines.push("**Detail**: ${buildUrl}")
     if (null != report.saReport)
         lines.push("**Static Analysis**: ${report.saReport}")
-    if (null != report.applicationUrl)
-        lines.push("**Application URL**: ${report.applicationUrl}")
+    if (null != report.appUrl)
+        lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.coverage)
         lines.push("**Coverage Report**: ${report.coverage}")
     if (null != report.juiUrl)
@@ -133,11 +134,21 @@ Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlab
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
 
+// deploy related
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
-String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
+String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
+String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
 
+String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
+String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
+
+// update after checkout stage success
 String appHeadSha = null
 String juiHeadSha = null
+
+String appHeadShaDir = "${deployBaseDir}/app-".toString()
+String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
+
 Boolean skipBuildApp = false
 Boolean skipBuildJui = false
 
@@ -206,16 +217,20 @@ node(buildNode) {
                             ]
                     ]
             ])
-            // update in tests and autoDevOps folder should not trigger application build
-            // for git 1.9, there is an easy way to do this. since most slaves are centos, whose git's version is 1.8, urgly one is used
+            // change in tests and autoDevOps directory should not trigger application build
+            // for git 1.9, there is an easy way to exclude files
+            // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
-            if ('' != appHeadSha) {
-
-
-            }
+            assert '' != appHeadSha, 'appHeadSha is invalid'
+            appHeadShaDir += appHeadSha
+            // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
-            if ('' != juiHeadSha) {
-
+            assert '' != juiHeadSha, 'juiHeadSha is invalid'
+            juiHeadShaDir += juiHeadSha
+            // check if app or jui has been built
+            sshagent(credentials: [deployCredentialId]) {
+                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
+                skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
             }
         }
 
@@ -226,6 +241,7 @@ node(buildNode) {
                 sh 'npm install --unsafe-perm'
             }
         }
+
         parallel (
                 'Static Analysis': {
                     stage(name: 'Static Analysis') {
@@ -244,9 +260,11 @@ node(buildNode) {
                         } catch (e) {
                             String saErrorMessage = sh(returnStdout: true, script: 'cat lint/*.txt').trim()
                             report.saReport = "${FAILURE_EMOJI} ${saErrorMessage}"
+                            throw e
                         }
                     }
                 },
+
                 'Unit Test': {
                     stage('Unit Test') {
                         sh 'npm run test:cover'
@@ -263,19 +281,20 @@ node(buildNode) {
                     }
                 },
                 'Build JUI' : {
-                    condStage(name: 'Build JUI') {
+                    condStage(name: 'Build JUI', enable: !skipBuildJui) {
                         sh 'npm run build:ui'
                     }
 
                     condStage(name: 'Deploy JUI') {
                         String sourceDir = "packages/jui/storybook-static/"  // !!! don't forget trailing '/'
-                        String deployDir = "${deployBaseDir}/${subDomain}-jui".toString()
                         sshagent(credentials: [deployCredentialId]) {
-                            rsyncFolderToRemote(sourceDir, deployUri, deployDir)
+                            // copy to dir name with head sha when dir is not exists
+                            skipBuildJui || rsyncFolderToRemote(sourceDir, deployUri, juiHeadShaDir)
+                            // and create link to branch name
+                            juiLinkDir
                         }
                     }
-
-                    report.juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
+                    report.juiUrl = juiUrl
                     safeMail(
                             reportChannels,
                             "Storybook Deployment Successful",
@@ -284,7 +303,7 @@ node(buildNode) {
                     )
                 },
                 'Build Application': {
-                    condStage(name: 'Build Application') {
+                    condStage(name: 'Build Application', enable: !skipBuildApp) {
                         // FIXME: move this part to build script
                         sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
                         sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
@@ -299,16 +318,18 @@ node(buildNode) {
 
                     condStage(name: 'Deploy Application') {
                         String sourceDir = "application/build/"  // !!! don't forget trailing '/'
-                        String deployDir = "${deployBaseDir}/${subDomain}".toString()
                         sshagent(credentials: [deployCredentialId]) {
-                            rsyncFolderToRemote(sourceDir, deployUri, deployDir)
+                            // copy to dir name with head sha when dir is not exists
+                            skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
+                            // and create link to branch name
+                            appLinkDir
                         }
                     }
-                    report.applicationUrl = applicationUrl
+                    report.appUrl = appUrl
                     safeMail(
                             reportChannels,
                             "Jupiter Deployment Successful",
-                            "**Jupiter deployment successful**: ${report.applicationUrl}"
+                            "**Jupiter deployment successful**: ${report.appUrl}"
                     )
                 }
         )
@@ -318,7 +339,7 @@ node(buildNode) {
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
             withEnv([
                     "HOST_NAME=${hostname}",
-                    "SITE_URL=${applicationUrl}",
+                    "SITE_URL=${appUrl}",
                     "SITE_ENV=${env.E2E_SITE_ENV}",
                     "SCREENSHOTS_PATH=${env.E2E_SCREENSHOTS_PATH}",
                     "SELENIUM_SERVER=${env.E2E_SELENIUM_SERVER}",
