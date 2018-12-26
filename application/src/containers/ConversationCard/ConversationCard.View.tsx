@@ -24,10 +24,11 @@ import { EditMessageInput } from './EditMessageInput';
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
-  private timer: number;
+  // private timer: number;
   state = {
     isHover: false,
     isFocusMoreAction: false,
+    // isFocusCard: false,
   };
 
   handleMouseEnter = () => {
@@ -37,31 +38,32 @@ export class ConversationCard extends React.Component<
   }
 
   handleMouseLeave = () => {
-    const { isFocusMoreAction } = this.state;
-    if (!isFocusMoreAction) {
-      this.setState({
-        isHover: false,
-      });
-    }
+    this.setState({
+      isHover: false,
+    });
   }
 
-  handleMoreActionFocus = () => {
-    this.setState({
-      isFocusMoreAction: true,
-    });
-    clearTimeout(this.timer);
-  }
+  // handleCardFocus = () => {
+  //   this.setState({
+  //     isFocusCard: true,
+  //   });
+  // }
 
-  handleMoreActionBlur = () => {
-    this.setState({
-      isFocusMoreAction: false,
-    });
-    this.timer = setTimeout(() => {
-      this.setState({
-        isHover: false,
-      });
-    });
-  }
+  // handleCardBlur = () => {
+  //   this.setState({
+  //     isFocusCard: false,
+  //   });
+  // }
+  // handleMoreActionFocus = () => {
+  //   this.setState({
+  //     isFocusMoreAction: true,
+  //   });
+  // }
+  // handleMoreActionBlur = () => {
+  //   this.setState({
+  //     isFocusMoreAction: false,
+  //   });
+  // }
 
   onClickAvatar = (event: React.MouseEvent) => {
     const { creator } = this.props;
@@ -119,6 +121,8 @@ export class ConversationCard extends React.Component<
           Avatar={avatar}
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
+          // onBlur={this.handleCardBlur}
+          // onFocus={this.handleCardFocus}
           mode={mode}
           highlight={highlight}
           onClick={onClickHandler}
@@ -136,9 +140,8 @@ export class ConversationCard extends React.Component<
             {showProgressActions ? <ProgressActions id={id} /> : null}
             {!showProgressActions && isHover ? (
               <Actions
-                onMoreActionFocus={this.handleMoreActionFocus}
-                onMoreActionBlur={this.handleMoreActionBlur}
-                tabIndex={0}
+                // onMoreActionFocus={this.handleMoreActionFocus}
+                // onMoreActionBlur={this.handleMoreActionBlur}
                 id={id}
               />
             ) : null}

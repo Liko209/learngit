@@ -14,12 +14,7 @@ import { Quote } from '../Quote';
 import { Delete } from '../Delete';
 import { Edit } from '../Edit';
 
-type MoreViewProps = ViewProps &
-  WithNamespaces & {
-    handleFocus: () => void;
-    handleBlur: () => void;
-    tabIndex: number;
-  };
+type MoreViewProps = ViewProps & WithNamespaces;
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
@@ -28,22 +23,33 @@ const menuItems = {
 };
 
 @observer
-class More extends React.Component<MoreViewProps> {
+class More extends React.Component<MoreViewProps, { open: boolean }> {
+  state = {
+    open: false,
+  };
   private _Anchor = () => {
-    const { t, handleBlur, handleFocus, tabIndex } = this.props;
+    const { t } = this.props;
     return (
       <JuiIconButton
         size="small"
         variant="plain"
         data-name="actionBarMore"
         tooltipTitle={t('more')}
-        onBlur={handleBlur}
-        onFocus={handleFocus}
-        tabIndex={tabIndex}
+        onClick={this.openPopper}
       >
         more_horiz
       </JuiIconButton>
     );
+  }
+  closePopper = () => {
+    this.setState({
+      open: false,
+    });
+  }
+  openPopper = () => {
+    this.setState({
+      open: true,
+    });
   }
 
   render() {
@@ -54,8 +60,12 @@ class More extends React.Component<MoreViewProps> {
     }
 
     return (
-      <JuiPopperMenu Anchor={this._Anchor} placement="bottom-start">
-        <JuiMenuList>
+      <JuiPopperMenu
+        Anchor={this._Anchor}
+        placement="bottom-start"
+        open={this.state.open}
+      >
+        <JuiMenuList onClick={this.closePopper}>
           {Object.keys(menuItems).map((key: string) => {
             const { permission, shouldShowAction } = permissionsMap[key];
             const Component = menuItems[key];
