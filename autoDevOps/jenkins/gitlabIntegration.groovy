@@ -162,6 +162,7 @@ String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
 // by default we should not skip building app and jui
 Boolean skipBuildApp = false
 Boolean skipBuildJui = false
+Boolean skipSaAndUt = false
 
 // glip channel
 def reportChannels = [
@@ -249,6 +250,10 @@ node(buildNode) {
                 skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
             }
+            // since SA and UT must be passed before we build and deploy app and jui
+            // that means if app and jui have already been built,
+            // SA and UT must have already passed, we can just skip them to save more resources
+            skipSaAndUt = skipBuildApp && skipBuildJui
         }
 
         stage ('Install Dependencies') {
@@ -262,7 +267,8 @@ node(buildNode) {
 
         parallel (
                 'Static Analysis': {
-                    stage(name: 'Static Analysis') {
+                    report.saReport = 'skip'
+                    condStage(name: 'Static Analysis', enable: !skipSaAndUt) {
                         sh 'mkdir -p lint'
                         try {
                             [
@@ -284,7 +290,8 @@ node(buildNode) {
                 },
 
                 'Unit Test': {
-                    stage('Unit Test') {
+                    report.coverage = 'skip'
+                    condStage(name: 'Unit Test', enable: !skipSaAndUt) {
                         sh 'npm run test:cover'
                         publishHTML([
                                 allowMissing: false,
