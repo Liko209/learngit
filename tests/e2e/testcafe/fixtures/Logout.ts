@@ -14,11 +14,11 @@ Object.keys(BrandTire).map((accountType) => BrandTire[accountType]).forEach(acco
     .afterEach(teardownCase());
 
   test(formalName('Logout', ['JPT-70', 'P0', 'Logout']), async (t) => {
-    const user = h(t).rcData.mainCompany.users[4];
+    const loginUser = h(t).rcData.mainCompany.users[1];
     const app = new AppRoot(t);
 
-    await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
     await h(t).withLog('Then I can open setting menu in home page', async () => {

@@ -205,17 +205,6 @@ describe('PostService', () => {
       });
     });
 
-    it('should not send request if the group had no post', async () => {
-      groupService.getById.mockResolvedValue({
-        most_recent_post_created_at: undefined,
-      });
-      await postService.getPostsFromRemote({
-        groupId: 1,
-        limit: 2,
-      });
-      expect(PostAPI.requestPosts).not.toHaveBeenCalled();
-    });
-
     it('should return hasMore = true if request failed', async () => {
       groupService.getById.mockResolvedValue({
         most_recent_post_created_at: 1,

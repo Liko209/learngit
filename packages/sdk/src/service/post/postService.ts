@@ -109,17 +109,6 @@ class PostService extends BaseService<Post> {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult> {
-    const groupService: GroupService = GroupService.getInstance();
-    const group = await groupService.getById(groupId);
-    if (group && !group.most_recent_post_created_at) {
-      // The group has no post
-      return {
-        posts: [],
-        items: [],
-        hasMore: false,
-      };
-    }
-
     const params: any = {
       limit,
       direction,
