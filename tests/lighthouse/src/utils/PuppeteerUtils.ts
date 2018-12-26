@@ -134,7 +134,7 @@ class PuppeteerUtils {
             '--ignore-certificate-errors'
         ];
         if (options['args']) {
-            defaultArgs.concat(options['args']);
+            defaultArgs = defaultArgs.concat(options['args']);
         }
 
         options['args'] = Array.from(new Set(defaultArgs));
