@@ -33,23 +33,23 @@ class MetriceService {
         let taskId = taskDto.id, name = scene.name();
 
         performance = accessibility = bestPractices = seo = pwa = 0;
-        if (categories['performance']) {
+        if (categories['performance'] && categories['performance'].score) {
             performance = categories['performance'].score * 100;
         }
 
-        if (categories['pwa']) {
+        if (categories['pwa'] && categories['pwa'].score) {
             pwa = categories['pwa'].score * 100;
         }
 
-        if (categories['accessibility']) {
+        if (categories['accessibility'] && categories['accessibility'].score) {
             accessibility = categories['accessibility'].score * 100;
         }
 
-        if (categories['best-practices']) {
+        if (categories['best-practices'] && categories['best-practices'].score) {
             bestPractices = categories['best-practices'].score * 100;
         }
 
-        if (categories['seo']) {
+        if (categories['seo'] && categories['seo'].score) {
             seo = categories['seo'].score * 100;
         }
         return await SceneDto.create({

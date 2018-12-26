@@ -139,8 +139,12 @@ class Scene {
         if (this.data) {
             let { categories } = this.data;
 
-            return categories && categories['performance'] && categories['pwa']
-                && categories['accessibility'] && categories['best-practices'] && categories['seo'];
+            return categories
+                && categories['performance'] && categories['performance'].score
+                && categories['pwa'] && categories['pwa'].score
+                && categories['accessibility'] && categories['accessibility'].score
+                && categories['best-practices'] && categories['best-practices'].score
+                && categories['seo'] && categories['seo'].score;
         }
         return false;
     }
