@@ -50,7 +50,7 @@ def condStage(Map args, Closure block) {
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
     GString sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
-    return sh(returnStdout: true, script: "${sshCmd} ${cmd}").trim()
+    return sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
 }
 
 // deploy helper
@@ -65,7 +65,7 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
 def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
     // the reason to use stdout instead of return code is,
     // by return code we can not tell the error of ssh itself or dir not exists
-    return 'true' == sshCmd(remoteUri, "[[ -d ${remoteDir} ]] && echo 'true' || echo 'false'")
+    return 'true' == sshCmd(remoteUri, "[ -d ${remoteDir} ] && echo 'true' || echo 'false'")
 }
 
 def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
