@@ -237,21 +237,21 @@ describe('AccountManager', () => {
         return mockedConfigDao;
       });
     });
-    it('should be valid user when the env is not restricted in the white list', async () => {
+    it('should be valid user when the env is not restricted in the white list [JPT-631]', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         Chris_sandbox: [],
       });
       const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
       expect(permitted).toBeTruthy();
     });
-    it('should be valid user when the user is in the white list', async () => {
+    it('should be valid user when the user is in the white list [JPT-631]', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['110'],
       });
       const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
       expect(permitted).toBeTruthy();
     });
-    it('should be invalid user when the user is not in the white list', async () => {
+    it('should be invalid user when the user is not in the white list [JPT-639]', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['123'],
       });

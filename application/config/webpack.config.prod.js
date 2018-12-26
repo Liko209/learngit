@@ -409,7 +409,7 @@ module.exports = {
     }),
     // generate service worker
     new GenerateSW({
-      exclude: [/\.map$/, /asset-manifest\.json$/],
+      exclude: [/\.map$/, /asset-manifest\.json$/, /whiteListedId\.json$/],
       skipWaiting: true,
       clientsClaim: true,
       navigateFallback: publicUrl + "/index.html",
