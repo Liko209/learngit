@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import ReactQuill from 'react-quill';
 import { Delta } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
@@ -15,6 +15,11 @@ import {
 import { handleAtMention } from './Mention/handleAtMention';
 
 import 'react-quill/dist/quill.snow.css';
+
+const MessageInputDropZoneClasses: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+};
 
 const Wrapper = styled.div<{
   isEditMode?: boolean;
@@ -165,4 +170,4 @@ class JuiMessageInput extends React.Component<Props> {
   }
 }
 
-export { JuiMessageInput, Props };
+export { JuiMessageInput, Props, MessageInputDropZoneClasses };

@@ -26,6 +26,7 @@ const Wrapper = styled.div`
   max-height: ${height(45)};
   overflow-y: auto;
   margin: ${spacing(2, 0, 0)};
+  padding: ${spacing(0.25, 0, 0, 0.25)};
 `;
 
 const AttachmentList: React.SFC<AttachmentListProps> = (
