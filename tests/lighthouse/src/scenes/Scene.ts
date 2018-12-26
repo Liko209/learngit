@@ -52,15 +52,14 @@ class Scene {
                     endTime,
                     total: endTime.getTime() - startTime.getTime()
                 }
-
-                await this.saveMetircsIntoDisk();
-
-                await this.saveMetircsIntoDb();
             } catch (err) {
                 this.logger.error(err);
             }
 
             if (this.isSuccess()) {
+                await this.saveMetircsIntoDisk();
+
+                await this.saveMetircsIntoDb();
                 return true;
             }
         }
