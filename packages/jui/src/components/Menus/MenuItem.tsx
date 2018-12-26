@@ -58,7 +58,6 @@ const StyledMenuItem = styled(MuiMenuItem)`
 
 class JuiMenuItem extends React.Component<JuiMenuItemProps> {
   render() {
-<<<<<<< HEAD
     const { icon, children, ...rest } = this.props;
     let iconElement: any;
     if (typeof icon !== 'string') {
@@ -69,16 +68,6 @@ class JuiMenuItem extends React.Component<JuiMenuItemProps> {
     return (
       <StyledMenuItem {...rest}>
         {icon && <StyledJuiListItemIcon>{iconElement}</StyledJuiListItemIcon>}
-=======
-    const { icon, children, disabled, ...rest } = this.props;
-    return (
-      <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>
-        {icon && (
-          <StyledJuiListItemIcon>
-            <JuiIconography fontSize="inherit">{icon}</JuiIconography>
-          </StyledJuiListItemIcon>
-        )}
->>>>>>> feature/FIJI-1637
         {children}
       </StyledMenuItem>
     );
