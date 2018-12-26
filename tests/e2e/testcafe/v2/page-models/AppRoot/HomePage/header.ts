@@ -117,10 +117,8 @@ class SearchItem extends BaseWebComponent {
 
   async getId() {
     if (await this.avatar.find('div').withAttribute('uid').exists) {
-      console.log("uid:", await this.uid)
       return await this.uid;
     }
-    console.log("cid:", await this.cid)
     return await this.cid;
   }
 

@@ -89,7 +89,7 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
       })
     }, true);
 
-    await h(t).withLog('When I click "Profile" button of the mini profile', async () => {
+    await h(t).withLog('When I click "message" button of the mini profile', async () => {
       await miniProfile.goToMessages();
     });
 
@@ -98,114 +98,6 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
     });
   }
 });
-
-
-test(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  const app = new AppRoot(t);
-  const teamName = uuid();
-  const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
-    .then(res => {
-      return res.data.display_name;
-    });
-
-  const steps = async (i: number, count: number, searchItem, type: string) => {
-    const top = await searchItem.avatar.getBoundingClientRectProperty('top');
-    const left = await searchItem.avatar.getBoundingClientRectProperty('left');
-    const id = await searchItem.getId();
-    await h(t).withLog(`When I click the avatar of ${i + 1}/${count}  ${type} result`, async () => {
-      await searchItem.clickAvatar();
-    });
-    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      await H.retryUntilPass(async () => {
-        const miniTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-        const miniLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-        await t.expect(top).eql(miniTop);
-        await t.expect(left).eql(miniLeft);
-      });
-    });
-    await h(t).withLog(`And the mini profile id should be ${id}`, async () => {
-      const miniProfileId = await miniProfile.getId();
-      await t.expect(miniProfileId).eql(id);
-    });
-
-    await h(t).withLog('When I click "Profile" button on MiniProfile', async () => {
-      await miniProfile.openProfile();
-    });
-    await h(t).withLog('Then the profile dialog should be popup', async () => {
-      await profileDialog.shouldBePopUp();
-    });
-    await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${id}`, async () => {
-      const profileDialogId = await profileDialog.getId();
-      await t.expect(profileDialogId).eql(id)
-      await profileDialog.close();
-    });
-  }
-
-  await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
-    await loginUser.sdk.platform.createGroup({
-      isPublic: true,
-      name: teamName,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    await loginUser.sdk.platform.createGroup({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-    await loginUser.sdk.platform.createGroup({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId],
-    });
-  });
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  const search = app.homePage.header.search;
-  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
-    await search.typeText(otherUserName);
-  });
-
-  let peopleCount: number, GroupCount;
-  await h(t).withLog('Then I should find at least one people and group result', async () => {
-    await t.expect(search.peoples.count).gte(1);
-    await t.expect(search.groups.count).gte(1);
-    peopleCount = await search.peoples.count;
-    GroupCount = await search.groups.count;
-  }, true);
-
-  const miniProfile = app.homePage.miniProfile;
-  const profileDialog = app.homePage.profileDialog;
-
-  for (let i = 0; i < peopleCount; i++) {
-    await steps(i, peopleCount, search.nthPeople(i), "People");
-  }
-
-  for (let i = 0; i < GroupCount; i++) {
-    await steps(i, peopleCount, search.nthGroup(i), "Group");
-  };
-
-
-  await h(t).withLog(`When I type teamName: ${teamName} in search input area`, async () => {
-    await search.typeText(teamName, { replace: true });
-  });
-
-  let teamCount
-  await h(t).withLog('Then I should find at least team result', async () => {
-    await t.expect(search.teams.count).gte(1);
-    teamCount = await search.teams.count;
-  }, true);
-
-  for (let i = 0; i < teamCount; i++) {
-    await steps(i, teamCount, search.nthTeam(i), "Team")
-  }
-});
-
 
 test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
@@ -282,5 +174,121 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
       await t.click(conversationPage.messageInputArea);
     });
   }
+});
 
+test(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  loginUser.sdk = await h(t).getSdk(loginUser);
+  const app = new AppRoot(t);
+  const teamName = uuid();
+  const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
+    .then(res => {
+      return res.data.display_name;
+    });
+
+  const steps = async (i: number, count: number, searchItem, type: string) => {
+    const top = await searchItem.avatar.getBoundingClientRectProperty('top');
+    const left = await searchItem.avatar.getBoundingClientRectProperty('left');
+    const id = await searchItem.getId();
+    await h(t).withLog(`When I click the avatar of ${i + 1}/${count}  ${type} result`, async () => {
+      await searchItem.clickAvatar();
+    });
+    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
+      await H.retryUntilPass(async () => {
+        const miniTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
+        const miniLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
+        await t.expect(top).eql(miniTop);
+        await t.expect(left).eql(miniLeft);
+      });
+    });
+    await h(t).withLog(`And the mini profile id should be ${id}`, async () => {
+      const miniProfileId = await miniProfile.getId();
+      await t.expect(miniProfileId).eql(id);
+    });
+
+    await h(t).withLog('When I click "Profile" button on MiniProfile', async () => {
+      await miniProfile.openProfile();
+    });
+    await h(t).withLog('Then the profile dialog should be popup', async () => {
+      await profileDialog.shouldBePopUp();
+    });
+    await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${id}`, async () => {
+      const profileDialogId = await profileDialog.getId();
+      await t.expect(profileDialogId).eql(id)
+      await profileDialog.close();
+    });
+  }
+
+  await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
+    await loginUser.sdk.platform.createGroup({
+      isPublic: true,
+      name: teamName,
+      type: 'Team',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+    await loginUser.sdk.platform.createGroup({
+      type: 'Group',
+      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+    });
+    await loginUser.sdk.platform.createGroup({
+      type: 'PrivateChat',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+  });
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const search = app.homePage.header.search;
+  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
+    await search.typeText(otherUserName);
+    await t.wait(3e3);
+  });
+
+  let peopleCount: number;
+  await h(t).withLog('Then I should find at least one people result', async () => {
+    await t.expect(search.peoples.count).gte(1);
+    peopleCount = await search.peoples.count;
+  }, true);
+
+  const miniProfile = app.homePage.miniProfile;
+  const profileDialog = app.homePage.profileDialog;
+
+  for (let i = 0; i < peopleCount; i++) {
+    await steps(i, peopleCount, search.nthPeople(i), "People");
+  }
+
+  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
+    await search.typeText(otherUserName, { replace: true });
+    await t.wait(3e3);
+  });
+
+  let GroupCount: number;
+  await h(t).withLog('Then I should find at least one group result', async () => {
+    await t.expect(search.groups.count).gte(1);
+    GroupCount = await search.groups.count;
+  }, true);
+
+  for (let i = 0; i < GroupCount; i++) {
+    await steps(i, peopleCount, search.nthGroup(i), "Group");
+  };
+
+
+  await h(t).withLog(`When I type teamName: ${teamName} in search input area`, async () => {
+    await search.typeText(teamName, { replace: true });
+    await t.wait(3e3);
+  });
+
+  let teamCount
+  await h(t).withLog('Then I should find at least team result', async () => {
+    await t.expect(search.teams.count).gte(1);
+    teamCount = await search.teams.count;
+  }, true);
+
+  for (let i = 0; i < teamCount; i++) {
+    await steps(i, teamCount, search.nthTeam(i), "Team")
+  }
 });
