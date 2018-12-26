@@ -27,7 +27,7 @@ class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
             <FileName filename={fileName} />
           </Jui.CardFileName>
           <Jui.CardFileInfo component="div">
-            <Jui.CardSize>
+            <Jui.CardSize data-test-automation-id="file-size">
               <Jui.FileIcon iconType={iconType} size="small" />
               {size}
             </Jui.CardSize>

@@ -3,24 +3,22 @@
  * @Date: 2018-11-15 10:00:51
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import BaseService from '../../service/BaseService';
 import { daoManager, ItemDao } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
-import handleData, { sendFileItem, uploadStorageFile } from './handleData';
+import handleData from './handleData';
 import { transform } from '../utils';
-import { StoredFile, Item, FileItem, NoteItem, Post, Raw } from '../../models';
+import { Item, ItemFile, NoteItem, Post, Raw, Progress } from '../../models';
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { ApiResult } from '../../api/ApiResult';
-
-interface ISendFile {
-  file: FormData;
-  groupId?: string;
-}
+import { ItemFileUploadHandler } from './itemFileUploadHandler';
+import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
+  _itemFileUploadHandler: ItemFileUploadHandler;
 
   constructor() {
     const subscription = {
@@ -29,20 +27,92 @@ class ItemService extends BaseService<Item> {
     super(ItemDao, ItemAPI, handleData, subscription);
   }
 
-  async sendFile(params: ISendFile): Promise<FileItem | null> {
-    const options: StoredFile = await uploadStorageFile(params);
-    const itemOptions = {
-      storedFile: options[0],
-      groupId: params.groupId,
-    };
-    const result = await sendFileItem(itemOptions);
+  async sendItemFile(
+    groupId: number,
+    file: File,
+    isUpdate: boolean,
+  ): Promise<ItemFile | null> {
+    return await this._getItemFileHandler().sendItemFile(
+      groupId,
+      file,
+      isUpdate,
+    );
+  }
 
-    if (result) {
-      const fileItem = transform<FileItem>(result);
-      await handleData([result]);
-      return fileItem;
+  async sendItemData(groupId: number, itemIds: number[]) {
+    const fileItemIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    await this._getItemFileHandler().sendItemData(groupId, fileItemIds);
+  }
+
+  async getItemVersion(itemFile: ItemFile): Promise<number> {
+    return await this._getItemFileHandler().getUpdateItemVersion(itemFile);
+  }
+
+  async cancelUpload(itemId: number) {
+    await this._getItemFileHandler().cancelUpload(itemId);
+  }
+
+  getUploadItems(groupId: number): ItemFile[] {
+    return this._getItemFileHandler().getUploadItems(groupId);
+  }
+
+  async canResendFailedItems(itemIds: number[]) {
+    const fileItemsIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    for (let i = 0; i < fileItemsIds.length; i++) {
+      if (
+        !(await this._getItemFileHandler().canResendFailedFile(fileItemsIds[i]))
+      ) {
+        return false;
+      }
     }
-    return null;
+    return true;
+  }
+
+  async resendFailedItems(itemIds: number[]) {
+    await Promise.all(
+      itemIds.map((id: number) => {
+        if (GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE) {
+          this._getItemFileHandler().resendFailedFile(id);
+        }
+      }),
+    );
+  }
+
+  async isFileExists(groupId: number, fileName: string): Promise<boolean> {
+    if (groupId <= 0 || !fileName || fileName.trim().length === 0) {
+      return false;
+    }
+    const dao = daoManager.getDao(this.DaoClass) as ItemDao;
+    const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
+    return files.length > 0
+      ? files.some((x: Item) => {
+        return x.post_ids.length > 0;
+      })
+      : false;
+  }
+
+  canUploadFiles(
+    groupId: number,
+    newFiles: File[],
+    includeUnSendFiles: boolean,
+  ): boolean {
+    return this._getItemFileHandler().canUploadFiles(
+      groupId,
+      newFiles,
+      includeUnSendFiles,
+    );
+  }
+
+  getUploadProgress(itemId: number): Progress | undefined {
+    return this._getItemFileHandler().getUploadProgress(itemId);
+  }
+
+  getItemsSendingStatus(itemIds: number[]) {
+    return this._getItemFileHandler().getItemsSendStatus(itemIds);
   }
 
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
@@ -57,6 +127,10 @@ class ItemService extends BaseService<Item> {
       groupId,
       limit,
     );
+  }
+
+  cleanUploadingFiles(groupId: number, itemIds: number[]) {
+    this._getItemFileHandler().cleanUploadingFiles(groupId, itemIds);
   }
 
   async getNoteById(id: number): Promise<NoteItem | null> {
@@ -130,6 +204,13 @@ class ItemService extends BaseService<Item> {
       Err: (e: BaseError) => e,
     });
   }
+
+  private _getItemFileHandler(): ItemFileUploadHandler {
+    if (!this._itemFileUploadHandler) {
+      this._itemFileUploadHandler = new ItemFileUploadHandler();
+    }
+    return this._itemFileUploadHandler;
+  }
 }
 
-export { ISendFile, ItemService };
+export { ItemService };

@@ -196,7 +196,7 @@ class BaseDao<T extends {}> {
     if (!_.isInteger(key)) {
       Throw(
         ErrorTypes.DB_INVALID_USAGE_ERROR,
-        'Key for db get method should be an integer.',
+        `Key for db get method should be an integer. ${key}`,
       );
     }
   }
