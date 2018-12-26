@@ -7,7 +7,7 @@
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
 
-import { JuiAvatarMenu } from './AvatarMenu';
+import { JuiAvatarActions } from './AvatarActions';
 import { StyledMoreIconButton } from './StyledMoreIconButton';
 
 const StyledRight = styled('div')`
@@ -28,17 +28,16 @@ const StyledRight = styled('div')`
   }
 
   @media (max-width: 600px) {
-    width: auto;
-    ${JuiAvatarMenu} {
+    /* ${JuiAvatarActions} {
       display: none;
-      color: red;
-    }
+    } */
+    width: auto;
   }
-  @media (min-width: 601px) {
+  /* @media (min-width: 601px) {
     ${StyledMoreIconButton} {
       display: none;
     }
-  }
+  } */
 `;
 
 StyledRight.displayName = 'StyledRight';

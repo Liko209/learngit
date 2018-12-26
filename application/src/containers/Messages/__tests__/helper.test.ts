@@ -35,6 +35,7 @@ function resetMockedServices() {
     async isConversationHidden() {
       return this.hidden;
     },
+    reopenConversation: jest.fn(),
   };
   mockedGroupService = {
     valid: true,
@@ -134,6 +135,66 @@ describe('MessageRouterChangeHelper', () => {
     it('should access Group when the state is leftRail', () => {
       MessageRouterChangeHelper.handleSourceOfRouter(110);
       expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(0);
+    });
+  });
+});
+
+describe('ensureGroupOpened', () => {
+  beforeEach(() => {
+    mockDependencies();
+    resetMockedServices();
+    Object.defineProperty(window.history, 'state', {
+      writable: true,
+      value: {},
+    });
+    window.history.state = {
+      state: {
+        source: '',
+      },
+    };
+    mockedProfileService = {
+      isConversationHidden: jest.fn(),
+      reopenConversation: jest.fn(),
+    };
+    ProfileService.getInstance = jest
+      .fn()
+      .mockImplementation(() => mockedProfileService);
+  });
+  it('should call service to reopen', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockResolvedValueOnce({ isErr: () => false });
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      done();
+    });
+  });
+  it('should not call service to reopen when it is not hidden', () => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValue(false);
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    expect(mockedProfileService.reopenConversation).not.toHaveBeenCalled();
+  });
+  it('should show loading page with error when reopen failed', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockResolvedValueOnce({ isErr: () => true });
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      expect(history.replace).toBeCalledWith('/messages/loading', {
+        error: true,
+        id: 110,
+      });
+      done();
     });
   });
 });

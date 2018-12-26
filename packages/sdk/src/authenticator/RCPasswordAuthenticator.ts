@@ -5,10 +5,11 @@
  */
 import { loginGlip, loginRCByPassword } from '../api';
 import { AuthDao, daoManager, ConfigDao } from '../dao';
-import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from '../dao/auth/constants';
+import { AUTH_GLIP_TOKEN } from '../dao/auth/constants';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { GlipAccount, RCAccount } from '../account';
 import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
+import { setRcToken } from './utils';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;
@@ -27,8 +28,9 @@ class RCPasswordAuthenticator implements IAuthenticator {
     const glipAuthResult = await loginGlip(rcAuthData);
     glipAuthResult.expect('Failed to login Glip.');
 
+    setRcToken(rcAuthData);
+
     const authDao = daoManager.getKVDao(AuthDao);
-    authDao.put(AUTH_RC_TOKEN, rcAuthData);
     authDao.put(AUTH_GLIP_TOKEN, glipAuthResult.headers['x-authorization']);
 
     const configDao = daoManager.getKVDao(ConfigDao);

@@ -3,10 +3,9 @@
  * @Date: 2018-12-11 11:59:55
  */
 import { SceneConfig } from './config/SceneConfig';
-import * as puppeteer from 'puppeteer';
 import * as lighthouse from 'lighthouse';
-import * as url from 'url';
 import { logUtils } from '../utils/LogUtils';
+import { puppeteerUtils } from '../utils/PuppeteerUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
 import { metriceService } from '../services/MetricService';
@@ -38,6 +37,8 @@ class Scene {
             const startTime = new Date();
 
             await this.preHandle();
+
+            this.config.settings.url = this.url;
 
             await this.collectData();
 
@@ -83,9 +84,7 @@ class Scene {
      * @description: collect performance metrics
      */
     async collectData() {
-        const browser = await puppeteer.launch({
-            headless: false,
-            defaultViewport: null,
+        const browser = await puppeteerUtils.launch({
             args: [
                 `--disable-extensions-except=${EXTENSION_PATH}`,
                 `--load-extension=${EXTENSION_PATH}`,
@@ -100,7 +99,7 @@ class Scene {
             }, this.config.toLightHouseConfig());
 
             lhr['finalUrl'] = this.url;
-            lhr['uri'] = url.parse(this.url).pathname;
+            lhr['uri'] = new URL(this.url).pathname;
             lhr['aliasUri'] = lhr['uri'];
             lhr['requestedUrl'] = this.url;
 
