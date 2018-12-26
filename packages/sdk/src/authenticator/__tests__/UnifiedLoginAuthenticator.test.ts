@@ -45,7 +45,9 @@ describe('UnifiedLoginAuthenticator', () => {
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
     const oauthTokenResult = new ApiResultOk(
-      'token',
+      {
+        access_token: 113123,
+      },
       createResponse({ status: 200, headers: {} }),
     );
     const loginGlipResult = new ApiResultOk(

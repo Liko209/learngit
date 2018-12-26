@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
+import {
+  daoManager,
+  ConfigDao,
+  GroupConfigDao,
+  QUERY_DIRECTION,
+} from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import { Group, GroupApiType, Raw, SortableModel, Profile } from '../../models';
@@ -68,6 +73,11 @@ const handleTeamsRemovedFrom = async (ids: number[]) => {
   service.removeTeamsByIds(ids, true);
 };
 
+const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
+};
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -79,6 +89,8 @@ class GroupService extends BaseService<Group> {
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
       [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
+      [SERVICE.POST_SERVICE
+        .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
@@ -181,7 +193,11 @@ class GroupService extends BaseService<Group> {
     return result;
   }
 
-  private _getFromSortedByMostRectPost(groups: Group[], offset: number, limit: number) {
+  private _getFromSortedByMostRectPost(
+    groups: Group[],
+    offset: number,
+    limit: number,
+  ) {
     return _.orderBy(groups, ['most_recent_post_created_at'], ['desc']).slice(
       offset,
       limit === Infinity ? groups.length : limit,
@@ -782,7 +798,7 @@ class GroupService extends BaseService<Group> {
   }
 
   public isValid(group: Group) {
-    return !group.is_archived && !group.deactivated && group.members.length > 0;
+    return !group.is_archived && !group.deactivated && !!group.members;
   }
 
   private _getTeamAdmins(permission?: TeamPermission) {
@@ -799,6 +815,29 @@ class GroupService extends BaseService<Group> {
     await postService.deletePostsByGroupIds(ids, true);
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     groupConfigDao.bulkDelete(ids);
+  }
+
+  async setAsTrue4HasMoreConfigByDirection(
+    ids: number[],
+    direction: QUERY_DIRECTION,
+  ) {
+    if (!ids.length) {
+      return;
+    }
+    const data: any = [];
+    ids.forEach((id: number) => {
+      const config = {
+        id,
+      };
+      if (direction === QUERY_DIRECTION.OLDER) {
+        config['has_more_older'] = true;
+      } else {
+        config['has_more_newer'] = true;
+      }
+      data.push(config);
+    });
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkUpdate(data);
   }
 }
 

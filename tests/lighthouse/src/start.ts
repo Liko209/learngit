@@ -9,6 +9,7 @@ import { metriceService } from './services/MetricService';
 import { fileService } from './services/FileService';
 import { Scene, LoginScene, RefreshScene, OfflineScene } from './scenes';
 import { logUtils } from './utils/LogUtils';
+import { puppeteerUtils } from './utils/PuppeteerUtils';
 
 const logger = logUtils.getLogger(__filename);
 
@@ -43,8 +44,9 @@ initModel().then(async () => {
         logger.info(`total cost ${endTime - startTime}ms`);
     } catch (err) {
         logger.error(err);
+    } finally {
+        // release resources
+        await dbUtils.close();
+        await puppeteerUtils.closeAll();
     }
-}).then(async () => {
-    // release resources
-    await dbUtils.close();
 });
