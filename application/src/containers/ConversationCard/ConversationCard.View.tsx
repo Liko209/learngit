@@ -27,7 +27,7 @@ export class ConversationCard extends React.Component<
   private timer: number;
   state = {
     isHover: false,
-    isFocusActions: false,
+    isFocusMoreAction: false,
   };
 
   handleMouseEnter = () => {
@@ -37,25 +37,27 @@ export class ConversationCard extends React.Component<
   }
 
   handleMouseLeave = () => {
-    const { isFocusActions } = this.state;
-    if (!isFocusActions) {
+    const { isFocusMoreAction } = this.state;
+    if (!isFocusMoreAction) {
       this.setState({
         isHover: false,
       });
     }
   }
 
-  handleActionsFocus = (value: boolean) => {
+  handleMoreActionFocus = () => {
     this.setState({
-      isFocusActions: value,
+      isFocusMoreAction: true,
     });
     clearTimeout(this.timer);
   }
 
-  handleActionsBlur = (value: boolean) => {
+  handleMoreActionBlur = () => {
+    this.setState({
+      isFocusMoreAction: false,
+    });
     this.timer = setTimeout(() => {
       this.setState({
-        isFocusActions: value,
         isHover: false,
       });
     });
@@ -134,8 +136,8 @@ export class ConversationCard extends React.Component<
             {showProgressActions ? <ProgressActions id={id} /> : null}
             {!showProgressActions && isHover ? (
               <Actions
-                onFocus={this.handleActionsFocus}
-                onBlur={this.handleActionsBlur}
+                onMoreActionFocus={this.handleMoreActionFocus}
+                onMoreActionBlur={this.handleMoreActionBlur}
                 tabIndex={0}
                 id={id}
               />

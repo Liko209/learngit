@@ -14,7 +14,12 @@ import { Quote } from '../Quote';
 import { Delete } from '../Delete';
 import { Edit } from '../Edit';
 
-type MoreViewProps = ViewProps & WithNamespaces;
+type MoreViewProps = ViewProps &
+  WithNamespaces & {
+    handleFocus: () => void;
+    handleBlur: () => void;
+    tabIndex: number;
+  };
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
@@ -25,13 +30,16 @@ const menuItems = {
 @observer
 class More extends React.Component<MoreViewProps> {
   private _Anchor = () => {
-    const { t } = this.props;
+    const { t, handleBlur, handleFocus, tabIndex } = this.props;
     return (
       <JuiIconButton
         size="small"
         variant="plain"
         data-name="actionBarMore"
         tooltipTitle={t('more')}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        tabIndex={tabIndex}
       >
         more_horiz
       </JuiIconButton>

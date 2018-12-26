@@ -9,7 +9,9 @@ import { MoreView } from './More.View';
 import { MoreViewModel } from './More.ViewModel';
 import { Props } from './types';
 
-const More = buildContainer<Props>({
+const More = buildContainer<
+  Props & { handleFocus: () => void; handleBlur: () => void; tabIndex: number }
+>({
   View: MoreView,
   ViewModel: MoreViewModel,
 });

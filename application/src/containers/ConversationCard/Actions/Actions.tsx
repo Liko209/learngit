@@ -11,8 +11,8 @@ import { ActionsProps } from './types';
 
 const Actions = buildContainer<
   ActionsProps & {
-    onFocus: (value: boolean) => void;
-    onBlur: (value: boolean) => void;
+    onMoreActionFocus: () => void;
+    onMoreActionBlur: () => void;
     tabIndex: number;
   }
 >({
