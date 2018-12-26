@@ -1,11 +1,5 @@
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallSession } from './IRTCCallSession';
-
-enum SIP_CALL_SESSION_STATE {
-  CONFIRMED = 'sipcallsessionstate.confirmed',
-  DISCONNECTED = 'sipcallsessionstate.disconnected',
-  ERROR = 'sipcallsessionstate.error',
-}
+import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',
@@ -37,15 +31,15 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _onSessionConfirmed() {
-    this.emit(SIP_CALL_SESSION_STATE.CONFIRMED);
+    this.emit(CALL_SESSION_STATE.CONFIRMED);
   }
 
   private _onSessionDisconnected() {
-    this.emit(SIP_CALL_SESSION_STATE.DISCONNECTED);
+    this.emit(CALL_SESSION_STATE.DISCONNECTED);
   }
 
   private _onSessionError() {
-    this.emit(SIP_CALL_SESSION_STATE.ERROR);
+    this.emit(CALL_SESSION_STATE.ERROR);
   }
 
   hangup() {
@@ -66,4 +60,4 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 }
 
-export { RTCSipCallSession, SIP_CALL_SESSION_STATE, WEBPHONE_STATE };
+export { RTCSipCallSession, WEBPHONE_STATE };

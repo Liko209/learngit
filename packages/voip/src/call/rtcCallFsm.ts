@@ -1,4 +1,4 @@
-import { RTCCallFsmTable } from './RTCCallFsmTable';
+import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import queue from 'async/queue';
 
@@ -11,13 +11,13 @@ const CallFsmEvent = {
   SESSION_ERROR: 'sessionErrorEvent',
 };
 
-class RTCCallFsm extends EventEmitter2 {
+class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _callFsmTable: RTCCallFsmTable;
   private _eventQueue: any;
 
   constructor() {
     super();
-    this._callFsmTable = new RTCCallFsmTable();
+    this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = new queue((task: any, callback: any) => {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
@@ -52,7 +52,7 @@ class RTCCallFsm extends EventEmitter2 {
     });
     // Observer FSM State
     // enter pending state will also report connecting for now
-    this._callFsmTable.observe('onPending', () => this._onEnterConnecting());
+    this._callFsmTable.observe('onPending', () => this._onEnterPending());
     this._callFsmTable.observe('onConnecting', () => this._onEnterConnecting());
     this._callFsmTable.observe('onConnected', () => this._onEnterConnected());
     this._callFsmTable.observe('onDisconnected', () =>
@@ -89,6 +89,14 @@ class RTCCallFsm extends EventEmitter2 {
 
   public sessionError() {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {});
+  }
+
+  onHangupAction() {
+    this.emit('hangupAction');
+  }
+
+  onCreateOutCallSession() {
+    this.emit('createOutCallSession');
   }
 
   private _onHangup() {
@@ -134,10 +142,6 @@ class RTCCallFsm extends EventEmitter2 {
   // Only for unit test
   private _fsmGoto(state: string) {
     this._callFsmTable.goto(state);
-  }
-
-  private _tailTask(name: string): boolean {
-    return this._eventQueue._tasks.tail.data.name === name;
   }
 }
 
