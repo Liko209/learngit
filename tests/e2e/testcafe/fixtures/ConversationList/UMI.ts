@@ -777,8 +777,8 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
     await h(t).withLog(`And set the conversation (id:${teamId}) is the last open conversation with 1 umi`, async () => {
       await h(t).glip(loginUser).setLastGroupId(loginUser.rcId, teamId);
       await h(t).platform(otherUser).sendTextPost(`This is a unRead message ${uuid()}`, teamId);
-    }); 
-  
+    });
+
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
         await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -786,7 +786,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
       },
     );
 
-    await h(t).withLog('Then the conversation should be opened and  not has any UMI', async () => {
+    await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
       await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).expectUmi(0);
     });
   },
