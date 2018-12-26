@@ -2,10 +2,10 @@ import {
   IRTCCallObserver,
   RTCCALL_STATE_IN_OBSERVER,
 } from './IRTCCallObserver';
-import { IRTCCallSession, CALL_SESSION_STATE } from './IrtcCallSession';
+import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
 import { RTCSipCallSession } from './RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm } from './rtcCallFsm';
+import { RTCCallFsm } from './RTCCallFsm';
 
 type CallInfo = {
   fromName: string;
