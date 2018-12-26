@@ -2,7 +2,7 @@
 import {
   rtcNetworkNotificationCenter,
   RTCNetworkEVENT,
-} from '../rtcNetworkNotificationCenter';
+} from '../RTCNetworkNotificationCenter';
 
 describe('Network Notification Center', async () => {
   class TestListener {

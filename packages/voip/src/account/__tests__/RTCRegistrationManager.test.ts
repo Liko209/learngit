@@ -1,5 +1,5 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCRegistrationManager } from '../rtcRegistrationManager';
+import { RTCRegistrationManager } from '../RTCRegistrationManager';
 
 describe('Registration manager', async () => {
   it('state transition: network change in ready', () => {

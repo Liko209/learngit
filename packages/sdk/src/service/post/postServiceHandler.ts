@@ -105,13 +105,13 @@ class PostServiceHandler {
       at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
       company_id: companyId,
       deactivated: false,
-      status: POST_STATUS.INPROGRESS,
+      __status: POST_STATUS.INPROGRESS,
       activity_data: {},
     };
   }
 
   static buildResendPostInfo(post: Post) {
-    post.status = POST_STATUS.INPROGRESS;
+    post.__status = POST_STATUS.INPROGRESS;
     return post;
   }
 

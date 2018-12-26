@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import FileItemModal from '@/store/models/FileItem';
+import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 
@@ -25,7 +25,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.document]: [],
       [FileType.others]: [],
     };
-    this.items.forEach((item: FileItemModal) => {
+    this.items.forEach((item: FileItemModel) => {
+      if (item.deactivated) return;
+
       const file = getFileType(item);
       files[file.type].push(file);
     });
@@ -35,7 +37,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   @computed
   get items() {
     return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemModal>(ENTITY_NAME.FILE_ITEM, id);
+      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
     });
   }
 }
