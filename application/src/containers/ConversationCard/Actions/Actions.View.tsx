@@ -16,16 +16,29 @@ import { ActionsViewProps } from './types';
 type Props = ActionsViewProps & WithNamespaces;
 
 @observer
-class ActionsViewComponent extends Component<Props> {
+class ActionsViewComponent extends Component<
+  Props & {
+    onFocus: (value: boolean) => void;
+    onBlur: (value: boolean) => void;
+    tabIndex: number;
+  }
+> {
   render() {
-    const { id } = this.props;
+    const { id, onFocus, onBlur, tabIndex } = this.props;
 
     const props = {
       Like: <Like id={id} />,
       Bookmark: <Bookmark id={id} />,
       More: <More id={id} />,
     };
-    return <JuiConversationActionBar {...props} />;
+    return (
+      <JuiConversationActionBar
+        onFocus={onFocus}
+        onBlur={onBlur}
+        tabIndex={tabIndex}
+        {...props}
+      />
+    );
   }
 }
 
