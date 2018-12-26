@@ -118,7 +118,7 @@ class Config {
       .map(arr => arr[1])
       .filter((env: string) => !env.startsWith('default'))
       .filter((env: string) => {
-        return process.env.JUPITER_ENV === 'release' || env !== 'release';
+        return process.env.JUPITER_ENV === 'production' || env !== 'production';
       })
       .value();
   }
