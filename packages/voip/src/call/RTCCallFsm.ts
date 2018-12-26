@@ -4,6 +4,9 @@ import queue from 'async/queue';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
+  ANSWER: 'answerEvent',
+  REJECT: 'rejectEvent',
+  SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
   ACCOUNT_READY: 'accountReadyEvent',
   ACCOUNT_NOT_READY: 'accountNotReadyEvent',
   SESSION_CONFIRMED: 'sessionConfirmedEvent',
@@ -22,6 +25,18 @@ class RTCCallFsm extends EventEmitter2 {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
           this._onHangup();
+          break;
+        }
+        case CallFsmEvent.ANSWER: {
+          this._onAnswer();
+          break;
+        }
+        case CallFsmEvent.REJECT: {
+          this._onReject();
+          break;
+        }
+        case CallFsmEvent.SEND_TO_VOICEMAIL: {
+          this._onSendToVoicemail();
           break;
         }
         case CallFsmEvent.ACCOUNT_READY: {
@@ -52,6 +67,7 @@ class RTCCallFsm extends EventEmitter2 {
     });
     // Observer FSM State
     // enter pending state will also report connecting for now
+    this._callFsmTable.observe('onAnswering', () => this._onEnterAnswering());
     this._callFsmTable.observe('onPending', () => this._onEnterConnecting());
     this._callFsmTable.observe('onConnecting', () => this._onEnterConnecting());
     this._callFsmTable.observe('onConnected', () => this._onEnterConnected());
@@ -62,6 +78,18 @@ class RTCCallFsm extends EventEmitter2 {
 
   public state(): string {
     return this._callFsmTable.state;
+  }
+
+  public answer() {
+    this._eventQueue.push({ name: CallFsmEvent.ANSWER }, () => {});
+  }
+
+  public reject() {
+    this._eventQueue.push({ name: CallFsmEvent.REJECT }, () => {});
+  }
+
+  public sendToVoicemail() {
+    this._eventQueue.push({ name: CallFsmEvent.SEND_TO_VOICEMAIL }, () => {});
   }
 
   public hangup() {
@@ -95,6 +123,18 @@ class RTCCallFsm extends EventEmitter2 {
     this._callFsmTable.hangup();
   }
 
+  private _onAnswer() {
+    this._callFsmTable.answer();
+  }
+
+  private _onReject() {
+    this._callFsmTable.reject();
+  }
+
+  private _onSendToVoicemail() {
+    this._callFsmTable.sendToVoicemail();
+  }
+
   private _onAccountReady() {
     this._callFsmTable.accountReady();
   }
@@ -113,6 +153,10 @@ class RTCCallFsm extends EventEmitter2 {
 
   private _onSessionError() {
     this._callFsmTable.sessionError();
+  }
+
+  private _onEnterAnswering() {
+    this.emit('enterAnswering');
   }
 
   private _onEnterPending() {

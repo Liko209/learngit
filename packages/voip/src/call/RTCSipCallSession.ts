@@ -26,11 +26,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_STATE.ACCEPTED, () => {
       this._onSessionConfirmed();
     });
-
     this._session.on(WEBPHONE_STATE.BYE, () => {
       this._onSessionDisconnected();
     });
-
     this._session.on(WEBPHONE_STATE.FAILED, () => {
       this._onSessionError();
     });
@@ -51,6 +49,24 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   hangup() {
     if (this._session != null) {
       this._session.hangup();
+    }
+  }
+
+  answer() {
+    if (this._session != null) {
+      this._session.accept();
+    }
+  }
+
+  reject() {
+    if (this._session != null) {
+      this._session.reject();
+    }
+  }
+
+  sendToVoicemail() {
+    if (this._session != null) {
+      this._session.sendToVoicemail();
     }
   }
 

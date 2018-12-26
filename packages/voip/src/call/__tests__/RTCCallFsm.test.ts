@@ -6,6 +6,9 @@ describe('Call FSM UT', async () => {
     private _fsm: RTCCallFsm;
     constructor(fsm: RTCCallFsm) {
       this._fsm = fsm;
+      fsm.on('enterAnswering', () => {
+        this.onEnterAnswering();
+      });
       fsm.on('enterPending', () => {
         this.onEnterPending();
       });
@@ -19,6 +22,8 @@ describe('Call FSM UT', async () => {
         this.onEnterDisconnected();
       });
     }
+
+    public onEnterAnswering() {}
 
     public onEnterPending() {}
 
@@ -67,7 +72,7 @@ describe('Call FSM UT', async () => {
     });
   });
 
-  describe('Idle state transitions', async () => {
+  describe('Idle state transitions', () => {
     it("State transition from Idle to Pending when receive 'Account not ready' event [JPT-580]", async () => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
@@ -93,6 +98,102 @@ describe('Call FSM UT', async () => {
       fsm._onHangup();
       expect(fsm.state()).toBe('disconnected');
       expect(listener.onEnterDisconnected).toBeCalled();
+    });
+
+    it("State transition from Idle to Answering when receive 'Answer' event", done => {
+      const fsm = createFsm();
+      fsm.answer();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        },         0);
+      }).then(() => {
+        expect(fsm.state()).toBe('answering');
+        done();
+      });
+    });
+
+    it("State transition from Idle to Disconnected when receive 'Reject' event", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.reject();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        },         0);
+      }).then(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it("State transition from Idle to Disconnected when receive 'SendToVoicemail' event", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.sendToVoicemail();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        },         0);
+      }).then(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+  });
+
+  describe('Answering state transitions', () => {
+    it("State transition from Answering to Connected when receive 'Session confirmed' event", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterConnected');
+      fsm._fsmGoto('answering');
+      fsm.sessionConfirmed();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        },         0);
+      }).then(() => {
+        expect(fsm.state()).toBe('connected');
+        expect(listener.onEnterConnected).toBeCalled();
+        done();
+      });
+    });
+
+    it("State transition from Answering to Disconnected when receive 'Hangup' event", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm._fsmGoto('answering');
+      fsm.hangup();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        },         0);
+      }).then(() => {
+        expect(fsm.state()).toBe('disconnected');
+        expect(listener.onEnterDisconnected).toBeCalled();
+        done();
+      });
+    });
+
+    it("State transition from Answering to Disconnected when receive 'sessionError' event", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm._fsmGoto('answering');
+      fsm.sessionError();
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        },         0);
+      }).then(() => {
+        expect(fsm.state()).toBe('disconnected');
+        expect(listener.onEnterDisconnected).toBeCalled();
+        done();
+      });
     });
   });
 
