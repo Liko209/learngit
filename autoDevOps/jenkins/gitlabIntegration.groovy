@@ -71,9 +71,9 @@ def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
 def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
     assert '/' != linkTarget, 'What the hell are you doing?'
     // remove link if exists
-    println sshCmd(remoteUri, "[ -L ${linkTarget}] && unlink ${linkTarget}")
+    println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget}")
     // remote directory if exists
-    println sshCmd(remoteUri, "[ -d ${linkTarget}] && rm -rf ${linkTarget}")
+    println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget}")
     // create link to new target
     println sshCmd(remoteUri, "ln -s ${linkSource} ${linkTarget}")
 }
