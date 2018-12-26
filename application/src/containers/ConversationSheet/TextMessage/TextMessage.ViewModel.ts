@@ -34,7 +34,7 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   private _getDisplayName(id: number) {
     const type = GlipTypeUtil.extractTypeId(id);
     const mapping = {
-      [TypeDictionary.TYPE_ID_GROUP]: this._getGroup(id).displayName,
+      // [TypeDictionary.TYPE_ID_GROUP]: this._getGroup(id).displayName, // Cannot @ group at present
       [TypeDictionary.TYPE_ID_TEAM]: this._getGroup(id).displayName,
       [TypeDictionary.TYPE_ID_PERSON]: this._getPerson(id).userDisplayName,
     };
