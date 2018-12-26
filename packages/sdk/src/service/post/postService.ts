@@ -337,7 +337,11 @@ class PostService extends BaseService<Post> {
             });
           }
 
-          this._updatePost(_.cloneDeep(post));
+          this._partialUpdatePost({
+            id: post.id,
+            _id: post.id,
+            item_ids: post.item_ids,
+          });
         }
       }
 
@@ -372,9 +376,14 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  private async _updatePost(post: Post) {
-    const postDao = daoManager.getDao(PostDao);
-    await postDao.update(post);
+  private async _partialUpdatePost(updateData: object) {
+    this.handlePartialUpdate(
+      updateData,
+      undefined,
+      async (updatedPost: Post) => {
+        return updatedPost;
+      },
+    );
   }
 
   private _getPseudoItemIdsFromPost(post: Post) {

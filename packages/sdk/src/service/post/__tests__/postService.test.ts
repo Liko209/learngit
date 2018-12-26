@@ -1087,6 +1087,9 @@ describe('PostService', () => {
       };
       info.item_data = itemData;
 
+      const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
+      spyPartialUpdate.mockImplementation(() => {});
+
       PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
       const spyResendFailedItems = jest.spyOn(
@@ -1159,6 +1162,7 @@ describe('PostService', () => {
         expect(spyResendFailedItems).not.toBeCalled();
         expect(itemService.cleanUploadingFiles).toBeCalled();
         expect(itemService.sendItemData).toBeCalled();
+        expect(spyPartialUpdate).toBeCalled();
         done();
       });
     });
