@@ -20,11 +20,11 @@ fixture('Send Messages')
 test(formalName('Send message', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
 
-  const user = users[3];
+  const loginUser = users[3];
   const app = new AppRoot(t);
 
-  await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
@@ -105,10 +105,11 @@ fixture('Fixture Name')
 test(formalName('Case1 Name', ['tag1', 'tag2']), async (t) => {
   /* 测试数据 */
   h(t).rcData; // 测试数据入口
-  const user = h(t).rcData.mainCompany.users[0];  // 从测试数据中获取一个用户账号
+  const loginUser = h(t).rcData.mainCompany.users[0];  // 从测试数据中获取一个用户账号
   
   /* sdk */
-  const userPlatform = await h(t).getSdk(user); // 获取以user身份登录的sdk实例(包括glip和platform)
+  await h(t).platform(loginUser).init(); // 获取以user身份登录的sdk实例(包括glip和platform)
+  await h(t).glip(loginUser).init();
 
   /* 日志 */
   await h(t).log('hello world'); // 向报告写入一条记录
@@ -176,17 +177,17 @@ await t.hover('html').click(button);
 
 ```typescript
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    await h(t).resetGlipAccount(user); // 重置用户
-    const userPlatform = await h(t).sdkHelper.sdkManager.getPlatform(user);
+    const loginUser = users[4];
+    await h(t).resetGlipAccount(loginUser); // 重置用户
+    await h(t).platform(loginUser).init(); // init platform sdk before using
 
     let chat, group;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat', async () => {
-      chat = await userPlatform.createGroup({
-        type: 'PrivateChat', members: [user.rcId, users[5].rcId],
+      chat = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'PrivateChat', members: [loginUser.rcId, users[5].rcId],
       });
-      group = await userPlatform.createGroup({
-        type: 'Group', members: [user.rcId, users[5].rcId, users[6].rcId],
+      group = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group', members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
     }); // 确保该用户只存在一个private chat 与 group
 ```

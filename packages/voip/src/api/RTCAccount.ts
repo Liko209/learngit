@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCRegistrationManager } from '../account/rtcRegistrationManager';
+import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 
 enum AccountState {
   IDLE,

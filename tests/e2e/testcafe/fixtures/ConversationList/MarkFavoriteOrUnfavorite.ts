@@ -19,32 +19,33 @@ test(formalName('Display Favorite button when user tap more button of a conversa
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
 
     let groupId, teamId;
     await h(t).withLog('Given I have an extension with a group and a team conversation', async () => {
-      groupId = (await user.sdk.platform.createGroup({
+      groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
-      teamId = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: uuid(),
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId],
+      });
     });
 
     await h(t).withLog('And the conversations should not be hidden and unfavorited before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
-      await user.sdk.glip.clearFavoriteGroups();
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [groupId, teamId]);
+      await h(t).glip(loginUser).clearFavoriteGroups();
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
@@ -96,35 +97,36 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init(); 
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
 
     let groupId, teamId;
     await h(t).withLog('Given I have an extension with a group and a team conversation', async () => {
-      groupId = (await user.sdk.platform.createGroup({
+      groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
-      teamId = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: uuid(),
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId],
+      });
     });
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await user.sdk.glip.showGroups(user.rcId, [groupId, teamId]);
-        await user.sdk.glip.favoriteGroups(user.rcId, [+groupId, +teamId]);
+        await h(t).glip(loginUser).showGroups(loginUser.rcId, [groupId, teamId]);
+        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+groupId, +teamId]);
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -177,24 +179,25 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init(); 
 
     let meChatId;
     await h(t).withLog('Given I have an extension with a me conversation', async () => {
-      meChatId = (await user.sdk.glip.getPerson(user.rcId)).data.me_group_id;
+      meChatId = (await h(t).glip(loginUser).getPerson(loginUser.rcId)).data.me_group_id;
     });
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await user.sdk.glip.showGroups(user.rcId, [meChatId]);
-        await user.sdk.glip.favoriteGroups(user.rcId, [+meChatId]);
+        await h(t).glip(loginUser).showGroups(loginUser.rcId, [meChatId]);
+        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+meChatId]);
 
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 

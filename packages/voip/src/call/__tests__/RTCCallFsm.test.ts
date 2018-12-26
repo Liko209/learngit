@@ -1,5 +1,5 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCCallFsm } from '../rtcCallFsm';
+import { RTCCallFsm } from '../RTCCallFsm';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {

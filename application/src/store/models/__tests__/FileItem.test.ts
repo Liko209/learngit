@@ -8,6 +8,22 @@ import FileItemModel from '../FileItem';
 // import { Item } from 'sdk/src/models';
 
 describe('FileItemModel', () => {
+  describe('new FileItem', () => {
+    const fileItemModel = FileItemModel.fromJS({
+      type: 'type',
+      name: 'name',
+      is_new: true,
+      is_document: true,
+      deactivated: true,
+      versions: [],
+    } as any);
+    expect(fileItemModel.type).toBe('type');
+    expect(fileItemModel.name).toBe('name');
+    expect(fileItemModel.isNew).toBe(true);
+    expect(fileItemModel.deactivated).toBe(true);
+    expect(fileItemModel.isDocument).toBe(true);
+    expect(fileItemModel.versions).toEqual([]);
+  });
   describe('hasVersions()', () => {
     it('should return true if has versions', () => {
       const fileItemModel = FileItemModel.fromJS({

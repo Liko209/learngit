@@ -7,10 +7,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
-import LinkItemModal from '@/store/models/LinkItem';
+import LinkItemModel from '@/store/models/LinkItem';
 
 type Props = {
-  postItems: LinkItemModal[];
+  postItems: LinkItemModel[];
   onLinkItemClose: Function;
 };
 @observer
@@ -23,7 +23,7 @@ class LinkItemView extends React.Component<Props> {
     const { postItems } = this.props;
     return (
       <>
-        {postItems.map((item: LinkItemModal) => {
+        {postItems.map((item: LinkItemModel) => {
           // In Glip must has this key
           // hard code in order to show the current image
           const image = item.image
