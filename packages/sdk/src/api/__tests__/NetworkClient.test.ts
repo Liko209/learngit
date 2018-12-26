@@ -217,14 +217,14 @@ describe('NetworkClient', () => {
 
       jest.spyOn(rcNetworkClient, 'request');
       rcNetworkClient.post('/', {
-        id: 123,
+        _id: 123,
         __draft: '123',
         a: true,
       });
 
       expect(rcNetworkClient.request).toHaveBeenCalledWith({
         data: {
-          id: 123,
+          _id: 123,
           a: true,
         },
         headers: {},
@@ -239,14 +239,14 @@ describe('NetworkClient', () => {
 
       jest.spyOn(rcNetworkClient, 'http');
       rcNetworkClient.put('/', {
-        id: 123,
+        _id: 123,
         __draft: '123',
         a: true,
       });
 
       expect(rcNetworkClient.http).toHaveBeenCalledWith({
         data: {
-          id: 123,
+          _id: 123,
           a: true,
         },
         headers: {},

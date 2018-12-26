@@ -184,7 +184,7 @@ export const groupStateResult1 = {
 export const groupState2 = {
   id: 532486,
   group_post_cursor: 2074,
-  trigger_ids: [1409027],
+  __trigger_ids: [1409027],
 };
 
 export const groupStateResult2 = {
@@ -199,7 +199,7 @@ export const groupState3 = {
   id: 532486,
   group_post_cursor: 2076,
   group_post_drp_cursor: 1,
-  trigger_ids: [1409027],
+  __trigger_ids: [1409027],
 };
 
 export const groupStateResultNoOrigin3 = {
@@ -221,14 +221,14 @@ export const groupStateResult3 = {
 export const groupState4 = {
   id: 532487,
   group_post_cursor: 2071,
-  trigger_ids: [1409027],
+  __trigger_ids: [1409027],
 };
 
 export const groupState5 = {
   id: 532486,
   group_post_cursor: 2074,
   group_post_drp_cursor: 1,
-  trigger_ids: [1409027],
+  __trigger_ids: [1409027],
 };
 
 export const groupStateResult5 = {
@@ -243,7 +243,7 @@ export const groupStateResult5 = {
 export const groupState6 = {
   id: 532486,
   group_post_drp_cursor: 1,
-  trigger_ids: [1409027],
+  __trigger_ids: [1409027],
 };
 
 export const groupStateResult6 = {
@@ -293,5 +293,5 @@ export const groupState10 = {
   id: 532486,
   group_post_cursor: 2070,
   group_post_drp_cursor: 1,
-  trigger_ids: [1409027],
+  __trigger_ids: [1409027],
 };
