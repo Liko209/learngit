@@ -17,8 +17,9 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init(); 
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -26,34 +27,34 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
     let favChatId, teamId, urlAfterClose;
     await h(t).withLog('Given I have an extension with group chat A and 1 team chat B',
       async () => {
-        teamId = (await user.sdk.platform.createGroup({
+        teamId = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        favChatId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
+        favChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
       },
     );
 
     await h(t).withLog('All conversa(tions should not be hidden before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [favChatId, teamId])
-      await user.sdk.glip.favoriteGroups(user.rcId, [+ favChatId])
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [favChatId, teamId])
+      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+ favChatId])
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
-        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+        const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages(loginUser.rcId);
+        await h(t).glip(loginUser).markAsRead(loginUser.rcId, unreadGroups);
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -116,8 +117,9 @@ test(formalName('Open profile via conversation list',
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init(); 
 
     const dmSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -126,42 +128,38 @@ test(formalName('Open profile via conversation list',
     let favChatId, pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B and 1 group chat C',
       async () => {
-        pvtChatId = (await user.sdk.platform.createGroup({
+        pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'PrivateChat',
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-        teamId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId],
+        });
+        teamId = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        favChatId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
+        favChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
       },
     );
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.updateProfile(user.rcId, {
-        [`hide_group_${pvtChatId}`]: false,
-        [`hide_group_${favChatId}`]: false,
-        [`hide_group_${teamId}`]: false,
-        favorite_group_ids: [+favChatId],
-      });
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId,favChatId,teamId]);
+      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favChatId]);
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
-        const unreadGroups = await user.sdk.glip.getIdsOfGroupsWithUnreadMessages(user.rcId);
-        await user.sdk.glip.markAsRead(user.rcId, unreadGroups);
+        const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages(loginUser.rcId);
+        await h(t).glip(loginUser).markAsRead(loginUser.rcId, unreadGroups);
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );

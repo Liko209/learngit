@@ -48,6 +48,7 @@ type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
+  private timer: number;
 
   state = {
     terms: [],
@@ -263,11 +264,27 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
   }
 
+  searchBarBlur = () => {
+    this.timer = setTimeout(() => {
+      this.onClose();
+    });
+  }
+
+  searchBarFocus = () => {
+    clearTimeout(this.timer);
+  }
+
   render() {
     const { terms, persons, groups, teams, focus } = this.state;
     const { searchValue } = this.props;
     return (
-      <JuiSearchBar onClose={this.onClose} focus={focus}>
+      <JuiSearchBar
+        onClose={this.onClose}
+        focus={focus}
+        tabIndex={0}
+        onBlur={this.searchBarBlur}
+        onFocus={this.searchBarFocus}
+      >
         <HotKeys
           keyMap={{
             enter: this.onEnter,

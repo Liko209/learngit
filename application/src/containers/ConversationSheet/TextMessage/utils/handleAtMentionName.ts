@@ -15,9 +15,9 @@ const handleAtMentionName = (str: string, kv = {}, currentUserId = 0) => {
       UN_ESCAPE_HTML_AT_MENTION_REGEXP,
       (match, id, p2) => {
         const text = kv[id] || p2;
-        return `<a class='at_mention_compose ${
-          +id === currentUserId ? 'current' : ''
-        }' href='javascript:void(0)' id=${id}>${text}</a>`;
+        return `<a class='at_mention_compose${
+          +id === currentUserId ? ' current' : ''
+        }' href='javascript:void(0)' id='${id}'>${text}</a>`;
       },
     );
   }

@@ -53,7 +53,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   async scrollToMiddle() {
     const scrollHeight = await this.streamWrapper.clientHeight;
-    this.scrollToY(scrollHeight/2);
+    await this.scrollToY(scrollHeight/2);
   }
 
   async scrollToBottom() {

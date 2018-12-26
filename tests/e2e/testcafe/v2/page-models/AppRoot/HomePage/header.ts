@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { promises } from "fs";
 
 export class Header extends BaseWebComponent {
   get self() {
