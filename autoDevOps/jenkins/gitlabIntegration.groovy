@@ -1,7 +1,6 @@
 import jenkins.model.*
 import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
-import hudson.AbortException
 
 // glip emoji const
 final String SUCCESS_EMOJI = ':white_check_mark:'
@@ -51,7 +50,7 @@ def condStage(Map args, Closure block) {
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
     GString sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
-    return sh(returnStdout: true script: "${sshCmd} ${cmd}").trim()
+    return sh(returnStdout: true, script: "${sshCmd} ${cmd}").trim()
 }
 
 // deploy helper
@@ -69,7 +68,7 @@ def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
     return 'true' == sshCmd(remoteUri, "[[ -d ${remoteDir} ]] && echo 'true' || echo 'false'")
 }
 
-def updateRemoteLink(String remoteUri, String linkSource String linkTarget) {
+def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
     assert '/' != linkTarget, 'What the hell are you doing?'
     // remove link if exists
     println sshCmd(remoteUri, "[ -L ${linkTarget}] && unlink ${linkTarget}")
@@ -401,7 +400,7 @@ node(buildNode) {
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
         String statusTitle = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
-            statusTitle = ":no_entry: Aborted"
+            statusTitle = "${ABORTED_EMOJI} Aborted"
         def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, env.BUILD_URL, report)
         safeMail(
                 reportChannels,
