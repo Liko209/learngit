@@ -64,12 +64,11 @@ export type GroupCommon = {
   permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
-  trigger_ids?: number[];
+  __trigger_ids?: number[];
   deactivated_post_cursor?: number;
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
-  has_no_more_post?: boolean;
   __send_failure_post_ids?: number[];
   __draft?: string;
   __last_accessed_at?: number;
@@ -155,7 +154,7 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  trigger_ids?: number[];
+  __trigger_ids?: number[];
   last_group_id: number;
   at_mentioning_post_ids?: number[];
 };
@@ -173,7 +172,7 @@ export type GroupState = {
   unread_deactivated_count?: number;
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
-  trigger_ids?: number[];
+  __trigger_ids?: number[];
 };
 
 export type GroupConfig = {
@@ -199,12 +198,12 @@ export type Post = ExtendedBaseModel & {
   activity_data?: object;
   at_mention_item_ids?: number[];
   at_mention_non_item_ids?: number[];
-  new_version?: number;
+  new_version?: number; // This field should be moved to base model?
   from_group_id?: number;
   item_data?: PostItemData;
   links?: object[];
   items?: object[];
-  status?: POST_STATUS;
+  __status?: POST_STATUS;
   source?: string;
   parent_id?: number;
 };
@@ -236,7 +235,7 @@ export type Item = ExtendedBaseModel & {
   versions: ItemVersions[];
   summary?: string;
   title?: string;
-  url: string;
+  url?: string;
   image?: string;
   do_not_render?: boolean;
 };
@@ -291,7 +290,6 @@ export type LinkItem = Item & {
   title: string;
   url: string;
   image: string;
-  deactivated: boolean;
   data: {
     provider_name: string;
   };

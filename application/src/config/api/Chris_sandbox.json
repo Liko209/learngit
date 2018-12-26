@@ -18,10 +18,6 @@
     "apiPlatformVersion": "v1.0",
     "apiPlatform": "/desktop"
   },
-  "upload": {
-    "server": "https://aws13-g04-uds02.asialab.glip.net:11906",
-    "apiPlatform": ""
-  },
   "splitio": {
     "clientSecret": "aiers1fdmskm7paalb3ubhhuumaauv21rnti"
   },

@@ -18,30 +18,31 @@ test(formalName('Show the 1:1 conversation and group conversation in the Direct 
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
-    let chat, group;
+    let chatId, groupId;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat', async () => {
-      chat = await user.sdk.platform.createGroup({
-        type: 'PrivateChat', members: [user.rcId, users[5].rcId],
+      chatId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'PrivateChat', members: [loginUser.rcId, users[5].rcId],
       });
-      group = await user.sdk.platform.createGroup({
-        type: 'Group', members: [user.rcId, users[5].rcId, users[6].rcId],
+      groupId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group', members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
-      await user.sdk.glip.showGroups(user.rcId, [chat.data.id, group.data.id]);
-      await user.sdk.glip.clearFavoriteGroupsRemainMeChat();
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [chatId, groupId]);
+      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
     await h(t).withLog('Then I can find 1 private chat and 1 group chat in direct messages section', async () => {
       const directMessagesSection = app.homePage.messageTab.directMessagesSection;
       await directMessagesSection.expand();
-      await t.expect(directMessagesSection.conversationEntryById(chat.data.id).exists).ok()
-      await t.expect(directMessagesSection.conversationEntryById(group.data.id).exists).ok()
+      await t.expect(directMessagesSection.conversationEntryById(chatId).exists).ok()
+      await t.expect(directMessagesSection.conversationEntryById(groupId).exists).ok()
     }, true);
   });

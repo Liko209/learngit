@@ -90,6 +90,14 @@ class Helper {
     return { glip, platform };
   }
 
+  glip(user: IUser) {
+    return  this.sdkHelper.sdkManager.glip(user);
+  }
+
+  platform(user: IUser) {
+    return this.sdkHelper.sdkManager.platform(user);
+  }
+
   // testcafe extend
   get href() {
     return ClientFunction(() => document.location.href)();
@@ -134,7 +142,7 @@ class Helper {
   }
 
   // a temporary method:  need time to wait back-end and front-end sync umi data.
-  async waitUmiDismiss(timeout: number = 1e3) {
+  async waitUmiDismiss(timeout: number = 3e3) {
     await this.t.wait(timeout);
   }
 

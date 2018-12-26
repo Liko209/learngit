@@ -5,7 +5,6 @@
  */
 
 enum FILE_FORM_DATA_KEYS {
-  FILE_NAME = 'filename',
   FILE = 'file',
   CONTENT_TYPE = 'Content-type',
 }

@@ -14,144 +14,117 @@ fixture('CreateTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(
-  formalName('new team popup can be open and closed', ['P1', 'JPT-86']),
-  async t => {
-    const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
-    await h(t).withLog(
-      `When I login Jupiter with ${user.company.number}#${user.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+test(formalName('new team popup can be open and closed', ['P1', 'JPT-86']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[0];
 
-    // case 1
-    await h(t).withLog('Then I can open add menu in home page', async () => {
-      await app.homePage.openAddActionMenu();
-    });
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    const createTeamModal = app.homePage.createTeamModal;
-    await h(t).withLog(
-      'Then I can open Create Team in AddActionMenu',
-      async () => {
-        await app.homePage.addActionMenu.createTeamEntry.enter();
-        await createTeamModal.ensureLoaded();
-      },
-      true,
-    );
-    await h(t).withLog('Then I can close the Create Team popup', async () => {
-      await createTeamModal.clickCancelButton();
-    });
-  },
-);
+  // case 1
+  await h(t).withLog('Then I can open add menu in home page', async () => {
+    await app.homePage.openAddActionMenu();
+  });
 
-test(
-  formalName('Check the maximum length of the Team Name input box', [
-    'P1',
-    'JPT-102',
-  ]),
-  async t => {
-    const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+  const createTeamModal = app.homePage.createTeamModal;
+  await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+    await createTeamModal.ensureLoaded();
+  }, true);
 
-    await h(t).withLog(
-      `When I login Jupiter with ${user.company.number}#${user.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+  await h(t).withLog('Then I can close the Create Team popup', async () => {
+    await createTeamModal.clickCancelButton();
+  });
+});
 
-    // case 2
-    await h(t).withLog('Then I can open add menu in home page', async () => {
-      await app.homePage.openAddActionMenu();
-    });
+test(formalName('Check the maximum length of the Team Name input box', ['P1', 'JPT-102']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[0];
 
-    const createTeamModal = app.homePage.createTeamModal;
-    await h(t).withLog(
-      'Then I can open Create Team in AddActionMenu',
-      async () => {
-        await app.homePage.addActionMenu.createTeamEntry.enter();
-        await createTeamModal.ensureLoaded();
-      },
-    );
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    await h(t).withLog(
-      'Then I input team name exceeded max characters',
-      async () => {
-        // Here we type 202 chars, which exceeds max chars of 200
-        await createTeamModal.inputRandomTeamName(202);
-      },
-    );
-    await h(t).withLog(
-      'Then I can input team name with 200 character',
-      async () => {
-        const teamNameValue = await createTeamModal.teamNameInput.value;
-        // assert only 1000 chars will be kept
-        await t.expect(teamNameValue.length).eql(200);
-        await createTeamModal.clickCancelButton();
-      },
-    );
-  },
-);
+  // case 2
+  await h(t).withLog('Then I can open add menu in home page', async () => {
+    await app.homePage.openAddActionMenu();
+  });
 
-test(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']),
-  async t => {
-    const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
-    const teamName = `Team ${uuid()}`;
+  const createTeamModal = app.homePage.createTeamModal;
+  await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+    await createTeamModal.ensureLoaded();
+  });
 
-    await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog('Then I input team name exceeded max characters', async () => {
+    // Here we type 202 chars, which exceeds max chars of 200
+    await createTeamModal.inputRandomTeamName(202);
+  });
 
-    // case 3
-    await h(t).withLog('Then I can open add menu in home page', async () => {
-      await app.homePage.openAddActionMenu();
-    });
+  await h(t).withLog('Then I can input team name with 200 character', async () => {
+    const teamNameValue = await createTeamModal.teamNameInput.value;
+    // assert only 1000 chars will be kept
+    await t.expect(teamNameValue.length).eql(200);
+    await createTeamModal.clickCancelButton();
+  });
+});
 
-    const createTeamModal = app.homePage.createTeamModal;
-    await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
-      await app.homePage.addActionMenu.createTeamEntry.enter();
-      await createTeamModal.ensureLoaded();
-    });
+test(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const teamName = `Team ${uuid()}`;
 
-    await h(t).withLog('Then I can input team name randomly', async () => {
-      await createTeamModal.setTeamName(teamName);
-    });
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    await h(t).withLog('Then I can set the team as Public', async () => {
-      await createTeamModal.clickPublicTeamButton();
-    });
+  // case 3
+  await h(t).withLog('Then I can open add menu in home page', async () => {
+    await app.homePage.openAddActionMenu();
+  });
 
-    await h(t).withLog('Then Turn off the toggle of "Members may post messages"', async () => {
-      await createTeamModal.clickMayPostButton();
-    });
+  const createTeamModal = app.homePage.createTeamModal;
+  await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+    await createTeamModal.ensureLoaded();
+  });
 
-    await h(t).withLog('Then Tap create team button', async () => {
-      await createTeamModal.clickCreateButton();
-    });
+  await h(t).withLog('Then I can input team name randomly', async () => {
+    await createTeamModal.setTeamName(teamName);
+  });
 
-    await h(t).withLog('Then Check the created team', async () => {
-      const teamSection = app.homePage.messageTab.teamsSection;
-      await teamSection.expand();
-      await t.expect(teamSection.conversations.withText(`${teamName}`).exists).ok();
-      await t.expect(app.homePage.messageTab.conversationPage.title.withText(`${teamName}`).exists).ok();
-    }, true);
-  },
-);
+  await h(t).withLog('Then I can set the team as Public', async () => {
+    await createTeamModal.clickPublicTeamButton();
+  });
+
+  await h(t).withLog('Then Turn off the toggle of "Members may post messages"', async () => {
+    await createTeamModal.clickMayPostButton();
+  });
+
+  await h(t).withLog('Then Tap create team button', async () => {
+    await createTeamModal.clickCreateButton();
+  });
+
+  await h(t).withLog('Then Check the created team', async () => {
+    const teamSection = app.homePage.messageTab.teamsSection;
+    await teamSection.expand();
+    await t.expect(teamSection.conversations.withText(`${teamName}`).exists).ok();
+    await t.expect(app.homePage.messageTab.conversationPage.title.withText(`${teamName}`).exists).ok();
+  }, true);
+});
 
 test(formalName('Check the Create button is disabled when user create team without team name', ['P2', 'JPT-92']),
   async t => {
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
     const teamName = `Team ${uuid()}`;
 
-    await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
@@ -175,22 +148,15 @@ test(formalName('Check the Create button is disabled when user create team witho
   },
 );
 
-test(
-  formalName('Check the maximum length of the Team Description input box', [
-    'P3',
-    'JPT-111',
-  ]),
+test(formalName('Check the maximum length of the Team Description input box', ['P3', 'JPT-111']),
   async t => {
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(
-      `When I login Jupiter with ${user.company.number}#${user.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
 
     // case 5
     await h(t).withLog('Then I can open add menu in home page', async () => {
@@ -198,30 +164,22 @@ test(
     });
 
     const createTeamModal = app.homePage.createTeamModal;
-    await h(t).withLog(
-      'Then I can open Create Team in AddActionMenu',
-      async () => {
-        await app.homePage.addActionMenu.createTeamEntry.enter();
-        await createTeamModal.ensureLoaded();
-      },
-    );
+    await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
+      await app.homePage.addActionMenu.createTeamEntry.enter();
+      await createTeamModal.ensureLoaded();
+    });
 
-    await h(t).withLog(
-      'Then I input team Description exceeded max characters',
-      async () => {
-        // Here we type 1002 chars, which exceeds max chars of 1000
-        await createTeamModal.inputRandomTeamDescription(1002);
-      },
-    );
-    await h(t).withLog(
-      'Then I can input team Description with 1000 character',
-      async () => {
-        const teamDescriptionValue = await createTeamModal.teamDescriptionInput.value;
-        // assert only 1000 chars will be kept
-        await t.expect(teamDescriptionValue.length).eql(1000);
-        await createTeamModal.clickCancelButton();
-      },
-    );
+    await h(t).withLog('Then I input team Description exceeded max characters', async () => {
+      // Here we type 1002 chars, which exceeds max chars of 1000
+      await createTeamModal.inputRandomTeamDescription(1002);
+    });
+
+    await h(t).withLog('Then I can input team Description with 1000 character', async () => {
+      const teamDescriptionValue = await createTeamModal.teamDescriptionInput.value;
+      // assert only 1000 chars will be kept
+      await t.expect(teamDescriptionValue.length).eql(1000);
+      await createTeamModal.clickCancelButton();
+    });
 
   },
 );

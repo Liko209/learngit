@@ -36,7 +36,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId);
+  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,

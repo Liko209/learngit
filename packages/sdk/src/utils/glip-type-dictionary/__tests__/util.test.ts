@@ -34,7 +34,7 @@ describe('GlipTypeUtil', () => {
           _id: 532486,
           modified_at: 1536061960642,
           post_cursor: 1995,
-          trigger_ids: [1376259],
+          __trigger_ids: [1376259],
           version: 7383248413917184,
         },
       ],
