@@ -13,7 +13,7 @@ import {
   JuiStreamWrapper,
 } from 'jui/pattern/ConversationPage';
 import { StreamDropZoneClasses } from 'jui/pattern/ConversationPage/StreamWrapper';
-import { DropZone } from 'jui/pattern/MessageInput/DropZone';
+import { JuiDropZone } from 'jui/pattern/MessageInput/DropZone';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
 import { Header } from './Header';
@@ -87,7 +87,7 @@ class ConversationPageViewComponent extends Component<
           data-test-automation-id="messagePanel"
         >
           <Header id={groupId} />
-          <DropZone
+          <JuiDropZone
             accepts={[NativeTypes.FILE]}
             onDrop={this._handleDropFileInStream}
             dropzoneClass={StreamDropZoneClasses}
@@ -100,9 +100,9 @@ class ConversationPageViewComponent extends Component<
               />
               <div id="jumpToFirstUnreadButtonRoot" />
             </JuiStreamWrapper>
-          </DropZone>
+          </JuiDropZone>
           {canPost ? (
-            <DropZone
+            <JuiDropZone
               accepts={[NativeTypes.FILE]}
               onDrop={this._handleDropFileInMessageInput}
             >
@@ -111,7 +111,7 @@ class ConversationPageViewComponent extends Component<
                 id={groupId}
                 onPost={this.sendHandler}
               />
-            </DropZone>
+            </JuiDropZone>
           ) : (
             <JuiDisabledInput text={t('disabledText')} />
           )}

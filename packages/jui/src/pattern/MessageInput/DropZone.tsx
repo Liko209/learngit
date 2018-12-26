@@ -15,12 +15,12 @@ import {
 import { ThemeProps } from '../../foundation/theme/theme';
 import { grey, width, palette } from '../../foundation/utils/styles';
 
-type DropZoneProps = {
+type JuiDropZoneProps = {
   dropzoneClass?: CSSProperties;
 };
 
 class TargetBox extends Component<
-  ITargetBoxProps & ITargetBoxCollectedProps & DropZoneProps & ThemeProps
+  ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
 > {
   render() {
     const {
@@ -65,8 +65,8 @@ interface ITargetBoxCollectedProps {
   connectDropTarget: ConnectDropTarget;
 }
 
-const DropZone = DropTarget<
-  ITargetBoxProps & DropZoneProps,
+const JuiDropZone = DropTarget<
+  ITargetBoxProps & JuiDropZoneProps,
   ITargetBoxCollectedProps
 >(
   (props: ITargetBoxProps) => props.accepts,
@@ -78,4 +78,4 @@ const DropZone = DropTarget<
   }),
 )(ThemedBox);
 
-export { DropZone, DropZoneProps };
+export { JuiDropZone, JuiDropZoneProps };

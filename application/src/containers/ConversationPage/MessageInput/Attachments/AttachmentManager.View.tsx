@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
-import { DuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
+import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
 import { t } from 'i18next';
 
@@ -20,7 +20,7 @@ class AttachmentManagerViewComponent extends Component<
     const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
       return (
-        <DuplicateAlert
+        <JuiDuplicateAlert
           title={t('updateFiles')}
           subtitle={t('theFollowingFilesAlreadyExist')}
           footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}

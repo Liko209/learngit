@@ -11,7 +11,7 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiMessageInput } from '..';
 import { AttachmentItem, ITEM_STATUS } from '../AttachmentItem';
 import { AttachmentList, ItemInfo } from '../AttachmentList';
-import { DuplicateAlert } from '../DuplicateAlert';
+import { JuiDuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
 import { AttachmentView } from '../Attachment';
 
@@ -88,7 +88,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
   );
 });
 
-storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
+storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
   const removeAttachment = () => {};
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
@@ -101,7 +101,7 @@ storiesOf('Pattern/MessageInput', module).add('DuplicateAlert', () => {
   const callback = (title: string) => alert(`you clicked ${title}`);
   return (
     <div>
-      <DuplicateAlert
+      <JuiDuplicateAlert
         title="Update Files?"
         subtitle="The following files already exist."
         footText="Do you want to update the existing files or do you wish to create new files?"

@@ -56,7 +56,7 @@ const Item = styled.li`
   ${ellipsis};
 `;
 
-const DuplicateAlert: React.SFC<Props> = (props: Props) => {
+const JuiDuplicateAlert: React.SFC<Props> = (props: Props) => {
   const {
     onCancel,
     onUpdate,
@@ -126,4 +126,4 @@ const DuplicateAlert: React.SFC<Props> = (props: Props) => {
   return null;
 };
 
-export { DuplicateAlert };
+export { JuiDuplicateAlert };

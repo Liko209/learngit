@@ -184,8 +184,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       }
       return item;
     } catch (e) {
-      // TODO
-      console.log(146, e);
       return null;
     }
   }
@@ -198,10 +196,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     const { id } = info;
     const record = this.items.get(id);
     if (record) {
-      try {
-        await this._itemService.cancelUpload(id);
-        this.items.delete(id);
-      } catch (e) {}
+      await this._itemService.cancelUpload(id);
+      this.items.delete(id);
     }
   }
 
