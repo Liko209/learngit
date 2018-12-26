@@ -1,24 +1,28 @@
 {
   "rc": {
-    "server": "https://api-glpdevxmn.lab.nordigy.ru",
+    "server": "https://platform.ringcentral.com",
     "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
     "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
   },
   "glip2": {
-    "server": "https://api-glpdevxmn.lab.nordigy.ru",
+    "server": "https://platform.ringcentral.com",
     "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
     "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
   },
   "glip": {
-    "server": "https://aws13-g04-uds02.asialab.glip.net:11904",
-    "cacheServer": "https://aws13-g04-uds02.asialab.glip.net:11907"
+    "server": "https://app.glip.com",
+    "cacheServer": "https://cache.glip.com"
   },
   "glip_desktop": {
-    "server": "https://aws13-g04-uds02.asialab.glip.net:11904",
+    "server": "https://app.glip.com",
     "apiPlatformVersion": "v1.0",
     "apiPlatform": "/desktop"
   },
+  "upload": {
+    "server": "https://api.glip.com",
+    "apiPlatform": ""
+  },
   "splitio": {
-    "clientSecret": "aiers1fdmskm7paalb3ubhhuumaauv21rnti"
+    "clientSecret": "29hgk2inao6t92k22dubohl2jtf2fdtgsmpn"
   }
 }

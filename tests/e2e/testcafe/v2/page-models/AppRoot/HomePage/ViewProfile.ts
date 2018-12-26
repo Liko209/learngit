@@ -97,6 +97,15 @@ export class MiniProfile extends BaseWebComponent {
     await this.t.click(this.profileButton);
   }
 
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.header.find('.privacy');
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
+  }
+
   get messageButton() {
     this.warnFlakySelector();
     return this.getSelectorByIcon('chat_bubble', this.footer).parent('button');

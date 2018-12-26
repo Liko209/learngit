@@ -85,6 +85,15 @@ export class ConversationPage extends BaseConversationPage {
       .pressKey('enter');
   }
 
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
+  }
+
   async favorite() {
     await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
   }

@@ -7,7 +7,7 @@ export class Header extends BaseWebComponent {
 
   getBackNForward(name: string) {
     return this.getComponent(
-      BackNForward, 
+      BackNForward,
       this.getSelectorByAutomationId(name, this.self)
     );
   }
@@ -19,7 +19,7 @@ export class Header extends BaseWebComponent {
   get forwardButton() {
     return this.getBackNForward('Forward');
   }
-  
+
   get search() {
     this.warnFlakySelector();
     return this.getComponent(Search, this.getSelector('.search-bar', this.self));
@@ -56,7 +56,7 @@ class Search extends BaseWebComponent {
   async typeText(text: string, options?: TypeActionOptions) {
     await this.t.typeText(this.inputArea, text, options)
   }
-  
+
   get closeButton() {
     return this.getSelectorByIcon('close');
   }
@@ -68,7 +68,7 @@ class Search extends BaseWebComponent {
   get allResultItems() {
     return this.getSelector('.search-items');
   }
-  
+
   get peoples() {
     return this.getSelectorByAutomationId('search-People-item');
   }
@@ -80,11 +80,11 @@ class Search extends BaseWebComponent {
   get teams() {
     return this.getSelectorByAutomationId('search-Teams-item');
   }
-  
+
   nthPeople(n: number) {
     return this.getComponent(SearchItem, this.peoples.nth(n));
   }
-  
+
   nthGroup(n: number) {
     return this.getComponent(SearchItem, this.groups.nth(n));
   }
@@ -95,23 +95,22 @@ class Search extends BaseWebComponent {
 }
 
 class SearchItem extends BaseWebComponent {
-  
   get avatar() {
     return this.getSelectorByAutomationId('search-item-avatar', this.self);
   }
-  
+
   get name() {
     return this.getSelectorByAutomationId('search-item-text', this.self);
   }
 
   // people
   get uid() {
-    return this.avatar.find("div").withAttribute('uid').getAttribute('uid');  
+    return this.avatar.find("div").withAttribute('uid').getAttribute('uid');
   }
 
   // group or team
   get cid() {
-    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');;  
+    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');
   }
 
   async getId() {
@@ -132,5 +131,4 @@ class SearchItem extends BaseWebComponent {
   async clickName() {
     await this.t.click(this.name);
   }
-
 }
