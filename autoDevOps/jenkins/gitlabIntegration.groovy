@@ -252,6 +252,7 @@ node(buildNode) {
 
         stage ('Install Dependencies') {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
+            sh "[ -f package-lock.json ] && rm package-lock.json"
             sshagent (credentials: [scmCredentialId]) {
                 sh 'npm install typescript ts-node --unsafe-perm'
                 sh 'npm install --unsafe-perm'
