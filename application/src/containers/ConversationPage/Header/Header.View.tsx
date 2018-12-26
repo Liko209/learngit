@@ -14,10 +14,9 @@ import {
 } from 'jui/pattern/ConversationPageHeader';
 import {
   JuiButtonBar,
-  JuiCheckboxButton,
   JuiIconButton,
 } from 'jui/components/Buttons';
-import { Notification } from '@/containers/Notification';
+import { Favorite, Privacy } from '@/containers/common';
 import { translate, WithNamespaces } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -33,6 +32,7 @@ type HeaderProps = {
     tooltip: string;
   }[];
   customStatus: string | null;
+  groupId: number;
   onFavoriteButtonHandler: (
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
@@ -81,60 +81,14 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   private _SubTitle() {
     const {
-      t,
-      isFavorite,
       type,
-      isPrivate,
-      onFavoriteButtonHandler,
+      groupId,
     } = this.props;
-    const onchange = async (
-      event: React.ChangeEvent<HTMLInputElement>,
-      checked: boolean,
-    ) => {
-      const result = await onFavoriteButtonHandler(event, checked);
-
-      if (result.isErr()) {
-        const message = isFavorite
-          ? t('markUnFavoriteServerErrorContent')
-          : t('markFavoriteServerErrorContent');
-
-        Notification.flashToast({
-          message,
-          type: 'error',
-          messageAlign: 'left',
-          fullWidth: false,
-          dismissible: false,
-        });
-      }
-    };
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        <JuiButtonBar size="medium" overlapSize={2}>
-          {type === CONVERSATION_TYPES.TEAM ? (
-            <JuiCheckboxButton
-              tooltipTitle={
-                isPrivate ? t('thisIsAPrivateTeam') : t('thisIsAPublicTeam')
-              }
-              color="grey.500"
-              checkedIconName="lock"
-              iconName="lock_open"
-              checked={isPrivate}
-            />
-          ) : null}
-          <JuiCheckboxButton
-            tooltipTitle={
-              isFavorite
-                ? toTitleCase(t('removeFromFavorites'))
-                : toTitleCase(t('addToFavorites'))
-            }
-            color="accent.gold"
-            checkedIconName="star"
-            iconName="star_border"
-            checked={isFavorite}
-            onChange={onchange}
-          />
-        </JuiButtonBar>
+        {type === CONVERSATION_TYPES.TEAM ? <Privacy id={groupId} size="medium" /> : null}
+        <Favorite id={groupId} size="medium" />
       </JuiConversationPageHeaderSubtitle>
     );
   }
