@@ -8,8 +8,8 @@ import { daoManager, AccountDao, PostDao } from '../../../dao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
-import { POST_STATUS } from '../../constants';
 import ItemService from '../../item';
+import { number } from '@storybook/addon-knobs';
 
 jest.mock('../../../dao');
 jest.mock('../../../utils/mathUtils');
@@ -71,7 +71,7 @@ describe('PostServiceHandler', () => {
     });
 
     const expectData = (hasItemIds: boolean) => ({
-      id: 'versionHash',
+      id: expect.any(Number),
       created_at: 123123,
       modified_at: 123123,
       creator_id: 123,
@@ -90,7 +90,6 @@ describe('PostServiceHandler', () => {
       links: [],
       company_id: 123,
       deactivated: false,
-      __status: 2,
       activity_data: {},
     });
 
@@ -224,18 +223,6 @@ describe('PostServiceHandler', () => {
       } catch (err) {
         expect(err).toBeInstanceOf(Error);
       }
-    });
-  });
-
-  describe('buildResendPost', () => {
-    it('buildResendPost', () => {
-      let model = postFactory.build({
-        created_at: 0,
-        version: 0,
-      });
-
-      model = PostServiceHandler.buildResendPostInfo(model);
-      expect(model.__status).toBe(POST_STATUS.INPROGRESS);
     });
   });
 });

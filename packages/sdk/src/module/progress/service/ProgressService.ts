@@ -35,7 +35,7 @@ class ProgressService extends EntityBaseService<Progress> {
   }
 
   getById(id: number) {
-    return id < 0 ? this._cacheController.getProgress(id) : undefined;
+    return this._cacheController.getProgress(id);
   }
 }
 

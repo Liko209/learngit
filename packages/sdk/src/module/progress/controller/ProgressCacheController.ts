@@ -27,12 +27,12 @@ class ProgressCacheController {
   updateProgress(id: number, progress: Progress) {
     if (this._progressCache.has(id)) {
       this._progressCache.set(id, progress);
+      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
     } else {
       mainLogger.warn(
         `ProgressCacheController, should not call update no cache found, ${id}`,
       );
     }
-    notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
   }
 
   deleteProgress(id: number) {
