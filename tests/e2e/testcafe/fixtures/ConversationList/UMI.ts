@@ -787,6 +787,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
     );
 
     await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
+      await app.homePage.messageTab.conversationPage.groupIdShouldBe(teamId);
       await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).expectUmi(0);
     });
   },
