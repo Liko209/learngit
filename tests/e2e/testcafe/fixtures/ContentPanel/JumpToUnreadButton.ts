@@ -17,7 +17,7 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.only(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
+test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[6];
@@ -57,7 +57,7 @@ test.only(formalName('Conversation list scrolling when sending massage', ['JPT-1
     }
   );
 
-  await h(t).withLog('And scroll to middle',
+  await h(t).withLog('And scroll to middle of page',
     async () => {
       await t.wait(3e3)
       await app.homePage.messageTab.conversationPage.scrollToY(0)
@@ -65,20 +65,38 @@ test.only(formalName('Conversation list scrolling when sending massage', ['JPT-1
   )
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const message = `message ${uuid()}`
-  await h(t).withLog('When I can send message to this conversation', async () => {
+  const message = `${uuid()}`
+  await h(t).withLog('When I send message to this conversation', async () => {
     await conversationPage.sendMessage(message);
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section',
     async () => {
-      await t.wait(3e3)
+      await t.wait(3e1)
       const posts = await app.homePage.messageTab.conversationPage.posts;
-
       await conversationPage.expectStreamScrollToBottom()
+      console.log(await posts.nth(-1)())
       await t.expect(posts.nth(-1).withText(message).exists).ok()
     }
   )
+
+
+  const anotherMessage = `${uuid()}`
+  await h(t).withLog('When I send another message to this conversation', async () => {
+    await t.wait(3e1)
+    await conversationPage.sendMessage(anotherMessage);
+  });
+
+  await h(t).withLog('Then I should see the newest post in bottom of stream section',
+    async () => {
+      await t.wait(3e1)
+      const posts = await app.homePage.messageTab.conversationPage.posts;
+      await conversationPage.expectStreamScrollToBottom()
+      console.log(await posts.nth(-1)())
+      await t.expect(posts.nth(-1).withText(anotherMessage).exists).ok()
+    }
+  )
+
 })
 
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
@@ -410,3 +428,76 @@ test(formalName('All unread messages can be downloaded when click the unread but
   )
 })
 
+test(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1','Wayne.Zhou', 'Stream']), async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const user = users[6];
+  const userPlatform = await h(t).getPlatform(user);
+  const anotherUserPlatform = await h(t).getPlatform(users[5])
+  let conversationA;
+  let conversationB;
+
+  await h(t).withLog('Given I have an extension with two conversation', async () => {
+    conversationA = (await userPlatform.createGroup({
+      isPublic: true,
+      name: `Team ${uuid()}`,
+      type: 'Team',
+      members: [user.rcId, users[5].rcId, users[6].rcId],
+    })).data.id;
+
+    conversationB = (await userPlatform.createGroup({
+      isPublic: true,
+      name: `Team ${uuid()}`,
+      type: 'Team',
+      members: [user.rcId, users[5].rcId, users[6].rcId],
+    })).data.id;
+  });
+
+  await h(t).withLog('And another user send 20 message in conversationA',
+    async ()=>{
+      const msgs = _.range(20)
+      for (let msg of msgs){
+        await anotherUserPlatform.createPost({text: `${msg} ${uuid()}`}, conversationA)
+      }
+    }
+  )
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter conversationA',
+    async () => {
+      const teamsSection = app.homePage.messageTab.teamsSection;
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(conversationA).enter();
+      await teamsSection.ensureLoaded();
+    });
+
+  await h(t).withLog('Then I should see unread button',
+    async () => {
+      const conversationPage = app.homePage.messageTab.conversationPage;
+      await t.wait(3e3);
+      await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
+    }
+  );
+
+  await h(t).withLog('When I navigate to conversationB then back to conversationA',
+    async () => {
+      const teamsSection = app.homePage.messageTab.teamsSection;
+      await teamsSection.conversationEntryById(conversationB).enter();
+      await teamsSection.ensureLoaded();
+      await teamsSection.conversationEntryById(conversationA).enter();
+    }
+  )
+
+  await h(t).withLog('Then I should not see unread button',
+    async () => {
+      const conversationPage = app.homePage.messageTab.conversationPage;
+      await t.wait(3e3);
+      await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).notOk()
+    }
+  )
+})
