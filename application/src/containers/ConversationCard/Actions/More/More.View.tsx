@@ -23,7 +23,10 @@ const menuItems = {
 };
 
 @observer
-class More extends React.Component<MoreViewProps> {
+class More extends React.Component<MoreViewProps, { open: boolean }> {
+  state = {
+    open: false,
+  };
   private _Anchor = () => {
     const { t } = this.props;
     return (
@@ -32,10 +35,21 @@ class More extends React.Component<MoreViewProps> {
         variant="plain"
         data-name="actionBarMore"
         tooltipTitle={t('more')}
+        onClick={this.openPopper}
       >
         more_horiz
       </JuiIconButton>
     );
+  }
+  closePopper = () => {
+    this.setState({
+      open: false,
+    });
+  }
+  openPopper = () => {
+    this.setState({
+      open: true,
+    });
   }
 
   render() {
@@ -46,8 +60,12 @@ class More extends React.Component<MoreViewProps> {
     }
 
     return (
-      <JuiPopperMenu Anchor={this._Anchor} placement="bottom-start">
-        <JuiMenuList>
+      <JuiPopperMenu
+        Anchor={this._Anchor}
+        placement="bottom-start"
+        open={this.state.open}
+      >
+        <JuiMenuList onClick={this.closePopper}>
           {Object.keys(menuItems).map((key: string) => {
             const { permission, shouldShowAction } = permissionsMap[key];
             const Component = menuItems[key];
