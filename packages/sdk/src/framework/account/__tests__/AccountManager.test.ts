@@ -1,14 +1,20 @@
 import { Container } from 'foundation';
 import { AccountManager } from '../AccountManager';
-import { IAuthenticator, ISyncAuthenticator, IAuthResponse, IAuthParams } from '../IAuthenticator';
+import {
+  IAuthenticator,
+  ISyncAuthenticator,
+  IAuthResponse,
+  IAuthParams,
+} from '../IAuthenticator';
 import { AbstractAccount } from '../AbstractAccount';
-
+import * as helper from '../helper';
+import * as dao from '../../../dao';
 class MyAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> { }
+  async updateSupportedServices(data: any): Promise<void> {}
 }
 
 class MyOtherAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> { }
+  async updateSupportedServices(data: any): Promise<void> {}
 }
 
 class MyAuthenticator implements IAuthenticator {
@@ -55,7 +61,7 @@ function setup() {
   return { accountManager, container };
 }
 
-function setupLoginSuccess() {
+async function setupLoginSuccess() {
   const { container, accountManager } = setup();
   mockSyncAuthenticate.mockReturnValue({
     success: true,
@@ -64,7 +70,7 @@ function setupLoginSuccess() {
       { type: MyOtherAccount.name, data: 'other token' },
     ],
   });
-  accountManager.syncLogin(MySyncAuthenticator.name);
+  await accountManager.syncLogin(MySyncAuthenticator.name);
   const account = accountManager.getAccount(MyAccount.name);
   const otherAccount = accountManager.getAccount(MyOtherAccount.name);
   return { accountManager, account, otherAccount, container };
@@ -85,18 +91,18 @@ describe('AccountManager', () => {
           success: true,
           accountInfos: [{ type: MyAccount.name, data: 'token' }],
         });
+        jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({});
       });
 
-      it('should emit login event', () => {
+      it('should emit login event', async () => {
         const mockFn = jest.fn();
         accountManager.on(AccountManager.EVENT_LOGIN, mockFn);
-
-        accountManager.syncLogin(MySyncAuthenticator.name);
+        await accountManager.syncLogin(MySyncAuthenticator.name);
         expect(mockFn).toHaveBeenCalled();
       });
 
-      it('should return successful response', () => {
-        const resp = accountManager.syncLogin(MySyncAuthenticator.name);
+      it('should return successful response', async () => {
+        const resp = await accountManager.syncLogin(MySyncAuthenticator.name);
         expect(resp.success).toBeTruthy();
       });
     });
@@ -107,8 +113,8 @@ describe('AccountManager', () => {
         mockSyncAuthenticate.mockReturnValue({ success: false });
       });
 
-      it('should return failed response', () => {
-        const resp = accountManager.syncLogin(MySyncAuthenticator.name);
+      it('should return failed response', async () => {
+        const resp = await accountManager.syncLogin(MySyncAuthenticator.name);
         expect(resp.success).toBeFalsy();
       });
     });
@@ -140,8 +146,8 @@ describe('AccountManager', () => {
       expect(account).toBeNull();
     });
 
-    it('should return a account instance', () => {
-      const { accountManager } = setupLoginSuccess();
+    it('should return a account instance', async () => {
+      const { accountManager } = await setupLoginSuccess();
       const account = accountManager.getAccount(MyAccount.name);
       expect(account).toBeInstanceOf(MyAccount);
     });
@@ -154,8 +160,12 @@ describe('AccountManager', () => {
   });
 
   describe('updateSupportedServices()', () => {
-    it(`should invoke all account's updateSupportedServices `, () => {
-      const { accountManager, account, otherAccount } = setupLoginSuccess();
+    it("should invoke all account's updateSupportedServices ", async () => {
+      const {
+        accountManager,
+        account,
+        otherAccount,
+      } = await setupLoginSuccess();
       jest.spyOn(account, 'updateSupportedServices');
       jest.spyOn(otherAccount, 'updateSupportedServices');
 
@@ -167,26 +177,32 @@ describe('AccountManager', () => {
   });
 
   describe('isLoggedInFor()', () => {
-    it('should return true when already logged in', () => {
-      const { accountManager } = setupLoginSuccess();
+    it('should return true when already logged in', async () => {
+      const { accountManager } = await setupLoginSuccess();
 
       expect(accountManager.isLoggedInFor(MyAccount.name)).toBeTruthy();
     });
   });
 
   describe('isLoggedIn()', () => {
-    it('should return true when already logged in', () => {
-      const { accountManager } = setupLoginSuccess();
+    it('should return true when already logged in', async () => {
+      const { accountManager } = await setupLoginSuccess();
 
       expect(accountManager.isLoggedIn()).toBeTruthy();
     });
   });
 
   describe('getSupportedServices()', () => {
-    it('should get supported services from accounts', () => {
-      const { account, otherAccount, accountManager } = setupLoginSuccess();
+    it('should get supported services from accounts', async () => {
+      const {
+        account,
+        otherAccount,
+        accountManager,
+      } = await setupLoginSuccess();
       jest.spyOn(account, 'getSupportedServices').mockReturnValue(['AService']);
-      jest.spyOn(otherAccount, 'getSupportedServices').mockReturnValue(['BService']);
+      jest
+        .spyOn(otherAccount, 'getSupportedServices')
+        .mockReturnValue(['BService']);
 
       const services = accountManager.getSupportedServices();
 
@@ -195,11 +211,52 @@ describe('AccountManager', () => {
   });
 
   describe('isSupportedService()', () => {
-    it('should get supported services from accounts', () => {
-      const { accountManager, account } = setupLoginSuccess();
+    it('should get supported services from accounts', async () => {
+      const { accountManager, account } = await setupLoginSuccess();
       jest.spyOn(account, 'getSupportedServices').mockReturnValue(['AService']);
 
       expect(accountManager.isSupportedService('AService')).toBeTruthy();
+    });
+  });
+  describe('sanitizeUser()', () => {
+    const mockedConfigDao = {
+      getEnv: jest.fn().mockReturnValue('release'),
+    };
+    const mockedAccountInfo = [
+      {
+        type: 'RC',
+        data: {
+          owner_id: '110',
+        },
+      },
+    ];
+    const accountManager = new AccountManager(null);
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.spyOn(dao.daoManager, 'getKVDao').mockImplementation(() => {
+        return mockedConfigDao;
+      });
+    });
+    it('should be valid user when the env is not restricted in the white list [JPT-631]', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        Chris_sandbox: [],
+      });
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      expect(permitted).toBeTruthy();
+    });
+    it('should be valid user when the user is in the white list [JPT-631]', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        release: ['110'],
+      });
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      expect(permitted).toBeTruthy();
+    });
+    it('should be invalid user when the user is not in the white list [JPT-639]', async () => {
+      jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
+        release: ['123'],
+      });
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      expect(permitted).toBeFalsy();
     });
   });
 });
