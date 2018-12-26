@@ -31,7 +31,6 @@ jest.mock('../../serviceManager');
 jest.mock('../../item/handleData');
 jest.mock('../../item');
 jest.mock('../postServiceHandler');
-jest.mock('../postStatusHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
 jest.mock('../../group');

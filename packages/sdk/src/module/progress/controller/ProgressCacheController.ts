@@ -1,0 +1,44 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2018-12-26 13:42:28
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { Progress } from '../../../models';
+import { mainLogger } from 'foundation/src';
+import notificationCenter from '../../../service/notificationCenter';
+import { ENTITY } from '../../../service/eventKey';
+
+class ProgressCacheController {
+  private _progressCache: Map<number, Progress>;
+  constructor() {
+    this._progressCache = new Map();
+  }
+
+  getProgress(id: number): Progress | undefined {
+    return this._progressCache.get(id);
+  }
+
+  addProgress(id: number, progress: Progress) {
+    this._progressCache.set(id, progress);
+    notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
+  }
+
+  updateProgress(id: number, progress: Progress) {
+    if (this._progressCache.has(id)) {
+      this._progressCache.set(id, progress);
+    } else {
+      mainLogger.warn(
+        `ProgressCacheController, should not call update no cache found, ${id}`,
+      );
+    }
+    notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
+  }
+
+  deleteProgress(id: number) {
+    this._progressCache.delete(id);
+    notificationCenter.emitEntityDelete(ENTITY.PROGRESS, [id]);
+  }
+}
+
+export { ProgressCacheController };

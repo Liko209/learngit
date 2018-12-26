@@ -11,8 +11,7 @@ import { ProgressActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
-
-import { POST_STATUS } from 'sdk/service';
+import { PROGRESS_STATUS } from 'sdk/module';
 import { JuiModal } from '@/containers/Dialog';
 
 type Props = ProgressActionsViewProps & WithNamespaces;
@@ -44,7 +43,7 @@ class ProgressActionsViewComponent extends Component<Props> {
 
   private _renderLoading = () => {
     const { postStatus } = this.props;
-    if (postStatus === POST_STATUS.INPROGRESS) {
+    if (postStatus === PROGRESS_STATUS.INPROGRESS) {
       return <JuiCircularProgress size={12} />;
     }
     return null;
@@ -52,7 +51,7 @@ class ProgressActionsViewComponent extends Component<Props> {
 
   private _renderResend = () => {
     const { postStatus, t } = this.props;
-    if (postStatus === POST_STATUS.FAIL) {
+    if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
           variant="plain"
@@ -70,7 +69,7 @@ class ProgressActionsViewComponent extends Component<Props> {
 
   private _renderDelete = () => {
     const { postStatus, t } = this.props;
-    if (postStatus === POST_STATUS.FAIL) {
+    if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
           variant="plain"
