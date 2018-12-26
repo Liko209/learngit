@@ -297,8 +297,10 @@ node(buildNode) {
                         ])
                         report.coverage = "${env.BUILD_URL}Coverage"
                     }
-                },
+                }
+        )
 
+        parallel (
                 'Build JUI' : {
                     condStage(name: 'Build JUI', enable: !skipBuildJui) {
                         sh 'npm run build:ui'
