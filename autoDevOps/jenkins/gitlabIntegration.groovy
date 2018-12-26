@@ -50,7 +50,7 @@ def condStage(Map args, Closure block) {
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
     GString sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
-    sh "${sshCmd} ${cmd}"
+    return sh(returnStdout: true script: "${sshCmd} ${cmd}").trim()
 }
 
 // deploy helper
@@ -60,6 +60,11 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
     String rsyncRemoteUri = "${uri.getUserInfo()}@${uri.getHost()}:${remoteDir}".toString()
     sh "rsync -azPq --delete --progress -e 'ssh -o StrictHostKeyChecking=no -p ${uri.getPort()}' ${sourceDir} ${rsyncRemoteUri}"
     sshCmd(remoteUri, "chmod -R 755 ${remoteDir}".toString())
+}
+
+def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
+    // the reason here using stdout instead of return code is, by return code we can not tell is the error of ssh itself or remote command
+    return 'true' == sshCmd(remoteUri, "[[ -d ${remoteDir} ]] && echo 'true' || echo 'false'")
 }
 
 static String getSubDomain(String sourceBranch, String targetBranch) {
@@ -131,6 +136,11 @@ Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' 
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 
+String appHeadSha = null
+String juiHeadSha = null
+Boolean skipBuildApp = false
+Boolean skipBuildJui = false
+
 // glip channel
 def reportChannels = [
         env.gitlabUserEmail,
@@ -196,6 +206,17 @@ node(buildNode) {
                             ]
                     ]
             ])
+            // update in tests and autoDevOps folder should not trigger application build
+            // for git 1.9, there is an easy way to do this. since most slaves are centos, whose git's version is 1.8, urgly one is used
+            appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
+            if ('' != appHeadSha) {
+
+
+            }
+            juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
+            if ('' != juiHeadSha) {
+
+            }
         }
 
         stage ('Install Dependencies') {
