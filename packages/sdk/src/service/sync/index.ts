@@ -22,7 +22,7 @@ import {
 import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ErrorParser, HttpError } from '../../utils';
-// import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
@@ -63,13 +63,13 @@ export default class SyncService extends BaseService {
       await this._firstLogin();
     }
     this.isLoading = false;
-    // this._preloadPosts();
+    this._preloadPosts();
   }
 
-  // private async _preloadPosts() {
-  //   const handler = new PreloadPostsForGroupHandler();
-  //   handler.preloadPosts();
-  // }
+  private async _preloadPosts() {
+    const handler = new PreloadPostsForGroupHandler();
+    handler.preloadPosts();
+  }
 
   private async _firstLogin() {
     const {
