@@ -2,13 +2,13 @@
  * @Author: doyle.wu
  * @Date: 2018-12-11 15:19:56
  */
-import { Throttling, MOBILE_3G } from './Throttling';
+import { Throttling, MOBILE_3G, WIFI } from './Throttling';
 
 class Setting {
     public output: string = 'html';
     public maxWaitForLoad: number = 45 * 1000;
     public throttlingMethod: string = 'devtools'; // 'simulate' || 'devtools' || 'provided'
-    public throttling: Throttling = MOBILE_3G;
+    public throttling: Throttling = WIFI;
     public auditMode: boolean = false;
     public gatherMode: boolean = false;
     public disableStorageReset: boolean = false;
