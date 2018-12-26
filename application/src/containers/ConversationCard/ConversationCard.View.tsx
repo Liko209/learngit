@@ -24,9 +24,12 @@ import { EditMessageInput } from './EditMessageInput';
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
+  private timer: number;
   state = {
     isHover: false,
+    isFocusActions: false,
   };
+
   handleMouseEnter = () => {
     this.setState({
       isHover: true,
@@ -34,8 +37,27 @@ export class ConversationCard extends React.Component<
   }
 
   handleMouseLeave = () => {
+    const { isFocusActions } = this.state;
+    if (!isFocusActions) {
+      this.setState({
+        isHover: false,
+      });
+    }
+  }
+
+  handleActionsFocus = (value: boolean) => {
     this.setState({
-      isHover: false,
+      isFocusActions: value,
+    });
+    clearTimeout(this.timer);
+  }
+
+  handleActionsBlur = (value: boolean) => {
+    this.timer = setTimeout(() => {
+      this.setState({
+        isFocusActions: value,
+        isHover: false,
+      });
     });
   }
 
@@ -110,7 +132,14 @@ export class ConversationCard extends React.Component<
             notification={activity}
           >
             {showProgressActions ? <ProgressActions id={id} /> : null}
-            {!showProgressActions && isHover ? <Actions id={id} /> : null}
+            {!showProgressActions && isHover ? (
+              <Actions
+                onFocus={this.handleActionsFocus}
+                onBlur={this.handleActionsBlur}
+                tabIndex={0}
+                id={id}
+              />
+            ) : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
             {hideText || isEditMode ? null : <TextMessage id={id} />}
