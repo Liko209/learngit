@@ -14,7 +14,7 @@ fixture('ConversationList/MarkPrivateOrProtected')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.only(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
+test(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
@@ -83,25 +83,23 @@ test.only(formalName('Team admin can change team from public to private.', ['JPT
     await search.typeText(teamName);
   });
 
-  const teamCount = await search.teams.count;
-  let hasSearch = false;
-
-  if(teamCount) {
-    for (let i = 0; i < teamCount; i++) {
-      const searchId = await search.nthTeam(i).getId();
-      if (searchId === teamId) {
-        hasSearch = true;
+  await h(t).withLog(`Then I should not find ${teamName} team.`, async () => {
+    const teamCount = await search.teams.count;
+    let hasSearch = false;
+    if(teamCount) {
+      for (let i = 0; i < teamCount; i++) {
+        const searchId = await search.nthTeam(i).getId();
+        if (searchId === teamId) {
+          hasSearch = true;
+        }
       }
     }
-  }
-
-  await h(t).withLog(`Then I should not find ${teamName} team.`, async () => {
     await t.expect(hasSearch).eql(false);
   }, true);
 
 });
 
-test.only(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1']), async (t) => {
+test(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
@@ -176,19 +174,18 @@ test.only(formalName('Team admin can change team from private to public.', ['JPT
     teamCount = await search.teams.count;
   }, true);
 
-  let hasSearch = false;
+  await h(t).withLog('Then I should not find this team', async () => {
+    let hasSearch = false;
 
-  if(teamCount) {
-    for (let i = 0; i < teamCount; i++) {
-      const searchId = await search.nthTeam(i).getId()
-      console.log(searchId, teamId)
-      if (searchId === teamId) {
-        hasSearch = true;
+    if(teamCount) {
+      for (let i = 0; i < teamCount; i++) {
+        const searchId = await search.nthTeam(i).getId()
+        console.log(searchId, teamId)
+        if (searchId === teamId) {
+          hasSearch = true;
+        }
       }
     }
-  }
-
-  await h(t).withLog('Then I should not find this team', async () => {
     await t.expect(hasSearch).eql(true);
   }, true);
 
@@ -219,14 +216,20 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-5
       const miniProfileId = await miniProfile.getId();
       await t.expect(miniProfileId).eql(id);
     });
-    await h(t).withLog(`when i click private button icon mini profile should not icon not update`, async () => {
+    await h(t).withLog(`when i click private button icon mini profile then should not icon not update`, async () => {
       await miniProfile.clickPrivate();
+    });
+
+    await h(t).withLog(`Then should not icon not update`, async () => {
       await t.expect(miniProfile.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
       await miniProfile.goToMessages();
     });
 
-    await h(t).withLog(`when i click private button icon conversation header should not icon not update`, async () => {
+    await h(t).withLog(`when i click private button icon conversation header`, async () => {
       await conversationSection.clickPrivate();
+    }, true);
+
+    await h(t).withLog(`then should not icon not update`, async () => {
       await t.expect(conversationSection.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
     }, true);
 
