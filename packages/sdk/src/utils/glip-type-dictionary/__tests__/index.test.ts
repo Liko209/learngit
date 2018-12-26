@@ -25,18 +25,18 @@ describe('GlipTypeUtil', () => {
     });
   });
   it('parseSocketMessage: group', () => {
-    const res = parseSocketMessage('{"body": {"timestamp": 1536061961508, "message_id": "user_id:1376259;id:f3839af4-ab2e-4f21-8f09-f874080771a7", '
-      + '"pending_object_ids": [], "partial": true, "hint": {"post_creator_ids":{"532439044":1376259}}, '
-      + '"objects": [[{"_id":532486,"version":7383248413917184,"modified_at":1536061960642,"post_cursor":1995}]]}}');
+    const res = parseSocketMessage(
+      '{"body": {"timestamp": 1536061961508, "message_id": "user_id:1376259;id:f3839af4-ab2e-4f21-8f09-f874080771a7", ' +
+        '"pending_object_ids": [], "partial": true, "hint": {"post_creator_ids":{"532439044":1376259}}, ' +
+        '"objects": [[{"_id":532486,"version":7383248413917184,"modified_at":1536061960642,"post_cursor":1995}]]}}',
+    );
     expect(res).toEqual({
       group: [
         {
           _id: 532486,
           modified_at: 1536061960642,
           post_cursor: 1995,
-          trigger_ids: [
-            1376259,
-          ],
+          __trigger_ids: [1376259],
           version: 7383248413917184,
         },
       ],

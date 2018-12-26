@@ -75,7 +75,7 @@ describe('utils', () => {
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
     });
 
-    it('should delete deactivated data', async () => {
+    it('should update deactivated data', async () => {
       const obj = {
         data: [
           { id: 1, deactivated: true },
@@ -93,7 +93,8 @@ describe('utils', () => {
 
       expect(deactivatedDao.bulkPut).toHaveBeenCalledWith(obj.data);
       expect(fakeDao.bulkDelete).toHaveBeenCalledWith([1, 2, 3]);
-      expect(notificationCenter.emitEntityDelete).toHaveBeenCalled();
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+      expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalled();
     });
   });
 });

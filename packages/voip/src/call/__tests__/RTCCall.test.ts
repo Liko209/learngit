@@ -3,7 +3,7 @@ import {
   IRTCCallObserver,
   RTCCALL_STATE_IN_OBSERVER,
 } from '../IRTCCallObserver';
-import { CALL_SESSION_STATE } from '../IrtcCallSession';
+import { CALL_SESSION_STATE } from '../IRTCCallSession';
 import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
 import { async } from 'q';

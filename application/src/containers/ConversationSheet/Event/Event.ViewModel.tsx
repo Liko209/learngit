@@ -9,7 +9,7 @@ import { Item } from 'sdk/models';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventViewProps, EventProps } from './types';
-import EventItemModal from '@/store/models/EventItem';
+import EventItemModel from '@/store/models/EventItem';
 
 class EventViewModel extends StoreViewModel<EventProps>
   implements EventViewProps {
@@ -20,7 +20,7 @@ class EventViewModel extends StoreViewModel<EventProps>
 
   @computed
   get event() {
-    return getEntity<Item, EventItemModal>(ENTITY_NAME.EVENT_ITEM, this._id);
+    return getEntity<Item, EventItemModel>(ENTITY_NAME.EVENT_ITEM, this._id);
   }
 }
 

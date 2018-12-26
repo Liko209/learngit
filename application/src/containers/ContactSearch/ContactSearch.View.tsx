@@ -20,7 +20,7 @@ class ContactSearch extends React.Component<Props> {
   }
   render() {
     const {
-      onChange,
+      onSelectChange,
       label,
       placeholder,
       error,
@@ -34,7 +34,7 @@ class ContactSearch extends React.Component<Props> {
       <JuiContactSearch
         inputChange={searchMembers}
         suggestions={suggestions}
-        onChange={onChange}
+        onSelectChange={onSelectChange}
         label={label}
         placeholder={placeholder}
         Chip={Chip}

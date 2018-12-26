@@ -2,7 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import * as puppeteer from 'puppeteer';
+import { puppeteerUtils } from '../utils/PuppeteerUtils';
 const Gatherer = require('lighthouse/lighthouse-core/gather/gatherers/gatherer');
 import * as bluebird from 'bluebird';
 const EXTENSION_ID = 'ijjcejlmgpmagghhloglnenalapepejo';
@@ -25,10 +25,7 @@ class ProcessGatherer extends Gatherer {
     async beforePass(passContext) {
         const driver = passContext.driver;
         let ws = await driver.wsEndpoint();
-        this.browser = await puppeteer.connect({
-            defaultViewport: null,
-            browserWSEndpoint: ws
-        });
+        this.browser = await puppeteerUtils.connect(ws);
 
         this.browser.on('targetchanged', async (target) => {
             let page = await target.page();

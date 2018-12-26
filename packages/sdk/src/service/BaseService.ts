@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger, BaseError } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { ErrorTypes } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
@@ -347,7 +347,7 @@ class BaseService<
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | null>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -472,7 +472,7 @@ class BaseService<
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | null>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -509,9 +509,10 @@ class BaseService<
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
 
-      const updatedModel = await doUpdateModel(mergedModel);
+      const updateResult = await doUpdateModel(mergedModel);
 
-      if (!updatedModel) {
+      if (updateResult instanceof BaseError) {
+        const error = updateResult;
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
           rollbackPartialModel,
@@ -523,11 +524,11 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed');
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', { apiError: error });
         break;
       }
 
-      result = serviceOk(updatedModel);
+      result = serviceOk(updateResult);
     } while (false);
 
     return result;
