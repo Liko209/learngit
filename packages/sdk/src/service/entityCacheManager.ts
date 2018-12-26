@@ -114,7 +114,7 @@ class EntityCacheManager<T extends BaseModel = BaseModel> {
 
   private _updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {
     Object.keys(partialEntity).forEach((key: string) => {
-      oldEntity[_.camelCase(key)] = partialEntity[key];
+      oldEntity[key] = partialEntity[key];
     });
   }
 }
