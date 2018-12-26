@@ -7,7 +7,7 @@ import { NoteItem } from 'sdk/models';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class NoteItemModal extends ItemModel {
+export default class NoteItemModel extends ItemModel {
   @observable title: string;
   @observable summary: string;
 
@@ -19,6 +19,6 @@ export default class NoteItemModal extends ItemModel {
   }
 
   static fromJS(data: NoteItem) {
-    return new NoteItemModal(data);
+    return new NoteItemModel(data);
   }
 }
