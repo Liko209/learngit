@@ -71,9 +71,9 @@ def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
 def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
     assert '/' != linkTarget, 'What the hell are you doing?'
     // remove link if exists
-    println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget}")
+    println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
     // remote directory if exists
-    println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget}")
+    println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
     // create link to new target
     println sshCmd(remoteUri, "ln -s ${linkSource} ${linkTarget}")
 }
@@ -252,7 +252,7 @@ node(buildNode) {
 
         stage ('Install Dependencies') {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
-            sh "[ -f package-lock.json ] && rm package-lock.json"
+            sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
                 sh 'npm install typescript ts-node --unsafe-perm'
                 sh 'npm install --unsafe-perm'
