@@ -78,6 +78,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  get jumpToFirstUnreadButtonWrapper(){
+    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
   async sendMessage(message: string) {
     await this.t
       .typeText(this.messageInputArea, message)
@@ -104,6 +108,10 @@ export class ConversationPage extends BaseConversationPage {
 
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());
+  }
+
+  async clickJumpToFirstUnreadButton () {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper)
   }
 }
 

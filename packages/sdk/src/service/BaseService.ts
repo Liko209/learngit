@@ -109,7 +109,7 @@ class BaseService<
       throwError('ApiClass || HandleData');
     }
     if (id <= 0) {
-      throwError('invalid id, should not do network request');
+      throwError(`invalid id(${id}), should not do network request`);
     }
     const result: ApiResult<any> = await this.ApiClass.getDataById(id);
     if (result.isOk()) {
@@ -362,12 +362,6 @@ class BaseService<
     let result: ServiceResult<SubModel>;
 
     do {
-      if (id <= 0) {
-        mainLogger.warn('handlePartialUpdate: Invalid model id');
-        result = serviceErr(ErrorTypes.SERVICE_INVALID_MODEL_ID);
-        break;
-      }
-
       const originalModel = await this.getById(id);
 
       if (!originalModel) {
