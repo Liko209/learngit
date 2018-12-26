@@ -5,7 +5,7 @@
  */
 
 import { rtcLogger } from '../RTCLoggerProxy';
-import { RTCEngine } from '../../api/rtcEngine';
+import { RTCEngine } from '../../api/RTCEngine';
 import { LOG_LEVEL, IRTCLogger } from '../IRTCLogger';
 
 class LoggerImpl implements IRTCLogger {

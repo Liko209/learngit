@@ -1,6 +1,6 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCRegistrationFSM } from '../rtcRegistrationFSM';
-import { RTCRegistrationManager } from '../rtcRegistrationManager';
+import { RTCRegistrationFSM } from '../RTCRegistrationFSM';
+import { RTCRegistrationManager } from '../RTCRegistrationManager';
 
 // jest.mock('../rtcAccountManager');
 
