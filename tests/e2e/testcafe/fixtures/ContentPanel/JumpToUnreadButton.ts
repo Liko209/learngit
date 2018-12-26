@@ -17,6 +17,8 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
+const unreadButtonLoadTime = 5e3;
+
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
@@ -66,7 +68,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
   await h(t).withLog('Then I should see unread button',
     async () => {
       const conversationPage = app.homePage.messageTab.conversationPage;
-      await t.wait(3e3);
+      await t.wait(unreadButtonLoadTime);
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     }
   );
@@ -79,7 +81,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
 
   await h(t).withLog('Then I should not see unread button',
     async () => {
-      await t.wait(3e3);
+      await t.wait(unreadButtonLoadTime);
       const conversationPage = app.homePage.messageTab.conversationPage;
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).notOk()
     }
@@ -92,13 +94,12 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   const user = users[6];
   const userPlatform = await h(t).getPlatform(user);
   const anotherUserPlatform = await h(t).getPlatform(users[5])
-  const isVisible = ClientFunction(selector =>{
+  const isVisible = ClientFunction((selector, container) =>{
       const bounding = selector().getBoundingClientRect()
+      const containerBox = container().getBoundingClientRect()
       return (
-          bounding.top + 10 >= 0 &&
-          bounding.left >= 0 &&
-          bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-          bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+          bounding.top - containerBox.top >= 0 &&
+          bounding.bottom - containerBox.bottom <= 0
       );
  })
 
@@ -152,8 +153,8 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
 
   await h(t).withLog('Then I should see unread button',
     async () => {
+      await t.wait(unreadButtonLoadTime);
       const conversationPage = app.homePage.messageTab.conversationPage;
-      await t.wait(3e3);
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     }
   );
@@ -162,44 +163,38 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
     async () => {
       const conversationPage = app.homePage.messageTab.conversationPage;
       await conversationPage.clickJumpToFirstUnreadButton();
-      await t.wait(3e3);
+      await t.wait(8e3);
     }
   )
 
   await h(t).withLog('Then I should see the first post',
     async ()=>{
       const posts = await app.homePage.messageTab.conversationPage.posts;
-      await t.expect(isVisible(await posts.nth(-msgList.length))).ok();
+      await t.expect(isVisible(await posts.nth(-msgList.length), await app.homePage.messageTab.conversationPage.streamWrapper)).ok();
       await t.expect(posts.nth(-msgList.length).withText(msgList[0]).exists).ok();
     }
   )
 
-  await h(t).withLog('And New Messages indicator exist',
+  await h(t).withLog('And New Messages indicator exist and can not be seen',
     async ()=>{
-      await t.expect(app.homePage.messageTab.conversationPage.stream.find('span').withText('New Messages').exists).ok()
+      const indicator = app.homePage.messageTab.conversationPage.stream.find('span').withText('New Messages')
+      await t.expect(indicator.exists).ok()
+      await t.expect(isVisible(await indicator, await app.homePage.messageTab.conversationPage.streamWrapper)).notOk()
     }
   )
 
   // TODO: enable after FIJI-2466 resolved
   // await h(t).withLog('When I enter the teamB conversation',
   //   async () => {
-  //     await teamsSection.expand();
-  //     await teamsSection.conversationEntryById(teamB).enter();
-  //     await teamsSection.ensureLoaded();
   //   });
 
   // await h(t).withLog('When I click jump to first unread button',
   //   async () => {
-  //     const conversationPage = app.homePage.messageTab.conversationPage;
-  //     await conversationPage.clickJumpToFirstUnreadButton();
   //   }
   // )
 
   // await h(t).withLog('Then I should see the first post',
   //   async ()=>{
-  //     const posts = await app.homePage.messageTab.conversationPage.posts;
-  //     await t.expect(isVisible(await posts.nth(-msgList.length))).ok();
-  //     await t.expect(posts.nth(-msgList.length).withText(msgList[0]).exists).ok();
   //   }
   // )
 });
@@ -264,7 +259,7 @@ test(formalName('The count of the unread button (up) should display correct', ['
 
   await h(t).withLog('Then I should see unread button with unread count 20',
     async () => {
-      await t.wait(3e3)
+      await t.wait(unreadButtonLoadTime)
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.find('span').withText('20').exists).ok()
     }
@@ -278,7 +273,7 @@ test(formalName('The count of the unread button (up) should display correct', ['
 
   await h(t).withLog('Then I should see unread button with unread count 99+',
     async () => {
-      await t.wait(3e3)
+      await t.wait(unreadButtonLoadTime)
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.find('span').withText('99+').exists).ok()
     }
@@ -329,7 +324,7 @@ test(formalName('All unread messages can be downloaded when click the unread but
 
   await h(t).withLog('And click jump to first unread button',
     async () => {
-      await t.wait(3e3)
+      await t.wait(8e3)
       await app.homePage.messageTab.conversationPage.clickJumpToFirstUnreadButton();
     }
   )
@@ -395,7 +390,7 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   await h(t).withLog('Then I should see unread button',
     async () => {
       const conversationPage = app.homePage.messageTab.conversationPage;
-      await t.wait(3e3);
+      await t.wait(unreadButtonLoadTime);
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     }
   );
@@ -412,7 +407,7 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   await h(t).withLog('Then I should not see unread button',
     async () => {
       const conversationPage = app.homePage.messageTab.conversationPage;
-      await t.wait(3e3);
+      await t.wait(unreadButtonLoadTime);
       await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).notOk()
     }
   )
