@@ -232,13 +232,13 @@ node(buildNode) {
             // change in tests and autoDevOps directory should not trigger application build
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
-            appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
+            appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list --no-merges -1 HEAD -- ''').trim()
             echo "appHeadSha=${appHeadSha}"
             assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
             echo "appHeadShaDir=${appHeadShaDir}"
             // build jui only when packages/jui has change
-            juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
+            juiHeadSha = sh(returnStdout: true, script: '''git rev-list --no-merges -1 HEAD -- packages/jui''').trim()
             echo "juiHeadSha=${juiHeadSha}"
             assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
