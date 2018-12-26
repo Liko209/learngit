@@ -754,3 +754,35 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
     });
   },
 );
+
+test(formalName(`Shouldn't show UMI when login then open last conversation with UMI`, ['JPT-110', 'P2', 'ConversationList', 'Potar.He']),
+  async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    const otherUser = users[5];
+    await h(t).platform(otherUser).init();
+
+    let teamId;
+    await h(t).withLog('Given I have an extension with one conversation', async () => {
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: `My Team ${uuid()}`,
+        members: [loginUser.rcId, users[5].rcId],
+      });
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    await h(t).withLog('Then the conversation should be opened and  not has any UMI', async () => {
+      await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).expectUmi(0);
+    });
+  },
+);
