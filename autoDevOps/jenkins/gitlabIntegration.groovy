@@ -75,7 +75,7 @@ def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
     // remote directory if exists
     println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
     // create link to new target
-    println sshCmd(remoteUri, "ln -s ${linkSource} ${linkTarget}")
+    println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
 }
 
 // business logic
