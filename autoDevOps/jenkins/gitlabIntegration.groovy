@@ -236,11 +236,14 @@ node(buildNode) {
             echo "appHeadSha=${appHeadSha}"
             assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
+            echo "appHeadShaDir=${appHeadShaDir}"
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
             echo "juiHeadSha=${juiHeadSha}"
             assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
+            echo "juiHeadShaDir=${juiHeadShaDir}"
+
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
                 skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
