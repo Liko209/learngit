@@ -7,7 +7,7 @@ import { LinkItem } from 'sdk/models';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 
-export default class LinkItemModal extends ItemModel {
+export default class LinkItemModel extends ItemModel {
   @observable
   doNotRender: boolean;
   @observable
@@ -55,6 +55,6 @@ export default class LinkItemModal extends ItemModel {
   }
 
   static fromJS(data: LinkItem) {
-    return new LinkItemModal(data);
+    return new LinkItemModel(data);
   }
 }

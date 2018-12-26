@@ -50,11 +50,6 @@ type PostData = {
   data: Post;
 };
 
-type PostSendData = {
-  id: number;
-  status: POST_STATUS;
-};
-
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
@@ -109,17 +104,6 @@ class PostService extends BaseService<Post> {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult> {
-    const groupService: GroupService = GroupService.getInstance();
-    const group = await groupService.getById(groupId);
-    if (group && !group.most_recent_post_created_at) {
-      // The group has no post
-      return {
-        posts: [],
-        items: [],
-        hasMore: false,
-      };
-    }
-
     const params: any = {
       limit,
       direction,
@@ -276,7 +260,7 @@ class PostService extends BaseService<Post> {
     await this.handlePreInsertProcess(buildPost);
     const { id: preInsertId } = buildPost;
     delete buildPost.id;
-    delete buildPost.status;
+    delete buildPost.__status;
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
@@ -336,7 +320,7 @@ class PostService extends BaseService<Post> {
     const updateData = {
       id: preInsertId,
       _id: preInsertId,
-      status: POST_STATUS.FAIL,
+      __status: POST_STATUS.FAIL,
     };
     let groupId: number = 0;
 
@@ -473,7 +457,7 @@ class PostService extends BaseService<Post> {
   ): Promise<Result<Post>> {
     const post = await this.getById(postId);
     if (post) {
-      const likes = post.likes || [];
+      const likes = post.likes ? [...post.likes] : [];
       const index = likes.indexOf(personId);
       if (toLike) {
         if (index === -1) {
@@ -605,11 +589,4 @@ class PostService extends BaseService<Post> {
   }
 }
 
-export {
-  IPostResult,
-  IRawPostResult,
-  IPostQuery,
-  PostData,
-  PostSendData,
-  PostService,
-};
+export { IPostResult, IRawPostResult, IPostQuery, PostData, PostService };

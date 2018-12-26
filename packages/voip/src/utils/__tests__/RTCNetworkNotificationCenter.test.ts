@@ -2,7 +2,7 @@
 import {
   rtcNetworkNotificationCenter,
   RTCNetworkEVENT,
-} from '../rtcNetworkNotificationCenter';
+} from '../RTCNetworkNotificationCenter';
 
 describe('Network Notification Center', async () => {
   class TestListener {
@@ -31,8 +31,8 @@ describe('Network Notification Center', async () => {
 
     onOffline() {}
   }
-  describe('should _isOnline chang to true when listen message', () => {
-    it('network evevt emit online JPT-540', () => {
+  describe('onOnline()', () => {
+    it('should network evevt emit online when listen online JPT-540', () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOnline');
@@ -41,7 +41,7 @@ describe('Network Notification Center', async () => {
       expect(testListener.onOnline).toHaveBeenCalled();
     });
 
-    it('network evevt emit online twice JPT-542', () => {
+    it('should network evevt emit online twice when listen online twice JPT-542', () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOnline');
@@ -52,8 +52,8 @@ describe('Network Notification Center', async () => {
     });
   });
 
-  describe('should _isOnline chang to false when listen message', () => {
-    it('network event emit offline JPT-541', async () => {
+  describe('onOffline()', () => {
+    it('should network evevt emit offline when listen offline JPT-541', async () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOffline');
@@ -62,7 +62,7 @@ describe('Network Notification Center', async () => {
       expect(testListener.onOffline).toHaveBeenCalled();
     });
 
-    it('network event emit offline twice JPT-543', async () => {
+    it('should network evevt emit offline twice when listen offline twice JPT-543', async () => {
       const nnc = rtcNetworkNotificationCenter;
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOffline');

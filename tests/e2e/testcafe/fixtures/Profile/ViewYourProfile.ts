@@ -10,13 +10,13 @@ fixture('Profile/ViewYourProfile')
     .afterEach(teardownCase());
 
 test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'JPT-453', 'P1', 'zack']), async (t) => {
-    const user = h(t).rcData.mainCompany.users[4];
+    const loginUser = h(t).rcData.mainCompany.users[0];
     const app = new AppRoot(t);
     const viewProfile = app.homePage.viewProfile;
     const conversationSection = app.homePage.messageTab.conversationPage;
 
-    await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
     });
     await h(t).withLog('Then I can open setting menu in home page', async () => {

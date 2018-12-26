@@ -1,5 +1,4 @@
-import { RTCEngine } from '../rtcEngine';
-import { RTCAccount } from '../rtcAccount';
+import { RTCEngine } from '../RTCEngine';
 
 describe('Engine', async () => {
   describe('getInstance', () => {
