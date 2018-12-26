@@ -74,6 +74,7 @@ class JuiPopoverMenu extends React.Component<
           anchorOrigin={anchorOrigin}
           transformOrigin={transformOrigin}
           data-test-automation-id={automationId}
+          className="popper-backdrop"
         >
           {children}
         </JuiPopover>

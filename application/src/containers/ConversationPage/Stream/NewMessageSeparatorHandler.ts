@@ -70,7 +70,7 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
      * (3)
      * Check if separator in other page
      */
-    const firstPost = _.first(allPosts);
+    const firstPost = this._oldestPost;
     const allPostsAreUnread = readThrough === 0;
     const hasSeparatorInOtherPage =
       (allPostsAreUnread && hasMore) ||
@@ -137,15 +137,19 @@ class NewMessageSeparatorHandler implements ISeparatorHandler {
     allPosts: ISortableModel<Post>[],
     postId: number,
   ) {
-    const targetPost = allPosts.find(
-      (post, i) =>
-        !!(
-          post.id > postId &&
-          post.data &&
-          post.data.creator_id !== this._userId
-        ),
-    );
-    if (!targetPost) return;
+    const len = allPosts.length;
+    let targetPost;
+    for (let i = 0; i < len; i++) {
+      const post = allPosts[i];
+      if (
+        post.id > postId &&
+        post.data &&
+        post.data.creator_id !== this._userId
+      ) {
+        targetPost = post;
+        break;
+      }
+    }
     return targetPost;
   }
 

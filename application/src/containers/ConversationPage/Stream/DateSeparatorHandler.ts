@@ -54,7 +54,10 @@ class DateSeparatorHandler implements ISeparatorHandler {
           if (posts) {
             posts.push(post);
           }
-          this._postsByDateMap.set(timestamp, _.sortBy(posts, 'id'));
+          this._postsByDateMap.set(
+            timestamp,
+            _.sortBy(posts, 'data.created_at'),
+          );
         }
       });
   }

@@ -23,6 +23,7 @@ class Setting {
     public onlyAudits: string[] | null = null;
     public onlyCategories: string[] | null = null;
     public skipAudits: string[] | null = null;
+    public url?: string;
 }
 
 export {
