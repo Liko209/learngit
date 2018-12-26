@@ -215,20 +215,20 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
       const miniProfileId = await miniProfile.getId();
       await t.expect(miniProfileId).eql(id);
     });
-    await h(t).withLog(`when i click private button icon mini profile then should not icon not update`, async () => {
+    await h(t).withLog(`when i click private button icon in mini profile`, async () => {
       await miniProfile.clickPrivate();
     });
 
-    await h(t).withLog(`Then should not icon not update`, async () => {
+    await h(t).withLog(`Then should icon not update`, async () => {
       await t.expect(miniProfile.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
       await miniProfile.goToMessages();
     });
 
-    await h(t).withLog(`when i click private button icon conversation header`, async () => {
+    await h(t).withLog(`when i click private button icon in conversation header`, async () => {
       await conversationSection.clickPrivate();
     }, true);
 
-    await h(t).withLog(`then should not icon not update`, async () => {
+    await h(t).withLog(`then should icon not update`, async () => {
       await t.expect(conversationSection.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
     }, true);
 
