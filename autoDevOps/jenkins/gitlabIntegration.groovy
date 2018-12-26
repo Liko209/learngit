@@ -365,6 +365,7 @@ node(buildNode) {
                     "ENABLE_REMOTE_DASHBOARD=${env.E2E_ENABLE_REMOTE_DASHBOARD}",
                     "BROWSERS=${env.E2E_BROWSERS}",
                     "CONCURRENCY=${env.E2E_CONCURRENCY}",
+                    "BRANCH=${env.gitlabSourceBranch}",
                     "ACTION=ON_MERGE",
                     "DEBUG_MODE=false",
                     "QUARANTINE_MODE=true",
