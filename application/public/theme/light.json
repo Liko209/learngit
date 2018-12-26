@@ -116,7 +116,8 @@
     "moreMenu": 999,
     "toast": 3000,
     "memberListHeader": 100,
-    "floatButton": 10
+    "floatButton": 10,
+    "makeZIndexStackingContext": 1
   },
   "size": {
     "width": 4,
