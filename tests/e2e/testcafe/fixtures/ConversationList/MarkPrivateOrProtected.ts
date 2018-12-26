@@ -179,8 +179,7 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
 
     if(teamCount) {
       for (let i = 0; i < teamCount; i++) {
-        const searchId = await search.nthTeam(i).getId()
-        console.log(searchId, teamId)
+        const searchId = await search.nthTeam(i).getId();
         if (searchId === teamId) {
           hasSearch = true;
         }
