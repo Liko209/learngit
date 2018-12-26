@@ -1,28 +1,27 @@
 import { LOG_LEVEL } from './constants';
+import { ILogApi } from './consumer';
+import { ILogPersistence } from './consumer/persistence';
 
 interface ILogger {
   tags(...tags: string[]): ILogger;
-  trace(message: string): void;
-  debug(message: string): void;
-  info(message: string): void;
-  warn(message: string): void;
-  error(message: string): void;
-  fatal(message: string): void;
+  log(...params: any): void;
+  trace(...params: any): void;
+  debug(...params: any): void;
+  info(...params: any): void;
+  warn(...params: any): void;
+  error(...params: any): void;
+  fatal(...params: any): void;
   doLog(logEntity: LogEntity): void;
 }
 
-interface ILogFilter {
-  preProcessFilter(logEntity: LogEntity): boolean;
-  isBrowserEnable(logEntity: LogEntity): boolean;
-  isConsumerEnable(logEntity: LogEntity): boolean;
-}
-
-interface ILoader<T> {
-  handle(data: T): T;
+interface ILogLoader {
+  options: object;
+  handle(data: LogEntity): LogEntity;
 }
 
 interface ILogConsumer {
   onLog(logEntity: LogEntity): Promise<void>;
+  flush(): Promise<void>;
 }
 
 interface ILogEntityProcessor {
@@ -36,40 +35,28 @@ interface IAccessor {
   subscribe(onChange: onAccessibleChange): void;
 }
 
-interface IDeque<E> {
-  addHead(e: E): void;
-  peekHead(): E;
-  getHead(): E;
-  addTail(e: E): void;
-  peekTail(): E;
-  getTail(): E;
-  peekAll(): E[];
-  size(): number;
+interface IConsoleLogPrettier {
+  prettier(logEntity: LogEntity): any[];
 }
 
-interface IQueueLoop {
-  loop(): Promise<void>;
-  isAvailable(): boolean;
-  sleep(timeout: number): void;
-  wake(): void;
-}
-
-type OnTaskErrorController = {
-  retry: () => Promise<void>,
-  ignore: () => Promise<void>,
-  abort: () => Promise<void>,
-  abortAll: () => Promise<void>,
-};
-
-type OnTaskCompletedController = {
-  next: () => Promise<void>,
-  abortAll: () => Promise<void>,
-};
-
-type LoopProgressCallback = {
-  onTaskError: (error: Error, loopController: OnTaskErrorController) => Promise<void>,
-  onTaskCompleted: (loopController: OnTaskCompletedController) => Promise<void>,
-  onLoopCompleted: () => Promise<void>,
+type LogConfig = {
+  level: LOG_LEVEL,
+  enabled: boolean,
+  filter: (logEntity: LogEntity) => boolean | null,
+  browser: {
+    enabled: boolean,
+  },
+  consumer: {
+    enabled: boolean,
+    memoryCountThreshold: number,
+    memorySizeThreshold: number,
+    uploadQueueLimit: number,
+    autoFlushTimeCycle: number,
+  },
+  uploadLogApi: ILogApi | null,
+  persistence: ILogPersistence | null,
+  uploadAccessor: IAccessor | null,
+  loaders: ILogLoader[],
 };
 
 class LogEntity {
@@ -87,15 +74,12 @@ class LogEntity {
 
 export {
   ILogger,
-  ILoader,
+  ILogLoader,
   ILogConsumer,
   ILogEntityProcessor,
-  ILogFilter,
-  IDeque,
+  IConsoleLogPrettier,
   IAccessor,
-  IQueueLoop,
-  LoopProgressCallback,
-  OnTaskErrorController,
-  OnTaskCompletedController,
   LogEntity,
+  // LogConfig,
+  LogConfig,
 };
