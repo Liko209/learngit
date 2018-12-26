@@ -9,10 +9,13 @@ import { puppeteerUtils } from '../utils/PuppeteerUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
 import { metriceService } from '../services/MetricService';
+import { mockHelper } from '../mock/MockHelper';
 import * as reportGenerater from 'lighthouse/lighthouse-core/report/report-generator';
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
 type Timing = { startTime: Date, endTime: Date, total: number };
+
+const RETRY_COUNT = 3;
 
 class Scene {
     protected url: string;
@@ -32,29 +35,36 @@ class Scene {
     /**
      * @description: run scene. don't override this method
      */
-    async run() {
-        try {
-            const startTime = new Date();
+    async run(): Promise<boolean> {
+        for (let i = 0; i < RETRY_COUNT; i++) {
+            try {
+                const startTime = new Date();
 
-            await this.preHandle();
+                await this.preHandle();
 
-            this.config.settings.url = this.url;
+                this.config.settings.url = this.url;
 
-            await this.collectData();
+                await this.collectData();
 
-            const endTime = new Date();
-            this.timing = {
-                startTime,
-                endTime,
-                total: endTime.getTime() - startTime.getTime()
+                const endTime = new Date();
+                this.timing = {
+                    startTime,
+                    endTime,
+                    total: endTime.getTime() - startTime.getTime()
+                }
+
+                await this.saveMetircsIntoDisk();
+
+                await this.saveMetircsIntoDb();
+            } catch (err) {
+                this.logger.error(err);
             }
 
-            await this.saveMetircsIntoDisk();
-
-            await this.saveMetircsIntoDb();
-        } catch (err) {
-            this.logger.error(err);
+            if (this.isSuccess()) {
+                return true;
+            }
         }
+        return false;
     }
 
     /**
@@ -78,6 +88,8 @@ class Scene {
      */
     async preHandle() {
         this.config = new SceneConfig();
+
+        mockHelper.open();
     }
 
     /**
@@ -122,6 +134,16 @@ class Scene {
         await metriceService.createPerformance(sceneDto, this);
 
         await metriceService.createPerformanceItem(sceneDto, this);
+    }
+
+    isSuccess(): boolean {
+        if (this.data) {
+            let { categories } = this.data;
+
+            return categories && categories['performance'] && categories['pwa']
+                && categories['accessibility'] && categories['best-practices'] && categories['seo'];
+        }
+        return false;
     }
 
     /**

@@ -5,35 +5,106 @@
 import { onRequest } from './RequestMocker';
 import { functionUtils } from '../utils/FunctionUtils';
 
+class BrowserDto {
+    browser: any;
+    pages: Array<any>;
+}
 
 class MockHelper {
-    private pages = new Array();
-    private browsers = new Array();
+    private _switch: boolean = false;
+
+    private browserMap: Map<string, BrowserDto> = new Map();
+
+    private ws(browser): string {
+        let ws = browser.wsEndpoint();
+        return ws.replace('127.0.0.1', 'localhost');
+    }
 
     private targetChangedListener = async (target) => {
         let page = await target.page();
         if (page) {
-            if (functionUtils.bindEvent(page, 'request', onRequest)) {
-                await page.setRequestInterception(true);
-                this.pages.push(page);
+            try {
+                let browser = target.browser();
+                let ws = this.ws(browser);
+                if (!this.browserMap.has(ws)) {
+                    return;
+                }
+
+                let dto = this.browserMap.get(ws);
+                if (functionUtils.bindEvent(page, 'request', onRequest)) {
+                    await page.setRequestInterception(true);
+                    if (this._switch) {
+                        dto.pages.push(page);
+                    } else {
+                        functionUtils.unbindEvent(page, 'request', onRequest);
+                        await page.setRequestInterception(false);
+                    }
+                }
+            } catch (err) {
             }
         }
     };
 
     async register(browser) {
+        if (!this._switch || !browser) {
+            return;
+        }
+
+        let ws = this.ws(browser);
+        if (this.browserMap.has(ws)) {
+            return;
+        }
         if (functionUtils.bindEvent(browser, 'targetchanged', this.targetChangedListener)) {
-            this.browsers.push(browser);
+            this.browserMap.set(ws, {
+                browser: browser,
+                pages: []
+            });
         }
     }
 
-    async close() {
-        for (let browser of this.browsers) {
-            functionUtils.unbindEvent(browser, 'targetchanged', this.targetChangedListener);
+    async unregister(browser) {
+        if (!this._switch || !browser) {
+            return;
         }
-        for (let page of this.pages) {
-            await page.setRequestInterception(false);
+
+        let ws = this.ws(browser);
+        if (!this.browserMap.has(ws)) {
+            return;
+        }
+
+        let dto = this.browserMap.get(ws);
+        functionUtils.unbindEvent(dto.browser, 'targetchanged', this.targetChangedListener);
+        for (let page of dto.pages) {
             functionUtils.unbindEvent(page, 'request', onRequest);
+            await page.setRequestInterception(false);
         }
+
+        this.browserMap.delete(ws);
+    }
+
+    open() {
+        if (process.env.MOCK_GLOBAL_SWITCH !== 'true' || this._switch) {
+            return;
+        }
+        this._switch = true;
+    }
+
+    async close() {
+        if (!this._switch) {
+            return;
+        }
+        this._switch = false;
+
+        let dtoList = this.browserMap.values();
+        for (let dto of dtoList) {
+            functionUtils.unbindEvent(dto.browser, 'targetchanged', this.targetChangedListener);
+            for (let page of dto.pages) {
+                functionUtils.unbindEvent(page, 'request', onRequest);
+                await page.setRequestInterception(false);
+            }
+        }
+
+        this.browserMap.clear();
     }
 }
 

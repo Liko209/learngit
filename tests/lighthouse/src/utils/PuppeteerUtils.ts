@@ -173,7 +173,7 @@ class PuppeteerUtils {
             this.logger.info(`connect chrome success, wsEndpoint: ${wsEndpoint}`);
 
             // inject mock
-            // await mockHelper.register(browser);
+            await mockHelper.register(browser);
 
             return browser;
         } catch (err) {

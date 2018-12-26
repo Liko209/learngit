@@ -33,10 +33,15 @@ const logger = logUtils.getLogger(__filename);
             new OfflineScene(`${host}`, taskDto),
         ];
 
+        process.exitCode = 1;
+        let result = true;
         for (let s of scenes) {
-            await s.run();
+            result = await s.run() && result;
         }
 
+        if (result) {
+            process.exitCode = 0;
+        }
         // generate report index.html
         await fileService.generateReportIndex();
 
@@ -44,12 +49,14 @@ const logger = logUtils.getLogger(__filename);
 
         await metriceService.updateTaskForEnd(taskDto);
 
-        logger.info(`total cost ${endTime - startTime}ms`);
+        logger.info(`total cost ${endTime - startTime}ms, result: ${result}`);
     } catch (err) {
         logger.error(err);
     } finally {
         // release resources
         await dbUtils.close();
         await puppeteerUtils.closeAll();
+
+        process.exit(process.exitCode);
     }
 });

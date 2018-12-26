@@ -8,7 +8,7 @@ import { logUtils } from '../utils/LogUtils';
 
 const logger = logUtils.getLogger(__filename);
 
-const onRequest = async (request) => {
+const onRequest = (request) => {
     /*
     response <Object> Response that will fulfill this request
         status <number> Response status code, defaults to 200.

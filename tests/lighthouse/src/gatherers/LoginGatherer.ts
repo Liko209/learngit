@@ -4,6 +4,7 @@
  */
 const Gatherer = require('lighthouse/lighthouse-core/gather/gatherers/gatherer');
 import { jupiterUtils } from '../utils/JupiterUtils';
+import { mockHelper } from '../mock/MockHelper';
 import { HomePage } from '../pages/HomePage';
 
 class LoginGatherer extends Gatherer {
@@ -13,6 +14,10 @@ class LoginGatherer extends Gatherer {
 
         let homePage = new HomePage(passContext);
 
+        let browser = await homePage.browser();
+
+        mockHelper.close();
+
         let authUrl = await jupiterUtils.getAuthUrl(url);
         let page = await homePage.newPage();
 
@@ -21,6 +26,9 @@ class LoginGatherer extends Gatherer {
         await homePage.waitForCompleted();
 
         await homePage.close();
+
+        mockHelper.open();
+        mockHelper.register(browser);
     }
 
     afterPass(passContext) {
