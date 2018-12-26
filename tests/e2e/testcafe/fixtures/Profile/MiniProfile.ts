@@ -176,16 +176,15 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
   }
 });
 
-test(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
+// skip due to the requirement is not implement.
+test.skip(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   loginUser.sdk = await h(t).getSdk(loginUser);
   const app = new AppRoot(t);
   const teamName = uuid();
   const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
-    .then(res => {
-      return res.data.display_name;
-    });
+    .then(res => res.data.display_name);
 
   const steps = async (i: number, count: number, searchItem, type: string) => {
     const top = await searchItem.avatar.getBoundingClientRectProperty('top');
@@ -244,7 +243,7 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
 
   const search = app.homePage.header.search;
   await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
-    await search.typeText(otherUserName);
+    await search.typeText(otherUserName, { replace: true, paste: true });
     await t.wait(3e3);
   });
 
@@ -262,7 +261,7 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
   }
 
   await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
-    await search.typeText(otherUserName, { replace: true });
+    await search.typeText(otherUserName, { replace: true, paste: true });
     await t.wait(3e3);
   });
 
@@ -276,9 +275,8 @@ test(formalName('Open mini profile via global search then open profile', ['JPT-3
     await steps(i, peopleCount, search.nthGroup(i), "Group");
   };
 
-
   await h(t).withLog(`When I type teamName: ${teamName} in search input area`, async () => {
-    await search.typeText(teamName, { replace: true });
+    await search.typeText(teamName, { replace: true, paste: true });
     await t.wait(3e3);
   });
 
