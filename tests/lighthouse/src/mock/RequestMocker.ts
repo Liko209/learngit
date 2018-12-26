@@ -36,7 +36,7 @@ const onRequest = (request) => {
             'access-control-allow-headerx-frame-options': 'SAMEORIGIN'
         }, item.headers);
 
-        logger.info(`modify response for uri[${request.method()} - ${url.pathname}]`);
+        logger.info(`modify response for uri[${request.method()}]${url.pathname}`);
 
         request.respond({
             status: item.status,
