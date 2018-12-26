@@ -297,6 +297,14 @@ class ProfileModal extends BaseWebComponent {
     this.warnFlakySelector();
     return this.self.find('span').find('span').withText('chat_bubble');
   }
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivacy() {
+    await this.t.click(this.privateButton);
+  }
 
   async close() {
     await this.t.click(this.closeButton);

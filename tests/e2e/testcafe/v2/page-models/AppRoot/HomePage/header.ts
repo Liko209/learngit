@@ -1,4 +1,5 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { ClientFunction } from "testcafe";
 
 export class Header extends BaseWebComponent {
   get self() {
@@ -7,21 +8,26 @@ export class Header extends BaseWebComponent {
 
   getBackNForward(name: string) {
     return this.getComponent(
-      BackNForward, 
+      BackNForward,
       this.getSelectorByAutomationId(name, this.self)
     );
   }
 
-  get backButton(){
+  get backButton() {
     return this.getBackNForward('Back');
   }
 
-  get forwardButton(){
+  get forwardButton() {
     return this.getBackNForward('Forward');
+  }
+
+  get search() {
+    this.warnFlakySelector();
+    return this.getComponent(Search, this.getSelector('.search-bar', this.self));
   }
 }
 
-export class BackNForward extends BaseWebComponent {
+class BackNForward extends BaseWebComponent {
   async click() {
     await this.t.click(this.self);
   }
@@ -37,4 +43,98 @@ export class BackNForward extends BaseWebComponent {
   async shouldBeEnabled() {
     await this.t.expect(this.isDisable).notOk();
   }
+}
+
+class Search extends BaseWebComponent {
+  get icon() {
+    return this.getSelectorByAutomationId('search-icon');
+  }
+
+  get inputArea() {
+    return this.getSelectorByAutomationId('search-input');
+  }
+
+  async typeText(text: string, options?: TypeActionOptions) {
+    await this.t.typeText(this.inputArea, text, options)
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.self.find('.material-icons').withText('close');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  get allresultItems() {
+    return this.getSelector('.search-items');
+  }
+
+  get peoples() {
+    return this.getSelectorByAutomationId('search-People-item');
+  }
+
+  get groups() {
+    return this.getSelectorByAutomationId('search-Groups-item');
+  }
+
+  get teams() {
+    return this.getSelectorByAutomationId('search-Teams-item');
+  }
+
+  nthPeople(n: number) {
+    return this.getComponent(SearchItem, this.peoples.nth(n));
+  }
+
+  nthGroup(n: number) {
+    return this.getComponent(SearchItem, this.groups.nth(n));
+  }
+
+  nthTeam(n: number) {
+    return this.getComponent(SearchItem, this.teams.nth(n));
+  }
+}
+
+class SearchItem extends BaseWebComponent {
+
+  get avatar() {
+    return this.getSelectorByAutomationId('search-item-avatar', this.self);
+  }
+
+  get name() {
+    return this.getSelectorByAutomationId('search-item-text', this.self);
+  }
+
+  // people
+  get uid() {
+    return this.avatar.find("div").withAttribute('uid').getAttribute('uid');
+  }
+
+  // group or team
+  get cid() {
+    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');;
+  }
+
+  async getId() {
+    if (await this.avatar.find('div').withAttribute('uid').exists) {
+      console.log("uid:", await this.uid)
+      return await this.uid;
+    }
+    console.log("cid:", await this.cid)
+    return await this.cid;
+  }
+
+  async enter() {
+    await this.t.click(this.self);
+  }
+
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
+  async clickName() {
+    await this.t.click(this.name);
+  }
+
 }
