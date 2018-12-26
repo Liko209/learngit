@@ -1,4 +1,5 @@
 // Replace ${deployHost} with real deployHost
+import _ from 'lodash';
 import merge from 'lodash/merge';
 import { service } from 'sdk';
 
@@ -108,7 +109,7 @@ class Config {
   }
 
   getEnv() {
-    return this._env || 'XMN-Stable';
+    return this._env || 'XMN-UP';
   }
 
   getAllEnv() {
