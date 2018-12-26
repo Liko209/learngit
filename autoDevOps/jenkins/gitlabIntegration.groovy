@@ -3,11 +3,12 @@ import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
 import hudson.AbortException
 
+// glip emoji const
 final String SUCCESS_EMOJI = ':white_check_mark:'
 final String FAILURE_EMOJI = ':negative_squared_cross_mark:'
 final String ABORTED_EMOJI = ':no_entry:'
 
-// cancel old build
+// cancel old build to safe slave resources
 @NonCPS
 def cancelOldBuildOfSameCause() {
     GitLabWebHookCause currentBuildCause = currentBuild.rawBuild.getCause(GitLabWebHookCause.class)
@@ -68,6 +69,17 @@ def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
     return 'true' == sshCmd(remoteUri, "[[ -d ${remoteDir} ]] && echo 'true' || echo 'false'")
 }
 
+def updateRemoteLink(String remoteUri, String linkSource String linkTarget) {
+    assert '/' != linkTarget, 'What the hell are you doing?'
+    // remove link if exists
+    println sshCmd(remoteUri, "[ -L ${linkTarget}] && unlink ${linkTarget}")
+    // remote directory if exists
+    println sshCmd(remoteUri, "[ -d ${linkTarget}] && rm -rf ${linkTarget}")
+    // create link to new target
+    println sshCmd(remoteUri, "ln -s ${linkSource} ${linkTarget}")
+}
+
+// business logic
 static String getSubDomain(String sourceBranch, String targetBranch) {
     if ("master" == sourceBranch)
         return 'release'
@@ -116,12 +128,10 @@ def buildReport(result, buildUrl, report) {
     return lines.join(' \n')
 }
 
-// params
+/* job params */
 String jobName = env.JOB_BASE_NAME
 String buildNode = env.BUILD_NODE
 String scmCredentialId = env.SCM_CREDENTIAL
-String gitlabApi = env.GITLAB_API
-String gitlabCredentialId = env.GITLAB_CREDENTIAL
 String npmRegistry = env.NPM_REGISTRY
 String nodejsTool = env.NODEJS_TOOL
 String deployUri = env.DEPLOY_URI
@@ -129,12 +139,12 @@ String deployCredentialId = env.DEPLOY_CREDENTIAL
 String deployBaseDir = env.DEPLOY_BASE_DIR
 String rcCredentialId = env.E2E_RC_CREDENTIAL
 
-// derivative value
+/* build strategy */
 Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
 
-// deploy related
+/* deploy params */
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
@@ -142,13 +152,15 @@ String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
 
-// update after checkout stage success
+// following params should be updated after checkout stage success
 String appHeadSha = null
 String juiHeadSha = null
 
+// update with +=
 String appHeadShaDir = "${deployBaseDir}/app-".toString()
 String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
 
+// by default we should not skip building app and jui
 Boolean skipBuildApp = false
 Boolean skipBuildJui = false
 
@@ -162,7 +174,7 @@ def reportChannels = [
 Map report = [:]
 report.buildUrl = env.BUILD_URL
 
-// start
+// start to build
 skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
 cancelOldBuildOfSameCause()
 
@@ -221,11 +233,13 @@ node(buildNode) {
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
-            assert '' != appHeadSha, 'appHeadSha is invalid'
+            echo "appHeadSha=${appHeadSha}"
+            assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
-            assert '' != juiHeadSha, 'juiHeadSha is invalid'
+            echo "juiHeadSha=${juiHeadSha}"
+            assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
@@ -280,6 +294,7 @@ node(buildNode) {
                         report.coverage = "${env.BUILD_URL}Coverage"
                     }
                 },
+
                 'Build JUI' : {
                     condStage(name: 'Build JUI', enable: !skipBuildJui) {
                         sh 'npm run build:ui'
@@ -290,8 +305,8 @@ node(buildNode) {
                         sshagent(credentials: [deployCredentialId]) {
                             // copy to dir name with head sha when dir is not exists
                             skipBuildJui || rsyncFolderToRemote(sourceDir, deployUri, juiHeadShaDir)
-                            // and create link to branch name
-                            juiLinkDir
+                            // and create link to branch name based folder
+                            updateRemoteLink(deployUri, juiHeadShaDir, juiLinkDir)
                         }
                     }
                     report.juiUrl = juiUrl
@@ -302,6 +317,7 @@ node(buildNode) {
 
                     )
                 },
+
                 'Build Application': {
                     condStage(name: 'Build Application', enable: !skipBuildApp) {
                         // FIXME: move this part to build script
@@ -321,8 +337,8 @@ node(buildNode) {
                         sshagent(credentials: [deployCredentialId]) {
                             // copy to dir name with head sha when dir is not exists
                             skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
-                            // and create link to branch name
-                            appLinkDir
+                            // and create link to branch name based folder
+                            updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
                         }
                     }
                     report.appUrl = appUrl
