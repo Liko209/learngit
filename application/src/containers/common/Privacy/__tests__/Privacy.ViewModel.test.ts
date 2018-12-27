@@ -4,32 +4,37 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// import { service } from 'sdk';
-// import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
+import { service } from 'sdk';
+import { ErrorTypes } from 'sdk/utils/';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
 import { PrivacyProps } from '../types';
 
 jest.mock('../../../../store/utils');
-
-// const { GroupService } = service;
-// const groupService = {
-//   getLocalGroup: jest.fn().mockResolvedValue(mockGroup),
-//   markGroupAsFavorite: jest.fn().mockResolvedValue(ServiceCommonErrorType.NONE),
-// };
-// GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+const mockGroup = {
+  id: 123,
+};
+const { GroupService } = service;
+const groupService = {
+  getLocalGroup: jest.fn().mockResolvedValue(mockGroup),
+  updateGroupPrivacy: jest
+    .fn()
+    .mockResolvedValue(ErrorTypes.SERVICE_INVALID_MODEL_ID),
+};
+GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
 const mockEntity = {
   isTeam: true,
   privacy: 'private',
+  isAdmin: true,
 };
 const props: PrivacyProps = {
   id: 1,
   size: 'medium',
 };
-const vm = new PrivacyViewModel(props);
 
 describe('Privacy view model', () => {
+  const vm = new PrivacyViewModel(props);
   beforeAll(() => {
     (getEntity as jest.Mock).mockReturnValue(mockEntity);
   });
@@ -54,8 +59,19 @@ describe('Privacy view model', () => {
     expect(vm.isPublic).toEqual(false);
   });
 
-  // it('request service for handler privacy', async () => {
-  //   const result = await vm.handlePrivacy();
-  //   expect(result).toEqual(ServiceCommonErrorType.NONE);
-  // });
+  describe('isAdmin', () => {
+    it('should isAdmin equal', () => {
+      mockEntity.isAdmin = true;
+      expect(vm.isAdmin).toBe(true);
+      mockEntity.isAdmin = false;
+      expect(vm.isAdmin).toBe(false);
+    });
+  });
+
+  describe('privacy', () => {
+    it('should return error when service error', async () => {
+      const result = await vm.handlePrivacy();
+      expect(result).toEqual(ErrorTypes.SERVICE_INVALID_MODEL_ID);
+    });
+  });
 });

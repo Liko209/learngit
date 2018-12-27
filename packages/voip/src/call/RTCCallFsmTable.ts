@@ -21,15 +21,23 @@ const CallFsmEvent = {
   SESSION_ERROR: 'sessionError',
 };
 
+interface IRTCCallFsmTableDependency {
+  onCreateOutCallSession(): void;
+  onHangupAction(): void;
+}
+
 class RTCCallFsmTable extends StateMachine {
-  constructor() {
+  constructor(dependency: IRTCCallFsmTableDependency) {
     super({
       init: CallFsmState.IDLE,
       transitions: [
         {
           name: CallFsmEvent.ACCOUNT_READY,
           from: [CallFsmState.IDLE, CallFsmState.PENDING],
-          to: CallFsmState.CONNECTING,
+          to: () => {
+            dependency.onCreateOutCallSession();
+            return CallFsmState.CONNECTING;
+          },
         },
         {
           name: CallFsmEvent.ACCOUNT_NOT_READY,
@@ -60,7 +68,10 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
           ],
-          to: CallFsmState.DISCONNECTED,
+          to: () => {
+            dependency.onHangupAction();
+            return CallFsmState.DISCONNECTED;
+          },
         },
         {
           name: CallFsmEvent.SESSION_CONFIRMED,
@@ -121,4 +132,4 @@ class RTCCallFsmTable extends StateMachine {
   }
 }
 
-export { RTCCallFsmTable };
+export { RTCCallFsmTable, IRTCCallFsmTableDependency };

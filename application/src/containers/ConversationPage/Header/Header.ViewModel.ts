@@ -31,6 +31,11 @@ class HeaderViewModel extends AbstractViewModel {
   }
 
   @computed
+  get groupId() {
+    return this._id;
+  }
+
+  @computed
   get title() {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
     let title = group.displayName;

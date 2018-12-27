@@ -265,6 +265,18 @@ describe('MoreVM', () => {
         ViewModel.permissionsMap[MENU_LIST_ITEM_TYPE.QUOTE].permission,
       ).toBe(false);
     });
+
+    it('should show more action when post only have files', () => {
+      (getEntity as jest.Mock).mockImplementation((type: string) => {
+        if (type === ENTITY_NAME.POST) {
+          return { itemIds: [1] };
+        }
+        return null;
+      });
+      ViewModel = new MoreViewModel({ id: 1 });
+
+      expect(ViewModel.showMoreAction).toBe(true);
+    });
   });
 
   describe('showMoreAction()', () => {

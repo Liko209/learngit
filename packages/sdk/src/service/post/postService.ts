@@ -17,13 +17,14 @@ import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post, Item, Raw, Group } from '../../models';
 import { PostStatusHandler } from './postStatusHandler';
-import { POST_STATUS } from '../constants';
-import { ENTITY, SOCKET } from '../eventKey';
+import { POST_STATUS, SENDING_STATUS } from '../constants';
+import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
-import { RawPostInfo, RawPostInfoWithFile } from './types';
+import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
 import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
+import { uniqueArray } from '../../utils';
 
 interface IPostResult {
   posts: Post[];
@@ -48,11 +49,6 @@ interface IPostQuery {
 type PostData = {
   id: number;
   data: Post;
-};
-
-type PostSendData = {
-  id: number;
-  status: POST_STATUS;
 };
 
 class PostService extends BaseService<Post> {
@@ -243,10 +239,9 @@ class PostService extends BaseService<Post> {
   }
 
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
-    // handle params, if has file item, should send file first then send post
     mainLogger.info('start to send post log');
-    const buildPost: Post = PostServiceHandler.buildPostInfo(params);
-    return this.innerSendPost(buildPost);
+    const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
+    return this.innerSendPost(buildPost, false);
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
@@ -255,17 +250,148 @@ class PostService extends BaseService<Post> {
       let post = await dao.get(postId);
       if (post) {
         post = PostServiceHandler.buildResendPostInfo(post);
-        return this.innerSendPost(post);
+        return this.innerSendPost(post, true);
       }
     }
     return null;
   }
 
-  async innerSendPost(buildPost: Post): Promise<PostData[]> {
-    await this.handlePreInsertProcess(buildPost);
-    const { id: preInsertId } = buildPost;
+  async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
+    if (!isResend && buildPost.item_ids.length > 0) {
+      this._cleanUploadingFiles(buildPost.group_id, buildPost.item_ids);
+    }
+
+    await this._handlePreInsertProcess(buildPost);
+    if (buildPost.item_ids.length > 0) {
+      const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
+      if (pseudoItems.length > 0) {
+        if (isResend) {
+          this._resendFailedItems(pseudoItems);
+        } else {
+          if (
+            !this._hasItemInTargetStatus(buildPost, SENDING_STATUS.INPROGRESS) // no item in progress
+          ) {
+            return await this.handleSendPostFail(buildPost.id);
+          }
+        }
+
+        return await this._sendPostWithPreInsertItems(buildPost);
+      }
+    }
+
+    return await this._sendPost(buildPost);
+  }
+
+  private async _resendFailedItems(pseudoItemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.resendFailedItems(pseudoItemIds);
+  }
+
+  private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.cleanUploadingFiles(groupId, itemIds);
+  }
+
+  private _getPseudoItemStatusInPost(post: Post) {
+    const itemService: ItemService = ItemService.getInstance();
+    return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
+  }
+
+  private _hasItemInTargetStatus(post: Post, status: SENDING_STATUS) {
+    return this._getPseudoItemStatusInPost(post).indexOf(status) > -1;
+  }
+
+  private _isValidPost(post: Post) {
+    return post && (post.text.length > 0 || post.item_ids.length > 0);
+  }
+
+  private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
+    const listener = async (params: {
+      status: SENDING_STATUS;
+      preInsertId: number;
+      updatedId: number;
+    }) => {
+      const { status, preInsertId, updatedId } = params;
+      if (!post.item_ids.includes(preInsertId)) {
+        return;
+      }
+
+      if (status === SENDING_STATUS.CANCELED) {
+        _.remove(post.item_ids, (id: number) => {
+          return id === preInsertId;
+        });
+      } else if (status === SENDING_STATUS.SUCCESS) {
+        // update post to db
+        if (updatedId !== preInsertId) {
+          post.item_ids = post.item_ids.map((id: number) => {
+            return id === preInsertId ? updatedId : id;
+          });
+
+          if (post.item_data && post.item_data.version_map) {
+            const versionMap = post.item_data.version_map;
+            Object.keys(versionMap).forEach((strKey: string) => {
+              if (strKey === preInsertId.toString()) {
+                versionMap[updatedId] = versionMap[preInsertId];
+                delete versionMap[preInsertId];
+              }
+            });
+          }
+
+          this._updatePost(_.cloneDeep(post));
+        }
+      }
+
+      if (this._isValidPost(post)) {
+        if (this._getPseudoItemIdsFromPost(post).length === 0) {
+          await this._sendPost(post);
+        }
+      } else {
+        await this.deletePost(post.id);
+      }
+
+      const itemStatuses = this._getPseudoItemStatusInPost(post);
+      // remove listener if item files are not in progress
+      if (!itemStatuses.includes(SENDING_STATUS.INPROGRESS)) {
+        // has failed
+        if (itemStatuses.includes(SENDING_STATUS.FAIL)) {
+          this.handleSendPostFail(post.id);
+        }
+
+        notificationCenter.removeListener(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          listener,
+        );
+      }
+    };
+
+    notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.sendItemData(post.group_id, post.item_ids);
+
+    return [];
+  }
+
+  private async _updatePost(post: Post) {
+    const postDao = daoManager.getDao(PostDao);
+    await postDao.update(post);
+  }
+
+  private _getPseudoItemIdsFromPost(post: Post) {
+    return post.item_ids.filter(x => x < 0);
+  }
+
+  private async _handlePreInsertProcess(buildPost: Post): Promise<void> {
+    this._postStatusHandler.setPreInsertId(buildPost.id);
+    const dao = daoManager.getDao(PostDao);
+    await dao.put(buildPost);
+    notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
+  }
+
+  private async _sendPost(buildPost: Post): Promise<PostData[]> {
+    const preInsertId = buildPost.id;
     delete buildPost.id;
-    delete buildPost.status;
+    delete buildPost.__status;
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
@@ -275,15 +401,6 @@ class PostService extends BaseService<Post> {
       this.handleSendPostFail(preInsertId);
       throw ErrorParser.parse(e);
     }
-  }
-
-  async handlePreInsertProcess(buildPost: Post): Promise<void> {
-    this._postStatusHandler.setPreInsertId(buildPost.id);
-    const dao = daoManager.getDao(PostDao);
-    await dao.put(buildPost);
-    try {
-      notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
-    } catch (err) {}
   }
 
   async handleSendPostSuccess(
@@ -325,7 +442,7 @@ class PostService extends BaseService<Post> {
     const updateData = {
       id: preInsertId,
       _id: preInsertId,
-      status: POST_STATUS.FAIL,
+      __status: POST_STATUS.FAIL,
     };
     let groupId: number = 0;
 
@@ -347,33 +464,31 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  async sendItemFile(params: RawPostInfoWithFile): Promise<Post | null> {
-    try {
-      // {groupId, file}
-      if (!params.groupId) {
-        return null;
-      }
-      const itemService: ItemService = ItemService.getInstance();
-      const result = await itemService.sendFile(params);
-      if (result) {
-        // result is file item
-        const options = {
-          text: '',
-          itemIds: [Number(result.id)],
-          groupId: Number(params.groupId),
-        };
-        const info = PostServiceHandler.buildPostInfo(options);
-        delete info.id; // should merge sendItemFile function into sendPost
-        const sendPostResult = await PostAPI.sendPost(info);
-        const rawPost = sendPostResult.expect('Send post failed.');
-        const posts = await baseHandleData(rawPost);
-        return posts[0];
-      }
-      return null;
-    } catch (e) {
-      mainLogger.error(`post service sendItemFile error${e}`);
-      return null;
-    }
+  async cancelUpload(postId: number, itemId: number) {
+    const preHandlePartialPost = (
+      partialModel: Partial<Raw<Post>>,
+      originalModel: Post,
+    ): Partial<Raw<Post>> => {
+      const itemIds = originalModel.item_ids.filter((value: number) => {
+        return value !== itemId;
+      });
+      const partialPost = {
+        ...partialModel,
+        item_ids: itemIds,
+      };
+      return partialPost;
+    };
+
+    const partialModel = { id: postId };
+    await this.handlePartialUpdate(
+      partialModel,
+      preHandlePartialPost,
+      async (updatedModel: Post) => {
+        const itemService: ItemService = ItemService.getInstance();
+        await itemService.cancelUpload(itemId);
+        return updatedModel;
+      },
+    );
   }
 
   /**
@@ -594,11 +709,4 @@ class PostService extends BaseService<Post> {
   }
 }
 
-export {
-  IPostResult,
-  IRawPostResult,
-  IPostQuery,
-  PostData,
-  PostSendData,
-  PostService,
-};
+export { IPostResult, IRawPostResult, IPostQuery, PostData, PostService };

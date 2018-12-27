@@ -13,4 +13,14 @@ const getFileName = (filename: string) => {
   return [left, right];
 };
 
-export { getFileName };
+const truncateLongName = (name: string) => {
+  const tailLength = 8;
+  if (name && name.length > tailLength) {
+    const left = name.substr(0, name.length - tailLength);
+    const right = name.substr(-tailLength);
+    return [left, right];
+  }
+  return [name, ''];
+};
+
+export { getFileName, truncateLongName };
