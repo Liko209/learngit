@@ -66,7 +66,7 @@ class JuiPopperMenu extends React.Component<
         </StyledAnchorWrapper>
         <JuiPopper
           id={id}
-          open={open}
+          open={open && Boolean(anchorEl)}
           anchorEl={anchorEl}
           placement={placement}
           data-test-automation-id={automationId}
