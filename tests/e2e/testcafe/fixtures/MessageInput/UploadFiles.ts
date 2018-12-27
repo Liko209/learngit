@@ -9,17 +9,17 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 
 fixture('UploadFiles')
-    .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+    .beforeEach(setupCase(BrandTire.RCOFFICE))
     .afterEach(teardownCase());
 
 const WAIT_FOR_POST_SENT = 5e3;
 
 // bug:https://jira.ringcentral.com/browse/FIJI-2399, so I only skip the check point, only check uploading several files
-test(formalName('JPT-448 The post is sent successfully when sending a post with uploaded files',['P0', 'UploadFiles', 'Mia.Cai', 'JPT-448']), async t => {
+test(formalName('JPT-448 The post is sent successfully when sending a post with uploaded files', ['P0', 'UploadFiles', 'Mia.Cai', 'JPT-448']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -60,7 +60,7 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
     });
 
     await h(t).withLog('Then I can read this message with files from post list', async () => {
-        // TODO bug https://jira.ringcentral.com/browse/FIJI-2399, so I skip the check point 
+        // TODO bug https://jira.ringcentral.com/browse/FIJI-2399, so I skip the check point
         // await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
         for (let i = 0; i < filesNames.length; i++) {
             await t.expect(conversationPage.fileNameOnPost.withText(filesNames[i]).exists).ok();
@@ -78,7 +78,7 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
     });
 });
 
-test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing file only in attachment;`,['P2', 'UploadFiles', 'Mia.Cai', 'JPT-592']), async t => {
+test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing file only in attachment;`, ['P2', 'UploadFiles', 'Mia.Cai', 'JPT-592']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -126,7 +126,7 @@ test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing fi
     });
 });
 
-test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same name is sent;JPT-457 Will show the prompt when re-upload an existing file in the conversation`,['P1', 'UploadFiles', 'Mia.Cai', 'JPT-498','JPT-457']), async t => {
+test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same name is sent;JPT-457 Will show the prompt when re-upload an existing file in the conversation`, ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-498', 'JPT-457']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -171,9 +171,9 @@ test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same 
 
     await h(t).withLog('And upload the same name file to the message attachment in the created conversation ', async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
-   });
+    });
 
-   // JPT-457
+    // JPT-457
     await h(t).withLog('Then will show a duplicate prompt ', async () => {
         await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
     });
@@ -192,7 +192,7 @@ test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same 
 
 });
 
-test(formalName('JPT-499 Can update files when click update the button in the duplicate prompt',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-499']), async t => {
+test(formalName('JPT-499 Can update files when click update the button in the duplicate prompt', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-499']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -275,7 +275,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
 
 });
 
-test(formalName('JPT-532 Can update files when re-select the file and local exists one post with the same name file',['P2', 'UploadFiles', 'Mia.Cai', 'JPT-532']), async t => {
+test(formalName('JPT-532 Can update files when re-select the file and local exists one post with the same name file', ['P2', 'UploadFiles', 'Mia.Cai', 'JPT-532']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -290,7 +290,7 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
     const filesSize = ['0.4Kb', '3.2Kb', '0.5Kb'];
     const message = uuid();
     const V2 = 'uploaded version 2';
-  
+
     let teamId;
     await h(t).withLog(`Given I create one new teams`, async () => {
         teamId = (await user.sdk.platform.createGroup({
@@ -299,16 +299,16 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
             members: [user.rcId, users[5].rcId],
         })).data.id;
     });
-  
+
     await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
     });
-  
+
     await h(t).withLog('And open the created conversation', async () => {
         await teamsSection.conversationEntryById(teamId).enter();
     });
-  
+
     await h(t).withLog(`And upload one file to the message attachment in the created conversation,size=${filesSize[0]} `, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath1);
     });
@@ -321,19 +321,19 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
-  
+
     await h(t).withLog(`And upload the same name file to the conversation, size=${filesSize[1]}`, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
     });
-  
+
     await h(t).withLog('Then will show a duplicate prompt ', async () => {
         await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
     });
-  
+
     await h(t).withLog('When click update button in the duplicate prompt', async () => {
         await duplicatePromptPage.clickUpdateButton();
     });
-  
+
     await h(t).withLog('Then the file count should be one in the attachment ', async () => {
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
     });
@@ -341,35 +341,35 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
     await h(t).withLog(`When upload the same name file to the attachment, and size = ${filesSize[2]}`, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath3);
     });
-  
+
     await h(t).withLog('Then will show a duplicate prompt ', async () => {
         await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
     });
-  
+
     await h(t).withLog('When click update button in the duplicate prompt', async () => {
         await duplicatePromptPage.clickUpdateButton();
     });
-       
+
     await h(t).withLog('Then the file count should be one in the attachment ', async () => {
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
-      });
-  
+    });
+
     await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
     });
-  
+
     await h(t).withLog(`Then the post\'s conversationCard header will show ${V2}`, async () => {
         await t.expect(conversationPage.conversationCard.nth(1).withText(V2).exists).ok();
     });
-  
+
     await h(t).withLog(`And the sent file size should be ${filesSize[2]}`, async () => {
         await t.expect(conversationPage.previewFileSize.nth(0).withText(filesSize[2]).exists).ok();
         await t.expect(conversationPage.previewFileSize.nth(1).withText(filesSize[2]).exists).ok();
     });
-  
+
 });
 
-test(formalName('JPT-500 Can create files in the duplicate prompt when the same name file is sent',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-500']), async t => {
+test(formalName('JPT-500 Can create files in the duplicate prompt when the same name file is sent', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-500']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -430,7 +430,7 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
     await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
-     });
+    });
 
     await h(t).withLog(`Then the previous sent file size = ${file1Size} `, async () => {
         await t.expect(conversationPage.previewFileSize.nth(0).withText(file1Size).exists).ok();
@@ -441,7 +441,7 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
     });
 });
 
-test(formalName('JPT-533 Can create files when re-select the file and local exists one post with the same name file',['P2', 'UploadFiles', 'Mia.Cai', 'JPT-533']), async t => {
+test(formalName('JPT-533 Can create files when re-select the file and local exists one post with the same name file', ['P2', 'UploadFiles', 'Mia.Cai', 'JPT-533']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -455,7 +455,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
     const filesPath3 = ['../../sources/files1/1.txt'];
     const filesSize = ['0.4Kb', '3.2Kb', '0.5Kb'];
     const message = uuid();
-  
+
     let teamId;
     await h(t).withLog(`Given I create one new teams`, async () => {
         teamId = (await user.sdk.platform.createGroup({
@@ -464,20 +464,20 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
             members: [user.rcId, users[5].rcId],
         })).data.id;
     });
-  
+
     await h(t).withLog(`When I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
         await h(t).directLoginWithUser(SITE_URL, user);
         await app.homePage.ensureLoaded();
     });
-  
+
     await h(t).withLog('And open the created conversation', async () => {
         await teamsSection.conversationEntryById(teamId).enter();
     });
-  
+
     await h(t).withLog(`And upload one file to the message attachment in the created conversation,size=${filesSize[0]}`, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath1);
     });
-  
+
     await h(t).withLog('Then the file count should be one in the attachment ', async () => {
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
     });
@@ -490,11 +490,11 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
         await t.wait(WAIT_FOR_POST_SENT);
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
     });
-  
+
     await h(t).withLog('Then will show a duplicate prompt ', async () => {
         await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
     });
-  
+
     await h(t).withLog('When click Create button in the duplicate prompt', async () => {
         await duplicatePromptPage.clickCreateButton();
     });
@@ -502,16 +502,16 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
     await h(t).withLog('Then the file count should be one in the attachment ', async () => {
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(1);
     });
-  
+
     await h(t).withLog(`When upload the same name file to the conversation,size=${filesSize[2]} `, async () => {
         await t.wait(WAIT_FOR_POST_SENT);
         await conversationPage.uploadFilesToMessageAttachment(filesPath3);
     });
-    
+
     await h(t).withLog('Then will show a duplicate prompt ', async () => {
         await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
     });
-    
+
     await h(t).withLog('When click Create button in the duplicate prompt', async () => {
         await duplicatePromptPage.clickCreateButton();
     });
@@ -519,20 +519,20 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
     await h(t).withLog('Then the file count should be two in the attachment ', async () => {
         await t.expect(conversationPage.attachmentFileName.withText(fileName).count).eql(2);
     });
-  
+
     await h(t).withLog('When I send message to this conversation', async () => {
         await conversationPage.sendMessage(message);
         await t.wait(WAIT_FOR_POST_SENT);
     });
-  
+
     await h(t).withLog(`Then the sent files size should have ${filesSize}`, async () => {
         filesSize.forEach(async (size) => {
             await t.expect(conversationPage.previewFileSize.withText(size).exists).ok();
-        });     
+        });
     });
 });
 
-test(formalName('JPT-593 Should update the oldest file when creating same name file then re-upload and update same name file to the conversation',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-593']), async t => {
+test(formalName('JPT-593 Should update the oldest file when creating same name file then re-upload and update same name file to the conversation', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-593']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -562,22 +562,22 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
     });
 
     await h(t).withLog('And open the created conversation', async () => {
-       await teamsSection.conversationEntryById(teamId).enter();
+        await teamsSection.conversationEntryById(teamId).enter();
     });
 
     await h(t).withLog(`And upload one file to the message attachment in the created conversation,size=${filesSize[0]} `, async () => {
         await t.wait(WAIT_FOR_POST_SENT);
         await conversationPage.uploadFilesToMessageAttachment(filesPath1);
-   });
+    });
 
     await h(t).withLog('And I send the file to this conversation', async () => {
-       await conversationPage.sendMessageWithoutText();
-       await t.wait(WAIT_FOR_POST_SENT);
+        await conversationPage.sendMessageWithoutText();
+        await t.wait(WAIT_FOR_POST_SENT);
     });
 
     await h(t).withLog(`And upload the same name file to the conversation,size=${filesSize[1]} `, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath2);
-   });
+    });
 
     await h(t).withLog('Then will show a duplicate prompt ', async () => {
         await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
@@ -594,13 +594,13 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
     await h(t).withLog('When I send the file to this conversation', async () => {
         await conversationPage.sendMessageWithoutText();
         await t.wait(WAIT_FOR_POST_SENT);
-     });
+    });
 
-     await h(t).withLog(`And upload same name file to the message attachment in the conversation,size=${filesSize[2]} `, async () => {
+    await h(t).withLog(`And upload same name file to the message attachment in the conversation,size=${filesSize[2]} `, async () => {
         await conversationPage.uploadFilesToMessageAttachment(filesPath3);
     });
 
-     await h(t).withLog('And click update button in the duplicate prompt', async () => {
+    await h(t).withLog('And click update button in the duplicate prompt', async () => {
         await duplicatePromptPage.clickUpdateButton();
     });
 
@@ -613,7 +613,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
         await t.expect(conversationPage.conversationCard.nth(2).withText(V2).exists).ok();
     });
 
-    await h(t).withLog(`And the same sent files size should be the same, and the size is ${filesSize}`, async () => {     
+    await h(t).withLog(`And the same sent files size should be the same, and the size is ${filesSize}`, async () => {
         await t.expect(conversationPage.previewFileSize.nth(0).withText(filesSize[2]).exists).ok();
         await t.expect(conversationPage.previewFileSize.nth(1).withText(filesSize[1]).exists).ok();
         await t.expect(conversationPage.previewFileSize.nth(2).withText(filesSize[2]).exists).ok();
@@ -621,7 +621,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
 
 });
 
-test(formalName('JPT-512 Can remove files when selected files to conversations',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-512']), async t => {
+test(formalName('JPT-512 Can remove files when selected files to conversations', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-512']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -675,7 +675,7 @@ test(formalName('JPT-512 Can remove files when selected files to conversations',
     });
 });
 
-test(formalName('JPT-515 The selected files shouldn\'t be in the other conversation when switch to other conversations',['P1', 'UploadFiles', 'Mia.Cai', 'JPT-515']), async t => {
+test(formalName('JPT-515 The selected files shouldn\'t be in the other conversation when switch to other conversations', ['P1', 'UploadFiles', 'Mia.Cai', 'JPT-515']), async t => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[0];
@@ -688,7 +688,7 @@ test(formalName('JPT-515 The selected files shouldn\'t be in the other conversat
 
     let teamId = [];
     await h(t).withLog(`Given I create two new teams`, async () => {
-        for(let i=0; i<2; i++){
+        for (let i = 0; i < 2; i++) {
             teamId[i] = (await user.sdk.platform.createGroup({
                 type: 'Team',
                 name: uuid(),
@@ -725,10 +725,9 @@ test(formalName('JPT-515 The selected files shouldn\'t be in the other conversat
     await h(t).withLog('When back to the first conversation', async () => {
         await teamsSection.conversationEntryById(teamId[0]).enter();
     });
- 
+
     await h(t).withLog('Then upload file shows in the first conversation ', async () => {
         await t.expect(conversationPage.attachmentFileName.withText(fileName).exists).ok();
     });
 
 });
-

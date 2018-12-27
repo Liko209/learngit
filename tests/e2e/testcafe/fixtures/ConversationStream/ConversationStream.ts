@@ -62,8 +62,8 @@ test(formalName('Check the posts display and the order', ['P1', 'JPT-52', 'Conve
       }
     });
 
-    await h(t).withLog('And the posts is at the bottom of conversationStream',async ()=>{
-       await app.homePage.messageTab.conversationPage.expectStreamScrollToBottom()
+    await h(t).withLog('And the posts is at the bottom of conversationStream', async () => {
+      await app.homePage.messageTab.conversationPage.expectStreamScrollToBottom()
     })
   }
 );
@@ -157,14 +157,14 @@ test(formalName('Should be able to read the newest posts once open a conversatio
       await t.expect(posts.nth(-1).withText(msgAfterLogin).exists).ok();
     });
 
-    await h(t).withLog('And the post is at the bottom of conversationStream',async ()=>{
-       await app.homePage.messageTab.conversationPage.expectStreamScrollToBottom()
+    await h(t).withLog('And the post is at the bottom of conversationStream', async () => {
+      await app.homePage.messageTab.conversationPage.expectStreamScrollToBottom()
     })
 
   }
 );
 
-test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
+test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[6];
@@ -183,7 +183,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
   await h(t).withLog('And this conversation 20 message',
     async () => {
       for (let i of _.range(20)) {
-         await userPlatform.createPost({ text: `${i} ${uuid()}` }, conversation)
+        await userPlatform.createPost({ text: `${i} ${uuid()}` }, conversation)
       }
     }
   )
@@ -192,7 +192,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
     async () => {
       await h(t).directLoginWithUser(SITE_URL, user);
       await app.homePage.ensureLoaded();
-  });
+    });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('And enter the team conversation',
@@ -221,7 +221,6 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
       await t.wait(3e1)
       const posts = await app.homePage.messageTab.conversationPage.posts;
       await conversationPage.expectStreamScrollToBottom()
-      console.log(await posts.nth(-1)())
       await t.expect(posts.nth(-1).withText(message).exists).ok()
     }
   )
@@ -238,9 +237,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
       await t.wait(3e1)
       const posts = await app.homePage.messageTab.conversationPage.posts;
       await conversationPage.expectStreamScrollToBottom()
-      console.log(await posts.nth(-1)())
       await t.expect(posts.nth(-1).withText(anotherMessage).exists).ok()
     }
   )
 })
-

@@ -14,6 +14,10 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
 
+  async clickJumpToFirstUnreadButton() {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
+  }
+
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
@@ -215,9 +219,6 @@ export class DuplicatePromptPage extends BaseConversationPage {
     await this.t.click(this.duplicateCreateButton);
   }
 
-  async clickJumpToFirstUnreadButton () {
-    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
-  }
 }
 
 export class MentionPage extends BaseConversationPage {
