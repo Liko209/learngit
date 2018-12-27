@@ -146,6 +146,7 @@ Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' 
 /* deploy params */
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
+String appStageLinkDir = "${deployBaseDir}/stage".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
@@ -351,6 +352,9 @@ node(buildNode) {
                             skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
                             // and create link to branch name based folder
                             updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
+                            // for stage build, also create link to stage folder
+                            if (env.gitlabSourceBranch.startsWith('stage'))
+                                updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
                         }
                     }
                     report.appUrl = appUrl
