@@ -45,6 +45,13 @@ class AccountManager extends EventEmitter2 {
   async login(authType: string, params?: any) {
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate(params);
+    if (!resp.accountInfos) {
+      throw Error('Auth fail');
+    }
+    const isValid = await this.sanitizeUser(resp.accountInfos);
+    if (!isValid) {
+      throw Error('User not in the white list');
+    }
     return this._handleLoginResponse(resp);
   }
 
@@ -118,10 +125,6 @@ class AccountManager extends EventEmitter2 {
   private async _handleLoginResponse(resp: IAuthResponse) {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
-    }
-    const isValid = await this.sanitizeUser(resp.accountInfos);
-    if (!isValid) {
-      throw Error('User not in the white list');
     }
     this.emit(EVENT_LOGIN, resp.accountInfos);
     this._isLogin = true;
