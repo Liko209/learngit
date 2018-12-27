@@ -16,68 +16,67 @@ fixture('AtMention/AtMention')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-311']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    const otherUser = users[5];
-    await h(t).resetGlipAccount(loginUser);
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).platform(otherUser).init();
-    await h(t).glip(otherUser).init();
+test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-311']), async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).resetGlipAccount(loginUser);
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).platform(otherUser).init();
+  await h(t).glip(otherUser).init();
 
-    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-    const mentionPage = app.homePage.messageTab.mentionPage;
-    let groupId;
-    await h(t).withLog('Given I have an extension with 2 at-mention posts', async () => {
-      groupId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group', members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
-      });
-
-      await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
-      await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi again, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+  let groupId;
+  await h(t).withLog('Given I have an extension with 2 at-mention posts', async () => {
+    groupId = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'Group', members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+    await h(t).platform(otherUser).sendTextPost(
+      `Hi, ![:Person](${loginUser.rcId})`,
+      groupId,
+    );
+    await h(t).platform(otherUser).sendTextPost(
+      `Hi again, ![:Person](${loginUser.rcId})`,
+      groupId,
+    );
+  });
 
-    await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
-      await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).eql(2);
-    }, true);
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    let newPostId;
-    await h(t).withLog('Then I send a new post to user with mention', async () => {
-      newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Test add a mention, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
-    });
+  await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).eql(2);
+  }, true);
 
-    await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
-      await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).eql(3);
-    }, true);
+  let newPostId;
+  await h(t).withLog('Then I send a new post to user with mention', async () => {
+    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      `Test add a mention, ![:Person](${loginUser.rcId})`,
+      groupId,
+    );
+  });
 
-    await h(t).withLog('Then I delete the new post', async () => {
-      await h(t).glip(otherUser).deletePost(newPostId, groupId);
-    });
+  await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).eql(3);
+  }, true);
 
-    await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
-      await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).eql(2);
-    }, true);
-  },
+  await h(t).withLog('Then I delete the new post', async () => {
+    await h(t).glip(otherUser).deletePost(newPostId, groupId);
+  });
+
+  await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).eql(2);
+  }, true);
+},
 );
 
 test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314', 'JPT-463']),
@@ -397,6 +396,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(atMentionChatPostId).body.withText(verifyTextChat).exists)
         .ok({ timeout: 5e3 });

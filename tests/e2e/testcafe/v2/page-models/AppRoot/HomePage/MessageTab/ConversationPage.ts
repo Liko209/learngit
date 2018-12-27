@@ -11,6 +11,9 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header');
   }
 
+  get headerStatus() {
+    return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
+  }
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
@@ -40,10 +43,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async waitUntilPostsBeLoaded(timeout = 5e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
     return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
   }
 
-// FIXME: find a more reliable method
+// todo: find a more reliable method
 async expectStreamScrollToBottom() {
   const scrollTop = await this.streamWrapper.scrollTop;
   const streamHeight = await this.stream.clientHeight;
@@ -90,9 +94,9 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
 
-  async sendMessage(message: string) {
+  async sendMessage(message: string, options?) {
     await this.t
-      .typeText(this.messageInputArea, message)
+      .typeText(this.messageInputArea, message, options)
       .click(this.messageInputArea)
       .pressKey('enter');
   }
