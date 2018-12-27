@@ -9,6 +9,11 @@ import * as _ from 'lodash';
 import { ClientFunction } from 'testcafe';
 
 class BaseConversationPage extends BaseWebComponent {
+
+  get jumpToFirstUnreadButtonWrapper() {
+    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
@@ -21,8 +26,16 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
+  get favIcon() {
+    return this.getSelectorByAutomationId('favorite-icon');
+  }
+
   get leftWrapper() {
     return this.header.find('.left-wrapper');
+  }
+
+  async clickFavIcon() {
+    await this.t.click(this.favIcon);
   }
 
   nthPostItem(nth: number) {
@@ -59,7 +72,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   async scrollToMiddle() {
     const scrollHeight = await this.streamWrapper.clientHeight;
-    this.scrollToY(scrollHeight / 2);
+    await this.scrollToY(scrollHeight / 2);
   }
 
   async scrollToBottom() {
@@ -84,6 +97,7 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+
   async sendMessage(message: string) {
     await this.t
       .typeText(this.messageInputArea, message)
@@ -95,6 +109,15 @@ export class ConversationPage extends BaseConversationPage {
     await this.t
       .click(this.messageInputArea)
       .pressKey('enter');
+  }
+
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
   }
 
   async favorite() {
@@ -192,6 +215,9 @@ export class DuplicatePromptPage extends BaseConversationPage {
     await this.t.click(this.duplicateCreateButton);
   }
 
+  async clickJumpToFirstUnreadButton () {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
+  }
 }
 
 export class MentionPage extends BaseConversationPage {
@@ -230,6 +256,14 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get mentions() {
+    return this.text.find('.at_mention_compose');
+  }
+
+  getMentionByName(name: string) {
+    return this.mentions.filter((el) => el.textContent === name);
+  }
+
   imgTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
@@ -258,6 +292,10 @@ export class PostItem extends BaseWebComponent {
     return this.getSelector('.tooltipPlacementBottom').textContent;
   }
 
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }
@@ -280,6 +318,7 @@ export class PostItem extends BaseWebComponent {
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
+
 
 
   // --- mention page only ---

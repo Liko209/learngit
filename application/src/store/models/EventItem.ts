@@ -7,7 +7,7 @@ import { EventItem } from 'sdk/models';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class EventItemModal extends ItemModel {
+export default class EventItemModel extends ItemModel {
   @observable color: string;
   @observable description: string;
   @observable start: number;
@@ -46,6 +46,6 @@ export default class EventItemModal extends ItemModel {
   }
 
   static fromJS(data: EventItem) {
-    return new EventItemModal(data);
+    return new EventItemModel(data);
   }
 }

@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 import { JuiMenuList } from 'jui/components';
-import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
+import { JuiPopperMenu } from 'jui/pattern/PopperMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Quote } from '../Quote';
 import { Delete } from '../Delete';
@@ -23,7 +23,10 @@ const menuItems = {
 };
 
 @observer
-class More extends React.Component<MoreViewProps> {
+class More extends React.Component<MoreViewProps, { open: boolean }> {
+  state = {
+    open: false,
+  };
   private _Anchor = () => {
     const { t } = this.props;
     return (
@@ -32,10 +35,21 @@ class More extends React.Component<MoreViewProps> {
         variant="plain"
         data-name="actionBarMore"
         tooltipTitle={t('more')}
+        onClick={this.openPopper}
       >
         more_horiz
       </JuiIconButton>
     );
+  }
+  closePopper = () => {
+    this.setState({
+      open: false,
+    });
+  }
+  openPopper = () => {
+    this.setState({
+      open: true,
+    });
   }
 
   render() {
@@ -46,18 +60,12 @@ class More extends React.Component<MoreViewProps> {
     }
 
     return (
-      <JuiPopoverMenu
+      <JuiPopperMenu
         Anchor={this._Anchor}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
+        placement="bottom-start"
+        open={this.state.open}
       >
-        <JuiMenuList>
+        <JuiMenuList onClick={this.closePopper}>
           {Object.keys(menuItems).map((key: string) => {
             const { permission, shouldShowAction } = permissionsMap[key];
             const Component = menuItems[key];
@@ -68,7 +76,7 @@ class More extends React.Component<MoreViewProps> {
             );
           })}
         </JuiMenuList>
-      </JuiPopoverMenu>
+      </JuiPopperMenu>
     );
   }
 }

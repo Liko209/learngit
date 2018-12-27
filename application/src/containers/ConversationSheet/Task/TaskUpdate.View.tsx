@@ -44,7 +44,6 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
     const { task, activityData } = this.props;
     const { color, text, complete } = task;
     const { value, key, old_value } = activityData;
-
     return (
       <TaskUpdateViewCard
         title={this._getTitleText(text)}

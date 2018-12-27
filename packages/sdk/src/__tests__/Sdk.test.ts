@@ -37,7 +37,13 @@ describe('Sdk', () => {
     serviceManager = new ServiceManager(null);
     networkManager = new NetworkManager();
     syncService = new SyncService();
-    sdk = new Sdk(daoManager, accountManager, serviceManager, networkManager, syncService);
+    sdk = new Sdk(
+      daoManager,
+      accountManager,
+      serviceManager,
+      networkManager,
+      syncService,
+    );
   });
 
   afterEach(() => {
@@ -63,7 +69,7 @@ describe('Sdk', () => {
 
   describe('onLogin()', () => {
     beforeEach(() => {
-      jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => { });
+      jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
       sdk.onLogin();
     });
     afterEach(() => jest.restoreAllMocks());
@@ -105,10 +111,14 @@ describe('Sdk', () => {
 
       sdk.updateNetworkToken();
 
-      expect(networkManager.setOAuthToken)
-        .toHaveBeenCalledWith(new Token('glip token'), HandleByGlip);
-      expect(networkManager.setOAuthToken)
-        .toHaveBeenCalledWith(new Token('glip token'), HandleByUpload);
+      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
+        new Token('glip token'),
+        HandleByGlip,
+      );
+      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
+        new Token('glip token'),
+        HandleByUpload,
+      );
     });
 
     it('should init with rc token ', () => {
@@ -118,8 +128,14 @@ describe('Sdk', () => {
 
       sdk.updateNetworkToken();
 
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith('rc token', HandleByRingCentral);
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith('rc token', HandleByGlip2);
+      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
+        'rc token',
+        HandleByRingCentral,
+      );
+      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
+        'rc token',
+        HandleByGlip2,
+      );
     });
 
     it('should init with glip2 token ', () => {
@@ -129,7 +145,10 @@ describe('Sdk', () => {
 
       sdk.updateNetworkToken();
 
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith('glip2 token', HandleByGlip2);
+      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
+        'glip2 token',
+        HandleByGlip2,
+      );
     });
   });
 

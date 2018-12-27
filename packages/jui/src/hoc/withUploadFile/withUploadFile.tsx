@@ -45,6 +45,7 @@ function withUploadFile(Component: ComponentType<any>) {
       const { onFileChanged } = this.props;
       if (inputRef && onFileChanged) {
         onFileChanged(inputRef.files);
+        inputRef.value = null;
       }
     }
 
@@ -57,9 +58,11 @@ function withUploadFile(Component: ComponentType<any>) {
     }
 
     public showFileDialog = () => {
-      const inputRef = this._fileInputRef.current;
+      const inputRef: HTMLInputElement = this._fileInputRef.current;
       if (inputRef) {
-        inputRef.click();
+        const event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        inputRef.dispatchEvent(event);
       }
     }
 
@@ -74,6 +77,7 @@ function withUploadFile(Component: ComponentType<any>) {
             ref={this._fileInputRef}
             onChange={this._fileChanged}
             type="file"
+            data-test-automation-id="upload-file-input"
           />
         </Fragment>
       );

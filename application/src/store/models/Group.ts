@@ -92,6 +92,11 @@ export default class GroupModel extends Base<Group> {
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
+  get isAdmin() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.isThePersonAdmin(currentUserId);
+  }
+
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {

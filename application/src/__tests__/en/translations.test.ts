@@ -301,4 +301,22 @@ describe('i18next-en', () => {
     expect(i18next.t('AboutRingCentral')).toEqual('About RingCentral');
     expect(i18next.t('newActions')).toEqual('New actions');
   });
+
+  it('should check duplicate alert text JPT-455', () => {
+    expect(i18next.t('updateFiles')).toEqual('Update File(s)?');
+    expect(i18next.t('theFollowingFilesAlreadyExist')).toEqual(
+      'The following file(s) already exist',
+    );
+    expect(
+      i18next.t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne'),
+    ).toEqual(
+      'Would you like to update the existing file(s) or create a new one?',
+    );
+  });
+
+  it('should check file no longer exist JPT-617', () => {
+    expect(i18next.t('fileNoLongerExists')).toEqual(
+      'The file no longer exists.',
+    );
+  });
 });

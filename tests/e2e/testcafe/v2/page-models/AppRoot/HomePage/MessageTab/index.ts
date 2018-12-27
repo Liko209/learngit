@@ -90,7 +90,7 @@ class MenuItem extends Entry {
     await this.t.click(this.self);
   }
 
-  get  disabled(): Promise<string> {
+  get disabled(): Promise<string> {
     return this.self.getAttribute("data-disabled");
   }
 
@@ -171,7 +171,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   get hasDraftMessage() {
-    return this.self.find('.material-icons').withText('border_color').exists;
+    return this.getSelectorByIcon('border_color').exists;
   }
 
   async enter() {
@@ -296,6 +296,14 @@ class ProfileModal extends BaseWebComponent {
   get messageButton() {
     this.warnFlakySelector();
     return this.self.find('span').find('span').withText('chat_bubble');
+  }
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivacy() {
+    await this.t.click(this.privateButton);
   }
 
   async close() {

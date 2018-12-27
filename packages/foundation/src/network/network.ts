@@ -7,9 +7,9 @@
 type IToken = {
   timestamp: number;
   access_token?: string;
-  accessTokenExpireIn: number;
-  refreshTokenExpireIn: number;
-  refreshToken?: string;
+  expires_in: number;
+  refresh_token_expires_in: number;
+  refresh_token?: string;
 };
 interface IHandleType {
   survivalModeSupportable: boolean;
@@ -81,7 +81,7 @@ type Header = {
 
 interface IRequest {
   readonly id: string;
-  readonly path: string;
+  path: string;
   readonly method: NETWORK_METHOD;
   data: object | string;
   headers: Header;
