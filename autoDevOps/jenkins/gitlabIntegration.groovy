@@ -247,7 +247,8 @@ node(buildNode) {
 
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
-                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
+                // we should always build release version
+                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir) && !buildRelease
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
             }
             // since SA and UT must be passed before we build and deploy app and jui
