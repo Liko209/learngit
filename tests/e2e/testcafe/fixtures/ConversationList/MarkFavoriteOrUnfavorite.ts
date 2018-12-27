@@ -92,7 +92,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
   },
 );
 
-test(formalName('Display Unfavorite button when user tap more button of a conversation in favorite section. & When user mark a conversation as unfavorite, remove the conversation from favorite section.',
+test.only(formalName('Display Unfavorite button when user tap more button of a conversation in favorite section. & When user mark a conversation as unfavorite, remove the conversation from favorite section.',
   ['P1', 'P2', 'JPT-182', 'JPT-184', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -103,9 +103,12 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
+    const conversationPage = app.homePage.messageTab.conversationPage;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection= app.homePage.messageTab.teamsSection;
 
-    let groupId, teamId;
-    await h(t).withLog('Given I have an extension with a group and a team conversation', async () => {
+    let groupId, teamId, groupId1, teamId1;
+    await h(t).withLog('Given I have an extension with 2 groups and 2 teams conversation', async () => {
       groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group',
         members: [loginUser.rcId, users[5].rcId, users[6].rcId],
@@ -115,12 +118,21 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
         name: uuid(),
         members: [loginUser.rcId, users[5].rcId],
       });
+      groupId1 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group',
+        members: [loginUser.rcId, users[3].rcId, users[6].rcId],
+      });
+      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: uuid(),
+        members: [loginUser.rcId, users[5].rcId],
+      });
     });
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await h(t).glip(loginUser).showGroups(loginUser.rcId, [groupId, teamId]);
-        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+groupId, +teamId]);
+        await h(t).glip(loginUser).showGroups(loginUser.rcId, [groupId, teamId, groupId1, teamId1]);
+        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+groupId, +teamId, +groupId1, +teamId1]);
       },
     );
 
@@ -171,6 +183,65 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
       teamItem = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
       await t.expect(teamItem.exists).ok();
     });
+
+    // JPT-184 page header entry(DM) 
+    await h(t).withLog('When I open the fav DM conversation', async () => {
+      await favoritesSection.conversationEntryById(groupId1).enter();
+    });
+
+    await h(t).withLog('And I click unfav icon in the conversation page header', async () => {
+      await conversationPage.clickFavIcon();
+    });
+
+    await h(t).withLog('Then the conversation should remove from Fav section', async () => {
+      await t.expect(favoritesSection.conversationEntryById(groupId1).exists).notOk();
+    });
+
+    await h(t).withLog('And the conversation should show in DM section', async () => {
+      await t.expect(directMessagesSection.conversationEntryById(groupId1).exists).ok();
+    });
+
+    await h(t).withLog('When I click unfav icon in the conversation page header', async () => {
+      await conversationPage.clickFavIcon();
+    });
+
+    await h(t).withLog('Then the conversation should show in fav section', async () => {
+      await t.expect(favoritesSection.conversationEntryById(groupId1).exists).ok();
+    });
+
+    await h(t).withLog('And the conversation should remove from DM section', async () => {
+      await t.expect(directMessagesSection.conversationEntryById(groupId1).exists).notOk()
+    });
+
+    // JPT-184 page header entry(Team) 
+    await h(t).withLog('When I open the fav team conversation ', async () => {
+      await favoritesSection.conversationEntryById(teamId1).enter();
+    });
+
+    await h(t).withLog('And I click unfav icon in the conversation page header', async () => {
+      await conversationPage.clickFavIcon();
+    });
+
+    await h(t).withLog('Then the conversation should remove from Fav section', async () => {
+      await t.expect(favoritesSection.conversationEntryById(teamId1).exists).notOk();
+    });
+
+    await h(t).withLog('And the conversation should show in Team section', async () => {
+      await t.expect(teamsSection.conversationEntryById(teamId1).exists).ok();
+    });
+
+    await h(t).withLog('When I click fav icon in the conversation page header', async () => {
+      await conversationPage.clickFavIcon();
+    });
+
+    await h(t).withLog('Then the conversation should show in Fav section', async () => {
+      await t.expect(favoritesSection.conversationEntryById(teamId1).exists).ok();
+    });
+
+    await h(t).withLog('And the conversation should remove from Team section', async () => {
+      await t.expect(teamsSection.conversationEntryById(teamId1).exists).notOk();
+    });
+
   },
 );
 
