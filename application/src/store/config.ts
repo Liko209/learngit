@@ -6,6 +6,7 @@ const {
   ItemService,
   CompanyService,
   GroupService,
+  GroupConfigService,
   PostService,
   PresenceService,
   StateService,
@@ -106,6 +107,12 @@ const ENTITY_SETTING = {
   [ENTITY_NAME.POST_SENT_STATUS]: {
     event: [ENTITY.POST_SENT_STATUS],
     service: [() => PostService.getInstance(), 'getPostSendStatus'],
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
+  [ENTITY_NAME.GROUP_CONFIG]: {
+    event: [ENTITY_NAME.GROUP_CONFIG],
+    service: () => GroupConfigService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },

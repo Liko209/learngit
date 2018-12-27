@@ -27,8 +27,13 @@ class IndicatorViewModel extends AbstractViewModel
   }
 
   @computed
-  get draft() {
-    return this._group.draft;
+  get _groupConfig() {
+    return getEntity(ENTITY_NAME.GROUP_CONFIG, this.id);
+  }
+
+  @computed
+  get hasDraft() {
+    return !!this._groupConfig.draft;
   }
 
   @computed

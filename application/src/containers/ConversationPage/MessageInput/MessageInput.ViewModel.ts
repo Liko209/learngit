@@ -10,7 +10,7 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import { GroupService, PostService, ItemService } from 'sdk/service';
+import { PostService, GroupConfigService, ItemService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -18,7 +18,8 @@ import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
-import { Group } from 'sdk/models';
+import { Group, GroupConfig } from 'sdk/models';
+import GroupConfigModel from '@/store/models/GroupConfig';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -29,11 +30,11 @@ enum ERROR_TYPES {
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
-  private _groupService: GroupService;
   private _postService: PostService;
   private _itemService: ItemService;
 
   private _onPostCallbacks: OnPostCallback[] = [];
+  private _groupConfigService: GroupConfigService;
   @computed
   get id() {
     return this.props.id;
@@ -57,10 +58,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
 
     this._itemService = ItemService.getInstance();
+    this._groupConfigService = GroupConfigService.getInstance();
     this._sendPost = this._sendPost.bind(this);
     this.reaction(
       () => this.id,
@@ -86,7 +87,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   forceSaveDraft = () => {
     const draft = this._isEmpty(this.draft) ? '' : this.draft;
-    this._groupService.updateGroupDraft({
+    this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
     });
@@ -97,13 +98,20 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
 
+  @computed get _groupConfig() {
+    return getEntity<GroupConfig, GroupConfigModel>(
+      ENTITY_NAME.GROUP_CONFIG,
+      this.id,
+    );
+  }
+
   @computed
   get draft() {
-    return this._group.draft || '';
+    return this._groupConfig.draft || '';
   }
 
   set draft(draft: string) {
-    this._group.draft = draft;
+    this._groupConfig.draft = draft;
   }
 
   @computed

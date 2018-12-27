@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { GroupService } from 'sdk/service';
+import { GroupConfigService } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -78,8 +78,8 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   updateDraft = (draft: string) => {
-    const groupService: GroupService = GroupService.getInstance();
-    groupService.updateGroupDraft({
+    const groupService: GroupConfigService = GroupConfigService.getInstance();
+    groupService.updateDraft({
       draft,
       id: this._groupId,
     });

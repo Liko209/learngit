@@ -180,6 +180,7 @@ export type GroupConfig = {
   has_more_older?: boolean;
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
+  draft?: string;
 };
 
 export type PostItemData = {
