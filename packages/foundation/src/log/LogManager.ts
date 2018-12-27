@@ -23,9 +23,6 @@ class LogManager {
 
   public constructor() {
     this._loggers = new Map();
-    if (typeof window === 'undefined') {
-      return;
-    }
     this._defaultLoaderMap = {
       SessionLoader: new SessionLoader(),
       StringCutLoader: new StringCutLoader(),
@@ -56,10 +53,12 @@ class LogManager {
     this._logConsumer = new LogConsumer();
     this._logConsumer.setLogPersistence(new LogPersistence());
     this._logger.setConsumer(this._logConsumer);
-    window.onerror = this.windowError.bind(this);
-    window.addEventListener('beforeunload', (event: any) => {
-      this.flush();
-    });
+    if (typeof window !== 'undefined') {
+      window.onerror = this.windowError.bind(this);
+      window.addEventListener('beforeunload', (event: any) => {
+        this.flush();
+      });
+    }
   }
 
   static get Instance() {
@@ -100,9 +99,9 @@ class LogManager {
     let logger = this._loggers.get(categoryName);
     if (!logger) {
       logger = this._logger.tags(categoryName);
-      this._loggers.set(categoryName, logger as ILogger);
+      this._loggers.set(categoryName, logger);
     }
-    return logger as ILogger;
+    return logger;
   }
 
   getMainLogger(): ILogger {
