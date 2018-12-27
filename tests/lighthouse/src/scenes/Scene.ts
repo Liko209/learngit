@@ -184,7 +184,7 @@ class Scene {
                 let cnt = 0;
                 let keys = Object.keys(scores);
                 for (let key of keys) {
-                    if (categories[key] && categories[key].score) {
+                    if (categories[key] && (categories[key].score || categories[key].score >= 0)) {
                         cnt++;
                         scores[key] = categories[key].score * 100;
                     }
