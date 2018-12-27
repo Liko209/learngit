@@ -20,7 +20,7 @@ export class MessageDecorator implements ILogEntityDecorator {
     if (data.timestamp) {
       message = `${message}[${this._formatTime(data)}]`;
     }
-    const paramsString = data.params
+    data.params = data.params
       .map((item) => {
         const type = Object.prototype.toString.call(item);
         // messageDecorator only deal with string, if want to support other type, please transform to stringg
@@ -28,7 +28,8 @@ export class MessageDecorator implements ILogEntityDecorator {
           return type;
         }
         return item;
-      })
+      });
+    const paramsString = data.params
       .join(' ');
     data.message = `${data.sessionIndex} ${message} ${paramsString}`;
     data.size = message.length;

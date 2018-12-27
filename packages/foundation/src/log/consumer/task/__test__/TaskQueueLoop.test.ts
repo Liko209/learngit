@@ -3,9 +3,11 @@ import { Task, OnTaskCompletedController, OnTaskErrorController } from '../types
 
 const createCallbackObserver = (): [Function, Promise<any>] => {
   let callback = () => { };
+  let called = false;
   const observer = new Promise((resolve) => {
     callback = async () => {
-      await resolve();
+      !called && await resolve();
+      called = true;
     };
   });
   return [callback, observer];
@@ -16,7 +18,6 @@ describe('TaskQueueLoop', () => {
   describe('sleep()', () => {
     it('should sleep until timeout', async () => {
       const taskQueueLoop = new TaskQueueLoop();
-      // taskQueueLoop.addTail();
       taskQueueLoop.sleep(100);
       expect(taskQueueLoop.isAvailable()).toBeFalsy();
       await new Promise((resolve) => {
@@ -27,7 +28,6 @@ describe('TaskQueueLoop', () => {
 
     it('should not superposition sleep time', async () => {
       const taskQueueLoop = new TaskQueueLoop();
-      // taskQueueLoop.addTail();
       taskQueueLoop.sleep(100);
       taskQueueLoop.sleep(100);
       expect(taskQueueLoop.isAvailable()).toBeFalsy();

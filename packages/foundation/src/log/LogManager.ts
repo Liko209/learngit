@@ -54,7 +54,7 @@ class LogManager {
     this._logConsumer.setLogPersistence(new LogPersistence());
     this._logger.setConsumer(this._logConsumer);
     if (typeof window !== 'undefined') {
-      window.onerror = this.windowError.bind(this);
+      window.addEventListener('error', this.windowError.bind(this));
       window.addEventListener('beforeunload', (event: any) => {
         this.flush();
       });

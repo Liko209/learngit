@@ -4,13 +4,12 @@ import AccountService from '../account';
 import axios from 'axios';
 
 const DEFAULT_EMAIL = 'service@glip.com';
-const SPLIT_LINE = '--------------------------------------------\n';
 export class LogUploader implements ILogApi {
   async upload(logs: LogEntity[]): Promise<any> {
     const userInfo = await this._getUserInfo();
-    const logMsgs = [SPLIT_LINE].concat(logs.map(log => this._getLogText(log)));
-
-    await this._doUpload(userInfo, { logMsgs });
+    const logMsgs = logs.map(log => this._getLogText(log));
+    const sessionId = logs[0].sessionId;
+    await this._doUpload(userInfo, { [sessionId]: logMsgs });
   }
 
   private async _getUserInfo() {

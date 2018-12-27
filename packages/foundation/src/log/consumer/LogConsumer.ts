@@ -34,6 +34,9 @@ class UploadPersistenceLogTask extends Task {
     super();
     this.setOnExecute(async () => await _logApi.upload(transform.toLogEntity(log)));
     this.setOnCompleted(async () => await _logPersistence.delete(log));
+    this.setOnAbort(async () => {
+      await _logPersistence.put(log);
+    });
   }
 }
 
@@ -62,10 +65,12 @@ export class LogConsumer implements ILogConsumer {
   private _uploadTaskQueueLoop: TaskQueueLoop;
   private _persistenceTaskQueueLoop: TaskQueueLoop;
   private _timeoutId: NodeJS.Timeout;
+  private _flushMode: boolean;
 
   constructor() {
     this._memoryQueue = new MemoryQueue();
     this._memorySize = 0;
+    this._flushMode = false;
     this._logApi = new LogApiProxy();
     this._uploadTaskQueueLoop = new TaskQueueLoop()
       .setOnTaskError(async (task, error, loopController) => {
@@ -82,9 +87,7 @@ export class LogConsumer implements ILogConsumer {
         await loopController.next();
       })
       .setOnLoopCompleted(async () => {
-        if (this._persistenceFSM.state !== PERSISTENCE_STATE.EMPTY) {
-          this._consumePersistence();
-        }
+        this._consumePersistenceIfNeed();
       });
     this._persistenceTaskQueueLoop = new TaskQueueLoop();
     this._persistenceFSM = new StateMachine({
@@ -103,12 +106,12 @@ export class LogConsumer implements ILogConsumer {
         onEnsureEmpty: () => {
         },
         onEnsureNotEmpty: () => {
-          this._consumePersistence();
+          this._consumePersistenceIfNeed();
         },
         onConsume: () => {
         },
         onAppend: () => {
-          this._consumePersistence();
+          this._consumePersistenceIfNeed();
         },
       },
     });
@@ -128,8 +131,14 @@ export class LogConsumer implements ILogConsumer {
   }
 
   async flush(): Promise<void> {
+    if (this._uploadTaskQueueLoop.size() > 0) {
+      // abort uploadTaskQueue's waiting task,
+      this._uploadTaskQueueLoop.abortAll();
+    }
+    // indicated in _flushMode
+    this._flushMode = true;
     this._flushMemory();
-    this._uploadTaskQueueLoop.abortAll();
+    this._flushMode = false;
   }
 
   public setLogPersistence(logPersistence: ILogPersistence) {
@@ -153,6 +162,8 @@ export class LogConsumer implements ILogConsumer {
       clearTimeout(this._timeoutId);
     }
     this._timeoutId = setTimeout(() => {
+
+      this._consumePersistenceIfNeed();
       this._flushMemory();
     },                           configManager.getConfig().consumer.autoFlushTimeCycle);
   }
@@ -183,32 +194,29 @@ export class LogConsumer implements ILogConsumer {
     this._persistenceTaskQueueLoop.addTail(
       new PersistenceTask()
         .setOnExecute(async () => {
-          // console.log(TAG, 'ensure state start --', this._logPersistence);
           const count = await this._logPersistence.count();
           if (this._persistenceFSM.state === PERSISTENCE_STATE.NO_SURE) {
-            if (count) {
-              this._persistenceFSM.ensureNotEmpty();
-            } else {
-              this._persistenceFSM.ensureEmpty();
-            }
+            count ? this._persistenceFSM.ensureNotEmpty() : this._persistenceFSM.ensureEmpty();
           }
         }),
     );
   }
 
-  private _consumePersistence() {
+  private _consumePersistenceIfNeed() {
     const {
       consumer: {
         uploadQueueLimit,
       },
     } = configManager.getConfig();
-    if (this._uploadAvailable()) {
+    if (this._persistenceFSM.state === PERSISTENCE_STATE.NOT_EMPTY
+      && this._uploadTaskQueueLoop.size() === 0
+      && this._uploadAvailable()) {
       this._persistenceTaskQueueLoop.addTail(
         new PersistenceTask()
           .setOnExecute(async () => {
-            // const limit = this._uploadLimit;
             const persistenceLogs = await this._logPersistence.getAll(uploadQueueLimit);
             if (persistenceLogs && persistenceLogs.length) {
+              await this._logPersistence.bulkDelete(persistenceLogs);
               persistenceLogs.forEach((persistenceLog) => {
                 this._uploadTaskQueueLoop.addTail(
                   new UploadPersistenceLogTask(persistenceLog, this._logApi, this._logPersistence),
@@ -235,6 +243,7 @@ export class LogConsumer implements ILogConsumer {
       },
     } = configManager.getConfig();
     do {
+      if (this._flushMode) break;
       if (uploadAccessor && !uploadAccessor.isAccessible()) break;
       if (this._uploadTaskQueueLoop.size() >= uploadQueueLimit) break;
       if (!this._uploadTaskQueueLoop.isAvailable()) break;

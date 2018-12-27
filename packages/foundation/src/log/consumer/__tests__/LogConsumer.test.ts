@@ -11,9 +11,11 @@ class MockApi implements ILogApi {
 
 const createCallbackObserver = (): [Function, Promise<any>] => {
   let callback = () => { };
+  let called = false;
   const observer = new Promise((resolve) => {
     callback = async () => {
-      await resolve();
+      !called && await resolve();
+      called = true;
     };
   });
   return [callback, observer];
@@ -244,45 +246,59 @@ describe('LogConsumer', () => {
     });
 
     it('DB cache log data should upload by network if work queue is empty or not block [JPT-549]', async () => {
+      const mockAccessor = {
+        networkAccessible: true,
+      };
       configManager.setConfig(logConfigFactory.build({
         uploadLogApi: mockApi,
         uploadAccessor: {
-          isAccessible: jest.fn().mockReturnValue(true),
+          isAccessible: () => mockAccessor.networkAccessible,
           subscribe: jest.fn(),
         },
         consumer: consumerConfigFactory.build({
           enabled: true,
-          uploadQueueLimit: 2,
+          uploadQueueLimit: 4,
           memoryCountThreshold: 0,
         }),
       }));
       const logConsumer = new LogConsumer();
       const logs = logEntityFactory.buildList(3);
-      logConsumer.setLogPersistence(mockLogPersistence);
-      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
-        callback();
-      });
-      // waite init check
-      await observer;
-      // prepare network queue
       const rawOnLoopCompleted = logConsumer['_uploadTaskQueueLoop']['_onLoopCompleted'];
-      [callback, observer] = createCallbackObserver();
-      logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
-        await rawOnLoopCompleted();
-        callback();
+      const [callback1, observer1] = createCallbackObserver();
+      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
+        callback1();
       });
+      logConsumer.setLogPersistence(mockLogPersistence);
+      // waite init check
+      await observer1;
+      // net not busy, to net queue
+      mockAccessor.networkAccessible = true;
       logConsumer.onLog(logs[0]);
       logConsumer.onLog(logs[1]);
-      // will add to persistence
+      // net busy, to DB queue
+      mockAccessor.networkAccessible = false;
       logConsumer.onLog(logs[2]);
-      // wait network queue consume over
-      await observer;
-      expect(mockLogPersistence.put).toBeCalledTimes(1);
+      mockAccessor.networkAccessible = true;
+      // wait net loop completed
+      const [callback2, observer2] = createCallbackObserver();
+      logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
+        await rawOnLoopCompleted();
+        callback2();
+      });
+      await observer2;
       expect(mockApi.upload).toHaveBeenNthCalledWith(1, [logs[0]]);
       expect(mockApi.upload).toHaveBeenNthCalledWith(2, [logs[1]]);
+      expect(mockApi.upload).toBeCalledTimes(2);
+      const [callback3, observer3] = createCallbackObserver();
+      logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
+        await rawOnLoopCompleted();
+        callback3();
+      });
+      // wait next net loop, expect DB log has been upload
+      await observer3;
       expect(mockApi.upload).toHaveBeenNthCalledWith(3, [logs[2]]);
       expect(mockApi.upload).toBeCalledTimes(3);
-      // clear
+
       logConsumer['_uploadTaskQueueLoop'].peekAll();
       logConsumer['_persistenceTaskQueueLoop'].peekAll();
     });
