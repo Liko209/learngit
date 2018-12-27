@@ -119,6 +119,9 @@ export class GlipSdk {
   }
 
   async authByRcToken(forMobile: boolean = false) {
+    if (undefined === this.platform.token) {
+      await this.platform.init();
+    }
     const encodedToken = Buffer.from(
       JSON.stringify(this.platform.token),
     ).toString('base64');
@@ -144,7 +147,7 @@ export class GlipSdk {
     };
   }
 
-  async auth() {
+  async init() {
     const res = await this.authByRcToken(true);
     this.accessToken = res.headers['x-authorization'];
     this.initData = res.data;
@@ -471,8 +474,8 @@ export class GlipSdk {
       data = _.assign(
         {},
         ...(groupIds as string[]).map(id => {
-          return { [`hde_group_${id}`]: true }
-        })
+          return { [`hide_group_${id}`]: true }
+        }) 
       )
     } else {
       data = { [`hide_group_${groupIds}`]: true }

@@ -2,13 +2,15 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-06-24 14:19:24
  * Copyright © RingCentral. All rights reserved
-*/
+ */
 import { EventEmitter2 } from 'eventemitter2';
 import _ from 'lodash';
 import { Container } from 'foundation';
-
+import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
+import { daoManager, ConfigDao } from '../../dao';
+
 import {
   IAccountInfo,
   IAuthenticator,
@@ -34,7 +36,7 @@ class AccountManager extends EventEmitter2 {
     super();
   }
 
-  syncLogin(authType: string, params?: any) {
+  async syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
     return this._handleLoginResponse(resp);
@@ -49,6 +51,7 @@ class AccountManager extends EventEmitter2 {
   async logout() {
     this._accountMap.clear();
     this._accounts = [];
+    this._isLogin = false;
     await this.emitAsync(EVENT_LOGOUT);
   }
 
@@ -101,9 +104,24 @@ class AccountManager extends EventEmitter2 {
     return accounts;
   }
 
-  private _handleLoginResponse(resp: IAuthResponse) {
+  async sanitizeUser(account: IAccountInfo[]) {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    const env = configDao.getEnv();
+    const whiteList = await fetchWhiteList();
+    if (Object.keys(whiteList).includes(env)) {
+      const isLegalUser = whiteList[env].includes(account[0].data.owner_id);
+      return isLegalUser;
+    }
+    return true;
+  }
+
+  private async _handleLoginResponse(resp: IAuthResponse) {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
+    }
+    const isValid = await this.sanitizeUser(resp.accountInfos);
+    if (!isValid) {
+      throw Error('User not in the white list');
     }
     this.emit(EVENT_LOGIN, resp.accountInfos);
     this._isLogin = true;

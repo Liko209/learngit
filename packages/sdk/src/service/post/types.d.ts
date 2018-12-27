@@ -7,13 +7,12 @@ export type RawPostInfo = {
   atMentions?: boolean;
   users?: any[];
   text: string;
-  file?: FormData;
   groupId?: number;
   itemIds?: number[];
   postId?: number;
   itemId?: number;
 };
 
-export type RawPostInfoWithFile = RawPostInfo & {
+export type RawFilePostInfo = RawPostInfo & {
   file: FormData;
 };

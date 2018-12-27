@@ -12,7 +12,7 @@ import {
   NetworkManager,
   NetworkRequestBuilder,
 } from 'foundation';
-
+import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
 import { ApiResult } from './ApiResult';
 import { apiErr, apiOk } from './utils';
@@ -67,6 +67,7 @@ export default class NetworkClient {
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;
+
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
@@ -83,37 +84,71 @@ export default class NetworkClient {
     this.networkManager = networkManager;
   }
 
-  request<T>(query: IQuery): Promise<ApiResult<T>> {
-    const { via, path, method, params } = query;
+  private _buildApiKey(query: IQuery) {
+    const { path, params, method } = query;
+    return `${path}_${method}_${serializeUrlParams(params || {})}`;
+  }
+
+  private _saveApiCallback(
+    apiMapKey: string,
+    resolve: IResultResolveFn<any>,
+    reject: IResponseRejectFn,
+  ) {
+    const promiseResolvers = this.apiMap.get(apiMapKey) || [];
+    promiseResolvers.push({ resolve, reject });
+    this.apiMap.set(apiMapKey, promiseResolvers);
+  }
+
+  request<T>(
+    query: IQuery,
+    requestHolder?: RequestHolder,
+  ): Promise<ApiResult<T>> {
     return new Promise((resolve, reject) => {
-      const apiMapKey = `${path}_${method}_${serializeUrlParams(params || {})}`;
-      const duplicate = this._isDuplicate(method, apiMapKey);
+      let isDuplicated = false;
+      const { method } = query;
+      const request = this.getRequestByVia<T>(query, query.via);
+      if (this._needCheckDuplicated(method)) {
+        const apiMapKey = this._buildApiKey(query);
+        isDuplicated = this.apiMap.has(apiMapKey);
+        this._saveApiCallback(apiMapKey, resolve, reject);
 
-      const promiseResolvers = this.apiMap.get(apiMapKey) || [];
-      promiseResolvers.push({ resolve, reject });
-      this.apiMap.set(apiMapKey, promiseResolvers);
+        if (!isDuplicated) {
+          request.callback = (resp: BaseResponse) => {
+            const promiseResolvers = this.apiMap.get(apiMapKey);
+            if (promiseResolvers) {
+              promiseResolvers.forEach(({ resolve }) => {
+                this._apiResolvedCallBack(resolve)(resp);
+              });
+              this.apiMap.delete(apiMapKey);
+            }
+          };
+        }
+      } else {
+        request.callback = this._apiResolvedCallBack(resolve);
+      }
 
-      if (!duplicate) {
-        const request = this.getRequestByVia<T>(query, via);
-        request.callback = this.buildCallback<T>(apiMapKey);
+      if (!isDuplicated) {
         this.networkManager.addApiRequest(request);
+
+        if (requestHolder) {
+          requestHolder.request = request;
+        }
       }
     });
   }
 
-  buildCallback<T>(apiMapKey: string) {
+  private _apiResolvedCallBack(resolve: IResultResolveFn<any>) {
     return (resp: BaseResponse) => {
-      const promiseResolvers = this.apiMap.get(apiMapKey);
-      if (!promiseResolvers) return;
-      promiseResolvers.forEach(({ resolve }) => {
-        if (resp.status >= 200 && resp.status < 300) {
-          resolve(apiOk(resp));
-        } else {
-          resolve(apiErr(resp));
-        }
-      });
-      this.apiMap.delete(apiMapKey);
+      if (resp.status >= 200 && resp.status < 300) {
+        resolve(apiOk(resp));
+      } else {
+        resolve(apiErr(resp));
+      }
     };
+  }
+
+  cancelRequest(request: IRequest) {
+    this.networkManager.cancelRequest(request);
   }
 
   getRequestByVia<T>(
@@ -150,8 +185,8 @@ export default class NetworkClient {
       .build();
   }
 
-  http<T>(query: IQuery) {
-    return this.request<T>(query);
+  http<T>(query: IQuery, requestHolder?: RequestHolder) {
+    return this.request<T>(query, requestHolder);
   }
 
   /**
@@ -228,11 +263,7 @@ export default class NetworkClient {
     });
   }
 
-  private _isDuplicate(method: NETWORK_METHOD, apiMapKey: string) {
-    if (method !== NETWORK_METHOD.GET && method !== NETWORK_METHOD.DELETE) {
-      return false;
-    }
-
-    return this.apiMap.has(apiMapKey);
+  private _needCheckDuplicated(method: NETWORK_METHOD) {
+    return method === NETWORK_METHOD.GET || method === NETWORK_METHOD.DELETE;
   }
 }

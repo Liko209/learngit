@@ -9,6 +9,5 @@ export {
   IRawPostResult,
   IPostQuery,
   PostData,
-  PostSendData,
   PostService as default,
 } from './postService';

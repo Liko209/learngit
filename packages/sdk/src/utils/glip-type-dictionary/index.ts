@@ -62,7 +62,7 @@ function parseSocketMessage(message: string | ISystemMessage) {
   objects.forEach((arr: any[]) => {
     arr.forEach((obj: any) => {
       if (post_creator_ids) {
-        obj.trigger_ids = post_creator_ids;
+        obj.__trigger_ids = post_creator_ids;
       }
       if (obj.search_results) {
         result['search'] = obj.search_results;

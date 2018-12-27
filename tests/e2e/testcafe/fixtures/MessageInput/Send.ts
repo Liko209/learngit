@@ -20,20 +20,20 @@ fixture('Send Messages')
 
 test(formalName('Enter text in the conversation input box', ['P0', 'JPT-77']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
-  const user = users[4];
-  const app = new AppRoot(t);
-  const userPlatform = await h(t).getPlatform(user);
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
 
-  await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog(`And I create one new teams`, async () => {
-    await userPlatform.createGroup({
+    await h(t).platform(loginUser).createGroup({
       type: 'Team',
       name: uuid(),
-      members: [user.rcId, users[5].rcId],
+      members: [loginUser.rcId, users[5].rcId],
     });
   });
 

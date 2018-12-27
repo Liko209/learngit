@@ -5,7 +5,7 @@
  */
 import moment from 'moment';
 import { t } from 'i18next';
-import FileItemModal, {
+import FileItemModel, {
   ExtendFileItem,
   FileType,
 } from '@/store/models/FileItem';
@@ -98,7 +98,7 @@ function getFileIcon(fileType: string) {
   return null;
 }
 
-function getFileType(item: FileItemModal): ExtendFileItem {
+function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
     item,
     type: -1,
@@ -121,7 +121,7 @@ function getFileType(item: FileItemModal): ExtendFileItem {
   return fileType;
 }
 
-function image(item: FileItemModal) {
+function image(item: FileItemModel) {
   const { thumbs, type, versionUrl } = item;
   const image = {
     isImage: false,
@@ -148,7 +148,7 @@ function image(item: FileItemModal) {
   return image;
 }
 
-function document(item: FileItemModal) {
+function document(item: FileItemModel) {
   const { pages } = item;
   const doc = {
     isDocument: false,
