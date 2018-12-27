@@ -10,7 +10,9 @@ class SceneConfigFactory {
         let config = new SceneConfig();
         this.removeGatherer(config, 'scripts');
         this.removeAudit(config, 'byte-efficiency/unminified-javascript');
+        this.removeAudit(config, 'byte-efficiency/total-byte-weight');
         this.removeCategory(config, 'performance', 'unminified-javascript');
+        this.removeCategory(config, 'performance', 'total-byte-weight');
 
         return config;
     }
