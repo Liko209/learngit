@@ -23,6 +23,9 @@ const CallFsmEvent = {
 
 interface IRTCCallFsmTableDependency {
   onCreateOutCallSession(): void;
+  onAnswerAction(): void;
+  onRejectAction(): void;
+  onSendToVoicemailAction(): void;
   onHangupAction(): void;
 }
 
@@ -47,17 +50,26 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.ANSWER,
           from: CallFsmState.IDLE,
-          to: CallFsmState.ANSWERING,
+          to: () => {
+            dependency.onAnswerAction();
+            return CallFsmState.ANSWERING;
+          },
         },
         {
           name: CallFsmEvent.REJECT,
           from: CallFsmState.IDLE,
-          to: CallFsmState.DISCONNECTED,
+          to: () => {
+            dependency.onRejectAction();
+            return CallFsmState.DISCONNECTED;
+          },
         },
         {
           name: CallFsmEvent.SEND_TO_VOICEMAIL,
           from: CallFsmState.IDLE,
-          to: CallFsmState.DISCONNECTED,
+          to: () => {
+            dependency.onSendToVoicemailAction();
+            return CallFsmState.DISCONNECTED;
+          },
         },
         {
           name: CallFsmEvent.HANGUP,

@@ -1,5 +1,5 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCCallFsm } from '../RTCCallFsm';
+import { RTCCallFsm, CALL_FSM_ACTION } from '../RTCCallFsm';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {
@@ -21,10 +21,10 @@ describe('Call FSM UT', async () => {
       fsm.on('enterDisconnected', () => {
         this.onEnterDisconnected();
       });
-      fsm.on('hangupAction', () => {
+      fsm.on(CALL_FSM_ACTION.HANGUP_ACTION, () => {
         this.onHangupAction();
       });
-      fsm.on('createOutCallSession', () => {
+      fsm.on(CALL_FSM_ACTION.CREATE_OUTGOING_CALL_SESSION, () => {
         this.onCreateOutCallSession();
       });
     }

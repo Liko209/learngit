@@ -14,6 +14,14 @@ const CallFsmEvent = {
   SESSION_ERROR: 'sessionErrorEvent',
 };
 
+const CALL_FSM_ACTION = {
+  ANSWER_ACTION: 'answerAction',
+  REJECT_ACTION: 'rejectAction',
+  SEND_TO_VOICEMAIL_ACTION: 'sendToVoicemailAction',
+  HANGUP_ACTION: 'hangupAction',
+  CREATE_OUTGOING_CALL_SESSION: 'createOutgoingCallSessionAction',
+};
+
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _callFsmTable: RTCCallFsmTable = new RTCCallFsmTable(this);
   private _eventQueue: any;
@@ -119,12 +127,24 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {});
   }
 
+  onAnswerAction() {
+    this.emit(CALL_FSM_ACTION.ANSWER_ACTION);
+  }
+
+  onRejectAction() {
+    this.emit(CALL_FSM_ACTION.REJECT_ACTION);
+  }
+
+  onSendToVoicemailAction() {
+    this.emit(CALL_FSM_ACTION.SEND_TO_VOICEMAIL_ACTION);
+  }
+
   onHangupAction() {
-    this.emit('hangupAction');
+    this.emit(CALL_FSM_ACTION.HANGUP_ACTION);
   }
 
   onCreateOutCallSession() {
-    this.emit('createOutCallSession');
+    this.emit(CALL_FSM_ACTION.CREATE_OUTGOING_CALL_SESSION);
   }
 
   private _onHangup() {
@@ -189,4 +209,4 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   }
 }
 
-export { RTCCallFsm };
+export { RTCCallFsm, CALL_FSM_ACTION };

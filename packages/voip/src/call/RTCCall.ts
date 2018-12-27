@@ -5,7 +5,7 @@ import {
 import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
 import { RTCSipCallSession } from './RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm } from './RTCCallFsm';
+import { RTCCallFsm, CALL_FSM_ACTION } from './RTCCallFsm';
 
 type CallInfo = {
   fromName: string;
@@ -31,16 +31,50 @@ class RTCCall {
   private _observer: IRTCCallObserver;
   private _isIncomingCall: boolean = false;
 
-  constructor(toNum: string, account: IRTCAccount, observer: IRTCCallObserver) {
-    this._callInfo.toNum = toNum;
+  static createOutgoingCall(
+    toNum: string,
+    account: IRTCAccount,
+    observer: IRTCCallObserver,
+  ): RTCCall {
+    const call = new RTCCall(account, observer);
+    call._callInfo.toNum = toNum;
+    call._isIncomingCall = false;
+    call._prepare();
+    call._startOutCallFSM();
+    return call;
+  }
+
+  static createIncomingCall(
+    session: any,
+    account: IRTCAccount,
+    observer: IRTCCallObserver,
+  ): RTCCall {
+    const call = new RTCCall(account, observer);
+    call.setCallSession(session);
+    call._isIncomingCall = true;
+    call._prepare();
+    return call;
+  }
+
+  private constructor(account: IRTCAccount, observer: IRTCCallObserver) {
     this._account = account;
     this._observer = observer;
-    this._prepare();
-    this._startOutCallFSM();
   }
 
   getCallState(): RTCCALL_STATE_IN_OBSERVER {
     return this._callState;
+  }
+
+  answer(): void {
+    this._fsm.answer();
+  }
+
+  reject(): void {
+    this._fsm.reject();
+  }
+
+  sendToVoicemail(): void {
+    this._fsm.sendToVoicemail();
   }
 
   hangup(): void {
@@ -87,11 +121,20 @@ class RTCCall {
     this._fsm.on('enterDisconnected', () => {
       this._onCallStateChange(RTCCALL_STATE_IN_OBSERVER.DISCONNECTED);
     });
-    this._fsm.on('hangupAction', () => {
+    this._fsm.on(CALL_FSM_ACTION.HANGUP_ACTION, () => {
       this._onHangupAction();
     });
-    this._fsm.on('createOutCallSession', () => {
+    this._fsm.on(CALL_FSM_ACTION.CREATE_OUTGOING_CALL_SESSION, () => {
       this._onCreateOutCallSession();
+    });
+    this._fsm.on(CALL_FSM_ACTION.ANSWER_ACTION, () => {
+      this._onAnswerAction();
+    });
+    this._fsm.on(CALL_FSM_ACTION.REJECT_ACTION, () => {
+      this._onRejectAction();
+    });
+    this._fsm.on(CALL_FSM_ACTION.SEND_TO_VOICEMAIL_ACTION, () => {
+      this._onSendToVoicemailAction();
     });
   }
 
@@ -108,6 +151,18 @@ class RTCCall {
     this._fsm.sessionError();
   }
   // fsm listener
+  private _onAnswerAction() {
+    this._callSession.answer();
+  }
+
+  private _onRejectAction() {
+    this._callSession.reject();
+  }
+
+  private _onSendToVoicemailAction() {
+    this._callSession.sendToVoicemail();
+  }
+
   private _onHangupAction() {
     this._callSession.hangup();
   }
