@@ -35,33 +35,41 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('jui-stream');
   }
 
-  // FIXME: find a more reliable method
-  async expectStreamScrollToBottom() {
-    const scrollTop = await this.streamWrapper.scrollTop;
-    const streamHeight = await this.stream.clientHeight;
-    const streamWrapperHeight = await this.streamWrapper.clientHeight;
-    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+  get loadingCircle() {
+    return this.self.find('circle');
   }
 
-  async scrollToY(y: number) {
-    await this.t.eval(() => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
-    }, {
+  async waitUntilPostsBeLoaded(timeout = 5e3) {
+    return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
+  }
+
+// FIXME: find a more reliable method
+async expectStreamScrollToBottom() {
+  const scrollTop = await this.streamWrapper.scrollTop;
+  const streamHeight = await this.stream.clientHeight;
+  const streamWrapperHeight = await this.streamWrapper.clientHeight;
+  await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+}
+
+async scrollToY(y: number) {
+  await this.t.eval(() => {
+    document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
+  }, {
       dependencies: { y }
     });
-  }
+}
 
-  async scrollToMiddle() {
-    const scrollHeight = await this.streamWrapper.clientHeight;
-    await this.scrollToY(scrollHeight/2);
-  }
+async scrollToMiddle() {
+  const scrollHeight = await this.streamWrapper.clientHeight;
+  await this.scrollToY(scrollHeight / 2);
+}
 
-  async scrollToBottom() {
-    await this.t.eval(() => {
-      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
-    });
-  }
+async scrollToBottom() {
+  await this.t.eval(() => {
+    const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
+    document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
+  });
+}
 }
 
 export class ConversationPage extends BaseConversationPage {
@@ -78,7 +86,7 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
-  get jumpToFirstUnreadButtonWrapper(){
+  get jumpToFirstUnreadButtonWrapper() {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
 
@@ -110,19 +118,19 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 
-  async clickJumpToFirstUnreadButton () {
+  async clickJumpToFirstUnreadButton() {
     await this.t.click(this.jumpToFirstUnreadButtonWrapper)
   }
 }
 
 export class MentionPage extends BaseConversationPage {
   get self() {
-    return this.getSelectorByAutomationId('post-list-page');
+    return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 }
 export class BookmarkPage extends BaseConversationPage {
   get self() {
-    return this.getSelectorByAutomationId('post-list-page');
+    return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
   }
 }
 
@@ -220,13 +228,13 @@ export class PostItem extends BaseWebComponent {
     await this.t.click(this.self);
   }
 
-
   async clickConversationByButton() {
-    const buttonElement  = this.jumpToConversationButton;
+    const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
-        buttonElement().style["opacity"] = "1";
+      buttonElement().style["opacity"] = "1";
     }, {
-      dependencies: { buttonElement } }
+        dependencies: { buttonElement }
+      }
     );
     await this.t.hover(this.self)
     await displayJumpButton();

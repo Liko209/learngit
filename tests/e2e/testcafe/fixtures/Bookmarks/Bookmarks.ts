@@ -83,6 +83,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the Bookmarks post in the pvTeam', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(bookmarksPostTeamId).body.withText(verifyTextTeam).exists)
         .ok({ timeout: 5e3 });
@@ -107,6 +108,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the Bookmarks post in the pvChat', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(bookmarksPostChatId).body.withText(verifyTextChat).exists)
         .ok({ timeout: 5e3 });
