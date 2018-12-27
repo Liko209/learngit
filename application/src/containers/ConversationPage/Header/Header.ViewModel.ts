@@ -79,25 +79,6 @@ class HeaderViewModel extends AbstractViewModel {
     return group.isFavorite;
   }
 
-  @computed
-  get isPrivate() {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
-    return group.privacy === 'private';
-  }
-
-  @computed
-  get actions() {
-    const actions: HeaderAction[] = [];
-    // hide not implemented button: audio conference, call, meeting, add member
-    return actions;
-  }
-
-  onFavoriteButtonHandler = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
-  ) => {
-    return this._groupService.markGroupAsFavorite(this._id, checked);
-  }
 }
 
 export { HeaderViewModel };
