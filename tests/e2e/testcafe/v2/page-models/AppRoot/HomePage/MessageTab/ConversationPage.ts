@@ -15,8 +15,16 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
+  get favIcon(){
+    return this.getSelectorByAutomationId('favorite-icon');
+  }
+
   get leftWrapper() {
     return this.header.find('.left-wrapper');
+  }
+
+  async clickFavIcon(){
+    await this.t.click(this.favIcon);
   }
 
   nthPostItem(nth: number) {
