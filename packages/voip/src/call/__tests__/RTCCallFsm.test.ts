@@ -1,30 +1,30 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCCallFsm, CALL_FSM_ACTION } from '../RTCCallFsm';
+import { RTCCallFsm, RTCCallFsmNotify } from '../RTCCallFsm';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {
     private _fsm: RTCCallFsm;
     constructor(fsm: RTCCallFsm) {
       this._fsm = fsm;
-      fsm.on('enterAnswering', () => {
+      fsm.on(RTCCallFsmNotify.ENTER_ANSWERING, () => {
         this.onEnterAnswering();
       });
-      fsm.on('enterPending', () => {
+      fsm.on(RTCCallFsmNotify.ENTER_PENDING, () => {
         this.onEnterPending();
       });
-      fsm.on('enterConnecting', () => {
+      fsm.on(RTCCallFsmNotify.ENTER_CONNECTING, () => {
         this.onEnterConnecting();
       });
-      fsm.on('enterConnected', () => {
+      fsm.on(RTCCallFsmNotify.ENTER_CONNECTED, () => {
         this.onEnterConnected();
       });
-      fsm.on('enterDisconnected', () => {
+      fsm.on(RTCCallFsmNotify.ENTER_DISCONNECTED, () => {
         this.onEnterDisconnected();
       });
-      fsm.on(CALL_FSM_ACTION.HANGUP_ACTION, () => {
+      fsm.on(RTCCallFsmNotify.HANGUP_ACTION, () => {
         this.onHangupAction();
       });
-      fsm.on(CALL_FSM_ACTION.CREATE_OUTGOING_CALL_SESSION, () => {
+      fsm.on(RTCCallFsmNotify.CREATE_OUTGOING_CALL_SESSION, () => {
         this.onCreateOutCallSession();
       });
     }
@@ -91,44 +91,42 @@ describe('Call FSM UT', async () => {
       });
     });
 
-    it("State transition from Idle to Answering when receive 'Answer' event", done => {
+    it("State transition from Idle to Answering when receive 'Answer' event [JPT-619]", done => {
       const fsm = createFsm();
       fsm.answer();
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        },         0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('answering');
         done();
       });
     });
 
-    it("State transition from Idle to Disconnected when receive 'Reject' event", done => {
+    it("State transition from Idle to Disconnected when receive 'Reject' event [JPT-615]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');
       fsm.reject();
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        },         0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
       });
     });
 
-    it("State transition from Idle to Disconnected when receive 'SendToVoicemail' event", done => {
+    it("State transition from Idle to Disconnected when receive 'SendToVoicemail' event [JPT-618]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');
       fsm.sendToVoicemail();
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        },         0);
-      }).then(() => {
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+    it("State transition from Idle to Disconnected when receive 'sessionDisconnected' event [JPT-618]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.sessionDisconnected();
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
       });
@@ -136,51 +134,51 @@ describe('Call FSM UT', async () => {
   });
 
   describe('Answering state transitions', () => {
-    it("State transition from Answering to Connected when receive 'Session confirmed' event", done => {
+    it("State transition from Answering to Connected when receive 'Session confirmed' event [JPT-620]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterConnected');
       fsm._fsmGoto('answering');
       fsm.sessionConfirmed();
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        },         0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('connected');
         expect(listener.onEnterConnected).toBeCalled();
         done();
       });
     });
 
-    it("State transition from Answering to Disconnected when receive 'Hangup' event", done => {
+    it("State transition from Answering to Disconnected when receive 'Hangup' event [JPT-622]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');
       fsm._fsmGoto('answering');
       fsm.hangup();
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        },         0);
-      }).then(() => {
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onEnterDisconnected).toBeCalled();
         done();
       });
     });
 
-    it("State transition from Answering to Disconnected when receive 'sessionError' event", done => {
+    it("State transition from Answering to Disconnected when receive 'sessionError' event [JPT-621]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');
       fsm._fsmGoto('answering');
       fsm.sessionError();
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        },         0);
-      }).then(() => {
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        expect(listener.onEnterDisconnected).toBeCalled();
+        done();
+      });
+    });
+    it("State transition from Answering to Disconnected when receive 'sessionDisconnected' event [JPT-621]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm._fsmGoto('answering');
+      fsm.sessionDisconnected();
+      setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onEnterDisconnected).toBeCalled();
         done();

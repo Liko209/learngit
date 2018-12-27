@@ -1,6 +1,5 @@
 /// <reference path="../../__tests__/types.d.ts" />
 import { RTCSipCallSession, WEBPHONE_STATE } from '../RTCSipCallSession';
-
 import { EventEmitter2 } from 'eventemitter2';
 
 describe('sip call session', () => {

@@ -15,15 +15,16 @@ const CallFsmEvent = {
 };
 
 enum RTCCallFsmNotify {
-  ENTERPENDING = 'enterPending',
-  ENTERCONNECTING = 'enterConnecting',
-  ENTERCONNECTED = 'enterConnected',
-  ENTERDISCONNECTED = 'enterDisconnected',
+  ENTER_ANSWERING = 'enterAnswering',
+  ENTER_PENDING = 'enterPending',
+  ENTER_CONNECTING = 'enterConnecting',
+  ENTER_CONNECTED = 'enterConnected',
+  ENTER_DISCONNECTED = 'enterDisconnected',
   ANSWER_ACTION = 'answerAction',
   REJECT_ACTION = 'rejectAction',
   SEND_TO_VOICEMAIL_ACTION = 'sendToVoicemailAction',
-  HANGUPACTION = 'hangupAction',
-  CREATEOUTCALLSESSION = 'createOutCallSession',
+  HANGUP_ACTION = 'hangupAction',
+  CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
 }
 
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
@@ -31,8 +32,8 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _eventQueue: any;
 
   constructor() {
-    this._callFsmTable = new RTCCallFsmTable(this);
     super();
+    this._callFsmTable = new RTCCallFsmTable(this);
     // this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = new queue((task: any, callback: any) => {
       switch (task.name) {
@@ -133,23 +134,23 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   }
 
   onAnswerAction() {
-    this.emit(CALL_FSM_ACTION.ANSWER_ACTION);
+    this.emit(RTCCallFsmNotify.ANSWER_ACTION);
   }
 
   onRejectAction() {
-    this.emit(CALL_FSM_ACTION.REJECT_ACTION);
+    this.emit(RTCCallFsmNotify.REJECT_ACTION);
   }
 
   onSendToVoicemailAction() {
-    this.emit(CALL_FSM_ACTION.SEND_TO_VOICEMAIL_ACTION);
+    this.emit(RTCCallFsmNotify.SEND_TO_VOICEMAIL_ACTION);
   }
 
   onHangupAction() {
-    this.emit(RTCCallFsmNotify.HANGUPACTION);
+    this.emit(RTCCallFsmNotify.HANGUP_ACTION);
   }
 
   onCreateOutCallSession() {
-    this.emit(RTCCallFsmNotify.CREATEOUTCALLSESSION);
+    this.emit(RTCCallFsmNotify.CREATE_OUTGOING_CALL_SESSION);
   }
 
   private _onHangup() {
@@ -189,23 +190,23 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   }
 
   private _onEnterAnswering() {
-    this.emit('enterAnswering');
+    this.emit(RTCCallFsmNotify.ENTER_ANSWERING);
   }
 
   private _onEnterPending() {
-    this.emit(RTCCallFsmNotify.ENTERPENDING);
+    this.emit(RTCCallFsmNotify.ENTER_PENDING);
   }
 
   private _onEnterConnecting() {
-    this.emit(RTCCallFsmNotify.ENTERCONNECTING);
+    this.emit(RTCCallFsmNotify.ENTER_CONNECTING);
   }
 
   private _onEnterConnected() {
-    this.emit(RTCCallFsmNotify.ENTERCONNECTED);
+    this.emit(RTCCallFsmNotify.ENTER_CONNECTED);
   }
 
   private _onEnterDisconnected() {
-    this.emit(RTCCallFsmNotify.ENTERDISCONNECTED);
+    this.emit(RTCCallFsmNotify.ENTER_DISCONNECTED);
   }
 
   // Only for unit test

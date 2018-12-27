@@ -92,7 +92,12 @@ class RTCCallFsmTable extends StateMachine {
         },
         {
           name: CallFsmEvent.SESSION_DISCONNECTED,
-          from: [CallFsmState.CONNECTING, CallFsmState.CONNECTED],
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.CONNECTED,
+          ],
           to: CallFsmState.DISCONNECTED,
         },
         {

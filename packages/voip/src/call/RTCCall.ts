@@ -58,6 +58,10 @@ class RTCCall {
     return this._callState;
   }
 
+  isIncomingCall(): boolean {
+    return this._isIncomingCall;
+  }
+
   answer(): void {
     this._fsm.answer();
   }
@@ -102,33 +106,36 @@ class RTCCall {
       this._onSessionError();
     });
     // listen fsm
-    this._fsm.on(RTCCallFsmNotify.ENTERPENDING, () => {
+    this._fsm.on(RTCCallFsmNotify.ENTER_PENDING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTING, () => {
+    this._fsm.on(RTCCallFsmNotify.ENTER_PENDING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTED, () => {
+    this._fsm.on(RTCCallFsmNotify.ENTER_CONNECTING, () => {
+      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
+    });
+    this._fsm.on(RTCCallFsmNotify.ENTER_CONNECTED, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTED);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERDISCONNECTED, () => {
+    this._fsm.on(RTCCallFsmNotify.ENTER_DISCONNECTED, () => {
       this._onCallStateChange(RTCCALL_STATE.DISCONNECTED);
     });
-    this._fsm.on(RTCCallFsmNotify.HANGUPACTION, () => {
+    this._fsm.on(RTCCallFsmNotify.HANGUP_ACTION, () => {
       this._onHangupAction();
     });
-    this._fsm.on(RTCCallFsmNotify.CREATEOUTCALLSESSION, () => {
+    this._fsm.on(RTCCallFsmNotify.CREATE_OUTGOING_CALL_SESSION, () => {
       this._onCreateOutCallSession();
     });
-    // this._fsm.on(CALL_FSM_ACTION.ANSWER_ACTION, () => {
-    //   this._onAnswerAction();
-    // });
-    // this._fsm.on(CALL_FSM_ACTION.REJECT_ACTION, () => {
-    //   this._onRejectAction();
-    // });
-    // this._fsm.on(CALL_FSM_ACTION.SEND_TO_VOICEMAIL_ACTION, () => {
-    //   this._onSendToVoicemailAction();
-    // });
+    this._fsm.on(RTCCallFsmNotify.ANSWER_ACTION, () => {
+      this._onAnswerAction();
+    });
+    this._fsm.on(RTCCallFsmNotify.REJECT_ACTION, () => {
+      this._onRejectAction();
+    });
+    this._fsm.on(RTCCallFsmNotify.SEND_TO_VOICEMAIL_ACTION, () => {
+      this._onSendToVoicemailAction();
+    });
   }
 
   // session listener
