@@ -24,6 +24,7 @@ import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
 import { SENDING_STATUS } from '../../constants';
 import { err, ok, BaseResponse } from 'foundation';
+import GroupConfigService from '../../groupConfig';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -36,6 +37,7 @@ jest.mock('../handleData');
 jest.mock('../../profile');
 jest.mock('../../group');
 jest.mock('../../notificationCenter');
+jest.mock('../../groupConfig');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -43,6 +45,7 @@ PostAPI.requestByIds = jest.fn();
 describe('PostService', () => {
   const postService = new PostService();
   const groupService = new GroupService();
+  const groupConfigService = new GroupConfigService();
   const itemService = new ItemService();
   const profileService = new ProfileService();
   const postDao = new PostDao(null);
@@ -566,8 +569,10 @@ describe('PostService', () => {
     });
 
     it('should send post success', async () => {
-      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-      groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
+      GroupConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue(groupConfigService);
+      groupConfigService.getGroupSendFailurePostIds.mockResolvedValue([]);
       daoManager.getDao.mockReturnValue(postDao);
       postDao.put.mockImplementation(() => {});
 
@@ -747,7 +752,12 @@ describe('PostService', () => {
       jest
         .spyOn(postDao, 'get')
         .mockReturnValueOnce(postFactory.build({ id: 100 }));
-      groupService.getGroupSendFailurePostIds.mockResolvedValueOnce([100]);
+      GroupConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue(groupConfigService);
+      groupConfigService.getGroupSendFailurePostIds.mockResolvedValueOnce([
+        100,
+      ]);
 
       const result = await postService.deletePost(100);
 
@@ -756,10 +766,10 @@ describe('PostService', () => {
         100,
       ]);
       expect(postDao.delete).toBeCalled();
-      expect(groupService.getGroupSendFailurePostIds).toBeCalled();
+      expect(groupConfigService.getGroupSendFailurePostIds).toBeCalled();
       // find failure ids then delete
       // then updateGroupSendFailurePostIds
-      expect(groupService.updateGroupSendFailurePostIds).toBeCalled();
+      expect(groupConfigService.updateGroupSendFailurePostIds).toBeCalled();
     });
   });
 
@@ -1251,7 +1261,10 @@ describe('PostService', () => {
     it('should update group send failure post ids', async () => {
       const postId = 100;
       const preInsertId = -1;
-      groupService.getGroupSendFailurePostIds.mockReturnValueOnce([
+      GroupConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue(groupConfigService);
+      groupConfigService.getGroupSendFailurePostIds.mockReturnValueOnce([
         preInsertId,
       ]);
       await postService.handleSendPostSuccess(
@@ -1263,8 +1276,8 @@ describe('PostService', () => {
         },
         preInsertId,
       );
-      expect(groupService.getGroupSendFailurePostIds).toBeCalled();
-      expect(groupService.updateGroupSendFailurePostIds).toBeCalled();
+      expect(groupConfigService.getGroupSendFailurePostIds).toBeCalled();
+      expect(groupConfigService.updateGroupSendFailurePostIds).toBeCalled();
     });
   });
 });

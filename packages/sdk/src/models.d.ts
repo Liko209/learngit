@@ -179,6 +179,7 @@ export type GroupConfig = {
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
   draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type PostItemData = {

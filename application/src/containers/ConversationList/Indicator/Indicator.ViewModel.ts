@@ -22,11 +22,6 @@ class IndicatorViewModel extends AbstractViewModel
   }
 
   @computed
-  get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this.id);
-  }
-
-  @computed
   get _groupConfig() {
     return getEntity(ENTITY_NAME.GROUP_CONFIG, this.id);
   }
@@ -38,7 +33,7 @@ class IndicatorViewModel extends AbstractViewModel
 
   @computed
   get sendFailurePostIds() {
-    return this._group.sendFailurePostIds || [];
+    return this._groupConfig.sendFailurePostIds || [];
   }
 }
 export { IndicatorViewModel };

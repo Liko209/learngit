@@ -10,12 +10,15 @@ import Base from './Base';
 export default class GroupConfigModel extends Base<GroupConfig> {
   @observable
   draft?: string;
+  @observable
+  sendFailurePostIds?: number[];
 
   constructor(data: GroupConfig) {
     super(data);
-    const { draft } = data;
+    const { draft, sendFailurePostIds } = data;
 
     this.draft = draft;
+    this.sendFailurePostIds = sendFailurePostIds;
   }
 
   static fromJS(data: GroupConfig) {
