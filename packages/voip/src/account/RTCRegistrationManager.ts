@@ -42,19 +42,8 @@ class RTCRegistrationManager implements IConditionalHandler {
   constructor(listener: IRTCAccountListener) {
     this._listener = listener;
     this._fsm = new RTCRegistrationFSM(this);
-    this._fsm.observe(ObserveEvent.REG_IN_PROGRESS, () => {
-      this._onEnterRegInProgress();
-    });
-    this._fsm.observe(ObserveEvent.READY, () => {
-      this._onEnterReady();
-    });
-    this._fsm.observe(ObserveEvent.REG_FAILURE, () => {
-      this._onEnterRegFailure();
-    });
-    this._fsm.observe(ObserveEvent.UN_REGISTERED, () => {
-      this._onEnterUnRegistered();
-    });
     this._eventEmitter = new EventEmitter2();
+    this._initFsmObserve();
     this._initListener();
   }
 
@@ -81,6 +70,21 @@ class RTCRegistrationManager implements IConditionalHandler {
       AccountState.REGISTERED,
       AccountState.UNREGISTERED,
     );
+  }
+
+  private _initFsmObserve() {
+    this._fsm.observe(ObserveEvent.REG_IN_PROGRESS, () => {
+      this._onEnterRegInProgress();
+    });
+    this._fsm.observe(ObserveEvent.READY, () => {
+      this._onEnterReady();
+    });
+    this._fsm.observe(ObserveEvent.REG_FAILURE, () => {
+      this._onEnterRegFailure();
+    });
+    this._fsm.observe(ObserveEvent.UN_REGISTERED, () => {
+      this._onEnterUnRegistered();
+    });
   }
 
   private _initListener() {
