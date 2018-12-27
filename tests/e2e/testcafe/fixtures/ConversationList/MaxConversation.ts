@@ -94,15 +94,15 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
     const conversation1 = teamsSection.conversationEntryById(newTeamIds[0]);
     const conversation5 = teamsSection.conversationEntryById(newTeamIds[4]);
-
+    const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I click the unread conversation.1 ', async () => {
       await conversation1.enter();
-      await t.wait(5e3);
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I navigate away from conversation.1 (click conversation.5 )', async () => {
       await conversation5.enter();
-      await t.wait(5e3);
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('Then unread conversation.1 should remain in the section', async () => {
@@ -115,7 +115,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
     await h(t).withLog('When I navigate away from conversation.5 (click conversation.1 )', async () => {
       await conversation1.enter();
-      await t.wait(5e3);
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('Then conversation.5 should be hide', async () => {
