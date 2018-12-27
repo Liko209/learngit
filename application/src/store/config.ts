@@ -111,7 +111,7 @@ const ENTITY_SETTING = {
     cacheCount: 1000,
   },
   [ENTITY_NAME.GROUP_CONFIG]: {
-    event: [ENTITY_NAME.GROUP_CONFIG],
+    event: [ENTITY.GROUP_CONFIG],
     service: () => GroupConfigService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,

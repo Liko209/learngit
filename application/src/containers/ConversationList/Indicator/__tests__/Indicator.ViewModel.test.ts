@@ -25,7 +25,7 @@ describe('IndicatorViewModel', () => {
   });
 
   it.skip('get computed _group', () => {
-    expect(indicatorViewModel._groupConfig).toBe(mockGroupEntityData);
+    expect(indicatorViewModel.groupConfig).toBe(mockGroupEntityData);
   });
 
   it.skip('get computed draft', () => {

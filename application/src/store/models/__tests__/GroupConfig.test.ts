@@ -13,14 +13,17 @@ describe('GroupConfigModel', () => {
         id: 1,
       } as GroupConfig);
       expect(model.draft).toBe(undefined);
+      expect(model.sendFailurePostIds).toBe(undefined);
     });
 
     it('should be undefined when there has draft value', () => {
       const model = GroupConfigModel.fromJS({
         id: 1,
         draft: 'text',
+        send_failure_post_ids: [1, 2],
       } as GroupConfig);
       expect(model.draft).toEqual('text');
+      expect(model.sendFailurePostIds).toEqual([1, 2]);
     });
   });
 });

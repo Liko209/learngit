@@ -15,10 +15,9 @@ export default class GroupConfigModel extends Base<GroupConfig> {
 
   constructor(data: GroupConfig) {
     super(data);
-    const { draft, sendFailurePostIds } = data;
-
+    const { draft, send_failure_post_ids } = data;
     this.draft = draft;
-    this.sendFailurePostIds = sendFailurePostIds;
+    this.sendFailurePostIds = send_failure_post_ids;
   }
 
   static fromJS(data: GroupConfig) {
