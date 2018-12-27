@@ -24,16 +24,15 @@ export class CreateTeamModal extends BaseWebComponent {
   }
 
   get toggleList() {
-    this.warnFlakySelector();
-    return this.self.find('[data-test-automation-id="CreateTeamToggleList"]');
+    return this.getSelectorByAutomationId("CreateTeamToggleList");
   }
 
   get teamNameInput() {
-    return this.self.find('[data-test-automation-id="CreateTeamName"]');
+    return this.getSelectorByAutomationId("CreateTeamName");
   }
 
   get teamDescriptionInput() {
-    return this.self.find('[data-test-automation-id="CreateTeamDescription"]');
+    return this.getSelectorByAutomationId("CreateTeamDescription");
   }
 
   private getToggleButton(index) {
