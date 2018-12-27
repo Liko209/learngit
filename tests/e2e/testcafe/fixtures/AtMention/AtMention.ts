@@ -194,19 +194,19 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
     const postMentionPage = app.homePage.messageTab.mentionPage;
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
-    let group;
+    let groupId;
     await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-      group = await h(t).platform(loginUser).createAndGetGroupId({
+      groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, group.data.id);
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     });
 
-    let newPost;
+    let newPostId;
     await h(t).withLog('And I have an AtMention post', async () => {
-      newPost = await h(t).platform(otherUser).sendTextPost(
+      newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
         `Hi AtMention, ![:Person](${loginUser.rcId})`,
-        group.data.id,
+        groupId,
       );
     }, true);
 
@@ -226,7 +226,7 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
     })
 
     await h(t).withLog('When I click the post and jump to the conversation', async () => {
-      await postMentionPage.postItemById(newPost.data.id).jumpToConversationByClickPost();
+      await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
     });
 
     await h(t).withLog('And the UMI should dismiss', async () => {
@@ -270,22 +270,21 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
   const msgList = _.range(20).map(i => `${i} ${uuid()}`);
 
-  let group;
-  let newPost;
+  let groupId, newPostId;
   await h(t).withLog('Given I have an AtMention message from the conversation', async () => {
-    group = await h(t).platform(loginUser).createAndGetGroupId({
+    groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, group.data.id);
-    newPost = await h(t).platform(otherUser).sendTextPost(
+    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
+    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `First AtMention, ![:Person](${loginUser.rcId})`,
-      group.data.id,
+      groupId,
     );
   });
 
   await h(t).withLog('And I also have 20 non AtMention messages in conversation', async () => {
     for (const msg of msgList) {
-      await h(t).platform(loginUser).sendTextPost(msg, group.data.id);
+      await h(t).platform(loginUser).sendTextPost(msg, groupId);
       await t.wait(1e3);
     }
   });
@@ -298,14 +297,15 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   await h(t).withLog('And I jump to conversation from AtMentions page should no UMI', async () => {
     await mentionsEntry.enter();
-    await postMentionPage.postItemById(newPost.data.id).jumpToConversationByClickPost();
+    await postMentionPage.waitUntilPostsBeLoaded();
+    await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
     await directMessagesSection.expectHeaderUmi(0);
   }, true);
 
   await h(t).withLog('Then I received new AtMention post should 1 UMI', async () => {
     await h(t).platform(otherUser).sendTextPost(
       `Just for UMI, ![:Person](${loginUser.rcId})`,
-      group.data.id,
+      groupId,
     );
     await directMessagesSection.fold();
     await directMessagesSection.expectHeaderUmi(1);

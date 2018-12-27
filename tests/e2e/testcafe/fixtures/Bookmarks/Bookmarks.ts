@@ -221,15 +221,12 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
   const msgList = _.range(20).map(i => `${i} ${uuid()}`);
 
-  let groupId;
-  let bookmarkPostId;
+  let groupId, bookmarkPostId;
   await h(t).withLog('Given I have an AtMention message from the conversation', async () => {
     groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).updateProfile(loginUser.rcId, {
-      [`hide_group_${groupId}`]: false
-    });
+    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     bookmarkPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `I'm Bookmarks, ![:Person](${loginUser.rcId})`,
       groupId,
