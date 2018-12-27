@@ -209,6 +209,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section', async () => {
+    await t.wait(1e3);
     await conversationPage.expectStreamScrollToBottom();
     await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
   });
@@ -220,6 +221,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section', async () => {
+    await t.wait(1e3);
     await conversationPage.expectStreamScrollToBottom();
     await t.expect(conversationPage.nthPostItem(-1).body.withText(anotherMessage).exists).ok();
   });

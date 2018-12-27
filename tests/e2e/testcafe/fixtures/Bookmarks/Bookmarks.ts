@@ -200,8 +200,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     }, true);
   });
 
-//Feature bug: FIJI-2135
-test.skip(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
+test(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
   if (await H.isEdge()) {
     await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
     return;
