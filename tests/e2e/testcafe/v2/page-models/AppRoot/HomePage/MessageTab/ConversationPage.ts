@@ -15,7 +15,6 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
-  // TODO
   get favIcon(){
     return this.getSelectorByAutomationId('favorite-icon');
   }

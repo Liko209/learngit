@@ -93,7 +93,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
 );
 
 test.only(formalName('Display Unfavorite button when user tap more button of a conversation in favorite section. & When user mark a conversation as unfavorite, remove the conversation from favorite section.',
-  ['P1', 'P2', 'JPT-182', 'JPT-184', 'ConversationList']),
+  ['P1', 'P2', 'JPT-182', 'JPT-184', 'ConversationList','Mia.Cai']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
