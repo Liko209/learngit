@@ -17,9 +17,9 @@ class MetriceService {
         });
     }
 
-    async updateTaskForEnd(taskDto: TaskDto) {
+    async updateTaskForEnd(taskDto: TaskDto, status: string) {
         await TaskDto.update({
-            status: '1',
+            status: status,
             endTime: new Date()
         }, { where: { id: taskDto.id } });
     }

@@ -139,6 +139,7 @@ class Scene {
         if (this.data) {
             let { categories } = this.data;
 
+            this.logger.info(`isSuccess : ${categories}`);
             return categories
                 && categories['performance'] && categories['performance'].score
                 && categories['pwa'] && categories['pwa'].score
