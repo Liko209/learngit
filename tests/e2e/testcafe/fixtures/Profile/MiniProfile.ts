@@ -19,8 +19,11 @@ fixture('Profile/MiniProfile')
 test(formalName('Open mini profile via post avatar then open conversation', ['JPT-449', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  const otherUserPlatform = await h(t).getPlatform(users[5]);
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  const otherUser = users[5];
+  await h(t).platform(otherUser).init();
+
   const app = new AppRoot(t);
 
   const miniProfile = app.homePage.miniProfile;
@@ -28,29 +31,17 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
 
   let teamId, myPost, otherUserPost;
   await h(t).withLog('Given I have one team, one post which I send, one post which other user send ', async () => {
-    teamId = await loginUser.sdk.platform.createGroup({
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
       isPublic: true,
       name: uuid(),
       type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    }).then(res => {
-      return res.data.id;
+      members: [loginUser.rcId, otherUser.rcId],
     });
 
-    const myPostId = await loginUser.sdk.platform.sendTextPost(
-      `My post ${uuid()}`,
-      teamId
-    ).then(res => {
-      return res.data.id;
-    });
+    const myPostId = await h(t).platform(loginUser).sentAndGetTextPostId(`My post ${uuid()}`, teamId);
     myPost = await conversationPage.postItemById(myPostId);
 
-    const otherUserPostId = await otherUserPlatform.sendTextPost(
-      `Other post ${uuid()}`,
-      teamId
-    ).then(res => {
-      return res.data.id;
-    });
+    const otherUserPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`Other post ${uuid()}`, teamId);
     otherUserPost = conversationPage.postItemById(otherUserPostId);
   });
 
@@ -102,44 +93,39 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
 test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  const otherUserPlatform = await h(t).getPlatform(users[5]);
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  const otherUser = users[5];
+  await h(t).platform(otherUser).init();
+
   const app = new AppRoot(t);
   const miniProfile = app.homePage.miniProfile;
   const conversationPage = app.homePage.messageTab.conversationPage
 
   let teamId, meMentionPost, contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I have one team with some mention posts ', async () => {
-    teamId = await loginUser.sdk.platform.createGroup({
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
       isPublic: true,
       name: uuid(),
       type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    }).then(res => {
-      return res.data.id;
+      members: [loginUser.rcId, otherUser.rcId],
     });
-    const meMentionPostId = await otherUserPlatform.sendTextPost(
+    const meMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `Hi AtMention, ![:Person](${loginUser.rcId})`,
-      teamId
-    ).then(res => {
-      return res.data.id;
-    });
+      teamId,
+    );
     meMentionPost = conversationPage.postItemById(meMentionPostId);
 
-    const contactMentionPostId = await loginUser.sdk.platform.sendTextPost(
-      `Hi AtMention, ![:Person](${users[5].rcId})`,
-      teamId
-    ).then(res => {
-      return res.data.id;
-    });
+    const contactMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
+      `Hi AtMention, ![:Person](${otherUser.rcId})`,
+      teamId,
+    );
     contactMentionPost = conversationPage.postItemById(contactMentionPostId);
 
-    const teamMentionPostId = await loginUser.sdk.platform.sendTextPost(
+    const teamMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
       `Hi AtMention, ![:Team](${teamId})`,
       teamId
-    ).then(res => {
-      return res.data.id;
-    });
+    );
     teamMentionPost = conversationPage.postItemById(teamMentionPostId);
   });
 
@@ -180,10 +166,12 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
 test.skip(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  loginUser.sdk = await h(t).getSdk(loginUser);
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+
   const app = new AppRoot(t);
   const teamName = uuid();
-  const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
+  const otherUserName = await h(t).glip(loginUser).getPerson(users[5].rcId)
     .then(res => res.data.display_name);
 
   const steps = async (i: number, count: number, searchItem, type: string) => {
@@ -220,17 +208,17 @@ test.skip(formalName('Open mini profile via global search then open profile', ['
   }
 
   await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
-    await loginUser.sdk.platform.createGroup({
+    await h(t).platform(loginUser).createGroup({
       isPublic: true,
       name: teamName,
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
     });
-    await loginUser.sdk.platform.createGroup({
+    await h(t).platform(loginUser).createGroup({
       type: 'Group',
       members: [loginUser.rcId, users[5].rcId, users[6].rcId],
     });
-    await loginUser.sdk.platform.createGroup({
+    await h(t).platform(loginUser).createGroup({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[5].rcId],
     });
