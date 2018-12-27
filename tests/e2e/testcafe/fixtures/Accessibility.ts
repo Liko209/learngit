@@ -9,11 +9,11 @@ fixture('Accessibility')
   .afterEach(teardownCase());
 
 test(formalName('Accessibility', ['FIJI-1323']), async (t) => {
-  const user = h(t).rcData.mainCompany.users[4];
+  const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
-  await h(t).withLog(`Given I login Jupiter with ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 

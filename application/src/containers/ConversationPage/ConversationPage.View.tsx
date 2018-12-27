@@ -13,6 +13,7 @@ import {
   JuiStreamWrapper,
 } from 'jui/pattern/ConversationPage';
 import { StreamDropZoneClasses } from 'jui/pattern/ConversationPage/StreamWrapper';
+import { MessageInputDropZoneClasses } from 'jui/pattern/MessageInput/MessageInput';
 import { JuiDropZone } from 'jui/pattern/MessageInput/DropZone';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
@@ -105,6 +106,7 @@ class ConversationPageViewComponent extends Component<
             <JuiDropZone
               accepts={[NativeTypes.FILE]}
               onDrop={this._handleDropFileInMessageInput}
+              dropzoneClass={MessageInputDropZoneClasses}
             >
               <MessageInput
                 viewRef={this._messageInputRef}

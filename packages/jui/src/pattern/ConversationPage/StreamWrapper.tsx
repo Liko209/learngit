@@ -18,7 +18,8 @@ const JuiStreamWrapper = styled(Div)`
 const StreamDropZoneClasses: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  height: 'calc(100% - 148px)',
+  flex: 1,
+  minHeight: 0, // firefox compatibility
 };
 
 export { JuiStreamWrapper, JuiStreamWrapperProps, StreamDropZoneClasses };

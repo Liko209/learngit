@@ -15,6 +15,15 @@ describe('omitLocalProperties()', () => {
       name: 'aaa',
     });
   });
+  it('should return object omit the specified keys', () => {
+    const specifiedKeyData = {
+      id: 'id',
+      _delta: '_delta',
+    };
+    expect(omitLocalProperties({ ...specifiedKeyData, name: 'aaa' })).toEqual({
+      name: 'aaa',
+    });
+  });
 
   it('should return array in which each item omit the __ properties', () => {
     expect(

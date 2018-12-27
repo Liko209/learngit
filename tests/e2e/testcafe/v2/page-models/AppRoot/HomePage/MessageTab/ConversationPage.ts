@@ -53,7 +53,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   async scrollToMiddle() {
     const scrollHeight = await this.streamWrapper.clientHeight;
-    this.scrollToY(scrollHeight/2);
+    await this.scrollToY(scrollHeight/2);
   }
 
   async scrollToBottom() {
@@ -83,6 +83,15 @@ export class ConversationPage extends BaseConversationPage {
       .typeText(this.messageInputArea, message)
       .click(this.messageInputArea)
       .pressKey('enter');
+  }
+
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
   }
 
   async favorite() {

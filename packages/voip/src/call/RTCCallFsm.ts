@@ -1,4 +1,4 @@
-import { RTCCallFsmTable } from './rtcCallFsmTable';
+import { RTCCallFsmTable } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import queue from 'async/queue';
 

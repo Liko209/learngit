@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCAccount, IRTCAccountListener } from './rtcAccount';
+import { RTCAccount, IRTCAccountListener } from './RTCAccount';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 

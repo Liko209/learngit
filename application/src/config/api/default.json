@@ -11,8 +11,7 @@
     "apiPlatform": "/restapi",
     "clientId": "dQPxFL6KTWWnolcs74LM4Q",
     "clientSecret": "TT0X369AQ_q8-rUaT8NGzAg5KP_VrFSaGctmkvb4bNEQ",
-    "redirectUri": "http://localhost:5000/unified-login/",
-    "brandId": 1210
+    "redirectUri": "http://localhost:5000/unified-login/"
   },
   "glip": {
     "server": "https://app.glip.com",

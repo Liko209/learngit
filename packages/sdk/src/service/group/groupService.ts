@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
+import {
+  daoManager,
+  ConfigDao,
+  GroupConfigDao,
+  QUERY_DIRECTION,
+} from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import { Group, GroupApiType, Raw, SortableModel, Profile } from '../../models';
@@ -23,7 +28,7 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser, BaseError } from '../../utils/error';
+import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -68,6 +73,11 @@ const handleTeamsRemovedFrom = async (ids: number[]) => {
   service.removeTeamsByIds(ids, true);
 };
 
+const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
+};
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -79,6 +89,8 @@ class GroupService extends BaseService<Group> {
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
       [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
+      [SERVICE.POST_SERVICE
+        .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
@@ -472,6 +484,50 @@ class GroupService extends BaseService<Group> {
     }
   }
 
+  private async _updateGroup(
+    id: number,
+    data: Partial<Group>,
+  ): Promise<boolean> {
+    data.id = id;
+    const result = await this.handlePartialUpdate(
+      data,
+      undefined,
+      async (updatedModel: Group) => {
+        return await this._doUpdateGroup(id, updatedModel);
+      },
+    );
+    if (result.isOk()) {
+      return true;
+    }
+    if (!result.apiError) {
+      throw ErrorTypes.UNDEFINED_ERROR;
+    }
+    throw result.apiError.code;
+  }
+
+  // update partial group data http
+  private async _doUpdateGroup(
+    id: number,
+    group: Group,
+  ): Promise<Group | BaseError> {
+    const apiResult = await GroupAPI.putTeamById(id, group);
+    if (apiResult.isOk()) {
+      return transform<Group>(apiResult.data);
+    }
+    return apiResult.error;
+  }
+
+  // update partial group data, for message draft
+  async updateGroupPrivacy(params: {
+    id: number;
+    privacy: string;
+  }): Promise<boolean> {
+    const result = await this._updateGroup(params.id, {
+      privacy: params.privacy,
+    });
+    return result;
+  }
+
   // update partial group data, for message draft
   async updateGroupDraft(params: {
     id: number;
@@ -803,6 +859,29 @@ class GroupService extends BaseService<Group> {
     await postService.deletePostsByGroupIds(ids, true);
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     groupConfigDao.bulkDelete(ids);
+  }
+
+  async setAsTrue4HasMoreConfigByDirection(
+    ids: number[],
+    direction: QUERY_DIRECTION,
+  ) {
+    if (!ids.length) {
+      return;
+    }
+    const data: any = [];
+    ids.forEach((id: number) => {
+      const config = {
+        id,
+      };
+      if (direction === QUERY_DIRECTION.OLDER) {
+        config['has_more_older'] = true;
+      } else {
+        config['has_more_newer'] = true;
+      }
+      data.push(config);
+    });
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkUpdate(data);
   }
 }
 

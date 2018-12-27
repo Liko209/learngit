@@ -8,41 +8,55 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { PrivacyViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-
-import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { JuiModal } from '@/containers/Dialog';
+import { ErrorTypes } from 'sdk/utils/';
+import { Notification } from '@/containers/Notification';
 
 type Props = PrivacyViewProps & WithNamespaces;
 
 class PrivacyViewComponent extends Component<Props> {
+  flashToast = (message: string) => {
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
   onClickPrivacy = async () => {
-    const { handlePrivacy, isPublic, t } = this.props;
-    const result = await handlePrivacy();
-    if (result === ServiceCommonErrorType.SERVER_ERROR) {
-      const content = isPublic
-        ? t('markPrivateServerErrorContent')
-        : t('markPublicServerErrorContent');
-      JuiModal.alert({
-        content,
-        title: '',
-        okText: t('OK'),
-        okVariant: 'text',
-        onOK: () => {},
-      });
+    const { handlePrivacy } = this.props;
+    try {
+      await handlePrivacy();
+    } catch (error) {
+      if (error === ErrorTypes.API_NETWORK) {
+        this.flashToast('teamNetError');
+      } else {
+        this.flashToast('markPrivateServerErrorForTeam');
+      }
     }
   }
 
+  getTipText = () => {
+    const { isPublic, isAdmin } = this.props;
+    if (isAdmin) {
+      return isPublic ? 'setStatePrivate' : 'setStatePublic';
+    }
+    return isPublic ? 'publicTeam' : 'privateTeam';
+  }
+
   render() {
-    const { isPublic, size, t } = this.props;
-    const tooltipKey = isPublic ? 'setStatePrivate' : 'setStatePublic';
+    const { isPublic, size, t, isAdmin } = this.props;
+    const tooltipKey = this.getTipText();
     return (
       <JuiIconButton
         size={size}
         color="grey.500"
         className="privacy"
+        disabled={!isAdmin}
+        alwaysEnableTooltip={true}
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
-        ariaLabel={t(tooltipKey)}
       >
         {isPublic ? 'lock_open' : 'lock'}
       </JuiIconButton>

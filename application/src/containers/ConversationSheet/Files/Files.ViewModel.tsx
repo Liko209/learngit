@@ -16,8 +16,7 @@ import {
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
-import FileItemModal from '@/store/models/FileItem';
-
+import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 import PostModel from '@/store/models/Post';
@@ -65,7 +64,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.document]: [],
       [FileType.others]: [],
     };
-    this.items.forEach((item: FileItemModal) => {
+    this.items.forEach((item: FileItemModel) => {
+      if (item.deactivated) return;
+
       const file = getFileType(item);
       files[file.type].push(file);
     });
@@ -75,7 +76,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   @computed
   get items() {
     return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemModal>(ENTITY_NAME.FILE_ITEM, id);
+      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
     });
   }
 

@@ -13,7 +13,7 @@ import {
   DropTargetMonitor,
 } from 'react-dnd';
 import { ThemeProps } from '../../foundation/theme/theme';
-import { grey, width, palette } from '../../foundation/utils/styles';
+import { grey, palette } from '../../foundation/utils/styles';
 
 type JuiDropZoneProps = {
   dropzoneClass?: CSSProperties;
@@ -36,7 +36,6 @@ class TargetBox extends Component<
         : 'none',
       background: isOver ? grey('200')({ theme }) : 'transparent',
       opacity: isOver ? theme.palette.action.hoverOpacity * 2 : 1,
-      flex: `${width(25)} 1 0`,
       // minHeight: 100 /* firefox compatibility */,
       ...dropzoneClass,
     };

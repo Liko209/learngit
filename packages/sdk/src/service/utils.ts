@@ -51,11 +51,6 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
-
-      const deactivatedDataIds = _.map(deactivatedData, (data: any) => {
-        return data.id;
-      });
-      notificationCenter.emitEntityDelete(eventKey, deactivatedDataIds);
     }
     // put normalData
     const normalData = data.filter((item: any) => item.deactivated !== true);
@@ -63,8 +58,8 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
       if (!noSavingToDB) {
         await dao.bulkPut(normalData);
       }
-      notificationCenter.emitEntityUpdate(eventKey, normalData);
     }
+    notificationCenter.emitEntityUpdate(eventKey, data);
     return normalData;
   } catch (e) {
     mainLogger.error(`baseHandleData: ${JSON.stringify(e)}`);
