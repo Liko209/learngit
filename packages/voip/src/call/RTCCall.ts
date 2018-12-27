@@ -1,45 +1,38 @@
-import {
-  IRTCCallObserver,
-  RTCCALL_STATE_IN_OBSERVER,
-} from './IRTCCallObserver';
+import { IRTCCallObserver } from './IRTCCallObserver';
 import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
 import { RTCSipCallSession } from './RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm } from './RTCCallFsm';
-
-type CallInfo = {
-  fromName: string;
-  fromNum: string;
-  toName: string;
-  toNum: string;
-  uuid: string;
-};
+import { RTCCallFsm, RTCCallFsmNotify } from './RTCCallFsm';
+import { v4 as uuid } from 'uuid';
+import { RTCCallInfo, RTCCALL_STATE } from './types';
 
 class RTCCall {
-  private _callState: RTCCALL_STATE_IN_OBSERVER =
-    RTCCALL_STATE_IN_OBSERVER.IDLE;
-  private _callInfo: CallInfo = {
+  private _callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
+  private _callInfo: RTCCallInfo = {
     fromName: '',
     fromNum: '',
     toName: '',
     toNum: '',
     uuid: '',
   };
-  private _callSession: IRTCCallSession = new RTCSipCallSession();
-  private _fsm: RTCCallFsm = new RTCCallFsm();
+  private _callSession: IRTCCallSession;
+  private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
   private _observer: IRTCCallObserver;
   private _isIncomingCall: boolean = false;
 
   constructor(toNum: string, account: IRTCAccount, observer: IRTCCallObserver) {
+    this._callSession = new RTCSipCallSession();
+    this._fsm = new RTCCallFsm();
     this._callInfo.toNum = toNum;
+    this._callInfo.uuid = uuid();
     this._account = account;
     this._observer = observer;
     this._prepare();
     this._startOutCallFSM();
   }
 
-  getCallState(): RTCCALL_STATE_IN_OBSERVER {
+  getCallState(): RTCCALL_STATE {
     return this._callState;
   }
 
@@ -75,22 +68,22 @@ class RTCCall {
       this._onSessionError();
     });
     // listen fsm
-    this._fsm.on('enterPending', () => {
-      this._onCallStateChange(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
+    this._fsm.on(RTCCallFsmNotify.ENTERPENDING, () => {
+      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on('enterConnecting', () => {
-      this._onCallStateChange(RTCCALL_STATE_IN_OBSERVER.CONNECTING);
+    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTING, () => {
+      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on('enterConnected', () => {
-      this._onCallStateChange(RTCCALL_STATE_IN_OBSERVER.CONNECTED);
+    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTED, () => {
+      this._onCallStateChange(RTCCALL_STATE.CONNECTED);
     });
-    this._fsm.on('enterDisconnected', () => {
-      this._onCallStateChange(RTCCALL_STATE_IN_OBSERVER.DISCONNECTED);
+    this._fsm.on(RTCCallFsmNotify.ENTERDISCONNECTED, () => {
+      this._onCallStateChange(RTCCALL_STATE.DISCONNECTED);
     });
-    this._fsm.on('hangupAction', () => {
+    this._fsm.on(RTCCallFsmNotify.HANGUPACTION, () => {
       this._onHangupAction();
     });
-    this._fsm.on('createOutCallSession', () => {
+    this._fsm.on(RTCCallFsmNotify.CREATEOUTCALLSESSION, () => {
       this._onCreateOutCallSession();
     });
   }
@@ -116,7 +109,7 @@ class RTCCall {
     this._account.createOutCallSession(this._callInfo.toNum);
   }
 
-  private _onCallStateChange(state: RTCCALL_STATE_IN_OBSERVER): void {
+  private _onCallStateChange(state: RTCCALL_STATE): void {
     if (this._callState !== state) {
       this._callState = state;
       this._observer.onCallStateChange(state);
@@ -124,4 +117,4 @@ class RTCCall {
   }
 }
 
-export { RTCCall, CallInfo };
+export { RTCCall };
