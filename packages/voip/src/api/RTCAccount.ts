@@ -26,16 +26,11 @@ class RTCAccount {
 
   constructor(listener: IRTCAccountListener) {
     console.log('RTCAccout created');
-    this._registrationManager = new RTCRegistrationManager(listener);
   }
 
-  public deRegister() {
-    this._registrationManager.deRegister();
-  }
+  public deRegister() {}
 
-  public doRegister() {
-    this._registrationManager.doRegister();
-  }
+  public doRegister() {}
 }
 
 export { AccountState, IRTCAccountListener, RTCAccount };

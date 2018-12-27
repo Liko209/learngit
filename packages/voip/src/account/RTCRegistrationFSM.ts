@@ -11,25 +11,19 @@ const RegistrationState = {
   REG_IN_PROGRESS: 'regInProgress',
   READY: 'ready',
   REG_FAILURE: 'regFailure',
-  UN_REG_IN_PROGRESS: 'unRegInProgress',
-  NONE: 'none',
+  UN_REGISTERED: 'unRegistered',
 };
 
 const RegistrationEvent = {
-  DO_REGISTER: 'doRegister',
+  PROVISION_READY: 'provisionReady',
   REG_SUCCEED: 'regSucceed',
   REG_TIMEOUT: 'regTimeOut',
   REG_ERROR: 'regError',
-  NETWORK_CHANGED: 'networkChanged',
-  DEREGISTER: 'deRegister',
-  TERMINATE: 'terminate',
-  OUTGOINGCALL: 'outGoingCall',
-  DEREG_SUCCEED: 'deRegSucceed',
+  UN_REGISTER: 'unRegister',
 };
 
 interface IConditionalHandler {
   onReadyWhenRegSucceed(): string;
-  onReadyWhenNetworkChanged(): string;
 }
 
 class RTCRegistrationFSM extends StateMachine {
@@ -38,7 +32,7 @@ class RTCRegistrationFSM extends StateMachine {
       init: RegistrationState.IDLE,
       transitions: [
         {
-          name: RegistrationEvent.DO_REGISTER,
+          name: RegistrationEvent.PROVISION_READY,
           from: RegistrationState.IDLE,
           to: RegistrationState.REG_IN_PROGRESS,
         },
@@ -60,53 +54,14 @@ class RTCRegistrationFSM extends StateMachine {
         },
         // ready
         {
-          name: RegistrationEvent.DO_REGISTER,
+          name: RegistrationEvent.UN_REGISTER,
           from: RegistrationState.READY,
-          to: RegistrationState.REG_IN_PROGRESS,
-        },
-        {
-          name: RegistrationEvent.OUTGOINGCALL,
-          from: RegistrationState.READY,
-          to: RegistrationState.READY,
-        },
-        {
-          name: RegistrationEvent.DEREGISTER,
-          from: RegistrationState.READY,
-          to: RegistrationState.UN_REG_IN_PROGRESS,
+          to: RegistrationState.UN_REGISTERED,
         },
         {
           name: RegistrationEvent.REG_SUCCEED,
           from: RegistrationState.READY,
           to: () => handler.onReadyWhenRegSucceed(),
-        },
-        {
-          name: RegistrationEvent.NETWORK_CHANGED,
-          from: RegistrationState.READY,
-          to: () => handler.onReadyWhenNetworkChanged(),
-        },
-
-        // registration failure
-        {
-          name: RegistrationEvent.DO_REGISTER,
-          from: RegistrationState.REG_FAILURE,
-          to: RegistrationState.REG_IN_PROGRESS,
-        },
-        {
-          name: RegistrationEvent.NETWORK_CHANGED,
-          from: RegistrationState.REG_FAILURE,
-          to: RegistrationState.REG_IN_PROGRESS,
-        },
-
-        // unRegistration in progress
-        {
-          name: RegistrationEvent.DEREG_SUCCEED,
-          from: RegistrationState.UN_REG_IN_PROGRESS,
-          to: RegistrationState.NONE,
-        },
-        {
-          name: RegistrationEvent.TERMINATE,
-          from: RegistrationState.UN_REG_IN_PROGRESS,
-          to: RegistrationState.NONE,
         },
       ],
       methods: {

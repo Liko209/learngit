@@ -1,44 +1,35 @@
-/// <reference path="../../__tests__/types.d.ts" />
-import { RTCRegistrationManager } from '../RTCRegistrationManager';
+/*
+ * @Author: Jayson zhang  (jayson.zhang@ringcentral.com)
+ * @Date: 2018-12-27 11:14:52
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { RTCRegistrationManager, ErrorCode } from '../RTCRegistrationManager';
+import { IRTCAccountListener, AccountState } from '../../api/RTCAccount';
 
-describe('Registration manager', async () => {
-  it('state transition: network change in ready', () => {
-    const am = new RTCRegistrationManager(null);
-    jest.spyOn(am, 'onReadyWhenNetworkChanged');
-    am.doRegister();
-    am.regSucceed();
-    am.networkChanged();
-    expect(am.onReadyWhenNetworkChanged).toHaveBeenCalled();
+describe('RTCRegistrationManager', () => {
+  class MockAccountListener implements IRTCAccountListener {
+    onAccountStateChanged = jest.fn();
+  }
+
+  describe('provisionReady', () => {
+    it('Should trigger register func', () => {
+      const mockListener = new MockAccountListener();
+      const fsmManager = new RTCRegistrationManager(mockListener);
+      fsmManager.provisionReady('provisionData', 'options');
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        AccountState.IDLE,
+        AccountState.IN_PROGRESS,
+      );
+    });
   });
 
-  it('state transition: from idle to none', async () => {
-    const am = new RTCRegistrationManager(null);
-    jest.spyOn(am, 'onRegInProgress');
-    jest.spyOn(am, 'onLeaveRegInProgress');
-    jest.spyOn(am, 'onReady');
-    jest.spyOn(am, 'onLeaveReady');
-    jest.spyOn(am, 'onUnRegInProgress');
-    jest.spyOn(am, 'onLeaveUnRegInProgress');
-    jest.spyOn(am, 'onNone');
-    am.doRegister();
-    am.regSucceed();
-    am.deRegister();
-    am.deRegSucceed();
-    expect(am.onNone).toHaveBeenCalled();
-    expect(am.onLeaveUnRegInProgress).toHaveBeenCalled();
-    expect(am.onUnRegInProgress).toHaveBeenCalled();
-    expect(am.onLeaveReady).toHaveBeenCalled();
-    expect(am.onReady).toHaveBeenCalled();
-    expect(am.onLeaveRegInProgress).toHaveBeenCalled();
-    expect(am.onRegInProgress).toHaveBeenCalled();
-  });
-
-  it('SIP refresh while state is in ready', async () => {
-    const am = new RTCRegistrationManager(null);
-    jest.spyOn(am, 'onReadyWhenRegSucceed');
-    am.doRegister();
-    am.regSucceed();
-    am.regSucceed();
-    expect(am.onReadyWhenRegSucceed).toHaveBeenCalled();
+  describe('makeCall', () => {
+    it('Should return session when register success', () => {
+      const mockListener = new MockAccountListener();
+      const fsmManager = new RTCRegistrationManager(mockListener);
+      fsmManager.provisionReady('provisionData', 'options');
+      const session = fsmManager.makeCall('phoneNumber', 'options');
+      expect(session).toEqual('session');
+    });
   });
 });

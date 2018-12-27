@@ -13,7 +13,7 @@ enum WEBPHONE_REGISTER_EVENT {
 }
 
 class RTCSipUserAgent implements IRTCUserAgent {
-  private _userAgent: WebPhone = null;
+  private _userAgent: WebPhone;
   private _eventEmitter: EventEmitter2;
 
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
