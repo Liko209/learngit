@@ -167,33 +167,32 @@ test(formalName('Should be able to read the newest posts once open a conversatio
 test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[6];
-  const userPlatform = await h(t).getPlatform(user);
+  const loginUser= users[6];
+  await h(t).platform(loginUser).init();
 
   let conversationId;
   await h(t).withLog('Given I have an extension with a conversation', async () => {
-    conversationId = await userPlatform.createAndGetGroupId({
+    conversationId = await h(t).platform(loginUser).createAndGetGroupId({
       isPublic: true,
       name: `Team ${uuid()}`,
       type: 'Team',
-      members: [user.rcId, users[5].rcId, users[6].rcId],
+      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
     });
   });
 
   await h(t).withLog('And this conversation 20 message', async () => {
     for (let i of _.range(20)) {
-      await userPlatform.createPost({ text: `${i} ${uuid()}` }, conversationId);
+      await h(t).platform(loginUser).createPost({ text: `${i} ${uuid()}` }, conversationId);
     }
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const posts = conversationPage.posts;
   await h(t).withLog('And enter the team conversation', async () => {
     await teamsSection.expand();
     await teamsSection.conversationEntryById(conversationId).enter();
@@ -201,29 +200,28 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
 
   await h(t).withLog('And scroll to middle of page', async () => {
     await conversationPage.waitUntilPostsBeLoaded();
-    await conversationPage.scrollToY(0);
+    await conversationPage.scrollToMiddle();
   });
 
-  const message = `${uuid()}`
+  const message = `${uuid()}`;
   await h(t).withLog('When I send message to this conversation', async () => {
     await conversationPage.sendMessage(message, { paste: true });
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section', async () => {
     await conversationPage.expectStreamScrollToBottom();
-    await t.expect(posts.nth(-1).withText(message).exists).ok();
+    await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
   });
 
 
-  const anotherMessage = `${uuid()}`
+  const anotherMessage = `${uuid()}`;
   await h(t).withLog('When I send another message to this conversation', async () => {
     await conversationPage.sendMessage(anotherMessage, { paste: true });
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section', async () => {
-    await t.wait(1e3);
     await conversationPage.expectStreamScrollToBottom();
-    await t.expect(posts.nth(-1).withText(anotherMessage).exists).ok();
+    await t.expect(conversationPage.nthPostItem(-1).body.withText(anotherMessage).exists).ok();
   });
 })
 
