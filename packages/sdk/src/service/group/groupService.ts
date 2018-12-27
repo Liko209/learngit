@@ -208,7 +208,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const result = this._queryGroupByMemberList(personIds);
+      const result = await this._queryGroupByMemberList(personIds);
       if (result) {
         return result;
       }

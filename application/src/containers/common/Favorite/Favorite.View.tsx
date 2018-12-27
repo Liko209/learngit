@@ -20,10 +20,6 @@ class FavoriteViewComponent extends Component<Props> {
     super(props);
   }
 
-  componentDidMount() {
-    this.props.getConversationId();
-  }
-
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;
     const result: ServiceResult<Profile> = await handlerFavorite();

@@ -22,6 +22,10 @@ const { GroupService } = service;
 class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   implements FavoriteViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
+  constructor(props: FavoriteProps) {
+    super(props);
+    this.autorun(this.getConversationId);
+  }
 
   @observable
   conversationId: number;
