@@ -18,8 +18,16 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
+  get favIcon(){
+    return this.getSelectorByAutomationId('favorite-icon');
+  }
+
   get leftWrapper() {
     return this.header.find('.left-wrapper');
+  }
+
+  async clickFavIcon(){
+    await this.t.click(this.favIcon);
   }
 
   nthPostItem(nth: number) {
@@ -163,6 +171,14 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get mentions() {
+    return this.text.find('.at_mention_compose');
+  }
+
+  getMentionByName(name: string) {
+    return this.mentions.filter((el) => el.textContent === name);
+  }
+
   imgTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
@@ -191,6 +207,10 @@ export class PostItem extends BaseWebComponent {
     return this.getSelector('.tooltipPlacementBottom').textContent;
   }
 
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }
@@ -213,6 +233,7 @@ export class PostItem extends BaseWebComponent {
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
+
 
 
   // --- mention page only ---

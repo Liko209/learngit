@@ -1,4 +1,4 @@
-import { RTCCallFsmTable } from './RTCCallFsmTable';
+import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import queue from 'async/queue';
 
@@ -11,13 +11,23 @@ const CallFsmEvent = {
   SESSION_ERROR: 'sessionErrorEvent',
 };
 
-class RTCCallFsm extends EventEmitter2 {
+enum RTCCallFsmNotify {
+  ENTERPENDING = 'enterPending',
+  ENTERCONNECTING = 'enterConnecting',
+  ENTERCONNECTED = 'enterConnected',
+  ENTERDISCONNECTED = 'enterDisconnected',
+  HANGUPACTION = 'hangupAction',
+  CREATEOUTCALLSESSION = 'createOutCallSession',
+}
+
+class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _callFsmTable: RTCCallFsmTable;
   private _eventQueue: any;
 
   constructor() {
+    this._callFsmTable = new RTCCallFsmTable(this);
     super();
-    this._callFsmTable = new RTCCallFsmTable();
+    // this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = new queue((task: any, callback: any) => {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
@@ -52,7 +62,7 @@ class RTCCallFsm extends EventEmitter2 {
     });
     // Observer FSM State
     // enter pending state will also report connecting for now
-    this._callFsmTable.observe('onPending', () => this._onEnterConnecting());
+    this._callFsmTable.observe('onPending', () => this._onEnterPending());
     this._callFsmTable.observe('onConnecting', () => this._onEnterConnecting());
     this._callFsmTable.observe('onConnected', () => this._onEnterConnected());
     this._callFsmTable.observe('onDisconnected', () =>
@@ -91,6 +101,14 @@ class RTCCallFsm extends EventEmitter2 {
     this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {});
   }
 
+  onHangupAction() {
+    this.emit(RTCCallFsmNotify.HANGUPACTION);
+  }
+
+  onCreateOutCallSession() {
+    this.emit(RTCCallFsmNotify.CREATEOUTCALLSESSION);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
   }
@@ -116,29 +134,25 @@ class RTCCallFsm extends EventEmitter2 {
   }
 
   private _onEnterPending() {
-    this.emit('enterPending');
+    this.emit(RTCCallFsmNotify.ENTERPENDING);
   }
 
   private _onEnterConnecting() {
-    this.emit('enterConnecting');
+    this.emit(RTCCallFsmNotify.ENTERCONNECTING);
   }
 
   private _onEnterConnected() {
-    this.emit('enterConnected');
+    this.emit(RTCCallFsmNotify.ENTERCONNECTED);
   }
 
   private _onEnterDisconnected() {
-    this.emit('enterDisconnected');
+    this.emit(RTCCallFsmNotify.ENTERDISCONNECTED);
   }
 
   // Only for unit test
   private _fsmGoto(state: string) {
     this._callFsmTable.goto(state);
   }
-
-  private _tailTask(name: string): boolean {
-    return this._eventQueue._tasks.tail.data.name === name;
-  }
 }
 
-export { RTCCallFsm };
+export { RTCCallFsm, RTCCallFsmNotify };

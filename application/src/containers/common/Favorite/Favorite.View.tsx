@@ -20,10 +20,6 @@ class FavoriteViewComponent extends Component<Props> {
     super(props);
   }
 
-  componentDidMount() {
-    this.props.getConversationId();
-  }
-
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;
     const result: ServiceResult<Profile> = await handlerFavorite();
@@ -57,6 +53,7 @@ class FavoriteViewComponent extends Component<Props> {
         onClick={this.onClickFavorite}
         tooltipTitle={t(tooltipKey)}
         ariaLabel={t(tooltipKey)}
+        data-test-automation-id="favorite-icon"
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>
