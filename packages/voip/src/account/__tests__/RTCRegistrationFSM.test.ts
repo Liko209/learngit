@@ -3,11 +3,8 @@
  * @Date: 2018-12-26 13:16:41
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  RTCRegistrationFSM,
-  IConditionalHandler,
-  RegistrationState,
-} from '../RTCRegistrationFSM';
+import { RTCRegistrationFSM, IConditionalHandler } from '../RTCRegistrationFSM';
+import { RegistrationState } from '../types';
 
 describe('RTCRegistrationFSM', async () => {
   class MockHandler implements IConditionalHandler {

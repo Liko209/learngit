@@ -3,7 +3,7 @@
  * @Date: 2018-12-27 11:14:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTCRegistrationManager, ErrorCode } from '../RTCRegistrationManager';
+import { RTCRegistrationManager } from '../RTCRegistrationManager';
 import { IRTCAccountListener, AccountState } from '../../api/RTCAccount';
 
 describe('RTCRegistrationManager', () => {

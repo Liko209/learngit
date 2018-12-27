@@ -4,22 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  RTCRegistrationFSM,
-  IConditionalHandler,
-  RegistrationState,
-} from './RTCRegistrationFSM';
+import { RTCRegistrationFSM, IConditionalHandler } from './RTCRegistrationFSM';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent, UA_EVENT } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
 import { IRTCAccountListener, AccountState } from '../api/RTCAccount';
+import { ErrorCode, RegistrationState } from './types';
 
 const RegistrationEvent = {
   PROVISION_READY: 'provisionReady',
-};
-
-const ErrorCode = {
-  TIME_OUT: 500,
 };
 
 const ObserveEvent = {
@@ -136,4 +129,4 @@ class RTCRegistrationManager implements IConditionalHandler {
   }
 }
 
-export { RTCRegistrationManager, ErrorCode };
+export { RTCRegistrationManager };

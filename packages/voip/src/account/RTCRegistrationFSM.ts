@@ -5,14 +5,7 @@
  */
 
 import StateMachine from 'ts-javascript-state-machine';
-
-const RegistrationState = {
-  IDLE: 'idle',
-  REG_IN_PROGRESS: 'regInProgress',
-  READY: 'ready',
-  REG_FAILURE: 'regFailure',
-  UN_REGISTERED: 'unRegistered',
-};
+import { RegistrationState } from './types';
 
 const RegistrationEvent = {
   PROVISION_READY: 'provisionReady',
@@ -93,4 +86,4 @@ class RTCRegistrationFSM extends StateMachine {
   }
 }
 
-export { RTCRegistrationFSM, IConditionalHandler, RegistrationState };
+export { RTCRegistrationFSM, IConditionalHandler };
