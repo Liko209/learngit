@@ -53,6 +53,7 @@ class FavoriteViewComponent extends Component<Props> {
         onClick={this.onClickFavorite}
         tooltipTitle={t(tooltipKey)}
         ariaLabel={t(tooltipKey)}
+        data-test-automation-id="favorite-icon"
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>
