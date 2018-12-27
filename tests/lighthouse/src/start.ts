@@ -47,8 +47,8 @@ const logger = logUtils.getLogger(__filename);
 
         let endTime = Date.now();
 
-        // 1: success  2: failure
-        await metriceService.updateTaskForEnd(taskDto, result ? '1' : '2');
+        // 1: success  0: failure
+        await metriceService.updateTaskForEnd(taskDto, result ? '1' : '0');
 
         logger.info(`total cost ${endTime - startTime}ms, result: ${result}`);
     } catch (err) {
