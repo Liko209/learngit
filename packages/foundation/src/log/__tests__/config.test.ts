@@ -1,11 +1,11 @@
-import { ILogLoader, LogEntity } from '../types';
+import { ILogEntityDecorator, LogEntity } from '../types';
 import { logConfigFactory, consumerConfigFactory } from './factory';
 import { configManager } from '../config';
 import { LOG_LEVEL } from '../constants';
-class DummyLoader implements ILogLoader {
+class DummyLoader implements ILogEntityDecorator {
   options: object;
 
-  handle(data: LogEntity): LogEntity {
+  decorate(data: LogEntity): LogEntity {
     return data;
   }
 
@@ -38,15 +38,15 @@ describe('config', () => {
     });
 
     it('should replace array value in config', async () => {
-      const expectLoaders = [
+      const expectDecorators = [
         new DummyLoader(),
         new DummyLoader(),
       ];
       const rawConfig = configManager.getConfig();
       const result = configManager.mergeConfig({
-        loaders: expectLoaders,
+        decorators: expectDecorators,
       });
-      expect(result).toEqual({ ...rawConfig, loaders: expectLoaders });
+      expect(result).toEqual({ ...rawConfig, decorators: expectDecorators });
     });
   });
 });

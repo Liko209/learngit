@@ -19,7 +19,7 @@ const defaultConfig: LogConfig = {
   uploadLogApi: null,
   uploadAccessor: null,
   persistence: null,
-  loaders: [],
+  decorators: [],
 };
 
 class ConfigManager {

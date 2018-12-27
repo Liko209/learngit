@@ -12,10 +12,10 @@ export class LogEntityProcessor implements ILogEntityProcessor {
   }
 
   process(initLogEntity: LogEntity): LogEntity {
-    const { loaders } = configManager.getConfig();
-    const logEntity: LogEntity = loaders.reduce((preEntity, curLoader) => {
-      return curLoader.handle(preEntity);
-    },                                          initLogEntity);
+    const { decorators } = configManager.getConfig();
+    const logEntity: LogEntity = decorators.reduce((preEntity, curLoader) => {
+      return curLoader.decorate(preEntity);
+    },                                             initLogEntity);
     return logEntity;
   }
 

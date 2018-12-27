@@ -1,5 +1,5 @@
 
-import { ILogApi, LogEntity } from 'foundation';
+import { ILogApi, LogEntity, mainLogger } from 'foundation';
 import AccountService from '../account';
 import axios from 'axios';
 
@@ -16,7 +16,12 @@ export class LogUploader implements ILogApi {
   private async _getUserInfo() {
     const accountService: AccountService = AccountService.getInstance();
     const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
-    const id = accountService.getCurrentUserId();
+    let id;
+    try {
+      id = accountService.getCurrentUserId();
+    } catch (error) {
+      mainLogger.error(error);
+    }
     const userId = id ? id.toString() : '';
     const clientId = accountService.getClientId();
     return {

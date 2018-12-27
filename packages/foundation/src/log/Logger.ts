@@ -20,10 +20,10 @@ const buildLogEntity = (level: LOG_LEVEL, tags: string[], params: any[]): LogEnt
 export class Logger implements ILogger, ILoggerCore {
   private _logEntityProcessor: ILogEntityProcessor;
   private _logConsumer: ILogConsumer;
-  private _consoleLogger: ILoggerCore;
+  private _consoleLoggerCore: ILoggerCore;
   constructor() {
     this._logEntityProcessor = new LogEntityProcessor();
-    this._consoleLogger = new ConsoleLogCore(new ConsoleLogPrettier());
+    this._consoleLoggerCore = new ConsoleLogCore(new ConsoleLogPrettier());
   }
 
   setConsumer(consumer: ILogConsumer) {
@@ -66,7 +66,7 @@ export class Logger implements ILogger, ILoggerCore {
     if (!this._isLogEnabled(logEntity)) return;
     const finalLogEntity = this._logEntityProcessor.process(logEntity);
     configManager.getConfig().consumer.enabled && this._logConsumer.onLog(finalLogEntity);
-    configManager.getConfig().browser.enabled && this._consoleLogger.doLog(finalLogEntity);
+    configManager.getConfig().browser.enabled && this._consoleLoggerCore.doLog(finalLogEntity);
   }
 
   private _isLogEnabled(logEntity: LogEntity) {

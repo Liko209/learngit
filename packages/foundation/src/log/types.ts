@@ -17,9 +17,9 @@ interface ILoggerCore {
   doLog(logEntity: LogEntity): void;
 }
 
-interface ILogLoader {
+interface ILogEntityDecorator {
   options: object;
-  handle(data: LogEntity): LogEntity;
+  decorate(data: LogEntity): LogEntity;
 }
 
 interface ILogConsumer {
@@ -59,7 +59,7 @@ type LogConfig = {
   uploadLogApi: ILogApi | null,
   persistence: ILogPersistence | null,
   uploadAccessor: IAccessor | null,
-  loaders: ILogLoader[],
+  decorators: ILogEntityDecorator[],
 };
 
 class LogEntity {
@@ -78,7 +78,7 @@ class LogEntity {
 export {
   ILogger,
   ILoggerCore,
-  ILogLoader,
+  ILogEntityDecorator,
   ILogConsumer,
   ILogEntityProcessor,
   IConsoleLogPrettier,

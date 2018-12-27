@@ -3,12 +3,12 @@
  * @Date: 2018-12-26 15:22:01
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogLoader, LogEntity } from '../types';
+import { ILogEntityDecorator, LogEntity } from '../types';
 
-export class StringCutLoader implements ILogLoader {
+export class TruncationDecorator implements ILogEntityDecorator {
   options: { limit: number };
 
-  handle(data: LogEntity): LogEntity {
+  decorate(data: LogEntity): LogEntity {
     if (!this.options || !this.options.limit) return data;
     if (data.params) {
       data.params = data.params.map((param: string) => {

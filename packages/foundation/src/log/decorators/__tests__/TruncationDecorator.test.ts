@@ -1,20 +1,20 @@
-import { StringCutLoader } from '../StringCutLoader';
+import { TruncationDecorator } from '../TruncationDecorator';
 import { logEntityFactory } from '../../__tests__/factory';
-describe('StringCutLoader', () => {
+describe('TruncationDecorator', () => {
 
-  describe('handle', () => {
-    it('should cut correctly', async () => {
+  describe('decorate', () => {
+    it('should cut by limiting length', async () => {
       const mockLog = logEntityFactory.build();
-      const loader = new StringCutLoader();
+      const loader = new TruncationDecorator();
       loader.options = {
         limit: 2,
       };
       mockLog.params = ['1', '22', '333', '4444'];
-      expect(loader.handle(mockLog)['params']).toEqual(['1', '22', '33', '44']);
+      expect(loader.decorate(mockLog)['params']).toEqual(['1', '22', '33', '44']);
     });
     it('should ignore object', async () => {
       const mockLog = logEntityFactory.build();
-      const loader = new StringCutLoader();
+      const loader = new TruncationDecorator();
       const object = {
         x: 'sss',
       };
@@ -22,7 +22,7 @@ describe('StringCutLoader', () => {
         limit: 2,
       };
       mockLog.params = ['22', object, '333'];
-      expect(loader.handle(mockLog)['params']).toEqual(['22', object, '33']);
+      expect(loader.decorate(mockLog)['params']).toEqual(['22', object, '33']);
     });
   });
 });

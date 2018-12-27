@@ -130,7 +130,7 @@ describe('Logger', () => {
     });
     it('Log prettier format should correct [JPT-538]', () => {
       const logger = new Logger();
-      const mockPrettier = jest.spyOn(logger['_consoleLogPrettier'], 'prettier')
+      const mockPrettier = jest.spyOn(logger['_consoleLoggerCore']['_consoleLogPrettier'], 'prettier')
         .mockImplementation(item => item.params);
       const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);

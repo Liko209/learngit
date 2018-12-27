@@ -3,11 +3,11 @@
  * @Date: 2018-12-26 15:21:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogLoader, LogEntity } from '../types';
+import { ILogEntityDecorator, LogEntity } from '../types';
 import { DATE_FORMATTER } from '../constants';
 import DateFormatter from './DateFormatter';
 
-export class SessionLoader implements ILogLoader {
+export class SessionDecorator implements ILogEntityDecorator {
   options: object;
   private _sessionId: string;
   private _sessionIndex: number;
@@ -30,7 +30,7 @@ export class SessionLoader implements ILogLoader {
     return this._sessionIndex++;
   }
 
-  handle(data: LogEntity): LogEntity {
+  decorate(data: LogEntity): LogEntity {
     data.sessionId = this._sessionId;
     data.sessionIndex = this.requestIndex();
     return data;

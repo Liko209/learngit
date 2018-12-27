@@ -1,17 +1,17 @@
 import { Logger } from './Logger';
 import { LOG_LEVEL, LOG_TAGS } from './constants';
-import { ILogger, ILogLoader, LogConfig } from './types';
+import { ILogger, ILogEntityDecorator, LogConfig } from './types';
 import { configManager } from './config';
 import mergeWith from 'lodash/mergeWith';
-import { MessageLoader, SessionLoader, StringCutLoader, TimestampLoader } from './loaders';
+import { MessageDecorator, SessionDecorator, TruncationDecorator, TimestampDecorator } from './decorators';
 import { LogConsumer, LogPersistence } from './consumer';
 
 type LoaderMap = {
-  [name: string]: ILogLoader,
+  [name: string]: ILogEntityDecorator,
 };
 
 type LoaderItem = {
-  loader: string | ILogLoader,
+  loader: string | ILogEntityDecorator,
   options?: object,
 };
 class LogManager {
@@ -24,29 +24,29 @@ class LogManager {
   public constructor() {
     this._loggers = new Map();
     this._defaultLoaderMap = {
-      SessionLoader: new SessionLoader(),
-      StringCutLoader: new StringCutLoader(),
-      TimestampLoader: new TimestampLoader(),
-      MessageLoader: new MessageLoader(),
+      SessionDecorator: new SessionDecorator(),
+      TruncationDecorator: new TruncationDecorator(),
+      TimestampDecorator: new TimestampDecorator(),
+      MessageDecorator: new MessageDecorator(),
     };
     configManager.mergeConfig({
       persistence: new LogPersistence(),
     });
-    this.configLoaders([
+    this.configDecorators([
       {
-        loader: 'SessionLoader',
+        loader: 'SessionDecorator',
       },
       {
-        loader: 'StringCutLoader',
+        loader: 'TruncationDecorator',
         options: {
           limit: 2000,
         },
       },
       {
-        loader: 'TimestampLoader',
+        loader: 'TimestampDecorator',
       },
       {
-        loader: 'MessageLoader',
+        loader: 'MessageDecorator',
       },
     ]);
     this._logger = new Logger();
@@ -79,18 +79,18 @@ class LogManager {
     return this;
   }
 
-  configLoaders(loaderItems: LoaderItem[], customLoaderMap?: LoaderMap) {
+  configDecorators(loaderItems: LoaderItem[], customLoaderMap?: LoaderMap) {
     const loaderMap = customLoaderMap ? mergeWith({}, this._defaultLoaderMap, customLoaderMap) : this._defaultLoaderMap;
-    const loaders: ILogLoader[] = (loaderItems || []).map((loaderItem) => {
+    const decorators: ILogEntityDecorator[] = (loaderItems || []).map((loaderItem) => {
       if (Object.prototype.toString.call(loaderItem.loader) === '[object String]') {
-        const loader: ILogLoader = loaderMap[loaderItem.loader as string];
+        const loader: ILogEntityDecorator = loaderMap[loaderItem.loader as string];
         loader.options = loaderItem.options || {};
         return loader;
       }
-      return loaderItem.loader as ILogLoader;
+      return loaderItem.loader as ILogEntityDecorator;
     });
     configManager.mergeConfig({
-      loaders,
+      decorators,
     });
     return this;
   }

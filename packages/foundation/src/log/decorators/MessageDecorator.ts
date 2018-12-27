@@ -5,22 +5,31 @@
  */
 import DateFormatter from './DateFormatter';
 import { DATE_FORMATTER } from '../constants';
-import { ILogLoader, LogEntity } from '../types';
+import { ILogEntityDecorator, LogEntity } from '../types';
+import _ from 'lodash';
 
-export class MessageLoader implements ILogLoader {
+export class MessageDecorator implements ILogEntityDecorator {
   options: object;
   private dateFormatter: DateFormatter;
   constructor() {
     this.dateFormatter = new DateFormatter();
   }
 
-  handle(data: LogEntity): LogEntity {
+  decorate(data: LogEntity): LogEntity {
     let message = '';
     if (data.timestamp) {
       message = `${message}[${this._formatTime(data)}]`;
     }
-    // data.message = message;
-    const paramsString = (data.params.filter(item => Object.prototype.toString.call(item) === '[object String]').join(' ') as string);
+    const paramsString = data.params
+      .map((item) => {
+        const type = Object.prototype.toString.call(item);
+        // messageDecorator only deal with string, if want to support other type, please transform to stringg
+        if (type !== '[object String]') {
+          return type;
+        }
+        return item;
+      })
+      .join(' ');
     data.message = `${data.sessionIndex} ${message} ${paramsString}`;
     data.size = message.length;
     return data;
