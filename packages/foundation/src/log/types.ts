@@ -11,6 +11,9 @@ interface ILogger {
   warn(...params: any): void;
   error(...params: any): void;
   fatal(...params: any): void;
+}
+
+interface ILoggerCore {
   doLog(logEntity: LogEntity): void;
 }
 
@@ -74,12 +77,12 @@ class LogEntity {
 
 export {
   ILogger,
+  ILoggerCore,
   ILogLoader,
   ILogConsumer,
   ILogEntityProcessor,
   IConsoleLogPrettier,
   IAccessor,
   LogEntity,
-  // LogConfig,
   LogConfig,
 };
