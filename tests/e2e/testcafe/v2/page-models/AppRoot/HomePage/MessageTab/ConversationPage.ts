@@ -181,7 +181,7 @@ export class ConversationPage extends BaseConversationPage {
 
 }
 
-export class DuplicatePromptPage extends BaseConversationPage {
+export class DuplicatePromptPage extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
