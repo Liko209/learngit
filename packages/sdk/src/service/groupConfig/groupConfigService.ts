@@ -36,11 +36,10 @@ class GroupConfigService extends BaseService<GroupConfig> {
   }
   // update partial groupConfig data, for message draft
   async updateDraft(params: { id: number; draft: string }): Promise<boolean> {
-    const result = await this.updateGroupConfigPartialData({
+    return this.updateGroupConfigPartialData({
       id: params.id,
       draft: params.draft,
     });
-    return result;
   }
 
   async getDraft(groupId: number): Promise<string> {

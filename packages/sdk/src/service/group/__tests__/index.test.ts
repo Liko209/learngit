@@ -284,14 +284,6 @@ describe('GroupService', () => {
     expect(result).toEqual(true);
   });
 
-  it('updateGroupDraf({id, draft}) is update success', async () => {
-    const result = await groupService.updateGroupDraft({
-      id: 1,
-      draft: 'draft',
-    });
-    expect(result).toEqual(true);
-  });
-
   it('updateGroupSendFailurePostIds({id, __send_failure_post_ids}) is update success', async () => {
     daoManager.getDao.mockReturnValueOnce(groupDao);
 
@@ -523,7 +515,7 @@ describe('GroupService', () => {
         id: 1,
         privacy: 'privacy',
       });
-      result.then((bool) => {
+      result.then(bool => {
         expect(bool).toEqual(true);
       });
     });

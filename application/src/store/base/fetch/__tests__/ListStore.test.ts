@@ -13,9 +13,7 @@ describe('List Store', () => {
 
   beforeEach(() => {
     listStore = new ListStore<number>();
-    disposer = autorun(() => {
-      console.log(`========> ${listStore.items}`);
-    });
+    disposer = autorun(() => {});
   });
 
   afterEach(() => {
