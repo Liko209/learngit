@@ -1,12 +1,6 @@
-enum RTCCALL_STATE_IN_OBSERVER {
-  IDLE = 'Idle',
-  CONNECTING = 'Connecting',
-  CONNECTED = 'Connected',
-  DISCONNECTED = 'Disconnected',
-}
-
+import { RTCCALL_STATE } from './types';
 interface IRTCCallObserver {
-  onCallStateChange(state: RTCCALL_STATE_IN_OBSERVER): void;
+  onCallStateChange(state: RTCCALL_STATE): void;
 }
 
-export { IRTCCallObserver, RTCCALL_STATE_IN_OBSERVER };
+export { IRTCCallObserver, RTCCALL_STATE };
