@@ -64,6 +64,9 @@ class Scene {
                 return true;
             }
         }
+
+        // save last failure report, and not save result into db.
+        await this.saveMetircsIntoDisk();
         return false;
     }
 

@@ -17,6 +17,7 @@ const logger = logUtils.getLogger(__filename);
     // init
     await initModel();
 })().then(async () => {
+    let exitCode = 1;
     try {
         let startTime = Date.now();
 
@@ -33,14 +34,13 @@ const logger = logUtils.getLogger(__filename);
             new OfflineScene(`${host}`, taskDto),
         ];
 
-        process.exitCode = 1;
         let result = true;
         for (let s of scenes) {
             result = await s.run() && result;
         }
 
         if (result) {
-            process.exitCode = 0;
+            exitCode = 0;
         }
         // generate report index.html
         await fileService.generateReportIndex();
@@ -58,6 +58,7 @@ const logger = logUtils.getLogger(__filename);
         await dbUtils.close();
         await puppeteerUtils.closeAll();
 
-        process.exit(process.exitCode);
+        // process.exitCode = exitCode;
+        // process.exit(process.exitCode);
     }
 });
