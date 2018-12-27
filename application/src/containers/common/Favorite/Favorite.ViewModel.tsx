@@ -51,6 +51,7 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
     }
     if (type === TypeDictionary.TYPE_ID_PERSON) {
       const group = await this._groupService.getLocalGroup([this.id]);
+      console.log('andy hu fav', this.id, group);
       if (group) {
         this.conversationId = group.id;
       } else {

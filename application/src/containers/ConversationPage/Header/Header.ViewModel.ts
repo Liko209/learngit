@@ -39,6 +39,7 @@ class HeaderViewModel extends AbstractViewModel {
     }
     return title;
   }
+
   @computed
   get actions() {
     const actions: HeaderAction[] = [];
