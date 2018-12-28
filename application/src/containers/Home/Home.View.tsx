@@ -15,30 +15,17 @@ import Wrapper from './Wrapper';
 import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import { analytics } from '@/Analytics';
-import { MiniCard } from '@/containers/MiniCard';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 
 @observer
 class Home extends Component<HomeViewProps> {
-  onClick = () => {
-    this.dismissProfile();
-  }
-
-  onScroll = () => {
-    this.dismissProfile();
-  }
-
-  dismissProfile = () => {
-    MiniCard.dismissProfile();
-  }
-
   componentDidMount() {
     analytics.identify();
   }
 
   render() {
     return (
-      <Wrapper onClick={this.onClick} onScroll={this.onScroll}>
+      <Wrapper>
         <TopBar />
         <Bottom>
           <ToastWrapper />
