@@ -70,10 +70,10 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
         ENTITY_NAME.PROGRESS,
         this.id,
       );
-      const res =
+      return (
         progress.progressStatus === PROGRESS_STATUS.INPROGRESS ||
-        progress.progressStatus === PROGRESS_STATUS.FAIL;
-      return res;
+        progress.progressStatus === PROGRESS_STATUS.FAIL
+      );
     }
     return false;
   }

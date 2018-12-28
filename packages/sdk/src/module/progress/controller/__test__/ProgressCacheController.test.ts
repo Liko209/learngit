@@ -7,7 +7,7 @@
 import { Progress } from '../../../../models';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ENTITY } from '../../../../service/eventKey';
-import { PROGRESS_STATUS } from '../../constants';
+import { PROGRESS_STATUS } from '../../types';
 import { ProgressCacheController } from '../ProgressCacheController';
 
 jest.mock('../../../../service/notificationCenter');

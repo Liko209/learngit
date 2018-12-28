@@ -5,4 +5,4 @@
  */
 
 export { ProgressService as default } from './service/ProgressService';
-export { PROGRESS_STATUS } from './constants';
+export { PROGRESS_STATUS } from './types';

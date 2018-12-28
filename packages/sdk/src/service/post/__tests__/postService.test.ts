@@ -984,11 +984,10 @@ describe('PostService', () => {
     });
   });
 
-  describe.skip('send post with pseudo items', () => {
+  describe.only('send post with pseudo items', () => {
     beforeEach(() => {
       clearMocks();
       setup();
-
       daoManager.getDao.mockReturnValue(postDao);
       postDao.update.mockImplementation(() => {});
     });

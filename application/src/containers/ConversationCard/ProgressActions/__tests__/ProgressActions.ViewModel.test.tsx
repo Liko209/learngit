@@ -8,6 +8,7 @@ import { PostService, ItemService } from 'sdk/service';
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 import { getEntity } from '../../../../store/utils';
 import { Notification } from '@/containers/Notification';
+import { PROGRESS_STATUS } from 'sdk/module';
 
 jest.mock('../../../../store/utils');
 jest.mock('sdk/service');
@@ -27,15 +28,21 @@ PostService.getInstance = jest.fn().mockReturnValue(postService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 const mockPostData = {
-  id: 123,
+  id: -123,
+  status: PROGRESS_STATUS.FAIL,
   itemIds: [1],
 };
 
-const props = {
+const nprops = {
+  id: -123,
+};
+
+const pprops = {
   id: 123,
 };
 
-let vm: ProgressActionsViewModel;
+let nvm: ProgressActionsViewModel;
+let pvm: ProgressActionsViewModel;
 
 describe('ProgressActionsViewModel', () => {
   beforeAll(() => {
@@ -43,35 +50,34 @@ describe('ProgressActionsViewModel', () => {
   });
 
   beforeEach(() => {
-    vm = new ProgressActionsViewModel(props);
+    nvm = new ProgressActionsViewModel(nprops);
+    pvm = new ProgressActionsViewModel(pprops);
     jest.clearAllMocks();
   });
 
   describe('id', () => {
     it('should be get post id when the component is instantiated', () => {
-      expect(vm.id).toEqual(props.id);
+      expect(nvm.id).toEqual(nprops.id);
     });
   });
 
-  // describe('post', () => {
-  //   it('should be get post entity when invoke class instance property post', () => {
-  //     expect(vm.post).toEqual(mockPostData);
-  //   });
+  describe('post', () => {
+    it('should be get post entity when invoke class instance property post', () => {
+      expect(nvm.post).toEqual(mockPostData);
+    });
 
-  //   it('should be get POST_STATUS.INPROGRESS when change post status', () => {
-  //     mockPostData.status = POST_STATUS.INPROGRESS;
-  //     expect(vm.post.status).toEqual(POST_STATUS.INPROGRESS);
-  //   });
+    it('should be get post status from cache when postId < 0', () => {
+      expect(nvm.postProgress).toEqual(PROGRESS_STATUS.FAIL);
+    });
 
-  //   it('should be get POST_STATUS.FAIL when change post status', () => {
-  //     mockPostData.status = POST_STATUS.FAIL;
-  //     expect(vm.post.status).toEqual(POST_STATUS.FAIL);
-  //   });
-  // });
+    it('should be get POST_STATUS.SUCCESS when postId > 0', () => {
+      expect(pvm.postProgress).toEqual(PROGRESS_STATUS.SUCCESS);
+    });
+  });
 
   describe('resend()', () => {
     it('should be called on post service method when invoke it', async () => {
-      await vm.resend();
+      await nvm.resend();
       expect(postService.reSendPost).toBeCalled();
     });
 
@@ -79,7 +85,7 @@ describe('ProgressActionsViewModel', () => {
       (itemService.canResendFailedItems as jest.Mock).mockReturnValueOnce(
         false,
       );
-      await vm.resend();
+      await nvm.resend();
       expect(postService.reSendPost).toBeCalledTimes(0);
       expect(Notification.flashToast).toBeCalled();
     });
@@ -87,7 +93,7 @@ describe('ProgressActionsViewModel', () => {
 
   describe('delete()', () => {
     it('should be called on post service method when invoke it', async () => {
-      await vm.deletePost();
+      await nvm.deletePost();
       expect(postService.deletePost).toBeCalled();
     });
   });

@@ -17,14 +17,13 @@ class ProgressModel extends Base<Progress> {
   constructor(data: Progress) {
     console.log('​ProgressModel -> constructor -> data', data);
     super(data);
-    const { rate, status } = data;
-    this.rate = rate;
-    this.status = status;
+    this.rate = data.rate;
+    this.status = data.status;
   }
 
   get progressStatus() {
     if (this.id < 0) {
-      return this.status !== undefined ? this.status : PROGRESS_STATUS.FAIL;
+      return this.status ? this.status : PROGRESS_STATUS.FAIL;
     }
     return PROGRESS_STATUS.SUCCESS;
   }
