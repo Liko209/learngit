@@ -75,8 +75,8 @@ test(formalName('UMI should be added received messages count in conversations', 
     groupConversation = directMessagesSection.conversationEntryById(groupId);
     await teamsSection.expand();
     teamConversation = teamsSection.conversationEntryById(teamId);
-    await t.expect(await groupConversation.getUmi()).eql(1);
-    await t.expect(await teamConversation.getUmi()).eql(1);
+    await groupConversation.expectUmi(1);
+    await teamConversation.expectUmi(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
