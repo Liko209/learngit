@@ -7,6 +7,8 @@ import { GroupConfig } from '../../models';
 import BaseService from '../../service/BaseService';
 import { ErrorParser } from '../../utils/error';
 import { daoManager, GroupConfigDao } from '../../dao';
+import notificationCenter from '../notificationCenter';
+import { ENTITY } from '../eventKey';
 class GroupConfigService extends BaseService<GroupConfig> {
   static serviceName = 'GroupConfigService';
 
@@ -34,12 +36,24 @@ class GroupConfigService extends BaseService<GroupConfig> {
       throw ErrorParser.parse(error);
     }
   }
+  async saveAndDoNotify(params: GroupConfig) {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    const original = await groupConfigDao.get(params.id);
+    // this is because of updateGroupConfigPartialData won't support a model to to parital update if it does exist
+    if (original) {
+      return this.updateGroupConfigPartialData(params);
+    }
+    groupConfigDao.update(params);
+    notificationCenter.emitEntityUpdate(
+      ENTITY.GROUP_CONFIG,
+      [params],
+      [params],
+    );
+    return true;
+  }
   // update partial groupConfig data, for message draft
   async updateDraft(params: { id: number; draft: string }): Promise<boolean> {
-    return this.updateGroupConfigPartialData({
-      id: params.id,
-      draft: params.draft,
-    });
+    return this.saveAndDoNotify(params);
   }
 
   async getDraft(groupId: number): Promise<string> {
@@ -51,6 +65,24 @@ class GroupConfigService extends BaseService<GroupConfig> {
       return config.draft;
     }
     return '';
+  }
+
+  // update partial group data, for send failure post ids
+  async updateGroupSendFailurePostIds(params: {
+    id: number;
+    send_failure_post_ids: number[];
+  }): Promise<boolean> {
+    return this.saveAndDoNotify(params);
+  }
+
+  // get group data, for send failure post ids
+  async getGroupSendFailurePostIds(id: number): Promise<number[]> {
+    try {
+      const group = (await this.getById(id)) as GroupConfig;
+      return group.send_failure_post_ids || [];
+    } catch (error) {
+      throw ErrorParser.parse(error);
+    }
   }
 }
 

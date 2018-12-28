@@ -18,8 +18,7 @@ import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
-import { Group, GroupConfig } from 'sdk/models';
-import GroupConfigModel from '@/store/models/GroupConfig';
+import { Group } from 'sdk/models';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -35,6 +34,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _onPostCallbacks: OnPostCallback[] = [];
   private _groupConfigService: GroupConfigService;
+
+  @observable
+  private _memoryDraftMap: Map<number, string> = new Map();
+
   @computed
   get id() {
     return this.props.id;
@@ -85,6 +88,17 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.draft = this._isEmpty(draft) ? '' : draft;
   }
 
+  @action
+  cellWillChange = (newGroupId: number, oldGroupId: number) => {
+    const draft = this._isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
+      ? ''
+      : this._memoryDraftMap.get(oldGroupId) || '';
+    this._groupConfigService.updateDraft({
+      draft,
+      id: oldGroupId,
+    });
+  }
+
   forceSaveDraft = () => {
     const draft = this._isEmpty(this.draft) ? '' : this.draft;
     this._groupConfigService.updateDraft({
@@ -98,20 +112,22 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
 
-  @computed get _groupConfig() {
-    return getEntity<GroupConfig, GroupConfigModel>(
-      ENTITY_NAME.GROUP_CONFIG,
-      this.id,
-    );
-  }
-
   @computed
   get draft() {
-    return this._groupConfig.draft || '';
+    if (this._memoryDraftMap.has(this.id)) {
+      return this._memoryDraftMap.get(this.id) || '';
+    }
+    this.getDraftFromLocal();
+    return '';
+  }
+
+  async getDraftFromLocal() {
+    const draft = await this._groupConfigService.getDraft(this.id);
+    this._memoryDraftMap.set(this.id, draft);
   }
 
   set draft(draft: string) {
-    this._groupConfig.draft = draft;
+    this._memoryDraftMap.set(this.id, draft);
   }
 
   @computed
