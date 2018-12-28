@@ -1,4 +1,5 @@
 // Replace ${deployHost} with real deployHost
+import _ from 'lodash';
 import merge from 'lodash/merge';
 import { service } from 'sdk';
 
@@ -108,15 +109,19 @@ class Config {
   }
 
   getEnv() {
-    return this._env || 'XMN-Stable';
+    return this._env || 'XMN-UP';
   }
 
   getAllEnv() {
-    return parseConfigFiles()
-      .keys.filter(arr => arr[0] === 'api')
-      .map(arr => arr[1]);
+    return _(parseConfigFiles().keys)
+      .filter(arr => arr[0] === 'api')
+      .map(arr => arr[1])
+      .filter((env: string) => !env.startsWith('default'))
+      .filter((env: string) => {
+        return process.env.JUPITER_ENV === 'production' || env !== 'production';
+      })
+      .value();
   }
-
   get(property: string) {
     return get(this._config, property);
   }

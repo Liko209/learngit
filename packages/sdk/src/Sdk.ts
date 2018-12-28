@@ -89,7 +89,9 @@ class Sdk {
     );
 
     // Check is already login
-    const loginResp = this.accountManager.syncLogin(AutoAuthenticator.name);
+    const loginResp = await this.accountManager.syncLogin(
+      AutoAuthenticator.name,
+    );
     if (loginResp && loginResp.success) {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)

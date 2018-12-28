@@ -13,6 +13,7 @@ import {
   GroupDao,
   ConfigDao,
   GroupConfigDao,
+  QUERY_DIRECTION,
 } from '../../../dao';
 
 import { Group, Raw, Person } from '../../../models';
@@ -508,6 +509,23 @@ describe('GroupService', () => {
         }),
       );
       expect(groupService.handleRawGroup).toHaveBeenCalled();
+    });
+
+    it('updateGroupPrivacy({id, privacy}) is update success', async () => {
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.putTeamById.mockResolvedValue(
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
+      );
+      const result = groupService.updateGroupPrivacy({
+        id: 1,
+        privacy: 'privacy',
+      });
+      result.then((bool) => {
+        expect(bool).toEqual(true);
+      });
     });
 
     it('data should have correct permission level if passed in options', async () => {
@@ -1165,6 +1183,42 @@ describe('GroupService', () => {
       );
       const result = await groupService.markGroupAsFavorite(1, true);
       expect(result.isErr()).toBeTruthy();
+    });
+  });
+
+  describe('handleMarkGroupHasMoreAsTrue', () => {
+    it('should do nothing when ids is empty', async () => {
+      await groupService.setAsTrue4HasMoreConfigByDirection(
+        [],
+        QUERY_DIRECTION.OLDER,
+      );
+      expect(groupConfigDao.bulkUpdate).toHaveBeenCalledTimes(0);
+    });
+    it('should update group config has_more_older as true', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      await groupService.setAsTrue4HasMoreConfigByDirection(
+        [2],
+        QUERY_DIRECTION.OLDER,
+      );
+      expect(groupConfigDao.bulkUpdate).toHaveBeenCalledWith([
+        {
+          id: 2,
+          has_more_older: true,
+        },
+      ]);
+    });
+    it('should update group config has_more_newer as true', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      await groupService.setAsTrue4HasMoreConfigByDirection(
+        [2],
+        QUERY_DIRECTION.NEWER,
+      );
+      expect(groupConfigDao.bulkUpdate).toHaveBeenCalledWith([
+        {
+          id: 2,
+          has_more_newer: true,
+        },
+      ]);
     });
   });
 });

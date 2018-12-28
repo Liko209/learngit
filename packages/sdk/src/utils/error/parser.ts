@@ -70,7 +70,7 @@ class ErrorParser {
      */
     if (statusText === 'Network Error') {
       return new BaseError(
-        ErrorTypes.API_NETWORK,
+        ErrorTypes.API_SERVER_ERROR,
         'Api Error: Please check whether server crash',
       );
     }

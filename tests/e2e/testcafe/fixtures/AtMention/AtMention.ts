@@ -16,68 +16,67 @@ fixture('AtMention/AtMention')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-311']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    const otherUser = users[5];
-    await h(t).resetGlipAccount(loginUser);
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).platform(otherUser).init();
-    await h(t).glip(otherUser).init();
+test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-311']), async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).resetGlipAccount(loginUser);
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).platform(otherUser).init();
+  await h(t).glip(otherUser).init();
 
-    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-    const mentionPage = app.homePage.messageTab.mentionPage;
-    let groupId;
-    await h(t).withLog('Given I have an extension with 2 at-mention posts', async () => {
-      groupId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group', members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
-      });
-
-      await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
-      await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi again, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+  let groupId;
+  await h(t).withLog('Given I have an extension with 2 at-mention posts', async () => {
+    groupId = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'Group', members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+    await h(t).platform(otherUser).sendTextPost(
+      `Hi, ![:Person](${loginUser.rcId})`,
+      groupId,
+    );
+    await h(t).platform(otherUser).sendTextPost(
+      `Hi again, ![:Person](${loginUser.rcId})`,
+      groupId,
+    );
+  });
 
-    await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
-      await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).eql(2);
-    }, true);
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    let newPostId;
-    await h(t).withLog('Then I send a new post to user with mention', async () => {
-      newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Test add a mention, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
-    });
+  await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).eql(2);
+  }, true);
 
-    await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
-      await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).eql(3);
-    }, true);
+  let newPostId;
+  await h(t).withLog('Then I send a new post to user with mention', async () => {
+    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      `Test add a mention, ![:Person](${loginUser.rcId})`,
+      groupId,
+    );
+  });
 
-    await h(t).withLog('Then I delete the new post', async () => {
-      await h(t).glip(otherUser).deletePost(newPostId, groupId);
-    });
+  await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).eql(3);
+  }, true);
 
-    await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
-      await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).eql(2);
-    }, true);
-  },
+  await h(t).withLog('Then I delete the new post', async () => {
+    await h(t).glip(otherUser).deletePost(newPostId, groupId);
+  });
+
+  await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).eql(2);
+  }, true);
+},
 );
 
 test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314', 'JPT-463']),
@@ -195,19 +194,19 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
     const postMentionPage = app.homePage.messageTab.mentionPage;
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
-    let group;
+    let groupId;
     await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-      group = await h(t).platform(loginUser).createAndGetGroupId({
+      groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, group.data.id);
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     });
 
-    let newPost;
+    let newPostId;
     await h(t).withLog('And I have an AtMention post', async () => {
-      newPost = await h(t).platform(otherUser).sendTextPost(
+      newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
         `Hi AtMention, ![:Person](${loginUser.rcId})`,
-        group.data.id,
+        groupId,
       );
     }, true);
 
@@ -227,7 +226,7 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
     })
 
     await h(t).withLog('When I click the post and jump to the conversation', async () => {
-      await postMentionPage.postItemById(newPost.data.id).jumpToConversationByClickPost();
+      await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
     });
 
     await h(t).withLog('And the UMI should dismiss', async () => {
@@ -247,8 +246,7 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
   }
 );
 
-//Feature bug: FIJI-2135
-test.skip(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
+test(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
   if (await H.isEdge()) {
     await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
     return;
@@ -271,22 +269,21 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
   const msgList = _.range(20).map(i => `${i} ${uuid()}`);
 
-  let group;
-  let newPost;
+  let groupId, newPostId;
   await h(t).withLog('Given I have an AtMention message from the conversation', async () => {
-    group = await h(t).platform(loginUser).createAndGetGroupId({
+    groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, group.data.id);
-    newPost = await h(t).platform(otherUser).sendTextPost(
+    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
+    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `First AtMention, ![:Person](${loginUser.rcId})`,
-      group.data.id,
+      groupId,
     );
   });
 
   await h(t).withLog('And I also have 20 non AtMention messages in conversation', async () => {
     for (const msg of msgList) {
-      await h(t).platform(loginUser).sendTextPost(msg, group.data.id);
+      await h(t).platform(loginUser).sendTextPost(msg, groupId);
       await t.wait(1e3);
     }
   });
@@ -299,14 +296,15 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   await h(t).withLog('And I jump to conversation from AtMentions page should no UMI', async () => {
     await mentionsEntry.enter();
-    await postMentionPage.postItemById(newPost.data.id).jumpToConversationByClickPost();
+    await postMentionPage.waitUntilPostsBeLoaded();
+    await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
     await directMessagesSection.expectHeaderUmi(0);
   }, true);
 
   await h(t).withLog('Then I received new AtMention post should 1 UMI', async () => {
     await h(t).platform(otherUser).sendTextPost(
       `Just for UMI, ![:Person](${loginUser.rcId})`,
-      group.data.id,
+      groupId,
     );
     await directMessagesSection.fold();
     await directMessagesSection.expectHeaderUmi(1);
@@ -382,6 +380,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the AtMention post in the team', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(atMentionTeamPostId).body.withText(verifyTextTeam).exists)
         .ok({ timeout: 5e3 });
@@ -396,6 +395,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(atMentionChatPostId).body.withText(verifyTextChat).exists)
         .ok({ timeout: 5e3 });
