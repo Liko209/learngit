@@ -78,8 +78,8 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   updateDraft = (draft: string) => {
-    const groupService: GroupConfigService = GroupConfigService.getInstance();
-    groupService.updateDraft({
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    groupConfigService.updateDraft({
       draft,
       id: this._groupId,
     });
