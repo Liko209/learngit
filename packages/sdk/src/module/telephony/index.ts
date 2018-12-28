@@ -1,3 +1,2 @@
-export {
-  TelephonyService as default,
-} from 'sdk/src/module/telephony/service/TelephonyService';
+export { TelephonyService } from './service';
+export { TelephonyController } from './controller';

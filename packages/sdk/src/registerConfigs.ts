@@ -42,7 +42,7 @@ import { SocketManager } from './service/socket/SocketManager';
 import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
-import TelephonyService from './module/telephony';
+import { TelephonyService } from './module/telephony';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
