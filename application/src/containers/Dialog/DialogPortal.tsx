@@ -36,7 +36,7 @@ class DialogPortal extends React.Component<Props, State> {
       if (Element instanceof Function) {
         components.push(createPortal(<Element {...props} />, node));
       } else {
-        components.push(createPortal(<>{Element}</>, node));
+        components.push(createPortal(Element, node));
       }
     }
     return components;
