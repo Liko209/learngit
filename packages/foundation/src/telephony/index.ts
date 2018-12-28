@@ -1,1 +1,1 @@
-export * from './ITelephonyDelegate';
+export * from './ITelephonyNetworkDelegate';
