@@ -33,7 +33,6 @@ class DialogPortal extends React.Component<Props, State> {
     const components = [];
     for (const [Element, value] of portals.entries()) {
       const { node, props } = value;
-      console.log(Element, props, '--nello props');
       if (Element instanceof Function) {
         components.push(createPortal(<Element {...props} />, node));
       } else {
