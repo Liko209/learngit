@@ -6,7 +6,7 @@
 
 import { formalName } from '../../libs/filter';
 import * as _ from 'lodash';
-import { h } from '../../v2/helpers'
+import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
@@ -20,6 +20,10 @@ fixture('ContentPanel/JumpToUnreadButton')
 const unreadButtonLoadTime = 5e3;
 
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2','Wayne.Zhou', 'Stream']), async (t) => {
+  if (await H.isElectron() || await H.isEdge()) {
+    await h(t).log('This case (resize) is not working on Electron or Edge!');
+    return;
+  }
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[6];
