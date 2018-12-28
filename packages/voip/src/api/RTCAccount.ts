@@ -5,21 +5,7 @@
  */
 
 import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
-
-enum AccountState {
-  IDLE,
-  REGISTERED,
-  FAILED,
-  UNREGISTERED,
-  IN_PROGRESS,
-}
-
-interface IRTCAccountListener {
-  onAccountStateChanged(
-    updateState: AccountState,
-    originalState: AccountState,
-  ): void;
-}
+import { IRTCAccountListener } from './IRTCAccountListener';
 
 class RTCAccount {
   private _registrationManager: RTCRegistrationManager;
@@ -33,4 +19,4 @@ class RTCAccount {
   public doRegister() {}
 }
 
-export { AccountState, IRTCAccountListener, RTCAccount };
+export { RTCAccount };

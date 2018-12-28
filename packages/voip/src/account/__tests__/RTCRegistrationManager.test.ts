@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
-import { IRTCAccountListener, AccountState } from '../../api/RTCAccount';
-
+import { IRTCAccountListener } from '../../api/IRTCAccountListener';
+import { AccountState } from '../../api/types';
 describe('RTCRegistrationManager', () => {
   class MockAccountListener implements IRTCAccountListener {
     onAccountStateChanged = jest.fn();

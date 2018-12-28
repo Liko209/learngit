@@ -4,11 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCRegistrationFSM, IConditionalHandler } from './RTCRegistrationFSM';
+import { RTCRegistrationFSM } from './RTCRegistrationFSM';
+import { IConditionalHandler } from './IConditionalHandler';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent, UA_EVENT } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { IRTCAccountListener, AccountState } from '../api/RTCAccount';
+import { IRTCAccountListener } from '../api/IRTCAccountListener';
+import { AccountState } from '../api/types';
+
 import { ErrorCode, RegistrationState } from './types';
 
 const RegistrationEvent = {

@@ -6,6 +6,7 @@
 
 import StateMachine from 'ts-javascript-state-machine';
 import { RegistrationState } from './types';
+import { IConditionalHandler } from './IConditionalHandler';
 
 const RegistrationEvent = {
   PROVISION_READY: 'provisionReady',
@@ -14,10 +15,6 @@ const RegistrationEvent = {
   REG_ERROR: 'regError',
   UN_REGISTER: 'unRegister',
 };
-
-interface IConditionalHandler {
-  onReadyWhenRegSucceed(): string;
-}
 
 class RTCRegistrationFSM extends StateMachine {
   constructor(handler: IConditionalHandler) {
@@ -86,4 +83,4 @@ class RTCRegistrationFSM extends StateMachine {
   }
 }
 
-export { RTCRegistrationFSM, IConditionalHandler };
+export { RTCRegistrationFSM };

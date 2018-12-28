@@ -3,7 +3,8 @@
  * @Date: 2018-12-26 13:16:41
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTCRegistrationFSM, IConditionalHandler } from '../RTCRegistrationFSM';
+import { RTCRegistrationFSM } from '../RTCRegistrationFSM';
+import { IConditionalHandler } from '../IConditionalHandler';
 import { RegistrationState } from '../types';
 
 describe('RTCRegistrationFSM', async () => {
