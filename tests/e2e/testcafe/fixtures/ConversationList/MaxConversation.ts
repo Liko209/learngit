@@ -129,7 +129,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
       const expectNewTeamIds = Array.from(newTeamIds);
       expectNewTeamIds.splice(2, 2);
       for (let i = 0; i < expectNewTeamIds.length; i++) {
-        await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok(newTeamIds.indexOf(expectNewTeamIds[i]) + " : " + expectNewTeamIds[i]);
+        await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok({ timeout: 8e3 });
       }
       await t.expect(teamsSection.conversationEntryById(newTeamIds[2]).exists).notOk();
       await t.expect(teamsSection.conversationEntryById(newTeamIds[3]).exists).notOk();
