@@ -48,7 +48,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
 
   handleViewYourProfile = () => {
     const { currentUserId } = this.props;
-    Dialog.open(<ProfileDialogPerson id={currentUserId} />, {
+    Dialog.simple(<ProfileDialogPerson id={currentUserId} />, {
       size: 'medium',
     });
   }

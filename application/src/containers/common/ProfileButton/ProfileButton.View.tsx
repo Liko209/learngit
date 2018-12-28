@@ -28,7 +28,7 @@ class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
     const { id, typeId } = this.props;
     const Profile = MappingComponent[typeId];
     MiniCard.dismissProfile();
-    Dialog.open(<Profile id={id} />, {
+    Dialog.simple(<Profile id={id} />, {
       size: 'medium',
     });
   }

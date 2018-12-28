@@ -147,7 +147,7 @@ class MenuViewComponent extends Component<Props, State> {
       ProfileDialog = ProfileDialogPerson;
       id = personId;
     }
-    Dialog.open(<ProfileDialog id={id} />, {
+    Dialog.simple(<ProfileDialog id={id} />, {
       size: 'medium',
     });
   }

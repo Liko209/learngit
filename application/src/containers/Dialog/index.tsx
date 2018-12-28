@@ -13,7 +13,7 @@ type ReturnFunc = {
 };
 
 class Dialog {
-  static open(
+  static simple(
     component: JSX.Element | React.ComponentType<any>,
     config?: JuiDialogFuncProps,
   ): ReturnFunc {
