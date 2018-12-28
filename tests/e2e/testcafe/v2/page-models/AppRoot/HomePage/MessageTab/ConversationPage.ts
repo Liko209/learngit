@@ -70,33 +70,33 @@ class BaseConversationPage extends BaseWebComponent {
     return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
   }
 
-// todo: find a more reliable method
-async expectStreamScrollToBottom() {
-  const scrollTop = await this.streamWrapper.scrollTop;
-  const streamHeight = await this.stream.clientHeight;
-  const streamWrapperHeight = await this.streamWrapper.clientHeight;
-  await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
-}
+  // todo: find a more reliable method
+  async expectStreamScrollToBottom() {
+    const scrollTop = await this.streamWrapper.scrollTop;
+    const streamHeight = await this.stream.clientHeight;
+    const streamWrapperHeight = await this.streamWrapper.clientHeight;
+    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+  }
 
-async scrollToY(y: number) {
-  await this.t.eval(() => {
-    document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
-  }, {
-      dependencies: { y }
+  async scrollToY(y: number) {
+    await this.t.eval(() => {
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
+    }, {
+        dependencies: { y }
+      });
+  }
+
+  async scrollToMiddle() {
+    const scrollHeight = await this.streamWrapper.clientHeight;
+    await this.scrollToY(scrollHeight / 2);
+  }
+
+  async scrollToBottom() {
+    await this.t.eval(() => {
+      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
     });
-}
-
-async scrollToMiddle() {
-  const scrollHeight = await this.streamWrapper.clientHeight;
-  await this.scrollToY(scrollHeight / 2);
-}
-
-async scrollToBottom() {
-  await this.t.eval(() => {
-    const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
-    document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
-  });
-}
+  }
 }
 
 export class ConversationPage extends BaseConversationPage {
@@ -155,27 +155,24 @@ export class ConversationPage extends BaseConversationPage {
   get uploadFileInput() {
     return this.getSelectorByAutomationId('upload-file-input');
   }
-  get removeButton() {
+
+  get removeFileButtons() {
     return this.getSelectorByAutomationId('attachment-action-button');
   }
 
-  get attachmentFileName() {
-    return this.getSelectorByAutomationId('attachment-file-name');
+  get fileNamesOnMessageArea() {
+    return this.getSelectorByAutomationId('file-name', this.messageFilesArea);
   }
 
-  get fileNameOnPost() {
+  get fileNamesOnPost() {
     return this.getSelectorByAutomationId('file-name');
   }
 
-  get fileSize() {
-    return this.getSelectorByAutomationId('file-size');
-  }
-
-  get previewFileSize() {
+  get previewFilesSize() {
     return this.getSelectorByAutomationId('file-no-preview-size');
   }
 
-  get conversationCard() {
+  get fileNotification() {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
@@ -187,11 +184,11 @@ export class ConversationPage extends BaseConversationPage {
     await this.uploadFiles(this.uploadFileInput, filesPath);
   }
 
-  async clickRemoveButton() {
-    await this.t.click(this.removeButton);
+  async removeFileOnMessageArea(n = 0) {
+    await this.t.click(this.removeFileButtons.nth(n));
   }
-
 }
+
 
 export class DuplicatePromptPage extends BaseWebComponent {
   get self() {
@@ -332,9 +329,40 @@ export class PostItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
 
+  get headerNotification() {
+    return this.self.find('[data="cardHeaderNotification"]');
+  }
 
+  get fileNotification() {
+    return this.getSelectorByAutomationId('conversation-card-activity', this.headerNotification);
+  }
 
-  // --- mention page only ---
+  get progressBar() {
+    return this.self.find('[role="progressbar"]')
+  }
+
+  async waitUntilFilesUploaded(timeout = 20e3) {
+    await this.t.wait(1e3);
+    await this.t.expect(this.progressBar.exists).notOk({ timeout });
+  }
+
+  get fileName() {
+    return this.getSelectorByAutomationId('file-name', this.self);
+  }
+
+  get fileSize() {
+    return this.getSelectorByAutomationId('file-no-preview-size', this.self);
+  }
+
+  async nthFileNameShouldBe(n: number, name: string) {
+    await this.t.expect(this.fileName.nth(n).withText(name).exists).ok();
+  }
+
+  async nthFileSizeShouldBe(n: number, size: string) {
+    await this.t.expect(this.fileSize.nth(n).withText(size).exists).ok();
+  }
+
+  // --- mention and bookmark page only ---
   get conversationName() {
     return this.self.find('.conversation-name')
   }
