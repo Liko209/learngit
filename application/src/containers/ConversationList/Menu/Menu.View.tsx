@@ -10,7 +10,7 @@ import { translate, WithNamespaces } from 'react-i18next'; // use external inste
 import { JuiMenu, JuiMenuItem } from 'jui/components';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
 import {
@@ -82,7 +82,7 @@ class MenuViewComponent extends Component<Props, State> {
       this.setState({
         checked: false,
       });
-      JuiModal.alert({
+      Dialog.alert({
         title: t('conversationMenuItem:closeConfirmDialogHeader'),
         content: (
           <>
@@ -147,10 +147,7 @@ class MenuViewComponent extends Component<Props, State> {
       ProfileDialog = ProfileDialogPerson;
       id = personId;
     }
-    JuiModal.open(ProfileDialog, {
-      componentProps: {
-        id,
-      },
+    Dialog.open(<ProfileDialog id={id} />, {
       size: 'medium',
     });
   }

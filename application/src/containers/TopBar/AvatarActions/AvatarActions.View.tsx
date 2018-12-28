@@ -12,7 +12,7 @@ import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
 
 @observer
@@ -48,10 +48,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
 
   handleViewYourProfile = () => {
     const { currentUserId } = this.props;
-    JuiModal.open(ProfileDialogPerson, {
-      componentProps: {
-        id: currentUserId,
-      },
+    Dialog.open(<ProfileDialogPerson id={currentUserId} />, {
       size: 'medium',
     });
   }

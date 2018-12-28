@@ -10,7 +10,7 @@ import { PrivacyViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 
 type Props = PrivacyViewProps & WithNamespaces;
 
@@ -22,7 +22,7 @@ class PrivacyViewComponent extends Component<Props> {
       const content = isPublic
         ? t('markPrivateServerErrorContent')
         : t('markPublicServerErrorContent');
-      JuiModal.alert({
+      Dialog.alert({
         content,
         title: '',
         okText: t('OK'),
