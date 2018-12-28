@@ -140,10 +140,14 @@ function image(item: FileItemModel) {
 
   // In order to show image
   // If upload doc and image together, image will not has thumbs
-  if (IMAGE_TYPE.includes(type)) {
-    image.isImage = true;
-    image.previewUrl = versionUrl || '';
-    return image;
+  // FIXME: FIJI-2565
+  if (type) {
+    const isImage = IMAGE_TYPE.some(looper => type.includes(looper));
+    if (type.includes('image/') || isImage) {
+      image.isImage = true;
+      image.previewUrl = versionUrl || '';
+      return image;
+    }
   }
   return image;
 }
