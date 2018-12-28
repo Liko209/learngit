@@ -3,7 +3,7 @@
  * @Date: 2018-02-24 23:23:08
  */
 import { BaseDao } from '../base';
-import { Post } from '../../models';
+import { Post } from '../../module/post/entity';
 import { IDatabase } from 'foundation';
 import { QUERY_DIRECTION } from '../constants';
 

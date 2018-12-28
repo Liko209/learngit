@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../model';
 
-interface IRequestController<T extends BaseModel = BaseModel> {
+interface IRequestController<T extends IdModel = IdModel> {
   get(id: number): Promise<T | null>;
 
   put(data: Partial<T>): Promise<T>;

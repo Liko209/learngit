@@ -10,7 +10,7 @@ import { NotificationProps, NotificationViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 
 class NotificationViewModel extends AbstractViewModel<NotificationProps>
   implements NotificationViewProps {

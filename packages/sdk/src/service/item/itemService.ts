@@ -9,7 +9,11 @@ import { daoManager, ItemDao } from '../../dao';
 import ItemAPI, { IRightRailItemModel } from '../../api/glip/item';
 import handleData from './handleData';
 import { transform } from '../utils';
-import { Item, ItemFile, NoteItem, Post, Raw, Progress } from '../../models';
+import { Progress } from '../../models';
+import { Item, ItemFile, NoteItem } from '../../module/item/entity';
+import { Raw } from '../../framework/model';
+import { Post } from '../../module/post/entity';
+
 import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { ApiResult } from '../../api/ApiResult';

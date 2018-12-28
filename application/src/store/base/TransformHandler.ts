@@ -7,10 +7,10 @@ import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
 import { ListStore } from './fetch/ListStore';
 import { ISortableModel, TDelta, TUpdated } from './fetch/types';
-import { BaseModel } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
-abstract class TransformHandler<T, K extends BaseModel> {
+abstract class TransformHandler<T, K extends IdModel> {
   fetchData: (direction: QUERY_DIRECTION, pageSize?: number) => any;
 
   constructor(

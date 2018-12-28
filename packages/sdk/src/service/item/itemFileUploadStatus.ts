@@ -3,7 +3,8 @@
  * @Date: 2018-12-07 14:35:00
  */
 
-import { Progress, ItemFile } from '../../models';
+import { Progress } from '../../models';
+import { ItemFile } from '../../module/item/entity';
 import { RequestHolder } from '../../api/requestHolder';
 
 type ItemFileUploadStatus = {

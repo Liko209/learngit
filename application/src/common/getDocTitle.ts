@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';

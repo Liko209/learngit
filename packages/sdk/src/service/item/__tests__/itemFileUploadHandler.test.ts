@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
-import { ItemFile, Progress } from '../../../models';
+
+import { Progress } from '../../../models';
+
+import { ItemFile } from '../../../module/item/entity';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
 import AccountService from '../../account';
 import { daoManager, ItemDao } from '../../../dao';

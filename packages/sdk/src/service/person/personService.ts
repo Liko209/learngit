@@ -13,10 +13,12 @@ import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import {
   Person,
-  SortableModel,
   PhoneNumberModel,
   SanitizedExtensionModel,
-} from '../../models';
+} from '../../module/person/entity';
+
+import { SortableModel } from '../../models';
+
 import {
   CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,

@@ -10,7 +10,7 @@ import GroupDao from '../../dao/group';
 import PersonDao from '../../dao/person';
 
 import BaseService from '../../service/BaseService';
-import { Person } from '../../models';
+import { Person } from '../../module/person/entity';
 import SearchAPI from '../../api/glip/search';
 import handleData from './handleData';
 

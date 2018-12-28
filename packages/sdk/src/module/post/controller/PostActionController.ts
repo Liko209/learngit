@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Post, Raw } from '../../../models';
+import { Post } from '../entity';
+import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';

@@ -15,14 +15,13 @@ import ProfileService from '../../service/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
 import { transform } from '../utils';
-import {
-  Group,
-  Post,
-  Raw,
-  Profile,
-  PartialWithKey,
-  GroupState,
-} from '../../models';
+import { PartialWithKey, GroupState } from '../../models';
+
+import { Raw } from '../../framework/model';
+import { Group } from '../../module/group/entity';
+import { Post } from '../../module/post/entity';
+import { Profile } from '../../module/profile/entity';
+
 import StateService from '../state';
 import { EVENT_TYPES } from '../constants';
 import AccountService from '../account';

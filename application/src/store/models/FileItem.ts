@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 15:08:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 

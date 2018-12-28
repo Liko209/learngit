@@ -15,7 +15,10 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Item, Raw, Group } from '../../models';
+import { Post } from '../../module/post/entity';
+import { Item } from '../../module/item/entity';
+import { Raw } from '../../framework/model';
+import { Group } from '../../module/group/entity';
 import { PostStatusHandler } from './postStatusHandler';
 import { POST_STATUS, SENDING_STATUS } from '../constants';
 import { ENTITY, SOCKET, SERVICE } from '../eventKey';
@@ -241,7 +244,7 @@ class PostService extends BaseService<Post> {
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
     mainLogger.info('start to send post log');
     const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
-    return this.innerSendPost(buildPost, false);
+    return await this.innerSendPost(buildPost, false);
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
@@ -250,7 +253,7 @@ class PostService extends BaseService<Post> {
       let post = await dao.get(postId);
       if (post) {
         post = PostServiceHandler.buildResendPostInfo(post);
-        return this.innerSendPost(post, true);
+        return await this.innerSendPost(post, true);
       }
     }
     return null;

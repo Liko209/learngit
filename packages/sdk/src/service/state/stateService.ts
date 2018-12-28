@@ -11,7 +11,8 @@ import {
   AccountDao,
   ACCOUNT_USER_ID,
 } from '../../dao';
-import { GroupState, MyState, Post } from '../../models';
+import { GroupState, MyState } from '../../models';
+import { Post } from '../../module/post/entity';
 import StateAPI from '../../api/glip/state';
 import BaseService from '../BaseService';
 import PostService from '../post';
