@@ -69,18 +69,9 @@ class Api {
     name: HttpConfigType,
     type: IHandleType,
   ): NetworkClient {
-    console.log('=============1=========');
-    console.log('=============1=========');
-    console.log('=============1=========');
     if (!this._httpConfig) Throw(ErrorTypes.API, 'Api not initialized');
-    console.log('=============2=========');
-    console.log('=============2=========');
-    console.log('=============2=========');
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
-      console.log('=============3=========');
-      console.log('=============3=========');
-      console.log('=============3=========');
       const currentConfig = this._httpConfig[name];
       const networkRequests: INetworkRequests = {
         host: currentConfig.server,
