@@ -12,13 +12,42 @@ describe('RTCRegistrationManager', () => {
   }
 
   describe('provisionReady', () => {
-    it('Should trigger register func', () => {
+    it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', () => {
       const mockListener = new MockAccountListener();
       const fsmManager = new RTCRegistrationManager(mockListener);
       fsmManager.provisionReady('provisionData', 'options');
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.IDLE,
+        AccountState.REGISTERED,
+      );
+    });
+    it('Should  Report regInProgress state to upper layer when account state transient to regInProgress [JPT-524]', () => {
+      const mockListener = new MockAccountListener();
+      const fsmManager = new RTCRegistrationManager(mockListener);
+      fsmManager.provisionReady('provisionData', 'options');
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
         AccountState.IN_PROGRESS,
+      );
+    });
+  });
+
+  describe('_utReportRegFailed', () => {
+    it('Should  Report failed state to upper layer when account state transient to failed [JPT-525]', () => {
+      const mockListener = new MockAccountListener();
+      const fsmManager = new RTCRegistrationManager(mockListener);
+      fsmManager.utReportRegFailed();
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        AccountState.FAILED,
+      );
+    });
+  });
+
+  describe('utReportUnRegister', () => {
+    it('Should  Report unRegistered state to upper layer when account state transient to unRegistered [JPT-562]', () => {
+      const mockListener = new MockAccountListener();
+      const fsmManager = new RTCRegistrationManager(mockListener);
+      fsmManager.utReportUnRegister();
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        AccountState.UNREGISTERED,
       );
     });
   });

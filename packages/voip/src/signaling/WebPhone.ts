@@ -8,7 +8,6 @@ import { EventEmitter2 } from 'eventemitter2';
 class WebPhone extends EventEmitter2 {
   constructor(provisionData: any, options: any) {
     super();
-    this.emit('registered');
   }
 
   public register(options?: any): any {

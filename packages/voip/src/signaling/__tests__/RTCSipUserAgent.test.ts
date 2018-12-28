@@ -17,7 +17,6 @@ describe('RTCSipUserAgent', async () => {
         'options',
         eventEmitter,
       );
-      userAgent.register('1');
       expect(eventEmitter.emit).toHaveBeenCalledWith(UA_EVENT.REG_SUCCESS);
     });
 

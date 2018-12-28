@@ -44,28 +44,16 @@ class RTCRegistrationManager implements IConditionalHandler {
   }
 
   private _onEnterReady() {
-    this._listener.onAccountStateChanged(
-      AccountState.IN_PROGRESS,
-      AccountState.REGISTERED,
-    );
+    this._listener.onAccountStateChanged(AccountState.REGISTERED);
   }
   private _onEnterRegInProgress() {
-    this._listener.onAccountStateChanged(
-      AccountState.IDLE,
-      AccountState.IN_PROGRESS,
-    );
+    this._listener.onAccountStateChanged(AccountState.IN_PROGRESS);
   }
   private _onEnterRegFailure() {
-    this._listener.onAccountStateChanged(
-      AccountState.IN_PROGRESS,
-      AccountState.FAILED,
-    );
+    this._listener.onAccountStateChanged(AccountState.FAILED);
   }
   private _onEnterUnRegistered() {
-    this._listener.onAccountStateChanged(
-      AccountState.REGISTERED,
-      AccountState.UNREGISTERED,
-    );
+    this._listener.onAccountStateChanged(AccountState.UNREGISTERED);
   }
 
   private _initFsmObserve() {
@@ -85,6 +73,7 @@ class RTCRegistrationManager implements IConditionalHandler {
 
   private _initListener() {
     this._eventEmitter.on(UA_EVENT.REG_SUCCESS, () => {
+      console.log('3333');
       this._onUARegSuccess();
     });
     this._eventEmitter.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
@@ -129,6 +118,18 @@ class RTCRegistrationManager implements IConditionalHandler {
     } else {
       this._fsm.regError();
     }
+  }
+
+  // only for UT
+  public utReportRegFailed() {
+    this._fsm.provisionReady();
+    this._fsm.regError();
+  }
+
+  public utReportUnRegister() {
+    this._fsm.provisionReady();
+    this._fsm.regSucceed();
+    this._fsm.unRegister();
   }
 }
 

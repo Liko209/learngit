@@ -6,10 +6,7 @@
 import { AccountState } from './types';
 
 interface IRTCAccountListener {
-  onAccountStateChanged(
-    updateState: AccountState,
-    originalState: AccountState,
-  ): void;
+  onAccountStateChanged(accountState: AccountState): void;
 }
 
 export { IRTCAccountListener };

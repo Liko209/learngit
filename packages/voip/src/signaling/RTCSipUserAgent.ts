@@ -19,8 +19,9 @@ class RTCSipUserAgent implements IRTCUserAgent {
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
     // to be modify when import ringcentral-web-phone library
     this._userAgent = new WebPhone(provisionData, options);
-    this._eventEmitter = eventEmitter;
     this._initListener();
+    this._eventEmitter = eventEmitter;
+    this.register(options);
   }
 
   public register(options?: any): any {
