@@ -183,3 +183,35 @@ test(formalName('Check the maximum length of the Team Description input box', ['
 
   },
 );
+
+test(formalName('Check user can be able to remove the selected name(s)', ['P3', 'JPT-148', 'Potar.He']),
+  async t => {
+    const app = new AppRoot(t);
+    const loginUser = h(t).rcData.mainCompany.users[0];
+
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    const createTeamModal = app.homePage.createTeamModal;
+    await h(t).withLog('When I click Create Team on AddActionMenu', async () => {
+      await app.homePage.openAddActionMenu();
+      await app.homePage.addActionMenu.createTeamEntry.enter();
+      await createTeamModal.ensureLoaded();
+    });
+
+    await h(t).withLog('Then the create team dialog should be popup', async () => {
+      await t.expect(createTeamModal.exists).ok();
+    });
+
+    await h(t).withLog(`When I type user name, and select the first search user`, async () => {
+     
+    });
+
+    await h(t).withLog(`Then the `, async () => {
+     
+    }); 
+
+  },
+);
