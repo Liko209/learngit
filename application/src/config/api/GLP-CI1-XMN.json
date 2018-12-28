@@ -20,5 +20,8 @@
   },
   "splitio": {
     "clientSecret": "aiers1fdmskm7paalb3ubhhuumaauv21rnti"
+  },
+  "upload": {
+    "server": "https://glpci1xmn.asialab.glip.net:8443"
   }
 }

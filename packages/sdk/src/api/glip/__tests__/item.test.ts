@@ -4,20 +4,37 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import ItemAPI from '../item';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils/glip-type-dictionary';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils/glip-type-dictionary';
+import { date } from '@storybook/addon-knobs';
+import NetworkClient from '../../NetworkClient';
+import { HandleByCustom } from '../../handlers';
+import { NETWORK_VIA } from 'foundation/src';
+import { Api } from '../..';
+import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 
 jest.mock('../../api');
 
 describe('ItemAPI', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  });
+
   describe('sendFileItem()', () => {
     it('glipNetworkClient.post() should be called with specific path', () => {
       ItemAPI.sendFileItem({ file: {} });
-      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith('/file', { file: {} });
+      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith('/file', {
+        file: {},
+      });
     });
   });
   describe('uploadFileItem()', () => {
     it('uploadNetworkClient.http() should be called with specific path', () => {
-      ItemAPI.uploadFileItem(new FormData(), () => { });
+      ItemAPI.uploadFileItem(new FormData(), () => {});
       expect(ItemAPI.uploadNetworkClient.http).toHaveBeenCalled();
     });
   });
@@ -37,15 +54,19 @@ describe('ItemAPI', () => {
       jest.spyOn(GlipTypeUtil, 'extractTypeId').mockReturnValue(100);
       TypeDictionary.TYPE_ID_CUSTOM_ITEM = 1;
       ItemAPI.requestById(9);
-      expect(ItemAPI.glipNetworkClient.get).toHaveBeenCalledWith('/integration_item/9');
+      expect(ItemAPI.glipNetworkClient.get).toHaveBeenCalledWith(
+        '/integration_item/9',
+      );
     });
   });
   describe('requestRightRailItems()', () => {
     it('glipNetworkClient.get() should be called with specific path', () => {
       (ItemAPI.glipNetworkClient.get as jest.Mock).mockClear();
       ItemAPI.requestRightRailItems(1);
-      expect(ItemAPI.glipNetworkClient.get)
-        .toHaveBeenCalledWith('/web_client_right_rail_items', { group_id: 1 });
+      expect(ItemAPI.glipNetworkClient.get).toHaveBeenCalledWith(
+        '/web_client_right_rail_items',
+        { group_id: 1 },
+      );
     });
   });
 
@@ -53,7 +74,104 @@ describe('ItemAPI', () => {
     it('glipNetworkClient.get() should be called with specific path', () => {
       (ItemAPI.glipNetworkClient.get as jest.Mock).mockClear();
       ItemAPI.getNote(1);
-      expect(ItemAPI.glipNetworkClient.get).toHaveBeenCalledWith('/pages_body/1');
+      expect(ItemAPI.glipNetworkClient.get).toHaveBeenCalledWith(
+        '/pages_body/1',
+      );
+    });
+  });
+
+  describe('putItem', () => {
+    it('should pass expected parameters to glipNetworkClient', () => {
+      (ItemAPI.glipNetworkClient.put as jest.Mock).mockClear();
+      const type = 'file';
+      const id = 123;
+      const data = { name: 'name1' };
+      ItemAPI.putItem(id, type, data);
+      expect(ItemAPI.glipNetworkClient.put).toHaveBeenCalledWith(
+        `/${type}/${id}`,
+        data,
+      );
+    });
+  });
+
+  describe('cancelUploadRequest', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+    });
+
+    function setupCancelUploadRequest() {
+      const mockUploadClient = {
+        cancelRequest: jest.fn(),
+      };
+      ItemAPI.uploadNetworkClient = jest
+        .fn()
+        .mockReturnValueOnce(mockUploadClient);
+
+      return { mockUploadClient };
+    }
+
+    it('should pass parameters to uploadNetworkClient ', () => {
+      (ItemAPI.uploadNetworkClient.cancelRequest as jest.Mock).mockClear();
+
+      const requestHolder = { request: { path: '123' } };
+      ItemAPI.cancelUploadRequest(requestHolder);
+      expect(ItemAPI.uploadNetworkClient.cancelRequest).toHaveBeenCalled();
+    });
+
+    it('should not pass parameters to uploadNetworkClient when input is invalid', () => {
+      const { mockUploadClient } = setupCancelUploadRequest();
+
+      const requestHolder: { request: undefined };
+      ItemAPI.cancelUploadRequest(requestHolder);
+      expect(mockUploadClient.cancelRequest).not.toBeCalled();
+    });
+  });
+
+  describe('requestAmazonFilePolicy()', () => {
+    it('should pass expected parameters to glipNetworkClient', () => {
+      (ItemAPI.glipNetworkClient.post as jest.Mock).mockClear();
+      const data = {
+        size: 123123,
+        filename: 'filenName',
+        for_file_type: true,
+        filetype: 'js',
+      };
+      ItemAPI.requestAmazonFilePolicy(data);
+      expect(ItemAPI.glipNetworkClient.post).toHaveBeenCalledWith(
+        '/s3/v1/post-policy',
+        data,
+      );
+    });
+  });
+
+  describe('uploadFileToAmazonS3()', () => {
+    it('should pass expected parameters to custom network client', () => {
+      const params = {
+        host: 'www.host.com',
+        formFile: new FormData(),
+        callback: (e: ProgressEvent) => {},
+        requestHolder: { request: undefined },
+      };
+      const { host, formFile, callback, requestHolder } = params;
+      const mockNetworkClient = {
+        http: jest.fn(),
+      };
+      ItemAPI.customNetworkClient = jest
+        .fn()
+        .mockReturnValueOnce(mockNetworkClient);
+      ItemAPI.uploadFileToAmazonS3(host, formFile, callback, requestHolder);
+      expect(mockNetworkClient.http).toBeCalledWith(
+        expect.objectContaining({
+          path: '',
+          method: NETWORK_METHOD.POST,
+          via: NETWORK_VIA.HTTP,
+          data: formFile,
+          requestConfig: expect.anything(),
+        }),
+        requestHolder,
+      );
     });
   });
 });

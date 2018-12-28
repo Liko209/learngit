@@ -61,7 +61,7 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
           direction,
           addedItems,
           this.orderListStore.items,
-          this.hasMore(direction),
+          this.hasMore(QUERY_DIRECTION.OLDER), // separatorHandler should only care whether the older posts loaded yet.
         );
       });
     });

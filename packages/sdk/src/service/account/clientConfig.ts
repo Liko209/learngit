@@ -10,9 +10,11 @@ import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
 } from '../../dao/account/constants';
+import { BETA_CONFIG_KEYS } from './constants';
 
 enum EBETA_FLAG {
   BETA_LOG,
+  BETA_S3_DIRECT_UPLOADS,
   //   BETA_TELEPHONY_EMAIL,
   //   BETA_TELEPHONY_DOMAIN,
   //   BETA_SMS_EMAIL,
@@ -28,12 +30,15 @@ enum EBETA_FLAG {
   //   BETA_LAB_EVENT_REMINDER
 }
 
-const KeyForBetaEnableLog = 'beta_enable_log';
-
 function isInBeta(flag: EBETA_FLAG): boolean {
   switch (flag) {
     case EBETA_FLAG.BETA_LOG:
-      return isInBetaList(KeyForBetaEnableLog);
+      return isInBetaList(BETA_CONFIG_KEYS.BETA_ENABLE_LOG);
+    case EBETA_FLAG.BETA_S3_DIRECT_UPLOADS:
+      return (
+        isInBetaList(BETA_CONFIG_KEYS.BETA_S3_DIRECT_UPLOADS) ||
+        isBetaOn(BETA_CONFIG_KEYS.BETA_S3_DIRECT_UPLOADS)
+      );
     // case EBETA_FLAG.BETA_TELEPHONY_EMAIL:
     //   return isInBetaEmailList('');
     // case EBETA_FLAG.BETA_TELEPHONY_DOMAIN:
@@ -66,7 +71,15 @@ function isInBeta(flag: EBETA_FLAG): boolean {
 }
 
 function isInBetaList(flagName: string): boolean {
-  return isInBetaEmailList(`${flagName}_emails`) || isInBetaDomainList(`${flagName}_domains`);
+  return (
+    isInBetaEmailList(`${flagName}_emails`) ||
+    isInBetaDomainList(`${flagName}_domains`)
+  );
+}
+
+function isBetaOn(flagName: string, defaultVal = false): boolean {
+  const value: string = getFlagValue(flagName);
+  return value ? value === 'true' : defaultVal;
 }
 
 function isInBetaEmailList(flagName: string): boolean {

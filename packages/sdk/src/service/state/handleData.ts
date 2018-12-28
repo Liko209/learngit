@@ -61,9 +61,9 @@ export function transform(
   (clone as TransformedState).groupState = [...Array.from(groupIds)].map(
     id => groupStates[id],
   );
-  if (item && item.trigger_ids) {
+  if (item && item.__trigger_ids) {
     (clone as TransformedState).groupState.forEach((state: GroupState) => {
-      state.trigger_ids = item.trigger_ids;
+      state.__trigger_ids = item.__trigger_ids;
     });
   }
   clone.away_status_history = clone.away_status_history || [];
@@ -175,7 +175,7 @@ export async function handleGroupChange(groups?: Group[]) {
       id: group.id,
       group_post_cursor: group.post_cursor,
       group_post_drp_cursor: group.drp_post_cursor,
-      trigger_ids: group.trigger_ids,
+      __trigger_ids: group.__trigger_ids,
     } as GroupState;
     return groupState;
   });

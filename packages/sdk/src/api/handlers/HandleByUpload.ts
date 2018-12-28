@@ -22,12 +22,18 @@ const HandleByUpload = new class extends AbstractHandleType {
           request.params = {
             ...request.params,
           };
-          request.headers = {
-            ...request.headers,
-            Authorization: `Bearer ${handler.accessToken()}`,
-          };
+
+          if (request.path.indexOf('upload') > -1) {
+            request.path = `${request.path}?tk=${handler.accessToken()}`;
+          } else {
+            request.headers = {
+              ...request.headers,
+              Authorization: `Bearer ${handler.accessToken()}`,
+            };
+          }
         }
       }
+
       return request;
     };
   }

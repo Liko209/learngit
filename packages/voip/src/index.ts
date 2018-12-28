@@ -1,1 +1,1 @@
-export { default as RTCEngine } from './api/rtcEngine';
+export { default as RTCEngine } from './api/RTCEngine';
