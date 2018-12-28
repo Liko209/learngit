@@ -17,8 +17,9 @@ class ProgressModel extends Base<Progress> {
   constructor(data: Progress) {
     console.log('​ProgressModel -> constructor -> data', data);
     super(data);
-    this.rate = data.rate;
-    this.status = data.status;
+    const { rate, status } = data;
+    this.rate = rate;
+    this.status = status;
   }
 
   get progressStatus() {
