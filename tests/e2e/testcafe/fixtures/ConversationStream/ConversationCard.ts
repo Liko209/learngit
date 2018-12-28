@@ -43,7 +43,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     );
 
     await h(t).withLog(`Then I enter a random conversation in teams section`, async () => {
-      const conversations = app.homePage.messageTab.teamsSection.conversations;
+      const conversations = app.homePage.messageTab.teamsSection.conversations
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
       await app.homePage.messageTab.teamsSection.nthConversationEntry(n).enter();

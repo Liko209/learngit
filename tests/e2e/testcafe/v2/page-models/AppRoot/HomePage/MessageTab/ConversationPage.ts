@@ -26,6 +26,9 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header');
   }
 
+  get headerStatus() {
+    return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
+  }
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
@@ -58,33 +61,42 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('jui-stream');
   }
 
-  // FIXME: find a more reliable method
-  async expectStreamScrollToBottom() {
-    const scrollTop = await this.streamWrapper.scrollTop;
-    const streamHeight = await this.stream.clientHeight;
-    const streamWrapperHeight = await this.streamWrapper.clientHeight;
-    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+  get loadingCircle() {
+    return this.self.find('circle');
   }
 
-  async scrollToY(y: number) {
-    await this.t.eval(() => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
-    }, {
-        dependencies: { y }
-      });
+  async waitUntilPostsBeLoaded(timeout = 10e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
   }
 
-  async scrollToMiddle() {
-    const scrollHeight = await this.streamWrapper.clientHeight;
-    await this.scrollToY(scrollHeight / 2);
-  }
+// todo: find a more reliable method
+async expectStreamScrollToBottom() {
+  const scrollTop = await this.streamWrapper.scrollTop;
+  const streamHeight = await this.stream.clientHeight;
+  const streamWrapperHeight = await this.streamWrapper.clientHeight;
+  await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+}
 
-  async scrollToBottom() {
-    await this.t.eval(() => {
-      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
+async scrollToY(y: number) {
+  await this.t.eval(() => {
+    document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
+  }, {
+      dependencies: { y }
     });
-  }
+}
+
+async scrollToMiddle() {
+  const scrollHeight = await this.streamWrapper.clientHeight;
+  await this.scrollToY(scrollHeight / 2);
+}
+
+async scrollToBottom() {
+  await this.t.eval(() => {
+    const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
+    document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
+  });
+}
 }
 
 export class ConversationPage extends BaseConversationPage {
@@ -102,9 +114,9 @@ export class ConversationPage extends BaseConversationPage {
   }
 
 
-  async sendMessage(message: string) {
+  async sendMessage(message: string, options?) {
     await this.t
-      .typeText(this.messageInputArea, message)
+      .typeText(this.messageInputArea, message, options)
       .click(this.messageInputArea)
       .pressKey('enter');
   }
@@ -223,12 +235,12 @@ export class DuplicatePromptPage extends BaseWebComponent {
 
 export class MentionPage extends BaseConversationPage {
   get self() {
-    return this.getSelectorByAutomationId('post-list-page');
+    return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 }
 export class BookmarkPage extends BaseConversationPage {
   get self() {
-    return this.getSelectorByAutomationId('post-list-page');
+    return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
   }
 }
 
@@ -338,7 +350,6 @@ export class PostItem extends BaseWebComponent {
   async jumpToConversationByClickPost() {
     await this.t.click(this.self);
   }
-
 
   async clickConversationByButton() {
     const buttonElement = this.jumpToConversationButton;
