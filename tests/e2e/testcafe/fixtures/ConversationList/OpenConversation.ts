@@ -146,7 +146,8 @@ test(formalName('Shouldn not display in conversation list when last conversation
     await h(t).withLog('Then the conversation should not display in conversation list', async () => {
       await t.expect(teamsSection.conversationEntryById(teamId).exists).notOk();
       const url = await h(t).href;
-      await t.expect(url).eql(`${SITE_URL}/messages/`);
+      const reg = new RegExp("^"+SITE_URL+"\/?messages\/$");
+      await t.expect(url).match(reg);
     });
   },
 );

@@ -224,7 +224,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const result = this._queryGroupByMemberList(personIds);
+      const result = await this._queryGroupByMemberList(personIds);
       if (result) {
         return result;
       }
@@ -745,13 +745,14 @@ class GroupService extends BaseService<Group> {
     const memberIds = this._addCurrentUserToMemList(ids);
     const groupDao = daoManager.getDao(GroupDao);
     if (this.isCacheInitialized()) {
-      return await this.getEntitiesFromCache(
+      const result = await this.getEntitiesFromCache(
         (item: Group) =>
           this.isValid(item) &&
           !item.is_team &&
           item.members &&
-          item.members.sort().toString() === ids.sort().toString(),
-      )[0];
+          item.members.sort().toString() === memberIds.sort().toString(),
+      );
+      return result[0];
     }
     return await groupDao.queryGroupByMemberList(memberIds);
   }

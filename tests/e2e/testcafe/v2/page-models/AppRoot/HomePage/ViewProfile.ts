@@ -250,7 +250,7 @@ export class ProfileDialog extends BaseWebComponent {
     }
     return await this.avatar.getAttribute('uid');
   }
-
+  
   async close() {
     await this.t.click(this.closeButton);
   }

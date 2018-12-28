@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { ClientFunction } from "testcafe";
 
 export class Header extends BaseWebComponent {
   get self() {
@@ -59,15 +58,14 @@ class Search extends BaseWebComponent {
   }
 
   get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('.material-icons').withText('close');
+    return this.getSelectorByIcon('close');
   }
 
   async close() {
     await this.t.click(this.closeButton);
   }
 
-  get allresultItems() {
+  get allResultItems() {
     return this.getSelector('.search-items');
   }
 
@@ -97,7 +95,6 @@ class Search extends BaseWebComponent {
 }
 
 class SearchItem extends BaseWebComponent {
-
   get avatar() {
     return this.getSelectorByAutomationId('search-item-avatar', this.self);
   }
@@ -113,15 +110,13 @@ class SearchItem extends BaseWebComponent {
 
   // group or team
   get cid() {
-    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');;
+    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');
   }
 
   async getId() {
     if (await this.avatar.find('div').withAttribute('uid').exists) {
-      console.log("uid:", await this.uid)
       return await this.uid;
     }
-    console.log("cid:", await this.cid)
     return await this.cid;
   }
 
@@ -136,5 +131,4 @@ class SearchItem extends BaseWebComponent {
   async clickName() {
     await this.t.click(this.name);
   }
-
 }
