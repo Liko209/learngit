@@ -8,7 +8,8 @@ import CompanyDao from '../../dao/company';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
 import { transform } from '../utils';
-import { Company, Raw } from '../../models';
+import { Company } from '../../module/company/entity';
+import { Raw } from '../../framework/model';
 import CompanyAPI from '../../api/glip/company';
 
 const _getTransformData = async (

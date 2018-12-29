@@ -9,7 +9,8 @@ import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
 import AccountService from '../account';
-import { Profile, Raw } from '../../models';
+import { Profile } from '../../module/profile/entity';
+import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { BaseError, ErrorTypes } from '../../utils';

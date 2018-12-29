@@ -9,7 +9,9 @@ import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../service/group';
 import IncomingPostHandler from '../../service/post/incomingPostHandler';
 import { transform, baseHandleData as utilsBaseHandleData } from '../utils';
-import { Post, Group, Raw } from '../../models';
+import { Raw } from '../../framework/model';
+import { Group } from '../../module/group/entity';
+import { Post } from '../../module/post/entity';
 import PostService from '.';
 import _ from 'lodash';
 

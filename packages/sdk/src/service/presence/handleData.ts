@@ -7,7 +7,7 @@ import serviceManager from '../../service/serviceManager';
 import PresenceService from '../../service/presence/index';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
-import { Presence, RawPresence } from '../../models';
+import { Presence, RawPresence } from '../../module/presence/entity';
 
 function transform(obj: RawPresence): Presence {
   const presence = obj.calculatedStatus;

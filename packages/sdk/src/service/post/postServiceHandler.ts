@@ -10,7 +10,8 @@ import {
 } from '../../dao/account/constants';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
-import { Post, ItemFile, PostItemData } from '../../models';
+import { Post, PostItemData } from '../../module/post/entity';
+import { ItemFile } from '../../module/item/entity';
 import { RawPostInfo } from './types';
 import { POST_STATUS } from '../constants';
 import ItemService from '../item';

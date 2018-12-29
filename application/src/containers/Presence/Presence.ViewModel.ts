@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { Presence } from 'sdk/models';
+import { Presence } from 'sdk/module/presence/entity';
 import PresenceModel from '@/store/models/Presence';
 import { PresenceProps, PresenceViewProps } from './types';
 import { PRESENCE } from 'sdk/service';

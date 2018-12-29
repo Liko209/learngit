@@ -1,11 +1,11 @@
 /*
  * @Author: Lily.li (lily.li@ringcentral.com)
  * @Date: 2018-06-06 15:55:39
- * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
- * @Last Modified time: 2018-08-06 15:53:43
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2018-12-28 17:29:33
  */
 import _ from 'lodash';
-import { Group } from '../../models';
+import { Group } from '../../module/group/entity';
 import { PERMISSION_ENUM } from '../constants';
 
 export type PermissionKeys = keyof typeof PERMISSION_ENUM;
@@ -43,12 +43,16 @@ export default class Permission {
 
   isGuest() {
     const { guest_user_company_ids } = this.group;
-    return guest_user_company_ids && guest_user_company_ids.includes(this.companyId);
+    return (
+      guest_user_company_ids && guest_user_company_ids.includes(this.companyId)
+    );
   }
 
   isSelfGroup() {
     const { is_team, members, creator_id } = this.group;
-    return !is_team && members && members.length === 1 && creator_id === members[0];
+    return (
+      !is_team && members && members.length === 1 && creator_id === members[0]
+    );
   }
 
   isTeamGroup() {

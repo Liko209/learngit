@@ -12,7 +12,8 @@ import {
 import { computed } from 'mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { Post, Person } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';

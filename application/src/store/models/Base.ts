@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Entity } from '../store';
-import { BaseModel } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
 
-export default class Base<T extends BaseModel> implements Entity {
+export default class Base<T extends IdModel> implements Entity {
   id: number;
   data?: any;
   constructor(data: T) {

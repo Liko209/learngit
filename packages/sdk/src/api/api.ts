@@ -8,7 +8,7 @@ import NetworkClient, { INetworkRequests } from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
 import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
-import { Raw } from '../models';
+import { Raw } from '../framework/model';
 
 import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
 import {
