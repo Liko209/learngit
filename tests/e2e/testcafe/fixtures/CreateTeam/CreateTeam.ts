@@ -192,16 +192,11 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
   const loginUser = users[0];
   await h(t).glip(loginUser).init();
 
-  const createTeamModal = app.homePage.createTeamModal;
-
-
-  
-
-  let name, email;
+  let name; //  email;  TODO: currently no support  email search. {name, email}
   await h(t).withLog(`Given I one exist user name and email`, async () => {
     const personData = await h(t).glip(loginUser).getPerson(users[1].rcId);
     name = personData.data.first_name + " " + personData.data.last_name;
-    email = personData.data.email; 
+    // email = personData.data.email;  // TODO: currently no support  email search. {name, email} 
   });
 
 
@@ -211,7 +206,8 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
     await app.homePage.ensureLoaded();
   });
 
-  // create team 
+  // create team entry 
+  const createTeamModal = app.homePage.createTeamModal;
   await h(t).withLog('When I click Create Team on AddActionMenu', async () => {
     await app.homePage.openAddActionMenu();
     await app.homePage.addActionMenu.createTeamEntry.enter();
@@ -234,11 +230,11 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
     });
 
     if (i == 0) {
-      await h(t).withLog(`When I Tap the "backspace" button on the keypad`, async () => {
+      await h(t).withLog(`When I Tap the "backspace" on the keypad`, async () => {
         await t.pressKey('backspace');
       })
     } else {
-      await h(t).withLog(`When I "Tap the delete icon of the selected contact"`, async () => {
+      await h(t).withLog(`When I tap the "delete" icon of the selected contact`, async () => {
         await createTeamModal.removeSelectedMember();
       })
     }
@@ -255,7 +251,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
     }
   }
 
-  // create team 
+  // send new Message entry
   await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
     await createTeamModal.clickCancelButton();
     await app.homePage.openAddActionMenu();
@@ -264,7 +260,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
   });
 
   const sendNewMessageModal = app.homePage.sendNewMessageModal;
-  await h(t).withLog('Then the create team dialog should be popup', async () => {
+  await h(t).withLog('Then the "New Message" dialog should be popup', async () => {
     await t.expect(sendNewMessageModal.exists).ok();
   });
 
@@ -280,11 +276,11 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
     });
 
     if (i == 0) {
-      await h(t).withLog(`When I Tap the "backspace" button on the keypad`, async () => {
+      await h(t).withLog(`When I Tap the "backspace" on the keypad`, async () => {
         await t.pressKey('backspace');
       })
     } else {
-      await h(t).withLog(`When I "Tap the delete icon of the selected contact"`, async () => {
+      await h(t).withLog(`When I tap the "delete" icon of the selected contact`, async () => {
         await sendNewMessageModal.removeSelectedMember();
       })
     }
