@@ -235,13 +235,13 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
-  async isExpand() {
+  get isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return this.self.child().withText('keyboard_arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
-    const isExpand = await this.isExpand();
+    const isExpand = await this.isExpand;
     if (isExpand != expand) {
       await this.t.click(this.toggleButton);
     }
