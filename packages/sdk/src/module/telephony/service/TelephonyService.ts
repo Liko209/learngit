@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { TelephonyController } from '../controller';
+import { TelephonyEngineController } from '../controller';
 
 class TelephonyService extends EntityBaseService {
-  private _telephonyController: TelephonyController;
+  private _telephonyEngineController: TelephonyEngineController;
 
   constructor() {
     super();
@@ -15,12 +15,10 @@ class TelephonyService extends EntityBaseService {
   }
 
   protected get telephonyController() {
-    if (!this._telephonyController) {
-      this._telephonyController = new TelephonyController(
-        this.getControllerBuilder(),
-      );
+    if (!this._telephonyEngineController) {
+      this._telephonyEngineController = new TelephonyEngineController();
     }
-    return this._telephonyController;
+    return this._telephonyEngineController;
   }
 
   private _init() {

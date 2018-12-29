@@ -3,4 +3,4 @@
  * @Date: 2018-12-28 17:32:52
  * Copyright © RingCentral. All rights reserved.
  */
-export { TelephonyController } from './TelephonyController';
+export { TelephonyEngineController } from './TelephonyEngineController';

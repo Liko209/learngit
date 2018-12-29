@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ITelephonyNetworkDelegate, IRequest } from 'foundation';
-import { Api } from '../../../api';
-import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import RTCEngine from 'voip/src';
+import { Api } from '../../../api';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -26,11 +25,11 @@ class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   }
 }
 
-class TelephonyController {
+class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
 
-  constructor(public controllerBuilder: IControllerBuilder) {
+  constructor() {
     this.voipNetworkDelegate = new VoIPNetworkClient();
   }
 
@@ -39,4 +38,4 @@ class TelephonyController {
   }
 }
 
-export { TelephonyController };
+export { TelephonyEngineController };
