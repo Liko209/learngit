@@ -16,12 +16,15 @@ npm run perf
 ### .env
 ```bash
 # juipter
-JUIPTER_HOST=https://develop.fiji.gliprc.com
-JUIPTER_LOGIN_URL=https://develop.fiji.gliprc.com
+JUPITER_URL=https://develop.fiji.gliprc.com
+JUPITER_LOGIN_URL=https://login-glpci1xmn.lab.nordigy.ru
+JUPITER_GLIP_URL=https://glpci1xmn.asialab.glip.net
+JUPITER_GLIP2_URL=https://api-glpci1xmn.lab.nordigy.ru
 JUIPTER_USER_CREDENTIAL=
 JUIPTER_USER_PIN=
 JUIPTER_USER_PASSWORD=
 JUPITER_APP_KEY=
+JUPITER_SCERET=
 
 # mock
 MOCK_GLOBAL_SWITCH=false
