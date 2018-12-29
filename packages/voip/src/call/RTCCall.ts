@@ -62,6 +62,10 @@ class RTCCall {
     return this._isIncomingCall;
   }
 
+  getCallInfo(): RTCCallInfo {
+    return this._callInfo;
+  }
+
   answer(): void {
     this._fsm.answer();
   }
@@ -106,7 +110,7 @@ class RTCCall {
       this._onSessionError();
     });
     // listen fsm
-    this._fsm.on(RTCCallFsmNotify.ENTER_PENDING, () => {
+    this._fsm.on(RTCCallFsmNotify.ENTER_ANSWERING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
     this._fsm.on(RTCCallFsmNotify.ENTER_PENDING, () => {
