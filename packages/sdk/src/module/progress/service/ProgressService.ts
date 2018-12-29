@@ -15,7 +15,7 @@ class ProgressService extends EntityBaseService<Progress> {
     super();
   }
 
-  private get _cacheController() {
+  protected get progressCacheController() {
     if (!this._progressCacheController) {
       this._progressCacheController = new ProgressCacheController();
     }
@@ -23,19 +23,19 @@ class ProgressService extends EntityBaseService<Progress> {
   }
 
   addProgress(id: number, status: Progress) {
-    this._cacheController.addProgress(id, status);
+    this.progressCacheController.addProgress(id, status);
   }
 
   updateProgress(id: number, status: Progress) {
-    this._cacheController.updateProgress(id, status);
+    this.progressCacheController.updateProgress(id, status);
   }
 
   deleteProgress(id: number) {
-    this._cacheController.deleteProgress(id);
+    this.progressCacheController.deleteProgress(id);
   }
 
   getById(id: number) {
-    return this._cacheController.getProgress(id);
+    return this.progressCacheController.getProgress(id);
   }
 }
 

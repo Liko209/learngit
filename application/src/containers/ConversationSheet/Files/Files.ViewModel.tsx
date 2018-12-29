@@ -20,6 +20,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 import PostModel from '@/store/models/Post';
+import { val } from 'factory.ts';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
