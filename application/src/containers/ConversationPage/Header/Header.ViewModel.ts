@@ -5,7 +5,8 @@
  */
 
 import { observable, computed, action } from 'mobx';
-import { Group, Person } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Person } from 'sdk/module/person/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';

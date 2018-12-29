@@ -3,7 +3,7 @@
  * @Date: 2018-12-17 14:08:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { TaskItem } from 'sdk/models';
+import { TaskItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 

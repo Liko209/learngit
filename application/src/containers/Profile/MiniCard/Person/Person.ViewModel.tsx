@@ -12,7 +12,7 @@ import {
 } from './types';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
-import { Person } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 

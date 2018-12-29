@@ -3,7 +3,7 @@
  * @Date: 2018-09-03 15:18:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { Group } from '../../models';
+import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
 import { baseHandleData } from '../post/handleData';

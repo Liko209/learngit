@@ -12,7 +12,7 @@ import { rawPostFactory, rawItemFactory } from '../../../__tests__/factories';
 import notificationCenter from '../../notificationCenter';
 import { transformAll } from '../../../service/utils';
 import { SERVICE } from '../../eventKey';
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../../framework/model';
 
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/utils');
@@ -57,7 +57,7 @@ describe('Service handleData', () => {
   it('Search Success', () => {
     const post = rawPostFactory.build({ _id: 71680004 });
     const item = rawItemFactory.build();
-    const transformedData: BaseModel[] = [];
+    const transformedData: IdModel[] = [];
     transformAll.mockReturnValue(transformedData);
 
     handleData({

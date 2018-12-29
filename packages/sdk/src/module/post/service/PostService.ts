@@ -5,7 +5,7 @@
  */
 
 import { PostController } from '../controller/PostController';
-import { Post } from '../../../models';
+import { Post } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 
 class PostService extends EntityBaseService<Post> {

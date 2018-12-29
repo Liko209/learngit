@@ -8,7 +8,8 @@ import { mainLogger, BaseError } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { ErrorTypes } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { BaseModel, Raw, SortableModel } from '../models'; // eslint-disable-line
+import { IdModel, Raw } from '../framework/model';
+import { SortableModel } from '../models'; // eslint-disable-line
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
@@ -28,9 +29,7 @@ const throwError = (text: string): never => {
   );
 };
 
-class BaseService<
-  SubModel extends BaseModel = BaseModel
-> extends AbstractService {
+class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   static serviceName = 'BaseService';
   private _cachedManager: EntityCacheManager<SubModel>;
 
@@ -518,7 +517,9 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', { apiError: error });
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', {
+          apiError: error,
+        });
         break;
       }
 
