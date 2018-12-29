@@ -6,6 +6,21 @@ import axios from "axios";
 import * as qs from "qs";
 import * as btoa from "btoa";
 import { logUtils } from "./LogUtils";
+/**
+ *  Login flow: https://wiki.ringcentral.com/display/~doyle.wu/Login+flow+of+Jupiter
+ *  Example:
+ *      let response;
+ *      let url = "https://develop.fiji.gliprc.com";
+ *
+ *      let code = await jupiterUtils.getAuthCode(url);
+ *      response = await jupiterUtils.getRcToken(code, url);
+ *
+ *      response = await jupiterUtils.getRcCode(response.data["access_token"]);
+ *
+ *      response = await jupiterUtils.getRcToken(response.data["code"]);
+ *
+ *      response = await jupiterUtils.getGlipToken(response.data);
+ **/
 class JupiterUtils {
   private clientId: string = process.env.JUPITER_APP_KEY;
   private clientSecret: string = process.env.JUPITER_APP_SECRET;
