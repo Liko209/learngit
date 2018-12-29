@@ -13,10 +13,9 @@ class JupiterUtils {
 
   private async login(redirectUrl: string) {
     let url = new URL(redirectUrl);
-    const state = url.pathname + url.search.replace("&", "$") + url.hash;
     const redirectUri = url.origin;
     const body = {
-      state,
+      state: `/?env=${process.env.JUPITER_ENV}`,
       username: process.env.JUPITER_USER_CREDENTIAL,
       password: process.env.JUPITER_USER_PASSWORD,
       autoLogin: false,
