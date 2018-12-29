@@ -1,30 +1,36 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:07:54
+ * Copyright © RingCentral. All rights reserved.
+ */
 /// <reference path="../../__tests__/types.d.ts" />
-import { RTCCallFsm, RTCCallFsmNotify } from '../RTCCallFsm';
+import { RTCCallFsm } from '../RTCCallFsm';
+import { CALL_FSM_NOTIFY } from '../types';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {
     private _fsm: RTCCallFsm;
     constructor(fsm: RTCCallFsm) {
       this._fsm = fsm;
-      fsm.on(RTCCallFsmNotify.ENTER_ANSWERING, () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_ANSWERING, () => {
         this.onEnterAnswering();
       });
-      fsm.on(RTCCallFsmNotify.ENTER_PENDING, () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_PENDING, () => {
         this.onEnterPending();
       });
-      fsm.on(RTCCallFsmNotify.ENTER_CONNECTING, () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTING, () => {
         this.onEnterConnecting();
       });
-      fsm.on(RTCCallFsmNotify.ENTER_CONNECTED, () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
         this.onEnterConnected();
       });
-      fsm.on(RTCCallFsmNotify.ENTER_DISCONNECTED, () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
         this.onEnterDisconnected();
       });
-      fsm.on(RTCCallFsmNotify.HANGUP_ACTION, () => {
+      fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
         this.onHangupAction();
       });
-      fsm.on(RTCCallFsmNotify.CREATE_OUTGOING_CALL_SESSION, () => {
+      fsm.on(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION, () => {
         this.onCreateOutCallSession();
       });
     }

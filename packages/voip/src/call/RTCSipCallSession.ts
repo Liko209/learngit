@@ -1,5 +1,11 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:08:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
+import { IRTCCallSession } from './IRTCCallSession';
+import { CALL_SESSION_STATE } from './types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',

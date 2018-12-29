@@ -1,10 +1,14 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:07:41
+ * Copyright © RingCentral. All rights reserved.
+ */
 /// <reference path="../../__tests__/types.d.ts" />
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallObserver } from '../IRTCCallObserver';
-import { CALL_SESSION_STATE } from '../IRTCCallSession';
 import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
-import { RTCCALL_STATE } from '../types';
+import { RTCCALL_STATE, CALL_SESSION_STATE } from '../types';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallObserver, IRTCAccount {
@@ -41,7 +45,7 @@ describe('RTC call', () => {
   describe('constructor()', async () => {
     it('should set UUID when use constructor() ', async () => {
       const vAccount = new VirturlAccountAndCallObserver();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       expect(call.getCallInfo().uuid).not.toBe('');
     });
   });
@@ -49,7 +53,7 @@ describe('RTC call', () => {
   describe('setCallSession()', async () => {
     it('should call._callSession.setSession() is called when ues setCallSession()', async () => {
       const vAccount = new VirturlAccountAndCallObserver();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       jest.spyOn(call._callSession, 'setSession');
       call.setCallSession(null);
       expect(call._callSession.setSession).toBeCalled();
@@ -57,23 +61,23 @@ describe('RTC call', () => {
   });
 
   describe('Incoming call', () => {
-    it('isIncoming return true when call is incoming call', () => {
+    it('should isIncomingCall() return true for incoming call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       expect(call.isIncomingCall()).toBe(true);
     });
 
-    it('isIncoming return false when call is outgoing call', () => {
+    it('should isIncomingCall() return false for outgoing call', () => {
       const account = new VirturlAccountAndCallObserver();
-      const call = RTCCall.createOutgoingCall('123', account, account);
+      const call = new RTCCall(false, '123', null, account, account);
       expect(call.isIncomingCall()).toBe(false);
     });
 
-    it("Receive 'Reject' event when call is idle,check call static is 'Disconnected' and reject action is called [JPT-623]", done => {
+    it('should call state become disconnected when reject call in idle state [JPT-623]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       jest.spyOn(session, 'reject');
       call.reject();
       setImmediate(() => {
@@ -82,10 +86,11 @@ describe('RTC call', () => {
         done();
       });
     });
-    it("Receive 'SendtoVM' event when call is idle,check call static is 'Disconnected' and sendtovm action is called [JPT-624]", done => {
+
+    it('should call state become disconnected when send to voicemail in idle state [JPT-624]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       jest.spyOn(session, 'sendToVoicemail');
       call.sendToVoicemail();
       setImmediate(() => {
@@ -94,20 +99,20 @@ describe('RTC call', () => {
         done();
       });
     });
-    it("Receive 'sessionDisconnected' event when call is idle,check call status is 'Disconnected'", done => {
+    it('should call state become disconnected when hangup call in idle state [JPT-614]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       session.mockSignal('bye');
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
         done();
       });
     });
-    it('Receive Answer event when call is idle, check call status is Connecting and answer action is called [JPT-625]', done => {
+    it('should call state become connecting when answer in idle state [JPT-625]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       jest.spyOn(session, 'accept');
       call.answer();
       setImmediate(() => {
@@ -116,10 +121,10 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('Receive onAnswered event when call is answering, check call static is Connected [JPT-526]', done => {
+    it('should call state become connected when received session confirmed in answering state  [JPT-526]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       call.answer();
       session.mockSignal('accepted');
       setImmediate(() => {
@@ -127,10 +132,10 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('Receive Failed event when call is answering, check call static is Disconnected [JPT-627]', done => {
+    it('should call state become disconnected when receive session failed in answering state [JPT-627]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       call.answer();
       session.mockSignal('failed');
       setImmediate(() => {
@@ -138,10 +143,10 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('Receive hangup event when call is answering, check call static is Disconnected and hangup action is called [JPT-526]', done => {
+    it('should call state become disconnected when hangup in answering state [JPT-526]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       jest.spyOn(session, 'hangup');
       call.answer();
       call.hangup();
@@ -151,10 +156,10 @@ describe('RTC call', () => {
         done();
       });
     });
-    it("Receive 'sessionDisconnected' event when call is answering,check call static is 'Disconnected'", done => {
+    it('should call state become disconnected when receive session disconnected in answering state [JPT-655]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createIncomingCall(session, account, account);
+      const call = new RTCCall(true, '', session, account, account);
       call.answer();
       session.mockSignal('bye');
       setImmediate(() => {
@@ -169,7 +174,7 @@ describe('RTC call', () => {
       const vAccount = new VirturlAccountAndCallObserver();
       jest.spyOn(vAccount, 'createOutCallSession');
       vAccount.isReadyReturnValue = false;
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
         expect(vAccount.callState).toBe(RTCCALL_STATE.CONNECTING);
@@ -182,7 +187,7 @@ describe('RTC call', () => {
       const vAccount = new VirturlAccountAndCallObserver();
       jest.spyOn(vAccount, 'createOutCallSession');
       vAccount.isReadyReturnValue = true;
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
         expect(vAccount.callState).toBe(RTCCALL_STATE.CONNECTING);
@@ -197,7 +202,7 @@ describe('RTC call', () => {
     it("should state transition from Pending to Connecting when receive 'Account ready' event [JPT-603]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
       jest.spyOn(vAccount, 'createOutCallSession');
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.onAccountReady();
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
@@ -212,7 +217,7 @@ describe('RTC call', () => {
       const vAccount = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       vAccount.isReadyReturnValue = false;
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
       jest.spyOn(session, 'hangup');
       call.hangup();
@@ -229,7 +234,7 @@ describe('RTC call', () => {
     it("should state transition from Connecting to Connected when receive 'Session confirmed' event [JPT-605]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
       call.onAccountReady();
       session.mockSignal('accepted');
@@ -243,7 +248,7 @@ describe('RTC call', () => {
     it("should state transition from Connecting to Disconnected when receive 'Hang up' event [JPT-606]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
       jest.spyOn(session, 'hangup');
       call.onAccountReady();
@@ -259,7 +264,7 @@ describe('RTC call', () => {
     it("should state transition from Connecting to Disconnected when receive 'Session disconnected' event [JPT-607]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
       call.onAccountReady();
       session.mockSignal('bye');
@@ -273,7 +278,7 @@ describe('RTC call', () => {
     it("should state transition from Connecting to Disconnected when receive 'Session error' event [JPT-608]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
       const session = new MockSession();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
       call.onAccountReady();
       session.mockSignal('failed');
@@ -288,7 +293,7 @@ describe('RTC call', () => {
   describe('Connected state transitions', async () => {
     it("should state transition from Connected to Disconnected when receive 'Hang up' event [JPT-609]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       const session = new MockSession();
       jest.spyOn(session, 'hangup');
       call.setCallSession(session);
@@ -305,7 +310,7 @@ describe('RTC call', () => {
 
     it("should state transition from Connected to Disconnected when receive 'Session disconnected' event [JPT-610]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       const session = new MockSession();
       call.setCallSession(session);
       call.onAccountReady();
@@ -319,7 +324,7 @@ describe('RTC call', () => {
     });
     it("should state transition from Connected to Disconnected when receive 'Session error' event [JPT-611]", done => {
       const vAccount = new VirturlAccountAndCallObserver();
-      const call = RTCCall.createOutgoingCall('123', vAccount, vAccount);
+      const call = new RTCCall(false, '123', null, vAccount, vAccount);
       const session = new MockSession();
       call.setCallSession(session);
       call.onAccountReady();

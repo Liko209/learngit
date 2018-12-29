@@ -1,3 +1,8 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:08:40
+ * Copyright © RingCentral. All rights reserved.
+ */
 import StateMachine from 'ts-javascript-state-machine';
 
 const CallFsmState = {
