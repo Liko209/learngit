@@ -21,6 +21,7 @@ import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 import PostModel from '@/store/models/Post';
 import { val } from 'factory.ts';
+import { err } from 'sdk/node_modules/foundation/src';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -91,6 +92,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (progress && progress.rate) {
           const { loaded = 0, total } = progress.rate;
           const value = (loaded / Math.max(total, 1)) * 100;
+          if (value > 100) {
+            throw Error('Fatal: the file sending progress > 100');
+          }
           result.set(id, value);
         }
       } else {
