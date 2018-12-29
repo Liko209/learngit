@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCUserAgent, UA_EVENT } from './IRTCUserAgent';
+import { IRTCUserAgent } from './IRTCUserAgent';
 import { WebPhone } from './WebPhone';
+import { UA_EVENT } from './types';
 
 enum WEBPHONE_REGISTER_EVENT {
   REG_SUCCESS = 'registered',

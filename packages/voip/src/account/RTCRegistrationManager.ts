@@ -7,12 +7,13 @@
 import { RTCRegistrationFSM } from './RTCRegistrationFSM';
 import { IConditionalHandler } from './IConditionalHandler';
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCUserAgent, UA_EVENT } from '../signaling/IRTCUserAgent';
+import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
 import { IRTCAccountListener } from '../api/IRTCAccountListener';
 import { AccountState } from '../api/types';
+import { UA_EVENT } from '../signaling/types';
 
-import { ErrorCode, RegistrationState } from './types';
+import { ErrorCode } from './types';
 
 const RegistrationEvent = {
   PROVISION_READY: 'provisionReady',
@@ -31,8 +32,13 @@ class RTCRegistrationManager implements IConditionalHandler {
   private _userAgent: IRTCUserAgent;
   private _listener: IRTCAccountListener;
 
-  public onReadyWhenRegSucceed(): string {
-    return RegistrationState.READY;
+  public onReadyWhenRegSucceedAction(): void {}
+  public onProvisionReadyAction(provisionData: any, options: any): void {
+    this._userAgent = new RTCSipUserAgent(
+      provisionData,
+      options,
+      this._eventEmitter,
+    );
   }
 
   constructor(listener: IRTCAccountListener) {
@@ -73,16 +79,18 @@ class RTCRegistrationManager implements IConditionalHandler {
 
   private _initListener() {
     this._eventEmitter.on(UA_EVENT.REG_SUCCESS, () => {
-      console.log('3333');
       this._onUARegSuccess();
     });
     this._eventEmitter.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
       this._onUARegFailed(response, cause);
     });
+    this._eventEmitter.on(UA_EVENT.REG_UNREGISTER, () => {
+      this._onUADeRegister();
+    });
     this._eventEmitter.on(
       RegistrationEvent.PROVISION_READY,
       (provisionData: any, options: any) => {
-        this._doRegister(provisionData, options);
+        this._onProvisionReady(provisionData, options);
       },
     );
   }
@@ -95,13 +103,8 @@ class RTCRegistrationManager implements IConditionalHandler {
     );
   }
 
-  private _doRegister(provisionData: any, options: any) {
-    this._fsm.provisionReady();
-    this._userAgent = new RTCSipUserAgent(
-      provisionData,
-      options,
-      this._eventEmitter,
-    );
+  private _onProvisionReady(provisionData: any, options: any) {
+    this._fsm.provisionReady(provisionData, options);
   }
 
   public makeCall(phoneNumber: string, options: any): any {
@@ -112,24 +115,16 @@ class RTCRegistrationManager implements IConditionalHandler {
     this._fsm.regSucceed();
   }
 
+  private _onUADeRegister() {
+    this._fsm.unRegister();
+  }
+
   private _onUARegFailed(response: any, cause: any) {
     if (ErrorCode.TIME_OUT === cause) {
       this._fsm.regTimeOut();
     } else {
       this._fsm.regError();
     }
-  }
-
-  // only for UT
-  public utReportRegFailed() {
-    this._fsm.provisionReady();
-    this._fsm.regError();
-  }
-
-  public utReportUnRegister() {
-    this._fsm.provisionReady();
-    this._fsm.regSucceed();
-    this._fsm.unRegister();
   }
 }
 

@@ -24,7 +24,10 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: RegistrationEvent.PROVISION_READY,
           from: RegistrationState.IDLE,
-          to: RegistrationState.REG_IN_PROGRESS,
+          to: (provisionData: any, options: any) => {
+            handler.onProvisionReadyAction(provisionData, options);
+            return RegistrationState.REG_IN_PROGRESS;
+          },
         },
         // registration in progress
         {
@@ -51,7 +54,10 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: RegistrationEvent.REG_SUCCEED,
           from: RegistrationState.READY,
-          to: () => handler.onReadyWhenRegSucceed(),
+          to: () => {
+            handler.onReadyWhenRegSucceedAction();
+            return RegistrationState.READY;
+          },
         },
       ],
       methods: {

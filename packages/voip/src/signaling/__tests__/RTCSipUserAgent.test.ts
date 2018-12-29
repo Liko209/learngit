@@ -5,7 +5,7 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCSipUserAgent } from '../RTCSipUserAgent';
-import { UA_EVENT } from '../IRTCUserAgent';
+import { UA_EVENT } from '../types';
 
 describe('RTCSipUserAgent', async () => {
   describe('register', () => {

@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 interface IConditionalHandler {
-  onReadyWhenRegSucceed(): string;
+  onReadyWhenRegSucceedAction(): void;
+  onProvisionReadyAction(provisionData: any, options: any): void;
 }
 
 export { IConditionalHandler };

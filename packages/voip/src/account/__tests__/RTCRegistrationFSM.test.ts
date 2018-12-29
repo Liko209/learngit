@@ -9,10 +9,12 @@ import { RegistrationState } from '../types';
 
 describe('RTCRegistrationFSM', async () => {
   class MockHandler implements IConditionalHandler {
-    onReadyWhenRegSucceed(): string {
-      return RegistrationState.READY;
-    }
+    onReadyWhenRegSucceedAction = jest.fn();
+    onProvisionReadyAction = jest.fn();
   }
+
+  const provisionData = 'provisionData';
+  const options = 'options';
 
   describe('create', () => {
     it('Should be idle state when create', () => {
@@ -26,8 +28,12 @@ describe('RTCRegistrationFSM', async () => {
     it('Should transition from idle state to regInProgress state when provision is ready [JPT-522]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady();
+      fsm.provisionReady(provisionData, options);
       expect(fsm.state).toBe(RegistrationState.REG_IN_PROGRESS);
+      expect(mockHandler.onProvisionReadyAction).toHaveBeenCalledWith(
+        provisionData,
+        options,
+      );
     });
   });
 
@@ -35,7 +41,7 @@ describe('RTCRegistrationFSM', async () => {
     it('Should transition from regInProgress state to ready state when regSucceed fired in regInProgress state [JPT-523]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady();
+      fsm.provisionReady(provisionData, options);
       fsm.regSucceed();
       expect(fsm.state).toBe(RegistrationState.READY);
     });
@@ -43,12 +49,11 @@ describe('RTCRegistrationFSM', async () => {
     it('Should transition from ready state to ready state when regSucceed fired in ready state [JPT-530]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      jest.spyOn(mockHandler, 'onReadyWhenRegSucceed');
-      fsm.provisionReady();
+      fsm.provisionReady(provisionData, options);
       fsm.regSucceed();
       fsm.regSucceed();
       expect(fsm.state).toBe(RegistrationState.READY);
-      expect(mockHandler.onReadyWhenRegSucceed).toHaveBeenCalled();
+      expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
     });
   });
 
@@ -56,7 +61,7 @@ describe('RTCRegistrationFSM', async () => {
     it('Should transition from ready state to regFailure state when time out [JPT-526]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady();
+      fsm.provisionReady(provisionData, options);
       fsm.regTimeOut();
       expect(fsm.state).toBe(RegistrationState.REG_FAILURE);
     });
@@ -66,7 +71,7 @@ describe('RTCRegistrationFSM', async () => {
     it('Should transition from ready state to regFailure state when error [JPT-560]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady();
+      fsm.provisionReady(provisionData, options);
       fsm.regError();
       expect(fsm.state).toBe(RegistrationState.REG_FAILURE);
     });
@@ -76,7 +81,7 @@ describe('RTCRegistrationFSM', async () => {
     it('Should transition from ready state to unRegistered state when unRegister fired in ready state [JPT-653]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady();
+      fsm.provisionReady(provisionData, options);
       fsm.regSucceed();
       fsm.unRegister();
       expect(fsm.state).toBe(RegistrationState.UN_REGISTERED);
