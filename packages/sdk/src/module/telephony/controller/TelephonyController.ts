@@ -8,10 +8,7 @@ import { Api } from '../../../api';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import RTCEngine from 'voip/src';
 
-class VoIPNetworkDelegate implements ITelephonyNetworkDelegate {
-  /**
-   * @override
-   */
+class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
     return await Api.rcNetworkClient
       .request({
@@ -31,10 +28,10 @@ class VoIPNetworkDelegate implements ITelephonyNetworkDelegate {
 
 class TelephonyController {
   rtcEngine: RTCEngine;
-  voipNetworkDelegate: VoIPNetworkDelegate;
+  voipNetworkDelegate: VoIPNetworkClient;
 
   constructor(public controllerBuilder: IControllerBuilder) {
-    this.voipNetworkDelegate = new VoIPNetworkDelegate();
+    this.voipNetworkDelegate = new VoIPNetworkClient();
   }
 
   initEngine() {
