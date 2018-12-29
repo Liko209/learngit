@@ -7,6 +7,7 @@
 import { RTCAccount, IRTCAccountListener } from './RTCAccount';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcRestApiManager } from '../utils/RTCRestApiManager';
 
 class RTCEngine {
   private static instance: RTCEngine;
@@ -26,6 +27,10 @@ class RTCEngine {
 
   public static setLogger(logger: IRTCLogger): void {
     rtcLogger.setLogger(logger);
+  }
+
+  public setClient(Client: any): void {
+    rtcRestApiManager.setClient(Client);
   }
 }
 

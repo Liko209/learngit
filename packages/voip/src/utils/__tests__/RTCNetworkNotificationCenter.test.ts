@@ -1,3 +1,9 @@
+/*
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2018-12-28 15:52:43
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 /// <reference path="../../__tests__/types.d.ts" />
 import {
   rtcNetworkNotificationCenter,

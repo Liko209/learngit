@@ -1,3 +1,9 @@
+/*
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2018-12-28 15:51:45
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 type RTCCallInfo = {
   fromName: string;
   fromNum: string;
