@@ -15,7 +15,7 @@ import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { BaseError, ErrorTypes } from '../../utils';
 import { transform } from '../utils';
 import PersonService from '../person';
-import handleData from './handleData';
+import handleData, { hiddenGroupsChange } from './handleData';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -290,6 +290,7 @@ class ProfileService extends BaseService<Profile> {
           favorite_group_ids: favIds,
         };
       }
+      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
@@ -314,6 +315,7 @@ class ProfileService extends BaseService<Profile> {
         ...partialModel,
         [`hide_group_${groupId}`]: false,
       };
+      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
