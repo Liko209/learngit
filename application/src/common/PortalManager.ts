@@ -84,6 +84,7 @@ class PortalManager extends EventEmitter2 {
       show: wrapperComponent.show,
     };
   }
+
   onChange(fn: Function) {
     this.on(EventKey, (portals: PortalsMapProps) => {
       fn(portals);
@@ -91,5 +92,5 @@ class PortalManager extends EventEmitter2 {
   }
 }
 
-export { PortalsMapProps, PortalManager };
+export { PortalsMapProps, PortalManager, EventKey };
 export default new PortalManager();
