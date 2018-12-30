@@ -39,6 +39,94 @@ storiesOf('Pattern/ConversationCard', module)
             }
           />
         </JuiFileWithExpand>
+        <JuiFileWithExpand
+          fileName={fileName}
+          expand={expand}
+          Actions={
+            <div>
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            </div>
+          }
+        >
+          <JuiPreviewImage
+            url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+            fileName={fileName}
+            ratio={0.5}
+            Actions={
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            }
+          />
+        </JuiFileWithExpand>
+        <JuiFileWithExpand
+          fileName={fileName}
+          expand={expand}
+          Actions={
+            <div>
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            </div>
+          }
+        >
+          <JuiPreviewImage
+            url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+            fileName={fileName}
+            ratio={0.5}
+            Actions={
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            }
+          />
+        </JuiFileWithExpand>
+        <JuiFileWithExpand
+          fileName={fileName}
+          expand={expand}
+          Actions={
+            <div>
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            </div>
+          }
+        >
+          <JuiPreviewImage
+            url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+            fileName={fileName}
+            ratio={0.5}
+            Actions={
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            }
+          />
+        </JuiFileWithExpand>
+        <JuiFileWithExpand
+          fileName={fileName}
+          expand={expand}
+          Actions={
+            <div>
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            </div>
+          }
+        >
+          <JuiPreviewImage
+            url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
+            fileName={fileName}
+            ratio={0.5}
+            Actions={
+              <JuiIconButton variant="plain" tooltipTitle="download">
+                get_app
+              </JuiIconButton>
+            }
+          />
+        </JuiFileWithExpand>
       </div>
     );
   });

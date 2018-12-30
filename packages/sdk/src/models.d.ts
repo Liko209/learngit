@@ -182,6 +182,10 @@ export type GroupConfig = {
   is_newest_saved?: boolean;
 };
 
+export type PostItemData = {
+  version_map: { [key: number]: number };
+};
+
 export type Post = ExtendedBaseModel & {
   group_id: number;
   company_id: number;
@@ -196,7 +200,7 @@ export type Post = ExtendedBaseModel & {
   at_mention_non_item_ids?: number[];
   new_version?: number; // This field should be moved to base model?
   from_group_id?: number;
-  item_data?: object;
+  item_data?: PostItemData;
   links?: object[];
   items?: object[];
   __status?: POST_STATUS;
@@ -269,7 +273,7 @@ export type EventItem = Item & {
   text: string;
 };
 
-export type FileItem = Item & {
+export type ItemFile = Item & {
   name: string;
 };
 
@@ -306,4 +310,10 @@ export type RawPresence = {
 
 export type Presence = BaseModel & {
   presence: RawPresence['calculatedStatus'];
+};
+
+export type Progress = BaseModel & {
+  total: number;
+  loaded: number;
+  groupId?: number;
 };

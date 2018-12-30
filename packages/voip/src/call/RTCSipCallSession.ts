@@ -1,11 +1,11 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:08:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from './IRTCCallSession';
-
-enum SIP_CALL_SESSION_STATE {
-  CONFIRMED = 'sipcallsessionstate.confirmed',
-  DISCONNECTED = 'sipcallsessionstate.disconnected',
-  ERROR = 'sipcallsessionstate.error',
-}
+import { CALL_SESSION_STATE } from './types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',
@@ -26,31 +26,47 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_STATE.ACCEPTED, () => {
       this._onSessionConfirmed();
     });
-
     this._session.on(WEBPHONE_STATE.BYE, () => {
       this._onSessionDisconnected();
     });
-
     this._session.on(WEBPHONE_STATE.FAILED, () => {
       this._onSessionError();
     });
   }
 
   private _onSessionConfirmed() {
-    this.emit(SIP_CALL_SESSION_STATE.CONFIRMED);
+    this.emit(CALL_SESSION_STATE.CONFIRMED);
   }
 
   private _onSessionDisconnected() {
-    this.emit(SIP_CALL_SESSION_STATE.DISCONNECTED);
+    this.emit(CALL_SESSION_STATE.DISCONNECTED);
   }
 
   private _onSessionError() {
-    this.emit(SIP_CALL_SESSION_STATE.ERROR);
+    this.emit(CALL_SESSION_STATE.ERROR);
   }
 
   hangup() {
     if (this._session != null) {
       this._session.hangup();
+    }
+  }
+
+  answer() {
+    if (this._session != null) {
+      this._session.accept();
+    }
+  }
+
+  reject() {
+    if (this._session != null) {
+      this._session.reject();
+    }
+  }
+
+  sendToVoicemail() {
+    if (this._session != null) {
+      this._session.sendToVoicemail();
     }
   }
 
@@ -66,4 +82,4 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 }
 
-export { RTCSipCallSession, SIP_CALL_SESSION_STATE, WEBPHONE_STATE };
+export { RTCSipCallSession, WEBPHONE_STATE };

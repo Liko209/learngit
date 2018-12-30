@@ -342,8 +342,7 @@ class ProfileService extends BaseService<Profile> {
 
   private async _requestUpdateProfile(
     newProfile: Profile,
-    handleDataFunc?: (profile: Raw<Profile> | null) => Promise<Profile | null>,
-  ): Promise<Profile | null> {
+  ): Promise<Profile | BaseError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
 
@@ -354,17 +353,10 @@ class ProfileService extends BaseService<Profile> {
 
     return apiResult.match({
       Ok: async (rawProfile: Raw<Profile>) => {
-        if (handleDataFunc) {
-          const profile = await handleDataFunc(rawProfile);
-          if (profile) {
-            return profile;
-          }
-          return null;
-        }
         const latestProfileModel: Profile = transform(rawProfile);
         return latestProfileModel;
       },
-      Err: () => null,
+      Err: (error: BaseError) => error,
     });
   }
 

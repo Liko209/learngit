@@ -51,7 +51,7 @@ const execQuery = <T extends {}>(
   }
 
   const where = (key: string) =>
-    (coll ? collectionWhere(coll, key) : table.where(key));
+    coll ? collectionWhere(coll, key) : table.where(key);
 
   anyOfs.forEach(({ key, array, ignoreCase }: IAnyOf) => {
     coll = ignoreCase

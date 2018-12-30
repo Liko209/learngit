@@ -28,7 +28,7 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser, BaseError } from '../../utils/error';
+import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -482,6 +482,50 @@ class GroupService extends BaseService<Group> {
     } catch (error) {
       throw ErrorParser.parse(error);
     }
+  }
+
+  private async _updateGroup(
+    id: number,
+    data: Partial<Group>,
+  ): Promise<boolean> {
+    data.id = id;
+    const result = await this.handlePartialUpdate(
+      data,
+      undefined,
+      async (updatedModel: Group) => {
+        return await this._doUpdateGroup(id, updatedModel);
+      },
+    );
+    if (result.isOk()) {
+      return true;
+    }
+    if (!result.apiError) {
+      throw ErrorTypes.UNDEFINED_ERROR;
+    }
+    throw result.apiError.code;
+  }
+
+  // update partial group data http
+  private async _doUpdateGroup(
+    id: number,
+    group: Group,
+  ): Promise<Group | BaseError> {
+    const apiResult = await GroupAPI.putTeamById(id, group);
+    if (apiResult.isOk()) {
+      return transform<Group>(apiResult.data);
+    }
+    return apiResult.error;
+  }
+
+  // update partial group data, for message draft
+  async updateGroupPrivacy(params: {
+    id: number;
+    privacy: string;
+  }): Promise<boolean> {
+    const result = await this._updateGroup(params.id, {
+      privacy: params.privacy,
+    });
+    return result;
   }
 
   // update partial group data, for message draft

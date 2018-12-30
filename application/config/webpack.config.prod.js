@@ -27,7 +27,6 @@ const paths = require("./paths");
 const getClientEnvironment = require("./env");
 const excludeNodeModulesExcept = require("./excludeNodeModulesExcept");
 const appPackage = require(paths.appPackageJson);
-
 const argv = process.argv;
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -378,6 +377,7 @@ module.exports = {
     // Otherwise React will be compiled in the very slow development mode.
     new webpack.DefinePlugin({
       ...env.stringified,
+      "process.env.JUPITER_ENV": JSON.stringify(process.env.JUPITER_ENV),
       "process.env.APP_VERSION": JSON.stringify(appPackage.version),
       "process.env.BUILD_TIME": Date.now(),
       "process.env.APP_NAME": JSON.stringify(env.appName || "RingCentral")
@@ -409,7 +409,7 @@ module.exports = {
     }),
     // generate service worker
     new GenerateSW({
-      exclude: [/\.map$/, /asset-manifest\.json$/],
+      exclude: [/\.map$/, /asset-manifest\.json$/, /whiteListedId\.json$/],
       skipWaiting: true,
       clientsClaim: true,
       navigateFallback: publicUrl + "/index.html",

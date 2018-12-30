@@ -78,11 +78,24 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  get jumpToFirstUnreadButtonWrapper(){
+    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
   async sendMessage(message: string) {
     await this.t
       .typeText(this.messageInputArea, message)
       .click(this.messageInputArea)
       .pressKey('enter');
+  }
+
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
   }
 
   async favorite() {
@@ -95,6 +108,10 @@ export class ConversationPage extends BaseConversationPage {
 
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());
+  }
+
+  async clickJumpToFirstUnreadButton () {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper)
   }
 }
 

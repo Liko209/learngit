@@ -34,6 +34,7 @@ const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
   overflow: auto;
   height: 100%;
   position: relative;
+  flex: 1;
 `;
 
 const ScrollerContext = React.createContext({
