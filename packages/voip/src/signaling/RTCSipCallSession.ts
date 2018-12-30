@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallSession } from './IRTCCallSession';
-import { CALL_SESSION_STATE } from './types';
+import { IRTCCallSession } from '../signaling/IRTCCallSession';
+import { CALL_SESSION_STATE } from '../call/types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',

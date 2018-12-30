@@ -8,7 +8,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallObserver } from '../IRTCCallObserver';
 import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
-import { RTCCALL_STATE, CALL_SESSION_STATE } from '../types';
+import { RTCCALL_STATE, CALL_SESSION_STATE } from '../../call/types';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallObserver, IRTCAccount {

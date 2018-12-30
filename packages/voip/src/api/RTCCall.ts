@@ -4,17 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IRTCCallObserver } from './IRTCCallObserver';
-import { IRTCCallSession } from './IRTCCallSession';
-import { RTCSipCallSession } from './RTCSipCallSession';
+import { IRTCCallSession } from '../signaling/IRTCCallSession';
+import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm } from './RTCCallFsm';
+import { RTCCallFsm } from '../call/RTCCallFsm';
 import { v4 as uuid } from 'uuid';
 import {
   RTCCallInfo,
   RTCCALL_STATE,
   CALL_SESSION_STATE,
   CALL_FSM_NOTIFY,
-} from './types';
+} from '../call/types';
 
 class RTCCall {
   private _callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
