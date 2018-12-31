@@ -70,7 +70,6 @@ class Api {
     type: IHandleType,
   ): NetworkClient {
     if (!this._httpConfig) Throw(ErrorTypes.API, 'Api not initialized');
-
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
       const currentConfig = this._httpConfig[name];
