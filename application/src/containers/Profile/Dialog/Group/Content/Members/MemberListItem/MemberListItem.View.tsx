@@ -28,11 +28,21 @@ class MemberListItem extends React.Component<
     const ListItemAdmin = JuiProfileDialogContentMemberListItemAdmin;
     const ListItemGuest = JuiProfileDialogContentMemberListItemGuest;
     return (
-      <ListItem>
+      <ListItem data-id={pid}>
         <Avatar uid={pid} presence={presence} />
-        <ListItemName>{person.userDisplayName}</ListItemName>
-        {isThePersonAdmin && <ListItemAdmin>{t('admin')}</ListItemAdmin>}
-        {isThePersonGuest && <ListItemGuest>{t('guest')}</ListItemGuest>}
+        <ListItemName data-test-automation-id="profileDialogMemberListItemPersonName">
+          {person.userDisplayName}
+        </ListItemName>
+        {isThePersonAdmin && (
+          <ListItemAdmin data-test-automation-id="profileDialogMemberListItemPersonAdmin">
+            {t('admin')}
+          </ListItemAdmin>
+        )}
+        {isThePersonGuest && (
+          <ListItemGuest data-test-automation-id="profileDialogMemberListItemPersonGuest">
+            {t('guest')}
+          </ListItemGuest>
+        )}
       </ListItem>
     );
   }

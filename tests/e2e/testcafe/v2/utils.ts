@@ -63,4 +63,10 @@ export class MiscUtils {
     const filepath = path.join(TMPFILE_PATH, filename);
     return filepath;
   }
+
+  static createDirIfNotExists(path) {
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path)
+    }
+  }
 }

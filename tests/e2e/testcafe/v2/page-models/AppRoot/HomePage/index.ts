@@ -9,68 +9,80 @@ import { MessageTab } from './MessageTab';
 import { Header } from './header';
 import { LeftRail } from './LeftRail';
 import { RightRail } from './RightRail';
-
+import { ViewProfile, MiniProfile, ProfileDialog } from './ViewProfile';
 
 export class HomePage extends BaseWebComponent {
-    async ensureLoaded() {
-        await this.waitUntilExist(this.leftPanel, 60e3);
-    }
+  async ensureLoaded() {
+    await this.waitUntilExist(this.leftPanel, 60e3);
+  }
 
-    get self() {
-        return this.getSelector('#root');
-    }
+  get self() {
+    return this.getSelector('#root');
+  }
 
-    get leftPanel() {
-        return this.getComponent(LeftPanel);
-    }
+  get leftPanel() {
+    return this.getComponent(LeftPanel);
+  }
 
-    get leftRail() {
-        return this.getComponent(LeftRail);
-    }
+  get leftRail() {
+    return this.getComponent(LeftRail);
+  }
 
-    get rightRail() {
-        return this.getComponent(RightRail);
-    }
+  get rightRail() {
+    return this.getComponent(RightRail);
+  }
 
-    get messageTab() {
-        return this.getComponent(MessageTab);
-    }
+  get messageTab() {
+    return this.getComponent(MessageTab);
+  }
 
-    get header() {
-        return this.getComponent(Header);
-    }
+  get header() {
+    return this.getComponent(Header);
+  }
 
-    get addActionButton() {
-        this.warnFlakySelector();
-        return this.self.find('button').child().withText('add_circle').parent().parent();
-    }
+  get addActionButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').child().withText('add_circle').parent().parent();
+  }
 
-    get addActionMenu() {
-        return this.getComponent(AddActionMenu);
-    }
+  get addActionMenu() {
+    return this.getComponent(AddActionMenu);
+  }
 
-    get createTeamModal() {
-        return this.getComponent(CreateTeamModal);
-    }
+  get createTeamModal() {
+    return this.getComponent(CreateTeamModal);
+  }
 
-    get sendNewMessageModal() {
-        return this.getComponent(SendNewMessageModal);
-    }
+  get sendNewMessageModal() {
+    return this.getComponent(SendNewMessageModal);
+  }
 
-    get topBarAvatar() {
-        return this.getSelectorByAutomationId('topBarAvatar');
-    }
+  // todo: delete after e2e/FIJI-2395 merge;
+  get viewProfile() {
+    return this.getComponent(ViewProfile);
+  }
 
-    get settingMenu() {
-        return this.getComponent(SettingMenu);
-    }
+  get miniProfile() {
+    return this.getComponent(MiniProfile);
+  }
 
-    async openAddActionMenu() {
-        await this.t.hover('html').click(this.addActionButton);
-    }
+  get profileDialog() {
+    return this.getComponent(ProfileDialog);
+  }
+  get topBarAvatar() {
+    return this.getSelectorByAutomationId('topBarAvatar');
+  }
 
-    async openSettingMenu() {
-        await this.t.click(this.topBarAvatar);
-    }
+  get settingMenu() {
+    return this.getComponent(SettingMenu);
+  }
+
+  async openAddActionMenu() {
+    await this.t.hover('html').click(this.addActionButton);
+  }
+
+  async openSettingMenu() {
+    await this.t.click(this.topBarAvatar);
+  }
 
 }

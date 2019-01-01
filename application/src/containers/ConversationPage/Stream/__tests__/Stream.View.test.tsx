@@ -88,7 +88,6 @@ describe('StreamView', () => {
       const card = wrapper.find(ConversationPost);
       const card0 = card.at(0);
       const card1 = card.at(1);
-
       expect(card).toHaveLength(2);
       expect(card0.props()).toMatchObject({ id: 1, highlight: false });
       expect(card1.props()).toMatchObject({ id: 2, highlight: false });

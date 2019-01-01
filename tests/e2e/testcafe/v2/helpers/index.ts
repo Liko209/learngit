@@ -1,5 +1,5 @@
 import 'testcafe';
-import { ClientFunction } from 'testcafe';
+import { ClientFunction, Role } from 'testcafe';
 import { getLogger } from 'log4js';
 
 import { DataHelper } from './data-helper'
@@ -12,6 +12,8 @@ import { AllureHelper } from './allure-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
+import { AppRoot } from '../page-models/AppRoot';
+import { SITE_URL, SITE_ENV } from '../../config';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -70,7 +72,7 @@ class Helper {
     return await this.logHelper.log(step, takeScreenShot);
   }
 
-  async withLog(step: IStep | string, cb: () => Promise<any>, takeScreenShot: boolean = false) {
+  async withLog(step: IStep | string, cb: (step?: IStep) => Promise<any>, takeScreenShot: boolean = false) {
     return await this.logHelper.withLog(step, cb, takeScreenShot);
   }
 
@@ -86,6 +88,14 @@ class Helper {
     const glip = await this.getGlip(user);
     const platform = await this.getPlatform(user);
     return { glip, platform };
+  }
+
+  glip(user: IUser) {
+    return  this.sdkHelper.sdkManager.glip(user);
+  }
+
+  platform(user: IUser) {
+    return this.sdkHelper.sdkManager.platform(user);
   }
 
   // testcafe extend
@@ -115,6 +125,27 @@ class Helper {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  get setLocalStorage(): (k: string, v: string) => Promise<any> {
+    return ClientFunction((key, val) => localStorage.setItem(key, val));
+  }
+
+  async userRole(user: IUser, cb?: (appRoot) => Promise<any>) {
+    return await Role(SITE_URL, async (t) => {
+      const app = new AppRoot(t);
+      await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
+      await app.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
+      await app.homePage.ensureLoaded();
+      if (undefined !== cb) {
+        await cb(app);
+      }
+    }, { preserveUrl: true, });
+  }
+
+  // a temporary method:  need time to wait back-end and front-end sync umi data.
+  async waitUmiDismiss(timeout: number = 3e3) {
+    await this.t.wait(timeout);
+  }
+
   // misc
   async resetGlipAccount(user: IUser) {
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(user.company.admin);
@@ -123,8 +154,11 @@ class Helper {
   }
 }
 
-function h(t: TestController) {
-  return new Helper(t);
+function h(t: TestController): Helper {
+  if (undefined == t.ctx.__helper) {
+    t.ctx.__helper = new Helper(t);
+  }
+  return t.ctx.__helper;
 }
 
 export { Helper, h, H };

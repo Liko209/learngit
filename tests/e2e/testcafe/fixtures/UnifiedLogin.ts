@@ -8,19 +8,19 @@ import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { SITE_URL } from '../config';
+import { SITE_URL, BrandTire, SITE_ENV } from '../config';
 
 fixture('Unified Login')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
-  const user = h(t).rcData.mainCompany.users[0];
+  const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
   await h(t).withLog('Given I login Jupiter interactively', async () => {
-    await t.navigateTo(SITE_URL);
-    await app.loginPage.interactiveSignIn(user.company.number, user.extension, user.password);
+    await h(t).jupiterHelper.selectEnvironment(SITE_URL, SITE_ENV);
+    await app.loginPage.interactiveSignIn(loginUser.company.number, loginUser.extension, loginUser.password);
   });
 
   await h(t).withLog('Then I should find state params in url before enter home page', async () => {

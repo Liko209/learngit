@@ -9,7 +9,7 @@ import { SOCKET } from '../eventKey';
 import dataDispatcher from '../../component/DataDispatcher/index';
 
 import { BaseModel, Raw, SortableModel } from '../../models'; // eslint-disable-line
-import { BaseError, ErrorParser } from '../../utils';
+import { BaseError, ErrorParser, ErrorTypes } from '../../utils';
 import _ from 'lodash';
 import { ApiResultOk } from '../../api/ApiResult';
 import { BaseResponse, ResultType } from 'foundation/src';
@@ -17,7 +17,7 @@ import { BaseResponse, ResultType } from 'foundation/src';
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
 
-class MyDao extends BaseDao<{}> {}
+class MyDao extends BaseDao<{}> { }
 const fakeApi = {
   getDataById: jest.fn(),
 };
@@ -288,7 +288,7 @@ describe('BaseService', () => {
         name: 'someone',
       };
 
-      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(null);
+      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(new BaseError(ErrorTypes.API_NETWORK, 'fake network error'));
 
       jest
         .spyOn(service, 'getById')
@@ -369,11 +369,12 @@ describe('BaseService', () => {
       const partialModel = {
         id: 3,
         name: 'someone',
+        sex: 'boy',
       };
 
       const originalModel = { id: 3, name: 'trump', note: 'a player' };
 
-      const targetModel = { id: 3, name: 'trump' };
+      const targetModel = { id: 3, name: 'trump', sex: undefined };
 
       service.doPartialNotify = jest.fn();
 

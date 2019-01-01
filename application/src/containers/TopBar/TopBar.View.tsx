@@ -54,8 +54,8 @@ class TopBar extends React.Component<TopBarProps> {
       <React.Fragment>
         <JuiTopBar
           MainMenu={this._MainMenu}
-          AvatarMenu={AvatarActions}
-          AddMenu={NewActions}
+          AvatarActions={AvatarActions}
+          NewActions={NewActions}
           SearchBar={SearchBar}
           Logo={this._Logo}
           BackNForward={isElectron ? BackNForward : undefined}

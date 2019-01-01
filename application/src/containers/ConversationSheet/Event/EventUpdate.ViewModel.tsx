@@ -10,7 +10,7 @@ import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventUpdateViewProps, EventUpdateProps } from './types';
-import { EventItem } from '@/store/models/Items';
+import EventItemModel from '@/store/models/EventItem';
 
 class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   implements EventUpdateViewProps {
@@ -31,7 +31,7 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
 
   @computed
   get event() {
-    return getEntity<Item, EventItem>(ENTITY_NAME.ITEM, this._id);
+    return getEntity<Item, EventItemModel>(ENTITY_NAME.EVENT_ITEM, this._id);
   }
 
   @computed

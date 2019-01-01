@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MenuViewModel } from '../Menu.ViewModel';
+import * as utils from '@/store/utils';
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {
     it('should return falsy for shouldSkipCloseConfirmation as default', () => {
@@ -28,10 +29,35 @@ describe('MenuViewModel', () => {
     });
   });
 
-  describe('_group()', () => {
-    it('should _group with true', () => {
+  describe('closable()', () => {
+    let groupState: any;
+    beforeEach(() => {
+      groupState = {
+        unreadCount: 0,
+        isFavorite: false,
+      };
+      jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => groupState);
+    });
+    it('should closable when conversation is neither unread nor favourite', () => {
       const model = new MenuViewModel();
-      expect(model.showClose).toBe(true);
+      expect(model.closable).toBe(true);
+    });
+    it('should not closable when conversation is both unread and favourite', () => {
+      const model = new MenuViewModel();
+      groupState.unreadCount = 100;
+      groupState.isFavorite = true;
+      expect(model.closable).toBe(false);
+    });
+    it('should not closable when conversation is unread ', () => {
+      const model = new MenuViewModel();
+      groupState.unreadCount = 100;
+      expect(model.closable).toBe(false);
+    });
+    it('should not closable when conversation is favourite', () => {
+      const model = new MenuViewModel();
+      groupState.isFavorite = true;
+      expect(model.closable).toBe(false);
     });
   });
 });

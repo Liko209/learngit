@@ -59,7 +59,9 @@ class TokenRouteViewModel extends StoreViewModel {
     }
   }
 
-  redirectToIndex = () => {
+  redirectToIndex = async () => {
+    const authService = AuthService.getInstance() as AuthService;
+    await authService.logout();
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
     this._redirect(state);

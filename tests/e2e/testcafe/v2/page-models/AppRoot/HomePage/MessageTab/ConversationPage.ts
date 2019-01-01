@@ -53,7 +53,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   async scrollToMiddle() {
     const scrollHeight = await this.streamWrapper.clientHeight;
-    this.scrollToY(scrollHeight/2);
+    await this.scrollToY(scrollHeight/2);
   }
 
   async scrollToBottom() {
@@ -74,11 +74,28 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get currentGroupId() {
+    return this.self.getAttribute('data-group-id');
+  }
+
+  get jumpToFirstUnreadButtonWrapper(){
+    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
   async sendMessage(message: string) {
     await this.t
       .typeText(this.messageInputArea, message)
       .click(this.messageInputArea)
       .pressKey('enter');
+  }
+
+  get privateButton() {
+    this.warnFlakySelector();
+    return this.self.find('.privacy');
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
   }
 
   async favorite() {
@@ -89,8 +106,12 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
   }
 
-  get currentGroupId() {
-    return this.self.getAttribute('data-group-id');
+  async groupIdShouldBe(id: string | number) {
+    await this.t.expect(this.currentGroupId).eql(id.toString());
+  }
+
+  async clickJumpToFirstUnreadButton () {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper)
   }
 }
 
@@ -130,6 +151,14 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get mentions() {
+    return this.text.find('.at_mention_compose');
+  }
+
+  getMentionByName(name: string) {
+    return this.mentions.filter((el) => el.textContent === name);
+  }
+
   imgTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
@@ -154,6 +183,14 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
 
+  get prompt() {
+    return this.getSelector('.tooltipPlacementBottom').textContent;
+  }
+
+  async clickAvatar() {
+    await this.t.click(this.avatar);
+  }
+
   async clickLikeOnActionBar() {
     await this.t.hover(this.self).click(this.likeToggleOnActionBar);
   }
@@ -176,6 +213,7 @@ export class PostItem extends BaseWebComponent {
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
   }
+
 
 
   // --- mention page only ---

@@ -11,6 +11,7 @@ const ErrorTypes = {
   API: 1000,
   API_INVALID_GRANT: 1147,
   API_NETWORK: 5000, // TODO unified API error codes
+  API_SERVER_ERROR: 5001, // TODO unified API error codes
   API_ALREADY_TAKEN: 6001,
   API_INVALID_FIELD: 6002,
 

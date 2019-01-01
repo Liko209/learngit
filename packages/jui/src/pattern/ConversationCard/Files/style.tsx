@@ -185,16 +185,15 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
 const ImageMedia = styled(FileCardMedia)``;
 
 const FileExpandItemWrapper = styled.div`
-  margin-bottom: ${spacing(3)};
-  &:last-child {
-    margin-bottom: 0;
+  &:not(:last-child) {
+    margin: ${spacing(0, 0, 2, 0)};
   }
 `;
 
 const FileExpandItem = styled(MuiListItem)`
   && {
+    height: ${height(13)};
     padding: ${spacing(4)};
-    margin: ${spacing(0, 0, 2, 0)};
     width: ${width(ITEM_WIDTH)};
     border-radius: ${shape('borderRadius', 1)};
     box-shadow: ${props => props.theme.shadows[1]};

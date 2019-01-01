@@ -1,0 +1,27 @@
+{
+  "rc": {
+    "server": "https://api-glpci1xmn.lab.nordigy.ru",
+    "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
+    "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
+  },
+  "glip2": {
+    "server": "https://api-glpci1xmn.lab.nordigy.ru",
+    "clientId": "YCWFuqW8T7-GtSTb6KBS6g",
+    "clientSecret": "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA"
+  },
+  "glip": {
+    "server": "https://glpci1xmn.asialab.glip.net",
+    "cacheServer": "https://glpci1xmn.asialab.glip.net:31337"
+  },
+  "glip_desktop": {
+    "server": "https://glpci1xmn.asialab.glip.net",
+    "apiPlatformVersion": "v1.0",
+    "apiPlatform": "/desktop"
+  },
+  "splitio": {
+    "clientSecret": "aiers1fdmskm7paalb3ubhhuumaauv21rnti"
+  },
+  "upload": {
+    "server": "https://glpci1xmn.asialab.glip.net:8443"
+  }
+}

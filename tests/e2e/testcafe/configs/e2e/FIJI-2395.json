@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/MiniProfile.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

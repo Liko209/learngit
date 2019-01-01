@@ -3,11 +3,11 @@ import { v4 as uuid } from 'uuid';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 declare var test: TestFn;
 fixture('CloseConversation')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Close current conversation directly, and navigate to blank page (without UMI)',
@@ -15,51 +15,55 @@ test(formalName('Close current conversation directly, and navigate to blank page
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
-    const directMessagesSection =
-      app.homePage.messageTab.directMessagesSection;
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, favChatId, teamId, currentGroupId;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat and I team chat',
       async () => {
-        pvtChatId = (await user.sdk.platform.createGroup({
+        pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'PrivateChat',
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-        favChatId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId],
+        });
+
+        favChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        teamId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
+
+        teamId = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
+
       },
     );
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [pvtChatId, favChatId, teamId]);
-      await user.sdk.glip.favoriteGroups(user.rcId, [+favChatId]);
-    })
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, favChatId, teamId]);
+      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favChatId]);
+    });
+
     await h(t).withLog('And I clean all UMI before login', async () => {
-      await user.sdk.glip.clearAllUmi();
+      await h(t).glip(loginUser).clearAllUmi();
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
-        await user.sdk.glip.skipCloseConversationConfirmation(user.rcId, true);
-     },
+        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+      },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -87,9 +91,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`,
         async () => {
           await item.enter();
-          currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
-            'data-group-id',
-          );
+          currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
           await item.expectUmi(0);
           await item.openMoreMenu();
           await app.homePage.messageTab.moreMenu.close.enter();
@@ -117,8 +119,8 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await favChat.openMoreMenu();
     });
 
-    await h(t).withLog('Then the close button should not be show', async () => {
-      await t.expect(app.homePage.messageTab.moreMenu.close.exists).notOk();
+    await h(t).withLog('Then the close button should be disabled', async () => {
+      await app.homePage.messageTab.moreMenu.close.shouldBeDisabled()
       await t.pressKey('esc');
     },
     );
@@ -130,42 +132,42 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
     const dmSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, teamId, urlBeforeClose, urlAfterClose, currentGroupId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B', async () => {
-      pvtChatId = (await user.sdk.platform.createGroup({
+      pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
-      teamId = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId],
+      });
+
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
         isPublic: true,
         name: uuid(),
         type: 'Team',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
     });
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
-      await user.sdk.glip.clearFavoriteGroups();
-      });
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, teamId]);
+      await h(t).glip(loginUser).clearFavoriteGroups();
+    });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: true,
-        });
+        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -180,9 +182,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
       await teamsSection.expand();
       await t.expect(team.exists).ok(teamId, { timeout: 10e3 });
       await team.enter();
-      currentGroupId = await app.homePage.messageTab.conversationPage.self.getAttribute(
-        'data-group-id',
-      );
+      currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
     });
 
     await h(t).withLog('When I open conversation B and close conversation A', async () => {
@@ -221,8 +221,10 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+
 
     const dmSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -230,41 +232,40 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     let pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
       async () => {
-        pvtChatId = (await user.sdk.platform.createGroup({
+        pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'PrivateChat',
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-        teamId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId],
+        });
+
+        teamId = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-      },
-    );
-
-    await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
-      await user.sdk.glip.clearFavoriteGroups();
-    });
-
-    await h(t).withLog('And I clean all UMI before login',
-      async () => {
-        await user.sdk.glip.clearAllUmi();
-     },
-    );
-
-    await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
-      async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: false,
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
         });
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog('All conversations should not be hidden before login', async () => {
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, teamId]);
+      await h(t).glip(loginUser).clearFavoriteGroups();
+    });
+
+    await h(t).withLog('And I clean all UMI before login',
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).glip(loginUser).clearAllUmi();
+      },
+    );
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
+      async () => {
+        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, false);
+      },
+    );
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -279,6 +280,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
     }, true);
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
 
@@ -336,8 +338,9 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
     const dmSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -345,41 +348,39 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     let pvtChatId, teamId;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 team chat B',
       async () => {
-        pvtChatId = (await user.sdk.platform.createGroup({
+        pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'PrivateChat',
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-        teamId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId],
+        });
+        teamId = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: uuid(),
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
       },
     );
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.showGroups(user.rcId, [pvtChatId, teamId]);
-      await user.sdk.glip.clearFavoriteGroups();
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, teamId]);
+      await h(t).glip(loginUser).clearFavoriteGroups();
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
-        await user.sdk.glip.clearAllUmi();
+        await h(t).glip(loginUser).clearAllUmi();
       },
     );
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
-        await user.sdk.glip.updateProfile(user.rcId, {
-          skip_close_conversation_confirmation: false,
-        });
+        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, false);
       },
     );
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -395,6 +396,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     }, true);
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
+      await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
       await pvtChat.expectUmi(0);
     });
 
@@ -447,9 +449,14 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    await h(t).resetGlipAccount(user);
-    user.sdk = await h(t).getSdk(user);
+    const loginUser = users[4];
+    const otherUser = users[5];
+
+    await h(t).resetGlipAccount(loginUser);
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    await h(t).platform(otherUser).init();
+
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const directMessagesSection =
@@ -459,36 +466,36 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     let favGroupId, pvtChatId, teamId1, teamId2;
     await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group team',
       async () => {
-        pvtChatId = (await user.sdk.platform.createGroup({
+        pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'PrivateChat',
-          members: [user.rcId, users[5].rcId],
-        })).data.id;
-        favGroupId = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId],
+        });
+        favGroupId = await h(t).platform(loginUser).createAndGetGroupId({
           type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        teamId1 = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
+        teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: `Team ${uuid()}`,
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
-        teamId2 = (await user.sdk.platform.createGroup({
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
+        teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
           isPublic: true,
           name: `Team ${uuid()}`,
           type: 'Team',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        })).data.id;
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+        });
       },
     );
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-      await user.sdk.glip.favoriteGroups(user.rcId, [+favGroupId]);
+      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favGroupId]);
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -496,11 +503,11 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     await h(t).withLog('And other user send post to each conversation', async () => {
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId2).enter();
-      const user5Platform = await h(t).getPlatform(users[5]);
+
       const umiGroupIds = [favGroupId, pvtChatId, teamId1];
       for (const id of umiGroupIds) {
-        await user5Platform.createPost(
-          { text: `${uuid()} ![:Person](${user.rcId})` },
+        await h(t).platform(otherUser).createPost(
+          { text: `${uuid()} ![:Person](${loginUser.rcId})` },
           id,
         );
       }
@@ -539,7 +546,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       );
 
       await h(t).withLog('Then the close button should not be show', async () => {
-        await t.expect(closeButton.exists).notOk();
+        await closeButton.shouldBeDisabled();
         await t.pressKey('esc');
       });
     }

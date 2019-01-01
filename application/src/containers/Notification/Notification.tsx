@@ -12,9 +12,6 @@ import { Omit } from 'jui/foundation/utils/typeHelper';
 
 type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
   dismissible?: boolean;
-};
-
-type ShowNotificationOptions = NotificationProps & {
   autoHideDuration?: number;
 };
 
@@ -23,10 +20,10 @@ const MAX_SHOW_COUNT = 3;
 class Notification extends AbstractViewModel {
   @observable
   static data: ToastProps[] = [];
-  static _buffer: ShowNotificationOptions[] = [];
+  static _buffer: NotificationProps[] = [];
 
   @action
-  private static _showNotification(props: ShowNotificationOptions) {
+  private static _showNotification(props: NotificationProps) {
     if (Notification.data.length === MAX_SHOW_COUNT) {
       Notification._buffer.push(props);
       return {};
@@ -87,4 +84,4 @@ class Notification extends AbstractViewModel {
 
 autorun(Notification.checkBufferAvailability);
 
-export { Notification, NotificationProps, ShowNotificationOptions };
+export { Notification, NotificationProps, NotificationProps as ShowNotificationOptions };

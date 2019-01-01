@@ -1,24 +1,30 @@
-import { BaseModel, Raw } from '../models';
 import _ from 'lodash';
+import { BaseModel, Raw } from '../models';
+import { CACHE_INITIAL_STATUS } from './constants';
 
 class EntityCacheManager<T extends BaseModel = BaseModel> {
   private _entities: { [id: number]: T } = {};
-  private _isInitialized: boolean;
+  private _initialStatus: CACHE_INITIAL_STATUS;
 
   constructor() {
-    this._isInitialized = false;
-  }
-
-  isInitialized() {
-    return this._isInitialized;
+    this._initialStatus = CACHE_INITIAL_STATUS.NONE;
   }
 
   initialize(entities: T[]) {
-    this._isInitialized = true;
+    this._initialStatus = CACHE_INITIAL_STATUS.INPROGRESS;
     this.clear();
     _.forEach(entities, (model: T) => {
       this.set(model);
     });
+    this._initialStatus = CACHE_INITIAL_STATUS.SUCCESS;
+  }
+
+  isInitialized() {
+    return this._initialStatus === CACHE_INITIAL_STATUS.SUCCESS;
+  }
+
+  isStartInitial() {
+    return this._initialStatus !== CACHE_INITIAL_STATUS.NONE;
   }
 
   async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
@@ -108,7 +114,7 @@ class EntityCacheManager<T extends BaseModel = BaseModel> {
 
   private _updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {
     Object.keys(partialEntity).forEach((key: string) => {
-      oldEntity[_.camelCase(key)] = partialEntity[key];
+      oldEntity[key] = partialEntity[key];
     });
   }
 }

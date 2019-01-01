@@ -56,7 +56,7 @@ class ConversationInitialPost extends React.Component<
             {t('directMessageDescription', { displayName })}
           </StyledSpan>
         )}
-        {isTeam ? (
+        {(isTeam && groupDescription) ? (
           <StyledDescription>{groupDescription}</StyledDescription>
         ) : null}
       </JuiConversationInitialPostHeader>

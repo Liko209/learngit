@@ -173,7 +173,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
-          onChange={handleSearchContactChange}
+          onSelectChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}
@@ -182,11 +182,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           isExcludeMe={true}
         />
         <JuiTextarea
+          id={t('Team Description')}
+          label={t('Team Description')}
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
             maxLength: 1000,
           }}
-          placeholder={t('Team Description')}
           fullWidth={true}
           onChange={handleDescChange}
         />

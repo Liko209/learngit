@@ -41,7 +41,7 @@ class ErrorParser {
     /**
      * From resp.data
      */
-    if (data.error) {
+    if (data && data.error) {
       let httpErrorCode: string = '';
       let httpErrorMessage: string = '';
 
@@ -70,7 +70,7 @@ class ErrorParser {
      */
     if (statusText === 'Network Error') {
       return new BaseError(
-        ErrorTypes.API_NETWORK,
+        ErrorTypes.API_SERVER_ERROR,
         'Api Error: Please check whether server crash',
       );
     }

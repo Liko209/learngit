@@ -10,7 +10,7 @@ import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { TaskUpdateProps, TaskUpdateViewProps } from './types';
-import { TaskItem } from '@/store/models/Items';
+import TaskItemModel from '@/store/models/TaskItem';
 
 class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
   implements TaskUpdateViewProps {
@@ -31,7 +31,7 @@ class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
 
   @computed
   get task() {
-    return getEntity<Item, TaskItem>(ENTITY_NAME.ITEM, this._id);
+    return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
   }
 
   @computed

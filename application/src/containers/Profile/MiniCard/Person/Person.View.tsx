@@ -22,11 +22,14 @@ class ProfileMiniCardPersonView extends Component<
   render() {
     const { id, isMe } = this.props;
     return (
-      <JuiMiniCard>
-        <JuiMiniCardHeader emphasize={isMe}>
+      <JuiMiniCard data-test-automation-id="profileMiniCard">
+        <JuiMiniCardHeader
+          emphasize={isMe}
+          data-test-automation-id="profileMiniCardHeader"
+        >
           <ProfileMiniCardPersonHeader id={id} />
         </JuiMiniCardHeader>
-        <JuiMiniCardFooter>
+        <JuiMiniCardFooter data-test-automation-id="profileMiniCardFooter">
           <ProfileMiniCardPersonFooter id={id} />
         </JuiMiniCardFooter>
       </JuiMiniCard>

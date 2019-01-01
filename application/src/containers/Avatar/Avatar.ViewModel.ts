@@ -69,10 +69,10 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
       return defaultAvatar;
     }
     let url: string | null = null;
-    const { headShotVersion, headshot } = this._person;
-    if (headShotVersion) {
+    const { headshotVersion, headshot } = this._person;
+    if (headshotVersion) {
       const personService = PersonService.getInstance<PersonService>();
-      url = personService.getHeadShot(this.props.uid, headShotVersion, 150);
+      url = personService.getHeadShot(this.props.uid, headshotVersion, 150);
     } else if (headshot) {
       if (typeof headshot === 'string') {
         url = headshot;
@@ -88,8 +88,8 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     return url;
   }
   @computed
-  get autoMationId() {
-    return this.props.autoMationId;
+  get automationId() {
+    return this.props.automationId;
   }
 }
 export { AvatarViewModel };

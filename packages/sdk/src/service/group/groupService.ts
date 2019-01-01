@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao, GroupConfigDao } from '../../dao';
+import {
+  daoManager,
+  ConfigDao,
+  GroupConfigDao,
+  QUERY_DIRECTION,
+} from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
 import { Group, GroupApiType, Raw, SortableModel, Profile } from '../../models';
@@ -23,7 +28,7 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser, BaseError } from '../../utils/error';
+import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -68,6 +73,11 @@ const handleTeamsRemovedFrom = async (ids: number[]) => {
   service.removeTeamsByIds(ids, true);
 };
 
+const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
+  const service: GroupService = GroupService.getInstance();
+  service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
+};
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -79,13 +89,14 @@ class GroupService extends BaseService<Group> {
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
       [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
+      [SERVICE.POST_SERVICE
+        .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
     };
     super(GroupDao, GroupAPI, handleData, subscriptions);
     this.enableCache();
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
-    let result: Group[] = [];
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
     if (
@@ -93,16 +104,22 @@ class GroupService extends BaseService<Group> {
       profile.favorite_group_ids &&
       profile.favorite_group_ids.length > 0
     ) {
-      let favorite_group_ids = profile.favorite_group_ids.filter(
+      let favoriteGroupIds = profile.favorite_group_ids.filter(
         id => typeof id === 'number' && !isNaN(id),
       );
       const hiddenIds = extractHiddenGroupIds(profile);
-      favorite_group_ids = _.difference(favorite_group_ids, hiddenIds);
+      favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
+      if (this.isCacheInitialized()) {
+        return await this.getMultiEntitiesFromCache(
+          favoriteGroupIds,
+          (item: Group) => this.isValid(item),
+        );
+      }
       const dao = daoManager.getDao(GroupDao);
-      result = await dao.queryGroupsByIds(favorite_group_ids);
-      result = sortFavoriteGroups(favorite_group_ids, result);
+      const result = await dao.queryGroupsByIds(favoriteGroupIds);
+      return sortFavoriteGroups(favoriteGroupIds, result);
     }
-    return result;
+    return [];
   }
 
   async getGroupsByType(
@@ -119,25 +136,43 @@ class GroupService extends BaseService<Group> {
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
     } else if (groupType === GROUP_QUERY_TYPE.ALL) {
-      result = await dao.queryAllGroups(offset, limit);
+      if (this.isCacheInitialized()) {
+        result = await this.getEntitiesFromCache((item: Group) =>
+          this.isValid(item),
+        );
+        result = this._getFromSortedByMostRectPost(result, offset, limit);
+      } else {
+        result = await dao.queryAllGroups(offset, limit);
+      }
     } else {
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-
-      result = await dao.queryGroups(
-        offset,
-        Infinity,
-        groupType === GROUP_QUERY_TYPE.TEAM,
-        excludeIds,
-      );
-      result = await filterGroups(
-        result,
-        limit,
-        groupType === GROUP_QUERY_TYPE.GROUP,
-      );
+      const userId = profile ? profile.creator_id : undefined;
+      const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
+      if (this.isCacheInitialized()) {
+        result = await this.getEntitiesFromCache(
+          (item: Group) =>
+            this.isValid(item) &&
+            item.is_team === isTeam &&
+            !excludeIds.includes(item.id) &&
+            (userId ? item.members.includes(userId) : true),
+        );
+        if (offset !== 0) {
+          result = result.slice(offset + 1, result.length);
+        }
+      } else {
+        result = await dao.queryGroups(
+          offset,
+          Infinity,
+          isTeam,
+          excludeIds,
+          userId,
+        );
+      }
+      result = await filterGroups(result, limit);
     }
     return result;
   }
@@ -146,9 +181,27 @@ class GroupService extends BaseService<Group> {
   async getLastNGroups(n: number): Promise<Group[]> {
     mainLogger.debug(`get last ${n} groups`);
     let result: Group[] = [];
-    const dao = daoManager.getDao(GroupDao);
-    result = await dao.getLastNGroups(n);
+    if (this.isCacheInitialized()) {
+      result = await this.getEntitiesFromCache((item: Group) =>
+        this.isValid(item),
+      );
+      result = this._getFromSortedByMostRectPost(result, 0, n);
+    } else {
+      const dao = daoManager.getDao(GroupDao);
+      result = await dao.getLastNGroups(n);
+    }
     return result;
+  }
+
+  private _getFromSortedByMostRectPost(
+    groups: Group[],
+    offset: number,
+    limit: number,
+  ) {
+    return _.orderBy(groups, ['most_recent_post_created_at'], ['desc']).slice(
+      offset,
+      limit === Infinity ? groups.length : limit,
+    );
   }
 
   async getGroupsByIds(ids: number[]): Promise<Group[]> {
@@ -171,7 +224,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const result = this._queryGroupByMemberList(personIds);
+      const result = await this._queryGroupByMemberList(personIds);
       if (result) {
         return result;
       }
@@ -235,7 +288,12 @@ class GroupService extends BaseService<Group> {
 
   async pinPost(postId: number, groupId: number, toPin: boolean) {
     const groupDao = daoManager.getDao(GroupDao);
-    const group = await groupDao.get(groupId);
+    let group = null;
+    if (this.isCacheInitialized()) {
+      group = await this.getEntityFromCache(groupId);
+    } else {
+      group = await groupDao.get(groupId);
+    }
     if (group && this.canPinPost(postId, group)) {
       // pinned_post_ids
       if (toPin) {
@@ -426,6 +484,50 @@ class GroupService extends BaseService<Group> {
     }
   }
 
+  private async _updateGroup(
+    id: number,
+    data: Partial<Group>,
+  ): Promise<boolean> {
+    data.id = id;
+    const result = await this.handlePartialUpdate(
+      data,
+      undefined,
+      async (updatedModel: Group) => {
+        return await this._doUpdateGroup(id, updatedModel);
+      },
+    );
+    if (result.isOk()) {
+      return true;
+    }
+    if (!result.apiError) {
+      throw ErrorTypes.UNDEFINED_ERROR;
+    }
+    throw result.apiError.code;
+  }
+
+  // update partial group data http
+  private async _doUpdateGroup(
+    id: number,
+    group: Group,
+  ): Promise<Group | BaseError> {
+    const apiResult = await GroupAPI.putTeamById(id, group);
+    if (apiResult.isOk()) {
+      return transform<Group>(apiResult.data);
+    }
+    return apiResult.error;
+  }
+
+  // update partial group data, for message draft
+  async updateGroupPrivacy(params: {
+    id: number;
+    privacy: string;
+  }): Promise<boolean> {
+    const result = await this._updateGroup(params.id, {
+      privacy: params.privacy,
+    });
+    return result;
+  }
+
   // update partial group data, for message draft
   async updateGroupDraft(params: {
     id: number;
@@ -599,10 +701,7 @@ class GroupService extends BaseService<Group> {
           ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
             (terms.length > 0 &&
               this.isFuzzyMatched(team.set_abbreviation, terms))) &&
-          (team.privacy === 'protected' ||
-            team.members.find((id: number) => {
-              return id === currentUserId;
-            }))
+          (team.privacy === 'protected' || team.members.includes(currentUserId))
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
@@ -645,6 +744,16 @@ class GroupService extends BaseService<Group> {
   private async _queryGroupByMemberList(ids: number[]): Promise<Group | null> {
     const memberIds = this._addCurrentUserToMemList(ids);
     const groupDao = daoManager.getDao(GroupDao);
+    if (this.isCacheInitialized()) {
+      const result = await this.getEntitiesFromCache(
+        (item: Group) =>
+          this.isValid(item) &&
+          !item.is_team &&
+          item.members &&
+          item.members.sort().toString() === memberIds.sort().toString(),
+      );
+      return result[0];
+    }
     return await groupDao.queryGroupByMemberList(memberIds);
   }
 
@@ -734,7 +843,7 @@ class GroupService extends BaseService<Group> {
   }
 
   public isValid(group: Group) {
-    return !group.is_archived && !group.deactivated && group.members;
+    return !group.is_archived && !group.deactivated && !!group.members;
   }
 
   private _getTeamAdmins(permission?: TeamPermission) {
@@ -751,6 +860,29 @@ class GroupService extends BaseService<Group> {
     await postService.deletePostsByGroupIds(ids, true);
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     groupConfigDao.bulkDelete(ids);
+  }
+
+  async setAsTrue4HasMoreConfigByDirection(
+    ids: number[],
+    direction: QUERY_DIRECTION,
+  ) {
+    if (!ids.length) {
+      return;
+    }
+    const data: any = [];
+    ids.forEach((id: number) => {
+      const config = {
+        id,
+      };
+      if (direction === QUERY_DIRECTION.OLDER) {
+        config['has_more_older'] = true;
+      } else {
+        config['has_more_newer'] = true;
+      }
+      data.push(config);
+    });
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkUpdate(data);
   }
 }
 

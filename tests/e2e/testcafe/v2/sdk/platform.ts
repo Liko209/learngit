@@ -31,12 +31,12 @@ export class RcPlatformSdk {
     return this.sdk._token;
   }
 
-  async auth() {
+  async init() {
     await this.sdk.authorize(this.credential);
   }
 
   async refresh() {
-    return await this.auth();
+    return await this.init();
   }
 
   async createExtension(data: object, accountId: string = '~') {
@@ -53,10 +53,23 @@ export class RcPlatformSdk {
     });
   }
 
+  async sendTextPost(text: string, groupId: string) {
+    const data = { text };
+    return await this.createPost(data, groupId);
+  }
+
   async createGroup(data: object) {
     const url = 'restapi/v1.0/glip/groups';
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, data);
     });
+  }
+
+  async createAndGetGroupId(data: object) {
+    return await this.createGroup(data).then(res => res.data.id);
+  }
+
+  async sentAndGetTextPostId(text: string, groupId: string) {
+    return await this.sendTextPost(text, groupId).then(res => res.data.id);
   }
 }
