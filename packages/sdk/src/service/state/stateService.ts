@@ -172,19 +172,16 @@ class StateService extends BaseService<GroupState> {
     const hasUmiMetric = _.some(UMI_METRICS, (umiMetric: string) => {
       return _.has(groupState, umiMetric);
     });
-    console.log('andy hu umi metric changed', isSelf, hasUmiMetric);
     return !isSelf && hasUmiMetric;
   }
 
   async calculateUMI(groupStates: GroupState[]) {
-    console.log('andy hu umi strart calc', groupStates);
     if (!groupStates.length) {
       // mainLogger.info('[State Service]: empty new umis to calculate');
       return [];
     }
     const ids = _.map(groupStates, 'id');
     const originGroupStates = await this.getAllGroupStatesFromLocal(ids);
-    console.log('andy hu umi origin', originGroupStates);
     const resultGroupStates = await Promise.all(
       groupStates.map(async (updatedGroupState: GroupState) => {
         if (!(await this.umiMetricChanged(updatedGroupState))) {
@@ -281,6 +278,7 @@ class StateService extends BaseService<GroupState> {
         return resultGroupState;
       }),
     );
+
     return _.compact(resultGroupStates);
   }
 }
