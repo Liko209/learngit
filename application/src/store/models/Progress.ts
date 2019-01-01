@@ -23,7 +23,7 @@ class ProgressModel extends Base<Progress> {
 
   get progressStatus() {
     if (this.id < 0) {
-      return this.status ? this.status : PROGRESS_STATUS.FAIL;
+      return this.status !== undefined ? this.status : PROGRESS_STATUS.FAIL;
     }
     return PROGRESS_STATUS.SUCCESS;
   }

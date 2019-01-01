@@ -57,7 +57,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
         ENTITY_NAME.PROGRESS,
         this.id,
       );
-      return progress.status;
+      return progress.progressStatus;
     }
     return PROGRESS_STATUS.SUCCESS;
   }

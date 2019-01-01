@@ -29,7 +29,7 @@ ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 const mockPostData = {
   id: -123,
-  status: PROGRESS_STATUS.FAIL,
+  progressStatus: PROGRESS_STATUS.FAIL,
   itemIds: [1],
 };
 
