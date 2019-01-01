@@ -10,7 +10,12 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import { PostService, GroupConfigService, ItemService } from 'sdk/service';
+import {
+  PostService,
+  GroupConfigService,
+  ItemService,
+  notificationCenter,
+} from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -19,6 +24,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
 import { Group } from 'sdk/models';
+import { UI_NOTIFICATION_KEY } from '@/constants';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -74,6 +80,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         this.forceSaveDraft();
       },
     );
+    notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, ({ quote, groupId }) => {
+      console.log(
+        '--------UI_NOTIFICATION_KEY.QUOTE-----------',
+        groupId,
+        quote,
+      );
+      this._memoryDraftMap.set(groupId, quote);
+    });
   }
 
   private _isEmpty = (content: string) => {
