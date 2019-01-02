@@ -5,7 +5,7 @@
  */
 function getFileSize(bytes: number) {
   if (bytes < 100) {
-    return `${(bytes).toFixed(1)}B`;
+    return `${bytes && bytes.toFixed(1)}B`;
   }
   if (bytes / 1024 < 1000) {
     return `${(bytes / 1024).toFixed(1)}KB`;
