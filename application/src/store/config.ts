@@ -113,12 +113,6 @@ const ENTITY_SETTING = {
     cacheCount: 1000,
   },
 
-  [ENTITY_NAME.POST_SENT_STATUS]: {
-    event: [ENTITY.POST_SENT_STATUS],
-    service: [() => PostService.getInstance(), 'getPostSendStatus'],
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
-  },
   [ENTITY_NAME.GROUP_CONFIG]: {
     event: [ENTITY.GROUP_CONFIG],
     service: () => GroupConfigService.getInstance(),

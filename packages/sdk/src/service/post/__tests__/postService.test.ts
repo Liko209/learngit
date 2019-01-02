@@ -733,13 +733,20 @@ describe('PostService', () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       const post = { id: -1, group_id: 123 };
       postDao.get.mockResolvedValue(post);
-      groupService.getGroupSendFailurePostIds.mockReturnValue([-1, -2]);
+
+      GroupConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue(groupConfigService);
+      groupConfigService.getGroupSendFailurePostIds.mockResolvedValueOnce([
+        -1,
+        -2,
+      ]);
       const result = await postService.deletePost(-1);
       expect(result).toBe(true);
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(ENTITY.POST, [
         -1,
       ]);
-      expect(groupService.updateGroupSendFailurePostIds).toBeCalledWith({
+      expect(groupConfigService.updateGroupSendFailurePostIds).toBeCalledWith({
         id: post.group_id,
         send_failure_post_ids: [-2],
       });
@@ -780,33 +787,6 @@ describe('PostService', () => {
       });
       baseHandleData.mockResolvedValueOnce([{ id: 100, deactivated: true }]);
       await expect(postService.deletePost(100)).rejects.toThrowError();
-    });
-
-    it('should work when post isInPreInsert', async () => {
-      // do some mock
-      daoManager.getDao.mockReturnValueOnce(postDao);
-      jest.spyOn(postService, 'isInPreInsert').mockReturnValueOnce(true);
-      jest
-        .spyOn(postDao, 'get')
-        .mockReturnValueOnce(postFactory.build({ id: 100 }));
-      GroupConfigService.getInstance = jest
-        .fn()
-        .mockReturnValue(groupConfigService);
-      groupConfigService.getGroupSendFailurePostIds.mockResolvedValueOnce([
-        100,
-      ]);
-
-      const result = await postService.deletePost(100);
-
-      expect(result).toBeTruthy();
-      expect(notificationCenter.emitEntityDelete).toBeCalledWith(ENTITY.POST, [
-        100,
-      ]);
-      expect(postDao.delete).toBeCalled();
-      expect(groupConfigService.getGroupSendFailurePostIds).toBeCalled();
-      // find failure ids then delete
-      // then updateGroupSendFailurePostIds
-      expect(groupConfigService.updateGroupSendFailurePostIds).toBeCalled();
     });
   });
 
