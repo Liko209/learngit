@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../../models';
+import { IdModel, Raw } from '../../model';
 
-interface IPartialModifyController<T extends BaseModel = BaseModel> {
+interface IPartialModifyController<T extends IdModel = IdModel> {
   updatePartially(
     entityId: number,
     preHandlePartialEntity?: (

@@ -8,7 +8,7 @@ import NetworkClient, { INetworkRequests } from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
 import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
-import { Raw } from '../models';
+import { Raw } from '../framework/model';
 
 import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
 import {
@@ -70,7 +70,6 @@ class Api {
     type: IHandleType,
   ): NetworkClient {
     if (!this._httpConfig) Throw(ErrorTypes.API, 'Api not initialized');
-
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
       const currentConfig = this._httpConfig[name];

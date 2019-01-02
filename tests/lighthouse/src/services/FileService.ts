@@ -62,7 +62,7 @@ class FileService {
     async saveArtifactsIntoDisk(artifacts: any, fileName: string) {
         let artifactsPath = `${REPORT_DIR_PATH}/${fileName}.artifacts.json`;
         fs.writeFileSync(artifactsPath, JSON.stringify(artifacts));
-        logger.info(`data has saved.[${artifactsPath}]`);
+        logger.info(`artifacts has saved.[${artifactsPath}]`);
     }
 
     /**

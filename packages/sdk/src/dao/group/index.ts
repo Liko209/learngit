@@ -4,7 +4,7 @@
  */
 
 import { BaseDao } from '../base';
-import { Group } from '../../models';
+import { Group } from '../../module/group/entity';
 import { IDatabase, mainLogger } from 'foundation';
 
 class GroupDao extends BaseDao<Group> {

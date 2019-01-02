@@ -79,8 +79,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
     const realNum = 5;
     await h(t).withLog(`Then max conversation count should be exceeded, total number should be ${realNum}`, async () => {
-      const count = await teamsSection.conversations.count;
-      await t.expect(count).eql(realNum);
+      await t.expect(teamsSection.conversations.count).eql(realNum);
     }, true);
 
     await h(t).withLog('And all new teams except the conversation.4 should be found in the team section', async () => {
@@ -130,7 +129,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
       const expectNewTeamIds = Array.from(newTeamIds);
       expectNewTeamIds.splice(2, 2);
       for (let i = 0; i < expectNewTeamIds.length; i++) {
-        await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok(newTeamIds.indexOf(expectNewTeamIds[i]) + " : " + expectNewTeamIds[i]);
+        await t.expect(teamsSection.conversationEntryById(expectNewTeamIds[i]).exists).ok({ timeout: 8e3 });
       }
       await t.expect(teamsSection.conversationEntryById(newTeamIds[2]).exists).notOk();
       await t.expect(teamsSection.conversationEntryById(newTeamIds[3]).exists).notOk();

@@ -8,7 +8,7 @@ import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
 import { PostService, ItemService, POST_STATUS } from 'sdk/service';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';

@@ -8,7 +8,7 @@ import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { NoteProps, NoteViewProps } from './types';
 
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import NoteItemModel from '@/store/models/NoteItem';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';

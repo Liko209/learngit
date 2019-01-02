@@ -10,7 +10,7 @@ import GroupService, {
   FEATURE_STATUS,
 } from '../../../service/group';
 import { daoManager, PersonDao, AuthDao } from '../../../dao';
-import { Person } from '../../../models';
+import { Person } from '../../../module/person/entity';
 import { AccountService } from '../../account/accountService';
 import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
 import { personFactory } from '../../../__tests__/factories';

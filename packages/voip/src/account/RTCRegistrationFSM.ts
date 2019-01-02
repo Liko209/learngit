@@ -5,32 +5,16 @@
  */
 
 import StateMachine from 'ts-javascript-state-machine';
-
-const RegistrationState = {
-  IDLE: 'idle',
-  REG_IN_PROGRESS: 'regInProgress',
-  READY: 'ready',
-  REG_FAILURE: 'regFailure',
-  UN_REG_IN_PROGRESS: 'unRegInProgress',
-  NONE: 'none',
-};
+import { RegistrationState } from './types';
+import { IConditionalHandler } from './IConditionalHandler';
 
 const RegistrationEvent = {
-  DO_REGISTER: 'doRegister',
+  PROVISION_READY: 'provisionReady',
   REG_SUCCEED: 'regSucceed',
   REG_TIMEOUT: 'regTimeOut',
   REG_ERROR: 'regError',
-  NETWORK_CHANGED: 'networkChanged',
-  DEREGISTER: 'deRegister',
-  TERMINATE: 'terminate',
-  OUTGOINGCALL: 'outGoingCall',
-  DEREG_SUCCEED: 'deRegSucceed',
+  UN_REGISTER: 'unRegister',
 };
-
-interface IConditionalHandler {
-  onReadyWhenRegSucceed(): string;
-  onReadyWhenNetworkChanged(): string;
-}
 
 class RTCRegistrationFSM extends StateMachine {
   constructor(handler: IConditionalHandler) {
@@ -38,9 +22,12 @@ class RTCRegistrationFSM extends StateMachine {
       init: RegistrationState.IDLE,
       transitions: [
         {
-          name: RegistrationEvent.DO_REGISTER,
+          name: RegistrationEvent.PROVISION_READY,
           from: RegistrationState.IDLE,
-          to: RegistrationState.REG_IN_PROGRESS,
+          to: (provisionData: any, options: any) => {
+            handler.onProvisionReadyAction(provisionData, options);
+            return RegistrationState.REG_IN_PROGRESS;
+          },
         },
         // registration in progress
         {
@@ -60,53 +47,17 @@ class RTCRegistrationFSM extends StateMachine {
         },
         // ready
         {
-          name: RegistrationEvent.DO_REGISTER,
+          name: RegistrationEvent.UN_REGISTER,
           from: RegistrationState.READY,
-          to: RegistrationState.REG_IN_PROGRESS,
-        },
-        {
-          name: RegistrationEvent.OUTGOINGCALL,
-          from: RegistrationState.READY,
-          to: RegistrationState.READY,
-        },
-        {
-          name: RegistrationEvent.DEREGISTER,
-          from: RegistrationState.READY,
-          to: RegistrationState.UN_REG_IN_PROGRESS,
+          to: RegistrationState.UN_REGISTERED,
         },
         {
           name: RegistrationEvent.REG_SUCCEED,
           from: RegistrationState.READY,
-          to: () => handler.onReadyWhenRegSucceed(),
-        },
-        {
-          name: RegistrationEvent.NETWORK_CHANGED,
-          from: RegistrationState.READY,
-          to: () => handler.onReadyWhenNetworkChanged(),
-        },
-
-        // registration failure
-        {
-          name: RegistrationEvent.DO_REGISTER,
-          from: RegistrationState.REG_FAILURE,
-          to: RegistrationState.REG_IN_PROGRESS,
-        },
-        {
-          name: RegistrationEvent.NETWORK_CHANGED,
-          from: RegistrationState.REG_FAILURE,
-          to: RegistrationState.REG_IN_PROGRESS,
-        },
-
-        // unRegistration in progress
-        {
-          name: RegistrationEvent.DEREG_SUCCEED,
-          from: RegistrationState.UN_REG_IN_PROGRESS,
-          to: RegistrationState.NONE,
-        },
-        {
-          name: RegistrationEvent.TERMINATE,
-          from: RegistrationState.UN_REG_IN_PROGRESS,
-          to: RegistrationState.NONE,
+          to: () => {
+            handler.onReadyWhenRegSucceedAction();
+            return RegistrationState.READY;
+          },
         },
       ],
       methods: {
@@ -138,4 +89,4 @@ class RTCRegistrationFSM extends StateMachine {
   }
 }
 
-export { RTCRegistrationFSM, IConditionalHandler, RegistrationState };
+export { RTCRegistrationFSM };
