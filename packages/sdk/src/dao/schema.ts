@@ -60,11 +60,13 @@ const schema: ISchema = {
     },
     8: { groupConfig: gen() },
     9: { item: gen('id', ['*group_ids', 'name']) },
-    10: { fileItem: gen('id', ['*group_ids']) },
-    11: { taskItem: gen('id', ['*group_ids']) },
-    12: { noteItem: gen('id', ['*group_ids']) },
-    13: { eventItem: gen('id', ['*group_ids']) },
-    14: { linkItem: gen('id', ['*group_ids']) },
+    10: {
+      fileItem: gen('id', ['*group_ids']),
+      taskItem: gen('id', ['*group_ids']),
+      noteItem: gen('id', ['*group_ids']),
+      eventItem: gen('id', ['*group_ids']),
+      linkItem: gen('id', ['*group_ids']),
+    },
   },
 };
 
