@@ -14,6 +14,11 @@ import {
   NoteItem,
   LinkItem,
   StoredFile,
+  SanitizedFileItem,
+  SanitizedTaskItem,
+  SanitizedNoteItem,
+  SanitizedEventItem,
+  SanitizedLinkItem,
 } from './Item';
 
 export {
@@ -26,4 +31,9 @@ export {
   NoteItem,
   LinkItem,
   StoredFile,
+  SanitizedFileItem,
+  SanitizedTaskItem,
+  SanitizedNoteItem,
+  SanitizedEventItem,
+  SanitizedLinkItem,
 };

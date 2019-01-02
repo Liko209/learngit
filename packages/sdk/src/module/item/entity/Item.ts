@@ -5,7 +5,7 @@
  */
 
 import { ExtendedBaseModel } from '../../models';
-import { Raw } from '../../../framework/model';
+import { Raw, IdModel } from '../../../framework/model';
 
 export type ItemVersionPage = {
   file_id: number;
@@ -101,3 +101,21 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
   last_modified: number;
   size: number;
 };
+
+export type SanitizedItem = IdModel & {
+  group_ids: number[];
+  created_at: number;
+  name: string;
+};
+
+export type SanitizedFileItem = SanitizedItem & {
+  type: string;
+};
+
+export type SanitizedTaskItem = SanitizedItem & {};
+
+export type SanitizedNoteItem = SanitizedItem & {};
+
+export type SanitizedEventItem = SanitizedItem & {};
+
+export type SanitizedLinkItem = SanitizedItem & {};
