@@ -32,7 +32,7 @@ export class MessageDecorator implements ILogEntityDecorator {
     const paramsString = data.params
       .join(' ');
     data.message = `${data.sessionIndex} ${message} ${paramsString}`;
-    data.size = message.length;
+    data.size = data.message.length;
     return data;
   }
 

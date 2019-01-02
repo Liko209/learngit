@@ -4,6 +4,7 @@ import { ILogApi } from '../api';
 import { LogPersistence, PersistenceLogEntity } from '../persistence';
 import { configManager } from '../../config';
 import { Task } from '../task';
+import { LogEntity } from '../../types';
 jest.mock('../persistence');
 class MockApi implements ILogApi {
   upload = jest.fn();
@@ -220,8 +221,10 @@ describe('LogConsumer', () => {
       const mockPersistenceLogs = persistenceLogFactory.buildList(10);
       // mock DB cache data
       await mockLogPersistence.bulkPut(mockPersistenceLogs);
-      // mockLogPersistence.count.mockReturnValue(mockPersistenceLogs.length);
-      // mockLogPersistence.getAll.mockReturnValue(mockPersistenceLogs);
+      let uploadLogs = [];
+      mockApi.upload.mockImplementation(async (logs: LogEntity[]) => {
+        uploadLogs = uploadLogs.concat(logs);
+      });
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
       logConsumer.setLogPersistence(mockLogPersistence);
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
@@ -230,16 +233,15 @@ describe('LogConsumer', () => {
       await observer;
       expect(mockLogPersistence.count).toBeCalled();
       expect(mockLogPersistence.getAll).toBeCalled();
-      expect(mockApi.upload).toBeCalledTimes(mockPersistenceLogs.length);
-      expect(mockLogPersistence.delete).toBeCalledTimes(mockPersistenceLogs.length);
+      // expect(mockApi.upload).toBeCalledTimes(mockPersistenceLogs.length);
+      expect(mockLogPersistence.bulkDelete).lastCalledWith(mockPersistenceLogs);
 
-      // should upload from DB cache
-      for (let i = 0; i < mockPersistenceLogs.length - 1; i++) {
-        expect(mockApi.upload).toHaveBeenNthCalledWith(
-          i + 1 /* begin with 1 */,
-          mockPersistenceLogs[i].logs, // logs from DB
-        );
-      }
+      // should upload all logs from DB cache
+      let persistenceLogs = [];
+      mockPersistenceLogs.forEach(({ logs }) => {
+        persistenceLogs = persistenceLogs.concat(logs);
+      });
+      expect(uploadLogs).toEqual(persistenceLogs);
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
       logConsumer['_persistenceTaskQueueLoop'].peekAll();

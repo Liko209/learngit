@@ -11,6 +11,8 @@ import StateMachine from 'ts-javascript-state-machine';
 import { configManager } from '../config';
 import { randomInt, sleep } from '../utils';
 import { NO_INJECT_ERROR, NETWORK_ERROR } from '../constants';
+import sumBy from 'lodash/sumBy';
+import cloneDeep from 'lodash/cloneDeep';
 
 const PERSISTENCE_STATE = {
   INIT: 'INIT',
@@ -48,6 +50,7 @@ const transform = {
       startTime: logEntities[0].timestamp,
       endTime: logEntities[logEntities.length - 1].timestamp,
       logs: logEntities,
+      size: sumBy(logEntities, log => log.size),
     };
     return target;
   },
@@ -74,6 +77,7 @@ export class LogConsumer implements ILogConsumer {
     this._logApi = new LogApiProxy();
     this._uploadTaskQueueLoop = new TaskQueueLoop()
       .setOnTaskError(async (task, error, loopController) => {
+        console.error('LogConsumer onTaskError:', error);
         if (error.message === NO_INJECT_ERROR || error.message === NETWORK_ERROR) {
           await sleep(5000);
           await loopController.retry();
@@ -109,6 +113,7 @@ export class LogConsumer implements ILogConsumer {
           this._consumePersistenceIfNeed();
         },
         onConsume: () => {
+          this._consumePersistenceIfNeed();
         },
         onAppend: () => {
           this._consumePersistenceIfNeed();
@@ -208,23 +213,21 @@ export class LogConsumer implements ILogConsumer {
         uploadQueueLimit,
       },
     } = configManager.getConfig();
-    if (this._persistenceFSM.state === PERSISTENCE_STATE.NOT_EMPTY
-      && this._uploadTaskQueueLoop.size() === 0
+    if (this._uploadTaskQueueLoop.size() === 0
       && this._uploadAvailable()) {
       this._persistenceTaskQueueLoop.addTail(
         new PersistenceTask()
           .setOnExecute(async () => {
-            const persistenceLogs = await this._logPersistence.getAll(uploadQueueLimit);
+            const persistenceLogs = await this._logPersistence.getAll(3 * uploadQueueLimit);
             if (persistenceLogs && persistenceLogs.length) {
               await this._logPersistence.bulkDelete(persistenceLogs);
-              persistenceLogs.forEach((persistenceLog) => {
+              const combineLogs = this._combinePersistenceLogs(persistenceLogs);
+              combineLogs.forEach((combineLog) => {
                 this._uploadTaskQueueLoop.addTail(
-                  new UploadPersistenceLogTask(persistenceLog, this._logApi, this._logPersistence),
+                  new UploadPersistenceLogTask(combineLog, this._logApi, this._logPersistence),
                 );
               });
-              if (persistenceLogs.length < uploadQueueLimit) {
-                this._persistenceFSM.consume();
-              }
+              this._persistenceFSM.consume();
             } else {
               if (this._persistenceFSM.state === PERSISTENCE_STATE.NOT_EMPTY) {
                 this._persistenceFSM.consume();
@@ -233,6 +236,28 @@ export class LogConsumer implements ILogConsumer {
           }),
       );
     }
+  }
+
+  private _combinePersistenceLogs(persistenceLogs: PersistenceLogEntity[]) {
+    const combineLogs = [];
+    let size = 0;
+    for (let i = 0; i < persistenceLogs.length; i++) {
+      size += (persistenceLogs[i].size || 0);
+      const currentLog = combineLogs[combineLogs.length - 1];
+      if (!currentLog) {
+        combineLogs.push(cloneDeep(persistenceLogs[i]));
+      } else if (size > configManager.getConfig().consumer.combineSizeThreshold
+        || currentLog.sessionId !== persistenceLogs[i].sessionId) {
+        combineLogs.push(cloneDeep(persistenceLogs[i]));
+        size = (persistenceLogs[i].size || 0);
+      } else {
+        // combine
+        currentLog.size = size;
+        currentLog.logs = currentLog.logs.concat(persistenceLogs[i].logs);
+        currentLog.endTime = persistenceLogs[i].endTime;
+      }
+    }
+    return combineLogs;
   }
 
   private _uploadAvailable(): boolean {

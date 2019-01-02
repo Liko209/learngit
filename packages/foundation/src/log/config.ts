@@ -13,6 +13,7 @@ const defaultConfig: LogConfig = {
     enabled: true,
     memoryCountThreshold: 100,
     memorySizeThreshold: 1024 * 1024,
+    combineSizeThreshold: 50 * 1024,
     uploadQueueLimit: 4,
     autoFlushTimeCycle: 30 * 1000,
   },

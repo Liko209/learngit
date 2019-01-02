@@ -2,8 +2,8 @@
 import { ILogApi, LogEntity, mainLogger } from 'foundation';
 import AccountService from '../account';
 import axios from 'axios';
-
 const DEFAULT_EMAIL = 'service@glip.com';
+
 export class LogUploader implements ILogApi {
   async upload(logs: LogEntity[]): Promise<any> {
     const userInfo = await this._getUserInfo();
@@ -39,8 +39,9 @@ export class LogUploader implements ILogApi {
     logInfo: object,
   ) {
     await axios({
-      method: 'POST',
-      url: 'http://10.32.35.26:7988/log/',
+      method: 'post',
+      // url: 'https://10.32.35.26:7988/log/',
+      url: 'http://127.0.0.1:7989/log/',
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',

@@ -55,6 +55,7 @@ type LogConfig = {
     memorySizeThreshold: number,
     uploadQueueLimit: number,
     autoFlushTimeCycle: number,
+    combineSizeThreshold: number,
   },
   uploadLogApi: ILogApi | null,
   persistence: ILogPersistence | null,

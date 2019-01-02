@@ -28,6 +28,7 @@ const logConfigBuilder: Builder<LogConfig> = {
     enabled: false,
     memoryCountThreshold: 100,
     memorySizeThreshold: 1024 * 1024,
+    combineSizeThreshold: 50 * 1024,
     uploadQueueLimit: 4,
     autoFlushTimeCycle: 30 * 1000,
   },
@@ -41,6 +42,7 @@ const consumerConfigBuilder = {
   enabled: false,
   memoryCountThreshold: 100,
   memorySizeThreshold: 1024 * 1024,
+  combineSizeThreshold: 50 * 1024,
   uploadQueueLimit: 4,
   autoFlushTimeCycle: 30 * 1000,
 };
