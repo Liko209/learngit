@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 
 
 class Entry extends BaseWebComponent {
@@ -352,6 +352,10 @@ export class MessageTab extends BaseWebComponent {
 
   get mentionPage() {
     return this.getComponent(MentionPage);
+  }
+
+  get duplicatePromptPage() {
+    return this.getComponent(DuplicatePromptPage);
   }
 
   get postListPage() {
