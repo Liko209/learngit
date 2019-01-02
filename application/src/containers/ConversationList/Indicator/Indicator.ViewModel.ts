@@ -9,6 +9,7 @@ import { AbstractViewModel } from '@/base';
 import { IndicatorProps, IndicatorViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { ItemService } from 'sdk/service';
 
 class IndicatorViewModel extends AbstractViewModel
   implements IndicatorViewProps {
@@ -28,7 +29,9 @@ class IndicatorViewModel extends AbstractViewModel
 
   @computed
   get draft() {
-    return this._group.draft;
+    const itemService: ItemService = ItemService.getInstance();
+    const result = itemService.getUploadItems(this.id);
+    return this._group.draft || result.length > 0;
   }
 
   @computed
