@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
+// import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountListener } from './IRTCAccountListener';
 
 class RTCAccount {
-  private _registrationManager: RTCRegistrationManager;
+  // private _registrationManager: RTCRegistrationManager;
 
   constructor(listener: IRTCAccountListener) {
     console.log('RTCAccout created');
