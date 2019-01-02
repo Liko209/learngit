@@ -26,6 +26,7 @@ class LinkItemView extends React.Component<Props> {
         {postItems.map((item: LinkItemModel) => {
           // In Glip must has this key
           // hard code in order to show the current image
+          const itemUrlWithProtocol = item.url && item.url.indexOf('http') > -1 ? item.url : `http://${item.url}`;
           const image = item.image
             ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
             : '';
@@ -37,7 +38,7 @@ class LinkItemView extends React.Component<Props> {
               title={item.title}
               summary={item.summary}
               thumbnail={image}
-              url={item.url}
+              url={itemUrlWithProtocol}
               onLinkItemClose={this.onLinkItemClose(item.id)}
               favicon={
                 item.favicon
