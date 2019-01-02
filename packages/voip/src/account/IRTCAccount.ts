@@ -1,6 +1,6 @@
 interface IRTCAccount {
   isReady(): boolean;
-  createOutCallSession(toNum: String): void;
+  createOutCallSession(toNum: String): any;
 }
 
 export { IRTCAccount };

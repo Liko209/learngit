@@ -13,7 +13,7 @@ import { IRTCAccountListener } from '../api/IRTCAccountListener';
 import { AccountState } from '../api/types';
 import { UA_EVENT } from '../signaling/types';
 
-import { ErrorCode } from './types';
+import { ErrorCode, RegistrationManagerEvent } from './types';
 
 const RegistrationEvent = {
   PROVISION_READY: 'provisionReady',
@@ -28,9 +28,10 @@ const ObserveEvent = {
 
 class RTCRegistrationManager implements IConditionalHandler {
   private _fsm: RTCRegistrationFSM;
-  private _eventEmitter: EventEmitter2;
+  public _eventEmitter: EventEmitter2;
   private _userAgent: IRTCUserAgent;
   private _listener: IRTCAccountListener;
+  private _isReady: boolean;
 
   public onReadyWhenRegSucceedAction(): void {}
   public onProvisionReadyAction(provisionData: any, options: any): void {
@@ -47,18 +48,23 @@ class RTCRegistrationManager implements IConditionalHandler {
     this._eventEmitter = new EventEmitter2();
     this._initFsmObserve();
     this._initListener();
+    this._isReady = false;
   }
 
   private _onEnterReady() {
+    this._isReady = true;
     this._listener.onAccountStateChanged(AccountState.REGISTERED);
   }
   private _onEnterRegInProgress() {
+    this._isReady = false;
     this._listener.onAccountStateChanged(AccountState.IN_PROGRESS);
   }
   private _onEnterRegFailure() {
+    this._isReady = false;
     this._listener.onAccountStateChanged(AccountState.FAILED);
   }
   private _onEnterUnRegistered() {
+    this._isReady = false;
     this._listener.onAccountStateChanged(AccountState.UNREGISTERED);
   }
 
@@ -84,6 +90,9 @@ class RTCRegistrationManager implements IConditionalHandler {
     this._eventEmitter.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
       this._onUARegFailed(response, cause);
     });
+    this._eventEmitter.on(UA_EVENT.RECEIVE_INVITE, (session: any) => {
+      this._onReceiveInvite(session);
+    });
     this._eventEmitter.on(UA_EVENT.REG_UNREGISTER, () => {
       this._onUADeRegister();
     });
@@ -107,8 +116,12 @@ class RTCRegistrationManager implements IConditionalHandler {
     this._fsm.provisionReady(provisionData, options);
   }
 
-  public makeCall(phoneNumber: string, options: any): any {
+  public createOutgoingCallSession(phoneNumber: string, options: any): any {
     return this._userAgent.makeCall(phoneNumber, options);
+  }
+
+  public isReady(): boolean {
+    return this._isReady;
   }
 
   private _onUARegSuccess() {
@@ -125,6 +138,13 @@ class RTCRegistrationManager implements IConditionalHandler {
     } else {
       this._fsm.regError();
     }
+  }
+
+  private _onReceiveInvite(session: any) {
+    this._eventEmitter.emit(
+      RegistrationManagerEvent.RECEIVER_INCOMING_SESSION,
+      session,
+    );
   }
 }
 

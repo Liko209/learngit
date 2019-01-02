@@ -4,9 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AccountState } from './types';
+import { RTCCall } from './RTCCall';
 
 interface IRTCAccountListener {
   onAccountStateChanged(accountState: AccountState): void;
+  onReceiveIncomingCall(call: RTCCall): void;
 }
 
 export { IRTCAccountListener };

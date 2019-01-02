@@ -6,6 +6,10 @@
 
 import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountListener } from './IRTCAccountListener';
+import { IRTCAccount } from '../account/IRTCAccount';
+import { RTCCall } from './RTCCall';
+import { IRTCCallObserver } from './IRTCCallObserver';
+import { RegistrationManagerEvent } from '../account/types';
 
 const provisionData = {
   data: {
@@ -70,7 +74,7 @@ const options = {
   logLevel: 10,
 };
 
-class RTCAccount {
+class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
   private _listener: IRTCAccountListener;
 
@@ -80,13 +84,52 @@ class RTCAccount {
 
   public setRegManager(regManager: RTCRegistrationManager) {
     this._regManager = regManager;
+    this._regManager._eventEmitter.on(
+      RegistrationManagerEvent.RECEIVER_INCOMING_SESSION,
+      (session: any) => {
+        this._onReceiveInvite(session);
+      },
+    );
   }
 
-  public handleProvisioning() {
+  public handleProvisioning(localAudio: any, remoteAudio: any) {
     if (!this._regManager) {
       return;
     }
-    this._regManager.provisionReady(provisionData, options);
+    const info = {
+      appKey: options.appKey,
+      appName: options.appName,
+      appVersion: options.appVersion,
+      endPointId: options.endPointId,
+      audioHelper: options.audioHelper,
+      logLevel: options.logLevel,
+      media: {
+        remote: remoteAudio,
+        local: localAudio,
+      },
+    };
+    this._regManager.provisionReady(provisionData.data, info);
+  }
+
+  public makeCall(toNumber: string, listener: IRTCCallObserver): RTCCall {
+    const call = new RTCCall(false, toNumber, null, this, listener);
+    return call;
+  }
+
+  isReady(): boolean {
+    if (this._regManager === null) {
+      return false;
+    }
+    return this._regManager.isReady();
+  }
+
+  createOutCallSession(toNum: string): any {
+    return this._regManager.createOutgoingCallSession(toNum, {});
+  }
+
+  private _onReceiveInvite(session: any) {
+    const call = new RTCCall(true, '', session, this, null);
+    this._listener.onReceiveIncomingCall(call);
   }
 }
 

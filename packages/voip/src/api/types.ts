@@ -4,11 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 enum AccountState {
-  IDLE,
-  REGISTERED,
-  FAILED,
-  UNREGISTERED,
-  IN_PROGRESS,
+  IDLE = 'Idle',
+  REGISTERED = 'Registered',
+  FAILED = 'Failed',
+  UNREGISTERED = 'Unregistered',
+  IN_PROGRESS = 'InProgress',
 }
 
-export { AccountState };
+type RTCCallInfo = {
+  fromName: string;
+  fromNum: string;
+  toName: string;
+  toNum: string;
+  uuid: string;
+};
+
+enum RTC_CALL_STATE {
+  IDLE = 'Idle',
+  CONNECTING = 'Connecting',
+  CONNECTED = 'Connected',
+  DISCONNECTED = 'Disconnected',
+}
+
+export { AccountState, RTCCallInfo, RTC_CALL_STATE };

@@ -15,4 +15,8 @@ const RegistrationState = {
   UN_REGISTERED: 'unRegistered',
 };
 
-export { ErrorCode, RegistrationState };
+const RegistrationManagerEvent = {
+  RECEIVER_INCOMING_SESSION: 'RegitrationManangerEventReceiveIncomingSession',
+};
+
+export { ErrorCode, RegistrationState, RegistrationManagerEvent };

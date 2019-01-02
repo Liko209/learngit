@@ -48,7 +48,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hangup() {
     if (this._session != null) {
-      this._session.hangup();
+      this._session.terminate();
     }
   }
 
@@ -66,7 +66,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   sendToVoicemail() {
     if (this._session != null) {
-      this._session.sendToVoicemail();
+      this._session.toVoicemail();
     }
   }
 

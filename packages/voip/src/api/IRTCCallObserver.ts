@@ -3,9 +3,9 @@
  * @Date: 2018-12-29 16:08:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTCCALL_STATE } from './types';
+import { RTC_CALL_STATE } from './types';
 interface IRTCCallObserver {
-  onCallStateChange(state: RTCCALL_STATE): void;
+  onCallStateChange(state: RTC_CALL_STATE): void;
 }
 
-export { IRTCCallObserver, RTCCALL_STATE };
+export { IRTCCallObserver };
