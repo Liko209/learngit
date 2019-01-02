@@ -1,9 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": [],
-    "include_tags": [],
-    "browsers": [
-      "selenium:chrome"
-    ]
-  }
-}
