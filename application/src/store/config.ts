@@ -1,4 +1,4 @@
-import { service } from 'sdk';
+import { service, module } from 'sdk';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 
 const {
@@ -13,6 +13,8 @@ const {
   ProfileService,
   ENTITY,
 } = service;
+
+const { ProgressService } = module;
 
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {
@@ -98,12 +100,19 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
+  [ENTITY_NAME.PROGRESS]: {
+    event: [ENTITY.PROGRESS],
+    service: () => ProgressService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
   [ENTITY_NAME.PROFILE]: {
     event: [ENTITY.PROFILE],
     service: () => ProfileService.getInstance(),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: 1000,
   },
+
   [ENTITY_NAME.POST_SENT_STATUS]: {
     event: [ENTITY.POST_SENT_STATUS],
     service: [() => PostService.getInstance(), 'getPostSendStatus'],

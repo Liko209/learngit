@@ -14,8 +14,8 @@ enum ENTITY_NAME {
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
   'PROFILE' = 'profile',
-  'POST_SENT_STATUS' = 'postSendStatus',
   'GLOBAL' = 'global',
+  'PROGRESS' = 'progress',
 }
 
 enum HANDLER_TYPE {

@@ -10,7 +10,6 @@ import GroupService from '../../service/group';
 import IncomingPostHandler from '../../service/post/incomingPostHandler';
 import { transform, baseHandleData as utilsBaseHandleData } from '../utils';
 import { Post, Group, Raw } from '../../models';
-import PostService from '.';
 import _ from 'lodash';
 
 function transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
@@ -152,10 +151,8 @@ export async function handlePreInsertPosts(posts: Post[] = []) {
     return [];
   }
   const ids: number[] = [];
-  const postService = PostService.getInstance<PostService>();
   posts.map(async (post: Post) => {
-    const isInPreInsert = postService.isInPreInsert(post.version);
-    if (isInPreInsert) {
+    if (post.id < 0) {
       ids.push(post.version);
     }
   });

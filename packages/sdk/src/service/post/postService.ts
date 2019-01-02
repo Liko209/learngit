@@ -16,8 +16,6 @@ import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post, Item, Raw, Group } from '../../models';
-import { PostStatusHandler } from './postStatusHandler';
-import { POST_STATUS, SENDING_STATUS } from '../constants';
 import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
@@ -26,6 +24,7 @@ import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
 import GroupConfigService from '../groupConfig';
+import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
 
 interface IPostResult {
   posts: Post[];
@@ -64,13 +63,11 @@ class PostService extends BaseService<Post> {
     return false;
   }
 
-  private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
       [SOCKET.POST]: handleDataFromSexio,
     };
     super(PostDao, PostAPI, baseHandleData, subscriptions);
-    this._postStatusHandler = new PostStatusHandler();
   }
 
   async getPostsFromLocal({
@@ -235,10 +232,6 @@ class PostService extends BaseService<Post> {
     return result;
   }
 
-  isInPreInsert(id: number) {
-    return this._postStatusHandler.isInPreInsert(id);
-  }
-
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
     mainLogger.info('start to send post log');
     const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
@@ -246,14 +239,16 @@ class PostService extends BaseService<Post> {
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
-    if (this.isInPreInsert(postId)) {
+    if (postId < 0) {
       const dao = daoManager.getDao(PostDao);
-      let post = await dao.get(postId);
+      const post = await dao.get(postId);
       if (post) {
-        post = PostServiceHandler.buildResendPostInfo(post);
         return this.innerSendPost(post, true);
       }
     }
+    mainLogger.warn(
+      `PostService, resend post should have a negative, but receive ${postId}`,
+    );
     return null;
   }
 
@@ -270,9 +265,12 @@ class PostService extends BaseService<Post> {
           this._resendFailedItems(pseudoItems);
         } else {
           if (
-            !this._hasItemInTargetStatus(buildPost, SENDING_STATUS.INPROGRESS) // no item in progress
+            !this._hasItemInTargetStatus(buildPost, PROGRESS_STATUS.INPROGRESS) // no item in progress
           ) {
-            return await this.handleSendPostFail(buildPost.id);
+            return await this.handleSendPostFail(
+              buildPost.id,
+              buildPost.group_id,
+            );
           }
         }
 
@@ -298,7 +296,7 @@ class PostService extends BaseService<Post> {
     return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
   }
 
-  private _hasItemInTargetStatus(post: Post, status: SENDING_STATUS) {
+  private _hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this._getPseudoItemStatusInPost(post).indexOf(status) > -1;
   }
 
@@ -308,7 +306,7 @@ class PostService extends BaseService<Post> {
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
     const listener = async (params: {
-      status: SENDING_STATUS;
+      status: PROGRESS_STATUS;
       preInsertId: number;
       updatedId: number;
     }) => {
@@ -317,11 +315,11 @@ class PostService extends BaseService<Post> {
         return;
       }
 
-      if (status === SENDING_STATUS.CANCELED) {
+      if (status === PROGRESS_STATUS.CANCELED) {
         _.remove(post.item_ids, (id: number) => {
           return id === preInsertId;
         });
-      } else if (status === SENDING_STATUS.SUCCESS) {
+      } else if (status === PROGRESS_STATUS.SUCCESS) {
         // update post to db
         if (updatedId !== preInsertId) {
           post.item_ids = post.item_ids.map((id: number) => {
@@ -348,7 +346,7 @@ class PostService extends BaseService<Post> {
 
       if (this._isValidPost(post)) {
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
-          await this._sendPost(post);
+          await this._sendPost.bind(this)(post);
         }
       } else {
         await this.deletePost(post.id);
@@ -356,10 +354,10 @@ class PostService extends BaseService<Post> {
 
       const itemStatuses = this._getPseudoItemStatusInPost(post);
       // remove listener if item files are not in progress
-      if (!itemStatuses.includes(SENDING_STATUS.INPROGRESS)) {
+      if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
         // has failed
-        if (itemStatuses.includes(SENDING_STATUS.FAIL)) {
-          this.handleSendPostFail(post.id);
+        if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
+          this.handleSendPostFail(post.id, post.group_id);
         }
 
         notificationCenter.removeListener(
@@ -392,7 +390,11 @@ class PostService extends BaseService<Post> {
   }
 
   private async _handlePreInsertProcess(buildPost: Post): Promise<void> {
-    this._postStatusHandler.setPreInsertId(buildPost.id);
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.addProgress(buildPost.id, {
+      id: buildPost.id,
+      status: PROGRESS_STATUS.INPROGRESS,
+    });
     const dao = daoManager.getDao(PostDao);
     await dao.put(buildPost);
     notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
@@ -401,14 +403,13 @@ class PostService extends BaseService<Post> {
   private async _sendPost(buildPost: Post): Promise<PostData[]> {
     const preInsertId = buildPost.id;
     delete buildPost.id;
-    delete buildPost.__status;
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
       const data = resp.expect('send post failed');
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
-      this.handleSendPostFail(preInsertId);
+      this.handleSendPostFail(preInsertId, buildPost.group_id);
       throw ErrorParser.parse(e);
     }
   }
@@ -417,7 +418,9 @@ class PostService extends BaseService<Post> {
     data: Raw<Post>,
     preInsertId: number,
   ): Promise<PostData[]> {
-    this._postStatusHandler.removePreInsertId(preInsertId);
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.deleteProgress(preInsertId);
+
     const post = transform<Post>(data);
     const obj: PostData = {
       id: preInsertId,
@@ -447,23 +450,12 @@ class PostService extends BaseService<Post> {
     return result;
   }
 
-  async handleSendPostFail(preInsertId: number) {
-    this._postStatusHandler.setPreInsertId(preInsertId, POST_STATUS.FAIL);
-    const updateData = {
+  async handleSendPostFail(preInsertId: number, groupId: number) {
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.updateProgress(preInsertId, {
       id: preInsertId,
-      _id: preInsertId,
-      __status: POST_STATUS.FAIL,
-    };
-    let groupId: number = 0;
-
-    await this.handlePartialUpdate(
-      updateData,
-      undefined,
-      async (updatedPost: Post) => {
-        groupId = updatedPost.group_id;
-        return updatedPost;
-      },
-    );
+      status: PROGRESS_STATUS.FAIL,
+    });
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -527,8 +519,10 @@ class PostService extends BaseService<Post> {
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
 
-    if (this.isInPreInsert(id)) {
-      this._postStatusHandler.removePreInsertId(id);
+    if (id < 0) {
+      const progressService: ProgressService = ProgressService.getInstance();
+      progressService.deleteProgress(id);
+
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
