@@ -1,5 +1,6 @@
 enum ENTITY_NAME {
   'GROUP' = 'group',
+  'GROUP_CONFIG' = 'groupConfig',
   'PERSON' = 'person',
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',

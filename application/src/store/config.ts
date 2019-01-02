@@ -6,6 +6,7 @@ const {
   ItemService,
   CompanyService,
   GroupService,
+  GroupConfigService,
   PostService,
   PresenceService,
   StateService,
@@ -109,6 +110,13 @@ const ENTITY_SETTING = {
     event: [ENTITY.PROFILE],
     service: () => ProfileService.getInstance(),
     type: HANDLER_TYPE.SINGLE_ENTITY,
+    cacheCount: 1000,
+  },
+
+  [ENTITY_NAME.GROUP_CONFIG]: {
+    event: [ENTITY.GROUP_CONFIG],
+    service: () => GroupConfigService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
 };

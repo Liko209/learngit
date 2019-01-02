@@ -70,8 +70,6 @@ export type GroupCommon = {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
-  __send_failure_post_ids?: number[];
-  __draft?: string;
   __last_accessed_at?: number;
 };
 
@@ -181,6 +179,8 @@ export type GroupConfig = {
   has_more_older?: boolean;
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
+  draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type PostItemData = {

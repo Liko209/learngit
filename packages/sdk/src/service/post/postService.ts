@@ -23,6 +23,7 @@ import { mainLogger, err, Result } from 'foundation';
 import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
+import GroupConfigService from '../groupConfig';
 import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
 
 interface IPostResult {
@@ -432,14 +433,14 @@ class PostService extends BaseService<Post> {
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);
 
-    const groupService: GroupService = GroupService.getInstance();
-    const failIds = await groupService.getGroupSendFailurePostIds(
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const failIds = await groupConfigService.getGroupSendFailurePostIds(
       post.group_id,
     );
     const index = failIds.indexOf(preInsertId);
     if (index > -1) {
       failIds.splice(index, 1);
-      groupService.updateGroupSendFailurePostIds({
+      groupConfigService.updateGroupSendFailurePostIds({
         id: post.group_id,
         send_failure_post_ids: failIds,
       });
@@ -456,9 +457,11 @@ class PostService extends BaseService<Post> {
       status: PROGRESS_STATUS.FAIL,
     });
 
-    const groupService: GroupService = GroupService.getInstance();
-    const failIds = await groupService.getGroupSendFailurePostIds(groupId);
-    groupService.updateGroupSendFailurePostIds({
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const failIds = await groupConfigService.getGroupSendFailurePostIds(
+      groupId,
+    );
+    groupConfigService.updateGroupSendFailurePostIds({
       id: groupId,
       send_failure_post_ids: [...new Set([...failIds, preInsertId])],
     });
@@ -523,14 +526,14 @@ class PostService extends BaseService<Post> {
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
-      const groupService: GroupService = GroupService.getInstance();
-      const failIds = await groupService.getGroupSendFailurePostIds(
+      const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+      const failIds = await groupConfigService.getGroupSendFailurePostIds(
         post.group_id,
       );
       const index = failIds.indexOf(id);
       if (index > -1) {
         failIds.splice(index, 1);
-        groupService.updateGroupSendFailurePostIds({
+        groupConfigService.updateGroupSendFailurePostIds({
           id: post.group_id,
           send_failure_post_ids: failIds,
         });

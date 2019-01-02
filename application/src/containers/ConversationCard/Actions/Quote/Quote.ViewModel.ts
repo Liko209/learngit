@@ -5,13 +5,14 @@
  */
 
 import { computed } from 'mobx';
-import { GroupService } from 'sdk/service';
+import { GroupConfigService, notificationCenter } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import PostModel from '@/store/models/Post';
 import { Post, Person } from 'sdk/models';
+import { UI_NOTIFICATION_KEY } from '@/constants';
 import PersonModel from '@/store/models/Person';
 
 class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
@@ -78,8 +79,12 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   updateDraft = (draft: string) => {
-    const groupService: GroupService = GroupService.getInstance();
-    groupService.updateGroupDraft({
+    notificationCenter.emit(UI_NOTIFICATION_KEY.QUOTE, {
+      quote: draft,
+      groupId: this._groupId,
+    });
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    groupConfigService.updateDraft({
       draft,
       id: this._groupId,
     });
