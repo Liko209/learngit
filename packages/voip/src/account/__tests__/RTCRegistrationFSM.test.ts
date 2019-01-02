@@ -7,15 +7,15 @@ import { RTCRegistrationFSM } from '../RTCRegistrationFSM';
 import { IConditionalHandler } from '../IConditionalHandler';
 import { RegistrationState } from '../types';
 
-describe('RTCRegistrationFSM', async () => {
-  class MockHandler implements IConditionalHandler {
-    onReadyWhenRegSucceedAction = jest.fn();
-    onProvisionReadyAction = jest.fn();
-  }
+class MockHandler implements IConditionalHandler {
+  onReadyWhenRegSucceedAction = jest.fn();
+  onProvisionReadyAction = jest.fn();
+}
 
-  const provisionData = 'provisionData';
-  const options = 'options';
+const provisionData = 'provisionData';
+const options = 'options';
 
+describe('RTCRegistrationFSM', () => {
   describe('create', () => {
     it('Should be idle state when create', () => {
       const mockHandler = new MockHandler();
