@@ -5,10 +5,10 @@
  */
 
 import { SanitizedFileItem } from '../entity';
-import { BaseDao } from '../../../dao';
+import { SubItemDao } from './SubItemDao';
 import { IDatabase } from 'foundation/src/db';
 
-class FileItemDao extends BaseDao<SanitizedFileItem> {
+class FileItemDao extends SubItemDao<SanitizedFileItem> {
   static COLLECTION_NAME = 'fileItem';
   constructor(db: IDatabase) {
     super(FileItemDao.COLLECTION_NAME, db);

@@ -5,10 +5,10 @@
  */
 
 import { SanitizedLinkItem } from '../entity';
-import { BaseDao } from '../../../dao';
+import { SubItemDao } from './SubItemDao';
 import { IDatabase } from 'foundation/src/db';
 
-class LinkItemDao extends BaseDao<SanitizedLinkItem> {
+class LinkItemDao extends SubItemDao<SanitizedLinkItem> {
   static COLLECTION_NAME = 'linkItem';
   constructor(db: IDatabase) {
     super(LinkItemDao.COLLECTION_NAME, db);

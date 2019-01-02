@@ -102,7 +102,7 @@ export type StoredFile = Raw<ExtendedBaseModel> & {
   size: number;
 };
 
-export type SanitizedItem = IdModel & {
+type SanitizedItem = IdModel & {
   group_ids: number[];
   created_at: number;
   name: string;

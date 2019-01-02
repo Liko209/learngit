@@ -5,10 +5,10 @@
  */
 
 import { SanitizedTaskItem } from '../entity';
-import { BaseDao } from '../../../dao';
+import { SubItemDao } from './SubItemDao';
 import { IDatabase } from 'foundation/src/db';
 
-class TaskItemDao extends BaseDao<SanitizedTaskItem> {
+class TaskItemDao extends SubItemDao<SanitizedTaskItem> {
   static COLLECTION_NAME = 'taskItem';
   constructor(db: IDatabase) {
     super(TaskItemDao.COLLECTION_NAME, db);
