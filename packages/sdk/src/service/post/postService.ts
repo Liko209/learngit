@@ -341,7 +341,7 @@ class PostService extends BaseService<Post> {
 
       if (this._isValidPost(post)) {
         if (this._getPseudoItemIdsFromPost(post).length === 0) {
-          await this._sendPost(post);
+          await this._sendPost.bind(this)(post);
         }
       } else {
         await this.deletePost(post.id);
