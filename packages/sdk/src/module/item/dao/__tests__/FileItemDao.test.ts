@@ -57,14 +57,21 @@ describe('Event Item Dao', () => {
           group_ids: [1],
           created_at: 1,
           name: 'item1',
+          type: 'jpg',
         },
         {
           id: 2,
           group_ids: [1],
           created_at: 2,
           name: 'item2',
+          type: 'png',
         },
       ]);
+    });
+
+    it('should return empty when not match', async () => {
+      const result = await dao.queryItemsByGroupId(4);
+      expect(result).toHaveLength(0);
     });
   });
 });

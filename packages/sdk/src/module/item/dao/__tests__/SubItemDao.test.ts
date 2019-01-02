@@ -68,5 +68,10 @@ describe('Event Item Dao', () => {
         },
       ]);
     });
+
+    it('should return empty when not match', async () => {
+      const result = await dao.queryItemsByGroupId(4);
+      expect(result).toHaveLength(0);
+    });
   });
 });

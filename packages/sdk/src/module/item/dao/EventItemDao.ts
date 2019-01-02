@@ -5,10 +5,10 @@
  */
 
 import { SanitizedEventItem } from '../entity';
-import { BaseDao } from '../../../dao';
+import { SubItemDao } from './SubItemDao';
 import { IDatabase } from 'foundation/src/db';
 
-class EventItemDao extends BaseDao<SanitizedEventItem> {
+class EventItemDao extends SubItemDao<SanitizedEventItem> {
   static COLLECTION_NAME = 'eventItem';
   constructor(db: IDatabase) {
     super(EventItemDao.COLLECTION_NAME, db);
