@@ -48,7 +48,7 @@ describe('Event Item Dao', () => {
       jest.restoreAllMocks();
     });
 
-    it('Query older posts by group Id and post id', async () => {
+    it('should return items by group id', async () => {
       const result = await dao.queryItemsByGroupId(1);
       expect(result).toHaveLength(2);
       expect(result).toEqual([
