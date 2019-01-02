@@ -42,6 +42,7 @@ import { SocketManager } from './service/socket/SocketManager';
 import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
+import ProgressService from './module/progress';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -82,6 +83,7 @@ const registerConfigs = {
     { name: ProfileService.name, value: ProfileService },
     { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
+    { name: ProgressService.name, value: ProgressService },
     {
       name: ConfigService.name,
       value: ConfigService,
