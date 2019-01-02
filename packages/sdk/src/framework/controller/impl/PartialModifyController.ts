@@ -4,15 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../../models';
+import { IdModel, Raw } from '../../model';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';
-import { ErrorParser } from '../../../utils';
 import { IPartialModifyController } from '../interface/IPartialModifyController';
 
-class PartialModifyController<T extends BaseModel = BaseModel>
+class PartialModifyController<T extends IdModel = IdModel>
   implements IPartialModifyController<T> {
   constructor(public entitySourceController: IEntitySourceController<T>) {}
 
@@ -163,7 +162,7 @@ class PartialModifyController<T extends BaseModel = BaseModel>
           doPartialNotify,
         );
 
-        throw ErrorParser.parse(e);
+        throw e;
       }
     } while (false);
 

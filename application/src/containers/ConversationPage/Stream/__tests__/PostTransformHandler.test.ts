@@ -13,7 +13,7 @@ import {
   Separator,
 } from '../types';
 import { ENTITY_NAME } from '@/store';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 
 const isMatchFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId);

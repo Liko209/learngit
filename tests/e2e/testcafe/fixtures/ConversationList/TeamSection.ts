@@ -190,7 +190,7 @@ test(formalName('Can expand and collapse the team section by clicking the sectio
 
     let teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then Team section should be expanded by default', async () => {
-      await t.expect(await teamSection.isExpand()).ok();
+      await t.expect(teamSection.isExpand).ok();
     });
 
     const teamSectionName = teamSection.toggleButton.child().withExactText('Teams');
@@ -198,7 +198,7 @@ test(formalName('Can expand and collapse the team section by clicking the sectio
       await t.click(teamSectionName);
     });
     await h(t).withLog('Then the team section should be collapsed.', async () => {
-      await t.expect(await teamSection.isExpand()).notOk();
+      await t.expect(teamSection.isExpand).notOk();
     });
 
     await h(t).withLog('When I click the team section name again', async () => {
@@ -206,7 +206,7 @@ test(formalName('Can expand and collapse the team section by clicking the sectio
     });
 
     await h(t).withLog('Then the team section should be expanded.', async () => {
-      await t.expect(await teamSection.isExpand()).ok();
+      await t.expect(teamSection.isExpand).ok();
     });
   }
 );

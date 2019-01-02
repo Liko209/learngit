@@ -5,8 +5,8 @@
  */
 
 import { observable, computed, action } from 'mobx';
-import { Group, Person } from 'sdk/models';
-import { service } from 'sdk';
+import { Group } from 'sdk/module/group/entity';
+import { Person } from 'sdk/module/person/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -16,14 +16,10 @@ import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
 import { t } from 'i18next';
 import _ from 'lodash';
-const { GroupService } = service;
-
 type HeaderAction = { name: string; iconName: string; tooltip: string };
 class HeaderViewModel extends AbstractViewModel {
   @observable
   private _id: number;
-
-  private _groupService: service.GroupService = GroupService.getInstance();
 
   @action
   onReceiveProps({ id }: { id: number }) {
@@ -43,6 +39,13 @@ class HeaderViewModel extends AbstractViewModel {
       title += ` (${t('text')})`;
     }
     return title;
+  }
+
+  @computed
+  get actions() {
+    const actions: HeaderAction[] = [];
+    // hide not implemented button: audio conference, call, meeting, add member
+    return actions;
   }
 
   @computed
@@ -77,26 +80,6 @@ class HeaderViewModel extends AbstractViewModel {
   get isFavorite() {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
     return group.isFavorite;
-  }
-
-  @computed
-  get isPrivate() {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
-    return group.privacy === 'private';
-  }
-
-  @computed
-  get actions() {
-    const actions: HeaderAction[] = [];
-    // hide not implemented button: audio conference, call, meeting, add member
-    return actions;
-  }
-
-  onFavoriteButtonHandler = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
-  ) => {
-    return this._groupService.markGroupAsFavorite(this._id, checked);
   }
 }
 

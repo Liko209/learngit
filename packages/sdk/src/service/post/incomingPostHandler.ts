@@ -6,7 +6,7 @@
 
 import { daoManager } from '../../dao';
 import PostDao from '../../dao/post';
-import { Post } from '../../models';
+import { Post } from '../../module/post/entity';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';

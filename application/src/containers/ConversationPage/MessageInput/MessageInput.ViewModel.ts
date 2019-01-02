@@ -18,7 +18,7 @@ import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';

@@ -6,7 +6,7 @@
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { ENTITY_NAME } from '@/store';
 import { ItemService } from 'sdk/service';
 import LinkItemModel from '@/store/models/LinkItem';

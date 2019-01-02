@@ -9,7 +9,7 @@ import { ProfileDialogPersonContentViewProps } from './types';
 import { ProfileDialogPersonViewModel } from '../Person.ViewModel';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import CompanyModel from '@/store/models/Company';
-import { Company } from 'sdk/models';
+import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
 import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/service/person';
 import { GLOBAL_KEYS } from '@/store/constants';

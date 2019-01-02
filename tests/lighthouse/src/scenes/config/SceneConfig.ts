@@ -4,6 +4,7 @@
  */
 import { Pass } from './Pass';
 import { Setting } from './Setting';
+import { ProxyGatherer } from '../../gatherers/ProxyGatherer';
 import { ProcessGatherer } from '../../gatherers/ProcessGatherer';
 import { ProcessAudit } from '../../audits/ProcessAudit';
 
@@ -22,6 +23,9 @@ class SceneConfig {
         networkQuietThresholdMs: 1000,
         cpuQuietThresholdMs: 1000,
         gatherers: [
+            {
+                instance: new ProxyGatherer()
+            },
             'scripts',
             'css-usage',
             'viewport',

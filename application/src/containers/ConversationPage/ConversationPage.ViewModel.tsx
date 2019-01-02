@@ -6,7 +6,7 @@
 
 import { action, observable, computed } from 'mobx';
 import { GroupService, StateService } from 'sdk/service';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { getEntity } from '@/store/utils';
 import { AbstractViewModel } from '@/base';
 import GroupModel from '@/store/models/Group';

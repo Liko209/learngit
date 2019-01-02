@@ -25,7 +25,8 @@ import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
-import { Raw, Profile } from '../../models';
+import { Raw } from '../../framework/model';
+import { Profile } from '../../module/profile/entity';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {

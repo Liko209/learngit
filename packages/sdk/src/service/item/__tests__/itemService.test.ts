@@ -7,7 +7,7 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 
 import ItemService from '../../../service/item';
-import { daoManager, ItemDao } from '../../../dao';
+import { daoManager } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
 import { ApiResultOk } from '../../../api/ApiResult';

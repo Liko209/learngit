@@ -7,7 +7,8 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MENU_LIST_ITEM_TYPE } from './types';
-import { Post, Group } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { Group } from 'sdk/module/group/entity';
 import { TypeDictionary } from 'sdk/utils';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';

@@ -13,7 +13,7 @@ import {
 } from './types';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { ENTITY_NAME } from '@/store';
 
 const ActivityDataKeyMappingPostType = {

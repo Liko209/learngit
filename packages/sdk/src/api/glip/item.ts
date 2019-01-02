@@ -6,21 +6,17 @@
 import { NETWORK_METHOD, NETWORK_VIA, Result } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
-import {
-  ItemFile,
-  Item,
-  BaseModel,
-  StoredFile,
-  Raw,
-  NoteItem,
-} from '../../models';
+import { IdModel, Raw } from '../../framework/model';
+
+import { ItemFile, Item, StoredFile, NoteItem } from '../../module/item/entity';
+
 import { RequestHolder } from '../requestHolder';
 import {
   AmazonFilePolicyRequestModel,
   AmazonFileUploadPolicyData,
 } from './types';
 
-interface IRightRailItemModel extends BaseModel {
+interface IRightRailItemModel extends IdModel {
   items: Raw<Item>[];
 }
 

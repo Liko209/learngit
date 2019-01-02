@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../../models';
+import { IdModel, Raw } from '../../model';
 
-interface IEntitySourceController<T extends BaseModel = BaseModel> {
+interface IEntitySourceController<T extends IdModel = IdModel> {
   getEntity(id: number): Promise<T | null>;
 
   getEntityLocally(id: number): Promise<T>;

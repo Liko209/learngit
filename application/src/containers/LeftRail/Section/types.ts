@@ -9,7 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 
 import { IMatchFunc, ITransformFunc } from '@/store/base/fetch';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 
 enum SECTION_TYPE {
   FAVORITE = 'favorites',

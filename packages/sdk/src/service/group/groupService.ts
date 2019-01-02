@@ -12,7 +12,9 @@ import {
 } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Group, GroupApiType, Raw, SortableModel, Profile } from '../../models';
+import { Raw } from '../../framework/model';
+import { Profile } from '../../module/profile/entity';
+import { GroupApiType, SortableModel } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -47,7 +49,12 @@ import _ from 'lodash';
 import AccountService from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
-import { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
+import {
+  FEATURE_STATUS,
+  FEATURE_TYPE,
+  TeamPermission,
+  Group,
+} from '../../module/group/entity';
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
@@ -105,7 +112,7 @@ class GroupService extends BaseService<Group> {
       profile.favorite_group_ids.length > 0
     ) {
       let favoriteGroupIds = profile.favorite_group_ids.filter(
-        id => typeof id === 'number' && !isNaN(id),
+        (id: any) => typeof id === 'number' && !isNaN(id),
       );
       const hiddenIds = extractHiddenGroupIds(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
@@ -224,7 +231,7 @@ class GroupService extends BaseService<Group> {
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
     try {
-      const result = this._queryGroupByMemberList(personIds);
+      const result = await this._queryGroupByMemberList(personIds);
       if (result) {
         return result;
       }
@@ -745,13 +752,14 @@ class GroupService extends BaseService<Group> {
     const memberIds = this._addCurrentUserToMemList(ids);
     const groupDao = daoManager.getDao(GroupDao);
     if (this.isCacheInitialized()) {
-      return await this.getEntitiesFromCache(
+      const result = await this.getEntitiesFromCache(
         (item: Group) =>
           this.isValid(item) &&
           !item.is_team &&
           item.members &&
-          item.members.sort().toString() === ids.sort().toString(),
-      )[0];
+          item.members.sort().toString() === memberIds.sort().toString(),
+      );
+      return result[0];
     }
     return await groupDao.queryGroupByMemberList(memberIds);
   }
