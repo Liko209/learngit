@@ -132,6 +132,9 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     );
     if (res) {
       runInAction(() => {
+        if (res.sortableModels.length > 20) {
+          res.sortableModels.length = 20;
+        }
         this.currentIndex = 0;
         this.members = res.sortableModels;
       });
