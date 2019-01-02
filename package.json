@@ -34,7 +34,8 @@
     "commits:all": "git add . && git-cz",
     "bt": "lerna bootstrap --hoist --no-ci",
     "raise-coverage": "node scripts/raise-coverage",
-    "generate": "plop --plopfile scripts/generators/index.js"
+    "generate": "plop --plopfile scripts/generators/index.js",
+    "tsc": "tsc -v && tsc -p application && tsc -p packages/jui && tsc -p packages/sdk && tsc -p packages/voip && tsc -p packages/foundation"
   },
   "devDependencies": {
     "@types/enzyme": "3.1.14",
@@ -85,7 +86,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "node ./scripts/check-coverage && npm run lint-all && npm run test:cover",
+      "pre-push": "npm run tsc && node ./scripts/check-coverage && npm run lint-all && npm run test:cover",
       "commit-msg": "node scripts/validate-commit-msg.js"
     }
   }
