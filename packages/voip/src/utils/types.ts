@@ -6,7 +6,14 @@
 
 type RTCSipProvisionInfo = {
   sipFlags: object;
-  device: object;
+  device: {
+    transport: string;
+    password: string;
+    domain: string;
+    username: string;
+    authorizationID: string;
+    outboundProxy: string;
+  }[];
   sipInfo: object;
 };
 
