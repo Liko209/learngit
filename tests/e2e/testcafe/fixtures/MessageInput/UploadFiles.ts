@@ -28,8 +28,8 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
   const lastPost = conversationPage.nthPostItem(-1);
-  const filesNames = ['1.txt', '3.txt',];
-  const filesSize = ['0.4Kb', '2.0Kb'];
+  const filesNames = ['1.txt', '3.txt'];
+  const filesSize = ['0.4KB', '2.0KB'];
   const filesPath = ['../../sources/1.txt', '../../sources/3.txt'];
   const message = uuid();
   const NOTIFICATIONS = `shared ${filesPath.length} files`;
