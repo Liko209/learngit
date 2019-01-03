@@ -16,6 +16,10 @@ module.exports = [
     handler: "staleWhileRevalidate"
   },
   {
+    urlPattern: new RegExp("https://glpdevxmn.asialab.glip.net:31337"),
+    handler: "staleWhileRevalidate"
+  },
+  {
     urlPattern: new RegExp("https://cache.glip.com"),
     handler: "staleWhileRevalidate"
   },
