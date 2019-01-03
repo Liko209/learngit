@@ -137,6 +137,27 @@ describe('RTC call', () => {
         done();
       });
     });
+    it('should call state become disconnected when receive session disconnected in idle state', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      session.mockSignal('bye');
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        done();
+      });
+    });
+    it('should call state become disconnected when receive session error in answering state', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.answer();
+      session.mockSignal('failed');
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        done();
+      });
+    });
     it('should call state become disconnected when receive session failed in answering state [JPT-627]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();

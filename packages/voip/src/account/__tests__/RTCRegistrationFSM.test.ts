@@ -55,6 +55,16 @@ describe('RTCRegistrationFSM', () => {
       expect(fsm.state).toBe(RegistrationState.READY);
       expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
     });
+
+    it('Should transition from failed state to ready state when regSucceed fired in ready state', () => {
+      const mockHandler = new MockHandler();
+      const fsm = new RTCRegistrationFSM(mockHandler);
+      fsm.provisionReady(provisionData, options);
+      fsm.regError();
+      fsm.regSucceed();
+      expect(fsm.state).toBe(RegistrationState.READY);
+      expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
+    });
   });
 
   describe('regTimeOut', () => {

@@ -97,7 +97,7 @@ describe('Call FSM UT', async () => {
       });
     });
 
-    it("State transition from Idle to Answering when receive 'Answer' event [JPT-619]", done => {
+    it('should state transition from Idle to Answering when receive answer event [JPT-619]', done => {
       const fsm = createFsm();
       fsm.answer();
       setImmediate(() => {
@@ -127,11 +127,21 @@ describe('Call FSM UT', async () => {
         done();
       });
     });
-    it("State transition from Idle to Disconnected when receive 'sessionDisconnected' event [JPT-618]", done => {
+    it('should state transition from Idle to disconnected when receive sessionDisconnected event [JPT-618]', done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');
       fsm.sessionDisconnected();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+    it('should state transition from Idle to disconnected when receive sessionError event', done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.sessionError();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
