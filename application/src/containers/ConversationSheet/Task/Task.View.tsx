@@ -23,7 +23,7 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 
 import { AvatarName } from './AvatarName';
-import { getDurationTime, getDurationTimeText } from '../helper';
+import { getDateAndTime, getDateMessage, getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 
 type taskViewProps = WithNamespaces & ViewProps;
@@ -118,12 +118,19 @@ class Task extends React.Component<taskViewProps> {
       assignedToIds,
       start,
       due,
+      hasDueTime,
       repeat,
       repeatEndingAfter,
       repeatEnding,
       repeatEndingOn,
     } = task;
-    const time = getDurationTime(start, due);
+    let startTime = '';
+    let endTime = '';
+    const hasTime = start && due;
+    if (hasTime) {
+      startTime = getDateMessage(start);
+      endTime = hasDueTime ? getDateAndTime(due) : getDateMessage(due);
+    }
     const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
@@ -138,9 +145,9 @@ class Task extends React.Component<taskViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
-        {start && (
+        {hasTime && (
           <JuiTaskContent title={t('due')}>
-            <JuiTimeMessage time={`${time} ${timeText}`} />
+            <JuiTimeMessage time={`${startTime} - ${endTime} ${timeText}`} />
           </JuiTaskContent>
         )}
         {assignedToIds && assignedToIds.length > 0 && (
