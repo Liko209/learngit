@@ -27,7 +27,7 @@ import {
   Group,
 } from './types';
 
-const SEARCH_DELAY = 300;
+const SEARCH_DELAY = 100;
 
 type State = {
   terms: string[];
