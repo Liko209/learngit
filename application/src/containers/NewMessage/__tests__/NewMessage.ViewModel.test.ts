@@ -4,26 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import * as goToConversation from '@/common/goToConversation';
 import { service } from 'sdk';
-import { BaseError, ErrorTypes } from 'sdk/utils';
-import { err, ok } from 'foundation';
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
+jest.mock('@/common/goToConversation');
 
 const { PostService } = service;
 
 const postService = {
-  newMessageWithPeopleIds() {},
+  sendPost() {},
 };
 
 const newMessageVM = new NewMessageViewModel();
-function getNewBaseError(type: ErrorTypes, message: string = '') {
-  return new BaseError(type, message);
-}
 
 describe('NewMessageVM', () => {
   beforeAll(() => {
@@ -37,53 +34,16 @@ describe('NewMessageVM', () => {
   });
 
   it('new message success', async () => {
-    postService.newMessageWithPeopleIds = jest
-      .fn()
-      .mockImplementation(() => ok({}));
-
+    jest
+      .spyOn(goToConversation, 'goToConversation')
+      .mockImplementation(() => 112);
     const message = 'test';
-    const memberIds = [1, 2];
-    await newMessageVM.newMessage(memberIds, message);
-    expect(postService.newMessageWithPeopleIds).toHaveBeenCalledWith(
-      memberIds,
+    newMessageVM.members = [1, 2];
+    await newMessageVM.newMessage(message);
+    expect(goToConversation.goToConversation).toHaveBeenCalledWith({
       message,
-    );
-  });
-
-  it('create team success handle error', async () => {
-    const baseError = new BaseError(ErrorTypes.API_INVALID_FIELD, '');
-    postService.newMessageWithPeopleIds = jest
-      .fn()
-      .mockResolvedValueOnce(err(baseError));
-
-    jest.spyOn(newMessageVM, 'newMessageErrorHandler');
-    const message = 'test';
-    const memberIds = [1, 2];
-    const result = await newMessageVM.newMessage(memberIds, message);
-    expect(result).toBeNull();
-    expect(newMessageVM.newMessageErrorHandler).toHaveBeenCalledWith(baseError);
-  });
-
-  it('newMessageErrorHandler()', () => {
-    const error = getNewBaseError(
-      ErrorTypes.API_INVALID_FIELD,
-      'This is not a valid email address: q@qq.com.',
-    );
-    newMessageVM.newMessageErrorHandler(error);
-    expect(newMessageVM.emailErrorMsg).toBe('Invalid Email');
-    expect(newMessageVM.emailError).toBe(true);
-  });
-
-  it('new message server error', async () => {
-    const baseError = new BaseError(ErrorTypes.UNDEFINED_ERROR, '');
-    postService.newMessageWithPeopleIds = jest
-      .fn()
-      .mockResolvedValueOnce(err(baseError));
-
-    const message = 'test';
-    const memberIds = [1, 2];
-    const result = await newMessageVM.newMessage(memberIds, message);
-    expect(result).toBeNull();
+      id: [1, 2],
+    });
   });
 
   it('isOpen', () => {

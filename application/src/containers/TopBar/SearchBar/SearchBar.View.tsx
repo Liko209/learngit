@@ -139,7 +139,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
-    await goToConversation(id);
+    await goToConversation({ id });
   }
 
   searchItemClickHandler = (id: number) => async () => {

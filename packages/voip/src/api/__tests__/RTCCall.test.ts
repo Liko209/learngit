@@ -126,7 +126,7 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('should call state become connected when received session confirmed in answering state  [JPT-526]', done => {
+    it('should call state become connected when received session confirmed in answering state  [JPT-626]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
@@ -159,7 +159,7 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('should call state become disconnected when hangup in answering state [JPT-526]', done => {
+    it('should call state become disconnected when hangup in answering state [JPT-628]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
