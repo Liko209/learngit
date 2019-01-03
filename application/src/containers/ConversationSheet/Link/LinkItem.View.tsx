@@ -28,14 +28,17 @@ class LinkItemView extends React.Component<Props> {
           // hard code in order to show the current image
           let itemUrlWithProtocol;
           const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
-          if (item.url) {
-            itemUrlWithProtocol = item.url.indexOf('http') > -1 ? item.url : `http://${item.url}`;
+          const itemUrl = item.url;
+          if (itemUrl) {
+            itemUrlWithProtocol =
+              itemUrl.indexOf('http://') > -1 ||
+              itemUrl.indexOf('https://') > -1
+                ? itemUrl
+                : `http://${itemUrl}`;
           } else {
-            itemUrlWithProtocol = item.url;
+            itemUrlWithProtocol = itemUrl;
           }
-          const image = item.image
-            ? `${item.image}${imgStamp}`
-            : '';
+          const image = item.image ? `${item.image}${imgStamp}` : '';
           return (item.title || item.image || item.summary) &&
             !item.doNotRender &&
             !item.deactivated ? (
