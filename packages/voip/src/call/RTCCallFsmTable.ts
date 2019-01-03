@@ -12,6 +12,9 @@ const CallFsmEvent = {
   ACCOUNT_READY: 'accountReady',
   ACCOUNT_NOT_READY: 'accountNotReady',
   HANGUP: 'hangup',
+  FLIP: 'flip',
+  START_RECORD: 'startRecord',
+  STOP_RECORD: 'stopRecord',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
@@ -20,6 +23,10 @@ const CallFsmEvent = {
 interface IRTCCallFsmTableDependency {
   onCreateOutCallSession(): void;
   onHangupAction(): void;
+  onFlipAction(target: number): void;
+  onStartRecordAction(): void;
+  onStopRecordAction(): void;
+  onInvalidTransition(transition: any, from: any, to: any): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -51,6 +58,30 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onHangupAction();
             return CallFsmState.DISCONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.FLIP,
+          from: CallFsmState.CONNECTED,
+          to: (target: number) => {
+            dependency.onFlipAction(target);
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.START_RECORD,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onStartRecordAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.STOP_RECORD,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onStopRecordAction();
+            return CallFsmState.CONNECTED;
           },
         },
         {
@@ -88,6 +119,7 @@ class RTCCallFsmTable extends StateMachine {
           return true;
         },
         onInvalidTransition(transition: any, from: any, to: any) {
+          dependency.onInvalidTransition(transition, from, to);
           console.log(
             'Call FSM: Invalid transition: %s from: %s to: %s',
             String(transition),

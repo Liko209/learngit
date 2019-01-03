@@ -13,4 +13,12 @@ enum RTCCALL_STATE {
   DISCONNECTED = 'Disconnected',
 }
 
-export { RTCCallInfo, RTCCALL_STATE };
+enum RTCCALL_ACTION {
+  FLIP_SUCCESS = 'flipSuccess',
+  FLIP_FAILED = 'flipFailed',
+  START_RECORD_SUCCESS = 'startRecordSuccess',
+  START_RECORD_FAILED = 'startRecordFailed',
+  STOP_RECORD_SUCCESS = 'stopRecordSuccess',
+  STOP_RECORD_FAILED = 'stopRecordFailed',
+}
+export { RTCCallInfo, RTCCALL_STATE, RTCCALL_ACTION };

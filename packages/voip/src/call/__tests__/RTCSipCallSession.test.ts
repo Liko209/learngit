@@ -22,6 +22,10 @@ describe('sip call session', () => {
     }
 
     hangup() {}
+
+    flip = jest.fn();
+    startRecord = jest.fn();
+    stopRecord = jest.fn();
   }
 
   describe('setsession()', () => {
@@ -54,6 +58,60 @@ describe('sip call session', () => {
       jest.spyOn(sipcallsession, 'hangup');
       sipcallsession.hangup();
       expect(sipcallsession.hangup).toHaveBeenCalled();
+    });
+  });
+
+  describe('flip()', () => {
+    it('should VirtueSession flip be called when SipCallSession flip be called', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtueSession();
+      sipcallsession.setSession(vsession);
+      vsession.flip.mockResolvedValue();
+      sipcallsession.flip(5);
+      expect(vsession.flip).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('startRecord()', () => {
+    it('should VirtueSession startRecord be called when SipCallSession startRecord be called', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtueSession();
+      sipcallsession.setSession(vsession);
+      vsession.startRecord.mockResolvedValue();
+      sipcallsession.startRecord();
+      expect(vsession.startRecord).toHaveBeenCalled();
+    });
+
+    it('should VirtueSession startRecord be called 1 time when SipCallSession startRecord be called 2 times', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtueSession();
+      sipcallsession.setSession(vsession);
+      vsession.startRecord.mockResolvedValue();
+      sipcallsession.startRecord();
+      sipcallsession.startRecord();
+      expect(vsession.startRecord).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('stopRecord()', () => {
+    it('should VirtueSession stopRecord be called when SipCallSession stopRecord be called and is recording', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtueSession();
+      sipcallsession.setSession(vsession);
+      vsession.stopRecord.mockResolvedValue();
+      vsession.startRecord.mockResolvedValue();
+      sipcallsession.startRecord();
+      sipcallsession.stopRecord();
+      expect(vsession.stopRecord).toHaveBeenCalled();
+    });
+
+    it('should VirtueSession stopRecord not be called when SipCallSession stopRecord be called and is not recording', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtueSession();
+      sipcallsession.setSession(vsession);
+      vsession.stopRecord.mockResolvedValue();
+      sipcallsession.stopRecord();
+      expect(vsession.stopRecord).not.toHaveBeenCalled();
     });
   });
 

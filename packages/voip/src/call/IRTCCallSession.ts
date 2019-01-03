@@ -8,6 +8,9 @@ enum CALL_SESSION_STATE {
 interface IRTCCallSession extends EventEmitter2 {
   setSession(session: any): void;
   hangup(): void;
+  flip(target: number): void;
+  startRecord(): void;
+  stopRecord(): void;
 }
 
 export { IRTCCallSession, CALL_SESSION_STATE };

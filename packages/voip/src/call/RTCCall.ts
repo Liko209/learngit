@@ -4,7 +4,7 @@ import { RTCSipCallSession } from './RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm, RTCCallFsmNotify } from './RTCCallFsm';
 import { v4 as uuid } from 'uuid';
-import { RTCCallInfo, RTCCALL_STATE } from './types';
+import { RTCCallInfo, RTCCALL_STATE, RTCCALL_ACTION } from './types';
 
 class RTCCall {
   private _callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
@@ -40,6 +40,18 @@ class RTCCall {
     this._fsm.hangup();
   }
 
+  flip(target: number): void {
+    this._fsm.flip(target);
+  }
+
+  startRecord(): void {
+    this._fsm.startRecord();
+  }
+
+  stopRecord(): void {
+    this._fsm.stopRecord();
+  }
+
   onAccountReady(): void {
     this._fsm.accountReady();
   }
@@ -67,6 +79,24 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
     });
+    this._callSession.on(RTCCALL_ACTION.FLIP_SUCCESS, () => {
+      this._onFlipSuccess();
+    });
+    this._callSession.on(RTCCALL_ACTION.FLIP_FAILED, () => {
+      this._onFlipFailed();
+    });
+    this._callSession.on(RTCCALL_ACTION.START_RECORD_SUCCESS, () => {
+      this._onStartRecordSuccess();
+    });
+    this._callSession.on(RTCCALL_ACTION.START_RECORD_FAILED, () => {
+      this._onStartRecordFailed();
+    });
+    this._callSession.on(RTCCALL_ACTION.STOP_RECORD_SUCCESS, () => {
+      this._onStopRecordSuccess();
+    });
+    this._callSession.on(RTCCALL_ACTION.STOP_RECORD_FAILED, () => {
+      this._onStopRecordFailed();
+    });
     // listen fsm
     this._fsm.on(RTCCallFsmNotify.ENTERPENDING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
@@ -86,6 +116,48 @@ class RTCCall {
     this._fsm.on(RTCCallFsmNotify.CREATEOUTCALLSESSION, () => {
       this._onCreateOutCallSession();
     });
+    this._fsm.on(RTCCallFsmNotify.FLIP_ACTION, (target: number) => {
+      this._onFlipAction(target);
+    });
+    this._fsm.on(RTCCallFsmNotify.START_RECORD_ACTION, () => {
+      this._onStartRecordAction();
+    });
+    this._fsm.on(RTCCallFsmNotify.STOP_RECORD_ACTION, () => {
+      this._onStopRecordAction();
+    });
+    this._fsm.on(RTCCallFsmNotify.FLIP_FAILED, () => {
+      this._onFlipFailed();
+    });
+    this._fsm.on(RTCCallFsmNotify.START_RECORD_FAILED, () => {
+      this._onStartRecordFailed();
+    });
+    this._fsm.on(RTCCallFsmNotify.STOP_RECORD_FAILED, () => {
+      this._onStopRecordFailed();
+    });
+  }
+  // call action listener
+  private _onFlipSuccess() {
+    this._observer.onCallAction(RTCCALL_ACTION.FLIP_SUCCESS);
+  }
+
+  private _onFlipFailed() {
+    this._observer.onCallAction(RTCCALL_ACTION.FLIP_FAILED);
+  }
+
+  private _onStartRecordSuccess() {
+    this._observer.onCallAction(RTCCALL_ACTION.START_RECORD_SUCCESS);
+  }
+
+  private _onStartRecordFailed() {
+    this._observer.onCallAction(RTCCALL_ACTION.START_RECORD_FAILED);
+  }
+
+  private _onStopRecordSuccess() {
+    this._observer.onCallAction(RTCCALL_ACTION.STOP_RECORD_SUCCESS);
+  }
+
+  private _onStopRecordFailed() {
+    this._observer.onCallAction(RTCCALL_ACTION.STOP_RECORD_FAILED);
   }
 
   // session listener
@@ -103,6 +175,18 @@ class RTCCall {
   // fsm listener
   private _onHangupAction() {
     this._callSession.hangup();
+  }
+
+  private _onFlipAction(target: number) {
+    this._callSession.flip(target);
+  }
+
+  private _onStartRecordAction() {
+    this._callSession.startRecord();
+  }
+
+  private _onStopRecordAction() {
+    this._callSession.stopRecord();
   }
 
   private _onCreateOutCallSession() {
