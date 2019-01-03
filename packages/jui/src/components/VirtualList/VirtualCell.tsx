@@ -4,8 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { CSSProperties } from 'react';
+
 type JuiVirtualCellOnLoadFunc = () => void;
 
+// cell must apply the `style` to it-self
 type JuiVirtualCellProps = {
   onLoad: JuiVirtualCellOnLoadFunc;
   style: CSSProperties;

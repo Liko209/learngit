@@ -3,7 +3,7 @@
  * @Date: 2019-01-02 15:02:09
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, CSSProperties } from 'react';
+import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
 import {
@@ -15,6 +15,7 @@ import {
 
 storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
   let count = number('cell count', 1000);
+  const cellIndex = number('scroll to cell', -1);
   if (count < 0) {
     count = 1000;
   }
@@ -43,8 +44,12 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     }
 
     cellAtIndex(index: number, style: CSSProperties) {
-      const text = this._list[index];
-      return <StaticCell title={text} style={style} key={index} />;
+      const text = `${this._list[index]}-${index + 1}`;
+      const s = {
+        ...style,
+        borderBottom: '1px dashed',
+      };
+      return <StaticCell title={text} style={s} key={index} />;
     }
 
     fixedCellHeight(): number {
@@ -59,21 +64,30 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     height: 400,
     border: '1px solid',
   };
-  const wrapperStyle: CSSProperties = {
-    display: 'flex',
-    justifyContent: 'space-between',
-  };
-  return (
-    <div style={wrapperStyle}>
-      <div style={style}>
-        <JuiVirtualList dataSource={dataSource} />
-      </div>
-    </div>
-  );
+  class Content extends Component {
+    private _listRef: RefObject<JuiVirtualList> = createRef();
+    componentDidMount() {
+      setTimeout(() => {
+        const { current } = this._listRef;
+        if (current) {
+          current.scrollToCell(cellIndex);
+        }
+      },         100);
+    }
+    render() {
+      return (
+        <div style={style}>
+          <JuiVirtualList ref={this._listRef} dataSource={dataSource} />
+        </div>
+      );
+    }
+  }
+  return <Content />;
 });
 
 storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   const part = ['Hello', 'This is title', 'A long text'];
+  const cellIndex = number('scroll to cell', -1);
   let count = number('cell count', 1000);
   if (count < 0) {
     count = 1000;
@@ -94,17 +108,24 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
       const imageHeight = ((this.props.index % 4) + 1) * 100;
       const source = `https://fillmurray.com/${imageWidth}/${imageHeight}`;
 
-      const { title, onLoad, ...rest } = this.props;
+      const { title, index, onLoad, ...rest } = this.props;
+      const footerStyle: CSSProperties = {
+        position: 'absolute',
+        top: 0,
+        color: 'white',
+      };
       return (
         <div {...rest}>
-          <img
-            onLoad={onLoad}
-            src={source}
-            style={{
-              width: imageWidth,
-            }}
-          />
-          {title}
+          <div style={{ height: '100%', position: 'relative' }}>
+            <img
+              onLoad={onLoad}
+              src={source}
+              style={{
+                width: imageWidth,
+              }}
+            />
+            <div style={footerStyle}>{`${title}-${index}`}</div>
+          </div>
         </div>
       );
     }
@@ -145,15 +166,23 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     height: 400,
     border: '1px solid',
   };
-  const wrapperStyle: CSSProperties = {
-    display: 'flex',
-    justifyContent: 'space-between',
-  };
-  return (
-    <div style={wrapperStyle}>
-      <div style={style}>
-        <JuiVirtualList dataSource={dynamicSource} />
-      </div>
-    </div>
-  );
+  class Content extends Component {
+    private _listRef: RefObject<JuiVirtualList> = createRef();
+    componentDidMount() {
+      setTimeout(() => {
+        const { current } = this._listRef;
+        if (current) {
+          current.scrollToCell(cellIndex);
+        }
+      },         100);
+    }
+    render() {
+      return (
+        <div style={style}>
+          <JuiVirtualList ref={this._listRef} dataSource={dynamicSource} />
+        </div>
+      );
+    }
+  }
+  return <Content />;
 });

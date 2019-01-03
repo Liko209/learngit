@@ -6,5 +6,4 @@
 
 export * from './VirtualList';
 export * from './VirtualListDataSource';
-export * from './VirtualListDelegate';
 export * from './VirtualCell';

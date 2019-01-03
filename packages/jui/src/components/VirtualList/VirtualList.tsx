@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import {
   AutoSizer,
   List,
@@ -19,8 +19,11 @@ type JuiVirtualListProps = {
 };
 
 class JuiVirtualList extends Component<JuiVirtualListProps> {
+  static DefaultMinCellHeight: number = 44;
+  static DefaultOverscanRowCount: number = 4;
   private _dataSource: IVirtualListDataSource;
   private _cache: CellMeasurerCache;
+  private _listRef: RefObject<List> = createRef();
 
   constructor(props: JuiVirtualListProps) {
     super(props);
@@ -37,7 +40,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       this._cache = new CellMeasurerCache({
         minHeight: this.dataSource.minCellHeight
           ? this.dataSource.minCellHeight()
-          : 44,
+          : JuiVirtualList.DefaultMinCellHeight,
         fixedWidth: true,
       });
     }
@@ -67,6 +70,20 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     );
   }
 
+  scrollToCell = (index: number) => {
+    const { current } = this._listRef;
+    if (current) {
+      requestAnimationFrame(() => current.scrollToRow(index));
+    }
+  }
+
+  scrollToPosition = (scrollTop: number) => {
+    const { current } = this._listRef;
+    if (current) {
+      current.scrollToPosition(scrollTop);
+    }
+  }
+
   render() {
     const cellCount = this._dataSource.countOfCell();
     const fixedHeight = this._dataSource.fixedCellHeight
@@ -78,6 +95,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         <AutoSizer>
           {({ width, height }) => (
             <List
+              ref={this._listRef}
               height={height}
               width={width}
               rowCount={cellCount}
@@ -91,14 +109,15 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       content = (
         <AutoSizer>
           {({ width, height }) => {
-            console.log(81, width, height);
             return (
               <List
+                ref={this._listRef}
                 deferredMeasurementCache={this.cache}
+                estimatedRowSize={JuiVirtualList.DefaultMinCellHeight}
                 height={height}
                 width={width}
                 rowCount={cellCount}
-                ooverscanRowCount={8}
+                overscanRowCount={JuiVirtualList.DefaultOverscanRowCount}
                 rowHeight={this.cache.rowHeight}
                 rowRenderer={this._renderDynamicCell}
               />
