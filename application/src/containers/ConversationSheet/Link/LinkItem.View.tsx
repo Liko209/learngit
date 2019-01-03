@@ -31,8 +31,7 @@ class LinkItemView extends React.Component<Props> {
           const itemUrl = item.url;
           if (itemUrl) {
             itemUrlWithProtocol =
-              itemUrl.indexOf('http://') > -1 ||
-              itemUrl.indexOf('https://') > -1
+              itemUrl.match('http://|https://')
                 ? itemUrl
                 : `http://${itemUrl}`;
           } else {
