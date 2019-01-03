@@ -30,7 +30,7 @@ class RTCRegistrationManager implements IConditionalHandler {
   private _fsm: RTCRegistrationFSM;
   public _eventEmitter: EventEmitter2;
   private _userAgent: IRTCUserAgent;
-  private _listener: IRTCAccountDelegate;
+  private _delegate: IRTCAccountDelegate;
   private _isReady: boolean;
 
   public onReadyWhenRegSucceedAction(): void {}
@@ -42,8 +42,8 @@ class RTCRegistrationManager implements IConditionalHandler {
     );
   }
 
-  constructor(listener: IRTCAccountDelegate) {
-    this._listener = listener;
+  constructor(delegate: IRTCAccountDelegate) {
+    this._delegate = delegate;
     this._fsm = new RTCRegistrationFSM(this);
     this._eventEmitter = new EventEmitter2();
     this._initFsmObserve();
@@ -53,19 +53,19 @@ class RTCRegistrationManager implements IConditionalHandler {
 
   private _onEnterReady() {
     this._isReady = true;
-    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
+    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
   }
   private _onEnterRegInProgress() {
     this._isReady = false;
-    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.IN_PROGRESS);
+    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.IN_PROGRESS);
   }
   private _onEnterRegFailure() {
     this._isReady = false;
-    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.FAILED);
+    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.FAILED);
   }
   private _onEnterUnRegistered() {
     this._isReady = false;
-    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.UNREGISTERED);
+    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.UNREGISTERED);
   }
 
   private _initFsmObserve() {
