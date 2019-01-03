@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw } from '../../model';
+import { IdModel } from '../../model';
 
 type SortableModel<T> = {
   id: number;
