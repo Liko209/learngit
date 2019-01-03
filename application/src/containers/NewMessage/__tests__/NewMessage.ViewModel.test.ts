@@ -42,7 +42,7 @@ describe('NewMessageVM', () => {
     await newMessageVM.newMessage(message);
     expect(goToConversation.goToConversation).toHaveBeenCalledWith({
       message,
-      memberIds: [1, 2],
+      id: [1, 2],
     });
   });
 

@@ -82,7 +82,7 @@ class NewMessageViewModel extends StoreViewModel {
   newMessage = async (message: string) => {
     goToConversation({
       message,
-      memberIds: this.members as number[],
+      id: Array.from(this.members) as number[],
     });
     this.updateNewMessageDialogState();
     this.inputReset();

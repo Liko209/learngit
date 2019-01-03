@@ -8,64 +8,55 @@ import { service } from 'sdk';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 type GoToConversationParams = {
-  id?: number;
-  memberIds?: number[];
+  id: number | number[];
   message?: string;
 };
 
-const getConversationId = async ({
-  id,
-  memberIds,
-  message,
-}: GoToConversationParams) => {
-  let groupId = null;
-  const { GroupService, PostService } = service;
+const getConversationId = async (id: number | number[]) => {
+  const { GroupService } = service;
   const groupService: service.GroupService = GroupService.getInstance();
-  if (id) {
-    const type = GlipTypeUtil.extractTypeId(id);
-    if (
-      type === TypeDictionary.TYPE_ID_GROUP ||
-      type === TypeDictionary.TYPE_ID_TEAM
-    ) {
-      groupId = id;
-    }
-    if (type === TypeDictionary.TYPE_ID_PERSON) {
-      const result = await groupService.getOrCreateGroupByMemberList([id]);
-      if (result.isOk()) {
-        groupId = result.data.id;
-      }
-    }
+  const type = Array.isArray(id)
+    ? TypeDictionary.TYPE_ID_PERSON
+    : GlipTypeUtil.extractTypeId(id);
+  if (
+    type === TypeDictionary.TYPE_ID_GROUP ||
+    type === TypeDictionary.TYPE_ID_TEAM
+  ) {
+    return id as number;
   }
-  if (memberIds) {
-    const result = await groupService.getOrCreateGroupByMemberList(memberIds);
+  if (type === TypeDictionary.TYPE_ID_PERSON) {
+    const result = await groupService.getOrCreateGroupByMemberList(
+      Array.isArray(id) ? id : [id],
+    );
     if (result.isOk()) {
-      groupId = result.data.id;
+      return result.data.id;
     }
   }
-  if (message && groupId) {
-    const postService: service.PostService = PostService.getInstance();
-    try {
-      await postService.sendPost({ groupId, text: message });
-    } catch (err) {
-      groupId = null;
-    }
-  }
-  return groupId;
+  return null;
 };
 
 async function goToConversation(params: GoToConversationParams) {
-  const { id, memberIds, message } = params;
+  const { id, message } = params;
+  const { PostService } = service;
   history.push('/messages/loading');
-  const conversationId = await getConversationId({ id, memberIds, message });
-  if (!conversationId) {
+  try {
+    const conversationId = await getConversationId(id);
+    if (!conversationId) {
+      throw new Error('Conversation not found.');
+    }
+    if (message && conversationId) {
+      const postService: service.PostService = PostService.getInstance();
+      await postService.sendPost({ groupId: conversationId, text: message });
+    }
+    history.replace(`/messages/${conversationId}`);
+    return true;
+  } catch (err) {
     history.replace('/messages/loading', {
       params,
       error: true,
     });
     return false;
   }
-  history.replace(`/messages/${conversationId}`);
-  return true;
 }
 
 export { goToConversation, getConversationId, GoToConversationParams };
