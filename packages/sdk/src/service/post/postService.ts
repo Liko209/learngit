@@ -305,6 +305,7 @@ class PostService extends BaseService<Post> {
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
+    let isPostSent: boolean = false;
     const listener = async (params: {
       status: PROGRESS_STATUS;
       preInsertId: number;
@@ -315,6 +316,7 @@ class PostService extends BaseService<Post> {
         return;
       }
 
+      let shouldUpdatePost: boolean = true;
       if (status === PROGRESS_STATUS.CANCELED) {
         _.remove(post.item_ids, (id: number) => {
           return id === preInsertId;
@@ -335,29 +337,47 @@ class PostService extends BaseService<Post> {
               }
             });
           }
-
-          this._partialUpdatePost({
-            id: post.id,
-            _id: post.id,
-            item_ids: post.item_ids,
-          });
-        }
-      }
-
-      if (this._isValidPost(post)) {
-        if (this._getPseudoItemIdsFromPost(post).length === 0) {
-          await this._sendPost.bind(this)(post);
         }
       } else {
-        await this.deletePost(post.id);
+        shouldUpdatePost = false;
       }
 
-      const itemStatuses = this._getPseudoItemStatusInPost(post);
+      const clonePost = _.cloneDeep(post);
+      if (shouldUpdatePost) {
+        await this.handlePartialUpdate(
+          {
+            id: clonePost.id,
+            _id: clonePost.id,
+            item_ids: clonePost.item_ids,
+          },
+          undefined,
+          async (updatedPost: Post) => {
+            return updatedPost;
+          },
+        );
+
+        const itemService: ItemService = ItemService.getInstance();
+        itemService.deleteFileItemCache(preInsertId);
+      }
+
+      if (this._isValidPost(clonePost)) {
+        if (
+          !isPostSent &&
+          this._getPseudoItemIdsFromPost(clonePost).length === 0
+        ) {
+          isPostSent = true;
+          await this._sendPost.bind(this)(clonePost);
+        }
+      } else {
+        await this.deletePost(clonePost.id);
+      }
+
+      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       // remove listener if item files are not in progress
       if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
         // has failed
         if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
-          this.handleSendPostFail(post.id, post.group_id);
+          this.handleSendPostFail(clonePost.id, post.group_id);
         }
 
         notificationCenter.removeListener(
@@ -373,16 +393,6 @@ class PostService extends BaseService<Post> {
     itemService.sendItemData(post.group_id, post.item_ids);
 
     return [];
-  }
-
-  private async _partialUpdatePost(updateData: object) {
-    this.handlePartialUpdate(
-      updateData,
-      undefined,
-      async (updatedPost: Post) => {
-        return updatedPost;
-      },
-    );
   }
 
   private _getPseudoItemIdsFromPost(post: Post) {

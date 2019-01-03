@@ -550,8 +550,6 @@ class ItemFileUploadHandler {
     await itemDao.delete(preInsertId);
     await itemDao.put(itemFile);
 
-    this._progressCaches.delete(preInsertId);
-
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
@@ -746,6 +744,10 @@ class ItemFileUploadHandler {
   private _hasValidStoredFile(itemFile: ItemFile) {
     const version = itemFile.versions[0];
     return version && version.download_url.length > 0 && version.url.length > 0;
+  }
+
+  deleteFileCache(id: number) {
+    this._progressCaches.delete(id);
   }
 }
 

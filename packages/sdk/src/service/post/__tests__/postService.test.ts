@@ -1061,6 +1061,9 @@ describe('PostService', () => {
         '_handlePreInsertProcess',
       );
 
+      const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
+      spyPartialUpdate.mockImplementation(() => {});
+
       spyHandlePreInsertProcess.mockImplementation(() => {});
       const spySendPost = jest.spyOn(postService, '_sendPost');
       spySendPost.mockImplementation(() => {});
@@ -1082,6 +1085,7 @@ describe('PostService', () => {
       await postService.sendPost(info);
 
       setTimeout(() => {
+        expect(spyPartialUpdate).toBeCalled();
         expect(spyDeletePost).toBeCalledWith(info.id);
         expect(spySendPost).not.toBeCalledTimes(1);
         expect(spyHandlePreInsertProcess).toBeCalledWith(info);
@@ -1181,6 +1185,7 @@ describe('PostService', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
+        expect(itemService.deleteFileItemCache).toBeCalled();
         expect(spyResendFailedItems).not.toBeCalled();
         expect(itemService.cleanUploadingFiles).toBeCalled();
         expect(itemService.sendItemData).toBeCalled();

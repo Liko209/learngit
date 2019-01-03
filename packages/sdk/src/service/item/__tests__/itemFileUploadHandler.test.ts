@@ -65,6 +65,29 @@ describe('ItemFileUploadHandler', () => {
     clearMocks();
   });
 
+  describe('deleteFileCache', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should delete the cached item file status', () => {
+      const groupId = 1;
+      const progressCaches = new Map();
+      progressCaches.set(-1, {
+        itemFile: { group_ids: [groupId], versions: [{ size: 0.1 * 1 }] },
+        progress: { rate: { loaded: 10 } },
+      } as ItemFileUploadStatus);
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      expect(progressCaches.get(-1)).not.toBeUndefined();
+      itemFileUploadHandler.deleteFileCache(-1);
+      expect(progressCaches.get(-1)).toBeUndefined();
+    });
+  });
+
   describe('sendItemFile()', () => {
     const groupId = 1;
     const userId = 2;
