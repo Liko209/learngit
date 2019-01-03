@@ -9,7 +9,7 @@ class OfflineGatherer extends Gatherer {
   async beforePass(passContext) {
     await passContext.driver.goOffline();
 
-    await bluebird.delay(1000);
+    await bluebird.delay(5000);
   }
 
   afterPass(passContext) {
