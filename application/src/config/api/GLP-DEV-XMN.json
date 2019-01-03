@@ -23,7 +23,5 @@
   },
   "upload": {
     "server": "https://glpdevxmn.asialab.glip.net:8443"
-    //"upload": "https://glpdevxmn.asialab.glip.net:8443/upload"
-    //"download": "https://glpdevxmn.asialab.glip.net:8443"
   }
 }
