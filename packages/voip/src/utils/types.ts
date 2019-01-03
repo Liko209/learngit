@@ -17,4 +17,8 @@ type RTCSipProvisionInfo = {
   sipInfo: object;
 };
 
-export { RTCSipProvisionInfo };
+enum RTCPROV_EVENT {
+  NEWPROV = 'newProv',
+}
+
+export { RTCSipProvisionInfo, RTCPROV_EVENT };

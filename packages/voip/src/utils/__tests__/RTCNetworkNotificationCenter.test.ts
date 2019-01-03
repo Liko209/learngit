@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/// <reference path="../../__tests__/types.d.ts" />
 import {
   rtcNetworkNotificationCenter,
   RTCNetworkEVENT,

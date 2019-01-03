@@ -18,6 +18,14 @@ class RTCRestApiManager {
       return null;
     }
   }
+
+  public reset() {
+    this._httpClient = null;
+  }
+
+  public getClient(): any {
+    return this._httpClient;
+  }
 }
 
 const rtcRestApiManager: RTCRestApiManager = new RTCRestApiManager();
