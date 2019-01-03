@@ -179,5 +179,8 @@
   "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
   "fileNoLongerExists": "The file no longer exists.",
   "section": "Section",
-  "descriptionNotes": "Description"
+  "descriptionNotes": "Description",
+  "conversationDetails": "Conversation Details",
+  "conversationDetailsShow": "Show details",
+  "conversationDetailsHide": "Hide details"
 }
