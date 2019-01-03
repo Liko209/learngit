@@ -1,8 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/LeftNav/LeftNavigator.ts"],
-    "include_tags": [],
-    "exclude_tags": [],
+    "fixtures": ["./fixtures/Logout.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
