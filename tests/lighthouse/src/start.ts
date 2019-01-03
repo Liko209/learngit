@@ -58,7 +58,7 @@ const logger = logUtils.getLogger(__filename);
     await dbUtils.close();
     await puppeteerUtils.closeAll();
 
-    // process.exitCode = exitCode;
-    // process.exit(process.exitCode);
+    process.exitCode = exitCode;
+    process.exit(process.exitCode);
   }
 });
