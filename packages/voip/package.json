@@ -11,6 +11,7 @@
     "ringcentral-web-phone": "git+ssh://git@git.ringcentral.com:Fiji/ringcentral-web-phone.git#dev"
   },
   "devDependencies": {
+    "@types/uuid": "^3.4.3",
     "@types/lodash": "4.14.117",
     "typescript": "3.1.4"
   }
