@@ -1,0 +1,11 @@
+User should be able to choose one of the following options
+Update
+Label for screenreader: Update
+By clicking it the prompt is dismissed and the file is uploaded as the user uploaded a version N of the file.
+Create
+Label for screenreader: Create
+By clicking it the prompt is dismissed and the file is uploaded as the user shares a file
+In this case, the app should automatically append (1) after the file name to distinguish it from the original file.
+Cancel
+Label for screenreader: Cancel
+By clicking it the prompt is dismissed and the upload is canceled.
