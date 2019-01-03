@@ -9,7 +9,7 @@ export class LogUploader implements ILogApi {
     const userInfo = await this._getUserInfo();
     const logMsgs = logs.map(log => this._getLogText(log));
     const sessionId = logs[0].sessionId;
-    await this._doUpload(userInfo, { [sessionId]: logMsgs });
+    await this.doUpload(userInfo, { [sessionId]: logMsgs });
   }
 
   private async _getUserInfo() {
@@ -30,7 +30,7 @@ export class LogUploader implements ILogApi {
     };
   }
 
-  private async _doUpload(
+  async doUpload(
     userInfo: {
       email: string;
       userId: string;
@@ -40,8 +40,7 @@ export class LogUploader implements ILogApi {
   ) {
     await axios({
       method: 'post',
-      // url: 'https://10.32.35.26:7988/log/',
-      url: 'http://127.0.0.1:7989/log/',
+      url: 'https://fijilog.lab.nordigy.ru/log/',
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',

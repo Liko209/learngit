@@ -13,7 +13,8 @@ describe('LogUploader', () => {
   describe('upload()', () => {
     it('should append userInfo', async () => {
       const mockLog = new LogEntity();
-      const spy = jest.spyOn(logUploader, '_doUpload');
+      const spy = jest.fn();
+      logUploader.doUpload = spy;
       await logUploader.upload([mockLog]);
       expect(spy).toBeCalledTimes(1);
     });
