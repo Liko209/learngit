@@ -29,13 +29,13 @@ describe('RTCSipUserAgent', async () => {
   describe('create', () => {
     it('Should emit registered event when create webPhone and register success', () => {
       const eventEmitter = new EventEmitter2();
-      jest.spyOn(eventEmitter, 'emit');
       const userAgent = new RTCSipUserAgent(
         provisionData,
         options,
         eventEmitter,
       );
       expect(mockOn.mock.calls[0][0]).toEqual('registered');
+      expect(mockOn.mock.calls[1][0]).toEqual('registrationFailed');
       expect(WebPhone).toHaveBeenCalledTimes(1);
     });
   });
@@ -43,7 +43,6 @@ describe('RTCSipUserAgent', async () => {
   describe('register', () => {
     it('Should emit registered event when register success [JPT-599]', () => {
       const eventEmitter = new EventEmitter2();
-      jest.spyOn(eventEmitter, 'emit');
       const userAgent = new RTCSipUserAgent(
         provisionData,
         options,

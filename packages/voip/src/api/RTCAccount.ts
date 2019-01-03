@@ -80,6 +80,7 @@ class RTCAccount implements IRTCAccount {
 
   constructor(listener: IRTCAccountListener) {
     this._listener = listener;
+    this._regManager = new RTCRegistrationManager(this._listener);
   }
 
   public setRegManager(regManager: RTCRegistrationManager) {

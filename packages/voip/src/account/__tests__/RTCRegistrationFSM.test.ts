@@ -15,7 +15,7 @@ class MockHandler implements IConditionalHandler {
 const provisionData = 'provisionData';
 const options = 'options';
 
-describe('RTCRegistrationFSM', async () => {
+describe('RTCRegistrationFSM', () => {
   describe('create', () => {
     it('Should be idle state when create', () => {
       const mockHandler = new MockHandler();
