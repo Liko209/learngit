@@ -170,6 +170,7 @@ String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
 Boolean skipBuildApp = false
 Boolean skipBuildJui = false
 Boolean skipSaAndUt = false
+Boolean skipInstallDependencies = false
 
 // glip channel
 def reportChannels = [
@@ -261,9 +262,13 @@ node(buildNode) {
             // that means if app and jui have already been built,
             // SA and UT must have already passed, we can just skip them to save more resources
             skipSaAndUt = skipBuildApp && skipBuildJui
+
+            // we can even skip install dependencies
+            skipInstallDependencies = [skipSaAndUt, skipEndToEnd].every()
+
         }
 
-        stage ('Install Dependencies') {
+        condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
