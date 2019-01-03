@@ -34,21 +34,21 @@ describe('TimeNodeDividerViewModel', () => {
     expect(timeNodeDividerViewModel.text).toBe(FORMAT);
   });
 
-  describe('createTime(). The time format for Conversation. JPT-701', () => {
-    it('should toBe today when createdAt in today.', () => {
+  describe('createTime()', () => {
+    it('should be today when createdAt in today. [JPT-701]', () => {
       timeNodeDividerViewModel.props.value = Date.now();
       expect(timeNodeDividerViewModel.text).toBe('today');
     });
-    it('should toBe yesterday when createdAt in yesterday', () => {
+    it('should be yesterday when createdAt in yesterday. [JPT-701]', () => {
       timeNodeDividerViewModel.props.value = Date.now() - 24 * 3600 * 1000;
       expect(timeNodeDividerViewModel.text).toBe('yesterday');
     });
-    it('should toBe Weekday format when createdAt diff > 7 && < 1', () => {
+    it('should be Weekday format when createdAt diff > 7 && < 1. [JPT-701]', () => {
       timeNodeDividerViewModel.props.value = Date.now() - 24 * 3600 * 1000 * 2;
       const days = new Date(timeNodeDividerViewModel.props.value).getDay();
       expect(timeNodeDividerViewModel.text).toBe(WEEKDAY[days]);
     });
-    it('should toBe date format when createdAt diff > 7 || < 0', () => {
+    it('should be date format when createdAt diff > 7 || < 0. [JPT-701]', () => {
       timeNodeDividerViewModel.props.value = Date.now() + 24 * 3600 * 1000;
       const days = new Date(timeNodeDividerViewModel.props.value).getDay();
       const dateMoment = moment(timeNodeDividerViewModel.props.value);

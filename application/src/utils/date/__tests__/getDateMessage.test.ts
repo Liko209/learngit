@@ -59,88 +59,116 @@ describe('getDateMessage', () => {
 });
 
 describe('formDataReturn', () => {
-  it('should equal exact time when get exact time', () => {
-    const timestamp = moment();
-    const result = formDataReturn.time(timestamp);
-    expect(result).toEqual(timestamp.format('LT'));
+  describe('time()', () => {
+    it('should equal exact time when get exact time', () => {
+      const timestamp = moment();
+      const result = formDataReturn.time(timestamp);
+      expect(result).toEqual(timestamp.format('LT'));
+    });
   });
-  it('should equal today when date in today', () => {
-    const FORMAT = 'today';
-    const result = formDataReturn.today();
-    expect(result).toEqual(FORMAT);
+  describe('today()', () => {
+    it('should equal today when date in today', () => {
+      const FORMAT = 'today';
+      const result = formDataReturn.today();
+      expect(result).toEqual(FORMAT);
+    });
   });
-
-  it('should equal yesterday when date in yesterday', () => {
-    const FORMAT = 'yesterday';
-    const result = formDataReturn.yesterday();
-    expect(result).toEqual(FORMAT);
-  });
-
-  it('should equal weekday when get weekday', () => {
-    const timestamp = moment();
-    const days = new Date(timestamp.format()).getDay();
-    const result = formDataReturn.weekday(timestamp);
-    expect(result).toEqual(t(WEEKDAY[days]));
+  describe('yesterday()', () => {
+    it('should equal yesterday when date in yesterday', () => {
+      const FORMAT = 'yesterday';
+      const result = formDataReturn.yesterday();
+      expect(result).toEqual(FORMAT);
+    });
   });
 
-  it('should equal date when get date', () => {
-    const timestamp = moment();
-    const days = new Date(timestamp.format()).getDay();
-    const result = formDataReturn.date(timestamp);
-    expect(result).toEqual(
-      `${t(WEEKDAY[days]).slice(0, 3)}, ${timestamp.format('l')}`,
-    );
+  describe('weekday()', () => {
+    it('should equal weekday when get weekday', () => {
+      const timestamp = moment();
+      const days = new Date(timestamp.format()).getDay();
+      const result = formDataReturn.weekday(timestamp);
+      expect(result).toEqual(t(WEEKDAY[days]));
+    });
   });
 
-  it('should equal weekday + Time when get weekdayAndTime', () => {
-    const timestamp = moment();
-    const days = new Date(timestamp.format()).getDay();
-    const result = formDataReturn.weekdayAndTime(timestamp);
-    expect(result).toEqual(
-      `${t(WEEKDAY[days]).slice(0, 3)}, ${timestamp.format('LT')}`,
-    );
+  describe('date()', () => {
+    it('should equal date when get date', () => {
+      const timestamp = moment();
+      const days = new Date(timestamp.format()).getDay();
+      const result = formDataReturn.date(timestamp);
+      expect(result).toEqual(
+        `${t(WEEKDAY[days]).slice(0, 3)}, ${timestamp.format('l')}`,
+      );
+    });
   });
 
-  it('should equal date + Time when get dateAndTime', () => {
-    const timestamp = moment();
-    const days = new Date(timestamp.format()).getDay();
-    const result = formDataReturn.dateAndTime(timestamp);
-    expect(result).toEqual(
-      `${t(WEEKDAY[days]).slice(0, 3)}, ${timestamp.format(
-        'l',
-      )} ${timestamp.format('LT')}`,
-    );
+  describe('weekdayAndTime()', () => {
+    it('should equal weekday + Time when get weekdayAndTime', () => {
+      const timestamp = moment();
+      const days = new Date(timestamp.format()).getDay();
+      const result = formDataReturn.weekdayAndTime(timestamp);
+      expect(result).toEqual(
+        `${t(WEEKDAY[days]).slice(0, 3)}, ${timestamp.format('LT')}`,
+      );
+    });
+  });
+
+  describe('dateAndTime()', () => {
+    it('should equal date + Time when get dateAndTime', () => {
+      const timestamp = moment();
+      const days = new Date(timestamp.format()).getDay();
+      const result = formDataReturn.dateAndTime(timestamp);
+      expect(result).toEqual(
+        `${t(WEEKDAY[days]).slice(0, 3)}, ${timestamp.format(
+          'l',
+        )} ${timestamp.format('LT')}`,
+      );
+    });
   });
 });
 
 describe('formDataCondition', () => {
-  it('should today equal true when diff is 0', () => {
-    const result = formDataCondition.today(0);
-    expect(result).toEqual(true);
-  });
-  it('should yesterday equal true when diff is 1', () => {
-    const result = formDataCondition.yesterday(1);
-    expect(result).toEqual(true);
-  });
-  it('should formTwoToSeven equal true when diff > 1 && < 7', () => {
-    const result = formDataCondition.formOneToSeven(2);
-    expect(result).toEqual(true);
+  describe('today()', () => {
+    it('should today equal true when diff is 0', () => {
+      const result = formDataCondition.today(0);
+      expect(result).toEqual(true);
+    });
   });
 
-  it('should formOneToSeven equal true when diff >= 1 && < 7', () => {
-    const result = formDataCondition.formOneToSeven(1);
-    expect(result).toEqual(true);
-  });
-  it('should overSevenOrFuture equal true when diff > 7 || < 0', () => {
-    const result = formDataCondition.overSevenOrFuture(9);
-    expect(result).toEqual(true);
-    const result1 = formDataCondition.overSevenOrFuture(-1);
-    expect(result1).toEqual(true);
+  describe('yesterday()', () => {
+    it('should yesterday equal true when diff is 1', () => {
+      const result = formDataCondition.yesterday(1);
+      expect(result).toEqual(true);
+    });
   });
 
-  it('should unRecentlyTwoDay equal true when diff > 1', () => {
-    const result = formDataCondition.unRecentlyTwoDay(2);
-    expect(result).toEqual(true);
+  describe('formTwoToSeven()', () => {
+    it('should formTwoToSeven equal true when diff > 1 && < 7', () => {
+      const result = formDataCondition.formOneToSeven(2);
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('formOneToSeven()', () => {
+    it('should formOneToSeven equal true when diff >= 1 && < 7', () => {
+      const result = formDataCondition.formOneToSeven(1);
+      expect(result).toEqual(true);
+    });
+  });
+
+  describe('overSevenOrFuture()', () => {
+    it('should overSevenOrFuture equal true when diff > 7 || < 0', () => {
+      const result = formDataCondition.overSevenOrFuture(9);
+      expect(result).toEqual(true);
+      const result1 = formDataCondition.overSevenOrFuture(-1);
+      expect(result1).toEqual(true);
+    });
+  });
+
+  describe('unRecentlyTwoDay()', () => {
+    it('should unRecentlyTwoDay equal true when diff > 1', () => {
+      const result = formDataCondition.unRecentlyTwoDay(2);
+      expect(result).toEqual(true);
+    });
   });
 });
 
@@ -150,7 +178,7 @@ const addDays = function (days: number) {
   return dat;
 };
 
-describe('formDate', () => {
+describe('formDate()', () => {
   const formDateFun = formDate(['today', 'yesterday'], ['today', 'yesterday']);
   it('should today equal when date is today', () => {
     expect(formDateFun(moment().format())).toEqual(t('today'));

@@ -40,8 +40,8 @@ describe('ConversationCardViewModel', () => {
       ...mockPostValue,
     });
   });
-  describe('createTime() The time format for Conversation. JPT-701', () => {
-    it('should toBe time format when createdAt in today', () => {
+  describe('createTime()', () => {
+    it('should be time format when createdAt in today [JPT-701]', () => {
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: Date.now(),
         creatorId: 107913219,
@@ -50,7 +50,7 @@ describe('ConversationCardViewModel', () => {
         moment(conversationCardVM.post.createdAt).format('LT'),
       );
     });
-    it('should toBe weekdayAndTime format when createdAt diff >= 1 && < 7', () => {
+    it('should be weekdayAndTime format when createdAt diff >= 1 && < 7 [JPT-701]', () => {
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: Date.now() - 24 * 60 * 60 * 1000,
         creatorId: 107913219,
@@ -61,7 +61,7 @@ describe('ConversationCardViewModel', () => {
         `${WEEKDAY[days].slice(0, 3)}, ${dateMoment.format('LT')}`,
       );
     });
-    it('should toBe dateAndTime format when createdAt diff > 7 || < 0', () => {
+    it('should be dateAndTime format when createdAt diff > 7 || < 0 [JPT-701]', () => {
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: Date.now() + 24 * 60 * 60 * 1000,
         creatorId: 107913219,
