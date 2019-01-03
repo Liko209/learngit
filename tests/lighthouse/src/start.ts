@@ -29,8 +29,8 @@ const logger = logUtils.getLogger(__filename);
     // run scenes
     let host = process.env.JUPITER_HOST;
     let scenes: Array<Scene> = [
-      // new LoginScene(`${host}`, taskDto),
-      // new RefreshScene(`${host}`, taskDto),
+      new LoginScene(`${host}`, taskDto),
+      new RefreshScene(`${host}`, taskDto),
       new OfflineScene(`${host}`, taskDto)
     ];
 
