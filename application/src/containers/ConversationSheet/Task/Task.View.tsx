@@ -117,13 +117,13 @@ class Task extends React.Component<taskViewProps> {
       complete,
       assignedToIds,
       start,
-      end,
+      due,
       repeat,
       repeatEndingAfter,
       repeatEnding,
       repeatEndingOn,
     } = task;
-    const time = getDurationTime(start, end);
+    const time = getDurationTime(start, due);
     const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
