@@ -1,0 +1,19 @@
+*Background*
+This is brought up during a storytime session. The ticket is created to implement a general solution to the cases where user tries to open a conversation not from the conversation list, but from the conversation URL. So far this solution should cover the following cases:
+* Open the last conversation after re-login the app
+* Go to a conversation from Bookmarks/Mentions page
+* Go to a conversation from the global search result.
+
+*Requirement*
+# When user opens a conversation from a conversation URL, the conversation should be listed on the top of the conversation list and it should be opened in the center panel.
+# When user jumps to a conversation by clicking a post on Bookmarks/Mentions page, the conversation should be listed on the top of the conversation list and the conversation itself should be opened in the center panel.
+# When user clicks a conversation in the conversation list, the conversation remains where it is in the list.
+# -When user refreshes page, conversation list does not update because of the page refresh itself.-
+As discussed with team, when user refreshes app page, in the senarios described in #2 and #3 above, the opened conversation should be displayed on the top of the conversation list. 
+
+*Requirement*
+# When user opens a conversation from a conversation URL, the conversation should be listed on the top of the conversation list and it should be opened in the center panel.
+# When user jumps to a conversation by clicking a post on Bookmarks/Mentions page, the conversation should be listed on the top of the conversation list and the conversation itself should be opened in the center panel.
+# When user clicks a conversation in the conversation list, the conversation remains where it is in the list.
+# -When user refreshes page, conversation list does not update because of the page refresh itself.-
+As discussed with team, when user refreshes app page, in the senarios described in #2 and #3 above, the opened conversation should be displayed on the top of the conversation list. 

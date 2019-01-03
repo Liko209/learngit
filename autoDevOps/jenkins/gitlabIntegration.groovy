@@ -110,6 +110,12 @@ def safeMail(addresses, subject, body) {
     }
 }
 
+def isStableBranch(String branchName) {
+    if (null == branchName)
+        return false
+    return branchName ==~ /^(develop)|(master)|(release.*)|(stage.*)$/
+}
+
 def buildReport(result, buildUrl, report) {
     List lines = []
     lines.push("**Build Result**: ${result}")
@@ -139,7 +145,7 @@ String deployBaseDir = env.DEPLOY_BASE_DIR
 String rcCredentialId = env.E2E_RC_CREDENTIAL
 
 /* build strategy */
-Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
+Boolean skipEndToEnd = !isStableBranch(env.gitlabSourceBranch) && !isStableBranch(env.gitlabTargetBranch)
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
 Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
 
