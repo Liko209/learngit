@@ -34,7 +34,6 @@ describe('NewMessageVM', () => {
   });
 
   it('new message success', async () => {
-    // postService.sendPost = jest.fn().mockImplementation(() => ok({}));
     jest
       .spyOn(goToConversation, 'goToConversation')
       .mockImplementation(() => 112);

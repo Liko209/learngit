@@ -48,10 +48,6 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const { message } = this.state;
     const { newMessage } = this.props;
     newMessage(message);
-    // if (result) {
-    //   history.push(`/messages/${result.id}`);
-    //   this.onClose();
-    // }
   }
 
   onClose = () => {
