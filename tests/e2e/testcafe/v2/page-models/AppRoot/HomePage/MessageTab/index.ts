@@ -282,38 +282,7 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-class ProfileModal extends BaseWebComponent {
-  get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
-  }
 
-  get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').find('span').withText('close');
-  }
-
-  get messageButton() {
-    this.warnFlakySelector();
-    return this.self.find('span').find('span').withText('chat_bubble');
-  }
-  get privateButton() {
-    this.warnFlakySelector();
-    return this.self.find('.privacy');
-  }
-
-  async clickPrivacy() {
-    await this.t.click(this.privateButton);
-  }
-
-  async close() {
-    await this.t.click(this.closeButton);
-  }
-
-  async message() {
-    await this.t.click(this.messageButton);
-  }
-}
 
 export class MessageTab extends BaseWebComponent {
   get self() {
@@ -380,9 +349,9 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(CloseConversationModal);
   }
 
-  get profileModal() {
-    return this.getComponent(ProfileModal);
-  }
+  // get profileModal() {
+  //   return this.getComponent(ProfileModal);
+  // }
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');

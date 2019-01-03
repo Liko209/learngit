@@ -9,7 +9,7 @@ import { MessageTab } from './MessageTab';
 import { Header } from './header';
 import { LeftRail } from './LeftRail';
 import { RightRail } from './RightRail';
-import { ViewProfile, MiniProfile, ProfileDialog } from './ViewProfile';
+import { MiniProfile, ProfileDialog } from './ViewProfile';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded() {
@@ -57,11 +57,6 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(SendNewMessageModal);
   }
 
-  // todo: delete after e2e/FIJI-2395 merge;
-  get viewProfile() {
-    return this.getComponent(ViewProfile);
-  }
-
   get miniProfile() {
     return this.getComponent(MiniProfile);
   }
@@ -69,6 +64,7 @@ export class HomePage extends BaseWebComponent {
   get profileDialog() {
     return this.getComponent(ProfileDialog);
   }
+  
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
   }
