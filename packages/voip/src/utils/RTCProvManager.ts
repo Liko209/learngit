@@ -6,7 +6,7 @@
 
 import { rtcRestApiManager } from './RTCRestApiManager';
 import { EventEmitter2 } from 'eventemitter2';
-import { RTCSipProvisionInfo, RTCPROV_EVENT } from './types';
+import { RTCSipProvisionInfo, RTC_PROV_EVENT } from './types';
 import { IResponse } from 'foundation/src/network/network';
 import { rtcLogger } from './RTCLoggerProxy';
 
@@ -20,22 +20,25 @@ class RTCProvManager extends EventEmitter2 {
   private _requestErrorRetryInterval: number = 8; // seconds
   private _reFreshInterval: number = 24 * 3600; // seconds
   private _reFreshTimerId: any = null;
-  private _isInErrorRetryTimer: boolean = false;
-  // for unit test
+  private _canAcquireSipProv: boolean = true;
+  // for unit test and log
   public retrySeconds: number = 0;
 
   constructor() {
     super();
   }
 
-  doSipProvRequest(): void {
-    if (this._isInErrorRetryTimer) {
+  async acquireSipProv() {
+    if (!this._canAcquireSipProv) {
       return;
     }
+    await this._sendSipProvRequest();
+  }
 
-    const response: IResponse = rtcRestApiManager.sendRequest();
+  private async _sendSipProvRequest() {
+    const response: IResponse = await rtcRestApiManager.sendRequest(null);
 
-    if (response === null) {
+    if (!response) {
       rtcLogger.loggerConnector(
         'error',
         'RTCProvManager',
@@ -45,7 +48,7 @@ class RTCProvManager extends EventEmitter2 {
       return;
     }
 
-    if (!(<number>response.status >= 200 && <number>response.status < 400)) {
+    if (<number>response.status < 200 || <number>response.status >= 400) {
       this._errorHandling(ERROR_TYPE.REQUEST_ERROR, response.retryAfter);
       return;
     }
@@ -62,17 +65,22 @@ class RTCProvManager extends EventEmitter2 {
 
     if (responseData !== this._sipProvisionInfo) {
       this._sipProvisionInfo = responseData;
-      this.emit(RTCPROV_EVENT.NEWPROV, { info: responseData });
+      this.emit(RTC_PROV_EVENT.NEW_PROV, { info: responseData });
     }
   }
 
   private _resetFreshTimer() {
+    this._clearFreshTimer();
+    this._reFreshTimerId = setTimeout(() => {
+      this._sendSipProvRequest();
+    },                                this._reFreshInterval);
+  }
+
+  private _clearFreshTimer() {
     if (this._reFreshTimerId) {
       clearTimeout(this._reFreshTimerId);
     }
-    this._reFreshTimerId = setTimeout(() => {
-      this.doSipProvRequest();
-    },                                this._reFreshInterval);
+    this._reFreshTimerId = null;
   }
 
   private _errorHandling(type: ERROR_TYPE, retryAfter: number): void {
@@ -105,11 +113,12 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _retryRequestForError(seconds: number) {
-    this._isInErrorRetryTimer = true;
+    this._clearFreshTimer();
+    this._canAcquireSipProv = false;
     this.retrySeconds = seconds;
     setTimeout(() => {
-      this._isInErrorRetryTimer = false;
-      this.doSipProvRequest();
+      this._canAcquireSipProv = true;
+      this._sendSipProvRequest();
     },         seconds * 1000);
   }
 

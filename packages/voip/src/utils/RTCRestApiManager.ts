@@ -4,27 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ITelephonyNetworkDelegate } from 'foundation/src/telephony/ITelephonyNetworkDelegate';
+import { IResponse } from 'foundation/src/network/network';
+
 class RTCRestApiManager {
-  private _httpClient: any = null;
+  private _httpClientDelegate: ITelephonyNetworkDelegate = null as any;
 
   constructor() {}
 
-  public setClient(Client: any): void {
-    this._httpClient = Client;
+  public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
+    this._httpClientDelegate = delegate;
   }
 
-  public sendRequest(): any {
-    if (this._httpClient == null) {
-      return null;
+  async sendRequest(request: any): Promise<IResponse> {
+    if (!this._httpClientDelegate) {
+      return null as any;
     }
+    return this._httpClientDelegate.doHttpRequest(request);
   }
 
   public reset() {
-    this._httpClient = null;
+    this._httpClientDelegate = null as any;
   }
 
-  public getClient(): any {
-    return this._httpClient;
+  public getClient(): ITelephonyNetworkDelegate {
+    return this._httpClientDelegate;
   }
 }
 

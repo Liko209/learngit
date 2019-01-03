@@ -7,15 +7,15 @@
 import { rtcRestApiManager } from '../RTCRestApiManager';
 
 describe('rtcRestApiManager', async () => {
-  describe('setClient()', () => {
-    it('should _httpClient is null when initialization', () => {
+  describe('setNetworkDelegate()', () => {
+    it('should _httpClientDelegate is null when initialization', () => {
       const ram = rtcRestApiManager;
       expect(ram.getClient()).toBe(null);
     });
-    it('should _httpClient is not null when setClient() be called', () => {
+    it('should _httpClientDelegate is not null when setNetworkDelegate() be called', () => {
       const ram = rtcRestApiManager;
       const mockClient = 'test';
-      ram.setClient(mockClient);
+      ram.setNetworkDelegate(mockClient);
       expect(ram.getClient()).toBe(mockClient);
       ram.reset();
     });
