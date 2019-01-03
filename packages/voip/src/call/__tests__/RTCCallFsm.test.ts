@@ -137,7 +137,7 @@ describe('Call FSM UT', async () => {
         done();
       });
     });
-    it('should state transition from Idle to disconnected when receive sessionError event', done => {
+    it('should state transition from Idle to disconnected when receive sessionError event [JPT-731]', done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterDisconnected');

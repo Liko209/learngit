@@ -56,7 +56,7 @@ describe('RTCRegistrationFSM', () => {
       expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
     });
 
-    it('Should transition from failed state to ready state when regSucceed fired in ready state', () => {
+    it('Should transition from failed state to ready state when regSucceed fired in ready state [JPT-529]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
