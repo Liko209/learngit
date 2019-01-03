@@ -3,7 +3,6 @@
  * @Date: 2018-10-08 16:29:08
  * Copyright © RingCentral. All rights reserved.
  */
-import moment from 'moment';
 import PostModel from '@/store/models/Post';
 import {
   ConversationCardProps,
@@ -15,6 +14,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
+import { postTimestamp } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import { POST_STATUS } from 'sdk/service';
@@ -83,7 +83,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get createTime() {
-    return moment(this.post.createdAt).format('hh:mm A');
+    return postTimestamp(this.post.createdAt);
   }
 
   onAnimationStart = (evt: React.AnimationEvent) => {

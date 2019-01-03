@@ -37,7 +37,7 @@ const StyledTime = styled('div')`
   color: ${grey('500')};
   white-space: nowrap;
   ${typography('caption2')};
-  width: ${width(20)};
+  min-width: ${width(20)};
   text-align: right;
 `;
 const RightSection = styled('div')`
