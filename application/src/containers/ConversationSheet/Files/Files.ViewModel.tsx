@@ -6,7 +6,7 @@
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
-import { Progress } from 'sdk/models';
+import { Progress } from 'sdk/module/progress';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -89,9 +89,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (id < 0) {
         const progress =
           this._progressMap.get(id) || this._itemService.getUploadProgress(id);
-        if (progress) {
-          const { loaded = 0, total } = progress;
+        if (progress && progress.rate) {
+          const { loaded = 0, total } = progress.rate;
           const value = (loaded / Math.max(total, 1)) * 100;
+          if (value > 100) {
+            throw Error('Fatal: the file sending progress > 100');
+          }
           result.set(id, value);
         }
       } else {

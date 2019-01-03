@@ -13,8 +13,8 @@ import { Markdown } from 'glipdown';
 import { Post, PostItemData } from '../../module/post/entity';
 import { ItemFile } from '../../module/item/entity';
 import { RawPostInfo } from './types';
-import { POST_STATUS } from '../constants';
 import ItemService from '../item';
+import { GlipTypeUtil, TypeDictionary } from '../../utils';
 
 // global_url_regex
 export type LinksArray = { url: string }[];
@@ -122,7 +122,7 @@ class PostServiceHandler {
     const now = Date.now();
     const buildPost: Post = {
       links,
-      id: vers,
+      id: GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_POST),
       created_at: now,
       modified_at: now,
       creator_id: userId,
@@ -140,7 +140,6 @@ class PostServiceHandler {
       at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
       company_id: companyId,
       deactivated: false,
-      __status: POST_STATUS.INPROGRESS,
       activity_data: {},
     };
 
@@ -156,11 +155,6 @@ class PostServiceHandler {
     }
 
     return buildPost;
-  }
-
-  static buildResendPostInfo(post: Post) {
-    post.__status = POST_STATUS.INPROGRESS;
-    return post;
   }
 
   static async buildModifiedPostInfo(

@@ -14,17 +14,6 @@ import { daoManager } from './dao';
 import DaoManager from './dao/DaoManager';
 import { AccountManager, ServiceManager } from './framework';
 import Sdk from './Sdk';
-// DAO
-// import AccountDao from './dao/account';
-// import PostDao from './dao/post';
-// import GroupDao from './dao/group';
-// import CompanyDao from './dao/company';
-// import ItemDao from './dao/item';
-// import PersonDao from './dao/person';
-// import ProfileDao from './dao/profile';
-// import StateDao from './dao/state';
-// import ConfigDao from './dao/config';
-// import AuthDao from './dao/auth';
 // Service
 import AccountService from './service/account';
 import AuthService from './service/auth';
@@ -37,12 +26,13 @@ import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';
 import SearchService from './service/search';
+import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
 import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
-import { TelephonyService } from './module/telephony';
+import ProgressService from './module/progress';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -83,6 +73,7 @@ const registerConfigs = {
     { name: ProfileService.name, value: ProfileService },
     { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
+    { name: ProgressService.name, value: ProgressService },
     {
       name: ConfigService.name,
       value: ConfigService,
@@ -95,7 +86,8 @@ const registerConfigs = {
     },
     { name: AccountService.name, value: AccountService },
     { name: SyncService.name, value: SyncService },
-    { name: TelephonyService.name, value: TelephonyService },
+    { name: GroupConfigService.name, value: GroupConfigService },
+
     // Manager
     {
       name: AccountManager.name,

@@ -6,7 +6,6 @@
 
 import { ExtendedBaseModel } from '../../models';
 import { PostItemData } from './PostItemData';
-import { POST_STATUS } from '../../../service';
 
 export type Post = ExtendedBaseModel & {
   group_id: number;
@@ -25,7 +24,6 @@ export type Post = ExtendedBaseModel & {
   item_data?: PostItemData;
   links?: object[];
   items?: object[];
-  __status?: POST_STATUS;
   source?: string;
   parent_id?: number;
 };
