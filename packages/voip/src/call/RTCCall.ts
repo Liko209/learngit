@@ -1,10 +1,22 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:08:27
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IRTCCallObserver } from './IRTCCallObserver';
-import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
+import { IRTCCallSession } from './IRTCCallSession';
 import { RTCSipCallSession } from './RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm, RTCCallFsmNotify } from './RTCCallFsm';
+import { RTCCallFsm } from './RTCCallFsm';
 import { v4 as uuid } from 'uuid';
-import { RTCCallInfo, RTCCALL_STATE, RTCCALL_ACTION } from './types';
+
+import {
+  RTCCallInfo,
+  RTCCALL_STATE,
+  CALL_SESSION_STATE,
+  CALL_FSM_NOTIFY,
+  RTC_CALL_ACTION,
+} from './types';
 
 class RTCCall {
   private _callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
@@ -19,21 +31,52 @@ class RTCCall {
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
   private _observer: IRTCCallObserver;
-  private _isIncomingCall: boolean = false;
+  private _isIncomingCall: boolean;
 
-  constructor(toNum: string, account: IRTCAccount, observer: IRTCCallObserver) {
-    this._callSession = new RTCSipCallSession();
-    this._fsm = new RTCCallFsm();
-    this._callInfo.toNum = toNum;
-    this._callInfo.uuid = uuid();
+  constructor(
+    isIncoming: boolean,
+    toNumber: string,
+    session: any,
+    account: IRTCAccount,
+    observer: IRTCCallObserver,
+  ) {
     this._account = account;
     this._observer = observer;
+    this._isIncomingCall = isIncoming;
+    this._callInfo.uuid = uuid();
+    this._fsm = new RTCCallFsm();
+    this._callSession = new RTCSipCallSession();
+    if (this._isIncomingCall) {
+      this.setCallSession(session);
+    } else {
+      this._callInfo.toNum = toNumber;
+      this._startOutCallFSM();
+    }
     this._prepare();
-    this._startOutCallFSM();
   }
 
   getCallState(): RTCCALL_STATE {
     return this._callState;
+  }
+
+  isIncomingCall(): boolean {
+    return this._isIncomingCall;
+  }
+
+  getCallInfo(): RTCCallInfo {
+    return this._callInfo;
+  }
+
+  answer(): void {
+    this._fsm.answer();
+  }
+
+  reject(): void {
+    this._fsm.reject();
+  }
+
+  sendToVoicemail(): void {
+    this._fsm.sendToVoicemail();
   }
 
   hangup(): void {
@@ -79,85 +122,72 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
     });
-    this._callSession.on(RTCCALL_ACTION.FLIP_SUCCESS, () => {
-      this._onFlipSuccess();
-    });
-    this._callSession.on(RTCCALL_ACTION.FLIP_FAILED, () => {
-      this._onFlipFailed();
-    });
-    this._callSession.on(RTCCALL_ACTION.START_RECORD_SUCCESS, () => {
-      this._onStartRecordSuccess();
-    });
-    this._callSession.on(RTCCALL_ACTION.START_RECORD_FAILED, () => {
-      this._onStartRecordFailed();
-    });
-    this._callSession.on(RTCCALL_ACTION.STOP_RECORD_SUCCESS, () => {
-      this._onStopRecordSuccess();
-    });
-    this._callSession.on(RTCCALL_ACTION.STOP_RECORD_FAILED, () => {
-      this._onStopRecordFailed();
-    });
+    this._callSession.on(
+      CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+      (callAction: RTC_CALL_ACTION) => {
+        this._onCallActionSuccess(callAction);
+      },
+    );
+    this._callSession.on(
+      CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+      (callAction: RTC_CALL_ACTION) => {
+        this._onCallActionFailed(callAction);
+      },
+    );
     // listen fsm
-    this._fsm.on(RTCCallFsmNotify.ENTERPENDING, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_ANSWERING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTING, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_PENDING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTED, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTING, () => {
+      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTED);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERDISCONNECTED, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
       this._onCallStateChange(RTCCALL_STATE.DISCONNECTED);
     });
-    this._fsm.on(RTCCallFsmNotify.HANGUPACTION, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
     });
-    this._fsm.on(RTCCallFsmNotify.CREATEOUTCALLSESSION, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION, () => {
       this._onCreateOutCallSession();
     });
-    this._fsm.on(RTCCallFsmNotify.FLIP_ACTION, (target: number) => {
+    this._fsm.on(CALL_FSM_NOTIFY.FLIP_ACTION, (target: number) => {
       this._onFlipAction(target);
     });
-    this._fsm.on(RTCCallFsmNotify.START_RECORD_ACTION, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.START_RECORD_ACTION, () => {
       this._onStartRecordAction();
     });
-    this._fsm.on(RTCCallFsmNotify.STOP_RECORD_ACTION, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.STOP_RECORD_ACTION, () => {
       this._onStopRecordAction();
     });
-    this._fsm.on(RTCCallFsmNotify.FLIP_FAILED, () => {
-      this._onFlipFailed();
+    this._fsm.on(
+      CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+      (callAction: RTC_CALL_ACTION) => {
+        this._onCallActionFailed(callAction);
+      },
+    );
+    this._fsm.on(CALL_FSM_NOTIFY.ANSWER_ACTION, () => {
+      this._onAnswerAction();
     });
-    this._fsm.on(RTCCallFsmNotify.START_RECORD_FAILED, () => {
-      this._onStartRecordFailed();
+    this._fsm.on(CALL_FSM_NOTIFY.REJECT_ACTION, () => {
+      this._onRejectAction();
     });
-    this._fsm.on(RTCCallFsmNotify.STOP_RECORD_FAILED, () => {
-      this._onStopRecordFailed();
+    this._fsm.on(CALL_FSM_NOTIFY.SEND_TO_VOICEMAIL_ACTION, () => {
+      this._onSendToVoicemailAction();
     });
   }
   // call action listener
-  private _onFlipSuccess() {
-    this._observer.onCallAction(RTCCALL_ACTION.FLIP_SUCCESS);
+  private _onCallActionSuccess(callAction: RTC_CALL_ACTION) {
+    this._observer.onCallActionSuccess(callAction);
   }
 
-  private _onFlipFailed() {
-    this._observer.onCallAction(RTCCALL_ACTION.FLIP_FAILED);
-  }
-
-  private _onStartRecordSuccess() {
-    this._observer.onCallAction(RTCCALL_ACTION.START_RECORD_SUCCESS);
-  }
-
-  private _onStartRecordFailed() {
-    this._observer.onCallAction(RTCCALL_ACTION.START_RECORD_FAILED);
-  }
-
-  private _onStopRecordSuccess() {
-    this._observer.onCallAction(RTCCALL_ACTION.STOP_RECORD_SUCCESS);
-  }
-
-  private _onStopRecordFailed() {
-    this._observer.onCallAction(RTCCALL_ACTION.STOP_RECORD_FAILED);
+  private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
+    this._observer.onCallActionFailed(callAction);
   }
 
   // session listener
@@ -173,6 +203,18 @@ class RTCCall {
     this._fsm.sessionError();
   }
   // fsm listener
+  private _onAnswerAction() {
+    this._callSession.answer();
+  }
+
+  private _onRejectAction() {
+    this._callSession.reject();
+  }
+
+  private _onSendToVoicemailAction() {
+    this._callSession.sendToVoicemail();
+  }
+
   private _onHangupAction() {
     this._callSession.hangup();
   }
