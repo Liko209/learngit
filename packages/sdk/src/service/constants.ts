@@ -39,12 +39,6 @@ enum POST_STATUS {
   INPROGRESS,
 }
 
-enum CACHE_INITIAL_STATUS {
-  NONE,
-  INPROGRESS,
-  SUCCESS,
-}
-
 enum PRESENCE {
   NOTREADY = 'NotReady',
   UNAVAILABLE = 'Unavailable',
