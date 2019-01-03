@@ -27,6 +27,7 @@ import storeManager from '@/store';
 import history from '@/history';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { trackPerformance, PERFORMANCE_SCENARIO } from 'sdk/utils';
 
 const { GroupService, StateService, ProfileService } = service;
 
@@ -389,9 +390,30 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
+      const startTime = performance.now();
       await this._handlersMap[sectionType].fetchData(direction);
       const ids = this._handlersMap[sectionType].sortableListStore.getIds();
       this._updateIdSet(EVENT_TYPES.UPDATE, ids);
+      const endTime = performance.now();
+      trackPerformance(this._getPerformanceScenario(sectionType), {
+        startTime,
+        endTime,
+      });
+    }
+  }
+
+  private _getPerformanceScenario(
+    sectionType: SECTION_TYPE,
+  ): PERFORMANCE_SCENARIO {
+    switch (sectionType) {
+      case SECTION_TYPE.FAVORITE:
+        return PERFORMANCE_SCENARIO.GROUP_SECTION_FETCH_FAVORITES;
+
+      case SECTION_TYPE.DIRECT_MESSAGE:
+        return PERFORMANCE_SCENARIO.GROUP_SECTION_FETCH_DIRECT_MESSAGES;
+
+      case SECTION_TYPE.TEAM:
+        return PERFORMANCE_SCENARIO.GROUP_SECTION_FETCH_TEAMS;
     }
   }
 
