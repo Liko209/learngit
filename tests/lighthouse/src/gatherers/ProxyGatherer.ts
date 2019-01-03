@@ -3,25 +3,24 @@
  * @Date: 2018-12-25 14:37:09
  */
 
-const Gatherer = require('lighthouse/lighthouse-core/gather/gatherers/gatherer');
-import { mockHelper } from '../mock/MockHelper';
+const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { mockHelper } from "../mock";
+import { logUtils } from "../utils/LogUtils";
 
+const logger = logUtils.getLogger(__filename);
 class ProxyGatherer extends Gatherer {
+  async beforePass(passContext) {}
 
-    async beforePass(passContext) {
-    }
+  async afterPass(passContext) {
+    // the mocker will effect lighthouse audit, so close mocker before audit.
+    let start = Date.now();
+    await mockHelper.close();
+    logger.info("close mock finish. ", Date.now() - start, "ms");
 
-    async afterPass(passContext) {
-        // the mocker will effect lighthouse audit, so close mocker before audit.
-        mockHelper.close();
+    return {};
+  }
 
-        return {};
-    }
-
-    async pass(passContext) {
-    }
+  async pass(passContext) {}
 }
 
-export {
-    ProxyGatherer
-}
+export { ProxyGatherer };

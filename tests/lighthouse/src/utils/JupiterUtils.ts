@@ -6,6 +6,7 @@ import axios from "axios";
 import * as qs from "qs";
 import * as btoa from "btoa";
 import { logUtils } from "./LogUtils";
+import { mockLoginResponse } from "../mock";
 /**
  *  Login flow: https://wiki.ringcentral.com/display/~doyle.wu/Login+flow+of+Jupiter
  *  Example:
@@ -56,6 +57,9 @@ class JupiterUtils {
 
   async getAuthUrl(redirectUrl: string): Promise<string> {
     let data = await this.login(redirectUrl);
+
+    await mockLoginResponse(redirectUrl, data);
+
     return data.redirectUri;
   }
 
@@ -97,7 +101,7 @@ class JupiterUtils {
       redirectUri: "glip://rclogin"
     };
 
-    this.logger.info(`getRcCode headers : ${headers}`);
+    this.logger.info(`getRcCode headers : ${JSON.stringify(headers)}`);
 
     const response = await axios.post(
       `${process.env.JUPITER_GLIP2_URL}/restapi/v1.0/interop/generate-code`,
