@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { EventItemService } from '../module/event/service/EventItemService';
-import { FileItemService } from '../module/file/service/FileItemService';
-import { TaskItemService } from '../module/task/service/TaskItemService';
-import { NoteItemService } from '../module/note/service/NoteItemService';
-import { LinkItemService } from '../module/link/service/LinkItemService';
-import { SubItemService } from '../module/base/service/SubItemService';
+import { EventItemService } from '../module/event/service';
+import { FileItemService } from '../module/file/service';
+import { TaskItemService } from '../module/task/service';
+import { NoteItemService } from '../module/note/service';
+import { LinkItemService } from '../module/link/service';
+import { ISubItemService } from '../module/base/service';
 import { TypeDictionary } from '../../../utils';
 type ClassConfig = {
   typeId: number;
@@ -26,7 +26,7 @@ const itemServiceConfigs: ClassConfig[] = [
 
 class SubItemServiceRegister {
   static buildSubItemServices() {
-    const serviceMap: Map<number, SubItemService> = new Map();
+    const serviceMap: Map<number, ISubItemService> = new Map();
     itemServiceConfigs.forEach((serviceInfo: ClassConfig) => {
       serviceMap.set(serviceInfo.typeId, serviceInfo.value());
     });

@@ -3,9 +3,9 @@
  * @Date: 2019-01-02 15:58:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { SubItemService } from '../../base/service/SubItemService';
+import { ISubItemService } from '../../base/service/ISubItemService';
 
-class EventItemService extends SubItemService {
+class EventItemService extends ISubItemService {
   constructor() {
     super();
   }

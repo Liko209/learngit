@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SubItemService } from '../../base/service/SubItemService';
+import { ISubItemService } from '../../base/service/ISubItemService';
 import { LinkItemController } from '../controller/LinkItemController';
 
-class LinkItemService extends SubItemService {
+class LinkItemService extends ISubItemService {
   private _linkItemController: LinkItemController;
   constructor() {
     super();

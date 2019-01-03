@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SubItemService } from '../../base/service/SubItemService';
+import { ISubItemService } from '../../base/service/ISubItemService';
 import { TaskItemController } from '../controller/TaskItemController';
 
-class TaskItemService extends SubItemService {
+class TaskItemService extends ISubItemService {
   private _taskItemController: TaskItemController;
 
   constructor() {

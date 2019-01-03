@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SubItemService } from '../../base/service/SubItemService';
+import { ISubItemService } from '../../base/service/ISubItemService';
 import { NoteItemController } from '../controller/NoteItemController';
-class NoteItemService extends SubItemService {
+class NoteItemService extends ISubItemService {
   private _noteItemController: NoteItemController;
 
   constructor() {

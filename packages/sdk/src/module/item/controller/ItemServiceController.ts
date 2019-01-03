@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SubItemService } from '../module/base/service/SubItemService';
+import { ISubItemService } from '../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../config';
 
 class ItemServiceController {
-  private _subItemServices: Map<number, SubItemService>;
+  private _subItemServices: Map<number, ISubItemService>;
 
   constructor() {
     this._subItemServices = SubItemServiceRegister.buildSubItemServices();
