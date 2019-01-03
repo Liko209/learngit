@@ -1,5 +1,5 @@
 import { POST_STATUS } from 'sdk/service';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { GlipTypeUtil } from 'sdk/utils';
 import Base from './Base';
 import { observable, computed } from 'mobx';

@@ -6,8 +6,6 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/models';
 import {
   JuiConversationPageHeader,
   JuiConversationPageHeaderSubtitle,
@@ -23,8 +21,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 
 type HeaderProps = {
   title: string;
-  isFavorite: boolean;
-  isPrivate: boolean;
+
   type: CONVERSATION_TYPES;
   actions: {
     name: string;
@@ -33,10 +30,6 @@ type HeaderProps = {
   }[];
   customStatus: string | null;
   groupId: number;
-  onFavoriteButtonHandler: (
-    event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
-  ) => Promise<ServiceResult<Profile>>;
 } & WithNamespaces;
 
 @observer

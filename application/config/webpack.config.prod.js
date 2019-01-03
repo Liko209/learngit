@@ -409,7 +409,7 @@ module.exports = {
     }),
     // generate service worker
     new GenerateSW({
-      exclude: [/\.map$/, /asset-manifest\.json$/, /whiteListedId\.json$/],
+      exclude: [/\.map$/, /asset-manifest\.json$/],
       skipWaiting: true,
       clientsClaim: true,
       navigateFallback: publicUrl + "/index.html",
@@ -421,7 +421,7 @@ module.exports = {
         new RegExp("/[^/]+\\.[^/]+$")
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ["**/*"],
+      globPatterns: ["**/!(whiteListedId.json)"],
       runtimeCaching
     }),
     ...[

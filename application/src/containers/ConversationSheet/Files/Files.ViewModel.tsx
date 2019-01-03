@@ -5,7 +5,9 @@
  */
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item, Progress, Post } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
+import { Progress } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';

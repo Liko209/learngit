@@ -5,7 +5,7 @@
  */
 
 import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/models';
+import { Profile } from 'sdk/module/profile/entity';
 import { MouseEvent } from 'react';
 
 type MenuProps = {

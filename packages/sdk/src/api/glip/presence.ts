@@ -5,7 +5,7 @@
  */
 
 import Api from '../api';
-import { RawPresence } from '../../models';
+import { RawPresence } from '../../module/presence/entity';
 import { NETWORK_VIA } from 'foundation';
 
 class PresenceAPI extends Api {

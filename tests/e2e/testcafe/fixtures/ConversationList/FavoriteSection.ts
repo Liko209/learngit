@@ -55,8 +55,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   });
 
   await h(t).withLog('I can find favorite section expanded by default', async () => {
-    const isExpand = await favoritesSection.isExpand();
-    await t.expect(isExpand).ok();
+    await t.expect(favoritesSection.isExpand).ok();
     await t.expect(favoritesSection.collapse.clientHeight).gt(0);
   });
 
@@ -66,8 +65,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
 
   await h(t).withLog('I can find favorite section collapsed', async () => {
     await t.wait(1e3);
-    const isExpand = await favoritesSection.isExpand();
-    await t.expect(isExpand).notOk();
+    await t.expect(favoritesSection.isExpand).notOk();
     await t.expect(favoritesSection.collapse.clientHeight).eql(0);
   });
 
@@ -77,8 +75,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
 
   await h(t).withLog('I can find favorite section expanded', async () => {
     await t.wait(1e3);
-    const isExpand = await favoritesSection.isExpand();
-    await t.expect(isExpand).ok();
+    await t.expect(favoritesSection.isExpand).ok();
     await t.expect(favoritesSection.collapse.clientHeight).gt(0);
   });
 });

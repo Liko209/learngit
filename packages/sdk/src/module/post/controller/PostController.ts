@@ -3,7 +3,7 @@
  * @Date: 2018-12-13 09:10:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { Post } from '../../../models';
+import { Post } from '../entity';
 import _ from 'lodash';
 import { Api } from '../../../api';
 import { PostActionController } from './PostActionController';

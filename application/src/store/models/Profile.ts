@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { computed } from 'mobx';
-import { Profile } from 'sdk/models';
+import { Profile } from 'sdk/module/profile/entity';
 import Base from './Base';
 
 export default class ProfileModel extends Base<Profile> {

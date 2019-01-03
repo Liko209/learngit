@@ -187,10 +187,10 @@ export class GlipSdk {
     return ids;
   }
 
-  async getInitRcTeamId() {
+  async getCompanyTeamId() {
     const teams = (await this.getTeams()).data.teams;
     if (!teams) return [];
-    const ids = teams.filter(team => team["set_abbreviation"] == "Team RingCentral Inc.").map(team => team['_id']);
+    const ids = teams.filter(team => team["is_company_team"] == true).map(team => team['_id']);
     return ids;
   }
 
@@ -421,8 +421,8 @@ export class GlipSdk {
         );
       })
       .map((key: string) => key.replace(/[^\d]+/, ''));
-    const initRcTeamId = await this.getInitRcTeamId();
-    unreadGroups.push(...initRcTeamId);
+    const companyTeamId = await this.getCompanyTeamId();
+    unreadGroups.push(...companyTeamId);
     return unreadGroups;
   }
 
@@ -475,7 +475,7 @@ export class GlipSdk {
         {},
         ...(groupIds as string[]).map(id => {
           return { [`hide_group_${id}`]: true }
-        }) 
+        })
       )
     } else {
       data = { [`hide_group_${groupIds}`]: true }

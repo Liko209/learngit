@@ -3,8 +3,10 @@
  * @Date: 2018-12-12 12:56:30
  */
 import { puppeteerUtils } from '../utils/PuppeteerUtils';
+import { functionUtils } from '../utils/FunctionUtils';
 const Gatherer = require('lighthouse/lighthouse-core/gather/gatherers/gatherer');
 import * as bluebird from 'bluebird';
+
 const EXTENSION_ID = 'ijjcejlmgpmagghhloglnenalapepejo';
 const EXTENSION_TAG = '[PerformanceMonitor]';
 
@@ -27,27 +29,34 @@ class ProcessGatherer extends Gatherer {
         let ws = await driver.wsEndpoint();
         this.browser = await puppeteerUtils.connect(ws);
 
-        this.browser.on('targetchanged', async (target) => {
+        functionUtils.bindEvent(this.browser, 'targetchanged', async (target) => {
             let page = await target.page();
-            page.on('console', (msg) => {
-                const str = msg._text;
-                if (str.startsWith(EXTENSION_TAG)) {
-                    const item = JSON.parse(str.substr(EXTENSION_TAG.length));
-                    const processes = item['process'];
-                    this.metrics.push({
-                        cpu: processes['cpu'],
-                        jsMemoryAllocated: processes['jsMemoryAllocated'],
-                        jsMemoryUsed: processes['jsMemoryUsed'],
-                        privateMemory: processes['privateMemory'],
-                        url: item['url'],
-                        type: processes['type'],
-                    });
-                }
-            });
+            if (page) {
+                functionUtils.bindEvent(page, 'console', (msg) => {
+                    const str = msg._text;
+                    if (str.startsWith(EXTENSION_TAG)) {
+                        const item = JSON.parse(str.substr(EXTENSION_TAG.length));
+                        const processes = item['process'];
+                        this.metrics.push({
+                            cpu: processes['cpu'],
+                            jsMemoryAllocated: processes['jsMemoryAllocated'],
+                            jsMemoryUsed: processes['jsMemoryUsed'],
+                            privateMemory: processes['privateMemory'],
+                            url: item['url'],
+                            type: processes['type'],
+                        });
+                    }
+                });
+            }
         });
 
         this.intervalId = setInterval(async () => {
-            await driver.evaluateAsync(`chrome.runtime.sendMessage("${EXTENSION_ID}", {})`);
+            await driver.evaluateAsync(`(function() {
+                if (chrome.runtime && chrome.runtime.sendMessage) {
+                    chrome.runtime.sendMessage("${EXTENSION_ID}", {});
+                }
+                return true;
+            })()`);
         }, 1000);
     }
     async afterPass(passContext) {

@@ -7,7 +7,7 @@
 import BaseService from '../../service/BaseService';
 import { presenceHandleData, handleStore } from './handleData';
 import { SOCKET, SERVICE } from '../eventKey';
-import { Presence, RawPresence } from '../../models';
+import { Presence, RawPresence } from '../../module/presence/entity';
 import SubscribeHandler from './subscribeHandler';
 import { PRESENCE } from '../constants';
 

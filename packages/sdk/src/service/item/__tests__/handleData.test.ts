@@ -1,13 +1,8 @@
 import ItemAPI from '../../../api/glip/item';
 import { daoManager } from '../../../dao';
-import UploadManager from '../../../service/UploadManager';
 import { transform, baseHandleData } from '../../../service/utils';
 import handleData, { extractFileNameAndType } from '../handleData';
-import {
-  storedFileFactory,
-  rawItemFactory,
-} from '../../../__tests__/factories';
-import { ApiResultOk } from '../../../api/ApiResult';
+import { rawItemFactory } from '../../../__tests__/factories';
 
 jest.mock('../../../api/glip/item');
 // const itemDao = daoManager.getDao(ItemDao);

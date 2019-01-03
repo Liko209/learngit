@@ -5,7 +5,7 @@
  */
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventViewProps, EventProps } from './types';

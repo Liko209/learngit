@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCUserAgent, UA_EVENT } from './IRTCUserAgent';
+import { IRTCUserAgent } from './IRTCUserAgent';
 import { WebPhone } from './WebPhone';
+import { UA_EVENT } from './types';
 
 enum WEBPHONE_REGISTER_EVENT {
   REG_SUCCESS = 'registered',
@@ -13,14 +14,15 @@ enum WEBPHONE_REGISTER_EVENT {
 }
 
 class RTCSipUserAgent implements IRTCUserAgent {
-  private _userAgent: WebPhone = null;
+  private _userAgent: WebPhone;
   private _eventEmitter: EventEmitter2;
 
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
     // to be modify when import ringcentral-web-phone library
     this._userAgent = new WebPhone(provisionData, options);
-    this._eventEmitter = eventEmitter;
     this._initListener();
+    this._eventEmitter = eventEmitter;
+    this.register(options);
   }
 
   public register(options?: any): any {

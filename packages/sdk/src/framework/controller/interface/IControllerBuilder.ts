@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../model';
 import { BaseDao } from '../../../dao/base';
 import NetworkClient from '../../../api/NetworkClient';
 import { IEntitySourceController } from './IEntitySourceController';
 import { IRequestController } from './IRequestController';
 import { IPartialModifyController } from './IPartialModifyController';
 
-interface IControllerBuilder<T extends BaseModel = BaseModel> {
+interface IControllerBuilder<T extends IdModel = IdModel> {
   buildEntitySourceController(
     dao: BaseDao<T>,
     requestController: IRequestController<T>,

@@ -6,7 +6,7 @@
 
 import { computed, observable } from 'mobx';
 import { service } from 'sdk';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { IconButtonSize } from 'jui/components/Buttons';
 
@@ -22,6 +22,10 @@ const { GroupService } = service;
 class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   implements FavoriteViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
+  constructor(props: FavoriteProps) {
+    super(props);
+    this.autorun(this.getConversationId);
+  }
 
   @observable
   conversationId: number;
@@ -47,6 +51,7 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
     }
     if (type === TypeDictionary.TYPE_ID_PERSON) {
       const group = await this._groupService.getLocalGroup([this.id]);
+      console.log('andy hu fav', this.id, group);
       if (group) {
         this.conversationId = group.id;
       } else {
