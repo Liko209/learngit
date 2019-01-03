@@ -5,6 +5,7 @@
  */
 
 import { ExtendedBaseModel } from '../../../../models';
+import { Raw } from '../../../../../framework/model';
 
 export type ItemVersionPage = {
   file_id: number;
@@ -36,4 +37,12 @@ export type Item = ExtendedBaseModel & {
   url?: string;
   image?: string;
   do_not_render?: boolean;
+};
+
+export type StoredFile = Raw<ExtendedBaseModel> & {
+  storage_url: string;
+  download_url: string;
+  storage_path: string;
+  last_modified: number;
+  size: number;
 };
