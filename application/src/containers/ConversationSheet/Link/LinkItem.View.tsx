@@ -26,9 +26,15 @@ class LinkItemView extends React.Component<Props> {
         {postItems.map((item: LinkItemModel) => {
           // In Glip must has this key
           // hard code in order to show the current image
-          const itemUrlWithProtocol = item.url && item.url.indexOf('http') > -1 ? item.url : `http://${item.url}`;
+          let itemUrlWithProtocol;
+          const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
+          if (item.url) {
+            itemUrlWithProtocol = item.url.indexOf('http') > -1 ? item.url : `http://${item.url}`;
+          } else {
+            itemUrlWithProtocol = item.url;
+          }
           const image = item.image
-            ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
+            ? `${item.image}${imgStamp}`
             : '';
           return (item.title || item.image || item.summary) &&
             !item.doNotRender &&
@@ -42,7 +48,7 @@ class LinkItemView extends React.Component<Props> {
               onLinkItemClose={this.onLinkItemClose(item.id)}
               favicon={
                 item.favicon
-                  ? `${item.favicon}&key=4527f263d6e64d7a8251b007b1ba9972` // hard code in order to show the current image
+                  ? `${item.favicon}${imgStamp}` // hard code in order to show the current image
                   : ''
               }
               faviconName={item.providerName}
