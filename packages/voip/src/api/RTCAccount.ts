@@ -10,6 +10,7 @@ import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
 import { IRTCCallObserver } from './IRTCCallObserver';
 import { RegistrationManagerEvent } from '../account/types';
+import { RTCEngine } from './RTCEngine';
 
 const provisionData = {
   data: {
@@ -93,7 +94,7 @@ class RTCAccount implements IRTCAccount {
     );
   }
 
-  public handleProvisioning(localAudio: any, remoteAudio: any) {
+  public handleProvisioning() {
     if (!this._regManager) {
       return;
     }
@@ -105,8 +106,8 @@ class RTCAccount implements IRTCAccount {
       audioHelper: options.audioHelper,
       logLevel: options.logLevel,
       media: {
-        remote: remoteAudio,
-        local: localAudio,
+        remote: RTCEngine.getInstance().getRemoteAudio(),
+        local: RTCEngine.getInstance().getLocalAudio(),
       },
     };
     this._regManager.provisionReady(provisionData.data, info);

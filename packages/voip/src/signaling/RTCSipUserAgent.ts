@@ -16,7 +16,7 @@ enum WEBPHONE_REGISTER_EVENT {
 }
 
 class RTCSipUserAgent implements IRTCUserAgent {
-  private _wephone: any;
+  private _webphone: any;
   private _eventEmitter: EventEmitter2;
 
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
@@ -25,29 +25,29 @@ class RTCSipUserAgent implements IRTCUserAgent {
   }
 
   private _createWebPhone(provisionData: any, options: any) {
-    this._wephone = new WebPhone(provisionData, options);
+    this._webphone = new WebPhone(provisionData, options);
     this._initListener();
   }
 
   public register(options?: any): any {
-    return this._wephone.register(options);
+    return this._webphone.register(options);
   }
 
   public makeCall(phoneNumber: string, options: any): any {
-    return this._wephone.userAgent.invite(phoneNumber, options);
+    return this._webphone.userAgent.invite(phoneNumber, options);
   }
 
   private _initListener(): void {
-    this._wephone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
+    this._webphone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
       this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
     });
-    this._wephone.userAgent.on(
+    this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
         this._eventEmitter.emit(UA_EVENT.REG_FAILED, response, cause);
       },
     );
-    this._wephone.userAgent.on(
+    this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.INVITE,
       (session: any) => {
         this._eventEmitter.emit(UA_EVENT.RECEIVE_INVITE, session);
