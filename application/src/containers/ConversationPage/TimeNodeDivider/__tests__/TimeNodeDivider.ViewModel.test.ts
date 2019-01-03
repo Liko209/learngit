@@ -41,7 +41,7 @@ describe('TimeNodeDividerViewModel', () => {
     });
     it('should toBe yesterday when createdAt in yesterday', () => {
       timeNodeDividerViewModel.props.value = Date.now() - 24 * 3600 * 1000;
-      expect(timeNodeDividerViewModel.text).toBe('tomorrow');
+      expect(timeNodeDividerViewModel.text).toBe('yesterday');
     });
     it('should toBe Weekday format when createdAt diff > 7 && < 1', () => {
       timeNodeDividerViewModel.props.value = Date.now() - 24 * 3600 * 1000 * 2;
