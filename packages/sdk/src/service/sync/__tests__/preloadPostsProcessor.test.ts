@@ -8,7 +8,6 @@ import PreloadPostsProcessor from '../preloadPostsProcessor';
 import { Group } from '../../../models';
 import PostService from '../../../service/post';
 import StateService from '../../../service/state';
-import PostAPI from '../../../api/glip/post';
 import { baseHandleData } from '../../post/handleData';
 import GroupService from '../../../service/group';
 
@@ -85,6 +84,16 @@ describe('PreloadPostsProcessor', () => {
       stateService.getById.mockResolvedValueOnce({
         unread_count: 101,
       });
+      const processor = new PreloadPostsProcessor(
+        '3',
+        getGroup({ most_recent_post_id: 1 }),
+      );
+      const result = await processor.needPreload();
+      expect(result.shouldPreload).toBe(false);
+    });
+
+    it('should return false if there is not group state', async () => {
+      stateService.getById.mockResolvedValueOnce(null);
       const processor = new PreloadPostsProcessor(
         '3',
         getGroup({ most_recent_post_id: 1 }),
