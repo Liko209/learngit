@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { setup } from '../../../../dao/__tests__/utils';
-import { NoteItemDao } from '../NoteItemDao';
+import { setup } from '../../../../../../dao/__tests__/utils';
+import { LinkItemDao } from '../LinkItemDao';
 
 describe('Event Item Dao', () => {
-  let dao: NoteItemDao;
+  let dao: LinkItemDao;
 
   beforeAll(() => {
     const { database } = setup();
-    dao = new NoteItemDao(database);
+    dao = new LinkItemDao(database);
   });
 
   describe('queryItemsByGroupId', () => {

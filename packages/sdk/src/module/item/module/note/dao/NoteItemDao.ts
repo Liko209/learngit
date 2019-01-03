@@ -5,7 +5,7 @@
  */
 
 import { SanitizedNoteItem } from '../entity';
-import { SubItemDao } from './SubItemDao';
+import { SubItemDao } from '../../base/dao';
 import { IDatabase } from 'foundation/src/db';
 
 class NoteItemDao extends SubItemDao<SanitizedNoteItem> {

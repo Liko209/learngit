@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { setup } from '../../../../dao/__tests__/utils';
-import { TaskItemDao } from '../TaskItemDao';
+import { setup } from '../../../../../../dao/__tests__/utils';
+import { EventItemDao } from '../EventItemDao';
 
 describe('Event Item Dao', () => {
-  let dao: TaskItemDao;
+  let dao: EventItemDao;
 
   beforeAll(() => {
     const { database } = setup();
-    dao = new TaskItemDao(database);
+    dao = new EventItemDao(database);
   });
 
   describe('queryItemsByGroupId', () => {
@@ -62,10 +62,6 @@ describe('Event Item Dao', () => {
           name: 'item2',
         },
       ]);
-    });
-    it('should return empty when not match', async () => {
-      const result = await dao.queryItemsByGroupId(4);
-      expect(result).toHaveLength(0);
     });
   });
 });

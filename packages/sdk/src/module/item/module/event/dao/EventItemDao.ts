@@ -5,7 +5,7 @@
  */
 
 import { SanitizedEventItem } from '../entity';
-import { SubItemDao } from './SubItemDao';
+import { SubItemDao } from '../../base/dao';
 import { IDatabase } from 'foundation/src/db';
 
 class EventItemDao extends SubItemDao<SanitizedEventItem> {

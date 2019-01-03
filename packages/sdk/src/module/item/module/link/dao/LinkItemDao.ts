@@ -5,7 +5,7 @@
  */
 
 import { SanitizedLinkItem } from '../entity';
-import { SubItemDao } from './SubItemDao';
+import { SubItemDao } from '../../base/dao';
 import { IDatabase } from 'foundation/src/db';
 
 class LinkItemDao extends SubItemDao<SanitizedLinkItem> {

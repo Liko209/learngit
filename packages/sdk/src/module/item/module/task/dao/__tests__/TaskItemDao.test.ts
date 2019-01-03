@@ -4,20 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { setup } from '../../../../dao/__tests__/utils';
-import { SubItemDao } from '../SubItemDao';
-import { EventItemDao } from '../EventItemDao';
-import { SanitizedEventItem } from '../../entity';
+import { setup } from '../../../../../../dao/__tests__/utils';
+import { TaskItemDao } from '../TaskItemDao';
 
 describe('Event Item Dao', () => {
-  let dao: SubItemDao<SanitizedEventItem>;
+  let dao: TaskItemDao;
 
   beforeAll(() => {
     const { database } = setup();
-    dao = new SubItemDao<SanitizedEventItem>(
-      EventItemDao.COLLECTION_NAME,
-      database,
-    );
+    dao = new TaskItemDao(database);
   });
 
   describe('queryItemsByGroupId', () => {
@@ -68,7 +63,6 @@ describe('Event Item Dao', () => {
         },
       ]);
     });
-
     it('should return empty when not match', async () => {
       const result = await dao.queryItemsByGroupId(4);
       expect(result).toHaveLength(0);

@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { setup } from '../../../../dao/__tests__/utils';
-import { EventItemDao } from '../EventItemDao';
+import { setup } from '../../../../../../dao/__tests__/utils';
+import { FileItemDao } from '../FileItemDao';
 
 describe('Event Item Dao', () => {
-  let dao: EventItemDao;
+  let dao: FileItemDao;
 
   beforeAll(() => {
     const { database } = setup();
-    dao = new EventItemDao(database);
+    dao = new FileItemDao(database);
   });
 
   describe('queryItemsByGroupId', () => {
@@ -22,18 +22,21 @@ describe('Event Item Dao', () => {
         group_ids: [1],
         created_at: 1,
         name: 'item1',
+        type: 'jpg',
       },
       {
         id: 2,
         group_ids: [1],
         created_at: 2,
         name: 'item2',
+        type: 'png',
       },
       {
         id: 3,
         group_ids: [2],
         created_at: 3,
         name: 'item3',
+        type: 'exe',
       },
     ];
     beforeAll(async () => {
@@ -54,14 +57,21 @@ describe('Event Item Dao', () => {
           group_ids: [1],
           created_at: 1,
           name: 'item1',
+          type: 'jpg',
         },
         {
           id: 2,
           group_ids: [1],
           created_at: 2,
           name: 'item2',
+          type: 'png',
         },
       ]);
+    });
+
+    it('should return empty when not match', async () => {
+      const result = await dao.queryItemsByGroupId(4);
+      expect(result).toHaveLength(0);
     });
   });
 });
