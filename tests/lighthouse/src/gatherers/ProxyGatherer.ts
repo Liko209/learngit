@@ -13,9 +13,7 @@ class ProxyGatherer extends Gatherer {
 
   async afterPass(passContext) {
     // the mocker will effect lighthouse audit, so close mocker before audit.
-    let start = Date.now();
     await mockHelper.close();
-    logger.info("close mock finish. ", Date.now() - start, "ms");
 
     return {};
   }
