@@ -6,7 +6,9 @@
 
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as _ from 'lodash';
+import * as assert from 'assert';
 import { ClientFunction } from 'testcafe';
+import { H } from '../../../../helpers';
 
 class BaseConversationPage extends BaseWebComponent {
 
@@ -96,6 +98,33 @@ class BaseConversationPage extends BaseWebComponent {
       const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
       document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
     });
+  }
+
+  get newMessageDeadLine() {
+    return this.stream.find('span').withText('New Messages');
+  }
+
+  async isVisible(el: Selector) {
+    const wrapper = this.streamWrapper;
+    const itemTop = await el.getBoundingClientRectProperty('top');
+    const itemBottom = await el.getBoundingClientRectProperty('bottom');
+    const wrapperTop = await wrapper.getBoundingClientRectProperty('top');
+    const wrapperBottom = await wrapper.getBoundingClientRectProperty('bottom');
+    return itemTop >= wrapperTop && itemBottom <= wrapperBottom;
+  }
+
+  async nthPostExpectVisible(n: number, isVisible: boolean = true) {
+    await H.retryUntilPass(async () => {
+      const result = await this.isVisible(this.posts.nth(n));
+      assert.strictEqual(result, isVisible, `This post expect visible: ${isVisible}, but actual: ${result}`);
+    }, 2)
+  }
+
+  async newMessageDeadLineExpectVisible(isVisible: boolean) {
+    await H.retryUntilPass(async () => {
+      const result = await this.isVisible(this.newMessageDeadLine);
+      assert.strictEqual(result, isVisible, `This 'New Messages' deadline expect visible: ${isVisible}, but actual: ${result}`);
+    }, 2);
   }
 }
 
