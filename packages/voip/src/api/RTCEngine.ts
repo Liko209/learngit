@@ -5,7 +5,7 @@
  */
 
 import { RTCAccount } from './RTCAccount';
-import { IRTCAccountListener } from './IRTCAccountListener';
+import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
@@ -26,8 +26,8 @@ class RTCEngine {
     return RTCEngine.instance;
   }
 
-  public createAccount(listener: IRTCAccountListener): RTCAccount {
-    return new RTCAccount(listener);
+  public createAccount(delegate: IRTCAccountDelegate): RTCAccount {
+    return new RTCAccount(delegate);
   }
 
   public static setLogger(logger: IRTCLogger): void {
@@ -49,6 +49,9 @@ class RTCEngine {
       this._mediaRootElement = document.createElement('div');
       this._mediaRootElement.setAttribute('id', 'rc_audio_div');
       rootEl.appendChild(this._mediaRootElement);
+    }
+    if (!this._mediaRootElement) {
+      return;
     }
     const local_audio = document.createElement('video');
     local_audio.hidden = true;

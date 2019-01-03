@@ -9,8 +9,8 @@ import { IConditionalHandler } from './IConditionalHandler';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { IRTCAccountListener } from '../api/IRTCAccountListener';
-import { AccountState } from '../api/types';
+import { IRTCAccountDelegate } from '../api/IRTCAccountDelegate';
+import { RTC_ACCOUNT_STATE } from '../api/types';
 import { UA_EVENT } from '../signaling/types';
 
 import { ErrorCode, RegistrationManagerEvent } from './types';
@@ -30,7 +30,7 @@ class RTCRegistrationManager implements IConditionalHandler {
   private _fsm: RTCRegistrationFSM;
   public _eventEmitter: EventEmitter2;
   private _userAgent: IRTCUserAgent;
-  private _listener: IRTCAccountListener;
+  private _listener: IRTCAccountDelegate;
   private _isReady: boolean;
 
   public onReadyWhenRegSucceedAction(): void {}
@@ -42,7 +42,7 @@ class RTCRegistrationManager implements IConditionalHandler {
     );
   }
 
-  constructor(listener: IRTCAccountListener) {
+  constructor(listener: IRTCAccountDelegate) {
     this._listener = listener;
     this._fsm = new RTCRegistrationFSM(this);
     this._eventEmitter = new EventEmitter2();
@@ -53,19 +53,19 @@ class RTCRegistrationManager implements IConditionalHandler {
 
   private _onEnterReady() {
     this._isReady = true;
-    this._listener.onAccountStateChanged(AccountState.REGISTERED);
+    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
   }
   private _onEnterRegInProgress() {
     this._isReady = false;
-    this._listener.onAccountStateChanged(AccountState.IN_PROGRESS);
+    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.IN_PROGRESS);
   }
   private _onEnterRegFailure() {
     this._isReady = false;
-    this._listener.onAccountStateChanged(AccountState.FAILED);
+    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.FAILED);
   }
   private _onEnterUnRegistered() {
     this._isReady = false;
-    this._listener.onAccountStateChanged(AccountState.UNREGISTERED);
+    this._listener.onAccountStateChanged(RTC_ACCOUNT_STATE.UNREGISTERED);
   }
 
   private _initFsmObserve() {

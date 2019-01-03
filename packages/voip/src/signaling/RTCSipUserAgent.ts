@@ -30,7 +30,7 @@ class RTCSipUserAgent implements IRTCUserAgent {
   }
 
   public register(options?: any): any {
-    return this._webphone.register(options);
+    return this._webphone.userAgent.register(options);
   }
 
   public makeCall(phoneNumber: string, options: any): any {
@@ -38,6 +38,9 @@ class RTCSipUserAgent implements IRTCUserAgent {
   }
 
   private _initListener(): void {
+    if (!this._webphone || !this._webphone.userAgent) {
+      return;
+    }
     this._webphone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
       this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
     });

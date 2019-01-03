@@ -3,7 +3,7 @@
  * @Date: 2018-12-29 16:08:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { IRTCCallObserver } from './IRTCCallObserver';
+import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
@@ -24,7 +24,7 @@ class RTCCall {
   private _callSession: IRTCCallSession;
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
-  private _observer: IRTCCallObserver;
+  private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
 
   constructor(
@@ -32,11 +32,11 @@ class RTCCall {
     toNumber: string,
     session: any,
     account: IRTCAccount,
-    observer: IRTCCallObserver | null,
+    delegate: IRTCCallDelegate | null,
   ) {
     this._account = account;
-    if (observer != null) {
-      this._observer = observer;
+    if (delegate != null) {
+      this._delegate = delegate;
     }
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
@@ -53,8 +53,8 @@ class RTCCall {
     this._prepare();
   }
 
-  setCallObserver(observer: IRTCCallObserver) {
-    this._observer = observer;
+  setCallDelegate(delegate: IRTCCallDelegate) {
+    this._delegate = delegate;
   }
 
   getCallState(): RTC_CALL_STATE {
@@ -182,7 +182,7 @@ class RTCCall {
   private _onCallStateChange(state: RTC_CALL_STATE): void {
     if (this._callState !== state) {
       this._callState = state;
-      this._observer.onCallStateChange(state);
+      this._delegate.onCallStateChange(state);
     }
   }
 }

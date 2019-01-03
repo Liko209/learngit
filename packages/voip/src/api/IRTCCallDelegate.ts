@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTC_CALL_STATE } from './types';
-interface IRTCCallObserver {
+interface IRTCCallDelegate {
   onCallStateChange(state: RTC_CALL_STATE): void;
 }
 
-export { IRTCCallObserver };
+export { IRTCCallDelegate };

@@ -3,12 +3,12 @@
  * @Date: 2018-12-28 10:37:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { AccountState } from './types';
+import { RTC_ACCOUNT_STATE } from './types';
 import { RTCCall } from './RTCCall';
 
-interface IRTCAccountListener {
-  onAccountStateChanged(accountState: AccountState): void;
+interface IRTCAccountDelegate {
+  onAccountStateChanged(accountState: RTC_ACCOUNT_STATE): void;
   onReceiveIncomingCall(call: RTCCall): void;
 }
 
-export { IRTCAccountListener };
+export { IRTCAccountDelegate };

@@ -5,10 +5,10 @@
  */
 
 import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
-import { IRTCAccountListener } from './IRTCAccountListener';
+import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
-import { IRTCCallObserver } from './IRTCCallObserver';
+import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { RegistrationManagerEvent } from '../account/types';
 import { RTCEngine } from './RTCEngine';
 
@@ -77,15 +77,11 @@ const options = {
 
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
-  private _listener: IRTCAccountListener;
+  private _delegate: IRTCAccountDelegate;
 
-  constructor(listener: IRTCAccountListener) {
-    this._listener = listener;
-    this._regManager = new RTCRegistrationManager(this._listener);
-  }
-
-  public setRegManager(regManager: RTCRegistrationManager) {
-    this._regManager = regManager;
+  constructor(listener: IRTCAccountDelegate) {
+    this._delegate = listener;
+    this._regManager = new RTCRegistrationManager(this._delegate);
     this._regManager._eventEmitter.on(
       RegistrationManagerEvent.RECEIVER_INCOMING_SESSION,
       (session: any) => {
@@ -113,8 +109,8 @@ class RTCAccount implements IRTCAccount {
     this._regManager.provisionReady(provisionData.data, info);
   }
 
-  public makeCall(toNumber: string, listener: IRTCCallObserver): RTCCall {
-    const call = new RTCCall(false, toNumber, null, this, listener);
+  public makeCall(toNumber: string, delegate: IRTCCallDelegate): RTCCall {
+    const call = new RTCCall(false, toNumber, null, this, delegate);
     return call;
   }
 
@@ -131,7 +127,7 @@ class RTCAccount implements IRTCAccount {
 
   private _onReceiveInvite(session: any) {
     const call = new RTCCall(true, '', session, this, null);
-    this._listener.onReceiveIncomingCall(call);
+    this._delegate.onReceiveIncomingCall(call);
   }
 }
 

@@ -14,9 +14,11 @@ const mockOn = jest.fn();
 jest.mock('ringcentral-web-phone', () => {
   return jest.fn().mockImplementation(() => {
     return {
-      invite: mockInvite,
-      register: mockRegister,
-      on: mockOn,
+      userAgent: {
+        register: mockRegister,
+        invite: mockInvite,
+        on: mockOn,
+      },
     };
   });
 });

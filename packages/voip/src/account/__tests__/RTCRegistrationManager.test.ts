@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
-import { IRTCAccountListener } from '../../api/IRTCAccountListener';
-import { AccountState } from '../../api/types';
+import { IRTCAccountDelegate } from '../../api/IRTCAccountDelegate';
+import { RTC_ACCOUNT_STATE } from '../../api/types';
 import { UA_EVENT } from '../../signaling/types';
 import { EventEmitter2 } from 'eventemitter2';
 
-class MockAccountListener implements IRTCAccountListener {
+class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
+  onReceiveIncomingCall = jest.fn();
 }
 
 class MockUserAgent {
@@ -26,6 +27,14 @@ class MockUserAgent {
 
   public deRegister() {
     this._eventEmitter.emit(UA_EVENT.REG_UNREGISTER);
+  }
+
+  public mockIncomingCall() {
+    const session = {
+      displayName: 'test',
+      uri: { aor: 'test@ringcentral.com' },
+    };
+    this._eventEmitter.emit(UA_EVENT.RECEIVE_INVITE, session);
   }
 
   makeCall = jest.fn();
@@ -46,7 +55,7 @@ describe('RTCRegistrationManager', () => {
       regManager.provisionReady(provisionData, options);
       regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.REGISTERED,
+        RTC_ACCOUNT_STATE.REGISTERED,
       );
     });
 
@@ -58,7 +67,7 @@ describe('RTCRegistrationManager', () => {
         .mockImplementation(() => {});
       regManager.provisionReady(provisionData, options);
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.IN_PROGRESS,
+        RTC_ACCOUNT_STATE.IN_PROGRESS,
       );
     });
     it('Should  Report failed state to upper layer when account state transient to failed [JPT-525]', () => {
@@ -73,7 +82,7 @@ describe('RTCRegistrationManager', () => {
         false,
       );
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.FAILED,
+        RTC_ACCOUNT_STATE.FAILED,
       );
     });
     it('Should  Report unRegistered state to upper layer when account state transient to unRegistered [JPT-562]', () => {
@@ -86,7 +95,7 @@ describe('RTCRegistrationManager', () => {
       regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
       regManager._userAgent.deRegister();
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.UNREGISTERED,
+        RTC_ACCOUNT_STATE.UNREGISTERED,
       );
     });
   });
@@ -99,14 +108,27 @@ describe('RTCRegistrationManager', () => {
         .spyOn(regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
       regManager.provisionReady('provisionData', 'options');
-      jest.spyOn(regManager, 'makeCall');
       regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
-      regManager.makeCall(phoneNumber, options);
-      expect(regManager.makeCall).toHaveBeenCalledWith(phoneNumber, options);
+      regManager.createOutgoingCallSession(phoneNumber, options);
       expect(regManager._userAgent.makeCall).toHaveBeenCalledWith(
         phoneNumber,
         options,
       );
+    });
+  });
+  describe('receive incoming call', () => {
+    it('Should call onReceiveInvite when user agent trigger receive incoming signal', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady('provisionData', 'options');
+      jest.spyOn(regManager, '_onReceiveInvite');
+      const ua = new MockUserAgent(regManager._eventEmitter, true);
+      regManager._userAgent = ua;
+      ua.mockIncomingCall();
+      expect(regManager._onReceiveInvite).toHaveBeenCalled();
     });
   });
 });

@@ -5,12 +5,13 @@
  */
 import { RTCAccount } from '../RTCAccount';
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCAccountListener } from '../IRTCAccountListener';
+import { IRTCAccountDelegate } from '../IRTCAccountDelegate';
 import { UA_EVENT } from '../../signaling/types';
-import { AccountState } from '../../api/types';
+import { RTC_ACCOUNT_STATE } from '../../api/types';
 
-class MockListener implements IRTCAccountListener {
+class MockListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
+  onReceiveIncomingCall = jest.fn();
 }
 
 class MockUserAgent {
@@ -39,7 +40,7 @@ describe('RTCAccount', () => {
         true,
       );
       expect(listener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.REGISTERED,
+        RTC_ACCOUNT_STATE.REGISTERED,
       );
     });
 
@@ -55,7 +56,7 @@ describe('RTCAccount', () => {
         false,
       );
       expect(listener.onAccountStateChanged).toHaveBeenCalledWith(
-        AccountState.FAILED,
+        RTC_ACCOUNT_STATE.FAILED,
       );
     });
   });
