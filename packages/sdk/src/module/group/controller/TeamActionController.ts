@@ -5,7 +5,7 @@
  */
 
 import { Group } from '../entity';
-import _ from 'lodash';
+import pick from 'lodash/pick';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 
@@ -19,7 +19,7 @@ class TeamActionController {
     return team
       && team.is_team
       && team.members
-      && team.members.some(id => id === userId);
+      && team.members.includes(userId);
   }
 
   canJoinTeam(team: Group) {
@@ -42,7 +42,7 @@ class TeamActionController {
         };
       },
       async (newEntity: Group) => {
-        return this.requestController.put(_.pick(newEntity, ['id', '_id', 'members']));
+        return this.requestController.put(pick(newEntity, ['id', '_id', 'members']));
       },
     );
   }
