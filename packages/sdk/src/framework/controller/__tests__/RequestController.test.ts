@@ -7,10 +7,10 @@
 import { RequestController } from '../impl/RequestController';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { BaseResponse, BaseError } from 'foundation/src';
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../../framework/model';
 import NetworkClient from '../../../api/NetworkClient';
 
-type TestEntity = BaseModel & {
+type TestEntity = IdModel & {
   name: string;
 };
 

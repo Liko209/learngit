@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Api from '../api';
-import { Group, GroupApiType, Raw } from '../../models';
+import { GroupApiType } from '../../models';
+import { Group } from '../../module/group/entity';
+import { Raw } from '../../framework/model';
 
 class GroupAPI extends Api {
   /**
@@ -36,6 +38,13 @@ class GroupAPI extends Api {
 
   static createTeam(data: Partial<GroupApiType>) {
     return this.glipNetworkClient.post<Raw<Group>>('/team', data);
+  }
+
+  static putTeamById(id: number, group: Partial<GroupApiType>) {
+    group._id = group.id;
+    delete group.id;
+    const path = group.is_team ? `/team/${id}` : `/group/${id}`;
+    return this.glipNetworkClient.put<Raw<Group>>(path, group);
   }
 }
 

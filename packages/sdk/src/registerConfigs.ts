@@ -42,6 +42,7 @@ import { SocketManager } from './service/socket/SocketManager';
 import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
+import { TelephonyService } from './module/telephony';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -94,7 +95,7 @@ const registerConfigs = {
     },
     { name: AccountService.name, value: AccountService },
     { name: SyncService.name, value: SyncService },
-
+    { name: TelephonyService.name, value: TelephonyService },
     // Manager
     {
       name: AccountManager.name,

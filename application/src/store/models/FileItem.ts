@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 15:08:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 
@@ -14,26 +14,28 @@ enum FileType {
 }
 
 type ExtendFileItem = {
-  item: FileItemModal;
+  item: FileItemModel;
   type: number;
   previewUrl: string;
 };
 
-export default class FileItemModal extends ItemModel {
+export default class FileItemModel extends ItemModel {
   @observable type: string;
   @observable name: string;
   @observable isDocument?: boolean;
   @observable isNew: boolean;
   @observable versions: Item['versions'];
+  @observable deactivated: Item['deactivated'];
 
   constructor(data: Item) {
     super(data);
-    const { type, name, versions, is_document, is_new } = data;
+    const { type, name, versions, is_document, is_new, deactivated } = data;
     this.type = type;
     this.name = name;
     this.isDocument = is_document;
     this.isNew = is_new;
     this.versions = versions;
+    this.deactivated = deactivated;
   }
 
   hasVersions() {
@@ -88,7 +90,7 @@ export default class FileItemModal extends ItemModel {
   }
 
   static fromJS(data: Item) {
-    return new FileItemModal(data);
+    return new FileItemModel(data);
   }
 }
 

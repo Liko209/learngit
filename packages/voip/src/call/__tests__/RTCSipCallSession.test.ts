@@ -1,9 +1,5 @@
 /// <reference path="../../__tests__/types.d.ts" />
-import {
-  RTCSipCallSession,
-  SIP_CALL_SESSION_STATE,
-  WEBPHONE_STATE,
-} from '../RTCSipCallSession';
+import { RTCSipCallSession, WEBPHONE_STATE } from '../RTCSipCallSession';
 
 import { EventEmitter2 } from 'eventemitter2';
 

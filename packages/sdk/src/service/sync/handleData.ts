@@ -25,7 +25,8 @@ import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
-import { Raw, Profile } from '../../models';
+import { Raw } from '../../framework/model';
+import { Profile } from '../../module/profile/entity';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
@@ -41,7 +42,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     teams = [],
     posts = [],
     max_posts_exceeded: maxPostsExceeded = false,
-    // client_config: clientConfig = {},
+    client_config: clientConfig = {},
   } = data;
 
   const arrState: any[] = [];
@@ -58,6 +59,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     accountHandleData({
       userId,
       companyId,
+      clientConfig,
       profileId: profile ? profile._id : undefined,
     }), // eslint-disable-line no-underscore-dangle, no-undefined
     companyHandleData(companies),

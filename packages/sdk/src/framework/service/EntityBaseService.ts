@@ -5,11 +5,11 @@
  */
 
 import { AbstractService } from './AbstractService';
-import { BaseModel } from '../../models';
+import { IdModel } from '../model';
 import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
 
 class EntityBaseService<
-  T extends BaseModel = BaseModel
+  T extends IdModel = IdModel
 > extends AbstractService {
   constructor() {
     super();

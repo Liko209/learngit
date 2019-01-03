@@ -8,7 +8,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import config from './config';
 import { ActivityViewProps, ActivityProps } from './types';
 

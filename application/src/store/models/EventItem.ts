@@ -3,11 +3,11 @@
  * @Date: 2018-12-17 14:08:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { EventItem } from 'sdk/models';
+import { EventItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class EventItemModal extends ItemModel {
+export default class EventItemModel extends ItemModel {
   @observable color: string;
   @observable description: string;
   @observable start: number;
@@ -46,6 +46,6 @@ export default class EventItemModal extends ItemModel {
   }
 
   static fromJS(data: EventItem) {
-    return new EventItemModal(data);
+    return new EventItemModel(data);
   }
 }

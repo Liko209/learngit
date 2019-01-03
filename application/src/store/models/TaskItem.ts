@@ -3,11 +3,11 @@
  * @Date: 2018-12-17 14:08:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { TaskItem } from 'sdk/models';
+import { TaskItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class TaskItemModal extends ItemModel {
+export default class TaskItemModel extends ItemModel {
   @observable color: string;
   @observable complete: boolean;
   @observable notes: string;
@@ -67,6 +67,6 @@ export default class TaskItemModal extends ItemModel {
   }
 
   static fromJS(data: TaskItem) {
-    return new TaskItemModal(data);
+    return new TaskItemModel(data);
   }
 }

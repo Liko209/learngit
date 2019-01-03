@@ -1,5 +1,5 @@
 import { POST_STATUS } from 'sdk/service';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { GlipTypeUtil } from 'sdk/utils';
 import Base from './Base';
 import { observable, computed } from 'mobx';
@@ -38,7 +38,7 @@ export default class PostModel extends Base<Post> {
       created_at,
       creator_id,
       text,
-      status,
+      __status,
       at_mention_non_item_ids,
       item_ids,
       likes,
@@ -55,7 +55,7 @@ export default class PostModel extends Base<Post> {
     this.activityData = activity_data;
     this.activity = activity;
     this.text = text;
-    this.status = status;
+    this.status = __status;
     this.atMentionNonItemIds = at_mention_non_item_ids;
     this.itemId = item_id;
     this.itemIds = item_ids;

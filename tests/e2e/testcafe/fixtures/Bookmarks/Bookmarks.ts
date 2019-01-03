@@ -83,6 +83,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the Bookmarks post in the pvTeam', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(bookmarksPostTeamId).body.withText(verifyTextTeam).exists)
         .ok({ timeout: 5e3 });
@@ -107,6 +108,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the Bookmarks post in the pvChat', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(bookmarksPostChatId).body.withText(verifyTextChat).exists)
         .ok({ timeout: 5e3 });
@@ -198,8 +200,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     }, true);
   });
 
-//Feature bug: FIJI-2135
-test.skip(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
+test(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
   if (await H.isEdge()) {
     await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
     return;
@@ -219,15 +220,12 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
   const msgList = _.range(20).map(i => `${i} ${uuid()}`);
 
-  let groupId;
-  let bookmarkPostId;
+  let groupId, bookmarkPostId;
   await h(t).withLog('Given I have an AtMention message from the conversation', async () => {
     groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).updateProfile(loginUser.rcId, {
-      [`hide_group_${groupId}`]: false
-    });
+    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     bookmarkPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `I'm Bookmarks, ![:Person](${loginUser.rcId})`,
       groupId,

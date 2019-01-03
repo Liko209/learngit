@@ -55,7 +55,7 @@ export class DashboardHelper {
     const tmtId = getTmtId(tags);
     // FIXME: remove user-agent from case name when dashboard is ready
     const beatsTest = await this.beatsClient.createTest({
-      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${_.findKey(BrandTire, (value) => value === accountType)})`,
+      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`,
       status: StatusMap[status],
       metadata: {
         user_agent: testRun.browserConnection.browserInfo.userAgent,

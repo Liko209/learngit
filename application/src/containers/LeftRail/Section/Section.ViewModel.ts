@@ -6,7 +6,7 @@
 import { computed, observable, action } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, transaction } from 'mobx';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { ISortableModel, TUpdated } from '@/store/base/fetch/types';
 import { TransformHandler } from '@/store/base/TransformHandler';

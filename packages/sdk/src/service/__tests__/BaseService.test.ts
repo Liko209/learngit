@@ -8,11 +8,12 @@ import notificationCenter from '../notificationCenter';
 import { SOCKET } from '../eventKey';
 import dataDispatcher from '../../component/DataDispatcher/index';
 
-import { BaseModel, Raw, SortableModel } from '../../models'; // eslint-disable-line
-import { BaseError, ErrorParser } from '../../utils';
+import { SortableModel } from '../../models';
+import { IdModel, Raw } from '../../framework/model';
+import { BaseError, ErrorTypes } from '../../utils';
 import _ from 'lodash';
 import { ApiResultOk } from '../../api/ApiResult';
-import { BaseResponse, ResultType } from 'foundation/src';
+import { BaseResponse } from 'foundation/src';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
@@ -23,7 +24,7 @@ const fakeApi = {
 };
 const EVENT = 'EVENT';
 
-export type BaseServiceTestModel = BaseModel & {
+export type BaseServiceTestModel = IdModel & {
   name?: string;
   note?: string;
 };
@@ -288,7 +289,11 @@ describe('BaseService', () => {
         name: 'someone',
       };
 
-      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(null);
+      jest
+        .spyOn(service, 'doUpdateModel')
+        .mockResolvedValue(
+          new BaseError(ErrorTypes.API_NETWORK, 'fake network error'),
+        );
 
       jest
         .spyOn(service, 'getById')

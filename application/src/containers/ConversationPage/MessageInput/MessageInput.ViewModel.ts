@@ -5,8 +5,12 @@
  */
 
 import { action, observable, computed } from 'mobx';
-import { MessageInputProps, MessageInputViewProps } from './types';
-import { GroupService, PostService } from 'sdk/service';
+import {
+  MessageInputProps,
+  MessageInputViewProps,
+  OnPostCallback,
+} from './types';
+import { GroupService, PostService, ItemService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -14,7 +18,7 @@ import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -27,13 +31,23 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
   private _groupService: GroupService;
   private _postService: PostService;
+  private _itemService: ItemService;
+
+  private _onPostCallbacks: OnPostCallback[] = [];
   @computed
   get id() {
     return this.props.id;
   }
+
+  get items() {
+    return this._itemService.getUploadItems(this.id);
+  }
+
   private _oldId: number = this.id;
+
   @observable
   error: string = '';
+
   keyboardEventHandler = {
     enter: {
       key: 13,
@@ -45,6 +59,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
+
+    this._itemService = ItemService.getInstance();
     this._sendPost = this._sendPost.bind(this);
     this.reaction(
       () => this.id,
@@ -124,10 +140,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         return;
       }
       vm.error = '';
-      if (content.trim()) {
+      const items = vm.items;
+      if (content.trim() || items.length > 0) {
         vm._sendPost(content);
-        const onPostHandler = vm.props.onPost;
-        onPostHandler && onPostHandler();
       }
     };
   }
@@ -136,16 +151,31 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.contentChange('');
     this.forceSaveDraft();
     const atMentions = isAtMentions(content);
+    const items = this.items;
     try {
       await this._postService.sendPost({
         atMentions,
         text: content,
         groupId: this.id,
         users: atMentions ? this._users : undefined,
+        itemIds: items.map(item => item.id),
       });
+      // clear context (attachments) after post
+      //
+      const onPostHandler = this.props.onPost;
+      onPostHandler && onPostHandler();
+      this._onPostCallbacks.forEach(callback => callback());
     } catch (e) {
       // You do not need to handle the error because the message will display a resend
     }
+  }
+
+  forceSendPost = () => {
+    this._sendPost('');
+  }
+
+  addOnPostCallback = (callback: OnPostCallback) => {
+    this._onPostCallbacks.push(callback);
   }
 }
 

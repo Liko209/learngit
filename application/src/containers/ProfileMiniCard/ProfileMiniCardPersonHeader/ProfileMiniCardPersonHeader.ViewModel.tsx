@@ -13,7 +13,7 @@ import {
 
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
-import { Person } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
 
 class ProfileMiniCardPersonHeaderViewModel

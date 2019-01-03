@@ -13,7 +13,8 @@ import {
 import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
-import { Person, Group } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
+import { Group } from 'sdk/module/group/entity';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';

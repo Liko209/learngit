@@ -9,7 +9,8 @@ import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
 import AccountService from '../account';
-import { Profile, Raw } from '../../models';
+import { Profile } from '../../module/profile/entity';
+import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { BaseError, ErrorTypes } from '../../utils';
@@ -342,8 +343,7 @@ class ProfileService extends BaseService<Profile> {
 
   private async _requestUpdateProfile(
     newProfile: Profile,
-    handleDataFunc?: (profile: Raw<Profile> | null) => Promise<Profile | null>,
-  ): Promise<Profile | null> {
+  ): Promise<Profile | BaseError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
 
@@ -354,17 +354,10 @@ class ProfileService extends BaseService<Profile> {
 
     return apiResult.match({
       Ok: async (rawProfile: Raw<Profile>) => {
-        if (handleDataFunc) {
-          const profile = await handleDataFunc(rawProfile);
-          if (profile) {
-            return profile;
-          }
-          return null;
-        }
         const latestProfileModel: Profile = transform(rawProfile);
         return latestProfileModel;
       },
-      Err: () => null,
+      Err: (error: BaseError) => error,
     });
   }
 

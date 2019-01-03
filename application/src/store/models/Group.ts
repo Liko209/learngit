@@ -5,7 +5,8 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group, Profile } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Profile } from 'sdk/module/profile/entity';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
@@ -90,6 +91,11 @@ export default class GroupModel extends Base<Group> {
       ) || [];
 
     return favoriteGroupIds.some(groupId => groupId === this.id);
+  }
+
+  get isAdmin() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.isThePersonAdmin(currentUserId);
   }
 
   @computed

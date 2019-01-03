@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
-import { identity } from 'lodash';
-import { IStep, IConsoleLog } from '../models'
+import { identity, findKey } from 'lodash';
+import { IStep, IConsoleLog } from '../models';
+import { BrandTire } from "../../config";
 
 const testStatusEnum = {
   passed: 'passed',
@@ -55,7 +56,7 @@ export class AllureHelper {
   startCase(caseName, startTime, userAgent, accountType) {
     this.allureReporter.startCase(caseName, startTime);
     this.allure.addArgument('User Agent', userAgent);
-    this.allure.addArgument('Account Type', accountType);
+    this.allure.addArgument('Account Type', findKey(BrandTire, (value) => value === accountType) || accountType);
   }
 
   endCase(status, testInfo, endTime) {

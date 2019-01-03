@@ -7,7 +7,9 @@
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
 import { PostService, StateService, ENTITY } from 'sdk/service';
-import { Post, GroupState, Group } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { GroupState } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 
@@ -36,7 +38,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId);
+  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
