@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { trackPerformance } from './performanceUtils';
-export { PERFORMANCE_SCENARIO, PerformanceItem } from './types';
+export { PERFORMANCE_SCENARIO } from './types';
