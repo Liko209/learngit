@@ -165,9 +165,9 @@ describe('i18next-en', () => {
     expect(i18next.t('updated')).toEqual('updated');
     expect(i18next.t('created')).toEqual('created');
     expect(i18next.t('delete')).toEqual('Delete');
-    expect(i18next.t('deletePostTitle')).toEqual('Delete message');
+    expect(i18next.t('deletePostTitle')).toEqual('Delete post');
     expect(i18next.t('deletePostContent')).toEqual(
-      'Are you sure to delete this message? It is evitable.',
+      'Are you sure you want to delete this post?',
     );
     expect(i18next.t('via')).toEqual('via');
     expect(i18next.t('marked')).toEqual('marked');

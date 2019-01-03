@@ -3,8 +3,9 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { POST_STATUS, PRESENCE } from './service';
 import { TeamPermission } from './service/group';
+import { PRESENCE } from './service';
+import { PROGRESS_STATUS } from './module';
 
 export type BaseModel = {
   id: number;
@@ -69,8 +70,6 @@ export type GroupCommon = {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
-  __send_failure_post_ids?: number[];
-  __draft?: string;
   __last_accessed_at?: number;
 };
 
@@ -180,6 +179,8 @@ export type GroupConfig = {
   has_more_older?: boolean;
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
+  draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type PostItemData = {
@@ -203,7 +204,6 @@ export type Post = ExtendedBaseModel & {
   item_data?: PostItemData;
   links?: object[];
   items?: object[];
-  __status?: POST_STATUS;
   source?: string;
   parent_id?: number;
 };
@@ -313,7 +313,6 @@ export type Presence = BaseModel & {
 };
 
 export type Progress = BaseModel & {
-  total: number;
-  loaded: number;
-  groupId?: number;
+  rate?: { total: number; loaded: number };
+  status?: PROGRESS_STATUS;
 };

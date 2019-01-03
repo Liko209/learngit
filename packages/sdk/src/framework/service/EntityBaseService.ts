@@ -7,6 +7,7 @@
 import { AbstractService } from './AbstractService';
 import { BaseModel } from '../../models';
 import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
+import { container } from '../../container';
 
 class EntityBaseService<
   T extends BaseModel = BaseModel
@@ -19,6 +20,10 @@ class EntityBaseService<
 
   getControllerBuilder() {
     return new ControllerBuilder<T>();
+  }
+
+  static getInstance<T extends EntityBaseService<any>>(): T {
+    return container.get(this.name);
   }
 }
 

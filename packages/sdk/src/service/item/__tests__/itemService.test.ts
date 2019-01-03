@@ -374,6 +374,14 @@ describe('ItemService', () => {
       });
     });
 
+    describe('deleteFileItemCache()', () => {
+      it('should call deleteFileItemCache api in the itemFileUploadHandler', () => {
+        itemFileUploadHandler.deleteFileCache.mockImplementationOnce(() => {});
+        itemService.deleteFileItemCache(-2);
+        expect(itemFileUploadHandler.deleteFileCache).toBeCalledWith(-2);
+      });
+    });
+
     describe('canUploadFiles()', () => {
       it('should canUploadFiles in the handler', () => {
         itemFileUploadHandler.canUploadFiles.mockResolvedValue(true);

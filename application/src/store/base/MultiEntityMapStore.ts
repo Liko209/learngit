@@ -160,8 +160,10 @@ export default class MultiEntityMapStore<
           }
         });
       } else {
-        this._partialUpdate(res as T, id);
-        model = this._data[id] as K;
+        if (res) {
+          this._partialUpdate(res as T, id);
+          model = this._data[id] as K;
+        }
       }
     }
 
