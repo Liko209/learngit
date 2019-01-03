@@ -5,14 +5,15 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import PostService from 'sdk/service/post';
+// import PostService from 'sdk/service/post';
 // import GroupService from 'sdk/service/group';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { matchInvalidEmail } from '@/utils/string';
-import { BaseError, ErrorTypes } from 'sdk/utils';
+// import { matchInvalidEmail } from '@/utils/string';
+// import { BaseError, ErrorTypes } from 'sdk/utils';
+import { goToConversation } from '@/common/goToConversation';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -65,7 +66,7 @@ class NewMessageViewModel extends StoreViewModel {
   @action
   inputReset = () => {
     this.emailErrorMsg = '';
-    // this.members = [];
+    this.members = [];
     this.emailError = false;
     this.serverError = false;
   }
@@ -82,35 +83,41 @@ class NewMessageViewModel extends StoreViewModel {
   }
 
   @action
-  newMessage = async (memberIds: number[], message: string) => {
-    const postService: PostService = PostService.getInstance();
-    // const groupService: GroupService = GroupService.getInstance();
+  newMessage = async (message: string) => {
+    // const postService: PostService = PostService.getInstance();
+    // // const groupService: GroupService = GroupService.getInstance();
 
-    const result = await postService.newMessageWithPeopleIds(
-      memberIds,
+    // const result = await postService.newMessageWithPeopleIds(
+    //   memberIds,
+    //   message,
+    // );
+    // if (result.isOk()) {
+    //   return result.data;
+    // }
+    // result.isErr() && this.newMessageErrorHandler(result.error);
+    // return null;
+    goToConversation({
       message,
-    );
-    if (result.isOk()) {
-      return result.data;
-    }
-    result.isErr() && this.newMessageErrorHandler(result.error);
-    return null;
+      memberIds: this.members as number[],
+    });
+    this.updateNewMessageDialogState();
+    this.inputReset();
   }
 
-  newMessageErrorHandler(error: BaseError) {
-    this.errorUnknown = false;
-    const code = error.code;
-    if (code === ErrorTypes.API_INVALID_FIELD) {
-      const message = error.message;
-      if (matchInvalidEmail(message).length > 0) {
-        this.errorEmail = matchInvalidEmail(message);
-        this.emailErrorMsg = 'Invalid Email';
-        this.emailError = true;
-      }
-    } else {
-      this.errorUnknown = true;
-    }
-  }
+  // newMessageErrorHandler(error: BaseError) {
+  //   this.errorUnknown = false;
+  //   const code = error.code;
+  //   if (code === ErrorTypes.API_INVALID_FIELD) {
+  //     const message = error.message;
+  //     if (matchInvalidEmail(message).length > 0) {
+  //       this.errorEmail = matchInvalidEmail(message);
+  //       this.emailErrorMsg = 'Invalid Email';
+  //       this.emailError = true;
+  //     }
+  //   } else {
+  //     this.errorUnknown = true;
+  //   }
+  // }
 }
 
 export { NewMessageViewModel };

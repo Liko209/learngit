@@ -27,7 +27,7 @@ class ProfileBody extends React.Component<Props> {
   OnMessageClick = async () => {
     const { id, dismiss } = this.props;
     dismiss();
-    await goToConversation(id);
+    await goToConversation({ id });
   }
   private _presence = (id: number) => {
     return <Presence uid={id} borderSize="xlarge" size="xlarge" />;

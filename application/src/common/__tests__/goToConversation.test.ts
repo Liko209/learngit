@@ -21,21 +21,21 @@ describe('goToConversation() with group or team type', () => {
       TypeDictionary.TYPE_ID_GROUP,
     );
 
-    expect(await goToConversation(1)).toEqual(true);
+    expect(await goToConversation({ id: 1 })).toEqual(true);
   });
 
   it('getConversationId() with team type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_TEAM,
     );
-    expect(await goToConversation(1)).toEqual(true);
+    expect(await goToConversation({ id: 1 })).toEqual(true);
   });
 
   it('getConversationId() with other type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_CALL,
     );
-    expect(await goToConversation(1)).toEqual(false);
+    expect(await goToConversation({ id: 1 })).toEqual(false);
   });
 });
 
@@ -52,13 +52,13 @@ describe('getConversationId() with person type conversationId', () => {
         id: 2,
       }),
     );
-    expect(await goToConversation(1)).toEqual(true);
+    expect(await goToConversation({ id: 1 })).toEqual(true);
   });
 
   it('groupService should return err', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
       err(new BaseError(500, '')),
     );
-    expect(await goToConversation(1)).toEqual(false);
+    expect(await goToConversation({ id: 1 })).toEqual(false);
   });
 });
