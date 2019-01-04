@@ -14,182 +14,6 @@ fixture('ConversationList/MarkPrivateOrProtected')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-<<<<<<< HEAD
-test.skip(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  const app = new AppRoot(t);
-  const teamName = uuid();
-
-  const teamsSection = app.homePage.messageTab.teamsSection;
-
-  let teamId;
-  await h(t).withLog('Given I have a team.', async () => {
-    teamId = (await loginUser.sdk.platform.createGroup({
-      privacy: 'protected',
-      name: teamName,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    })).data.id;
-  });
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  const teamChat = teamsSection.conversationEntryById(teamId);
-  await h(t).withLog('Then I can find the 1 conversations in conversation list', async () => {
-    await teamsSection.expand();
-    await t.expect(teamChat.exists).ok(teamId, { timeout: 10e3 });
-  }, true);
-
-
-  await h(t).withLog(`When I click a team conversation profile button`, async () => {
-    await teamChat.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-  });
-
-  const dialog = app.homePage.profileDialog;
-  await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await t.expect(dialog.getSelector('hr').exists).ok();
-    await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
-  });
-
-  await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
-    await t.wait(2e3);
-    await dialog.clickPrivate();
-    await t.wait(2e3);
-    await dialog.close();
-    await t.wait(2e3);
-  });
-
-  await h(t).withLog('Then I can open setting menu in home page', async () => {
-    await app.homePage.openSettingMenu();
-    await app.homePage.settingMenu.ensureLoaded();
-  });
-  await h(t).withLog('When I click logout button in setting menu', async () => {
-    await app.homePage.settingMenu.clickLogout();
-  });
-
-  await h(t).withLog(`Given I login Jupiter with ${users[6].company.number}#${users[6].extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, users[6]);
-    await app.homePage.ensureLoaded();
-    await h(t).refresh();
-  });
-
-  const search = app.homePage.header.search;
-  await h(t).withLog(`When I type people keyword ${teamName} in search input area`, async () => {
-    await search.typeText(teamName);
-  });
-
-  await h(t).withLog(`Then I should not find ${teamName} team.`, async () => {
-    const teamCount = await search.teams.count;
-    let hasSearch = false;
-    if(teamCount) {
-      for (let i = 0; i < teamCount; i++) {
-        const searchId = await search.nthTeam(i).getId();
-        if (searchId === teamId) {
-          hasSearch = true;
-        }
-      }
-    }
-    await t.expect(hasSearch).eql(false);
-  }, true);
-
-});
-
-test.skip(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1']), async (t) => {
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  const app = new AppRoot(t);
-  const teamName = uuid();
-
-  const teamsSection = app.homePage.messageTab.teamsSection;
-
-  let teamId
-  await h(t).withLog('Given I have a team.', async () => {
-    teamId = (await loginUser.sdk.platform.createGroup({
-      privacy: 'private',
-      name: teamName,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    })).data.id;
-  });
-
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  const teamChat = teamsSection.conversationEntryById(teamId);
-  await h(t).withLog('Then I can find the 1 conversations in conversation list', async () => {
-    await teamsSection.expand();
-    await t.expect(teamChat.exists).ok(teamId, { timeout: 10e3 });
-  }, true);
-
-
-  await h(t).withLog(`When I click a team conversation profile button`, async () => {
-    await teamChat.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-  });
-
-  const profileDialog = app.homePage.profileDialog;
-  await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await profileDialog.shouldBePopUp(); 
-  });
-
-  await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
-    await t.wait(2e3);
-    await profileDialog.clickPrivate();
-    await t.wait(2e3);
-    await profileDialog.close();
-    await t.wait(2e3);
-  });
-
-  await h(t).withLog('Then I can open setting menu in home page', async () => {
-    await app.homePage.openSettingMenu();
-    await app.homePage.settingMenu.ensureLoaded();
-  });
-  await h(t).withLog('When I click logout button in setting menu', async () => {
-    await app.homePage.settingMenu.clickLogout();
-  });
-
-  await h(t).withLog(`Given I login Jupiter with ${users[6].company.number}#${users[6].extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, users[6]);
-    await app.homePage.ensureLoaded();
-    await h(t).refresh();
-  });
-
-  const search = app.homePage.header.search;
-  await h(t).withLog(`When I type people keyword ${teamName} in search input area`, async () => {
-    await search.typeText(teamName);
-  });
-
-  let teamCount
-  await h(t).withLog('Then I should find at least team result', async () => {
-    await t.expect(search.teams.count).gte(1);
-    teamCount = await search.teams.count;
-  }, true);
-
-  await h(t).withLog('Then I should not find this team', async () => {
-    let hasSearch = false;
-
-    if(teamCount) {
-      for (let i = 0; i < teamCount; i++) {
-        const searchId = await search.nthTeam(i).getId();
-        if (searchId === teamId) {
-          hasSearch = true;
-        }
-      }
-    }
-    await t.expect(hasSearch).eql(true);
-  }, true);
-
-});
-=======
 // test(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
 //   const users = h(t).rcData.mainCompany.users;
 //   const loginUser = users[4];
@@ -199,7 +23,7 @@ test.skip(formalName('Team admin can change team from private to public.', ['JPT
 
 //   const teamsSection = app.homePage.messageTab.teamsSection;
 
-//   let teamId
+//   let teamId;
 //   await h(t).withLog('Given I have a team.', async () => {
 //     teamId = (await loginUser.sdk.platform.createGroup({
 //       privacy: 'protected',
@@ -226,7 +50,7 @@ test.skip(formalName('Team admin can change team from private to public.', ['JPT
 //     await app.homePage.messageTab.moreMenu.profile.enter();
 //   });
 
-//   const dialog = app.homePage.messageTab.profileModal;
+//   const dialog = app.homePage.profileDialog;
 //   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
 //     await t.expect(dialog.getSelector('hr').exists).ok();
 //     await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
@@ -234,7 +58,7 @@ test.skip(formalName('Team admin can change team from private to public.', ['JPT
 
 //   await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
 //     await t.wait(2e3);
-//     await dialog.clickPrivacy();
+//     await dialog.clickPrivate();
 //     await t.wait(2e3);
 //     await dialog.close();
 //     await t.wait(2e3);
@@ -311,17 +135,16 @@ test.skip(formalName('Team admin can change team from private to public.', ['JPT
 //     await app.homePage.messageTab.moreMenu.profile.enter();
 //   });
 
-//   const dialog = app.homePage.messageTab.profileModal;
+//   const profileDialog = app.homePage.profileDialog;
 //   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-//     await t.expect(dialog.getSelector('hr').exists).ok();
-//     await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
+//     await profileDialog.shouldBePopUp();
 //   });
 
 //   await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
 //     await t.wait(2e3);
-//     await dialog.clickPrivacy();
+//     await profileDialog.clickPrivate();
 //     await t.wait(2e3);
-//     await dialog.close();
+//     await profileDialog.close();
 //     await t.wait(2e3);
 //   });
 
@@ -365,7 +188,6 @@ test.skip(formalName('Team admin can change team from private to public.', ['JPT
 //   }, true);
 
 // });
->>>>>>> stage/0.1.181227
 
 test(formalName('Public/Private team icon is disabled for team member.', ['JPT-519', 'P1']), async (t) => {
   const users = h(t).rcData.mainCompany.users;

@@ -15,16 +15,10 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-<<<<<<< HEAD
 import { Post } from '../../module/post/entity';
 import { Item } from '../../module/item/entity';
 import { Raw } from '../../framework/model';
 import { Group } from '../../module/group/entity';
-import { PostStatusHandler } from './postStatusHandler';
-import { POST_STATUS, SENDING_STATUS } from '../constants';
-=======
-import { Post, Item, Raw, Group } from '../../models';
->>>>>>> stage/0.1.181227
 import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
@@ -252,12 +246,7 @@ class PostService extends BaseService<Post> {
       const dao = daoManager.getDao(PostDao);
       const post = await dao.get(postId);
       if (post) {
-<<<<<<< HEAD
-        post = PostServiceHandler.buildResendPostInfo(post);
-        return await this.innerSendPost(post, true);
-=======
         return this.innerSendPost(post, true);
->>>>>>> stage/0.1.181227
       }
     }
     mainLogger.warn(

@@ -11,14 +11,9 @@ import { ProgressActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
-<<<<<<< HEAD
 
-import { POST_STATUS } from 'sdk/service';
-import { Dialog } from '@/containers/Dialog';
-=======
 import { PROGRESS_STATUS } from 'sdk/module';
-import { JuiModal } from '@/containers/Dialog';
->>>>>>> stage/0.1.181227
+import { Dialog } from '@/containers/Dialog';
 
 type Props = ProgressActionsViewProps & WithNamespaces;
 
@@ -26,15 +21,9 @@ type Props = ProgressActionsViewProps & WithNamespaces;
 class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost, t } = this.props;
-<<<<<<< HEAD
     Dialog.confirm({
-      title: t('deletePostTitle'),
-      content: t('deletePostContent'),
-=======
-    JuiModal.confirm({
       title: t('deleteMessageTitle'),
       content: t('deleteMessageContent'),
->>>>>>> stage/0.1.181227
       okText: t('deletePostOk'),
       cancelText: t('deletePostCancel'),
       async onOK() {

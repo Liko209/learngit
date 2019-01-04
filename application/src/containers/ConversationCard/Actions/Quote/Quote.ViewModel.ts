@@ -11,13 +11,9 @@ import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import PostModel from '@/store/models/Post';
-<<<<<<< HEAD
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
-=======
-import { Post, Person } from 'sdk/models';
 import { UI_NOTIFICATION_KEY } from '@/constants';
->>>>>>> stage/0.1.181227
 import PersonModel from '@/store/models/Person';
 
 class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {

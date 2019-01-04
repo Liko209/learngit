@@ -7,14 +7,10 @@
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
-<<<<<<< HEAD
-import { PostService, ItemService, POST_STATUS } from 'sdk/service';
-import { Post } from 'sdk/module/post/entity';
-=======
 import { PostService, ItemService } from 'sdk/service';
+import { Post } from 'sdk/module/post/entity';
+import { Progress } from 'sdk/models';
 import { PROGRESS_STATUS } from 'sdk/module';
-import { Post, Progress } from 'sdk/models';
->>>>>>> stage/0.1.181227
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';

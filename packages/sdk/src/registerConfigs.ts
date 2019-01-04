@@ -32,11 +32,8 @@ import { SocketManager } from './service/socket/SocketManager';
 import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
-<<<<<<< HEAD
 import { TelephonyService } from './module/telephony';
-=======
 import ProgressService from './module/progress';
->>>>>>> stage/0.1.181227
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -90,12 +87,9 @@ const registerConfigs = {
     },
     { name: AccountService.name, value: AccountService },
     { name: SyncService.name, value: SyncService },
-<<<<<<< HEAD
     { name: TelephonyService.name, value: TelephonyService },
-=======
     { name: GroupConfigService.name, value: GroupConfigService },
 
->>>>>>> stage/0.1.181227
     // Manager
     {
       name: AccountManager.name,

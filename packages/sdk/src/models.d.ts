@@ -4,20 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TeamPermission } from './service/group';
-<<<<<<< HEAD
+
 import { ExtendedBaseModel } from './module/models';
 import { GroupCommon } from './module/group/entity';
 import { IdModel } from './framework/model';
 import { State } from './module/state/entity';
-=======
-import { PRESENCE } from './service';
-import { PROGRESS_STATUS } from './module';
-
-export type BaseModel = {
-  id: number;
-  _id?: number;
-};
->>>>>>> stage/0.1.181227
+import { PROGRESS_STATUS } from './module/progress/types';
 
 export type SortableModel<T> = {
   id: number;
@@ -29,40 +21,6 @@ export type SortableModel<T> = {
 
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
-<<<<<<< HEAD
-=======
-export type GroupCommon = {
-  company_id: number;
-  set_abbreviation: string;
-  email_friendly_abbreviation: string;
-  most_recent_content_modified_at: number;
-  most_recent_post_created_at?: number;
-  most_recent_post_id?: number;
-  is_team?: boolean;
-  is_archived?: boolean;
-  guest_user_company_ids?: number[];
-  removed_guest_user_ids?: number[];
-  privacy?: string; // 'protected'|'private'
-  team_folder?: string;
-  converted_to_team?: object;
-  converted_from_group?: object;
-  pinned_post_ids?: number[];
-  permissions?: TeamPermission;
-  post_cursor?: number;
-  drp_post_cursor?: number;
-  __trigger_ids?: number[];
-  deactivated_post_cursor?: number;
-  _delta?: { add?: object; remove?: object; set?: object };
-  is_public?: boolean;
-  description?: string;
-  __last_accessed_at?: number;
-};
-
-export type Group = ExtendedBaseModel & {
-  members: number[];
-} & GroupCommon;
-
->>>>>>> stage/0.1.181227
 export type GroupApiType = ExtendedBaseModel & {
   members: (number | string)[];
 } & GroupCommon;
@@ -98,144 +56,7 @@ export type GroupConfig = {
   send_failure_post_ids?: number[];
 };
 
-<<<<<<< HEAD
 export type Progress = IdModel & {
-  total: number;
-  loaded: number;
-  groupId?: number;
-=======
-export type PostItemData = {
-  version_map: { [key: number]: number };
-};
-
-export type Post = ExtendedBaseModel & {
-  group_id: number;
-  company_id: number;
-  text: string;
-  item_id?: number;
-  item_ids: number[];
-  post_ids: number[]; // quoted posts
-  likes?: number[];
-  activity?: string;
-  activity_data?: object;
-  at_mention_item_ids?: number[];
-  at_mention_non_item_ids?: number[];
-  new_version?: number; // This field should be moved to base model?
-  from_group_id?: number;
-  item_data?: PostItemData;
-  links?: object[];
-  items?: object[];
-  source?: string;
-  parent_id?: number;
-};
-
-export type ItemVersionPage = {
-  file_id: number;
-  url: string;
-};
-
-export type ItemVersions = {
-  download_url: string;
-  size: number;
-  url: string;
-  thumbs?: any;
-  length?: number; // document preview
-  orig_height?: number;
-  orig_width?: number;
-  pages?: ItemVersionPage[];
-};
-
-export type Item = ExtendedBaseModel & {
-  group_ids: number[];
-  post_ids: number[];
-  company_id: number;
-  is_document?: boolean;
-  name: string; // file name
-  type_id: number; // file type
-  type: string; // file type .jpg .exe
-  versions: ItemVersions[];
-  summary?: string;
-  title?: string;
-  url?: string;
-  image?: string;
-  do_not_render?: boolean;
-};
-
-export type TaskItem = Item & {
-  color: string;
-  complete: boolean;
-  notes: string;
-  start: number;
-  end: number;
-  section: string;
-  repeat: string;
-  repeat_ending: string;
-  repeat_ending_after: string;
-  repeat_ending_on: string;
-  text: string;
-  due: number;
-  complete_type: string;
-  assigned_to_ids: number[];
-  complete_people_ids: number[];
-  attachment_ids: number[];
-  complete_percentage: number;
-  hasDueTime: boolean;
-};
-
-export type EventItem = Item & {
-  color: string;
-  description: string;
-  start: number;
-  end: number;
-  location: string;
-  repeat: string;
-  repeat_ending: string;
-  repeat_ending_after: string;
-  repeat_ending_on: string;
-  text: string;
-};
-
-export type ItemFile = Item & {
-  name: string;
-};
-
-export type NoteItem = Item & {
-  body: string;
-  title: string;
-  summary: string;
-};
-
-export type LinkItem = Item & {
-  favicon: string;
-  providerName: string;
-  summary: string;
-  title: string;
-  url: string;
-  image: string;
-  data: {
-    provider_name: string;
-  };
-};
-
-export type StoredFile = Raw<ExtendedBaseModel> & {
-  storage_url: string;
-  download_url: string;
-  storage_path: string;
-  last_modified: number;
-  size: number;
-};
-
-export type RawPresence = {
-  personId: number;
-  calculatedStatus?: PRESENCE;
-};
-
-export type Presence = BaseModel & {
-  presence: RawPresence['calculatedStatus'];
-};
-
-export type Progress = BaseModel & {
   rate?: { total: number; loaded: number };
   status?: PROGRESS_STATUS;
->>>>>>> stage/0.1.181227
 };

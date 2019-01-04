@@ -9,14 +9,9 @@ import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../service/group';
 import IncomingPostHandler from '../../service/post/incomingPostHandler';
 import { transform, baseHandleData as utilsBaseHandleData } from '../utils';
-<<<<<<< HEAD
 import { Raw } from '../../framework/model';
 import { Group } from '../../module/group/entity';
 import { Post } from '../../module/post/entity';
-import PostService from '.';
-=======
-import { Post, Group, Raw } from '../../models';
->>>>>>> stage/0.1.181227
 import _ from 'lodash';
 
 function transformData(data: Raw<Post>[] | Raw<Post>): Post[] {

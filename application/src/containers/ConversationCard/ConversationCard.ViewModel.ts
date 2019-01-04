@@ -12,13 +12,10 @@ import {
 import { computed } from 'mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-<<<<<<< HEAD
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
-=======
-import { Post, Person, Progress } from 'sdk/models';
 import { PROGRESS_STATUS } from 'sdk/module';
->>>>>>> stage/0.1.181227
+import { Progress } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';

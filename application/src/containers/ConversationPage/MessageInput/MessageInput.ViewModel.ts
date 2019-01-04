@@ -23,12 +23,8 @@ import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
-<<<<<<< HEAD
 import { Group } from 'sdk/module/group/entity';
-=======
-import { Group } from 'sdk/models';
 import { UI_NOTIFICATION_KEY } from '@/constants';
->>>>>>> stage/0.1.181227
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
