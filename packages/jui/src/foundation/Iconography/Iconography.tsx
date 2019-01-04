@@ -18,7 +18,6 @@ const JuiIconography: React.SFC<JuiIconographyProps> & {
   dependencies?: any[];
 } = (props: JuiIconographyProps) => {
   const iconName = props.children as string;
-  // TODO: delete xx
   const className = `${props.className} ${name2icon[iconName]} icon`;
   return (
     <JuiIcon {...props} className={className}>

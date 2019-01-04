@@ -35,6 +35,20 @@ const name2icon = {
   copy: 'copy',
   chevron_left: 'chevron_left',
   chevron_right: 'chevron_right',
+  arrow_up: 'arrow_up',
+  arrow_down: 'arrow_down',
+  dashboard: 'dashboard',
+  chat: 'chat',
+  direct_message: 'people',
+  team: 'team',
+  work: 'work',
+  email: 'email',
+  chat_bubble: 'chat',
+  download: 'download',
+  unfold_more: 'unfold_more',
+  mention: 'mention',
+  quote: 'quote',
+  edit: 'edit',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

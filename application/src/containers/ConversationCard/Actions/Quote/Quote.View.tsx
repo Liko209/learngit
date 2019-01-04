@@ -20,11 +20,7 @@ class QuoteViewComponent extends React.Component<Props> {
   render() {
     const { disabled } = this.props;
     return (
-      <JuiMenuItem
-        icon="feedback"
-        onClick={this._handleClick}
-        disabled={disabled}
-      >
+      <JuiMenuItem icon="edit" onClick={this._handleClick} disabled={disabled}>
         Quote
       </JuiMenuItem>
     );

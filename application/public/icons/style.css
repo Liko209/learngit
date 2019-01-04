@@ -1,16 +1,18 @@
 @font-face {
-  font-family: "jupiter-icon";
-  src: url("fonts/jupiter-icon.woff2?lrifx9") format("woff2"),
-    url("fonts/jupiter-icon.ttf?lrifx9") format("truetype"),
-    url("fonts/jupiter-icon.woff?lrifx9") format("woff"),
-    url("fonts/jupiter-icon.svg?lrifx9#jupiter-icon") format("svg");
+  font-family: 'jupiter_icon';
+  src:  url('fonts/jupiter_icon.eot?9448fm');
+  src:  url('fonts/jupiter_icon.eot?9448fm#iefix') format('embedded-opentype'),
+    url('fonts/jupiter_icon.woff2?9448fm') format('woff2'),
+    url('fonts/jupiter_icon.ttf?9448fm') format('truetype'),
+    url('fonts/jupiter_icon.woff?9448fm') format('woff'),
+    url('fonts/jupiter_icon.svg?9448fm#jupiter_icon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 
 .icon {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: "jupiter-icon" !important;
+  font-family: 'jupiter_icon' !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -23,6 +25,55 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.edit:before {
+  content: "\e939";
+}
+.mention:before {
+  content: "\e93a";
+}
+.quote:before {
+  content: "\e93b";
+}
+.email:before {
+  content: "\e92d";
+}
+.work:before {
+  content: "\e92e";
+}
+.dashboard:before {
+  content: "\e92f";
+}
+.arrow_up:before {
+  content: "\e930";
+}
+.arrow_down:before {
+  content: "\e931";
+}
+.chat:before {
+  content: "\e932";
+}
+.people:before {
+  content: "\e933";
+}
+.team:before {
+  content: "\e934";
+}
+.doc:before {
+  content: "\e935";
+  color: #2b5796;
+}
+.excel:before {
+  content: "\e936";
+  color: #1e7145;
+}
+.pdf:before {
+  content: "\e937";
+  color: #e53f3a;
+}
+.ppt:before {
+  content: "\e938";
+  color: #d94d1f;
+}
 .star:before {
   content: "\e90f";
 }
