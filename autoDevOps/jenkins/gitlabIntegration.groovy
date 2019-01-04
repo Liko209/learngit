@@ -146,10 +146,13 @@ String deployCredentialId = env.DEPLOY_CREDENTIAL
 String deployBaseDir = env.DEPLOY_BASE_DIR
 String rcCredentialId = env.E2E_RC_CREDENTIAL
 
+String releaseBranch = 'master'
+String integrationBranch = 'develop'
+
 /* build strategy */
 Boolean skipEndToEnd = !isStableBranch(env.gitlabSourceBranch) && !isStableBranch(env.gitlabTargetBranch)
-Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
-Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || 'master' == env.gitlabSourceBranch
+Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && integrationBranch != env.gitlabSourceBranch
+Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || releaseBranch == env.gitlabSourceBranch
 
 /* deploy params */
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
@@ -316,22 +319,22 @@ node(buildNode) {
                                 reportTitles: 'Coverage'
                         ])
                         report.coverage = "${env.BUILD_URL}Coverage"
-                        if (null == env.gitlabTargetBranch && 'develop' == env.gitlabSourceBranch) {
-                            // attach coverage report as git note when new commits are pushed to develop branch
-                            sh 'git notes -f -F coverage/coverage-summary.json'
+                        if (env.gitlabSourceBranch == env.gitlabTargetBranch && integrationBranch == env.gitlabSourceBranch) {
+                            // attach coverage report as git note when new commits are pushed to integration branch
+                            sh 'git notes add -f -F coverage/coverage-summary.json'
                             // push git notes to remote
                             sshagent (credentials: [scmCredentialId]) {
-                                sh "git push -f origin refs/notes/*"
+                                sh "git push -f ${env.gitlabSourceNamespace} refs/notes/*"
                             }
-                        } else if ('develop' == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
-                            // compare coverage report with develop's
+                        } else if (integrationBranch == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
+                            // compare coverage report with integration branch's
                             // step 1: fetch git notes
                             sshagent (credentials: [scmCredentialId]) {
-                                sh 'git fetch origin develop'
-                                sh 'git fetch origin refs/notes/*:refs/notes/*'
+                                sh "git fetch ${env.gitlabTargetNamespace} ${env.gitlabTargetBranch}"
+                                sh "git fetch ${env.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
                             }
-                            // step 2: get latest commit on develop branch with notes
-                            sh "git rev-list origin/develop > commit-sha.txt"
+                            // step 2: get latest commit on integration branch with notes
+                            sh "git rev-list ${env.gitlabTargetNamespace}/${env.gitlabTargetBranch} > commit-sha.txt"
                             sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
                             String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
                             // step 3: compare with baseline
