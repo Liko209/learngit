@@ -315,6 +315,27 @@ node(buildNode) {
                                 reportTitles: 'Coverage'
                         ])
                         report.coverage = "${env.BUILD_URL}Coverage"
+                        if (null == env.gitlabTargetBranch && 'develop' == env.gitlabSourceBranch) {
+                            // attach coverage report as git note when new commits are pushed to develop branch
+                            sh 'git notes -f -F coverage/coverage-summary.json'
+                            // push git notes to remote
+                            sh 'git remote -v'
+                            sh "git push origin refs/notes/*"
+                        } else if ('develop' == env.gitlabTargetBranch) {
+                            // step 1: fetch git notes
+                            sh 'git fetch origin refs/notes/*:refs/notes/*'
+                            // step 2: get latest commit on develop branch with notes
+                            sh "git rev-list origin/develop > commit-sha.txt"
+                            sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
+                            String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
+                            // step 3: compare with baseline
+                            if (latestCommitWithNote) {
+                                sh "git notes ${latestCommitWithNote} > baseline-coverage-summary.json"
+                                sh "node scripts/ensure-coverage-raise.js baseline-coverage-summary.json coverage/coverage-summary.json"
+                            } else {
+                                echo "no coverage report is found on develop branch"
+                            }
+                        }
                     }
                 }
         )
