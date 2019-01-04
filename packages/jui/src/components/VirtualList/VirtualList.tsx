@@ -13,6 +13,7 @@ import {
   CellMeasurerCache,
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
+import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
@@ -65,7 +66,8 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         rowIndex={index}
         parent={parent}
       >
-        {({ measure }) => this._dataSource.cellAtIndex(index, style, measure)}
+        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) =>
+          this._dataSource.cellAtIndex(index, style, measure)}
       </CellMeasurer>
     );
   }
@@ -93,7 +95,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     if (typeof fixedHeight !== 'undefined') {
       content = (
         <AutoSizer>
-          {({ width, height }) => (
+          {({ width, height }: { width: number; height: number }) => (
             <List
               ref={this._listRef}
               height={height}
@@ -108,7 +110,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     } else {
       content = (
         <AutoSizer>
-          {({ width, height }) => {
+          {({ width, height }: { width: number; height: number }) => {
             return (
               <List
                 ref={this._listRef}
