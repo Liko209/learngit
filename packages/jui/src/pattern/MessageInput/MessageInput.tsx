@@ -40,6 +40,9 @@ const GlobalStyle = createGlobalStyle<{}>`
     width: 100%;
     align-self: flex-end;
   }
+  .ql-container {
+    max-height: 140px;
+  }
   .ql-snow {
     .mention {
       padding: ${spacing(0.5)};
