@@ -5,7 +5,8 @@
   "private": true,
   "main": "src/start.ts",
   "scripts": {
-    "perf": "ts-node src/start.ts"
+    "perf": "ts-node src/start.ts",
+    "debug": "ts-node src/test.ts"
   },
   "os": [
     "darwin",
@@ -13,12 +14,14 @@
     "win32"
   ],
   "dependencies": {
+    "axios": "0.18.0",
+    "btoa": "^1.2.1",
     "dotenv": "^6.1.0",
     "lighthouse": "^4.0.0-beta",
     "log4js": "^3.0.6",
     "mysql2": "^1.6.4",
-    "axios": "0.18.0",
     "puppeteer": "^1.10.0",
+    "qs": "^6.6.0",
     "reflect-metadata": "^0.1.12",
     "sequelize": "^4.41.2",
     "sequelize-typescript": "^0.6.6",
