@@ -644,7 +644,6 @@ describe('GroupService', () => {
     it('hideConversation, network not available', async () => {
       profileService.hideConversation.mockResolvedValueOnce(
         serviceErr(ERROR_CODES_SDK.GENERAL, ''),
-        // serviceErr(5000, ''),
       );
       const result = await groupService.hideConversation(1, false, true);
       expect(result.isErr()).toBeTruthy();

@@ -503,7 +503,6 @@ class GroupService extends BaseService<Group> {
     }
     if (!result.apiError) {
       throw new JSdkError(ERROR_CODES_SDK.GENERAL, 'undefined ERROR');
-      // throw ErrorTypes.UNDEFINED_ERROR;
     }
     throw result.apiError.code;
   }

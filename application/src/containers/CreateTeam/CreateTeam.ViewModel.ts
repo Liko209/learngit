@@ -95,7 +95,6 @@ class CreateTeamViewModel extends AbstractViewModel {
 
   createErrorHandler(error: JError) {
     this.serverUnknownError = false;
-    // const code = error.code;
     if (error.isMatch({ type: ERROR_TYPES.SERVER, codes: [ERROR_CODES_SERVER.ALREADY_TAKEN] })) {
       this.errorMsg = 'alreadyTaken';
       this.nameError = true;
