@@ -70,7 +70,7 @@ describe('ProgressActionsViewModel', () => {
       expect(nvm.postProgress).toEqual(PROGRESS_STATUS.FAIL);
     });
 
-    it('should be get POST_STATUS.SUCCESS when postId > 0', () => {
+    it('should be get PROGRESS_STATUS.SUCCESS when postId > 0', () => {
       expect(pvm.postProgress).toEqual(PROGRESS_STATUS.SUCCESS);
     });
   });
