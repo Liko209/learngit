@@ -74,7 +74,7 @@ describe('sip call session', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
-      vsession.flip.mockResolvedValue();
+      vsession.flip.mockResolvedValue(null);
       sipcallsession.flip(5);
       expect(vsession.flip).toHaveBeenCalledWith(5);
     });
@@ -85,41 +85,22 @@ describe('sip call session', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
-      vsession.startRecord.mockResolvedValue();
+      vsession.startRecord.mockResolvedValue(null);
       sipcallsession.startRecord();
       expect(vsession.startRecord).toHaveBeenCalled();
-    });
-
-    it('should VirtualSession startRecord be called 1 time when SipCallSession startRecord be called 2 times', () => {
-      const sipcallsession = new RTCSipCallSession();
-      const vsession = new VirtualSession();
-      sipcallsession.setSession(vsession);
-      vsession.startRecord.mockResolvedValue();
-      sipcallsession.startRecord();
-      sipcallsession.startRecord();
-      expect(vsession.startRecord).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('stopRecord()', () => {
-    it('should VirtualSession stopRecord be called when SipCallSession stopRecord be called and is recording', () => {
+    it('should VirtualSession stopRecord be called when SipCallSession stopRecord be called', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
-      vsession.stopRecord.mockResolvedValue();
-      vsession.startRecord.mockResolvedValue();
+      vsession.stopRecord.mockResolvedValue(null);
+      vsession.startRecord.mockResolvedValue(null);
       sipcallsession.startRecord();
       sipcallsession.stopRecord();
       expect(vsession.stopRecord).toHaveBeenCalled();
-    });
-
-    it('should VirtualSession stopRecord not be called when SipCallSession stopRecord be called and is not recording', () => {
-      const sipcallsession = new RTCSipCallSession();
-      const vsession = new VirtualSession();
-      sipcallsession.setSession(vsession);
-      vsession.stopRecord.mockResolvedValue();
-      sipcallsession.stopRecord();
-      expect(vsession.stopRecord).not.toHaveBeenCalled();
     });
   });
 

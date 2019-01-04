@@ -37,7 +37,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
           break;
         }
         case CallFsmEvent.FLIP: {
-          this._onFlip(task.Params);
+          this._onFlip(task.params);
           break;
         }
         case CallFsmEvent.START_RECORD: {
@@ -126,7 +126,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   flip(target: number) {
     this._eventQueue.push(
-      { name: CallFsmEvent.FLIP, Params: target },
+      { name: CallFsmEvent.FLIP, params: target },
       () => {},
     );
   }

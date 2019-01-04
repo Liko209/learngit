@@ -32,6 +32,7 @@ class RTCCall {
   private _account: IRTCAccount;
   private _observer: IRTCCallObserver;
   private _isIncomingCall: boolean;
+  private _isRecording: boolean = false;
 
   constructor(
     isIncoming: boolean,
@@ -88,11 +89,19 @@ class RTCCall {
   }
 
   startRecord(): void {
-    this._fsm.startRecord();
+    if (!this._isRecording) {
+      this._fsm.startRecord();
+    } else {
+      this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
+    }
   }
 
   stopRecord(): void {
-    this._fsm.stopRecord();
+    if (!this._isRecording) {
+      this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
+    } else {
+      this._fsm.stopRecord();
+    }
   }
 
   onAccountReady(): void {
@@ -183,6 +192,16 @@ class RTCCall {
   }
   // call action listener
   private _onCallActionSuccess(callAction: RTC_CALL_ACTION) {
+    switch (callAction) {
+      case RTC_CALL_ACTION.START_RECORD: {
+        this._isRecording = true;
+        break;
+      }
+      case RTC_CALL_ACTION.STOP_RECORD: {
+        this._isRecording = false;
+        break;
+      }
+    }
     this._observer.onCallActionSuccess(callAction);
   }
 

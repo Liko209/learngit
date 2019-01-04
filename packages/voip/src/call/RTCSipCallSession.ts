@@ -15,7 +15,6 @@ enum WEBPHONE_STATE {
 
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
-  private _isRecord: boolean = false;
   constructor() {
     super();
   }
@@ -65,55 +64,37 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   startRecord() {
-    if (!this._isRecord) {
-      this._isRecord = true;
-      this._session.startRecord().then(
-        () => {
-          this.emit(
-            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-            RTC_CALL_ACTION.START_RECORD,
-          );
-        },
-        () => {
-          this._isRecord = false;
-          this.emit(
-            CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-            RTC_CALL_ACTION.START_RECORD,
-          );
-        },
-      );
-    } else {
-      this.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.START_RECORD,
-      );
-    }
+    this._session.startRecord().then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_RECORD,
+        );
+      },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.START_RECORD,
+        );
+      },
+    );
   }
 
   stopRecord() {
-    if (!this._isRecord) {
-      this.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.STOP_RECORD,
-      );
-    } else {
-      this._isRecord = false;
-      this._session.stopRecord().then(
-        () => {
-          this.emit(
-            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-            RTC_CALL_ACTION.STOP_RECORD,
-          );
-        },
-        () => {
-          this._isRecord = true;
-          this.emit(
-            CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-            RTC_CALL_ACTION.STOP_RECORD,
-          );
-        },
-      );
-    }
+    this._session.stopRecord().then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
+      },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
+      },
+    );
   }
 
   answer() {
