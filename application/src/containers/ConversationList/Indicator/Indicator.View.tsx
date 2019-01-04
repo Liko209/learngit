@@ -6,11 +6,14 @@
 
 import React from 'react';
 import { IndicatorViewProps } from './types';
-import { JuiIndicatorDraft, JuiIndicatorFailure } from 'jui/pattern/ConversationList/Indicator';
+import {
+  JuiIndicatorDraft,
+  JuiIndicatorFailure,
+} from 'jui/pattern/ConversationList/Indicator';
 
 const IndicatorView = (props: IndicatorViewProps) => {
   let tag;
-  if (props.draft) {
+  if (props.hasDraft) {
     tag = <JuiIndicatorDraft />; // '[Draft]'
   }
   if (props.sendFailurePostIds.length > 0) {

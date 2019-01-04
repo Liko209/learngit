@@ -12,12 +12,17 @@ import {
 import { computed } from 'mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+<<<<<<< HEAD
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
+=======
+import { Post, Person, Progress } from 'sdk/models';
+import { PROGRESS_STATUS } from 'sdk/module';
+>>>>>>> stage/0.1.181227
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
-import { POST_STATUS } from 'sdk/service';
+import ProgressModel from '@/store/models/Progress';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   implements ConversationCardViewProps {
@@ -65,10 +70,17 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get showProgressActions() {
-    return (
-      this.post.status === POST_STATUS.INPROGRESS ||
-      this.post.status === POST_STATUS.FAIL
-    );
+    if (this.id < 0) {
+      const progress = getEntity<Progress, ProgressModel>(
+        ENTITY_NAME.PROGRESS,
+        this.id,
+      );
+      return (
+        progress.progressStatus === PROGRESS_STATUS.INPROGRESS ||
+        progress.progressStatus === PROGRESS_STATUS.FAIL
+      );
+    }
+    return false;
   }
 
   @computed

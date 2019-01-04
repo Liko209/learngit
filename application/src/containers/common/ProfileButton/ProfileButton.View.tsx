@@ -7,9 +7,13 @@
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
+<<<<<<< HEAD
 import { Dialog } from '@/containers/Dialog';
 // import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
 import { MiniCard } from '@/containers/MiniCard';
+=======
+import { JuiModal } from '@/containers/Dialog';
+>>>>>>> stage/0.1.181227
 import {
   ProfileDialogGroup,
   ProfileDialogPerson,
@@ -26,9 +30,14 @@ const MappingComponent = {
 class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
   private _onClickViewProfile = () => {
     const { id, typeId } = this.props;
+<<<<<<< HEAD
     const Profile = MappingComponent[typeId];
     MiniCard.dismissProfile();
     Dialog.simple(<Profile id={id} />, {
+=======
+    JuiModal.open(MappingComponent[typeId], {
+      componentProps: { id },
+>>>>>>> stage/0.1.181227
       size: 'medium',
     });
   }

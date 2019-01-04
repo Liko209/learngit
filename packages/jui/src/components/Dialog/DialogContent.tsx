@@ -27,6 +27,9 @@ const JuiDialogContent = styled(
     return <MuiDialogContent {...props} classes={{ root: 'root' }} />;
   },
 )`
+  &.root {
+    overflow-y: visible;
+  }
   & .root {
     ${({ theme, fullWidth }) => fullWidthStyle(theme, fullWidth)};
   }
