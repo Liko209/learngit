@@ -144,7 +144,8 @@ test(formalName('Show massage draft if only has files when switching conversatio
     await h(t).withLog(`Then I send the message, "Draft" icon should not exist `, async () => {
       await conversation1.enter();
       const { conversationPage } = app.homePage.messageTab;
-      conversationPage.sendMessage('');
+      const msg = uuid();
+      conversationPage.sendMessage(msg);
       await t.expect(conversation1.hasDraftMessage).notOk();
     });
 
