@@ -7,7 +7,7 @@ import React from 'react';
 import { ConversationInitialPostView } from '../ConversationInitialPost.View';
 import { shallow } from 'enzyme';
 import { CONVERSATION_TYPES } from '@/constants';
-import { JuiConversationInitialPostBody } from 'jui/pattern/ConversationInitialPost';
+import { JuiEmptyScreen } from 'jui/pattern/EmptyScreen';
 import PersonModel from '@/store/models/Person';
 
 describe('ConversationInitialPostView', () => {
@@ -29,7 +29,7 @@ describe('ConversationInitialPostView', () => {
       const wrapper = shallow(
         <ConversationInitialPostView {...baseProps} notEmpty={notEmpty} />,
       );
-      expect(wrapper.find(JuiConversationInitialPostBody)).toHaveLength(0);
+      expect(wrapper.find(JuiEmptyScreen)).toHaveLength(0);
     });
 
     it('should render initialPostBody when notEmpty is false [JPT-478]', () => {
@@ -37,7 +37,7 @@ describe('ConversationInitialPostView', () => {
       const wrapper = shallow(
         <ConversationInitialPostView {...baseProps} notEmpty={notEmpty} />,
       );
-      expect(wrapper.find(JuiConversationInitialPostBody)).toHaveLength(1);
+      expect(wrapper.find(JuiEmptyScreen)).toHaveLength(1);
     });
   });
 });

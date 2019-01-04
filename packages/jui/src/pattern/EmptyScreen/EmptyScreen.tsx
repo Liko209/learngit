@@ -13,7 +13,7 @@ import {
   grey,
 } from '../../foundation/utils';
 
-type JuiConversationInitialPostBodyProps = {
+type JuiEmptyScreenProps = {
   image: {
     url: string;
     width: number;
@@ -64,9 +64,7 @@ const StyledActions = styled.div`
   flex-wrap: wrap;
 `;
 
-const JuiConversationInitialPostBody = (
-  props: JuiConversationInitialPostBodyProps,
-) => {
+const JuiEmptyScreen = (props: JuiEmptyScreenProps) => {
   const { align, image, text, content, actions } = props;
 
   return (
@@ -85,4 +83,4 @@ const JuiConversationInitialPostBody = (
   );
 };
 
-export { JuiConversationInitialPostBody };
+export { JuiEmptyScreen };

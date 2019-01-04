@@ -7,12 +7,12 @@ import React from 'react';
 import {
   JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
-  JuiConversationInitialPostBody,
   StyledTitle,
   StyledSpan,
   StyledTeamName,
   StyledDescription,
 } from 'jui/pattern/ConversationInitialPost';
+import { JuiEmptyScreen } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
 import { Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
@@ -94,7 +94,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
 
     return (
-      <JuiConversationInitialPostBody
+      <JuiEmptyScreen
         text={t('postInitialTitle')}
         content={t('postInitialContent')}
         actions={[

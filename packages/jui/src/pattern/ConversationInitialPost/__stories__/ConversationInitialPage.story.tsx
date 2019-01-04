@@ -12,8 +12,8 @@ import { storiesOf } from '@storybook/react';
 import {
   JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
-  JuiConversationInitialPostBody,
 } from '..';
+import { JuiEmptyScreen } from '../../EmptyScreen';
 import { JuiButton } from '../../../components/Buttons';
 import { JuiLink } from '../../../components/Link';
 import image from './img/illustrator_2x.png';
@@ -48,7 +48,7 @@ const Action3 = (
 
 const ConversationInitialPostBody = () => {
   return (
-    <JuiConversationInitialPostBody
+    <JuiEmptyScreen
       text="Get Started"
       content="Having a home based business is a wonderful asset to your life."
       actions={[Action1, Action2, Action3]}
