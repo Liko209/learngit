@@ -151,6 +151,6 @@ test(formalName('Show massage draft if only has files when switching conversatio
 
     await h(t).withLog('When I enter conversation B, the "Draft" icon should not show on right of Conversation A', async () => {
       await conversation2.enter();
-      await t.expect(conversation1.hasDraftMessage).ok();
+      await t.expect(conversation1.hasDraftMessage).notOk();
     });
   });
