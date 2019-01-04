@@ -8,7 +8,7 @@ import MuiListItemText, {
   ListItemTextProps as MuiListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import styled from '../../foundation/styled-components';
-import { typography, ellipsis } from 'src/foundation/utils';
+import { typography, ellipsis } from '../../foundation/utils';
 
 type JuiListItemTextProps = MuiListItemTextProps;
 

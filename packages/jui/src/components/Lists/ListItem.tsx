@@ -8,7 +8,7 @@ import MuiListItem, {
   ListItemProps as MuiListItemProps,
 } from '@material-ui/core/ListItem';
 import styled from '../../foundation/styled-components';
-import { spacing } from 'src/foundation/utils';
+import { spacing } from '../../foundation/utils';
 
 type JuiListItemProps = MuiListItemProps & {
   singleLine?: boolean;

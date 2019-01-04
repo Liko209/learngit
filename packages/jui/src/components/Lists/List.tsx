@@ -5,7 +5,7 @@
  */
 import MuiList, { ListProps as MuiListProps } from '@material-ui/core/List';
 import styled from '../../foundation/styled-components';
-import { width } from 'src/foundation/utils';
+import { width } from '../../foundation/utils';
 
 type JuiListProps = MuiListProps;
 
