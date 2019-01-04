@@ -51,7 +51,7 @@ describe('ConversationCardViewModel', () => {
         createdAt: DATE_2019_1_3,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe('Fri, 9:21 AM');
+      expect(conversationCardVM.createTime).toBe('Thu, 9:21 AM');
     });
     it('should be dateAndTime format when createdAt is 2019/1/5 [JPT-701]', () => {
       moment().date(DATE_2019_1_4);
@@ -59,7 +59,7 @@ describe('ConversationCardViewModel', () => {
         createdAt: DATE_2019_1_5,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe('Sun, 1/5/2019 9:21 AM');
+      expect(conversationCardVM.createTime).toBe('Sat, 1/5/2019 9:21 AM');
     });
   });
   it('creator()', () => {

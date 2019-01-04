@@ -47,12 +47,12 @@ describe('TimeNodeDividerViewModel', () => {
     it('should be Weekday format when createdAt is 2019/1/2. [JPT-701]', () => {
       moment().date(DATE_2019_1_4);
       timeNodeDividerViewModel.props.value = DATE_2019_1_2;
-      expect(timeNodeDividerViewModel.text).toBe('Thursday');
+      expect(timeNodeDividerViewModel.text).toBe('Wednesday');
     });
     it('should be date format when createdAt is 2019/1/5. [JPT-701]', () => {
       moment().date(DATE_2019_1_4);
       timeNodeDividerViewModel.props.value = DATE_2019_1_5;
-      expect(timeNodeDividerViewModel.text).toBe('Sun, 1/5/2019');
+      expect(timeNodeDividerViewModel.text).toBe('Sat, 1/5/2019');
     });
 
     it('get computed text for new messages', () => {

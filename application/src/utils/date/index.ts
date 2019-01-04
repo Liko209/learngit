@@ -33,13 +33,13 @@ function getDateMessage(
 }
 
 const WEEKDAY = [
+  'Sunday',
   'Monday',
   'Tuesday',
   'Wednesday',
   'Thursday',
   'Friday',
   'Saturday',
-  'Sunday',
 ];
 type Moment = moment.Moment;
 const dateFormatter = {
@@ -167,11 +167,14 @@ const postTimestamp = buildFormatter([
   },
 ]);
 
+const onlyDateAndTime = dateFormatter.dateAndTime;
+
 export {
   getDateMessage,
   recentlyTwoDayAndOther,
   dividerTimestamp,
   postTimestamp,
+  onlyDateAndTime,
 };
 
 // 7 days inside
