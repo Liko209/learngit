@@ -115,6 +115,83 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
   });
 
+  test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JPT-311', 'zack']),
+  async (t: TestController) => {
+
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[4];
+    const otherUser = users[5];
+    const conversationPage = app.homePage.messageTab.conversationPage;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+    const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+
+    let teamId, bookmarksPostTeamId1, bookmarksPostTeamId2, bookmarksPostTeamId3;
+    await h(t).withLog('Given I have one team and 3 post', async () => {
+      await h(t).platform(loginUser).init();
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
+        isPublic: true,
+        name: `Team ${uuid()}`,
+        type: 'Team',
+        members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
+      });
+
+      await h(t).glip(loginUser).init();
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
+      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
+
+      await h(t).platform(otherUser).init();
+
+      bookmarksPostTeamId1 = await h(t).platform(otherUser).sentAndGetTextPostId(
+        uuid() + `, (${loginUser.rcId})`,
+        teamId,
+      );
+      bookmarksPostTeamId2 = await h(t).platform(otherUser).sentAndGetTextPostId(
+        uuid() + `, (${loginUser.rcId})`,
+        teamId,
+      );
+      bookmarksPostTeamId3 = await h(t).platform(otherUser).sentAndGetTextPostId(
+        uuid() + `, (${loginUser.rcId})`,
+        teamId,
+      );
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('And I enter the team conversation page', async () => {
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(teamId).enter();
+    });
+
+    await h(t).withLog('And I bookmark the team post', async () => {
+      await conversationPage.postItemById(bookmarksPostTeamId1).clickBookmarkToggle();
+      await conversationPage.postItemById(bookmarksPostTeamId2).clickBookmarkToggle();
+    });
+
+    await h(t).withLog('When I go to Bookmarks page', async () => {
+      await bookmarksEntry.enter();
+    });
+
+    await h(t).withLog('And I have 2 post in bookmark page', async () => {
+      await t.expect(bookmarkPage.posts.count).eql(2);
+    });
+
+    await h(t).withLog('When I bookmark 3th post in conversation', async () => {
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(teamId).enter();
+      await conversationPage.postItemById(bookmarksPostTeamId3).clickBookmarkToggle();
+    });
+
+    await h(t).withLog('And I have 3 post in bookmark page', async () => {
+      await bookmarksEntry.enter();
+      await t.expect(bookmarkPage.posts.count).eql(3);
+    });
+  })
+
 test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
   async (t: TestController) => {
     const app = new AppRoot(t);
@@ -132,7 +209,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     let groupId;
     await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-      await h(t).platform(loginUser).init(); 
+      await h(t).platform(loginUser).init();
       groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
@@ -142,7 +219,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     let bookmarkPostId;
     await h(t).withLog('And I have a post', async () => {
-      await h(t).platform(otherUser).init(); 
+      await h(t).platform(otherUser).init();
       bookmarkPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
         `Hi I'm Bookmarks, (${loginUser.rcId})`,
         groupId,
