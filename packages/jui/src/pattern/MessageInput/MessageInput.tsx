@@ -41,7 +41,7 @@ const GlobalStyle = createGlobalStyle<{}>`
     align-self: flex-end;
   }
   .ql-container {
-    max-height: 140px;
+    max-height: ${height(35)};
   }
   .ql-snow {
     .mention {
