@@ -66,27 +66,27 @@ class RightRailComponent extends React.Component<Props, States> {
           </JuiRightShelfHeaderIcon>
         </JuiRightShelfHeader>
         <JuiTabs defaultActiveValue={0}>
-          <JuiTab value={0} title="Pinned">
+          <JuiTab title="Pinned">
             <div>Pinned List {id}</div>
           </JuiTab>
-          <JuiTab value={1} title="Files Files Files Files Files">
+          <JuiTab title="Files Files Files Files Files">
             <div>Files List {id}</div>
           </JuiTab>
-          <JuiTab value={2} title="Images">
+          <JuiTab title="Images">
             <div>Images List {id}</div>
           </JuiTab>
-          <JuiTab value={3} title="Tasks">
+          <JuiTab title="Tasks">
             <div>Tasks List {id}</div>
           </JuiTab>
-          {/* <JuiTab value={4} title="Notes">
+          <JuiTab title="Notes">
             <div>Notes List {id}</div>
           </JuiTab>
-          <JuiTab value={5} title="Events">
+          <JuiTab title="Events">
             <div>Events List {id}</div>
           </JuiTab>
-          <JuiTab value={6} title="Integration">
+          <JuiTab title="Integration">
             <div>Integration List {id}</div>
-          </JuiTab> */}
+          </JuiTab>
         </JuiTabs>
       </JuiRightShelf>
     );

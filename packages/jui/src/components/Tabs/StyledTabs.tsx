@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import MuiTabs from '@material-ui/core/Tabs';
+import MuiTabs, { TabsProps as MuiTabsProps } from '@material-ui/core/Tabs';
 import styled from '../../foundation/styled-components';
 import { height, spacing } from '../../foundation/utils';
 
-const StyledTabs = styled(MuiTabs)`
+const StyledTabs = styled<MuiTabsProps>(MuiTabs)`
   &.root {
     padding: ${spacing(0, 2)};
     min-height: ${height(8)};
+    position: relative;
   }
 `;
 

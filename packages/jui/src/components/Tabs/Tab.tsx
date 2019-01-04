@@ -7,7 +7,6 @@
 import React, { PureComponent } from 'react';
 
 type JuiTabProps = {
-  value: any;
   title: JSX.Element | string;
   children: React.ReactNode | string; // Container
 };

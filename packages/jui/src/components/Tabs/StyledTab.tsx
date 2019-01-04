@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import MuiTab from '@material-ui/core/Tab';
+import MuiTab, { TabProps as MuiTabProps } from '@material-ui/core/Tab';
 import styled from '../../foundation/styled-components';
 import {
   width,
@@ -15,7 +15,7 @@ import {
   primary,
 } from '../../foundation/utils';
 
-const StyledTab = styled(MuiTab)`
+const StyledTab = styled<MuiTabProps>(MuiTab)`
   &.root {
     min-width: ${width(8)};
     max-width: ${width(30)};
