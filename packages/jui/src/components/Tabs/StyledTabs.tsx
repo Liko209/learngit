@@ -8,6 +8,8 @@ import MuiTabs, { TabsProps as MuiTabsProps } from '@material-ui/core/Tabs';
 import styled from '../../foundation/styled-components';
 import { height, spacing, grey } from '../../foundation/utils';
 
+type StyledTabsProps = MuiTabsProps;
+
 const StyledTabs = styled<MuiTabsProps>(MuiTabs)`
   &.root {
     padding: ${spacing(0, 2)};
@@ -17,4 +19,4 @@ const StyledTabs = styled<MuiTabsProps>(MuiTabs)`
   }
 `;
 
-export { StyledTabs };
+export { StyledTabs, StyledTabsProps };
