@@ -25,9 +25,9 @@ class ProfileMiniCard {
   }
 
   show({ anchor, id }: MiniCardShowProfileParams) {
-    if (this.anchor === anchor) {
-      return;
-    }
+    // if (this.anchor === anchor) {
+    //   return;
+    // }
     this.dismiss();
     this.anchor = anchor;
     this.div = document.createElement('div');

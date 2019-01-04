@@ -10,7 +10,7 @@ type IndicatorProps = {
 
 type IndicatorViewProps = {
   id: number;
-  draft: string;
+  hasDraft: boolean;
   sendFailurePostIds: number[];
 };
 
