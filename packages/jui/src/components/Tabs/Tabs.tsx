@@ -43,8 +43,7 @@ const CLASSES = {
   },
 };
 
-const MORE = 'MORE';
-// const INDEX = 100; // more tab mui auto add child index
+const MORE = 10000; // more tab mui auto add child index
 
 const STYLE: CSSProperties = {
   // position: 'absolute',
@@ -84,12 +83,17 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   componentDidMount() {
+    const domMore = this._moreRef.current;
+    if (domMore) {
+      this._moreWidth = domMore.getBoundingClientRect().width;
+    }
+    const domContainer = this._containerRef.current;
+    if (domContainer) {
+      this._containerWidth = domContainer.getBoundingClientRect().width - 16; // reduce padding
+    }
+    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+    // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
     this._measureTabWidths();
-    this._moreWidth = this._moreRef.current!.getBoundingClientRect().width;
-    this._containerWidth =
-      this._containerRef.current!.getBoundingClientRect().width - 16; // reduce padding
-    console.log('tabs', `_containerWidth: ${this._containerWidth}`);
-    console.log('tabs', `_moreWidth: ${this._moreWidth}`);
     this._calculateIndexTabsAndIndexMenus();
     // todo resize listener
   }
@@ -103,8 +107,8 @@ class JuiTabs extends PureComponent<Props, States> {
       }
       return 0;
     });
-    console.log('tabs', `_tabWidths: ${this._tabWidths}`);
-    console.log('tabs', `_tabWidthsTotal: ${this._tabWidthsTotal}`);
+    // console.log('tabs', `_tabWidths: ${this._tabWidths}`);
+    // console.log('tabs', `_tabWidthsTotal: ${this._tabWidthsTotal}`);
   }
 
   private _calculateIndexTabsAndIndexMenus = () => {
@@ -138,14 +142,14 @@ class JuiTabs extends PureComponent<Props, States> {
       // 5. change original array
       indexTabs.sort();
     }
-    console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
+    // console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
     this.setState({
       indexMenus,
       indexTabs,
     });
   }
 
-  private _handleChangeTab = (event: MouseEvent, indexSelected: any) => {
+  private _handleChangeTab = (event: MouseEvent, indexSelected: number) => {
     if (indexSelected === MORE) {
       return;
     }
@@ -178,6 +182,7 @@ class JuiTabs extends PureComponent<Props, States> {
         Anchor={this._renderMore}
         placement="bottom-start"
         open={openMenu}
+        value={MORE}
       >
         <JuiMenuList onClick={this._hideMenuList}>
           {indexMenus.map((item: number) => (
