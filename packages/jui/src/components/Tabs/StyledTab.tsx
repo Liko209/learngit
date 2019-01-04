@@ -13,6 +13,7 @@ import {
   typography,
   grey,
   primary,
+  spacing,
 } from '../../foundation/utils';
 
 type StyledTabProps = MuiTabProps;
@@ -29,8 +30,8 @@ const StyledTab = styled<MuiTabProps>(MuiTab)`
     }
   }
   .labelContainer {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: ${spacing(2)};
+    padding-right: ${spacing(2)};
     ${ellipsis}
     width: 100%;
     box-sizing: border-box;
