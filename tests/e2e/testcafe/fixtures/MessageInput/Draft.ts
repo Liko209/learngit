@@ -142,7 +142,14 @@ test(formalName('Show massage draft if only has files when switching conversatio
     });
 
     await h(t).withLog(`Then I refresh page, "Draft" icon should not exist `, async () => {
-      await h(t).refresh();
+      await conversation1.enter();
+      const { conversationPage } = app.homePage.messageTab;
+      conversationPage.sendMessage('');
       await t.expect(conversation1.hasDraftMessage).notOk();
+    });
+
+    await h(t).withLog('When I enter conversation B, the "Draft" icon should not show on right of Conversation A', async () => {
+      await conversation2.enter();
+      await t.expect(conversation1.hasDraftMessage).ok();
     });
   });
