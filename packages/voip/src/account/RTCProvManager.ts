@@ -4,21 +4,29 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcRestApiManager } from './RTCRestApiManager';
+import { rtcRestApiManager } from '../utils/RTCRestApiManager';
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCSipProvisionInfo, RTC_PROV_EVENT } from './types';
 import { IResponse } from 'foundation/src/network/network';
-import { rtcLogger } from './RTCLoggerProxy';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
+import {
+  kRTCProvRequestErrorRertyTimerMin,
+  kRTCProvFreshTimer,
+  kRTCProvParamsErrorRertyTimer,
+  kRTCProvRequestErrorRertyTimerMax,
+} from './constants';
+
+import { isNotEmptyString } from '../utils/utils';
 
 enum ERROR_TYPE {
   REQUEST_ERROR,
-  PARAME_ERROR,
+  PARAMS_ERROR,
 }
 
 class RTCProvManager extends EventEmitter2 {
   private _sipProvisionInfo: RTCSipProvisionInfo;
-  private _requestErrorRetryInterval: number = 8; // seconds
-  private _reFreshInterval: number = 24 * 3600; // seconds
+  private _requestErrorRetryInterval: number = kRTCProvRequestErrorRertyTimerMin; // seconds
+  private _reFreshInterval: number = kRTCProvFreshTimer; // seconds
   private _reFreshTimerId: any = null;
   private _canAcquireSipProv: boolean = true;
   // for unit test and log
@@ -39,12 +47,7 @@ class RTCProvManager extends EventEmitter2 {
     const response: IResponse = await rtcRestApiManager.sendRequest(null);
 
     if (!response) {
-      rtcLogger.loggerConnector(
-        'error',
-        'RTCProvManager',
-        '',
-        'the response is null',
-      );
+      rtcLogger.error('RTCProvManager', 'the response is null');
       return;
     }
 
@@ -56,12 +59,12 @@ class RTCProvManager extends EventEmitter2 {
     const responseData: RTCSipProvisionInfo = response.data;
 
     if (!this._checkSipProvInfoParame(responseData)) {
-      this._errorHandling(ERROR_TYPE.PARAME_ERROR, response.retryAfter);
+      this._errorHandling(ERROR_TYPE.PARAMS_ERROR, response.retryAfter);
       return;
     }
 
     this._resetFreshTimer();
-    this._requestErrorRetryInterval = 8;
+    this._requestErrorRetryInterval = kRTCProvRequestErrorRertyTimerMin;
 
     if (responseData !== this._sipProvisionInfo) {
       this._sipProvisionInfo = responseData;
@@ -94,18 +97,18 @@ class RTCProvManager extends EventEmitter2 {
 
         this._requestErrorRetryInterval = Math.min(
           this._requestErrorRetryInterval * 2,
-          3600,
+          kRTCProvRequestErrorRertyTimerMax,
         );
         break;
-      case ERROR_TYPE.PARAME_ERROR:
-        interval = !!retryAfter ? Math.max(7200, retryAfter) : 7200;
+      case ERROR_TYPE.PARAMS_ERROR:
+        interval = !!retryAfter
+          ? Math.max(kRTCProvParamsErrorRertyTimer, retryAfter)
+          : kRTCProvParamsErrorRertyTimer;
         this._retryRequestForError(interval);
         break;
       default:
-        rtcLogger.loggerConnector(
-          'error',
+        rtcLogger.error(
           'RTCProvManager',
-          '',
           `the error type ${type} is not defined`,
         );
         break;
@@ -129,24 +132,19 @@ class RTCProvManager extends EventEmitter2 {
         info.device instanceof Array ? info.device[0] : info.device;
 
       parame_correct =
-        this._isNotEmptyString(parame_device.authorizationID) &&
-        this._isNotEmptyString(parame_device.domain) &&
-        this._isNotEmptyString(parame_device.outboundProxy) &&
-        this._isNotEmptyString(parame_device.password) &&
-        this._isNotEmptyString(parame_device.transport) &&
-        this._isNotEmptyString(parame_device.username);
+        isNotEmptyString(parame_device.authorizationID) &&
+        isNotEmptyString(parame_device.domain) &&
+        isNotEmptyString(parame_device.outboundProxy) &&
+        isNotEmptyString(parame_device.password) &&
+        isNotEmptyString(parame_device.transport) &&
+        isNotEmptyString(parame_device.username);
     } catch (error) {
-      rtcLogger.loggerConnector(
-        'error',
+      rtcLogger.error(
         'RTCProvManager',
-        '',
         `the Prov Info Parame error is: ${error}`,
       );
     }
     return parame_correct;
-  }
-  private _isNotEmptyString(data: any) {
-    return typeof data === 'string' && data.length > 0;
   }
 }
 

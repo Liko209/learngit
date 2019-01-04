@@ -5,7 +5,12 @@
  */
 
 import { RTCProvManager } from '../RTCProvManager';
-import { rtcRestApiManager } from '../RTCRestApiManager';
+import { rtcRestApiManager } from '../../utils/RTCRestApiManager';
+import {
+  kRTCProvParamsErrorRertyTimer,
+  kRTCProvRequestErrorRertyTimerMax,
+  kRTCProvRequestErrorRertyTimerMin,
+} from '../constants';
 
 describe('RTCProvManager', async () => {
   const mockProvData_normal = {
@@ -52,7 +57,9 @@ describe('RTCProvManager', async () => {
       await pm.acquireSipProv();
       expect(pm.emit).toBeCalled();
       expect(pm._resetFreshTimer).toBeCalled();
-      expect(pm._requestErrorRetryInterval).toBe(8);
+      expect(pm._requestErrorRetryInterval).toBe(
+        kRTCProvRequestErrorRertyTimerMin,
+      );
     });
 
     it('should Emit NewProvision , reset 24h and error retry timers after validating the provision api response successfully(not has provision before) JPT-632', async () => {
@@ -65,10 +72,12 @@ describe('RTCProvManager', async () => {
       await pm.acquireSipProv();
       expect(pm.emit).toBeCalled();
       expect(pm._resetFreshTimer).toBeCalled();
-      expect(pm._requestErrorRetryInterval).toBe(8);
+      expect(pm._requestErrorRetryInterval).toBe(
+        kRTCProvRequestErrorRertyTimerMin,
+      );
     });
 
-    it('should Retry request provision at 8,16,32...3600s(retryAfter < 8)  interval when request sip provision failed JPT-633', async () => {
+    it('should Retry request provision at kRTCProvRequestErrorRertyTimerMin,16,32...3600s(retryAfter < kRTCProvRequestErrorRertyTimerMin)  interval when request sip provision failed JPT-633', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
       const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
@@ -78,16 +87,20 @@ describe('RTCProvManager', async () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
-      for (let i = 8; i <= 3600; i = i * 2) {
+      for (
+        let i = kRTCProvRequestErrorRertyTimerMin;
+        i <= kRTCProvRequestErrorRertyTimerMax;
+        i = i * 2
+      ) {
         await setImmediate(() => {});
-        const interval = Math.min(i, 3600);
+        const interval = Math.min(i, kRTCProvRequestErrorRertyTimerMax);
         expect(pm.retrySeconds).toBe(interval);
         jest.advanceTimersByTime(interval * 1000);
       }
       expect(pm._clearFreshTimer).toBeCalled();
     });
 
-    it('should Retry request provision at max(8,16,32...3600s,retryAfter)(retryAfter > 8)  interval when request sip provision failed ', async () => {
+    it('should Retry request provision at max(kRTCProvRequestErrorRertyTimerMin,16,32...3600s,retryAfter)(retryAfter > kRTCProvRequestErrorRertyTimerMin)  interval when request sip provision failed ', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
       const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
@@ -98,9 +111,16 @@ describe('RTCProvManager', async () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
-      for (let i = 8; i <= 3600; i = i * 2) {
+      for (
+        let i = kRTCProvRequestErrorRertyTimerMin;
+        i <= kRTCProvRequestErrorRertyTimerMax;
+        i = i * 2
+      ) {
         await setImmediate(() => {});
-        const interval = Math.max(Math.min(i, 3600), 2000);
+        const interval = Math.max(
+          Math.min(i, kRTCProvRequestErrorRertyTimerMax),
+          2000,
+        );
         expect(pm.retrySeconds).toBe(interval);
         jest.advanceTimersByTime(interval * 1000);
       }
@@ -116,7 +136,7 @@ describe('RTCProvManager', async () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
-      expect(pm.retrySeconds).toBe(7200);
+      expect(pm.retrySeconds).toBe(kRTCProvParamsErrorRertyTimer);
       expect(pm._clearFreshTimer).toBeCalled();
     });
 

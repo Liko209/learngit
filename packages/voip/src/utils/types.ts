@@ -4,21 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type RTCSipProvisionInfo = {
-  sipFlags: object;
-  device: {
-    transport: string;
-    password: string;
-    domain: string;
-    username: string;
-    authorizationID: string;
-    outboundProxy: string;
-  }[];
-  sipInfo: object;
-};
-
-enum RTC_PROV_EVENT {
-  NEW_PROV = 'newProv',
+enum RTC_NETWORK_EVENT {
+  NETWORK_CHANGE = 'networkchange',
 }
 
-export { RTCSipProvisionInfo, RTC_PROV_EVENT };
+enum RTC_NETWORK_STATE {
+  ONLINE = 'online',
+  OFFLINE = 'offline',
+}
+
+export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE };

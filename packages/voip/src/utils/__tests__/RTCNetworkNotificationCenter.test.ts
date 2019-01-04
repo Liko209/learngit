@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  rtcNetworkNotificationCenter,
-  RTCNetworkEVENT,
-} from '../RTCNetworkNotificationCenter';
+import { rtcNetworkNotificationCenter } from '../RTCNetworkNotificationCenter';
+
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../types';
 
 describe('Network Notification Center', async () => {
   class TestListener {
@@ -16,13 +15,13 @@ describe('Network Notification Center', async () => {
     }
     listenEvevt() {
       rtcNetworkNotificationCenter.on(
-        RTCNetworkEVENT.NETWORK_CHANGE,
+        RTC_NETWORK_EVENT.NETWORK_CHANGE,
         ({ state }: any) => {
           switch (state) {
-            case 'offline':
+            case RTC_NETWORK_STATE.OFFLINE:
               this.onOffline();
               break;
-            case 'online':
+            case RTC_NETWORK_STATE.ONLINE:
               this.onOnline();
               break;
             default:
