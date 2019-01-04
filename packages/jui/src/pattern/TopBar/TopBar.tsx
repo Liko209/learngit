@@ -16,8 +16,8 @@ import { JuiIconButtonProps } from '../../components/Buttons/IconButton';
 // import { MenuListCompositionProps } from '../MenuListComposition';
 
 type Props = {
-  MainMenu: () => ComponentType<JuiIconButtonProps>;
-  Logo: () => ComponentType;
+  MainMenu: ComponentType<JuiIconButtonProps>;
+  Logo: ComponentType;
   // Search: ComponentType,
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
@@ -58,8 +58,8 @@ class JuiTopBar extends React.Component<Props, States> {
         <StyledToolbar>
           <StyledLeft isShowSearchBar={isShowSearchBar}>
             <StyledMenuWithLogo>
-              {MainMenu()}
-              {Logo()}
+              <MainMenu />
+              <Logo />
             </StyledMenuWithLogo>
             {BackNForward ? <BackNForward /> : null}
             <SearchBar

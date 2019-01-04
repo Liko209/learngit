@@ -207,7 +207,7 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
   const conversationSection = app.homePage.messageTab.conversationPage;
   const steps = async (i: number, count: number, searchItem, type: string) => {
     const id = await searchItem.getId();
-    const icon = ['lock_open', 'lock']
+    const icon = ['unlock', 'lock']
     await h(t).withLog(`When I click the avatar of ${i + 1}/${count}  ${type} result`, async () => {
       await searchItem.clickAvatar();
     });

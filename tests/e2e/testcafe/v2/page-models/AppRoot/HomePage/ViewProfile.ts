@@ -127,7 +127,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get publicIcon() {
-    return this.getSelectorByIcon("lock_open", this.profileTitle);
+    return this.getSelectorByIcon("unlock", this.profileTitle);
   }
 
   // todo
