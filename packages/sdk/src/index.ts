@@ -9,6 +9,7 @@ import * as utils from './utils';
 import * as api from './api';
 
 export * from './framework';
+export * from './error';
 export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
 export { default as LogControlManager } from './service/uploadLogControl/logControlManager';
 
@@ -20,7 +21,7 @@ registerConfigs.classes.forEach(config => container.registerClass(config));
 // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
 registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
-const sdk: Sdk  = container.get(Sdk.name);
+const sdk: Sdk = container.get(Sdk.name);
 export { sdk as Sdk };
 export { sdk, service, utils, dao, api };
 export { mainLogger } from 'foundation';

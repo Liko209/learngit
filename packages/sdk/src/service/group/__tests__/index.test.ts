@@ -1,6 +1,6 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
-import { BaseResponse, ok, err } from 'foundation';
+import { BaseResponse, ok, err, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
 import AccountService from '../../account';
@@ -21,14 +21,14 @@ import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
-import { GroupErrorTypes } from '../groupService';
-import { BaseError, TypeDictionary } from '../../../utils';
+import { TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 import CompanyService from '../../company';
 import PostService from '../../post';
 import { Api } from '../../../api';
 import notificationCenter from '../../notificationCenter';
 import { serviceOk, serviceErr } from '../../ServiceResult';
+import { JServerError, ERROR_CODES_SERVER, ERROR_CODES_SDK, JSdkError } from '../../../error';
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
@@ -57,10 +57,10 @@ describe('GroupService', () => {
 
   jest
     .spyOn(groupService, 'updatePartialModel2Db')
-    .mockImplementation(() => {});
+    .mockImplementation(() => { });
   jest
     .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
-    .mockImplementation(() => {});
+    .mockImplementation(() => { });
 
   const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
@@ -170,7 +170,7 @@ describe('GroupService', () => {
       const memberIDs = [1, 2];
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(err(new BaseError(500, '')));
+        .mockResolvedValueOnce(err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')));
       groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
       const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
       expect(result.isErr()).toBe(true);
@@ -198,7 +198,7 @@ describe('GroupService', () => {
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result2).toHaveProperty('data', null);
 
-    const mockError = new ApiResultErr(new BaseError(403, ''), {
+    const mockError = new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, ''), {
       status: 403,
       headers: {},
     } as BaseResponse);
@@ -412,7 +412,7 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValueOnce(true);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new ApiResultErr(new BaseError(1, 'error'), {
+        new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'), {
           status: 403,
           headers: {},
         } as BaseResponse),
@@ -446,7 +446,7 @@ describe('GroupService', () => {
 
     it('should return null if request failed', async () => {
       jest.spyOn<GroupService, any>(groupService, 'handleRawGroup');
-      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      groupService.handleRawGroup.mockImplementationOnce(() => { });
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
         new ApiResultOk(null, {
@@ -483,7 +483,7 @@ describe('GroupService', () => {
 
     it('privacy should be protected if it is public', async () => {
       jest.spyOn(groupService, 'handleRawGroup');
-      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      groupService.handleRawGroup.mockImplementationOnce(() => { });
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
         new ApiResultOk(group, {
@@ -530,7 +530,7 @@ describe('GroupService', () => {
 
     it('data should have correct permission level if passed in options', async () => {
       jest.spyOn(groupService, 'handleRawGroup');
-      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      groupService.handleRawGroup.mockImplementationOnce(() => { });
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
         new ApiResultOk(group, {
@@ -596,8 +596,8 @@ describe('GroupService', () => {
     });
 
     it('should return error object if duplicate name', async () => {
-      const error = new BaseError(
-        GroupErrorTypes.ALREADY_TAKEN,
+      const error = new JServerError(
+        ERROR_CODES_SERVER.ALREADY_TAKEN,
         'Already taken',
       );
       GroupAPI.createTeam.mockResolvedValue(
@@ -643,7 +643,8 @@ describe('GroupService', () => {
     });
     it('hideConversation, network not available', async () => {
       profileService.hideConversation.mockResolvedValueOnce(
-        serviceErr(5000, ''),
+        serviceErr(ERROR_CODES_SDK.GENERAL, ''),
+        // serviceErr(5000, ''),
       );
       const result = await groupService.hideConversation(1, false, true);
       expect(result.isErr()).toBeTruthy();
@@ -877,7 +878,7 @@ describe('GroupService', () => {
     it('throw error ', async () => {
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(err(new BaseError(500, '')));
+        .mockResolvedValueOnce(err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')));
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(null);
       const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
@@ -918,7 +919,7 @@ describe('GroupService', () => {
 
     it('should throw an error when exception happened ', async () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultErr(new BaseError(500, 'error'), {
+        new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'error'), {
           status: 500,
           headers: {},
         } as BaseResponse),
@@ -1065,7 +1066,7 @@ describe('GroupService', () => {
       const res = await groupService.getGroupEmail(group.id);
       expect(res).toBe(
         `${
-          group.email_friendly_abbreviation
+        group.email_friendly_abbreviation
         }@${companyReplyDomain}.${envDomain}`,
       );
     });
@@ -1090,7 +1091,7 @@ describe('GroupService', () => {
       });
       const spyDoDefaultPartialNotify = jest
         .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
       await groupService.updateGroupLastAccessedTime({
         id: 1,
         timestamp: 12345,
@@ -1179,7 +1180,7 @@ describe('GroupService', () => {
 
     it('should return error type correctly', async () => {
       profileService.markGroupAsFavorite.mockResolvedValueOnce(
-        serviceErr(5300, 'mock error'),
+        serviceErr(ERROR_CODES_SDK.GENERAL, 'mock error'),
       );
       const result = await groupService.markGroupAsFavorite(1, true);
       expect(result.isErr()).toBeTruthy();

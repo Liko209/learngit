@@ -3,7 +3,7 @@
  * @Date: 2018-12-05 09:30:00
  */
 import _ from 'lodash';
-import { NETWORK_FAIL_TYPE, mainLogger } from 'foundation';
+import { NETWORK_FAIL_TYPE, mainLogger, JError } from 'foundation';
 import { Progress } from '../../models';
 import { Raw } from '../../framework/model';
 import { StoredFile, ItemFile, Item } from '../../module/item/entity';
@@ -14,7 +14,6 @@ import { transform } from '../utils';
 import { versionHash } from '../../utils/mathUtils';
 import { daoManager } from '../../dao';
 import ItemDao from '../../dao/item';
-import { BaseError } from '../../utils';
 import { ApiResult, ApiResultErr } from '../../api/ApiResult';
 import notificationCenter from '../notificationCenter';
 import { ENTITY, SERVICE } from '../eventKey';
@@ -69,7 +68,7 @@ class ItemFileUploadHandler {
       if (
         includeUnSendFiles &&
         currentUploadingInfo.fileCount + newFiles.length >
-          MAX_UPLOADING_FILE_CNT
+        MAX_UPLOADING_FILE_CNT
       ) {
         break;
       }
@@ -482,7 +481,7 @@ class ItemFileUploadHandler {
       );
     }
 
-    let result: ApiResult<Raw<ItemFile>, BaseError> | undefined = undefined;
+    let result: ApiResult<Raw<ItemFile>, JError> | undefined = undefined;
     if (existItemFile) {
       result = await this._updateItem(existItemFile, preInsertItem);
     } else {
@@ -496,7 +495,7 @@ class ItemFileUploadHandler {
     } else {
       this._handleItemFileSendFailed(preInsertItem.id, result as ApiResultErr<
         ItemFile
-      >);
+        >);
       mainLogger.warn(`_uploadItem error =>${result}`);
     }
   }

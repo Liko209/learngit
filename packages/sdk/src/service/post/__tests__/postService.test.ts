@@ -18,12 +18,11 @@ import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { serviceErr, serviceOk } from '../../ServiceResult';
-import { BaseError } from '../../../utils';
 import notificationCenter from '../../notificationCenter';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
 import { SENDING_STATUS } from '../../constants';
-import { err, ok, BaseResponse } from 'foundation';
+import { err, ok, BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
@@ -569,7 +568,7 @@ describe('PostService', () => {
       GroupService.getInstance = jest.fn().mockReturnValue(groupService);
       groupService.getGroupSendFailurePostIds.mockResolvedValue([]);
       daoManager.getDao.mockReturnValue(postDao);
-      postDao.put.mockImplementation(() => {});
+      postDao.put.mockImplementation(() => { });
 
       const info = _.cloneDeep(postMockInfo);
       const responseData = _.cloneDeep(postMockInfo);
@@ -837,7 +836,7 @@ describe('PostService', () => {
 
     it('should return null if error', async () => {
       PostAPI.requestPosts.mockRejectedValue(
-        new ApiResultErr(new BaseError(500, ''), {
+        new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''), {
           status: 500,
           headers: {},
         } as BaseResponse),
@@ -935,7 +934,7 @@ describe('PostService', () => {
     it('should not call send post when get group failed', async () => {
       const spy = jest.spyOn(postService, 'sendPost');
       groupService.getOrCreateGroupByMemberList.mockResolvedValue(
-        err(new BaseError(500, '')),
+        err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
       );
       const result = await postService.newMessageWithPeopleIds(
         [1, 2, 3],
@@ -963,7 +962,7 @@ describe('PostService', () => {
     it('should call partial update once ', async () => {
       jest
         .spyOn(postService, 'handlePartialUpdate')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
 
       await postService.cancelUpload(1, 1);
 
@@ -978,9 +977,9 @@ describe('PostService', () => {
       jest.restoreAllMocks();
 
       ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-      itemService.cleanUploadingFiles.mockImplementation(() => {});
+      itemService.cleanUploadingFiles.mockImplementation(() => { });
       daoManager.getDao.mockReturnValue(postDao);
-      postDao.update.mockImplementation(() => {});
+      postDao.update.mockImplementation(() => { });
     });
 
     it('should resend failed items and then send post', async (done: jest.DoneCallback) => {
@@ -996,19 +995,19 @@ describe('PostService', () => {
         postService,
         '_handlePreInsertProcess',
       );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
+      spyHandlePreInsertProcess.mockImplementation(() => { });
 
       const spySendPostWithPreInsertItems = jest.spyOn(
         postService,
         '_sendPostWithPreInsertItems',
       );
-      spySendPostWithPreInsertItems.mockImplementation(() => {});
+      spySendPostWithPreInsertItems.mockImplementation(() => { });
 
       const spyCleanUploadingFiles = jest.spyOn(
         postService,
         '_cleanUploadingFiles',
       );
-      spyCleanUploadingFiles.mockImplementation(() => {});
+      spyCleanUploadingFiles.mockImplementation(() => { });
 
       await postService.reSendPost(info.id);
       setTimeout(() => {
@@ -1028,23 +1027,23 @@ describe('PostService', () => {
 
       const spyDeletePost = jest
         .spyOn(postService, 'deletePost')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
 
       const spyResendFailedItems = jest.spyOn(
         postService,
         '_resendFailedItems',
       );
-      spyResendFailedItems.mockImplementation(() => {});
+      spyResendFailedItems.mockImplementation(() => { });
 
       const spyHandlePreInsertProcess = jest.spyOn(
         postService,
         '_handlePreInsertProcess',
       );
 
-      spyHandlePreInsertProcess.mockImplementation(() => {});
+      spyHandlePreInsertProcess.mockImplementation(() => { });
       const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
-      itemService.sendItemData.mockImplementationOnce(() => {});
+      spySendPost.mockImplementation(() => { });
+      itemService.sendItemData.mockImplementationOnce(() => { });
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
           listener({
@@ -1088,7 +1087,7 @@ describe('PostService', () => {
       info.item_data = itemData;
 
       const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
-      spyPartialUpdate.mockImplementation(() => {});
+      spyPartialUpdate.mockImplementation(() => { });
 
       PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
@@ -1096,16 +1095,16 @@ describe('PostService', () => {
         postService,
         '_resendFailedItems',
       );
-      spyResendFailedItems.mockImplementation(() => {});
+      spyResendFailedItems.mockImplementation(() => { });
 
       const spyHandlePreInsertProcess = jest.spyOn(
         postService,
         '_handlePreInsertProcess',
       );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
+      spyHandlePreInsertProcess.mockImplementation(() => { });
       const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
-      itemService.sendItemData.mockImplementationOnce(() => {});
+      spySendPost.mockImplementation(() => { });
+      itemService.sendItemData.mockImplementationOnce(() => { });
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
           listener({
@@ -1184,22 +1183,22 @@ describe('PostService', () => {
         postService,
         '_resendFailedItems',
       );
-      spyResendFailedItems.mockImplementation(() => {});
+      spyResendFailedItems.mockImplementation(() => { });
 
       const spyHandlePreInsertProcess = jest.spyOn(
         postService,
         '_handlePreInsertProcess',
       );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
+      spyHandlePreInsertProcess.mockImplementation(() => { });
 
       const spyHandleSendPostFail = jest.spyOn(
         postService,
         'handleSendPostFail',
       );
-      spyHandleSendPostFail.mockImplementation(() => {});
+      spyHandleSendPostFail.mockImplementation(() => { });
 
       const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
+      spySendPost.mockImplementation(() => { });
 
       itemService.getItemsSendingStatus.mockReturnValue([SENDING_STATUS.FAIL]);
 

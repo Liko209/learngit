@@ -14,11 +14,11 @@ import { Item, ItemFile, NoteItem } from '../../module/item/entity';
 import { Raw } from '../../framework/model';
 import { Post } from '../../module/post/entity';
 
-import { BaseError } from '../../utils';
 import { SOCKET } from '../eventKey';
 import { ApiResult } from '../../api/ApiResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
+import { JError } from '../../error';
 
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
@@ -192,7 +192,7 @@ class ItemService extends BaseService<Item> {
   private async _doUpdateItemModel(
     updatedItemModel: Item,
     type: string,
-  ): Promise<Raw<Item> | BaseError> {
+  ): Promise<Raw<Item> | JError> {
     updatedItemModel.do_not_render = true;
     updatedItemModel._id = updatedItemModel.id;
     delete updatedItemModel.id;
@@ -205,7 +205,7 @@ class ItemService extends BaseService<Item> {
 
     return result.match({
       Ok: (item: Raw<Item>) => item,
-      Err: (e: BaseError) => e,
+      Err: (e: JError) => e,
     });
   }
 
