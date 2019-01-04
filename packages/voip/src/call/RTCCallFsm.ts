@@ -25,8 +25,8 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   private _eventQueue: any;
 
   constructor() {
-    this._callFsmTable = new RTCCallFsmTable(this);
     super();
+    this._callFsmTable = new RTCCallFsmTable(this);
     // this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = new queue((task: any, callback: any) => {
       switch (task.name) {

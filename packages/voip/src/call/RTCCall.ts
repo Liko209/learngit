@@ -19,7 +19,7 @@ class RTCCall {
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
   private _observer: IRTCCallObserver;
-  private _isIncomingCall: boolean = false;
+  // private _isIncomingCall: boolean = false;
 
   constructor(toNum: string, account: IRTCAccount, observer: IRTCCallObserver) {
     this._callSession = new RTCSipCallSession();
