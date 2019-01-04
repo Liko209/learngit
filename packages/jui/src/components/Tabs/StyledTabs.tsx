@@ -6,13 +6,14 @@
 
 import MuiTabs, { TabsProps as MuiTabsProps } from '@material-ui/core/Tabs';
 import styled from '../../foundation/styled-components';
-import { height, spacing } from '../../foundation/utils';
+import { height, spacing, grey } from '../../foundation/utils';
 
 const StyledTabs = styled<MuiTabsProps>(MuiTabs)`
   &.root {
     padding: ${spacing(0, 2)};
     min-height: ${height(8)};
     position: relative;
+    border-bottom: 1px solid ${grey('300')};
   }
 `;
 

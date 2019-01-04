@@ -15,6 +15,8 @@ import {
   primary,
 } from '../../foundation/utils';
 
+type StyledTabProps = MuiTabProps;
+
 const StyledTab = styled<MuiTabProps>(MuiTab)`
   &.root {
     min-width: ${width(8)};
@@ -39,4 +41,4 @@ const StyledTab = styled<MuiTabProps>(MuiTab)`
   }
 `;
 
-export { StyledTab };
+export { StyledTab, StyledTabProps };
