@@ -126,6 +126,8 @@ def buildReport(result, buildUrl, report) {
         lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.coverage)
         lines.push("**Coverage Report**: ${report.coverage}")
+    if (null != report.coverageDiff)
+        lines.push("**Coverage Changes**: ${report.coverageDiff}")
     if (null != report.juiUrl)
         lines.push("**Storybook URL**: ${report.juiUrl}")
     if (null != report.e2eUrl)
@@ -265,7 +267,6 @@ node(buildNode) {
 
             // we can even skip install dependencies
             skipInstallDependencies = [skipSaAndUt, skipEndToEnd].every()
-
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
@@ -319,21 +320,30 @@ node(buildNode) {
                             // attach coverage report as git note when new commits are pushed to develop branch
                             sh 'git notes -f -F coverage/coverage-summary.json'
                             // push git notes to remote
-                            sh 'git remote -v'
-                            sh "git push origin refs/notes/*"
-                        } else if ('develop' == env.gitlabTargetBranch) {
+                            sshagent (credentials: [scmCredentialId]) {
+                                sh "git push -f origin refs/notes/*"
+                            }
+                        } else if ('develop' == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
+                            // compare coverage report with develop's
                             // step 1: fetch git notes
-                            sh 'git fetch origin refs/notes/*:refs/notes/*'
+                            sshagent (credentials: [scmCredentialId]) {
+                                sh 'git fetch origin develop'
+                                sh 'git fetch origin refs/notes/*:refs/notes/*'
+                            }
                             // step 2: get latest commit on develop branch with notes
                             sh "git rev-list origin/develop > commit-sha.txt"
                             sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
                             String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
                             // step 3: compare with baseline
                             if (latestCommitWithNote) {
-                                sh "git notes ${latestCommitWithNote} > baseline-coverage-summary.json"
-                                sh "node scripts/ensure-coverage-raise.js baseline-coverage-summary.json coverage/coverage-summary.json"
-                            } else {
-                                echo "no coverage report is found on develop branch"
+                                sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
+                                int exitCode = sh(
+                                    returnStatus: true,
+                                    script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
+                                )
+                                report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
+                                report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
+                                // TODO: throw exception when coverage drop
                             }
                         }
                     }
