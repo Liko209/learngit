@@ -1,7 +1,7 @@
 import Factory from 'factory.ts';
 import faker from 'faker';
-import { Group } from '../group/entity';
-import { ExtendedBaseModel } from '../models';
+import { Group } from '../../entity';
+import { ExtendedBaseModel } from '../../../models';
 
 const uniqueNumber = () => Factory.each(i => faker.random.number(Date.now() + i));
 

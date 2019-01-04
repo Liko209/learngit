@@ -8,7 +8,7 @@ import { TeamActionController } from '../TeamActionController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Group } from '../../entity/Group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { groupFactory } from '../../../__test__/factories';
+import { groupFactory } from './factory';
 
 class TestPartialModifyController implements IPartialModifyController<Group> {
   updatePartially = jest.fn();
