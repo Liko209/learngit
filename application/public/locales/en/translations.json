@@ -182,5 +182,13 @@
   "descriptionNotes": "Description",
   "conversationDetails": "Conversation Details",
   "conversationDetailsShow": "Show details",
-  "conversationDetailsHide": "Hide details"
+  "conversationDetailsHide": "Hide details",
+  "pinned": "Pinned",
+  "files": "Files",
+  "images": "Images",
+  "links": "Links",
+  "tasks": "Tasks",
+  "notes": "Notes",
+  "events": "Events",
+  "integration": "Integration"
 }
