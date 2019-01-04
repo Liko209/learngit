@@ -27,7 +27,7 @@ class RTCProvManager extends EventEmitter2 {
   private _sipProvisionInfo: RTCSipProvisionInfo;
   private _requestErrorRetryInterval: number = kRTCProvRequestErrorRertyTimerMin; // seconds
   private _reFreshInterval: number = kRTCProvFreshTimer; // seconds
-  private _reFreshTimerId: any = null;
+  private _reFreshTimerId: NodeJS.Timeout = null;
   private _canAcquireSipProv: boolean = true;
   // for unit test and log
   public retrySeconds: number = 0;

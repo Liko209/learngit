@@ -7,7 +7,6 @@ import { action, computed, observable } from 'mobx';
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue } from '@/store/utils';
-import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { goToConversation } from '@/common/goToConversation';
 
@@ -31,40 +30,8 @@ class NewMessageViewModel extends StoreViewModel {
   }
 
   @computed
-  get isOpen() {
-    return getGlobalValue(GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG) || false;
-  }
-
-  @computed
   get isOffline() {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
-  }
-
-  @action
-  updateNewMessageDialogState = () => {
-    const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG, !this.isOpen);
-  }
-
-  @action
-  updateCreateTeamDialogState = () => {
-    const globalStore = storeManager.getGlobalStore();
-    const isShowCreateTeamDialog = !globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-    );
-    globalStore.set(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-      isShowCreateTeamDialog,
-    );
-    this.updateNewMessageDialogState();
-  }
-
-  @action
-  inputReset = () => {
-    this.emailErrorMsg = '';
-    this.members = [];
-    this.emailError = false;
-    this.serverError = false;
   }
 
   handleSearchContactChange = (items: any) => {
@@ -84,8 +51,6 @@ class NewMessageViewModel extends StoreViewModel {
       message,
       id: Array.from(this.members) as number[],
     });
-    this.updateNewMessageDialogState();
-    this.inputReset();
   }
 }
 

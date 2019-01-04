@@ -17,6 +17,7 @@ import { HomeViewProps } from './types';
 import { analytics } from '@/Analytics';
 import { MiniCard } from '@/containers/MiniCard';
 import { ToastWrapper } from '@/containers/ToastWrapper';
+import { DialogPortal } from '@/containers/Dialog';
 
 @observer
 class Home extends Component<HomeViewProps> {
@@ -48,6 +49,7 @@ class Home extends Component<HomeViewProps> {
             <Route path="/messages/:id?" component={Messages} />
             <Route component={NotFound} />
           </Switch>
+          <DialogPortal />
         </Bottom>
       </Wrapper>
     );

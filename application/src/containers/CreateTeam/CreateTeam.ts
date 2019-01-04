@@ -4,12 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { buildContainer } from '@/base';
+import portalManager from '@/common/PortalManager';
 import { CreateTeamView } from './CreateTeam.View';
 import { CreateTeamViewModel } from './CreateTeam.ViewModel';
 
-const CreateTeam = buildContainer({
+const CreateTeamContainer = buildContainer({
   View: CreateTeamView,
   ViewModel: CreateTeamViewModel,
 });
+
+const CreateTeam = portalManager.wrapper(CreateTeamContainer);
 
 export { CreateTeam };
