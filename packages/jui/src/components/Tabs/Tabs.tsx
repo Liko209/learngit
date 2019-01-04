@@ -228,7 +228,6 @@ class JuiTabs extends PureComponent<Props, States> {
   }: StyledTabProps) => {
     return (
       <StyledTab
-        data-value={value}
         value={value}
         key={value}
         label={label}
