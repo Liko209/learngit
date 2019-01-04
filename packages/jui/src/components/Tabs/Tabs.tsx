@@ -46,8 +46,8 @@ const CLASSES = {
 const MORE = 10000; // more tab mui auto add child index
 
 const STYLE: CSSProperties = {
-  // position: 'absolute',
-  // right: 0,
+  position: 'absolute',
+  right: 0,
 };
 
 class JuiTabs extends PureComponent<Props, States> {
