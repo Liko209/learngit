@@ -9,7 +9,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 
 type TokenRouteProps = RouteComponentProps<{}> &
   WithNamespaces & {
@@ -56,7 +56,7 @@ class TokenRoute extends Component<TokenRouteProps> {
       if (this._alert) {
         this._alert.dismiss();
       }
-      this._alert = JuiModal.alert({
+      this._alert = Dialog.alert({
         content,
         title: t('signInFailedTitle'),
         onOK: () => {
