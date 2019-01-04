@@ -7,10 +7,13 @@ import MuiListItemAvatar, {
   ListItemAvatarProps as MuiListItemAvatarProps,
 } from '@material-ui/core/ListItemAvatar';
 import styled from '../../foundation/styled-components';
+import { spacing } from 'src/foundation/utils';
 
 type JuiListItemAvatarProps = MuiListItemAvatarProps;
 
-const JuiListItemAvatar = styled(MuiListItemAvatar)``;
+const JuiListItemAvatar = styled(MuiListItemAvatar)`
+  margin-right: ${spacing(2)};
+`;
 
 JuiListItemAvatar.displayName = 'JuiListItemAvatar';
 
