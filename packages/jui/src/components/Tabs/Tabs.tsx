@@ -14,14 +14,14 @@ import RootRef from '@material-ui/core/RootRef';
 import { JuiTabProps } from './Tab';
 
 type States = {
-  value: number;
-  open: boolean;
-  indexTabItems: number[];
-  indexMenuItems: number[]; // length > 0, has more tab
+  openMenu: boolean;
+  indexSelected: number;
+  indexTabs: number[];
+  indexMenus: number[]; // length > 0, has more tab
 };
 
 type Props = {
-  defaultActiveValue: number;
+  defaultActiveIndex: number;
   children: JSX.Element[];
 };
 
@@ -39,7 +39,7 @@ const MORE = 'MORE';
 
 const STYLE: React.CSSProperties = {
   position: 'absolute',
-  right: '0px',
+  right: 0,
 };
 
 class JuiTabs extends PureComponent<Props, States> {
@@ -58,7 +58,7 @@ class JuiTabs extends PureComponent<Props, States> {
     super(props);
     this._tabRefs = React.Children.map(
       props.children,
-      (child: React.ReactElement<JuiTabProps>, index: number) => {
+      (child: React.ReactElement<JuiTabProps>) => {
         this._tabTitles.push(child.props.title); // add tab title
         return React.createRef(); // add tab ref
       },
@@ -66,23 +66,23 @@ class JuiTabs extends PureComponent<Props, States> {
     this._moreRef = React.createRef();
     this._containerRef = React.createRef();
     this.state = {
-      value: props.defaultActiveValue || 0,
-      open: false,
-      indexTabItems: [],
-      indexMenuItems: [],
+      indexSelected: props.defaultActiveIndex || 0,
+      openMenu: false,
+      indexTabs: [],
+      indexMenus: [],
     };
   }
 
   componentDidMount() {
-    this.initItemsWidth();
+    this.getTabWidths();
     this._containerWidth =
       this._containerRef.current!.getBoundingClientRect().width - 16; // reduce padding
     this._moreWidth = this._moreRef.current!.getBoundingClientRect().width;
-    this.setTab();
+    this.calculateIndexTabsAndIndexMenus();
     // todo resize
   }
 
-  initItemsWidth = () => {
+  getTabWidths = () => {
     this._tabWidths = this._tabRefs.map(
       (_ref: React.RefObject<HTMLElement>) => {
         if (_ref.current) {
@@ -91,100 +91,95 @@ class JuiTabs extends PureComponent<Props, States> {
         return 0;
       },
     );
-    console.log(1111111, this._tabWidths);
   }
 
-  setTab = () => {
-    const { value } = this.state; // current selected tab index
+  calculateIndexTabsAndIndexMenus = () => {
+    const { indexSelected } = this.state; // current selected tab index
     const allTabWidth = this._tabWidths.reduce((a: number, b: number) => a + b);
-    console.log(1111111, allTabWidth);
-    console.log(1111111, this._containerWidth);
+    console.log(
+      'tabs',
+      `_tabWidths: ${this._tabWidths}`,
+      `_containerWidth: ${this._containerWidth}`,
+      `allTabWidth: ${allTabWidth}`,
+    );
+    let indexTabs: number[] = [];
+    const indexMenus: number[] = [];
     if (allTabWidth < this._containerWidth) {
-      // 0. show all tab, there is no more tab
-      const indexTabItems = this._tabWidths.map(
-        (width: number, index: number) => index,
-      );
-      this.setState({ indexTabItems, indexMenuItems: [] });
+      // 0. there is no more tab, show all tab
+      indexTabs = this._tabWidths.map((width: number, index: number) => index);
     } else {
       // 0. there must be more tab
-      const indexTabItems: number[] = [];
       // 1. add more tab width
       let sum = this._moreWidth;
       // 2. add selected tab index
-      if (sum + this._tabWidths[value] < this._containerWidth) {
-        indexTabItems.push(value);
-        sum += this._tabWidths[value];
+      if (sum + this._tabWidths[indexSelected] < this._containerWidth) {
+        indexTabs.push(indexSelected);
+        sum += this._tabWidths[indexSelected];
       }
       // 3. add order tab index
-      for (let i = 0, len = this._tabWidths.length; i < len; i++) {
-        if (i === value) {
-          continue;
-        }
-        const width = this._tabWidths[i];
-        if (sum + width < this._containerWidth) {
-          indexTabItems.push(i);
-          sum += width;
-        } else {
-          break;
-        }
-      }
-      // 5. except
-      const indexMenuItems: number[] = [];
       this._tabWidths.forEach((width: number, index: number) => {
-        if (!indexTabItems.includes(index)) {
-          indexMenuItems.push(index);
+        if (index === indexSelected) {
+          return; // continue
         }
+        if (sum + width < this._containerWidth) {
+          indexTabs.push(index); // add to tab list
+        } else {
+          indexMenus.push(index); // 4. add to menu list
+        }
+        sum += width;
       });
-      indexTabItems.sort(); // change original array
-      console.log(1111111, indexTabItems, indexMenuItems);
-      this.setState({
-        indexMenuItems,
-        indexTabItems,
-      });
+      // 5. change original array
+      indexTabs.sort();
     }
+    console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
+    this.setState({
+      indexMenus,
+      indexTabs,
+    });
   }
 
-  handleChangeTab = (event: React.MouseEvent<HTMLDivElement>, value: any) => {
-    if (value === MORE) {
+  handleChangeTab = (
+    event: React.MouseEvent<HTMLDivElement>,
+    indexSelected: any,
+  ) => {
+    if (indexSelected === MORE) {
       return;
     }
-    this.setState({ value });
+    this.setState({ indexSelected });
   }
 
   showMenuList = () => {
     this.setState({
-      open: true,
+      openMenu: true,
     });
   }
 
   hideMenuList = () => {
     this.setState({
-      open: false,
+      openMenu: false,
     });
   }
 
   handleMenuItemClick = (event: React.MouseEvent, index: number) => {
-    const { indexTabItems } = this.state;
-    const baseIndex = indexTabItems.length;
-    this.setState({ value: baseIndex + index });
+    this.setState({ indexSelected: index });
   }
 
   renderTabMoreAndMenuList = () => {
-    const { indexMenuItems, open } = this.state;
-    if (indexMenuItems.length === 0) {
+    const { indexMenus, openMenu } = this.state;
+    if (indexMenus.length === 0) {
       return null;
     }
     return (
       <JuiPopperMenu
         Anchor={this.renderTabMore}
         placement="bottom-start"
-        open={open}
+        open={openMenu}
       >
         <JuiMenuList onClick={this.hideMenuList}>
-          {indexMenuItems.map((item: number, index: number) => (
+          {indexMenus.map((item: number) => (
             <JuiMenuItem
-              key={index}
-              onClick={event => this.handleMenuItemClick(event, index)}
+              key={item}
+              onClick={event => this.handleMenuItemClick(event, item)}
             >
               {this._tabTitles[item]}
             </JuiMenuItem>
@@ -209,10 +204,10 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   renderTabItems = () => {
-    const { indexTabItems } = this.state;
-    const tabs = indexTabItems.map((item: number, index: number) => (
+    const { indexTabs } = this.state;
+    const tabs = indexTabs.map((item: number, index: number) => (
       <StyledTab
-        value={index}
+        value={item}
         label={this._tabTitles[item]}
         classes={CLASSES.tab}
         key={index}
@@ -229,7 +224,7 @@ class JuiTabs extends PureComponent<Props, States> {
     const { children } = this.props;
     const tabItems = React.Children.map(
       children,
-      (child: any, index: number) => (
+      (child: React.ReactElement<JuiTabProps>, index: number) => (
         <RootRef rootRef={this._tabRefs[index]} key={index}>
           <StyledTab
             value={index}
@@ -245,17 +240,17 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   render() {
-    const { value, indexTabItems, indexMenuItems } = this.state;
+    const { indexSelected, indexTabs, indexMenus } = this.state;
     return (
       <div ref={this._containerRef}>
         <StyledTabs
-          value={value}
+          value={indexSelected}
           onChange={this.handleChangeTab}
           indicatorColor="primary"
           textColor="primary"
           classes={CLASSES.tabs}
         >
-          {indexTabItems.length === 0 && indexMenuItems.length === 0
+          {indexTabs.length === 0 && indexMenus.length === 0
             ? this.renderInitAllTabItems()
             : this.renderTabItems()}
         </StyledTabs>
