@@ -86,7 +86,7 @@ describe('i18next-en', () => {
     expect(i18next.t('@mentions_title')).toEqual('@Mentions');
     expect(i18next.t('bookmarks_title')).toEqual('Bookmarks');
     expect(i18next.t('at')).toEqual('at');
-    expect(i18next.t('tomorrow')).toEqual('tomorrow');
+    expect(i18next.t('tomorrow')).toEqual('Tomorrow');
     expect(i18next.t('avatarnamesWithOthers', { count: 10 })).toEqual(
       ' and other 10 people',
     );
