@@ -1,9 +1,9 @@
 /*
- * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
- * @Date: 2018-12-29 16:07:41
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2019-01-03 19:44:25
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../__tests__/types.d.ts" />
+
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallObserver } from '../IRTCCallObserver';
 import { IRTCAccount } from '../../account/IRTCAccount';

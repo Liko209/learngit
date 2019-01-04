@@ -1,8 +1,9 @@
 /*
- * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
- * @Date: 2018-12-29 16:08:27
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2018-12-28 15:51:14
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { IRTCCallObserver } from './IRTCCallObserver';
 import { IRTCCallSession } from './IRTCCallSession';
 import { RTCSipCallSession } from './RTCSipCallSession';
