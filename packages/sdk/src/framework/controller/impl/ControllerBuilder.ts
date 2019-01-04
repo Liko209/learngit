@@ -13,6 +13,9 @@ import NetworkClient from '../../../api/NetworkClient';
 import { IControllerBuilder } from '../interface/IControllerBuilder';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import { IRequestController } from '../interface/IRequestController';
+import { EntityCacheController } from './EntityCacheController';
+import { IEntityCacheController } from '../interface/IEntityCacheController';
+import { EntityCacheSearchController } from './EntityCacheSearchController';
 
 class ControllerBuilder<T extends IdModel = IdModel>
   implements IControllerBuilder<T> {
@@ -39,6 +42,16 @@ class ControllerBuilder<T extends IdModel = IdModel>
     entitySourceController: IEntitySourceController<T>,
   ) {
     return new PartialModifyController<T>(entitySourceController);
+  }
+
+  buildEntityCacheController() {
+    return new EntityCacheController<T>();
+  }
+
+  buildEntityCacheSearchController(
+    entityCacheController: IEntityCacheController,
+  ) {
+    return new EntityCacheSearchController(entityCacheController);
   }
 }
 

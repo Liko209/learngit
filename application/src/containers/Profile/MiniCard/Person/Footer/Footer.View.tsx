@@ -22,7 +22,14 @@ class ProfileMiniCardPersonFooter extends Component<
 > {
   onClickMessage = () => {
     const { id } = this.props;
+<<<<<<< HEAD
     goToConversation(id);
+=======
+    const result = goToConversation({ id });
+    if (result) {
+      MiniCard.dismissProfile();
+    }
+>>>>>>> develop
   }
 
   getAriaLabelKey = () => {

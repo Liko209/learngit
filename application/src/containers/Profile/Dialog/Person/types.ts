@@ -8,7 +8,6 @@ import PersonModel from '@/store/models/Person';
 
 type ProfileDialogPersonProps = {
   id: number; // person id
-  dismiss: () => void;
 };
 
 type ProfileDialogPersonViewProps = ProfileDialogPersonProps & {

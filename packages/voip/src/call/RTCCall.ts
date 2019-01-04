@@ -1,10 +1,20 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:08:27
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IRTCCallObserver } from './IRTCCallObserver';
-import { IRTCCallSession, CALL_SESSION_STATE } from './IRTCCallSession';
+import { IRTCCallSession } from './IRTCCallSession';
 import { RTCSipCallSession } from './RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm, RTCCallFsmNotify } from './RTCCallFsm';
+import { RTCCallFsm } from './RTCCallFsm';
 import { v4 as uuid } from 'uuid';
-import { RTCCallInfo, RTCCALL_STATE } from './types';
+import {
+  RTCCallInfo,
+  RTCCALL_STATE,
+  CALL_SESSION_STATE,
+  CALL_FSM_NOTIFY,
+} from './types';
 
 class RTCCall {
   private _callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
@@ -19,21 +29,52 @@ class RTCCall {
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
   private _observer: IRTCCallObserver;
-  private _isIncomingCall: boolean = false;
+  private _isIncomingCall: boolean;
 
-  constructor(toNum: string, account: IRTCAccount, observer: IRTCCallObserver) {
-    this._callSession = new RTCSipCallSession();
-    this._fsm = new RTCCallFsm();
-    this._callInfo.toNum = toNum;
-    this._callInfo.uuid = uuid();
+  constructor(
+    isIncoming: boolean,
+    toNumber: string,
+    session: any,
+    account: IRTCAccount,
+    observer: IRTCCallObserver,
+  ) {
     this._account = account;
     this._observer = observer;
+    this._isIncomingCall = isIncoming;
+    this._callInfo.uuid = uuid();
+    this._fsm = new RTCCallFsm();
+    this._callSession = new RTCSipCallSession();
+    if (this._isIncomingCall) {
+      this.setCallSession(session);
+    } else {
+      this._callInfo.toNum = toNumber;
+      this._startOutCallFSM();
+    }
     this._prepare();
-    this._startOutCallFSM();
   }
 
   getCallState(): RTCCALL_STATE {
     return this._callState;
+  }
+
+  isIncomingCall(): boolean {
+    return this._isIncomingCall;
+  }
+
+  getCallInfo(): RTCCallInfo {
+    return this._callInfo;
+  }
+
+  answer(): void {
+    this._fsm.answer();
+  }
+
+  reject(): void {
+    this._fsm.reject();
+  }
+
+  sendToVoicemail(): void {
+    this._fsm.sendToVoicemail();
   }
 
   hangup(): void {
@@ -68,23 +109,35 @@ class RTCCall {
       this._onSessionError();
     });
     // listen fsm
-    this._fsm.on(RTCCallFsmNotify.ENTERPENDING, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_ANSWERING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTING, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_PENDING, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTING);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERCONNECTED, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTING, () => {
+      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
       this._onCallStateChange(RTCCALL_STATE.CONNECTED);
     });
-    this._fsm.on(RTCCallFsmNotify.ENTERDISCONNECTED, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
       this._onCallStateChange(RTCCALL_STATE.DISCONNECTED);
     });
-    this._fsm.on(RTCCallFsmNotify.HANGUPACTION, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
     });
-    this._fsm.on(RTCCallFsmNotify.CREATEOUTCALLSESSION, () => {
+    this._fsm.on(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION, () => {
       this._onCreateOutCallSession();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.ANSWER_ACTION, () => {
+      this._onAnswerAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.REJECT_ACTION, () => {
+      this._onRejectAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.SEND_TO_VOICEMAIL_ACTION, () => {
+      this._onSendToVoicemailAction();
     });
   }
 
@@ -101,6 +154,18 @@ class RTCCall {
     this._fsm.sessionError();
   }
   // fsm listener
+  private _onAnswerAction() {
+    this._callSession.answer();
+  }
+
+  private _onRejectAction() {
+    this._callSession.reject();
+  }
+
+  private _onSendToVoicemailAction() {
+    this._callSession.sendToVoicemail();
+  }
+
   private _onHangupAction() {
     this._callSession.hangup();
   }

@@ -4,12 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { buildContainer } from '@/base';
+import portalManager from '@/common/PortalManager';
 import { NewMessageView } from './NewMessage.View';
 import { NewMessageViewModel } from './NewMessage.ViewModel';
 
-const NewMessage = buildContainer({
+const NewMessageContainer = buildContainer({
   View: NewMessageView,
   ViewModel: NewMessageViewModel,
 });
+
+const NewMessage = portalManager.wrapper(NewMessageContainer);
 
 export { NewMessage };

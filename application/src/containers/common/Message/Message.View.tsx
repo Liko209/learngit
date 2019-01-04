@@ -16,10 +16,10 @@ class MessageView extends Component<Props> {
   }
 
   onClickMessage = async () => {
-    const { id, dismiss } = this.props;
-    const result = await goToConversation(id);
+    const { id, afterClick } = this.props;
+    const result = await goToConversation({ id });
     if (result) {
-      dismiss();
+      afterClick && afterClick();
     }
   }
 
