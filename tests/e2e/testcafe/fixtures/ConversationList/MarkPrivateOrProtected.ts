@@ -23,7 +23,7 @@ test.skip(formalName('Team admin can change team from public to private.', ['JPT
 
   const teamsSection = app.homePage.messageTab.teamsSection;
 
-  let teamId
+  let teamId;
   await h(t).withLog('Given I have a team.', async () => {
     teamId = (await loginUser.sdk.platform.createGroup({
       privacy: 'protected',
@@ -50,7 +50,7 @@ test.skip(formalName('Team admin can change team from public to private.', ['JPT
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
-  const dialog = app.homePage.messageTab.profileModal;
+  const dialog = app.homePage.profileDialog;
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
     await t.expect(dialog.getSelector('hr').exists).ok();
     await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
@@ -58,7 +58,7 @@ test.skip(formalName('Team admin can change team from public to private.', ['JPT
 
   await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
     await t.wait(2e3);
-    await dialog.clickPrivacy();
+    await dialog.clickPrivate();
     await t.wait(2e3);
     await dialog.close();
     await t.wait(2e3);
@@ -135,17 +135,16 @@ test.skip(formalName('Team admin can change team from private to public.', ['JPT
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
-  const dialog = app.homePage.messageTab.profileModal;
+  const profileDialog = app.homePage.profileDialog;
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await t.expect(dialog.getSelector('hr').exists).ok();
-    await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
+    await profileDialog.shouldBePopUp(); 
   });
 
   await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
     await t.wait(2e3);
-    await dialog.clickPrivacy();
+    await profileDialog.clickPrivate();
     await t.wait(2e3);
-    await dialog.close();
+    await profileDialog.close();
     await t.wait(2e3);
   });
 

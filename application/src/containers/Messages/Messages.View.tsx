@@ -13,7 +13,7 @@ import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversation, GoToConversationParams } from '@/common/goToConversation';
 
 import { MessagesViewProps } from './types';
 import { PostListPage } from '../PostListPage';
@@ -22,14 +22,14 @@ import { MessageRouterChangeHelper } from './helper';
 
 type State = {
   messageError: boolean;
-  retryId: number | null;
+  retryParams: GoToConversationParams | null;
 };
 
 @observer
 class MessagesViewComponent extends Component<MessagesViewProps, State> {
   state = {
     messageError: false,
-    retryId: null,
+    retryParams: null,
   };
 
   constructor(props: MessagesViewProps) {
@@ -62,15 +62,15 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
     if (state && state.error) {
       this.setState({
         messageError: true,
-        retryId: state.id,
+        retryParams: state.params,
       });
     }
   }
 
   retryMessage = () => {
-    const { retryId } = this.state;
-    if (!retryId) return;
-    goToConversation(retryId);
+    const { retryParams } = this.state;
+    if (!retryParams) return;
+    goToConversation(retryParams);
   }
 
   render() {

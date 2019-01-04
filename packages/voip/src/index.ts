@@ -1,4 +1,4 @@
 export { RTCEngine as default } from './api/RTCEngine';
-export { RTCAccount } from // IRTCAccountListener,
-// AccountState,
-'./api/RTCAccount';
+export * from './api/RTCAccount';
+export * from './api/IRTCAccountListener';
+export * from './api/types';
