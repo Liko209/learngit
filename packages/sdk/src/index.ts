@@ -7,6 +7,7 @@ import * as service from './service';
 import * as dao from './dao';
 import * as utils from './utils';
 import * as api from './api';
+import * as module from './module';
 
 export * from './framework';
 export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
@@ -21,7 +22,6 @@ registerConfigs.classes.forEach(config => container.registerClass(config));
 registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
 const sdk: Sdk = container.get(Sdk.name);
-export { GroupService } from './module/group/service/GroupService';
 export { sdk as Sdk };
-export { sdk, service, utils, dao, api };
+export { sdk, service, utils, dao, api, module };
 export { mainLogger } from 'foundation';
