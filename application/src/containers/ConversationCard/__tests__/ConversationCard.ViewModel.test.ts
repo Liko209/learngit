@@ -14,6 +14,12 @@ jest.mock('i18next', () => ({
 jest.mock('../../../store/utils');
 
 const conversationCardVM = new ConversationCardViewModel();
+
+const DAY = 24 * 3600 * 1000;
+const DATE_2019_1_4 = 1546564919703;
+const DATE_2019_1_3 = 1546564919703 - DAY;
+const DATE_2019_1_2 = 1546564919703 - 2 * DAY;
+const DATE_2019_1_5 = 1546564919703 + DAY;
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
     jest.resetAllMocks();
@@ -31,25 +37,26 @@ describe('ConversationCardViewModel', () => {
     });
   });
   describe('createTime()', () => {
-    const dateNow = 1546564919703;
-    moment().date(dateNow); // 2018/1/4 9:21 AM
-    it('should be time format when createdAt in today [JPT-701]', () => {
+    it('should be time format when createdAt is 2019/1/4 [JPT-701]', () => {
+      moment().date(DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
-        createdAt: dateNow,
+        createdAt: DATE_2019_1_4,
         creatorId: 107913219,
       });
       expect(conversationCardVM.createTime).toBe('9:21 AM');
     });
-    it('should be weekdayAndTime format when createdAt diff >= 1 && < 7 [JPT-701]', () => {
+    it('should be weekdayAndTime format when createdAt is 2019/1/3 [JPT-701]', () => {
+      moment().date(DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
-        createdAt: dateNow - 24 * 60 * 60 * 1000,
+        createdAt: DATE_2019_1_3,
         creatorId: 107913219,
       });
       expect(conversationCardVM.createTime).toBe('Fri, 9:21 AM');
     });
-    it('should be dateAndTime format when createdAt diff > 7 || < 0 [JPT-701]', () => {
+    it('should be dateAndTime format when createdAt is 2019/1/5 [JPT-701]', () => {
+      moment().date(DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
-        createdAt: dateNow + 24 * 60 * 60 * 1000,
+        createdAt: DATE_2019_1_5,
         creatorId: 107913219,
       });
       expect(conversationCardVM.createTime).toBe('Sun, 1/5/2019 9:21 AM');
