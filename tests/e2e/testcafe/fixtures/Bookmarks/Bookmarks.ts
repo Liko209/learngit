@@ -24,8 +24,8 @@ test(formalName('Jump to post position when click button or clickable area of po
     const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
     const bookmarkPage = app.homePage.messageTab.bookmarkPage;
 
-    let verifyTextTeam = 'First Bookmarks in Team';
-    let verifyTextChat = 'First Bookmarks in pvChat';
+    let verifyTextTeam = uuid();
+    let verifyTextChat = uuid();
 
     let teamId, pvChatId, bookmarksPostTeamId, bookmarksPostChatId;
     await h(t).withLog('Given I have 1 Bookmarks post in team ,one in group', async () => {
@@ -49,11 +49,11 @@ test(formalName('Jump to post position when click button or clickable area of po
 
       await h(t).platform(otherUser).init();
       bookmarksPostTeamId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextTeam + `, (${loginUser.rcId})`,
+        verifyTextTeam,
         teamId,
       );
       bookmarksPostChatId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextChat + `, (${loginUser.rcId})`,
+        verifyTextChat,
         pvChatId,
       );
 

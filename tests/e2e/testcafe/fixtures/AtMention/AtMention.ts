@@ -344,8 +344,8 @@ test(formalName('Jump to post position when click button or clickable area of po
     const postMentionPage = app.homePage.messageTab.mentionPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
 
-    let verifyTextTeam = 'First AtMention in Team';
-    let verifyTextChat = 'First AtMention in pvChat';
+    let verifyTextTeam = uuid();
+    let verifyTextChat = uuid();
 
     let teamId, pvChatId, atMentionTeamPostId, atMentionChatPostId;
     await h(t).withLog('Given I have 1 AtMention post in team ,one in group', async () => {
@@ -364,11 +364,11 @@ test(formalName('Jump to post position when click button or clickable area of po
       await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       atMentionTeamPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextTeam + `, ![:Person](${loginUser.rcId})`,
+        `${verifyTextTeam}, ![:Person](${loginUser.rcId})`,
         teamId,
       );
       atMentionChatPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextChat + `, ![:Person](${loginUser.rcId})`,
+        `${verifyTextChat}, ![:Person](${loginUser.rcId})`,
         pvChatId,
       );
 
