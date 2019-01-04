@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { t } from 'i18next';
+import _ from 'lodash';
 
 function getDateMessage(
   timestamp: any,
@@ -40,9 +41,9 @@ const WEEKDAY = [
   'Saturday',
   'Sunday',
 ];
-
-const formDataReturn = {
-  time: (m: any) => {
+type Moment = moment.Moment;
+const dateFormatter = {
+  localTime: (m: Moment) => {
     return m.format('LT');
   },
   today: () => {
@@ -51,46 +52,48 @@ const formDataReturn = {
   yesterday: () => {
     return t('yesterday');
   },
-  weekday: (m: any) => {
+  weekday: (m: Moment) => {
     const date = new Date(m.format());
     return t(WEEKDAY[date.getDay()]);
   },
-  date: (m: any) => {
-    return `${formDataReturn.weekday(m).slice(0, 3)}, ${m.format('l')}`;
+  exactDate: (m: Moment) => {
+    return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
   },
-  weekdayAndTime: (m: any) => {
-    return `${formDataReturn.weekday(m).slice(0, 3)}, ${formDataReturn.time(
+  weekdayAndTime: (m: Moment) => {
+    return `${dateFormatter.weekday(m).slice(0, 3)}, ${dateFormatter.localTime(
       m,
     )}`;
   },
-  dateAndTime: (m: any) => {
-    return `${formDataReturn.date(m)} ${formDataReturn.time(m)}`;
+  dateAndTime: (m: Moment) => {
+    return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
   },
 };
 
-const formDataCondition = {
-  today: (diff: number) => {
+const condition = {
+  isZero: (diff: number) => {
     return diff === 0;
   },
-  yesterday: (diff: number) => {
+  isOne: (diff: number) => {
     return diff === 1;
   },
-  formTwoToSeven: (diff: number) => {
-    return diff < 7 && diff > 1;
+  fromTwoToSix: (diff: number) => {
+    return _.inRange(diff, 2, 6);
   },
-  formOneToSeven: (diff: number) => {
-    return diff < 7 && diff >= 1;
+  fromOneToSix: (diff: number) => {
+    return _.inRange(diff, 1, 6);
   },
-  overSevenOrFuture: (diff: number) => {
-    return diff >= 7 || diff < 0;
+  overSevenOrLessZero: (diff: number) => {
+    return 0 > diff || diff >= 7;
   },
-  unRecentlyTwoDay: (diff: number) => {
+  overOne: (diff: number) => {
     return diff > 1;
   },
 };
 
-function formDate(conditionKey: string[], returnKey: string[]): Function {
-  return function (timestamp: any): string {
+function buildFormatter(
+  buildCondition: { condition: Function; formatter: Function }[],
+): Function {
+  return function (timestamp: Date): string {
     const mInit = moment(timestamp);
     const m = moment(timestamp)
       .hour(0)
@@ -104,9 +107,9 @@ function formDate(conditionKey: string[], returnKey: string[]): Function {
       .millisecond(0);
     const diff = now.diff(m, 'days', true);
     let formatDate = '';
-    conditionKey.some((v, i) => {
-      if (formDataCondition[v](diff)) {
-        formatDate = formDataReturn[returnKey[i]](mInit);
+    buildCondition.some((v, i) => {
+      if (v.condition(diff)) {
+        formatDate = v.formatter(mInit);
         return true;
       }
       return false;
@@ -115,28 +118,58 @@ function formDate(conditionKey: string[], returnKey: string[]): Function {
   };
 }
 
-const recentlyTwoDayAndOther = formDate(
-  ['today', 'yesterday', 'unRecentlyTwoDay'],
-  ['today', 'yesterday', 'date'],
-);
+const recentlyTwoDayAndOther = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.today,
+  },
+  {
+    condition: condition.isOne,
+    formatter: dateFormatter.yesterday,
+  },
+  {
+    condition: condition.overOne,
+    formatter: dateFormatter.exactDate,
+  },
+]);
 
-const dividerTimestamp = formDate(
-  ['today', 'yesterday', 'formTwoToSeven', 'overSevenOrFuture'],
-  ['today', 'yesterday', 'weekday', 'date'],
-);
+const dividerTimestamp = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.today,
+  },
+  {
+    condition: condition.isOne,
+    formatter: dateFormatter.yesterday,
+  },
+  {
+    condition: condition.fromTwoToSix,
+    formatter: dateFormatter.weekday,
+  },
+  {
+    condition: condition.overSevenOrLessZero,
+    formatter: dateFormatter.exactDate,
+  },
+]);
 
-const postTimestamp = formDate(
-  ['today', 'formOneToSeven', 'overSevenOrFuture'],
-  ['time', 'weekdayAndTime', 'dateAndTime'],
-);
+const postTimestamp = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.localTime,
+  },
+  {
+    condition: condition.fromOneToSix,
+    formatter: dateFormatter.weekdayAndTime,
+  },
+  {
+    condition: condition.overSevenOrLessZero,
+    formatter: dateFormatter.dateAndTime,
+  },
+]);
 
 export {
   getDateMessage,
-  formDate,
   recentlyTwoDayAndOther,
-  formDataCondition,
-  formDataReturn,
-  WEEKDAY,
   dividerTimestamp,
   postTimestamp,
 };

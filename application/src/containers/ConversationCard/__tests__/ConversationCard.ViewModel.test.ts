@@ -13,16 +13,6 @@ jest.mock('i18next', () => ({
 
 jest.mock('../../../store/utils');
 
-const WEEKDAY = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
 const conversationCardVM = new ConversationCardViewModel();
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
@@ -41,39 +31,28 @@ describe('ConversationCardViewModel', () => {
     });
   });
   describe('createTime()', () => {
+    const dateNow = 1546564919703;
+    moment().date(dateNow); // 2018/1/4 9:21 AM
     it('should be time format when createdAt in today [JPT-701]', () => {
       (getEntity as jest.Mock).mockReturnValue({
-        createdAt: Date.now(),
+        createdAt: dateNow,
         creatorId: 107913219,
       });
-      expect(conversationCardVM.createTime).toBe(
-        moment(conversationCardVM.post.createdAt).format('LT'),
-      );
+      expect(conversationCardVM.createTime).toBe('9:21 AM');
     });
     it('should be weekdayAndTime format when createdAt diff >= 1 && < 7 [JPT-701]', () => {
       (getEntity as jest.Mock).mockReturnValue({
-        createdAt: Date.now() - 24 * 60 * 60 * 1000,
+        createdAt: dateNow - 24 * 60 * 60 * 1000,
         creatorId: 107913219,
       });
-      const dateMoment = moment(conversationCardVM.post.createdAt);
-      const days = new Date(conversationCardVM.post.createdAt).getDay();
-      expect(conversationCardVM.createTime).toBe(
-        `${WEEKDAY[days].slice(0, 3)}, ${dateMoment.format('LT')}`,
-      );
+      expect(conversationCardVM.createTime).toBe('Fri, 9:21 AM');
     });
     it('should be dateAndTime format when createdAt diff > 7 || < 0 [JPT-701]', () => {
       (getEntity as jest.Mock).mockReturnValue({
-        createdAt: Date.now() + 24 * 60 * 60 * 1000,
+        createdAt: dateNow + 24 * 60 * 60 * 1000,
         creatorId: 107913219,
       });
-
-      const dateMoment = moment(conversationCardVM.post.createdAt);
-      const days = new Date(conversationCardVM.post.createdAt).getDay();
-      expect(conversationCardVM.createTime).toBe(
-        `${WEEKDAY[days].slice(0, 3)}, ${dateMoment.format(
-          'l',
-        )} ${dateMoment.format('LT')}`,
-      );
+      expect(conversationCardVM.createTime).toBe('Sun, 1/5/2019 9:21 AM');
     });
   });
   it('creator()', () => {

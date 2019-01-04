@@ -35,26 +35,23 @@ describe('TimeNodeDividerViewModel', () => {
   });
 
   describe('createTime()', () => {
+    const dateNow = 1546564919703;
+    moment().date(dateNow);
     it('should be today when createdAt in today. [JPT-701]', () => {
-      timeNodeDividerViewModel.props.value = Date.now();
+      timeNodeDividerViewModel.props.value = dateNow;
       expect(timeNodeDividerViewModel.text).toBe('today');
     });
     it('should be yesterday when createdAt in yesterday. [JPT-701]', () => {
-      timeNodeDividerViewModel.props.value = Date.now() - 24 * 3600 * 1000;
+      timeNodeDividerViewModel.props.value = dateNow - 24 * 3600 * 1000;
       expect(timeNodeDividerViewModel.text).toBe('yesterday');
     });
     it('should be Weekday format when createdAt diff > 7 && < 1. [JPT-701]', () => {
-      timeNodeDividerViewModel.props.value = Date.now() - 24 * 3600 * 1000 * 2;
-      const days = new Date(timeNodeDividerViewModel.props.value).getDay();
-      expect(timeNodeDividerViewModel.text).toBe(WEEKDAY[days]);
+      timeNodeDividerViewModel.props.value = dateNow - 24 * 3600 * 1000 * 2;
+      expect(timeNodeDividerViewModel.text).toBe('Thursday');
     });
     it('should be date format when createdAt diff > 7 || < 0. [JPT-701]', () => {
-      timeNodeDividerViewModel.props.value = Date.now() + 24 * 3600 * 1000;
-      const days = new Date(timeNodeDividerViewModel.props.value).getDay();
-      const dateMoment = moment(timeNodeDividerViewModel.props.value);
-      expect(timeNodeDividerViewModel.text).toBe(
-        `${WEEKDAY[days].slice(0, 3)}, ${dateMoment.format('l')}`,
-      );
+      timeNodeDividerViewModel.props.value = dateNow + 24 * 3600 * 1000;
+      expect(timeNodeDividerViewModel.text).toBe('Sun, 1/5/2019');
     });
   });
 
