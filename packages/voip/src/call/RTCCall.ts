@@ -89,19 +89,15 @@ class RTCCall {
   }
 
   startRecord(): void {
-    if (!this._isRecording) {
-      this._fsm.startRecord();
-    } else {
-      this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
-    }
+    this._isRecording
+      ? this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD)
+      : this._fsm.startRecord();
   }
 
   stopRecord(): void {
-    if (!this._isRecording) {
-      this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
-    } else {
-      this._fsm.stopRecord();
-    }
+    this._isRecording
+      ? this._fsm.stopRecord()
+      : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
   }
 
   onAccountReady(): void {
