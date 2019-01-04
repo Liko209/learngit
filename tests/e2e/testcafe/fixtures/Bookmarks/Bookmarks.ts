@@ -321,12 +321,10 @@ test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page
   let message = uuid(), newPostId;
   await h(t).withLog('And I received new message', async () => {
     newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(message, teamId);
-    // Wait for the post sent 
-    await t.wait(5e3);
   });
 
   await h(t).withLog('Then I can\'t find the posts in the bookmarks page', async () => {
-    await t.expect(bookmarkPage.postItemById(newPostId).exists).notOk();
+    await t.expect(bookmarkPage.postItemById(newPostId).exists).notOk({timeout: 10e3});
   }, true);
 
 },);
