@@ -89,6 +89,7 @@ describe('MessageRouterChangeHelper', () => {
         source: 'leftRail',
       },
     };
+    MessageRouterChangeHelper.isIndexDone = true;
   });
   afterEach(() => {
     // jest.clearAllMocks();
