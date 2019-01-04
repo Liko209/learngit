@@ -3,12 +3,12 @@
  * @Date: 2018-04-16 09:35:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { daoManager } from '../../dao';
-import ItemDao from '../../dao/item';
-import { ENTITY } from '../../service/eventKey';
-import { transform, baseHandleData } from '../utils';
-import { Item } from '../../module/item/entity';
-import { Raw } from '../../framework/model';
+import { daoManager } from '../../../dao';
+import ItemDao from '../../../dao/item';
+import { ENTITY } from '../../../service/eventKey';
+import { transform, baseHandleData } from '../../../service/utils';
+import { Item } from '../entity';
+import { Raw } from '../../../framework/model';
 
 const itemHandleData = async (items: Raw<Item>[]) => {
   if (items.length === 0) {

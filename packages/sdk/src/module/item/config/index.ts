@@ -4,6 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SubItemServiceRegister } from "./SubItemServiceRegister";
+import { SubItemServiceRegister } from './SubItemServiceRegister';
 
 export { SubItemServiceRegister };

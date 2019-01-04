@@ -13,9 +13,9 @@ import {
 import {
   PostService,
   GroupConfigService,
-  ItemService,
   notificationCenter,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';

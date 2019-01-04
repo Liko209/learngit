@@ -81,56 +81,6 @@ describe('ItemService', () => {
     });
   });
 
-  describe('getNoteById()', () => {
-    const itemDao = {
-      get: jest.fn(),
-    };
-    const rawData = {
-      _id: 1,
-      body: 'body',
-      title: 'title',
-    };
-    const transformedData = {
-      id: 1,
-      body: 'body',
-      title: 'title',
-    };
-
-    beforeAll(() => {
-      handleData.mockClear();
-      daoManager.getDao = jest.fn().mockReturnValue(itemDao);
-      ItemAPI.getNote = jest
-        .fn()
-        .mockResolvedValue(new ApiResultOk(rawData, 200, {}));
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should return local data if found', async () => {
-      itemDao.get.mockResolvedValue(transformedData);
-      const ret = await itemService.getNoteById(1);
-      expect(ItemAPI.getNote).not.toHaveBeenCalled();
-      expect(handleData).not.toHaveBeenCalled();
-      expect(ret).toEqual(transformedData);
-    });
-
-    it('should call related api if local not found', async () => {
-      itemDao.get.mockResolvedValue(null);
-      const ret = await itemService.getNoteById(1);
-      expect(ItemAPI.getNote).toHaveBeenCalled();
-      expect(handleData).toHaveBeenCalled();
-      expect(ret).toEqual(transformedData);
-    });
-
-    it('should return null if response data not exists', async () => {
-      itemDao.get.mockResolvedValue(null);
-      ItemAPI.getNote.mockResolvedValue(new ApiResultOk(null, 200, {}));
-      const ret = await itemService.getNoteById(1);
-      expect(ret).toBeNull();
-    });
-  });
   describe('doNotRenderLink', () => {
     const rawData = {
       do_not_render: true,

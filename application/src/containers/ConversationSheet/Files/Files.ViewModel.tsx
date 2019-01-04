@@ -13,11 +13,11 @@ import { ENTITY_NAME } from '@/store';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
   PostService,
-  ItemService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';

@@ -5,3 +5,4 @@
  */
 
 export { default as ProgressService, PROGRESS_STATUS } from './progress';
+export { default as ItemService } from './item';

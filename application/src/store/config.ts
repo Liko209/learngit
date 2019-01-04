@@ -3,7 +3,6 @@ import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 
 const {
   PersonService,
-  ItemService,
   CompanyService,
   GroupService,
   GroupConfigService,
@@ -13,6 +12,8 @@ const {
   ProfileService,
   ENTITY,
 } = service;
+
+const { ItemService } = module;
 
 const { ProgressService } = module;
 

@@ -15,7 +15,7 @@ import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import groupHandleData from '../group/handleData';
-import itemHandleData from '../item/handleData';
+import itemHandleData from '../../module/item/service/handleData';
 import notificationCenter from '../notificationCenter';
 import personHandleData from '../person/handleData';
 import postHandleData from '../post/handleData';

@@ -1,36 +1,49 @@
 /*
- * @Author: Jerry Cai (jerry.cai@ringcentral.com)
- * @Date: 2018-12-05 09:30:00
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-03 16:52:19
+ * Copyright © RingCentral. All rights reserved.
  */
+
 import _ from 'lodash';
-import { NETWORK_FAIL_TYPE, mainLogger } from 'foundation';
-import { Progress } from '../../module/progress';
-import { Raw } from '../../framework/model';
-import { StoredFile, ItemFile, Item } from '../../module/item/entity';
-import AccountService from '../account';
-import ItemAPI, { RequestHolder } from '../../api/glip/item';
-import { AmazonFileUploadPolicyData } from '../../api/glip/types';
-import { transform } from '../utils';
-import { versionHash } from '../../utils/mathUtils';
-import { daoManager } from '../../dao';
-import ItemDao from '../../dao/item';
-import { BaseError } from '../../utils';
-import { ApiResult, ApiResultErr } from '../../api/ApiResult';
-import notificationCenter from '../notificationCenter';
-import { ENTITY, SERVICE } from '../eventKey';
-import { FILE_FORM_DATA_KEYS } from './constants';
-import { ItemFileUploadStatus } from './itemFileUploadStatus';
-import { ItemService } from './itemService';
-import { PROGRESS_STATUS } from '../../module';
-import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
-import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
+import { mainLogger } from 'foundation';
+import { Progress, PROGRESS_STATUS } from '../../../../progress';
+import { Raw } from '../../../../../framework/model';
+import { StoredFile, ItemFile } from '../../../entity';
+import ItemAPI, { RequestHolder } from '../../../../../api/glip/item';
+import { AmazonFileUploadPolicyData } from '../../../../../api/glip/types';
+import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
+import { versionHash } from '../../../../../utils/mathUtils';
+import { FILE_FORM_DATA_KEYS } from '../constants';
+import {
+  isInBeta,
+  EBETA_FLAG,
+} from '../../../../../service/account/clientConfig';
+import { ENTITY, SERVICE } from '../../../../../service';
+import notificationCenter from '../../../../../service/notificationCenter';
+import AccountService from '../../../../../service/account';
+import { daoManager, ItemDao } from '../../../../../dao';
+import { transform } from '../../../../../service/utils';
+import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
 
-class ItemFileUploadHandler {
+type ItemFileUploadStatus = {
+  progress: Progress;
+  requestHolder: RequestHolder;
+  itemFile?: ItemFile;
+  file?: File;
+};
+
+class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
+
+  constructor(
+    private _partialModifyController: IPartialModifyController<ItemFile>,
+    private _fileRequestController: IRequestController<ItemFile>,
+  ) {}
 
   async sendItemFile(
     groupId: number,
@@ -178,7 +191,7 @@ class ItemFileUploadHandler {
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
   }
 
-  async canResendFailedFile(itemId: number) {
+  async hasValidItemFile(itemId: number) {
     let canResend = false;
     if (itemId < 0) {
       const itemDao = daoManager.getDao(ItemDao);
@@ -209,7 +222,7 @@ class ItemFileUploadHandler {
     let sendFailed = false;
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
-      const isUpdate = itemInDB.is_new;
+      const isUpdate = this._isUpdateItem(itemInDB);
       if (this._hasValidStoredFile(itemInDB)) {
         await this._uploadItem(groupId, itemInDB, isUpdate);
       } else {
@@ -305,7 +318,7 @@ class ItemFileUploadHandler {
     return result;
   }
 
-  public async getUpdateItemVersion(itemFile: ItemFile) {
+  public async getFileVersion(itemFile: ItemFile) {
     let versionNumber = 0;
     if (itemFile) {
       if (itemFile.id > 0) {
@@ -374,7 +387,10 @@ class ItemFileUploadHandler {
       newFormFile.append(val, storedPostForm[val]);
     });
 
-    newFormFile.append(FILE_FORM_DATA_KEYS.CONTENT_TYPE, file.type);
+    newFormFile.append(
+      FILE_FORM_DATA_KEYS.CONTENT_TYPE,
+      this._getFileType(file),
+    );
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
   }
@@ -384,7 +400,7 @@ class ItemFileUploadHandler {
       size: file.size,
       filename: file.name,
       for_file_type: true,
-      filetype: file.type,
+      filetype: this._getFileType(file),
     });
   }
 
@@ -415,10 +431,10 @@ class ItemFileUploadHandler {
           preInsertItem,
         );
       } else {
-        this._handleItemFileSendFailed(itemId, uploadResponse);
+        this._handleItemFileSendFailed(itemId);
       }
     } else {
-      this._handleItemFileSendFailed(itemId, policyResponse);
+      this._handleItemFileSendFailed(itemId);
     }
   }
 
@@ -446,7 +462,7 @@ class ItemFileUploadHandler {
         preInsertItem,
       );
     } else {
-      this._handleItemFileSendFailed(preInsertItem.id, uploadRes);
+      this._handleItemFileSendFailed(preInsertItem.id);
       mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
     }
   }
@@ -481,22 +497,19 @@ class ItemFileUploadHandler {
       );
     }
 
-    let result: ApiResult<Raw<ItemFile>, BaseError> | undefined = undefined;
-    if (existItemFile) {
-      result = await this._updateItem(existItemFile, preInsertItem);
-    } else {
-      result = await this._newItem(groupId, preInsertItem);
-    }
-
-    if (result && result.isOk()) {
-      const data = result.unwrap();
-      const fileItem = transform<ItemFile>(data);
-      this._handleItemUploadSuccess(preInsertItem, fileItem);
-    } else {
-      this._handleItemFileSendFailed(preInsertItem.id, result as ApiResultErr<
-        ItemFile
-      >);
-      mainLogger.warn(`_uploadItem error =>${result}`);
+    try {
+      let result: ItemFile | undefined = undefined;
+      if (existItemFile) {
+        result = await this._updateItem(existItemFile, preInsertItem);
+      } else {
+        result = await this._newItem(groupId, preInsertItem);
+      }
+      if (result) {
+        const fileItem = transform<ItemFile>(result);
+        this._handleItemUploadSuccess(preInsertItem, fileItem);
+      }
+    } catch (error) {
+      this._handleItemFileSendFailed(preInsertItem.id);
     }
   }
 
@@ -513,11 +526,25 @@ class ItemFileUploadHandler {
 
     await itemDao.update(preInsertItem);
     const itemId = preInsertItem.id;
-    await this._partialUpdateItemFile({
-      id: itemId,
-      _id: itemId,
-      versions: [fileVersion],
-    });
+
+    const preHandlePartial = (
+      partialPost: Partial<Raw<ItemFile>>,
+      originalPost: ItemFile,
+    ): Partial<Raw<ItemFile>> => {
+      return {
+        id: itemId,
+        _id: itemId,
+        versions: [fileVersion],
+      };
+    };
+    await this._partialModifyController.updatePartially(
+      itemId,
+      preHandlePartial,
+      async (updateModel: ItemFile) => {
+        return updateModel;
+      },
+      undefined,
+    );
     this._emitItemFileStatus(PROGRESS_STATUS.INPROGRESS, itemId, itemId);
   }
 
@@ -558,29 +585,13 @@ class ItemFileUploadHandler {
     this._emitItemFileStatus(PROGRESS_STATUS.SUCCESS, preInsertId, itemFile.id);
   }
 
-  private _handleItemFileSendFailed<T>(
-    preInsertId: number,
-    errRes?: ApiResultErr<T>,
-  ) {
-    if (errRes && errRes.response.statusText === NETWORK_FAIL_TYPE.CANCELLED) {
-      mainLogger.info(`the request has been canceled, ${errRes}`);
+  private _handleItemFileSendFailed(preInsertId: number) {
+    if (!this._progressCaches.get(preInsertId)) {
       return;
     }
-
     this._updateFileProgress(preInsertId, PROGRESS_STATUS.FAIL);
 
     this._emitItemFileStatus(PROGRESS_STATUS.FAIL, preInsertId, preInsertId);
-  }
-
-  private _partialUpdateItemFile(updateData: object) {
-    const itemService: ItemService = ItemService.getInstance();
-    itemService.handlePartialUpdate(
-      updateData,
-      undefined,
-      async (updatedItem: Item) => {
-        return updatedItem;
-      },
-    );
   }
 
   private _toFileVersion(storedFile: StoredFile) {
@@ -678,7 +689,7 @@ class ItemFileUploadHandler {
       company_id: companyId,
       name: file.name,
       type_id: 10,
-      type: file.type,
+      type: this._getFileType(file),
       versions: [{ download_url: '', size: file.size, url: '' }],
       url: '',
     };
@@ -700,7 +711,7 @@ class ItemFileUploadHandler {
       created_at: Date.now(),
       is_new: true,
     };
-    return await ItemAPI.sendFileItem(fileItemOptions);
+    return await this._fileRequestController.post(fileItemOptions);
   }
 
   private _emitItemFileStatus(
@@ -721,7 +732,7 @@ class ItemFileUploadHandler {
     existItem.modified_at = Date.now();
     existItem._id = existItem.id;
     delete existItem.id;
-    return await ItemAPI.putItem(existItem._id, 'file', existItem);
+    return await this._fileRequestController.put(existItem);
   }
 
   private async _getOldestExistFile(
@@ -752,6 +763,26 @@ class ItemFileUploadHandler {
   deleteFileCache(id: number) {
     this._progressCaches.delete(id);
   }
+
+  private _getFileType(file: File) {
+    if (file.type && file.type.length > 0) {
+      return file.type;
+    }
+    return this._extractFileType(file.name);
+  }
+
+  private _extractFileType(fileName: string) {
+    let type: string = '';
+    if (fileName) {
+      const arr = fileName.split('/');
+      if (arr && arr.length > 0) {
+        const name = arr[arr.length - 1];
+        const seArr = name.split('.');
+        type = seArr[seArr.length - 1];
+      }
+    }
+    return type;
+  }
 }
 
-export { ItemFileUploadHandler };
+export { FileUploadController, ItemFileUploadStatus };

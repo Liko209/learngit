@@ -7,7 +7,7 @@ import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
 import { baseHandleData } from '../post/handleData';
-import itemHandleData from '../item/handleData';
+import itemHandleData from '../../module/item/service/handleData';
 import { mainLogger } from 'foundation';
 import StateService from '../state';
 

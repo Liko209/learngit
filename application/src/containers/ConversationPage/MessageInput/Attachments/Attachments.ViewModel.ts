@@ -14,12 +14,13 @@ import {
 } from './types';
 
 import {
-  ItemService,
   PostService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+
+import { ItemService } from 'sdk/module';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';

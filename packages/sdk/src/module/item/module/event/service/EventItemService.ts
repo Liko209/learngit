@@ -5,6 +5,7 @@
  */
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
+import { Item } from '../../../entity';
 
 class EventItemService extends EntityBaseService implements ISubItemService {
   constructor() {
@@ -21,7 +22,7 @@ class EventItemService extends EntityBaseService implements ISubItemService {
     return [];
   }
 
-  updateItem(): void {}
+  updateItem(item: Item) {}
 }
 
 export { EventItemService };

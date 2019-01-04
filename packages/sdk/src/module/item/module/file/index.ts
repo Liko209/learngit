@@ -4,5 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { FileItemService } from './FileItemService';
+import { FileItemService } from './service/FileItemService';
 export { FileItemService };

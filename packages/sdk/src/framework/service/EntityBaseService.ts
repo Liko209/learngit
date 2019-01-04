@@ -8,15 +8,43 @@ import { AbstractService } from './AbstractService';
 import { IdModel } from '../model';
 import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
 import { container } from '../../container';
+import { SubscribeController } from '../controller/impl/SubscribeController';
+import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
 
-class EntityBaseService<
-  T extends IdModel = IdModel
-> extends AbstractService {
+class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
+  private _subscribeController: SubscribeController;
+  private entitySourceController: IEntitySourceController<T>;
   constructor() {
     super();
   }
-  protected onStarted() {}
-  protected onStopped() {}
+
+  setEntitySource(sourceController: IEntitySourceController<T>) {
+    this.entitySourceController = sourceController;
+  }
+
+  doSubscribe(subscriptions: object) {
+    this._subscribeController = this.getControllerBuilder().buildSubscriptionController(
+      subscriptions,
+    );
+  }
+
+  protected onStarted() {
+    if (this._subscribeController) {
+      this._subscribeController.subscribe();
+    }
+  }
+  protected onStopped() {
+    if (this._subscribeController) {
+      this._subscribeController.unsubscribe();
+    }
+  }
+
+  getById(id: number): Promise<T | null> | T | null {
+    if (this.entitySourceController) {
+      return Promise.resolve(this.entitySourceController.getEntity(id));
+    }
+    throw new Error('entitySourceController is null');
+  }
 
   getControllerBuilder() {
     return new ControllerBuilder<T>();

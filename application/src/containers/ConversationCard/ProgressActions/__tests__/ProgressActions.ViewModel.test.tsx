@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PostService, ItemService } from 'sdk/service';
+import { PostService } from 'sdk/service';
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 import { getEntity } from '../../../../store/utils';
 import { Notification } from '@/containers/Notification';
-import { PROGRESS_STATUS } from 'sdk/module';
+import { PROGRESS_STATUS, ItemService } from 'sdk/module';
 
 jest.mock('../../../../store/utils');
 jest.mock('sdk/service');
+jest.mock('sdk/module/item');
 jest.mock('@/containers/Notification');
 
 Notification.flashToast = jest.fn();

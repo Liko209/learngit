@@ -7,6 +7,7 @@
 import { EntitySourceController } from './EntitySourceController';
 import { daoManager, BaseDao, DeactivatedDao } from '../../../dao';
 import { RequestController } from './RequestController';
+import { SubscribeController } from './SubscribeController';
 import { PartialModifyController } from './PartialModifyController';
 import { IdModel } from '../../model';
 import NetworkClient from '../../../api/NetworkClient';
@@ -53,6 +54,13 @@ class ControllerBuilder<T extends IdModel = IdModel>
   ) {
     return new EntityCacheSearchController(entityCacheController);
   }
-}
 
+  buildSubscriptionController(subscriptions: Object) {
+    return new SubscribeController(subscriptions);
+  }
+
+  static getControllerBuilder<T extends IdModel = IdModel>() {
+    return new ControllerBuilder<T>();
+  }
+}
 export { ControllerBuilder };

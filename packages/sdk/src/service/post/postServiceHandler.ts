@@ -13,7 +13,7 @@ import { Markdown } from 'glipdown';
 import { Post, PostItemData } from '../../module/post/entity';
 import { ItemFile } from '../../module/item/entity';
 import { RawPostInfo } from './types';
-import ItemService from '../item';
+import { ItemService } from '../../module';
 import { GlipTypeUtil, TypeDictionary } from '../../utils';
 
 // global_url_regex

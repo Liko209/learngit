@@ -12,6 +12,7 @@ import { IRequestController } from './IRequestController';
 import { IPartialModifyController } from './IPartialModifyController';
 import { IEntityCacheController } from './IEntityCacheController';
 import { IEntityCacheSearchController } from './IEntityCacheSearchController';
+import { ISubscribeController } from './ISubscribeController';
 
 interface IControllerBuilder<T extends IdModel = IdModel> {
   buildEntitySourceController(
@@ -33,6 +34,8 @@ interface IControllerBuilder<T extends IdModel = IdModel> {
   buildEntityCacheSearchController(
     entityCacheController: IEntityCacheController,
   ): IEntityCacheSearchController;
+
+  buildSubscriptionController(subscriptions: Object): ISubscribeController;
 }
 
 export { IControllerBuilder };

@@ -9,8 +9,7 @@ import { daoManager, PostDao, GroupConfigDao } from '../../dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
-import ItemService from '../../service/item';
-import itemHandleData from '../../service/item/handleData';
+import itemHandleData from '../../module/item/service/handleData';
 import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
@@ -26,9 +25,10 @@ import { mainLogger, err, Result } from 'foundation';
 import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
+import { PROGRESS_STATUS } from '../../module/progress/entity';
 import GroupConfigService from '../groupConfig';
 import ProgressService from '../../module/progress';
-import { PROGRESS_STATUS } from '../../module/progress/entity';
+import ItemService from '../../module/item';
 
 interface IPostResult {
   posts: Post[];

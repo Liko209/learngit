@@ -15,8 +15,8 @@ class ProgressCacheController {
     this._progressCache = new Map();
   }
 
-  getProgress(id: number): Progress | undefined {
-    return this._progressCache.get(id);
+  getProgress(id: number): Progress | null {
+    return this._progressCache.get(id) || null;
   }
 
   addProgress(id: number, progress: Progress) {

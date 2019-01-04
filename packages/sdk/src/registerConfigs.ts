@@ -20,7 +20,7 @@ import AuthService from './service/auth';
 import CompanyService from './service/company';
 import ConfigService from './service/config';
 import GroupService from './service/group';
-import ItemService from './service/item';
+import ItemService from './module/item';
 import PersonService from './service/person';
 import PostService from './service/post';
 import PresenceService from './service/presence';

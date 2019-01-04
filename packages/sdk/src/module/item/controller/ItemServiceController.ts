@@ -6,17 +6,44 @@
 
 import { ISubItemService } from '../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../config';
+import { ItemActionController } from './ItemActionController';
+import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { Item } from '../entity';
+import { Api } from '../../../api';
+import { daoManager, ItemDao } from '../../../dao';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
-
-  constructor() {
+  private _itemActionController: ItemActionController;
+  constructor(private _controllerBuilder: IControllerBuilder<Item>) {
     this._subItemServices = SubItemServiceRegister.buildSubItemServices();
   }
 
   getSubItemService(typeId: number) {
-    return this._subItemServices.get(typeId);
+    return this._subItemServices.get(typeId) as ISubItemService;
+  }
+
+  get itemActionController() {
+    if (!this._itemActionController) {
+      const requestController = this._controllerBuilder.buildRequestController({
+        basePath: '/item',
+        networkClient: Api.glipNetworkClient,
+      });
+
+      const entitySourceController = this._controllerBuilder.buildEntitySourceController(
+        daoManager.getDao(ItemDao),
+        requestController,
+      );
+
+      const partialModifyController = this._controllerBuilder.buildPartialModifyController(
+        entitySourceController,
+      );
+
+      this._itemActionController = new ItemActionController(
+        partialModifyController,
+      );
+    }
+    return this._itemActionController;
   }
 
   async getItems(

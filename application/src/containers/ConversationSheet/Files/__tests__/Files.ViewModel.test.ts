@@ -5,13 +5,12 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
-import { service } from 'sdk';
+import { ItemService } from 'sdk/module';
 jest.mock('../../../../store/utils');
 // import ItemModel from '@/store/models/Item';
 // import { FileType } from '../types';
 import { FileType } from '../types';
 
-const { ItemService } = service;
 ItemService.getInstance = jest.fn().mockReturnValue({});
 
 const filesItemVM = new FilesViewModel();

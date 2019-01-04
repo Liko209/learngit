@@ -5,7 +5,7 @@
  */
 
 import { EventItemService } from '../module/event/service';
-import { FileItemService } from '../module/file/service';
+import { FileItemService } from '../module/file';
 import { TaskItemService } from '../module/task/service';
 import { NoteItemService } from '../module/note/service';
 import { LinkItemService } from '../module/link/service';
