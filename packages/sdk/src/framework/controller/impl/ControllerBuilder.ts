@@ -8,13 +8,13 @@ import { EntitySourceController } from './EntitySourceController';
 import { daoManager, BaseDao, DeactivatedDao } from '../../../dao';
 import { RequestController } from './RequestController';
 import { PartialModifyController } from './PartialModifyController';
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../model';
 import NetworkClient from '../../../api/NetworkClient';
 import { IControllerBuilder } from '../interface/IControllerBuilder';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import { IRequestController } from '../interface/IRequestController';
 
-class ControllerBuilder<T extends BaseModel = BaseModel>
+class ControllerBuilder<T extends IdModel = IdModel>
   implements IControllerBuilder<T> {
   constructor() {}
   buildEntitySourceController(

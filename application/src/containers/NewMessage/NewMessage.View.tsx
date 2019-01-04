@@ -48,12 +48,9 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 
   sendNewMessage = async () => {
     const { message } = this.state;
-    const { history, newMessage, members } = this.props;
-    const result = await newMessage(members, message);
-    if (result) {
-      history.push(`/messages/${result.id}`);
-      this.onClose();
-    }
+    const { newMessage } = this.props;
+    newMessage(message);
+    this.onClose();
   }
 
   onClose = () => portalManager.dismiss();

@@ -11,7 +11,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import TaskItemModel from '@/store/models/TaskItem';
 import FileItemModel from '@/store/models/FileItem';
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { getFileType } from '../helper';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Api from '../api';
-import { Company } from '../../models';
+import { Company } from '../../module/company/entity';
 
 class CompanyAPI extends Api {
   /**

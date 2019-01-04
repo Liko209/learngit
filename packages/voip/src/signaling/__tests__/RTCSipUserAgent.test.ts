@@ -5,7 +5,7 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCSipUserAgent } from '../RTCSipUserAgent';
-import { UA_EVENT } from '../IRTCUserAgent';
+import { UA_EVENT } from '../types';
 
 describe('RTCSipUserAgent', async () => {
   describe('register', () => {
@@ -17,7 +17,6 @@ describe('RTCSipUserAgent', async () => {
         'options',
         eventEmitter,
       );
-      userAgent.register('1');
       expect(eventEmitter.emit).toHaveBeenCalledWith(UA_EVENT.REG_SUCCESS);
     });
 

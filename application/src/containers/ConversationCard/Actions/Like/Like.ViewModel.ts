@@ -8,7 +8,7 @@ import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { LikeProps, LikeViewProps } from './types';
 import { PostService } from 'sdk/service';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';

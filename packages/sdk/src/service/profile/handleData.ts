@@ -9,7 +9,8 @@ import { daoManager } from '../../dao';
 import ProfileDao from '../../dao/profile';
 import { transform } from '../../service/utils';
 import AccountService from '../account';
-import { Profile, Raw } from '../../models';
+import { Profile } from '../../module/profile/entity';
+import { Raw } from '../../framework/model';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 

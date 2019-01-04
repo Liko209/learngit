@@ -5,7 +5,8 @@
  */
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item, Post } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
+import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';

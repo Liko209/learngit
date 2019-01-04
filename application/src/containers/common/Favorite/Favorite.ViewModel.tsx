@@ -6,7 +6,7 @@
 
 import { computed, observable } from 'mobx';
 import { service } from 'sdk';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { IconButtonSize } from 'jui/components/Buttons';
 

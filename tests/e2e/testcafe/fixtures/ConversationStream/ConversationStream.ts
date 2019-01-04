@@ -226,4 +226,3 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
     await t.expect(conversationPage.nthPostItem(-1).body.withText(anotherMessage).exists).ok();
   });
 })
-

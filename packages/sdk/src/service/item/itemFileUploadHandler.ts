@@ -4,7 +4,9 @@
  */
 import _ from 'lodash';
 import { NETWORK_FAIL_TYPE, mainLogger } from 'foundation';
-import { StoredFile, ItemFile, Item, Raw, Progress } from '../../models';
+import { Progress } from '../../models';
+import { Raw } from '../../framework/model';
+import { StoredFile, ItemFile, Item } from '../../module/item/entity';
 import AccountService from '../account';
 import ItemAPI, { RequestHolder } from '../../api/glip/item';
 import { AmazonFileUploadPolicyData } from '../../api/glip/types';

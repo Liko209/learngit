@@ -1,7 +1,11 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person, PhoneNumberModel, SanitizedExtensionModel } from 'sdk/models';
+import {
+  Person,
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+} from 'sdk/module/person/entity';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,

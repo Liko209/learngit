@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 
 
 class Entry extends BaseWebComponent {
@@ -235,13 +235,13 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
-  async isExpand() {
+  get isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return this.self.child().withText('keyboard_arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
-    const isExpand = await this.isExpand();
+    const isExpand = await this.isExpand;
     if (isExpand != expand) {
       await this.t.click(this.toggleButton);
     }
@@ -343,15 +343,21 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
+  
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
+
   get conversationPage() {
     return this.getComponent(ConversationPage);
   }
 
   get mentionPage() {
     return this.getComponent(MentionPage);
+  }
+
+  get duplicatePromptPage() {
+    return this.getComponent(DuplicatePromptPage);
   }
 
   get postListPage() {

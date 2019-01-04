@@ -5,13 +5,13 @@ import ModelProvider from './ModelProvider';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
-import { BaseModel } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 
 const modelProvider = new ModelProvider();
 
 export default class SingleEntityMapStore<
-  T extends BaseModel,
+  T extends IdModel,
   K extends Entity
 > extends BaseStore {
   @observable

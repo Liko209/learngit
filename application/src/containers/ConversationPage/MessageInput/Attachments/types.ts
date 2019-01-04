@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 09:44:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 
 type AttachmentItem = {

@@ -7,7 +7,8 @@ import { daoManager } from '../../dao';
 import ItemDao from '../../dao/item';
 import { ENTITY } from '../../service/eventKey';
 import { transform, baseHandleData } from '../utils';
-import { Item, Raw } from '../../models';
+import { Item } from '../../module/item/entity';
+import { Raw } from '../../framework/model';
 
 const itemHandleData = async (items: Raw<Item>[]) => {
   if (items.length === 0) {

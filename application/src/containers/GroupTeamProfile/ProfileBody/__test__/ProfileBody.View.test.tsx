@@ -25,6 +25,6 @@ describe('ProfileBodyView', () => {
     expect(wrapper.find(JuiGroupProfileMessageBtn)).toHaveLength(1);
     wrapper.find(JuiGroupProfileMessageBtn).simulate('click');
     expect(dismiss).toHaveBeenCalledTimes(1);
-    expect(await goToConversation(47988738)).toBe(true);
+    expect(await goToConversation({ id: 47988738 })).toBe(true);
   });
 });

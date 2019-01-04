@@ -9,7 +9,10 @@ import GroupStateDao from '../../dao/groupState';
 import notificationCenter from '../../service/notificationCenter';
 import { ENTITY } from '../../service/eventKey';
 import StateService from '.';
-import { State, GroupState, Group, Raw } from '../../models';
+import { State } from '../../module/state/entity';
+import { GroupState } from '../../models';
+import { Group } from '../../module/group/entity';
+import { Raw } from '../../framework/model';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 
