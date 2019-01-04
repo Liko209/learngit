@@ -13,6 +13,10 @@ const mockLoginResponse = async (redirectUrl, data) => {
     return;
   }
 
+  if (mockData.has(-1)) {
+    return;
+  }
+
   let code = data.authorizationCode;
 
   let response = await jupiterUtils.getRcToken(code, redirectUrl);

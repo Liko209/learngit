@@ -28,6 +28,7 @@ class JupiterUtils {
   private logger = logUtils.getLogger(__filename);
 
   private async login(redirectUrl: string) {
+    let start = Date.now();
     let url = new URL(redirectUrl);
     const redirectUri = url.origin;
     const body = {
@@ -52,6 +53,7 @@ class JupiterUtils {
       `${process.env.JUPITER_LOGIN_URL}/api/login`,
       body
     );
+    this.logger.info(`JupiterUtils.login cost ${Date.now() - start}ms`);
     return response.data;
   }
 
@@ -69,6 +71,7 @@ class JupiterUtils {
   }
 
   async getRcToken(code: string, redirectUrl: string = "glip://rclogin") {
+    let start = Date.now();
     let authorization = btoa(`${this.clientId}:${this.clientSecret}`);
     const headers = {
       Authorization: `Basic ${authorization}`,
@@ -87,10 +90,12 @@ class JupiterUtils {
       body,
       { headers }
     );
+    this.logger.info(`JupiterUtils.getRcToken cost ${Date.now() - start}ms`);
     return response;
   }
 
   async getRcCode(token: string) {
+    let start = Date.now();
     const headers = {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json;charset=utf-8"
@@ -108,10 +113,12 @@ class JupiterUtils {
       body,
       { headers }
     );
+    this.logger.info(`JupiterUtils.getRcCode cost ${Date.now() - start}ms`);
     return response;
   }
 
   async getGlipToken(tk) {
+    let start = Date.now();
     const headers = {
       "Content-Type": "application/json;charset=utf-8"
     };
@@ -127,6 +134,7 @@ class JupiterUtils {
       body,
       { headers }
     );
+    this.logger.info(`JupiterUtils.getGlipToken cost ${Date.now() - start}ms`);
     return response;
   }
 }
