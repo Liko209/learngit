@@ -56,7 +56,7 @@ class ConversationInitialPost extends React.Component<
             {t('directMessageDescription', { displayName })}
           </StyledSpan>
         )}
-        {(isTeam && groupDescription) ? (
+        {isTeam && groupDescription ? (
           <StyledDescription>{groupDescription}</StyledDescription>
         ) : null}
       </JuiConversationInitialPostHeader>
@@ -102,7 +102,7 @@ class ConversationInitialPost extends React.Component<
           this._handleCreateTask,
           this._handleIntegrateApps,
         ]}
-        image={image}
+        image={{ url: image, width: 67, height: 53 }}
       />
     );
   }

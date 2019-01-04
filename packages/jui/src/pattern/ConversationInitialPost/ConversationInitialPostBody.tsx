@@ -14,23 +14,32 @@ import {
 } from '../../foundation/utils';
 
 type JuiConversationInitialPostBodyProps = {
-  image: string;
+  image: {
+    url: string;
+    width: number;
+    height: number;
+  };
   text: string;
   content: string;
   actions: JSX.Element[];
+  align?: 'flex-start' | 'flex-end' | 'center';
 };
 
-const StyledWrapper = styled.div`
+const StyledWrapper = styled.div<{ align?: string }>`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: ${({ align }) => (align ? align : 'center')};
   padding-top: ${spacing(9)};
 `;
-const StyledPic = styled.img`
-  width: ${width(67)};
-  height: ${height(53)};
+
+type PicProps = { width: number; height: number };
+
+const StyledPic = styled.img<PicProps>`
+  width: ${(props: PicProps) => width(props.width)}; // 67
+  height: ${(props: PicProps) => height(props.height)}; // 53
   margin-bottom: ${spacing(7)};
 `;
+
 const StyledText = styled.div`
   ${typography('subheading1')};
   color: ${grey('900')};
@@ -43,8 +52,12 @@ const StyledContent = styled.div`
 `;
 
 const StyledActionWrapper = styled.div`
-  margin: 0 ${spacing(2)} ${spacing(4)};
+  margin: ${spacing(0, 2, 4, 0)};
+  &:last-child {
+    margin: 0;
+  }
 `;
+
 const StyledActions = styled.div`
   display: flex;
   justify-content: center;
@@ -54,17 +67,19 @@ const StyledActions = styled.div`
 const JuiConversationInitialPostBody = (
   props: JuiConversationInitialPostBodyProps,
 ) => {
+  const { align, image, text, content, actions } = props;
+
   return (
-    <StyledWrapper>
-      <StyledPic src={props.image} />
-      <StyledText>{props.text}</StyledText>
-      <StyledContent>{props.content}</StyledContent>
+    <StyledWrapper align={align}>
+      <StyledPic src={image.url} width={image.width} height={image.height} />
+      <StyledText>{text}</StyledText>
+      <StyledContent>{content}</StyledContent>
       <StyledActions>
-        {props.actions.length
-          ? props.actions.map((action, inx) => (
+        {actions.length
+          ? actions.map((action, inx) => (
               <StyledActionWrapper key={inx}>{action}</StyledActionWrapper>
             ))
-          : props.actions}
+          : actions}
       </StyledActions>
     </StyledWrapper>
   );

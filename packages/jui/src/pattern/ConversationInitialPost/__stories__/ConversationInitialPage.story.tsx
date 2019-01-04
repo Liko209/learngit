@@ -52,7 +52,7 @@ const ConversationInitialPostBody = () => {
       text="Get Started"
       content="Having a home based business is a wonderful asset to your life."
       actions={[Action1, Action2, Action3]}
-      image={image}
+      image={{ url: image, width: 67, height: 53 }}
     />
   );
 };
