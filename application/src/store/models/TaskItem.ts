@@ -25,6 +25,7 @@ export default class TaskItemModel extends ItemModel {
   @observable attachmentIds: number[];
   @observable completePeopleIds: number[];
   @observable completePercentage: number;
+  @observable hasDueTime: boolean;
 
   constructor(data: TaskItem) {
     super(data);
@@ -41,6 +42,7 @@ export default class TaskItemModel extends ItemModel {
       repeat_ending_on,
       text,
       due,
+      hasDueTime,
       complete_type,
       assigned_to_ids,
       attachment_ids,
@@ -59,6 +61,7 @@ export default class TaskItemModel extends ItemModel {
     this.repeatEndingOn = repeat_ending_on;
     this.text = text;
     this.due = due;
+    this.hasDueTime = hasDueTime;
     this.completeType = complete_type;
     this.assignedToIds = assigned_to_ids;
     this.attachmentIds = attachment_ids;
