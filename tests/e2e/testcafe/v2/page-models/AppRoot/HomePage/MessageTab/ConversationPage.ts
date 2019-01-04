@@ -67,7 +67,7 @@ class BaseConversationPage extends BaseWebComponent {
     return this.self.find('circle');
   }
 
-  async waitUntilPostsBeLoaded(timeout = 10e3) {
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
     await this.t.wait(1e3); // loading circle is invisible in first 1 second.
     return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
   }
