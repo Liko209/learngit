@@ -401,3 +401,44 @@ test(formalName('Jump to post position when click button or clickable area of po
         .ok({ timeout: 5e3 });
     });
   });
+
+test(formalName('JPT-733 Can\'t show all received posts when open mentions page', ['P2', 'JPT-733', 'Mia.Cai','AtMention']), async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    const otherUser = users[5];
+    await h(t).platform(user).init();
+    await h(t).platform(otherUser).init();
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const mentionPage = app.homePage.messageTab.mentionPage;
+
+    let teamId;
+    await h(t).withLog(`Given I create one new teams`, async () => {
+      teamId = await h(t).platform(user).createAndGetGroupId({
+        type: 'Team',
+        name: uuid(),
+        members: [user.rcId, otherUser.rcId],
+      });
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('And I open mentions page', async () => {
+      await mentionsEntry.enter();
+    });
+
+    let message = uuid(), newPostId;
+    await h(t).withLog('And I received new message', async () => {
+      newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(message, teamId);
+      // Wait for the post sent 
+      await t.wait(5e3);
+    });
+
+    await h(t).withLog('Then I can\'t find the posts in the mentions page', async () => {
+      await t.expect(mentionPage.postItemById(newPostId).exists).notOk();
+    }, true);
+
+  },);
