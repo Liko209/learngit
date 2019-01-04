@@ -6,8 +6,9 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { TaskItemController } from '../controller/TaskItemController';
+import { EntityBaseService } from '../../../../../framework/service';
 
-class TaskItemService extends ISubItemService {
+class TaskItemService extends EntityBaseService implements ISubItemService {
   private _taskItemController: TaskItemController;
 
   constructor() {
@@ -20,6 +21,18 @@ class TaskItemService extends ISubItemService {
     }
     return this._taskItemController;
   }
+
+  getSortedIds(
+    groupId: number,
+    limit: number,
+    offset: number,
+    sortKey: string,
+    desc: boolean,
+  ): number[] {
+    return [];
+  }
+
+  updateItem(): void {}
 }
 
 export { TaskItemService };

@@ -4,11 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ISubItemService } from '../../base/service/ISubItemService';
+import { EntityBaseService } from '../../../../../framework/service';
 
-class EventItemService extends ISubItemService {
+class EventItemService extends EntityBaseService implements ISubItemService {
   constructor() {
     super();
   }
+
+  getSortedIds(
+    groupId: number,
+    limit: number,
+    offset: number,
+    sortKey: string,
+    desc: boolean,
+  ): number[] {
+    return [];
+  }
+
+  updateItem(): void {}
 }
 
 export { EventItemService };

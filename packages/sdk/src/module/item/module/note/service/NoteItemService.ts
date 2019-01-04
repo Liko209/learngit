@@ -6,7 +6,8 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { NoteItemController } from '../controller/NoteItemController';
-class NoteItemService extends ISubItemService {
+import { EntityBaseService } from '../../../../../framework/service';
+class NoteItemService extends EntityBaseService implements ISubItemService {
   private _noteItemController: NoteItemController;
 
   constructor() {
@@ -19,6 +20,18 @@ class NoteItemService extends ISubItemService {
     }
     return this._noteItemController;
   }
+
+  getSortedIds(
+    groupId: number,
+    limit: number,
+    offset: number,
+    sortKey: string,
+    desc: boolean,
+  ): number[] {
+    return [];
+  }
+
+  updateItem(): void {}
 }
 
 export { NoteItemService };

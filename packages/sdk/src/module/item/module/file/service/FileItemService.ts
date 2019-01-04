@@ -6,8 +6,9 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { FileItemController } from '../controller/FileItemController';
+import { EntityBaseService } from '../../../../../framework/service';
 
-class FileItemService extends ISubItemService {
+class FileItemService extends EntityBaseService implements ISubItemService {
   private _fileItemController: FileItemController;
   constructor() {
     super();
@@ -19,6 +20,18 @@ class FileItemService extends ISubItemService {
     }
     return this._fileItemController;
   }
+
+  getSortedIds(
+    groupId: number,
+    limit: number,
+    offset: number,
+    sortKey: string,
+    desc: boolean,
+  ): number[] {
+    return [];
+  }
+
+  updateItem(): void {}
 }
 
 export { FileItemService };
