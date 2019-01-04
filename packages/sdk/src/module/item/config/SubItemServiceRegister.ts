@@ -28,7 +28,7 @@ class SubItemServiceRegister {
   static buildSubItemServices() {
     const serviceMap: Map<number, ISubItemService> = new Map();
     itemServiceConfigs.forEach((serviceInfo: ClassConfig) => {
-      serviceMap.set(serviceInfo.typeId, serviceInfo.value());
+      serviceMap.set(serviceInfo.typeId, serviceInfo.value);
     });
     return serviceMap;
   }

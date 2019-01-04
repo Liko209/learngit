@@ -5,7 +5,13 @@
  */
 
 interface ISubItemService {
-  getSortedIds(): number[];
+  getSortedIds(
+    groupId: number,
+    limit: number,
+    offset: number,
+    sortKey: string,
+    desc: boolean,
+  ): number[];
   updateItem(): void;
 }
 

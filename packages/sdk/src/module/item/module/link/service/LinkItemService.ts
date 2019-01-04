@@ -6,8 +6,9 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { LinkItemController } from '../controller/LinkItemController';
+import { EntityBaseService } from '../../../../../framework/service';
 
-class LinkItemService extends ISubItemService {
+class LinkItemService extends EntityBaseService implements ISubItemService {
   private _linkItemController: LinkItemController;
   constructor() {
     super();
@@ -19,6 +20,18 @@ class LinkItemService extends ISubItemService {
     }
     return this._linkItemController;
   }
+
+  getSortedIds(
+    groupId: number,
+    limit: number,
+    offset: number,
+    sortKey: string,
+    desc: boolean,
+  ): number[] {
+    return [];
+  }
+
+  updateItem(): void {}
 }
 
 export { LinkItemService };
