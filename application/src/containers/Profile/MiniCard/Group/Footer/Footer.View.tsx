@@ -16,7 +16,6 @@ import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { TypeDictionary } from 'sdk/utils';
-import { MiniCard } from '@/containers/MiniCard';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
@@ -24,10 +23,7 @@ class ProfileMiniCardGroupFooter extends Component<
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversation({ id });
-    if (result) {
-      MiniCard.dismissProfile();
-    }
+    goToConversation({ id });
   }
 
   getAriaLabelKey = () => {

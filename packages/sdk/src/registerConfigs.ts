@@ -32,8 +32,8 @@ import { SocketManager } from './service/socket/SocketManager';
 import { SplitIO } from './service/splitio';
 import StateService from './service/state';
 import SyncService from './service/sync';
-import ProgressService from './module/progress';
 import { TelephonyService } from './module/telephony';
+import ProgressService from './module/progress';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 

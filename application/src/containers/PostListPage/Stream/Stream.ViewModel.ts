@@ -23,7 +23,7 @@ import PostModel from '@/store/models/Post';
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
-    return !post.deactivated;
+    return !post.deactivated && this._postIds.includes(post.id);
   }
 
   private _options = {

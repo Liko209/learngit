@@ -166,6 +166,7 @@ function document(item: FileItemModel) {
 }
 
 export {
+  getDateMessage,
   getDateAndTime,
   getDurationTime,
   getDurationTimeText,
