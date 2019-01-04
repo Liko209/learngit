@@ -126,25 +126,25 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _checkSipProvInfoParame(info: RTCSipProvisionInfo): boolean {
-    let parame_correct: boolean = false;
+    let parameCorrect: boolean = false;
     try {
-      const parame_device =
+      const parameDevice =
         info.device instanceof Array ? info.device[0] : info.device;
 
-      parame_correct =
-        isNotEmptyString(parame_device.authorizationID) &&
-        isNotEmptyString(parame_device.domain) &&
-        isNotEmptyString(parame_device.outboundProxy) &&
-        isNotEmptyString(parame_device.password) &&
-        isNotEmptyString(parame_device.transport) &&
-        isNotEmptyString(parame_device.username);
+      parameCorrect =
+        isNotEmptyString(parameDevice.authorizationID) &&
+        isNotEmptyString(parameDevice.domain) &&
+        isNotEmptyString(parameDevice.outboundProxy) &&
+        isNotEmptyString(parameDevice.password) &&
+        isNotEmptyString(parameDevice.transport) &&
+        isNotEmptyString(parameDevice.username);
     } catch (error) {
       rtcLogger.error(
         'RTCProvManager',
         `the Prov Info Parame error is: ${error}`,
       );
     }
-    return parame_correct;
+    return parameCorrect;
   }
 }
 
