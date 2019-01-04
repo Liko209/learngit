@@ -169,6 +169,9 @@ describe('RTCProvManager', async () => {
       await pm.acquireSipProv();
       expect(pm.emit).not.toBeCalled();
       expect(pm._resetFreshTimer).toBeCalled();
+      expect(pm._requestErrorRetryInterval).toBe(
+        kRTCProvRequestErrorRertyTimerMin,
+      );
     });
 
     it('should do nothing when acquire provision again after previous request failed JPT-723', async () => {
