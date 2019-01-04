@@ -3,7 +3,7 @@
  * @Date: 2019-01-02 14:30:22
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import { RTCProvManager } from '../RTCProvManager';
 import { rtcRestApiManager } from '../../utils/RTCRestApiManager';
 import {
@@ -13,6 +13,10 @@ import {
 } from '../constants';
 
 describe('RTCProvManager', async () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   const mockProvData_normal = {
     sipFlags: {},
     device: {
@@ -46,8 +50,8 @@ describe('RTCProvManager', async () => {
 
     it('should Emit NewProvision , reset 24h and error retry timers after validating the provision api response successfully(has provision before) JPT-729', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_another = Object.create(mockProvResponse_normal);
-      mockProvResponse_another.data.transport = '456';
+      const mockProvResponse_another = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_another.data.device.transport = '456';
       pm._sipProvisionInfo = mockProvResponse_another;
       jest.spyOn(pm, 'emit');
       jest.spyOn(pm, '_resetFreshTimer');
@@ -80,7 +84,7 @@ describe('RTCProvManager', async () => {
     it('should Retry request provision at kRTCProvRequestErrorRertyTimerMin,16,32...3600s(retryAfter < kRTCProvRequestErrorRertyTimerMin)  interval when request sip provision failed JPT-633', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.status = 400;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
@@ -103,7 +107,7 @@ describe('RTCProvManager', async () => {
     it('should Retry request provision at max(kRTCProvRequestErrorRertyTimerMin,16,32...3600s,retryAfter)(retryAfter > kRTCProvRequestErrorRertyTimerMin)  interval when request sip provision failed ', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.status = 400;
       mockProvResponse_unnormal.retryAfter = 2000;
       jest
@@ -129,7 +133,7 @@ describe('RTCProvManager', async () => {
 
     it('should Retry request provision at 2h interval(retryAfter < 2h) when response is invalid JPT-658', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.device.transport = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
@@ -142,7 +146,7 @@ describe('RTCProvManager', async () => {
 
     it('should Retry request provision at retryAfter interval(retryAfter > 2h) when response is invalid', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.retryAfter = 7300;
       mockProvResponse_unnormal.data.device.transport = '';
       jest
@@ -164,13 +168,13 @@ describe('RTCProvManager', async () => {
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
       expect(pm.emit).not.toBeCalled();
-      expect(pm._resetFreshTimer).not.toBeCalled();
+      expect(pm._resetFreshTimer).toBeCalled();
     });
 
     it('should do nothing when acquire provision again after previous request failed JPT-723', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.status = 400;
       jest.spyOn(pm, '_sendSipProvRequest');
       jest
@@ -184,7 +188,7 @@ describe('RTCProvManager', async () => {
     it('should do nothing when acquire provision again after previous request is invalid JPT-724', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.device.transport = '';
       jest.spyOn(pm, '_sendSipProvRequest');
       jest.spyOn(rtcRestApiManager, 'sendRequest');
@@ -200,8 +204,8 @@ describe('RTCProvManager', async () => {
   describe('_checkSipProvInfoParame()', async () => {
     it('should The provision response be invalid when Transport filed is missed JPT-634', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      delete mockProvResponse_unnormal.data.transport;
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      delete mockProvResponse_unnormal.data.device.transport;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -212,8 +216,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Transport value is null JPT-647', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      mockProvResponse_unnormal.data.transport = '';
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_unnormal.data.device.transport = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -224,8 +228,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Password filed is missed JPT-636', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      delete mockProvResponse_unnormal.data.password;
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      delete mockProvResponse_unnormal.data.device.password;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -236,8 +240,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Password value is null JPT-648', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      mockProvResponse_unnormal.data.password = '';
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_unnormal.data.device.password = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -248,8 +252,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Domain filed is missed JPT-637', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      delete mockProvResponse_unnormal.data.domain;
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      delete mockProvResponse_unnormal.data.device.domain;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -260,8 +264,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Domain value is null JPT-649', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      mockProvResponse_unnormal.data.domain = '';
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_unnormal.data.device.domain = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -272,8 +276,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Username filed is missed JPT-638', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      delete mockProvResponse_unnormal.data.username;
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      delete mockProvResponse_unnormal.data.device.username;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -284,8 +288,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Username value is null JPT-650', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      mockProvResponse_unnormal.data.username = '';
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_unnormal.data.device.username = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -296,8 +300,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Authorization filed is missed JPT-640', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      delete mockProvResponse_unnormal.data.authorizationID;
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      delete mockProvResponse_unnormal.data.device.authorizationID;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -308,8 +312,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when Authorization value is null JPT-651', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      mockProvResponse_unnormal.data.authorizationID = '';
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_unnormal.data.device.authorizationID = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -320,8 +324,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when OutboundProxy filed is missed JPT-641', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      delete mockProvResponse_unnormal.data.outboundProxy;
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      delete mockProvResponse_unnormal.data.device.outboundProxy;
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
@@ -332,8 +336,8 @@ describe('RTCProvManager', async () => {
 
     it('should The provision response be invalid when OutboundProxy value is null JPT-652', async () => {
       const pm = new RTCProvManager();
-      const mockProvResponse_unnormal = Object.create(mockProvResponse_normal);
-      mockProvResponse_unnormal.data.outboundProxy = '';
+      const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
+      mockProvResponse_unnormal.data.device.outboundProxy = '';
       jest
         .spyOn(rtcRestApiManager, 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
