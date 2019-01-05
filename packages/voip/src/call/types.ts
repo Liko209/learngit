@@ -25,6 +25,11 @@ enum CALL_FSM_NOTIFY {
   SEND_TO_VOICEMAIL_ACTION = 'sendToVoicemailAction',
   HANGUP_ACTION = 'hangupAction',
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
+  FLIP_ACTION = 'flipAction',
+  START_RECORD_ACTION = 'startRecordAction',
+  STOP_RECORD_ACTION = 'stopRecordAction',
+  CALL_ACTION_SUCCESS = 'callActionSuccess',
+  CALL_ACTION_FAILED = 'callActionFailed',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };
