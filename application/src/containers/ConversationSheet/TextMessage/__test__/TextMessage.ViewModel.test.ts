@@ -44,8 +44,8 @@ describe('TextMessageViewModel', () => {
 
   beforeEach(() => {
     vm = new TextMessageViewModel();
-    jest.spyOn(vm, '_getGroup');
-    jest.spyOn(vm, '_getPerson');
+    jest.spyOn(vm, 'getGroup');
+    jest.spyOn(vm, 'getPerson');
   });
 
   describe('html', () => {
@@ -82,8 +82,8 @@ describe('TextMessageViewModel', () => {
           mockPersonData.userDisplayName
         }</a>`,
       );
-      expect(vm._getGroup).toHaveBeenCalledTimes(0);
-      expect(vm._getPerson).toHaveBeenCalledTimes(1);
+      expect(vm.getGroup).toHaveBeenCalledTimes(0);
+      expect(vm.getPerson).toHaveBeenCalledTimes(1);
     });
 
     it('should be get new person name link when person name be changed', () => {
@@ -111,8 +111,8 @@ describe('TextMessageViewModel', () => {
           mockGroupData.displayName
         }</a>`,
       );
-      expect(vm._getGroup).toHaveBeenCalledTimes(1);
-      expect(vm._getPerson).toHaveBeenCalledTimes(0);
+      expect(vm.getGroup).toHaveBeenCalledTimes(1);
+      expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
 
     it('should be get new team name link when team name be changed', () => {
@@ -138,8 +138,8 @@ describe('TextMessageViewModel', () => {
       expect(vm.html).toBe(
         `<a class='at_mention_compose' href='javascript:void(0)' id='123'>${originalText}</a>`,
       );
-      expect(vm._getGroup).toHaveBeenCalledTimes(0);
-      expect(vm._getPerson).toHaveBeenCalledTimes(0);
+      expect(vm.getGroup).toHaveBeenCalledTimes(0);
+      expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
   });
 });

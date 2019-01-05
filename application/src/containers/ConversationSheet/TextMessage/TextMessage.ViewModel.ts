@@ -23,11 +23,11 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
-  private _getGroup(id: number) {
+  getGroup(id: number) {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
   }
 
-  private _getPerson(id: number) {
+  getPerson(id: number) {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
   }
 
@@ -36,10 +36,10 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
 
     switch (type) {
       case TypeDictionary.TYPE_ID_TEAM:
-        return this._getGroup(id).displayName;
+        return this.getGroup(id).displayName;
 
       case TypeDictionary.TYPE_ID_PERSON:
-        return this._getPerson(id).userDisplayName;
+        return this.getPerson(id).userDisplayName;
 
       default:
         return undefined;
