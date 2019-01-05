@@ -5,8 +5,8 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallSession } from './IRTCCallSession';
-import { CALL_SESSION_STATE } from './types';
+import { IRTCCallSession } from '../signaling/IRTCCallSession';
+import { CALL_SESSION_STATE } from '../call/types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',
@@ -49,7 +49,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hangup() {
     if (this._session != null) {
-      this._session.hangup();
+      this._session.terminate();
     }
   }
 
@@ -67,7 +67,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   sendToVoicemail() {
     if (this._session != null) {
-      this._session.sendToVoicemail();
+      this._session.toVoicemail();
     }
   }
 

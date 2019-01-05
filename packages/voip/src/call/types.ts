@@ -3,22 +3,6 @@
  * @Date: 2018-12-28 15:51:45
  * Copyright © RingCentral. All rights reserved.
  */
-
-type RTCCallInfo = {
-  fromName: string;
-  fromNum: string;
-  toName: string;
-  toNum: string;
-  uuid: string;
-};
-
-enum RTCCALL_STATE {
-  IDLE = 'Idle',
-  CONNECTING = 'Connecting',
-  CONNECTED = 'Connected',
-  DISCONNECTED = 'Disconnected',
-}
-
 enum CALL_SESSION_STATE {
   CONFIRMED = 'callsessionstate.confirmed',
   DISCONNECTED = 'callsessionstate.disconnected',
@@ -43,4 +27,4 @@ enum CALL_FSM_NOTIFY {
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
 }
 
-export { RTCCallInfo, RTCCALL_STATE, CALL_SESSION_STATE, CALL_FSM_NOTIFY };
+export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

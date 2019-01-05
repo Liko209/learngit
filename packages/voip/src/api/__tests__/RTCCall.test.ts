@@ -5,20 +5,20 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallObserver } from '../IRTCCallObserver';
+import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
-import { RTCCALL_STATE, CALL_SESSION_STATE } from '../types';
+import { RTC_CALL_STATE } from '../types';
 
 describe('RTC call', () => {
-  class VirturlAccountAndCallObserver implements IRTCCallObserver, IRTCAccount {
-    public callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
+  class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
+    public callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
 
     public isReadyReturnValue: boolean = false;
 
     public toNum: string = '';
 
-    onCallStateChange(state: RTCCALL_STATE): void {
+    onCallStateChange(state: RTC_CALL_STATE): void {
       this.callState = state;
     }
 
@@ -32,14 +32,19 @@ describe('RTC call', () => {
   class MockSession extends EventEmitter2 {
     constructor() {
       super();
+      this.remoteIdentity = {
+        displayName: 'test',
+        uri: { aor: 'test@ringcentral.com' },
+      };
     }
     mockSignal(signal: string): void {
       this.emit(signal);
     }
-    hangup() {}
+    terminate() {}
     accept() {}
     reject() {}
-    sendToVoicemail() {}
+    toVoicemail() {}
+    public remoteIdentity: any;
   }
 
   describe('constructor()', async () => {
@@ -81,7 +86,7 @@ describe('RTC call', () => {
       jest.spyOn(session, 'reject');
       call.reject();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.reject).toBeCalled();
         done();
       });
@@ -91,21 +96,21 @@ describe('RTC call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
-      jest.spyOn(session, 'sendToVoicemail');
+      jest.spyOn(session, 'toVoicemail');
       call.sendToVoicemail();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.sendToVoicemail).toBeCalled();
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(session.toVoicemail).toBeCalled();
         done();
       });
     });
-    it('should call state become disconnected when hangup call in idle state [JPT-614]', done => {
+    it('should call state become disconnected when receive session disconnected in idle state [JPT-614]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
       session.mockSignal('bye');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -116,7 +121,7 @@ describe('RTC call', () => {
       jest.spyOn(session, 'accept');
       call.answer();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(session.accept).toBeCalled();
         done();
       });
@@ -128,7 +133,18 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal('accepted');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        done();
+      });
+    });
+    it('should call state become disconnected when receive session error in answering state [JPT-732]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.answer();
+      session.mockSignal('failed');
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -139,7 +155,7 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal('failed');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -147,12 +163,12 @@ describe('RTC call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
-      jest.spyOn(session, 'hangup');
+      jest.spyOn(session, 'terminate');
       call.answer();
       call.hangup();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled();
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(session.terminate).toBeCalled();
         done();
       });
     });
@@ -163,7 +179,7 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal('bye');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -176,8 +192,8 @@ describe('RTC call', () => {
       vAccount.isReadyReturnValue = false;
       const call = new RTCCall(false, '123', null, vAccount, vAccount);
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.CONNECTING);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(vAccount.createOutCallSession).not.toBeCalled();
         done();
       });
@@ -189,8 +205,8 @@ describe('RTC call', () => {
       vAccount.isReadyReturnValue = true;
       const call = new RTCCall(false, '123', null, vAccount, vAccount);
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.CONNECTING);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(vAccount.toNum).toBe('123');
         expect(vAccount.createOutCallSession).toBeCalled();
         done();
@@ -205,8 +221,8 @@ describe('RTC call', () => {
       const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.onAccountReady();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.CONNECTING);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(vAccount.toNum).toBe('123');
         expect(vAccount.createOutCallSession).toBeCalled();
         done();
@@ -219,12 +235,12 @@ describe('RTC call', () => {
       vAccount.isReadyReturnValue = false;
       const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
-      jest.spyOn(session, 'hangup');
+      jest.spyOn(session, 'terminate');
       call.hangup();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled;
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(session.terminate).toBeCalled;
         done();
       });
     });
@@ -239,8 +255,8 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('accepted');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.CONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTED);
         done();
       });
     });
@@ -250,13 +266,13 @@ describe('RTC call', () => {
       const session = new MockSession();
       const call = new RTCCall(false, '123', null, vAccount, vAccount);
       call.setCallSession(session);
-      jest.spyOn(session, 'hangup');
+      jest.spyOn(session, 'terminate');
       call.onAccountReady();
       call.hangup();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled();
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(session.terminate).toBeCalled();
         done();
       });
     });
@@ -269,8 +285,8 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('bye');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -283,8 +299,8 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('failed');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -295,15 +311,15 @@ describe('RTC call', () => {
       const vAccount = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, vAccount, vAccount);
       const session = new MockSession();
-      jest.spyOn(session, 'hangup');
+      jest.spyOn(session, 'terminate');
       call.setCallSession(session);
       call.onAccountReady();
       session.mockSignal('accept');
       call.hangup();
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled;
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(session.terminate).toBeCalled;
         done();
       });
     });
@@ -317,8 +333,8 @@ describe('RTC call', () => {
       session.mockSignal('accept');
       session.mockSignal('bye');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -331,8 +347,8 @@ describe('RTC call', () => {
       session.mockSignal('accept');
       session.mockSignal('failed');
       setImmediate(() => {
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTCCALL_STATE.DISCONNECTED);
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });

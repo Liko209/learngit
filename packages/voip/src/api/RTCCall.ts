@@ -3,22 +3,17 @@
  * @Date: 2018-12-28 15:51:14
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { IRTCCallObserver } from './IRTCCallObserver';
-import { IRTCCallSession } from './IRTCCallSession';
-import { RTCSipCallSession } from './RTCSipCallSession';
+import { IRTCCallDelegate } from './IRTCCallDelegate';
+import { IRTCCallSession } from '../signaling/IRTCCallSession';
+import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
-import { RTCCallFsm } from './RTCCallFsm';
+import { RTCCallFsm } from '../call/RTCCallFsm';
+import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
+import { RTCCallInfo, RTC_CALL_STATE } from './types';
 import { v4 as uuid } from 'uuid';
-import {
-  RTCCallInfo,
-  RTCCALL_STATE,
-  CALL_SESSION_STATE,
-  CALL_FSM_NOTIFY,
-} from './types';
 
 class RTCCall {
-  private _callState: RTCCALL_STATE = RTCCALL_STATE.IDLE;
+  private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
   private _callInfo: RTCCallInfo = {
     fromName: '',
     fromNum: '',
@@ -29,7 +24,7 @@ class RTCCall {
   private _callSession: IRTCCallSession;
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
-  private _observer: IRTCCallObserver;
+  private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
 
   constructor(
@@ -37,15 +32,19 @@ class RTCCall {
     toNumber: string,
     session: any,
     account: IRTCAccount,
-    observer: IRTCCallObserver,
+    delegate: IRTCCallDelegate | null,
   ) {
     this._account = account;
-    this._observer = observer;
+    if (delegate != null) {
+      this._delegate = delegate;
+    }
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
     this._fsm = new RTCCallFsm();
     this._callSession = new RTCSipCallSession();
     if (this._isIncomingCall) {
+      this._callInfo.fromName = session.remoteIdentity.displayName;
+      this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
       this.setCallSession(session);
     } else {
       this._callInfo.toNum = toNumber;
@@ -54,7 +53,11 @@ class RTCCall {
     this._prepare();
   }
 
-  getCallState(): RTCCALL_STATE {
+  setCallDelegate(delegate: IRTCCallDelegate) {
+    this._delegate = delegate;
+  }
+
+  getCallState(): RTC_CALL_STATE {
     return this._callState;
   }
 
@@ -111,19 +114,19 @@ class RTCCall {
     });
     // listen fsm
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_ANSWERING, () => {
-      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
+      this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_PENDING, () => {
-      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
+      this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTING, () => {
-      this._onCallStateChange(RTCCALL_STATE.CONNECTING);
+      this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
-      this._onCallStateChange(RTCCALL_STATE.CONNECTED);
+      this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
-      this._onCallStateChange(RTCCALL_STATE.DISCONNECTED);
+      this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
@@ -172,13 +175,14 @@ class RTCCall {
   }
 
   private _onCreateOutCallSession() {
-    this._account.createOutCallSession(this._callInfo.toNum);
+    const session = this._account.createOutCallSession(this._callInfo.toNum);
+    this.setCallSession(session);
   }
 
-  private _onCallStateChange(state: RTCCALL_STATE): void {
+  private _onCallStateChange(state: RTC_CALL_STATE): void {
     if (this._callState !== state) {
       this._callState = state;
-      this._observer.onCallStateChange(state);
+      this._delegate.onCallStateChange(state);
     }
   }
 }

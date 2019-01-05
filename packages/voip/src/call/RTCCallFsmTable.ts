@@ -108,6 +108,7 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.SESSION_ERROR,
           from: [
+            CallFsmState.IDLE,
             CallFsmState.ANSWERING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
