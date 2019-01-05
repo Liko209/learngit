@@ -679,15 +679,9 @@ describe('RTC call', () => {
       account.isReadyReturnValue = false;
       const call = new RTCCall(false, '123', null, account, account);
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(vAccount.createOutCallSession).not.toBeCalled();
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
-        expect(account.callState).toBe(RTCCALL_STATE.CONNECTING);
+        expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.createOutCallSession).not.toBeCalled();
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
         done();
       });
     });
@@ -698,17 +692,10 @@ describe('RTC call', () => {
       account.isReadyReturnValue = true;
       const call = new RTCCall(false, '123', null, account, account);
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(vAccount.toNum).toBe('123');
-        expect(vAccount.createOutCallSession).toBeCalled();
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
-        expect(account.callState).toBe(RTCCALL_STATE.CONNECTING);
+        expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.toNum).toBe('123');
         expect(account.createOutCallSession).toBeCalled();
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
         done();
       });
     });
@@ -721,17 +708,10 @@ describe('RTC call', () => {
       const call = new RTCCall(false, '123', null, account, account);
       call.onAccountReady();
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(vAccount.toNum).toBe('123');
-        expect(vAccount.createOutCallSession).toBeCalled();
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTING);
-        expect(account.callState).toBe(RTCCALL_STATE.CONNECTING);
+        expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.toNum).toBe('123');
         expect(account.createOutCallSession).toBeCalled();
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
         done();
       });
     });
@@ -745,15 +725,9 @@ describe('RTC call', () => {
       jest.spyOn(session, 'terminate');
       call.hangup();
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.terminate).toBeCalled;
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled;
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
         done();
       });
     });
@@ -768,13 +742,8 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('accepted');
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.CONNECTED);
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.CONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.CONNECTED);
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
+        expect(account.callState).toBe(RTC_CALL_STATE.CONNECTED);
         done();
       });
     });
@@ -788,15 +757,9 @@ describe('RTC call', () => {
       call.onAccountReady();
       call.hangup();
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.terminate).toBeCalled();
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled();
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
         done();
       });
     });
@@ -809,13 +772,9 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('bye');
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+
         done();
       });
     });
@@ -828,13 +787,8 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('failed');
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -851,15 +805,9 @@ describe('RTC call', () => {
       session.mockSignal('accept');
       call.hangup();
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(session.terminate).toBeCalled;
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(session.hangup).toBeCalled;
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
         done();
       });
     });
@@ -873,13 +821,8 @@ describe('RTC call', () => {
       session.mockSignal('accept');
       session.mockSignal('bye');
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
@@ -892,13 +835,8 @@ describe('RTC call', () => {
       session.mockSignal('accept');
       session.mockSignal('failed');
       setImmediate(() => {
-<<<<<<< HEAD:packages/voip/src/api/__tests__/RTCCall.test.ts
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
-        expect(vAccount.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
-=======
-        expect(call.getCallState()).toBe(RTCCALL_STATE.DISCONNECTED);
-        expect(account.callState).toBe(RTCCALL_STATE.DISCONNECTED);
->>>>>>> feature/FIJI-2556:packages/voip/src/call/__tests__/RTCCall.test.ts
+        expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
         done();
       });
     });
