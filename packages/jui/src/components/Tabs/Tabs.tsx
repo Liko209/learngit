@@ -99,6 +99,7 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   private _measureTabWidths = () => {
+    this._tabWidthsTotal = 0;
     this._tabWidths = this._tabRefs.map((_ref: RefObject<HTMLElement>) => {
       if (_ref.current) {
         const width = _ref.current.getBoundingClientRect().width;
