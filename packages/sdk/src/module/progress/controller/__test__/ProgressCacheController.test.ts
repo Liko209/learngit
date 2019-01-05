@@ -45,8 +45,8 @@ describe('ProgressCacheController', () => {
       }
     });
 
-    it('should return undefined when can not find the progress', () => {
-      expect(progressCacheController.getProgress(111)).toBeUndefined();
+    it('should return null when can not find the progress', () => {
+      expect(progressCacheController.getProgress(111)).toBeNull();
     });
   });
 
@@ -106,7 +106,7 @@ describe('ProgressCacheController', () => {
     it('should remove cache by input id', () => {
       expect(progressCacheController.getProgress(-5)).not.toBeUndefined();
       progressCacheController.deleteProgress(-5);
-      expect(progressCacheController.getProgress(-5)).toBeUndefined();
+      expect(progressCacheController.getProgress(-5)).toBeNull();
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
         ENTITY.PROGRESS,
         [-5],

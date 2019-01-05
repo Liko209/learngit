@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubscribeController } from '../interface/ISubscribeController';
+import { ISubscribeController } from '../../../framework/controller/interface/ISubscribeController';
 import dataDispatcher from '../../../component/DataDispatcher';
 import { SOCKET, notificationCenter } from '../../../service';
 
@@ -27,6 +27,10 @@ class SubscribeController implements ISubscribeController {
       }
       notificationCenter.off(eventName, fn);
     });
+  }
+
+  static buildSubscriptionController(subscriptions: Object) {
+    return new SubscribeController(subscriptions);
   }
 }
 

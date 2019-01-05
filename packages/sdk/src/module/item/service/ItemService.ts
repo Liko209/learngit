@@ -17,6 +17,7 @@ import handleData from './handleData';
 import { SOCKET } from '../../../service';
 import { FileItemService } from '../module/file';
 import { Api } from '../../../api';
+import { SubscribeController } from '../../base/controller/SubscribeController';
 
 class ItemService extends EntityBaseService<Item> {
   static serviceName = 'ItemService';
@@ -27,9 +28,11 @@ class ItemService extends EntityBaseService<Item> {
     super();
 
     this.setEntitySource(this._buildEntitySourceController());
-    this.doSubscribe({
-      [SOCKET.ITEM]: handleData,
-    });
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SOCKET.ITEM]: handleData,
+      }),
+    );
   }
 
   private _buildEntitySourceController() {

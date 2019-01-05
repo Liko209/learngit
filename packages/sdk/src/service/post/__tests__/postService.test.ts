@@ -8,9 +8,7 @@ import {
   AccountDao,
 } from '../../../dao';
 import PostAPI from '../../../api/glip/post';
-import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
-import ItemService from '../../item';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
@@ -24,13 +22,14 @@ import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
 import { err, ok, BaseResponse } from 'foundation';
 import GroupConfigService from '../../groupConfig';
-import ProgressService, { PROGRESS_STATUS } from '../../../module/progress';
+import itemHandleData from '../../../module/item/service/handleData';
+import { ItemService , ProgressService, PROGRESS_STATUS } from '../../../module';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
-jest.mock('../../item/handleData');
-jest.mock('../../item');
+jest.mock('../../../module/item/service/handleData');
+jest.mock('../../../module');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');

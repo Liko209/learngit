@@ -1,18 +1,24 @@
-import ItemAPI from '../../../api/glip/item';
-import { daoManager } from '../../../dao';
-import { transform, baseHandleData } from '../../../service/utils';
-import handleData, { extractFileNameAndType } from '../handleData';
-import { rawItemFactory } from '../../../__tests__/factories';
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-04 21:43:43
+ * Copyright © RingCentral. All rights reserved.
+ */
 
-jest.mock('../../../api/glip/item');
+import ItemAPI from '../../../../api/glip/item';
+import { daoManager } from '../../../../dao';
+import { transform, baseHandleData } from '../../../../service/utils';
+import handleData, { extractFileNameAndType } from '../handleData';
+import { rawItemFactory } from '../../../../__tests__/factories';
+
+jest.mock('../../../../api/glip/item');
 // const itemDao = daoManager.getDao(ItemDao);
-jest.mock('../../../dao', () => ({
+jest.mock('../../../../dao', () => ({
   daoManager: {
     getDao: jest.fn(),
   },
 }));
 
-jest.mock('../../../service/utils', () => ({
+jest.mock('../../../../service/utils', () => ({
   baseHandleData: jest.fn(),
   transform: jest.fn(),
 }));

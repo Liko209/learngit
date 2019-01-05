@@ -14,10 +14,12 @@ import {
 import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { GroupConfigService } from 'sdk/service';
+import { ItemService } from 'sdk/module';
 
 const groupConfigService = new GroupConfigService();
 (GroupConfigService as any).getInstance = () => groupConfigService;
 jest.mock('sdk/service/groupConfig');
+jest.mock('sdk/module');
 
 const mockGroupEntityData = {
   draft: 'draft',
@@ -34,9 +36,13 @@ const postService = {
 const groupService = {
   updateGroupDraft: jest.fn(),
 };
+const itemService = {
+  getUploadItems: jest.fn(),
+};
 
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 const messageInputViewModel = new MessageInputViewModel({ id: 123 });
 
@@ -92,6 +98,7 @@ describe('MessageInputViewModel', () => {
     });
 
     it('should not send when empty draft content', () => {
+      itemService.getUploadItems = jest.fn().mockReturnValue([]);
       const content = '';
       const that = mockThis(content);
       // @ts-ignore

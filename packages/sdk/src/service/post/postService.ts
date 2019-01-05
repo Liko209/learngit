@@ -27,8 +27,7 @@ import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
 import { PROGRESS_STATUS } from '../../module/progress/entity';
 import GroupConfigService from '../groupConfig';
-import ProgressService from '../../module/progress';
-import ItemService from '../../module/item';
+import { ItemService, ProgressService } from '../../module';
 
 interface IPostResult {
   posts: Post[];

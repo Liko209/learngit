@@ -8,12 +8,12 @@ import { daoManager, AccountDao, PostDao } from '../../../dao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
-import ItemService from '../../item';
+import { ItemService } from '../../../module';
 import { number } from '@storybook/addon-knobs';
 
 jest.mock('../../../dao');
 jest.mock('../../../utils/mathUtils');
-jest.mock('../../item');
+jest.mock('../../../module');
 
 describe('PostServiceHandler', () => {
   const mockPostDao = new PostDao(null);

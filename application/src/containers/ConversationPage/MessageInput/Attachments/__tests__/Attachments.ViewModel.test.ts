@@ -11,7 +11,7 @@ import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
-
+import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
   draft: 'draft',

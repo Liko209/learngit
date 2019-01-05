@@ -22,7 +22,6 @@ import { ENTITY, SERVICE } from '../../../../../service';
 import notificationCenter from '../../../../../service/notificationCenter';
 import AccountService from '../../../../../service/account';
 import { daoManager, ItemDao } from '../../../../../dao';
-import { transform } from '../../../../../service/utils';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 
@@ -31,7 +30,7 @@ const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
 
 type ItemFileUploadStatus = {
   progress: Progress;
-  requestHolder: RequestHolder;
+  requestHolder?: RequestHolder;
   itemFile?: ItemFile;
   file?: File;
 };
@@ -222,9 +221,8 @@ class FileUploadController {
     let sendFailed = false;
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
-      const isUpdate = this._isUpdateItem(itemInDB);
       if (this._hasValidStoredFile(itemInDB)) {
-        await this._uploadItem(groupId, itemInDB, isUpdate);
+        await this._uploadItem(groupId, itemInDB, this._isUpdateItem(itemInDB));
       } else {
         const cacheItem = this._progressCaches.get(itemId);
         if (groupId && cacheItem && cacheItem.file) {
@@ -244,7 +242,10 @@ class FileUploadController {
   async cancelUpload(itemId: number) {
     const status = this._progressCaches.get(itemId);
     if (status) {
-      ItemAPI.cancelUploadRequest(status.requestHolder);
+      if (status.requestHolder) {
+        ItemAPI.cancelUploadRequest(status.requestHolder);
+      }
+
       this._progressCaches.delete(itemId);
     }
 
@@ -336,6 +337,11 @@ class FileUploadController {
   }
 
   private _updateFileProgress(failedItemId: number, status: PROGRESS_STATUS) {
+    if (!this._progressCaches.has(failedItemId)) {
+      this._progressCaches.set(failedItemId, {
+        progress: { rate: { loaded: 0, total: 0 } },
+      } as ItemFileUploadStatus);
+    }
     const info = this._progressCaches.get(failedItemId);
     if (info && info.progress && info.progress.rate) {
       let loaded = info.progress.rate.loaded;
@@ -471,7 +477,7 @@ class FileUploadController {
     const uploadInfo = this._progressCaches.get(
       preInsertItemId,
     ) as ItemFileUploadStatus;
-    return uploadInfo.requestHolder;
+    return uploadInfo.requestHolder as RequestHolder;
   }
 
   private async _sendItemFile(preInsertItem: ItemFile, file: File) {
@@ -504,10 +510,7 @@ class FileUploadController {
       } else {
         result = await this._newItem(groupId, preInsertItem);
       }
-      if (result) {
-        const fileItem = transform<ItemFile>(result);
-        this._handleItemUploadSuccess(preInsertItem, fileItem);
-      }
+      this._handleItemUploadSuccess(preInsertItem, result);
     } catch (error) {
       this._handleItemFileSendFailed(preInsertItem.id);
     }

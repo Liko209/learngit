@@ -8,11 +8,11 @@ import { AbstractService } from './AbstractService';
 import { IdModel } from '../model';
 import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
 import { container } from '../../container';
-import { SubscribeController } from '../controller/impl/SubscribeController';
+import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
 
 class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
-  private _subscribeController: SubscribeController;
+  private _subscribeController: ISubscribeController;
   private entitySourceController: IEntitySourceController<T>;
   constructor() {
     super();
@@ -22,10 +22,8 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     this.entitySourceController = sourceController;
   }
 
-  doSubscribe(subscriptions: object) {
-    this._subscribeController = this.getControllerBuilder().buildSubscriptionController(
-      subscriptions,
-    );
+  setSubscriptionController(subscribeController: ISubscribeController) {
+    this._subscribeController = subscribeController;
   }
 
   protected onStarted() {
