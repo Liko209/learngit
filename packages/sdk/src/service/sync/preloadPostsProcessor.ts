@@ -58,10 +58,10 @@ class PreloadPostsProcessor implements IProcessor {
   }> {
     let shouldPreload = false;
     let unread_count = 0;
-    if (this._group.most_recent_post_id) {
+    if (this._group && this._group.most_recent_post_id) {
       const stateService: StateService = StateService.getInstance();
       const state = await stateService.getById(this._group.id);
-      if (state.unread_count) {
+      if (state && state.unread_count) {
         if (state.unread_count > 0 && state.unread_count <= MAX_UNREAD_COUNT) {
           const postService: PostService = PostService.getInstance();
           const post = await postService.getByIdFromDao(

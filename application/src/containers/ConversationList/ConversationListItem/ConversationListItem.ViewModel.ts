@@ -22,8 +22,6 @@ class ConversationListItemViewModel extends StoreViewModel<
   firstUnreadCount: number;
   important?: boolean | undefined;
   groupService: service.GroupService = GroupService.getInstance();
-  draft?: string | undefined;
-  sendFailurePostIds: number[];
   hasShowedUmi: boolean = false;
 
   @computed

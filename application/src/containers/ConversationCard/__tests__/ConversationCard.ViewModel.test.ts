@@ -18,7 +18,6 @@ const conversationCardVM = new ConversationCardViewModel();
 const DAY = 24 * 3600 * 1000;
 const DATE_2019_1_4 = 1546564919703;
 const DATE_2019_1_3 = 1546564919703 - DAY;
-const DATE_2019_1_2 = 1546564919703 - 2 * DAY;
 const DATE_2019_1_5 = 1546564919703 + DAY;
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
@@ -37,6 +36,16 @@ describe('ConversationCardViewModel', () => {
     });
   });
   describe('createTime()', () => {
+    it('should be timeAndDate format when mode is navigation [JPT-705]', () => {
+      moment().date(DATE_2019_1_4);
+      conversationCardVM.props.mode = 'navigation';
+      (getEntity as jest.Mock).mockReturnValue({
+        createdAt: DATE_2019_1_4,
+        creatorId: 107913219,
+      });
+      expect(conversationCardVM.createTime).toBe('Fri, 1/4/2019 9:21 AM');
+      conversationCardVM.props.mode = undefined;
+    });
     it('should be time format when createdAt is 2019/1/4 [JPT-701]', () => {
       moment().date(DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({

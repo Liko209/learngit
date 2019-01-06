@@ -101,4 +101,8 @@ const handlePartialProfileUpdate = async (
 };
 
 export default profileHandleData;
-export { extractHiddenGroupIds, handlePartialProfileUpdate };
+export {
+  extractHiddenGroupIds,
+  handlePartialProfileUpdate,
+  hiddenGroupsChange,
+};
