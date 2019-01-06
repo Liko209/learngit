@@ -150,6 +150,7 @@ String releaseBranch = 'master'
 String integrationBranch = 'develop'
 
 /* build strategy */
+Boolean isMerge = (null != env.gitlabTargetBranch) && (env.gitlabSourceBranch != env.gitlabTargetBranch)
 Boolean skipEndToEnd = !isStableBranch(env.gitlabSourceBranch) && !isStableBranch(env.gitlabTargetBranch)
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && integrationBranch != env.gitlabSourceBranch
 Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || releaseBranch == env.gitlabSourceBranch
@@ -319,19 +320,21 @@ node(buildNode) {
                                 reportTitles: 'Coverage'
                         ])
                         report.coverage = "${env.BUILD_URL}Coverage"
-                        if (env.gitlabSourceBranch == env.gitlabTargetBranch && integrationBranch == env.gitlabSourceBranch) {
+                        if (!isMerge && integrationBranch == env.gitlabSourceBranch) {
                             // attach coverage report as git note when new commits are pushed to integration branch
-                            sh 'git notes add -f -F coverage/coverage-summary.json'
                             // push git notes to remote
                             sshagent (credentials: [scmCredentialId]) {
+                                sh "git fetch -f ${env.gitlabSourceNamespace} refs/notes/*:refs/notes/*"
+                                sh 'git notes add -f -F coverage/coverage-summary.json'
                                 sh "git push -f ${env.gitlabSourceNamespace} refs/notes/*"
                             }
-                        } else if (integrationBranch == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
+                        }
+                        if (isMerge && integrationBranch == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
                             // compare coverage report with integration branch's
                             // step 1: fetch git notes
                             sshagent (credentials: [scmCredentialId]) {
-                                sh "git fetch ${env.gitlabTargetNamespace} ${env.gitlabTargetBranch}"
-                                sh "git fetch ${env.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
+                                sh "git fetch -f ${env.gitlabTargetNamespace} ${env.gitlabTargetBranch}"
+                                sh "git fetch -f ${env.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
                             }
                             // step 2: get latest commit on integration branch with notes
                             sh "git rev-list ${env.gitlabTargetNamespace}/${env.gitlabTargetBranch} > commit-sha.txt"
