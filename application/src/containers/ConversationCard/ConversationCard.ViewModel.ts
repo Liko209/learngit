@@ -17,7 +17,7 @@ import { Person } from 'sdk/module/person/entity';
 import { PROGRESS_STATUS } from 'sdk/module';
 import { Progress } from 'sdk/models';
 import { ENTITY_NAME } from '@/store';
-import { postTimestamp, onlyDateAndTime } from '@/utils/date';
+import { postTimestamp, dateFormatter } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
@@ -95,7 +95,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
   get createTime() {
     const { createdAt } = this.post;
     if (this.props.mode === 'navigation') {
-      return onlyDateAndTime(moment(this.post.createdAt));
+      return dateFormatter.dateAndTime(moment(this.post.createdAt));
     }
     return postTimestamp(createdAt);
   }
