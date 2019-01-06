@@ -37,7 +37,7 @@ describe('ConversationCardViewModel', () => {
   });
   describe('createTime()', () => {
     it('should be timeAndDate format when mode is navigation [JPT-705]', () => {
-      moment().date(DATE_2019_1_4);
+      global.Date.now = jest.fn(() => DATE_2019_1_4);
       conversationCardVM.props.mode = 'navigation';
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_4,
@@ -47,7 +47,7 @@ describe('ConversationCardViewModel', () => {
       conversationCardVM.props.mode = undefined;
     });
     it('should be time format when createdAt is 2019/1/4 [JPT-701]', () => {
-      moment().date(DATE_2019_1_4);
+      global.Date.now = jest.fn(() => DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_4,
         creatorId: 107913219,
@@ -55,7 +55,7 @@ describe('ConversationCardViewModel', () => {
       expect(conversationCardVM.createTime).toBe('9:21 AM');
     });
     it('should be weekdayAndTime format when createdAt is 2019/1/3 [JPT-701]', () => {
-      moment().date(DATE_2019_1_4);
+      global.Date.now = jest.fn(() => DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_3,
         creatorId: 107913219,
@@ -63,7 +63,7 @@ describe('ConversationCardViewModel', () => {
       expect(conversationCardVM.createTime).toBe('Thu, 9:21 AM');
     });
     it('should be dateAndTime format when createdAt is 2019/1/5 [JPT-701]', () => {
-      moment().date(DATE_2019_1_4);
+      global.Date.now = jest.fn(() => DATE_2019_1_4);
       (getEntity as jest.Mock).mockReturnValue({
         createdAt: DATE_2019_1_5,
         creatorId: 107913219,
