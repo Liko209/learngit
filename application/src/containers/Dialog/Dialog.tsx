@@ -4,34 +4,29 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { genDivAndDismiss } from '@/common/genDivAndDismiss';
-import ThemeProvider from '@/containers/ThemeProvider';
 import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
+import portalManager from '@/common/PortalManager';
 
 type Props = {
   componentProps?: any;
 } & JuiDialogProps;
 
-function dialog(component: React.ComponentType<any>, props: Props) {
+function dialog(
+  component: React.ComponentType<any> | JSX.Element,
+  props: Props,
+) {
   const Component = component;
-  const { container, dismiss } = genDivAndDismiss();
-
-  function render(currentProps: Props) {
-    const { componentProps, ...rest } = currentProps;
-
-    ReactDOM.render(
-      <ThemeProvider>
-        <JuiDialog {...rest}>
-          <Component {...componentProps} dismiss={dismiss} />
-        </JuiDialog>
-      </ThemeProvider>,
-      container,
+  const Dialog = () => {
+    return (
+      <JuiDialog {...props}>
+        {Component instanceof Function ? <Component /> : Component}
+      </JuiDialog>
     );
-  }
+  };
 
-  render(props);
+  const { dismiss, show } = portalManager.wrapper(Dialog);
 
+  show();
   return {
     dismiss,
   };

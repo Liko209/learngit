@@ -17,9 +17,6 @@ type ViewProps = {
   serverError: boolean;
   members: (number | string)[];
   errorEmail: string;
-  updateNewMessageDialogState: () => void;
-  updateCreateTeamDialogState: () => void;
-  inputReset: () => void;
   handleSearchContactChange: (items: any) => void;
 } & RouteComponentProps;
 

@@ -24,8 +24,8 @@ test(formalName('Jump to post position when click button or clickable area of po
     const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
     const bookmarkPage = app.homePage.messageTab.bookmarkPage;
 
-    let verifyTextTeam = 'First Bookmarks in Team';
-    let verifyTextChat = 'First Bookmarks in pvChat';
+    let verifyTextTeam = uuid();
+    let verifyTextChat = uuid();
 
     let teamId, pvChatId, bookmarksPostTeamId, bookmarksPostChatId;
     await h(t).withLog('Given I have 1 Bookmarks post in team ,one in group', async () => {
@@ -49,11 +49,11 @@ test(formalName('Jump to post position when click button or clickable area of po
 
       await h(t).platform(otherUser).init();
       bookmarksPostTeamId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextTeam + `, (${loginUser.rcId})`,
+        verifyTextTeam,
         teamId,
       );
       bookmarksPostChatId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextChat + `, (${loginUser.rcId})`,
+        verifyTextChat,
         pvChatId,
       );
 
@@ -65,9 +65,9 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('And I enter the team conversation page', async () => {
-
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I bookmark the team post', async () => {
@@ -76,6 +76,7 @@ test(formalName('Jump to post position when click button or clickable area of po
 
     await h(t).withLog('When I go to Bookmarks page', async () => {
       await bookmarksEntry.enter();
+      await bookmarkPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I click the Bookmarks post item then jump to pvTeam', async () => {
@@ -92,15 +93,16 @@ test(formalName('Jump to post position when click button or clickable area of po
     await h(t).withLog('When I enter the team conversation page', async () => {
       await dmSection.expand();
       await dmSection.conversationEntryById(pvChatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I bookmark the DM post', async () => {
-      await t.wait(3e3);
       await conversationPage.postItemById(bookmarksPostChatId).clickBookmarkToggle();
     });
 
     await h(t).withLog('When I back to Bookmarks page', async () => {
       await bookmarksEntry.enter();
+      await bookmarkPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I click the Bookmarks post item then jump to pvChat', async () => {
@@ -124,7 +126,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     await h(t).resetGlipAccount(loginUser);
 
     const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-    const postListPage = app.homePage.messageTab.postListPage;
+    // const postListPage = app.homePage.messageTab.postListPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
     const bookmarkPage = app.homePage.messageTab.bookmarkPage;
     const dmSection = app.homePage.messageTab.directMessagesSection;
@@ -165,7 +167,8 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
       await bookmarksEntry.enter();
-      await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(1);
+      await t.expect(bookmarkPage.posts.count).eql(1);
+      // await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(1);
     }, true);
 
     await h(t).withLog('And I recieve a new post', async () => {
@@ -253,12 +256,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     }
   });
 
-  // await h(t).withLog('And clear all UMI', async () => {
-  //   await conversationPage.scrollToBottom();
-  //   await dmSection.expectHeaderUmi(0);
-  // });
-
-  await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
+  await h(t).withLog('When I enter Bookmark page and find the Bookmark posts', async () => {
     await bookmarksEntry.enter();
     await dmSection.expectHeaderUmi(0);
   });
@@ -287,3 +285,42 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     await dmSection.expectHeaderUmi(0);
   });
 });
+
+test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page', ['P2', 'JPT-733', 'Mia.Cai','Bookmarks']), async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const user = users[4];
+  const otherUser = users[5];
+  await h(t).platform(user).init();
+  await h(t).platform(otherUser).init();
+  const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+
+  let teamId;
+  await h(t).withLog(`Given I create one new teams`, async () => {
+    teamId = await h(t).platform(user).createAndGetGroupId({
+      type: 'Team',
+      name: uuid(),
+      members: [user.rcId, otherUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, user);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I open bookmarks page', async () => {
+    await bookmarksEntry.enter();
+  });
+
+  let message = uuid(), newPostId;
+  await h(t).withLog('And I received new message', async () => {
+    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(message, teamId);
+  });
+
+  await h(t).withLog('Then I can\'t find the posts in the bookmarks page', async () => {
+    await t.expect(bookmarkPage.postItemById(newPostId).exists).notOk({timeout: 10e3});
+  }, true);
+
+},);

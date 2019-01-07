@@ -14,6 +14,7 @@ import { isTextOverflow, spacing, typography } from '../../foundation/utils';
 
 const StyledTypography = styled(MuiTypography)`
   && {
+    pointer-events: none;
     flex: 1;
     padding: ${spacing(0, 3, 0, 2)};
     ${typography('body2')};
