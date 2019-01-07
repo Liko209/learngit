@@ -319,4 +319,13 @@ describe('i18next-en', () => {
       'The file no longer exists.',
     );
   });
+
+  it('should check translation for error handle in cancel file upload', () => {
+    expect(i18next.t('notAbleToCancelUpload')).toEqual(
+      "Sorry, we weren't able to cancel the upload.",
+    );
+    expect(i18next.t('notAbleToCancelUploadTryAgain')).toEqual(
+      "Sorry, we weren't able to cancel the upload. Try again.",
+    );
+  });
 });
