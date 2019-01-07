@@ -11,7 +11,9 @@ import {
   DropTargetConnector,
   ConnectDropTarget,
   DropTargetMonitor,
+  DragDropContext,
 } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import { ThemeProps } from '../../foundation/theme/theme';
 import { grey, palette } from '../../foundation/utils/styles';
 
@@ -77,4 +79,6 @@ const JuiDropZone = DropTarget<
   }),
 )(ThemedBox);
 
-export { JuiDropZone, JuiDropZoneProps };
+const withDragDropContext = DragDropContext(HTML5Backend);
+
+export { JuiDropZone, JuiDropZoneProps, withDragDropContext };

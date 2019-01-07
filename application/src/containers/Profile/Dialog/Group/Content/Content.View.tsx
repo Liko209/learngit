@@ -24,6 +24,7 @@ import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { MemberHeader, MemberList } from './Members';
 import { TypeDictionary } from 'sdk/utils';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
@@ -51,8 +52,10 @@ class ProfileDialogGroupContentViewComponent extends Component<
     );
   }
 
+  messageAfterClick = () => portalManager.dismiss();
+
   render() {
-    const { id, group, showMessage, dismiss } = this.props;
+    const { id, group, showMessage } = this.props;
     return (
       <>
         <Summary data-test-automation-id="profileDialogSummary">
@@ -77,7 +80,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
               {showMessage && (
                 <Message
                   id={id}
-                  dismiss={dismiss}
+                  afterClick={this.messageAfterClick}
                   render={this.renderMessage}
                 />
               )}

@@ -284,38 +284,6 @@ describe('GroupService', () => {
     expect(result).toEqual(true);
   });
 
-  it('updateGroupDraf({id, draft}) is update success', async () => {
-    const result = await groupService.updateGroupDraft({
-      id: 1,
-      draft: 'draft',
-    });
-    expect(result).toEqual(true);
-  });
-
-  it('updateGroupSendFailurePostIds({id, __send_failure_post_ids}) is update success', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-
-    const result = await groupService.updateGroupSendFailurePostIds({
-      id: 123,
-      send_failure_post_ids: [12, 13],
-    });
-    expect(result).toEqual(true);
-  });
-
-  it('getGroupSendFailurePostIds(id) will be return number array', async () => {
-    const mock = { id: 1, __send_failure_post_ids: [12, 13] };
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.get.mockResolvedValueOnce(mock);
-    const result = await groupService.getGroupSendFailurePostIds(1);
-    expect(result).toEqual(mock.__send_failure_post_ids);
-  });
-
-  it('getGroupSendFailurePostIds(id) will be return error', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.get.mockRejectedValueOnce(new Error());
-    await expect(groupService.getGroupSendFailurePostIds(1)).rejects.toThrow();
-  });
-
   // it('levelToPermissionArray(level)', () => {
   //   const mock = [1, 2, 4, 8, 16];
   //   const result = groupService.levelToPermissionArray(31);
@@ -523,7 +491,7 @@ describe('GroupService', () => {
         id: 1,
         privacy: 'privacy',
       });
-      result.then((bool) => {
+      result.then((bool: boolean) => {
         expect(bool).toEqual(true);
       });
     });

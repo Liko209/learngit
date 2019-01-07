@@ -6,6 +6,7 @@ import { Scene } from './Scene';
 import { SceneConfig } from './config/SceneConfig';
 import { LoginGatherer } from '../gatherers/LoginGatherer';
 import { HomePageGatherer } from '../gatherers/HomePageGatherer';
+import { mockHelper } from '../mock';
 
 class RefreshScene extends Scene {
     async preHandle() {
@@ -17,6 +18,8 @@ class RefreshScene extends Scene {
         this.config.passes[0].gatherers.push({
             instance: new HomePageGatherer()
         });
+
+        mockHelper.open();
     }
 }
 

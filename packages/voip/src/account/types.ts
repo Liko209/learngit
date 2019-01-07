@@ -15,4 +15,21 @@ const RegistrationState = {
   UN_REGISTERED: 'unRegistered',
 };
 
-export { ErrorCode, RegistrationState };
+type RTCSipProvisionInfo = {
+  sipFlags: object;
+  device: {
+    transport: string;
+    password: string;
+    domain: string;
+    username: string;
+    authorizationID: string;
+    outboundProxy: string;
+  }[];
+  sipInfo: object;
+};
+
+enum RTC_PROV_EVENT {
+  NEW_PROV = 'newProv',
+}
+
+export { ErrorCode, RegistrationState, RTCSipProvisionInfo, RTC_PROV_EVENT };
