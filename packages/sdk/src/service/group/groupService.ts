@@ -631,21 +631,16 @@ class GroupService extends BaseService<Group> {
       },
       searchKey,
       undefined,
-      this._orderByName.bind(this),
+      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return -1;
+        }
+        if (groupA.firstSortKey > groupB.firstSortKey) {
+          return 1;
+        }
+        return 0;
+      },
     );
-  }
-
-  private _orderByName(
-    groupA: SortableModel<Group>,
-    groupB: SortableModel<Group>,
-  ) {
-    if (groupA.firstSortKey < groupB.firstSortKey) {
-      return -1;
-    }
-    if (groupA.firstSortKey > groupB.firstSortKey) {
-      return 1;
-    }
-    return 0;
   }
 
   async doFuzzySearchTeams(
@@ -663,23 +658,64 @@ class GroupService extends BaseService<Group> {
 
     return this.searchEntitiesFromCache(
       (team: Group, terms: string[]) => {
-        return this._idValidTeam(team) &&
-          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
-            (terms.length > 0 &&
-              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
-          (team.privacy === 'protected' || team.members.includes(currentUserId))
+        let isMatched: boolean = false;
+        let sortValue: number = 0;
+
+        do {
+          if (!this._idValidTeam(team)) {
+            break;
+          }
+
+          if (fetchAllIfSearchKeyEmpty && terms.length === 0) {
+            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          }
+
+          if (isMatched || terms.length === 0) {
+            break;
+          }
+
+          if (this.isStartWithMatched(team.set_abbreviation, terms)) {
+            sortValue = 1;
+            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          } else if (this.isFuzzyMatched(team.set_abbreviation, terms)) {
+            sortValue = 0;
+            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          }
+        } while (false);
+
+        return isMatched
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
-            firstSortKey: team.set_abbreviation.toLowerCase(),
+            firstSortKey: sortValue,
+            secondSortKey: team.set_abbreviation.toLowerCase(),
             entity: team,
           }
           : null;
       },
       searchKey,
       undefined,
-      this._orderByName.bind(this),
+      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+        if (groupA.firstSortKey > groupB.firstSortKey) {
+          return -1;
+        }
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return 1;
+        }
+
+        if (groupA.secondSortKey < groupB.secondSortKey) {
+          return -1;
+        }
+        if (groupA.secondSortKey > groupB.secondSortKey) {
+          return 1;
+        }
+        return 0;
+      },
     );
+  }
+
+  private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
+    return team.privacy === 'protected' || team.members.includes(userId);
   }
 
   getGroupNameByMultiMembers(members: number[], currentUserId: number) {
