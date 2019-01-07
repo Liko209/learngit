@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'jupiter_icon';
-  src:  url('fonts/jupiter_icon.eot?9448fm');
-  src:  url('fonts/jupiter_icon.eot?9448fm#iefix') format('embedded-opentype'),
-    url('fonts/jupiter_icon.woff2?9448fm') format('woff2'),
-    url('fonts/jupiter_icon.ttf?9448fm') format('truetype'),
-    url('fonts/jupiter_icon.woff?9448fm') format('woff'),
-    url('fonts/jupiter_icon.svg?9448fm#jupiter_icon') format('svg');
+  src:  url('fonts/jupiter_icon.eot?2m01k6');
+  src:  url('fonts/jupiter_icon.eot?2m01k6#iefix') format('embedded-opentype'),
+    url('fonts/jupiter_icon.woff2?2m01k6') format('woff2'),
+    url('fonts/jupiter_icon.ttf?2m01k6') format('truetype'),
+    url('fonts/jupiter_icon.woff?2m01k6') format('woff'),
+    url('fonts/jupiter_icon.svg?2m01k6#jupiter_icon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -73,6 +73,26 @@
 .ppt:before {
   content: "\e938";
   color: #d94d1f;
+}
+.dafaultfile:before {
+  content: "\e93c";
+  color: #0684bd;
+}
+.defaultmusic:before {
+  content: "\e93d";
+  color: #0684bd;
+}
+.defaultvideo:before {
+  content: "\e93e";
+  color: #0684bd;
+}
+.zip:before {
+  content: "\e93f";
+  color: #0684bd;
+}
+.imagepreview:before {
+  content: "\e940";
+  color: #f6ad16;
 }
 .star:before {
   content: "\e90f";
