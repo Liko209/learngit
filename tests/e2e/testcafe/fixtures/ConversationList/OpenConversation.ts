@@ -91,7 +91,8 @@ test(formalName('Should display in the top when open a closed conversation from 
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension} and URL contain ${teamId}`, async () => {
-      NEW_URL = `${SITE_URL}/messages/${teamId}`;
+      const url = new URL(SITE_URL)
+      NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
       await h(t).directLoginWithUser(NEW_URL, user);
       await app.homePage.ensureLoaded();
     });
@@ -112,7 +113,7 @@ test(formalName('Should display in the top when open a closed conversation from 
   },
 );
 
-test(formalName('Shouldn not display in conversation list when last conversation was closed', ['P2', 'JPT-566', 'ConversationList', 'Yilia Hong']),
+test(formalName('Should not display in conversation list when last conversation was closed', ['P2', 'JPT-566', 'ConversationList', 'Yilia Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
