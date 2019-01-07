@@ -45,9 +45,6 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
     const types = Object.keys(this._activityData);
     let activity: any = {};
     switch (true) {
-      case !!source:
-        activity = config.source(source!);
-        break;
       case !!parentId:
         activity = config.children();
         break;
@@ -56,6 +53,9 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
         break;
       case !!types.length:
         activity = this._activityData[types[0]];
+        break;
+      case !!source:
+        activity = config.source(source!);
         break;
     }
     return activity;
