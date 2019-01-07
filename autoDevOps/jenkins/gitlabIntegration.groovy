@@ -6,6 +6,8 @@ import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
 final String SUCCESS_EMOJI = ':white_check_mark:'
 final String FAILURE_EMOJI = ':negative_squared_cross_mark:'
 final String ABORTED_EMOJI = ':no_entry:'
+final String UPWARD_EMOJI = ':chart_with_upwards_trend:'
+final String DOWNWARD_EMOJI = ':chart_with_downwards_trend:'
 
 // cancel old build to safe slave resources
 @NonCPS
