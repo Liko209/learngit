@@ -7,6 +7,7 @@ import * as React from 'react';
 import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
 import name2icon from './name2icon';
 import styled from '../../foundation/styled-components';
+import './icons/style.css';
 
 type JuiIconographyProps = MuiIconProps;
 

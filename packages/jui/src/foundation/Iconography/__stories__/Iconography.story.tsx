@@ -7,7 +7,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '..';
-import '../../../../../../application/public/icons/style.css';
+import '../icons/style.css';
 
 console.log(document.documentElement.style);
 
