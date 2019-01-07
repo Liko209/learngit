@@ -37,6 +37,11 @@ const publicUrl = "";
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
+// number of circular dependencies allowed, for the purpose of integrate with
+// current state of system, will reduce to 0 when these are fixed.
+const MAX_CYCLES = 43;
+let numCyclesDetected;
+
 /**
  * Select which plugins to use to optimize the bundle's handling of
  * third party dependencies.
@@ -121,7 +126,7 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: (info) =>
+    devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
@@ -349,8 +354,22 @@ module.exports = {
     }),
     // Detect circular dependencies
     new CircularDependencyPlugin({
-      exclude: /node_modules/, // exclude node_modules
-      failOnError: false // show a warning when there is a circular dependency
+      onStart({ compilation }) {
+        numCyclesDetected = 0;
+      },
+      onDetected({ module: webpackModuleRecord, paths, compilation }) {
+        numCyclesDetected++;
+        compilation.warnings.push(new Error(paths.join(" -> ")));
+      },
+      onEnd({ compilation }) {
+        if (numCyclesDetected > MAX_CYCLES) {
+          compilation.errors.push(
+            new Error(
+              `[circular dependency] Detected ${numCyclesDetected} cycles which exceeds configured limit of ${MAX_CYCLES}`
+            )
+          );
+        }
+      }
     }),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
@@ -362,7 +381,7 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          (dllPath) =>
+          dllPath =>
             new AddAssetHtmlPlugin({
               filepath: dllPath,
               includeSourcemap: false
