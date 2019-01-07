@@ -151,7 +151,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     e: React.MouseEvent<HTMLElement>,
   ) => {
     e.stopPropagation();
-    // const { joinTeam } = this.props;
+    const { joinTeam } = this.props;
     Dialog.confirm({
       title: t('joinTeamTitle'),
       content: t('joinTeamContent', { teamName }),
@@ -159,8 +159,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       cancelText: t('Cancel'),
       onOK: async () => {
         try {
-          // await joinTeam(id);
-          // await this._goToConversation(id);
+          await joinTeam(id);
+          await this._goToConversation(id);
         } catch (error) {}
       },
     });

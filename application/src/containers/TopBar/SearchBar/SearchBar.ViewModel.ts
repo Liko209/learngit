@@ -66,8 +66,8 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     return sectionCount <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
   }
 
-  async joinTeam(teamId: number) {
-    const useId = await this.currentUserId();
+  joinTeam = async (teamId: number) => {
+    const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     await this.nGroupService.joinTeam(useId, teamId);
   }
 
