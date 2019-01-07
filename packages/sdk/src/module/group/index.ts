@@ -1,1 +1,1 @@
-export * from './service/GroupService';
+export { GroupService as default } from './service/GroupService';

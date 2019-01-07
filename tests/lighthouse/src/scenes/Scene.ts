@@ -9,7 +9,7 @@ import { puppeteerUtils } from '../utils/PuppeteerUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
 import { metriceService } from '../services/MetricService';
-import { mockHelper } from '../mock/MockHelper';
+import { mockHelper } from '../mock';
 import * as reportGenerater from 'lighthouse/lighthouse-core/report/report-generator';
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
@@ -87,7 +87,7 @@ class Scene {
     }
 
     /**
-     * @description: scene pre handle  
+     * @description: scene pre handle
      */
     async preHandle() {
         this.config = new SceneConfig();

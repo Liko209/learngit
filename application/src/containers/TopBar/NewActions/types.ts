@@ -6,11 +6,6 @@
 
 type Props = {};
 
-type ViewProps = {
-  updateCreateTeamDialogState: () => void;
-  updateNewMessageDialogState: () => void;
-  isShowNewMessageDialog: boolean;
-  isShowCreateTeamDialog: boolean;
-};
+type ViewProps = {};
 
 export { Props, ViewProps };

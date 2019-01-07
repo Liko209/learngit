@@ -11,6 +11,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
+import { service } from 'sdk';
 
 class GroupHandler {
   static accessGroup(id: number) {
@@ -54,6 +55,7 @@ class GroupHandler {
 
 export class MessageRouterChangeHelper {
   static defaultPageId = 0;
+  static isIndexDone = false;
   static async getLastGroupId() {
     const stateService: StateService = StateService.getInstance();
     const state = await stateService.getMyState();
@@ -108,10 +110,21 @@ export class MessageRouterChangeHelper {
     const { state } = window.history.state || { state: {} };
     if (!state || !state.source || state.source !== 'leftRail') {
       const handler = SectionGroupHandler.getInstance();
-      handler.onReady(() => {
-        GroupHandler.ensureGroupOpened(id);
-        GroupHandler.accessGroup(id);
-      });
+      const triggerReady = () => {
+        handler.onReady(() => {
+          GroupHandler.ensureGroupOpened(id);
+          GroupHandler.accessGroup(id);
+        });
+      };
+      if (this.isIndexDone) {
+        triggerReady();
+      } else {
+        const { notificationCenter, SERVICE } = service;
+        notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+          this.isIndexDone = true;
+          triggerReady();
+        });
+      }
     }
   }
 }

@@ -32,7 +32,7 @@ class ProfileMiniCardGroupComponent extends Component<Props> {
 
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversation(id);
+    const result = goToConversation({ id });
     if (result) {
       MiniCard.dismissProfile();
     }

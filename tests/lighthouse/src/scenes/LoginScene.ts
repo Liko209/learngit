@@ -5,7 +5,7 @@
 import { Scene } from './Scene';
 import { SceneConfig } from './config/SceneConfig';
 import { jupiterUtils } from '../utils/JupiterUtils';
-import { mockHelper } from '../mock/MockHelper';
+import { mockHelper } from '../mock';
 import { HomePageGatherer } from '../gatherers/HomePageGatherer';
 
 class LoginScene extends Scene {

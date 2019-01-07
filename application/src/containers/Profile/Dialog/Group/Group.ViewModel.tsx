@@ -24,10 +24,6 @@ class ProfileDialogGroupViewModel
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
-
-  dismiss() {
-    this.props.dismiss();
-  }
 }
 
 export { ProfileDialogGroupViewModel };
