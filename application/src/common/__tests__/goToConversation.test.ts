@@ -23,11 +23,6 @@ beforeAll(() => {
     writable: true,
     value: {},
   });
-  window.history.state = {
-    state: {
-      source: 'leftRail',
-    },
-  };
   history.push = jest.fn().mockImplementation(jest.fn());
   history.replace = jest.fn().mockImplementation(jest.fn());
 });

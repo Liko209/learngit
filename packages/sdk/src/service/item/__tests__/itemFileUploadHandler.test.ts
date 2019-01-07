@@ -14,7 +14,7 @@ import notificationCenter from '../../notificationCenter';
 import { ItemService } from '../itemService';
 import { ItemFileUploadStatus } from '../itemFileUploadStatus';
 import { RequestHolder } from '../../../api/requestHolder';
-import { SENDING_STATUS } from '../../constants';
+import { PROGRESS_STATUS } from '../../../module';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { isInBeta } from '../../account/clientConfig';
 import { JServerError, ERROR_CODES_SERVER } from '../../../error';
@@ -66,6 +66,29 @@ describe('ItemFileUploadHandler', () => {
 
   beforeEach(() => {
     clearMocks();
+  });
+
+  describe('deleteFileCache', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should delete the cached item file status', () => {
+      const groupId = 1;
+      const progressCaches = new Map();
+      progressCaches.set(-1, {
+        itemFile: { group_ids: [groupId], versions: [{ size: 0.1 * 1 }] },
+        progress: { rate: { loaded: 10 } },
+      } as ItemFileUploadStatus);
+      Object.assign(itemFileUploadHandler, {
+        _progressCaches: progressCaches,
+      });
+
+      expect(progressCaches.get(-1)).not.toBeUndefined();
+      itemFileUploadHandler.deleteFileCache(-1);
+      expect(progressCaches.get(-1)).toBeUndefined();
+    });
   });
 
   describe('sendItemFile()', () => {
@@ -170,13 +193,13 @@ describe('ItemFileUploadHandler', () => {
         expect(itemDao.put).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
-          [{ groupId: 1, id: expect.any(Number), loaded: 10, total: 100 }],
+          [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
         );
         expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
-            status: SENDING_STATUS.INPROGRESS,
+            status: PROGRESS_STATUS.INPROGRESS,
             preInsertId: expect.any(Number),
             updatedId: expect.any(Number),
           },
@@ -209,10 +232,10 @@ describe('ItemFileUploadHandler', () => {
           expect.anything(),
         );
         expect(itemFileUploadHandler.getItemsSendStatus([fileItem.id])).toEqual(
-          [SENDING_STATUS.FAIL],
+          [PROGRESS_STATUS.FAIL],
         );
         expect(
-          itemFileUploadHandler.getUploadProgress(fileItem.id).loaded,
+          itemFileUploadHandler.getUploadProgress(fileItem.id).rate.loaded,
         ).toBe(-1);
         done();
       }, 1000);
@@ -260,7 +283,7 @@ describe('ItemFileUploadHandler', () => {
       for (let i = 1; i < 9; i++) {
         progressCaches.set(-i, {
           itemFile: { group_ids: [groupId], versions: [{ size: 0.1 * oneGB }] },
-          progress: { loaded: 10 },
+          progress: { rate: { loaded: 10 } },
         } as ItemFileUploadStatus);
 
         progressCaches.set(-5 * i, {
@@ -268,7 +291,7 @@ describe('ItemFileUploadHandler', () => {
             group_ids: [groupId + 1],
             versions: [{ size: 0.1 * oneGB }],
           },
-          progress: { loaded: 10 },
+          progress: { rate: { loaded: 10 } },
         } as ItemFileUploadStatus);
       }
 
@@ -422,7 +445,7 @@ describe('ItemFileUploadHandler', () => {
       } as ItemFile;
 
       const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
+      const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
       const file = {
         name: '1.ts',
         type: 'ts',
@@ -490,7 +513,7 @@ describe('ItemFileUploadHandler', () => {
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
-            status: SENDING_STATUS.SUCCESS,
+            status: PROGRESS_STATUS.SUCCESS,
             preInsertId: -3,
             updatedId: 10,
           },
@@ -540,11 +563,11 @@ describe('ItemFileUploadHandler', () => {
       await itemFileUploadHandler.sendItemData(groupId, [-3]);
 
       setTimeout(() => {
-        expect(progressCaches.get(-3).progress.loaded).toBe(-1);
+        expect(progressCaches.get(-3).progress.rate.loaded).toBe(-1);
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
-            status: SENDING_STATUS.FAIL,
+            status: PROGRESS_STATUS.FAIL,
             preInsertId: -3,
             updatedId: -3,
           },
@@ -564,21 +587,21 @@ describe('ItemFileUploadHandler', () => {
       notificationCenter.on.mockImplementation(
         (event: string | string[], listener: Listener) => {
           listener({
-            status: SENDING_STATUS.INPROGRESS,
+            status: PROGRESS_STATUS.INPROGRESS,
             preInsertId: -6,
             updatedId: -6,
           });
 
           progressCaches.get(-5).itemFile.versions = [validStoredFile];
           listener({
-            status: SENDING_STATUS.FAIL,
+            status: PROGRESS_STATUS.FAIL,
             preInsertId: -5,
             updatedId: -5,
           });
 
           progressCaches.get(-4).itemFile.versions = [validStoredFile];
           listener({
-            status: SENDING_STATUS.INPROGRESS,
+            status: PROGRESS_STATUS.INPROGRESS,
             preInsertId: -4,
             updatedId: -4,
           });
@@ -739,7 +762,7 @@ describe('ItemFileUploadHandler', () => {
 
       progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
+      const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
       const f = new FormData();
       const itemFileUploadStatus = {
         progress: p,
@@ -869,7 +892,7 @@ describe('ItemFileUploadHandler', () => {
       );
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: -3, total: 3, loaded: 5, groupId: 1 };
+      const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
       const f = new FormData();
       const itemFileUploadStatus = {
         progress: p,
@@ -916,7 +939,7 @@ describe('ItemFileUploadHandler', () => {
     it('should notify upload failed when can not find the cache of the item', async (done: jest.DoneCallback) => {
       const progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: 1, total: 3, loaded: 5, groupId: 1 };
+      const p: Progress = { id: 1, rate: { total: 3, loaded: 5 } };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -943,7 +966,7 @@ describe('ItemFileUploadHandler', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
-        expect(itemFileUploadHandler.getUploadProgress(5).loaded).toBe(-1);
+        expect(itemFileUploadHandler.getUploadProgress(5).rate.loaded).toBe(-1);
         done();
       }, 1000);
     });
@@ -1018,15 +1041,15 @@ describe('ItemFileUploadHandler', () => {
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
       progressCaches.set(-3, {
-        progress: { id: -3, total: 3, loaded: 5, groupId: 1 },
+        progress: { id: -3, rate: { total: 3, loaded: 5 } },
         requestHolder: r,
       });
       progressCaches.set(-4, {
-        progress: { id: -4, total: 3, loaded: 5, groupId: 1 },
+        progress: { id: -4, rate: { total: 3, loaded: 5 } },
         requestHolder: r,
       });
       progressCaches.set(-5, {
-        progress: { id: -5, total: 3, loaded: -1, groupId: 1 },
+        progress: { id: -5, rate: { total: 3, loaded: -1 } },
         requestHolder: r,
       });
       Object.assign(itemFileUploadHandler, {
@@ -1037,27 +1060,30 @@ describe('ItemFileUploadHandler', () => {
     it('should return SUCCESS when id > 0', () => {
       const ids = [1, 2];
       const result = itemFileUploadHandler.getItemsSendStatus(ids);
-      expect(result).toEqual([SENDING_STATUS.SUCCESS, SENDING_STATUS.SUCCESS]);
+      expect(result).toEqual([
+        PROGRESS_STATUS.SUCCESS,
+        PROGRESS_STATUS.SUCCESS,
+      ]);
     });
 
     it('should return FAIL when id is not in progress cache', () => {
       const ids = [-999];
       const result = itemFileUploadHandler.getItemsSendStatus(ids);
-      expect(result).toEqual([SENDING_STATUS.FAIL]);
+      expect(result).toEqual([PROGRESS_STATUS.FAIL]);
     });
 
     it('should return FAIL when progress is -1', () => {
       const ids = [-5];
       const result = itemFileUploadHandler.getItemsSendStatus(ids);
-      expect(result).toEqual([SENDING_STATUS.FAIL]);
+      expect(result).toEqual([PROGRESS_STATUS.FAIL]);
     });
 
     it('should return IN_PROGRESS when id is not in progress cache and has positive progress', () => {
       const ids = [-3, -4];
       const result = itemFileUploadHandler.getItemsSendStatus(ids);
       expect(result).toEqual([
-        SENDING_STATUS.INPROGRESS,
-        SENDING_STATUS.INPROGRESS,
+        PROGRESS_STATUS.INPROGRESS,
+        PROGRESS_STATUS.INPROGRESS,
       ]);
     });
   });

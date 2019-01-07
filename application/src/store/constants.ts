@@ -1,5 +1,6 @@
 enum ENTITY_NAME {
   'GROUP' = 'group',
+  'GROUP_CONFIG' = 'groupConfig',
   'PERSON' = 'person',
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',
@@ -13,8 +14,8 @@ enum ENTITY_NAME {
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
   'PROFILE' = 'profile',
-  'POST_SENT_STATUS' = 'postSendStatus',
   'GLOBAL' = 'global',
+  'PROGRESS' = 'progress',
 }
 
 enum HANDLER_TYPE {

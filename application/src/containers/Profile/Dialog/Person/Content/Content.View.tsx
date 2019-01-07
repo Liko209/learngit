@@ -99,7 +99,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     copyValue,
   }: FormGroupType) => {
     return (
-      <FormGroup>
+      <FormGroup key={value}>
         <FormLeft>{icon && this.renderIcon(icon)}</FormLeft>
         <FormRight>
           <FormLabel>{label}</FormLabel>

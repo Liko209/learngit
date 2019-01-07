@@ -20,7 +20,7 @@ import { ENTITY, SERVICE } from '../eventKey';
 import { FILE_FORM_DATA_KEYS } from './constants';
 import { ItemFileUploadStatus } from './itemFileUploadStatus';
 import { ItemService } from './itemService';
-import { SENDING_STATUS } from '../constants';
+import { PROGRESS_STATUS } from '../../module';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
 
@@ -92,7 +92,8 @@ class ItemFileUploadHandler {
       if (
         status.itemFile &&
         status.itemFile.group_ids.includes(groupId) &&
-        status.progress.loaded > -1
+        status.progress.rate &&
+        status.progress.rate.loaded > -1
       ) {
         files.push(status.itemFile);
       }
@@ -140,7 +141,7 @@ class ItemFileUploadHandler {
     uploadingItemFileIds: number[],
   ) {
     const listener = (params: {
-      status: SENDING_STATUS;
+      status: PROGRESS_STATUS;
       preInsertId: number;
       updatedId: number;
     }) => {
@@ -158,7 +159,7 @@ class ItemFileUploadHandler {
 
       const item = this._getCachedItem(preInsertId);
       if (
-        status === SENDING_STATUS.INPROGRESS &&
+        status === PROGRESS_STATUS.INPROGRESS &&
         item &&
         this._hasValidStoredFile(item)
       ) {
@@ -200,7 +201,7 @@ class ItemFileUploadHandler {
   }
 
   async resendFailedFile(itemId: number) {
-    this._updateFileProgress(itemId, SENDING_STATUS.INPROGRESS);
+    this._updateFileProgress(itemId, PROGRESS_STATUS.INPROGRESS);
 
     const itemDao = daoManager.getDao(ItemDao);
     const itemInDB = (await itemDao.get(itemId)) as ItemFile;
@@ -247,7 +248,7 @@ class ItemFileUploadHandler {
       }
     });
 
-    this._emitItemFileStatus(SENDING_STATUS.CANCELED, itemId, itemId);
+    this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.delete(itemId);
@@ -282,21 +283,21 @@ class ItemFileUploadHandler {
     }
   }
 
-  getItemsSendStatus(itemIds: number[]): SENDING_STATUS[] {
-    const result: SENDING_STATUS[] = [];
+  getItemsSendStatus(itemIds: number[]): PROGRESS_STATUS[] {
+    const result: PROGRESS_STATUS[] = [];
     itemIds.forEach((id: number) => {
       if (id > 0) {
-        result.push(SENDING_STATUS.SUCCESS);
+        result.push(PROGRESS_STATUS.SUCCESS);
       } else {
         const info = this._progressCaches.get(id);
         if (info) {
           result.push(
-            info.progress.loaded < 0
-              ? SENDING_STATUS.FAIL
-              : SENDING_STATUS.INPROGRESS,
+            info.progress.rate && info.progress.rate.loaded > -1
+              ? PROGRESS_STATUS.INPROGRESS
+              : PROGRESS_STATUS.FAIL,
           );
         } else {
-          result.push(SENDING_STATUS.FAIL);
+          result.push(PROGRESS_STATUS.FAIL);
         }
       }
     });
@@ -320,24 +321,24 @@ class ItemFileUploadHandler {
     return versionNumber;
   }
 
-  private _updateFileProgress(failedItemId: number, status: SENDING_STATUS) {
+  private _updateFileProgress(failedItemId: number, status: PROGRESS_STATUS) {
     const info = this._progressCaches.get(failedItemId);
-    if (info && info.progress) {
-      let loaded = info.progress.loaded;
+    if (info && info.progress && info.progress.rate) {
+      let loaded = info.progress.rate.loaded;
       switch (status) {
-        case SENDING_STATUS.FAIL:
+        case PROGRESS_STATUS.FAIL:
           loaded = -1;
           break;
-        case SENDING_STATUS.INPROGRESS:
+        case PROGRESS_STATUS.INPROGRESS:
           loaded = 0;
           break;
-        case SENDING_STATUS.SUCCESS:
-          loaded = info.progress.total;
+        case PROGRESS_STATUS.SUCCESS:
+          loaded = info.progress.rate.total;
           break;
         default:
           break;
       }
-      info.progress.loaded = loaded;
+      info.progress.rate.loaded = loaded;
       notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [info.progress]);
     }
   }
@@ -350,10 +351,8 @@ class ItemFileUploadHandler {
     const { loaded, total } = event;
     if (loaded && total) {
       const progress = {
-        total,
-        loaded,
-        groupId,
         id: itemId, // id is item id
+        rate: { total, loaded },
       };
 
       const uploadStatus = this._progressCaches.get(progress.id);
@@ -518,7 +517,7 @@ class ItemFileUploadHandler {
       _id: itemId,
       versions: [fileVersion],
     });
-    this._emitItemFileStatus(SENDING_STATUS.INPROGRESS, itemId, itemId);
+    this._emitItemFileStatus(PROGRESS_STATUS.INPROGRESS, itemId, itemId);
   }
 
   private _updateCachedFilesStatus(newItemFile: ItemFile) {
@@ -552,12 +551,10 @@ class ItemFileUploadHandler {
     await itemDao.delete(preInsertId);
     await itemDao.put(itemFile);
 
-    this._progressCaches.delete(preInsertId);
-
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
     notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
-    this._emitItemFileStatus(SENDING_STATUS.SUCCESS, preInsertId, itemFile.id);
+    this._emitItemFileStatus(PROGRESS_STATUS.SUCCESS, preInsertId, itemFile.id);
   }
 
   private _handleItemFileSendFailed<T>(
@@ -569,9 +566,9 @@ class ItemFileUploadHandler {
       return;
     }
 
-    this._updateFileProgress(preInsertId, SENDING_STATUS.FAIL);
+    this._updateFileProgress(preInsertId, PROGRESS_STATUS.FAIL);
 
-    this._emitItemFileStatus(SENDING_STATUS.FAIL, preInsertId, preInsertId);
+    this._emitItemFileStatus(PROGRESS_STATUS.FAIL, preInsertId, preInsertId);
   }
 
   private _partialUpdateItemFile(updateData: object) {
@@ -628,8 +625,7 @@ class ItemFileUploadHandler {
     const requestHolder: RequestHolder = { request: undefined };
     const progress = {
       id: preInsertItem.id,
-      total: 0,
-      loaded: 0,
+      rate: { total: 0, loaded: 0 },
     };
 
     const preInsertItemId = preInsertItem.id;
@@ -706,7 +702,7 @@ class ItemFileUploadHandler {
   }
 
   private _emitItemFileStatus(
-    status: SENDING_STATUS,
+    status: PROGRESS_STATUS,
     preInsertId: number,
     updatedId: number,
   ) {
@@ -749,6 +745,10 @@ class ItemFileUploadHandler {
   private _hasValidStoredFile(itemFile: ItemFile) {
     const version = itemFile.versions[0];
     return version && version.download_url.length > 0 && version.url.length > 0;
+  }
+
+  deleteFileCache(id: number) {
+    this._progressCaches.delete(id);
   }
 }
 

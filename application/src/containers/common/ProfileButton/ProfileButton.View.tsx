@@ -8,8 +8,6 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
 import { Dialog } from '@/containers/Dialog';
-// import { GroupTeamProfile } from '@/containers/GroupTeamProfile';
-import { MiniCard } from '@/containers/MiniCard';
 import {
   ProfileDialogGroup,
   ProfileDialogPerson,
@@ -27,7 +25,6 @@ class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
   private _onClickViewProfile = () => {
     const { id, typeId } = this.props;
     const Profile = MappingComponent[typeId];
-    MiniCard.dismissProfile();
     Dialog.simple(<Profile id={id} />, {
       size: 'medium',
     });

@@ -43,6 +43,10 @@ class ItemService extends BaseService<Item> {
     );
   }
 
+  deleteFileItemCache(id: number) {
+    this._getItemFileHandler().deleteFileCache(id);
+  }
+
   async sendItemData(groupId: number, itemIds: number[]) {
     const fileItemIds = itemIds.filter(
       id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
