@@ -42,12 +42,11 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    const itemDao = daoManager.getDao(ItemDao);
     // handle deactivated data and normal data
     this.handleSanitizedItems(transformedData);
     return baseHandleData({
       data: transformedData,
-      dao: itemDao,
+      dao: daoManager.getDao(ItemDao),
       eventKey: ENTITY.ITEM,
     });
   }
@@ -159,7 +158,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     await Promise.all(
       itemIds.map((id: number) => {
         if (GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE) {
-          this.fileService.resendFailedFiles(id);
+          this.fileService.resendFailedFile(id);
         }
       }),
     );

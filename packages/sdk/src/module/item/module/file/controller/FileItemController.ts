@@ -7,32 +7,31 @@ import { ControllerBuilder } from '../../../../../framework/controller/impl/Cont
 import { FileUploadController } from '../controller/FileUploadController';
 import { Api } from '../../../../../api';
 import { daoManager, ItemDao } from '../../../../../dao';
-import { FileItemDao } from '../dao/FileItemDao';
-import { SanitizedFileItem, FileItem } from '../entity';
+import { FileItem } from '../entity';
 import { IItemService } from '../../../service/IItemService';
 
 class FileItemController {
   private _fileUploadController: FileUploadController;
   constructor(
     private _itemService: IItemService,
-    public controllerBuilder: ControllerBuilder<FileItem>,
+    private _controllerBuilder: ControllerBuilder<FileItem>,
   ) {}
 
   get fileUploadController() {
     if (!this._fileUploadController) {
-      const itemRequestController = this.controllerBuilder.buildRequestController(
+      const itemRequestController = this._controllerBuilder.buildRequestController(
         {
           basePath: '/file',
           networkClient: Api.glipNetworkClient,
         },
       );
 
-      const entitySourceController = this.controllerBuilder.buildEntitySourceController(
+      const entitySourceController = this._controllerBuilder.buildEntitySourceController(
         daoManager.getDao(ItemDao),
         itemRequestController,
       );
 
-      const partialModifyController = this.controllerBuilder.buildPartialModifyController(
+      const partialModifyController = this._controllerBuilder.buildPartialModifyController(
         entitySourceController,
       );
 
@@ -46,29 +45,17 @@ class FileItemController {
     return this._fileUploadController;
   }
 
-  async updateItem(file: FileItem) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    await sanitizedDao.update(this._toSanitizedFile(file));
-  }
-
-  async deleteItem(itemId: number) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    await sanitizedDao.delete(itemId);
-  }
-
-  async createItem(file: FileItem) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    await sanitizedDao.put(this._toSanitizedFile(file));
-  }
-
-  private _toSanitizedFile(file: FileItem) {
-    return {
-      id: file.id,
-      group_ids: file.group_ids,
-      created_at: file.created_at,
-      name: file.name,
-      type: file.type,
-    } as SanitizedFileItem;
+  async isFileExists(groupId: number, fileName: string): Promise<boolean> {
+    if (groupId <= 0 || !fileName || fileName.trim().length === 0) {
+      return false;
+    }
+    const dao = daoManager.getDao(ItemDao) as ItemDao;
+    const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
+    return files.length > 0
+      ? files.some((x: FileItem) => {
+        return x.post_ids.length > 0;
+      })
+      : false;
   }
 }
 

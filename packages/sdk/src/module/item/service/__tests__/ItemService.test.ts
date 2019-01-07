@@ -9,14 +9,21 @@ import { ItemServiceController } from '../../controller/ItemServiceController';
 import { FileItemService } from '../../module/file';
 import { daoManager, ItemDao } from '../../../../dao';
 import { ItemFile, Item } from '../../entity';
-import { postFactory } from '../../../../__tests__/factories';
+import { postFactory, rawItemFactory } from '../../../../__tests__/factories';
 import { ItemActionController } from '../../controller/ItemActionController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { SubscribeController } from '../../../base/controller/SubscribeController';
 import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
+import { transform, baseHandleData } from '../../../../service/utils';
 
+jest.mock('../../../../service/utils', () => ({
+  baseHandleData: jest.fn(),
+  transform: jest.fn(),
+}));
+
+jest.mock('../../../../service/utils');
 jest.mock('../../controller/ItemActionController');
 jest.mock('../../../../dao');
 jest.mock('../../../../api');
@@ -34,8 +41,9 @@ describe('ItemService', () => {
     itemService = new ItemService();
     itemServiceController = new ItemServiceController(
       itemService.getControllerBuilder(),
+      null,
     );
-    fileItemService = new FileItemService();
+    fileItemService = new FileItemService(itemService);
     itemActionController = new ItemActionController(
       undefined as IPartialModifyController<Item>,
     );
@@ -138,9 +146,9 @@ describe('ItemService', () => {
     describe('resendFailedItems()', () => {
       it('should call file item service with correct parameter', async () => {
         const ids = [-2078572554, -801456138, -1];
-        fileItemService.resendFailedFiles = jest.fn();
+        fileItemService.resendFailedFile = jest.fn();
         await itemService.resendFailedItems(ids);
-        expect(fileItemService.resendFailedFiles).toBeCalledTimes(2);
+        expect(fileItemService.resendFailedFile).toBeCalledTimes(2);
       });
     });
 
@@ -435,6 +443,36 @@ describe('ItemService', () => {
       await expect(itemService.getRightRailItemsOfGroup(123)).resolves.toBe(
         mockLocalData,
       );
+    });
+  });
+
+  describe('handleIncomingData', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+
+      Object.assign(itemService, {
+        _itemServiceController: itemServiceController,
+      });
+
+      itemServiceController.handleSanitizedItems = jest.fn();
+    });
+
+    it('should insert transformed data', async () => {
+      const item = rawItemFactory.build({ _id: 1 });
+      delete item.id;
+      await itemService.handleIncomingData([item]);
+      expect(itemServiceController.handleSanitizedItems).toHaveBeenCalled();
+      expect(baseHandleData).toHaveBeenCalled();
+      expect(transform).toHaveBeenCalledTimes(1);
+      expect(daoManager.getDao).toHaveBeenCalled();
+    });
+
+    it('should insert nothing', async () => {
+      const ret = await itemService.handleIncomingData([]);
+      expect(itemServiceController.handleSanitizedItems).not.toHaveBeenCalled();
+      expect(baseHandleData).not.toHaveBeenCalled();
+      expect(ret).toBeUndefined();
     });
   });
 });

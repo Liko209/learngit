@@ -45,7 +45,6 @@ function clearMocks() {
 }
 
 describe('fileUploadController', () => {
-  // const fileService = new FileItemService();
   const itemService = new ItemService();
   const itemDao = new ItemDao(null);
   const partialModifyController = new PartialModifyController(null);

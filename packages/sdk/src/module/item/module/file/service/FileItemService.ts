@@ -6,11 +6,13 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { FileItemController } from '../controller/FileItemController';
-import { ItemFile, Item } from '../../../entity';
-import { daoManager, ItemDao } from '../../../../../dao';
+import { ItemFile } from '../../../entity';
+import { daoManager } from '../../../../../dao';
 import { Progress } from '../../../../progress';
 import { EntityBaseService } from '../../../../../framework/service/EntityBaseService';
 import { IItemService } from '../../../service/IItemService';
+import { FileItemDao } from '../dao/FileItemDao';
+import { SanitizedFileItem, FileItem } from '../entity';
 
 class FileItemService extends EntityBaseService<ItemFile>
   implements ISubItemService {
@@ -80,21 +82,12 @@ class FileItemService extends EntityBaseService<ItemFile>
     return await this.fileUploadController.hasValidItemFile(itemId);
   }
 
-  async resendFailedFiles(itemId: number) {
+  async resendFailedFile(itemId: number) {
     await this.fileUploadController.resendFailedFile(itemId);
   }
 
   async isFileExists(groupId: number, fileName: string): Promise<boolean> {
-    if (groupId <= 0 || !fileName || fileName.trim().length === 0) {
-      return false;
-    }
-    const dao = daoManager.getDao(ItemDao) as ItemDao;
-    const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
-    return files.length > 0
-      ? files.some((x: Item) => {
-        return x.post_ids.length > 0;
-      })
-      : false;
+    return await this.fileItemController.isFileExists(groupId, fileName);
   }
 
   canUploadFiles(
@@ -121,16 +114,29 @@ class FileItemService extends EntityBaseService<ItemFile>
     this.fileUploadController.cleanUploadingFiles(groupId, itemIds);
   }
 
-  async updateItem(file: ItemFile) {
-    await this._fileItemController.updateItem(file);
+  async updateItem(file: FileItem) {
+    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
+    await sanitizedDao.update(this._toSanitizedFile(file));
   }
 
   async deleteItem(itemId: number) {
-    await this._fileItemController.deleteItem(itemId);
+    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
+    await sanitizedDao.delete(itemId);
   }
 
-  async createItem(file: ItemFile) {
-    await this._fileItemController.createItem(file);
+  async createItem(file: FileItem) {
+    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
+    await sanitizedDao.put(this._toSanitizedFile(file));
+  }
+
+  private _toSanitizedFile(file: FileItem) {
+    return {
+      id: file.id,
+      group_ids: file.group_ids,
+      created_at: file.created_at,
+      name: file.name,
+      type: file.type,
+    } as SanitizedFileItem;
   }
 }
 
