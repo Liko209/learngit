@@ -8,8 +8,11 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
 import { Progress } from 'sdk/models';
 import { Post } from 'sdk/module/post/entity';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { t } from 'i18next';
+import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
   PostService,
@@ -112,7 +115,28 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   removeFile = async (id: number) => {
-    await this._postService.cancelUpload(this._postId, id);
+    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
+    if (status === 'offline') {
+      Notification.flashToast({
+        message: t('notAbleToCancelUpload'),
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+      });
+    } else {
+      try {
+        await this._postService.cancelUpload(this._postId, id);
+      } catch (e) {
+        Notification.flashToast({
+          message: t('notAbleToCancelUploadTryAgain'),
+          type: 'error',
+          messageAlign: 'left',
+          fullWidth: false,
+          dismissible: false,
+        });
+      }
+    }
   }
 }
 
