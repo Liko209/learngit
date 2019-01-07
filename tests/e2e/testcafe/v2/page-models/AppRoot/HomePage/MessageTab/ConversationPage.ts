@@ -329,7 +329,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
-<<<<<<< HEAD
+
   get editTextArea()
   {
     return this.self.find('[data-placeholder="Type new message"]');
@@ -340,14 +340,14 @@ export class PostItem extends BaseWebComponent {
       .typeText(this.editTextArea, message)
       .click(this.editTextArea)
       .pressKey('enter');
-=======
+  }
+
   get mentions() {
     return this.text.find('.at_mention_compose');
   }
 
   getMentionByName(name: string) {
     return this.mentions.filter((el) => el.textContent === name);
->>>>>>> develop
   }
 
   imgTitle(text) {
