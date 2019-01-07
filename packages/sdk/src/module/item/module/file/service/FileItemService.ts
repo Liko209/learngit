@@ -10,10 +10,15 @@ import { ItemFile, Item } from '../../../entity';
 import { daoManager, ItemDao } from '../../../../../dao';
 import { Progress } from '../../../../progress';
 import { EntityBaseService } from '../../../../../framework/service/EntityBaseService';
+import { IItemService } from '../../../service/IItemService';
 
 class FileItemService extends EntityBaseService<ItemFile>
   implements ISubItemService {
   private _fileItemController: FileItemController;
+
+  constructor(private _itemService: IItemService) {
+    super();
+  }
 
   getSortedIds(
     groupId: number,
@@ -25,11 +30,10 @@ class FileItemService extends EntityBaseService<ItemFile>
     return [];
   }
 
-  updateItem(item: Item) {}
-
   protected get fileItemController() {
     if (!this._fileItemController) {
       this._fileItemController = new FileItemController(
+        this._itemService,
         this.getControllerBuilder(),
       );
     }
@@ -115,6 +119,18 @@ class FileItemService extends EntityBaseService<ItemFile>
 
   cleanUploadingFiles(groupId: number, itemIds: number[]) {
     this.fileUploadController.cleanUploadingFiles(groupId, itemIds);
+  }
+
+  async updateItem(file: ItemFile) {
+    await this._fileItemController.updateItem(file);
+  }
+
+  async deleteItem(itemId: number) {
+    await this._fileItemController.deleteItem(itemId);
+  }
+
+  async createItem(file: ItemFile) {
+    await this._fileItemController.createItem(file);
   }
 }
 

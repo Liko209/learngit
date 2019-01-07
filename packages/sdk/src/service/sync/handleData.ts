@@ -15,7 +15,6 @@ import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import groupHandleData from '../group/handleData';
-import itemHandleData from '../../module/item/service/handleData';
 import notificationCenter from '../notificationCenter';
 import personHandleData from '../person/handleData';
 import postHandleData from '../post/handleData';
@@ -27,7 +26,7 @@ import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
 import { Raw } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
-
+import ItemService from '../../module/item';
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
     user_id: userId,
@@ -63,7 +62,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
       profileId: profile ? profile._id : undefined,
     }), // eslint-disable-line no-underscore-dangle, no-undefined
     companyHandleData(companies),
-    itemHandleData(items),
+    (ItemService.getInstance() as ItemService).handleIncomingData(items),
     presenceHandleData(presences),
     stateHandleData(arrState),
     // featureFlag.handleData(clientConfig),

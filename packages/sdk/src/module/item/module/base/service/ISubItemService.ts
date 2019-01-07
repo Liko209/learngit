@@ -15,6 +15,10 @@ interface ISubItemService {
   ): number[];
 
   updateItem(item: Item): void;
+
+  deleteItem(itemId: number): void;
+
+  createItem(item: Item): void;
 }
 
 export { ISubItemService };

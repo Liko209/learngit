@@ -11,11 +11,11 @@ import { daoManager, ItemDao } from '../../../../../../dao';
 import ItemAPI from '../../../../../../api/glip/item';
 import { ApiResultOk, ApiResultErr } from '../../../../../../api/ApiResult';
 import notificationCenter from '../../../../../../service/notificationCenter';
-import AccountService from '../../../../../../service/account';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
-import { ENTITY, SERVICE } from '../../../../../../service';
+import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
 import { BaseError } from '../../../../../../utils';
+import { UserConfig } from '../../../../../../service/account/UserConfig';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
@@ -23,13 +23,15 @@ import {
   FileUploadController,
   ItemFileUploadStatus,
 } from '../FileUploadController';
+import { ItemService } from '../../../../service/ItemService';
 
+jest.mock('../../../../service/ItemService');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
 );
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../service/account/clientConfig');
-jest.mock('../../../../../../service/account');
+jest.mock('../../../../../../service/account/UserConfig');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../../../dao');
 jest.mock('../../../../../../service/notificationCenter');
@@ -44,7 +46,7 @@ function clearMocks() {
 
 describe('fileUploadController', () => {
   // const fileService = new FileItemService();
-  const accountService = new AccountService();
+  const itemService = new ItemService();
   const itemDao = new ItemDao(null);
   const partialModifyController = new PartialModifyController(null);
   const fileRequestController = new RequestController(null);
@@ -54,19 +56,20 @@ describe('fileUploadController', () => {
     const userId = 2;
     const companyId = 3;
     daoManager.getDao.mockReturnValue(itemDao);
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-    accountService.getCurrentCompanyId.mockReturnValue(companyId);
-    accountService.getCurrentUserId.mockReturnValue(userId);
 
-    itemDao.put.mockImplementation(() => {});
-    itemDao.update.mockImplementation(() => {});
-    itemDao.delete.mockImplementation(() => {});
+    UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
+    UserConfig.getCurrentUserId.mockReturnValue(userId);
+
+    itemService.createItem.mockImplementation(() => {});
+    itemService.updateItem.mockImplementation(() => {});
+    itemService.deleteItem.mockImplementation(() => {});
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
 
     fileUploadController = new FileUploadController(
+      itemService,
       partialModifyController,
       fileRequestController,
     );
@@ -194,7 +197,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
-        expect(itemDao.put).toBeCalledTimes(1);
+        expect(itemService.createItem).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
           [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
@@ -812,7 +815,7 @@ describe('fileUploadController', () => {
         ENTITY.ITEM,
         expect.anything(),
       );
-      expect(itemDao.delete).toBeCalledTimes(1);
+      expect(itemService.deleteItem).toBeCalledTimes(1);
       expect(uploadingFiles.get(1)).toHaveLength(1);
       expect(uploadingFiles.get(2)).toHaveLength(3);
       expect(progressCaches.get(-3)).not.toBeUndefined();
@@ -822,7 +825,7 @@ describe('fileUploadController', () => {
     it('should delete item and send notification', async () => {
       const itemId = -3;
       await fileUploadController.cancelUpload(itemId);
-      expect(itemDao.delete).toBeCalledTimes(1);
+      expect(itemService.deleteItem).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
       expect(progressCaches.get(itemId)).toBeUndefined();
       expect(progressCaches.get(-4)).not.toBeUndefined();
@@ -889,8 +892,8 @@ describe('fileUploadController', () => {
           itemWithVersion.name,
           true,
         );
-        expect(itemDao.delete).toBeCalledWith(itemWithVersion.id);
-        expect(itemDao.put).toBeCalledWith(serverItemFile);
+        expect(itemService.deleteItem).toBeCalledWith(itemWithVersion.id);
+        expect(itemService.updateItem).toBeCalledWith(serverItemFile);
         expect(fileRequestController.put).toBeCalledTimes(1);
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();

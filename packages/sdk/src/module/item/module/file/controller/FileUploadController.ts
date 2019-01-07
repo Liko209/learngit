@@ -6,6 +6,7 @@
 
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
+import { daoManager, ItemDao } from '../../../../../dao';
 import { Progress, PROGRESS_STATUS } from '../../../../progress';
 import { Raw } from '../../../../../framework/model';
 import { StoredFile, ItemFile } from '../../../entity';
@@ -14,16 +15,16 @@ import { AmazonFileUploadPolicyData } from '../../../../../api/glip/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 import { versionHash } from '../../../../../utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
+import { ENTITY, SERVICE } from '../../../../../service/eventKey';
+import notificationCenter from '../../../../../service/notificationCenter';
+import { UserConfig } from '../../../../../service/account/UserConfig';
+import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
+import { IItemService } from '../../../service/IItemService';
 import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
-import { ENTITY, SERVICE } from '../../../../../service';
-import notificationCenter from '../../../../../service/notificationCenter';
-import AccountService from '../../../../../service/account';
-import { daoManager, ItemDao } from '../../../../../dao';
-import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
-import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -40,6 +41,7 @@ class FileUploadController {
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
 
   constructor(
+    private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<ItemFile>,
     private _fileRequestController: IRequestController<ItemFile>,
   ) {}
@@ -265,8 +267,7 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.delete(itemId);
+    this._itemService.deleteItem(itemId);
     notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
   }
 
@@ -521,13 +522,12 @@ class FileUploadController {
     groupId: number,
     preInsertItem: ItemFile,
   ) {
-    const itemDao = daoManager.getDao(ItemDao);
     const fileVersion = this._toFileVersion(storedFile);
     preInsertItem.versions = [fileVersion];
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    await itemDao.update(preInsertItem);
+    this._itemService.updateItem(preInsertItem);
     const itemId = preInsertItem.id;
 
     const preHandlePartial = (
@@ -578,9 +578,8 @@ class FileUploadController {
     itemFile: ItemFile,
   ) {
     const preInsertId = preInsertItem.id;
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.delete(preInsertId);
-    await itemDao.put(itemFile);
+    await this._itemService.deleteItem(preInsertId);
+    await this._itemService.updateItem(itemFile);
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
@@ -664,9 +663,7 @@ class FileUploadController {
   private async _preSaveItemFile(newItemFile: ItemFile, file: File) {
     this._saveItemFileToUploadingFiles(newItemFile);
     this._saveItemFileToProgressCache(newItemFile, file);
-
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.put(newItemFile);
+    await this._itemService.createItem(newItemFile);
   }
 
   private _toItemFile(
@@ -674,9 +671,8 @@ class FileUploadController {
     file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const accountService: AccountService = AccountService.getInstance();
-    const userId = accountService.getCurrentUserId() as number;
-    const companyId = accountService.getCurrentCompanyId() as number;
+    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userId: number = UserConfig.getCurrentUserId();
     const now = Date.now();
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {

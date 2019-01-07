@@ -6,7 +6,7 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
-import AccountService from 'sdk/service/account';
+import { UserConfig } from 'sdk/service/account';
 import { BaseError, ErrorTypes } from 'sdk/utils';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
@@ -75,8 +75,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   ) => {
     const { isPublic, canPost } = options;
     const groupService: GroupService = GroupService.getInstance();
-    const accountService: AccountService = AccountService.getInstance();
-    const creatorId = Number(accountService.getCurrentUserId());
+    const creatorId = Number(UserConfig.getCurrentUserId());
     const result = await groupService.createTeam(
       name,
       creatorId,

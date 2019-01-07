@@ -46,7 +46,7 @@ import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
-import AccountService from '../account';
+import { UserConfig } from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
 import {
@@ -594,8 +594,7 @@ class GroupService extends BaseService<Group> {
   }
 
   private _isCurrentUserInGroup(group: Group) {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+    const currentUserId = UserConfig.getCurrentUserId();
     return group
       ? group.members.some((x: number) => x === currentUserId)
       : false;
@@ -608,8 +607,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+    const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
@@ -661,8 +659,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+    const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
@@ -730,8 +727,7 @@ class GroupService extends BaseService<Group> {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const accountService: AccountService = AccountService.getInstance();
-    const userId = accountService.getCurrentUserId();
+    const userId = UserConfig.getCurrentUserId();
     if (userId) {
       ids.push(userId);
     }

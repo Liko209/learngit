@@ -13,13 +13,15 @@ import { Post } from '../../post/entity';
 import ItemAPI, { IRightRailItemModel } from '../../../api/glip/item';
 import { ApiResult } from '../../../api/ApiResult';
 import { ItemDao, daoManager } from '../../../dao';
-import handleData from './handleData';
-import { SOCKET } from '../../../service';
+import { SOCKET, ENTITY } from '../../../service/eventKey';
 import { FileItemService } from '../module/file';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
+import { IItemService } from './IItemService';
+import { transform, baseHandleData } from '../../../service/utils';
+import { Raw } from '../../../framework/model';
 
-class ItemService extends EntityBaseService<Item> {
+class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';
 
   private _itemServiceController: ItemServiceController;
@@ -30,9 +32,24 @@ class ItemService extends EntityBaseService<Item> {
     this.setEntitySource(this._buildEntitySourceController());
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.ITEM]: handleData,
+        [SOCKET.ITEM]: this.handleIncomingData,
       }),
     );
+  }
+
+  handleIncomingData = async (items: Raw<Item>[]) => {
+    if (items.length === 0) {
+      return;
+    }
+    const transformedData = items.map(item => transform<Item>(item));
+    const itemDao = daoManager.getDao(ItemDao);
+    // handle deactivated data and normal data
+    this.handleSanitizedItems(transformedData);
+    return baseHandleData({
+      data: transformedData,
+      dao: itemDao,
+      eventKey: ENTITY.ITEM,
+    });
   }
 
   private _buildEntitySourceController() {
@@ -52,6 +69,7 @@ class ItemService extends EntityBaseService<Item> {
   protected get itemServiceController() {
     if (!this._itemServiceController) {
       this._itemServiceController = new ItemServiceController(
+        this,
         this.getControllerBuilder(),
       );
     }
@@ -77,15 +95,15 @@ class ItemService extends EntityBaseService<Item> {
   }
 
   async createItem(item: Item) {
-    return this.itemServiceController.createItem(item);
+    return await this.itemServiceController.createItem(item);
   }
 
   async updateItem(item: Item) {
-    return this.itemServiceController.updateItem(item);
+    return await this.itemServiceController.updateItem(item);
   }
 
   async deleteItem(itemId: number) {
-    return this.itemServiceController.deleteItem(itemId);
+    return await this.itemServiceController.deleteItem(itemId);
   }
 
   protected get fileService() {
@@ -196,7 +214,7 @@ class ItemService extends EntityBaseService<Item> {
     ItemAPI.requestRightRailItems(groupId).then(
       (result: ApiResult<IRightRailItemModel>) => {
         if (result.isOk()) {
-          handleData(result.data.items);
+          this.handleIncomingData(result.data.items);
         }
       },
     );
@@ -211,6 +229,10 @@ class ItemService extends EntityBaseService<Item> {
       id,
       type,
     );
+  }
+
+  async handleSanitizedItems(items: Item[]) {
+    return await this.itemServiceController.handleSanitizedItems(items);
   }
 }
 

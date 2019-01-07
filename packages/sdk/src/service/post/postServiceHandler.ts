@@ -10,11 +10,11 @@ import {
 } from '../../dao/account/constants';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
+import { RawPostInfo } from './types';
+import { GlipTypeUtil, TypeDictionary } from '../../utils';
 import { Post, PostItemData } from '../../module/post/entity';
 import { ItemFile } from '../../module/item/entity';
-import { RawPostInfo } from './types';
-import { ItemService } from '../../module';
-import { GlipTypeUtil, TypeDictionary } from '../../utils';
+import ItemService from '../../module/item';
 
 // global_url_regex
 export type LinksArray = { url: string }[];

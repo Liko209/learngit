@@ -6,7 +6,8 @@
 
 import { ISubscribeController } from '../../../framework/controller/interface/ISubscribeController';
 import dataDispatcher from '../../../component/DataDispatcher';
-import { SOCKET, notificationCenter } from '../../../service';
+import { SOCKET } from '../../../service/eventKey';
+import notificationCenter from '../../../service/notificationCenter';
 
 class SubscribeController implements ISubscribeController {
   constructor(private _subscriptions: Object = {}) {}

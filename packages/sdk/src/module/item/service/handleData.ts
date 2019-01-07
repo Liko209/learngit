@@ -9,19 +9,23 @@ import { ENTITY } from '../../../service/eventKey';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Item } from '../entity';
 import { Raw } from '../../../framework/model';
+import { IItemService } from './IItemService';
 
-const itemHandleData = async (items: Raw<Item>[]) => {
-  if (items.length === 0) {
-    return;
-  }
-  const transformedData = items.map(item => transform<Item>(item));
-  const itemDao = daoManager.getDao(ItemDao);
-  // handle deactivated data and normal data
-  return baseHandleData({
-    data: transformedData,
-    dao: itemDao,
-    eventKey: ENTITY.ITEM,
-  });
+const buildItemDataHandler = (itemService: IItemService) => {
+  return async (items: Raw<Item>[]) => {
+    if (items.length === 0) {
+      return;
+    }
+    const transformedData = items.map(item => transform<Item>(item));
+    const itemDao = daoManager.getDao(ItemDao);
+    // handle deactivated data and normal data
+    itemService.handleSanitizedItems(transformedData);
+    return baseHandleData({
+      data: transformedData,
+      dao: itemDao,
+      eventKey: ENTITY.ITEM,
+    });
+  };
 };
 
 const extractFileNameAndType = (storagePath: string) => {
@@ -43,4 +47,4 @@ const extractFileNameAndType = (storagePath: string) => {
 };
 
 export { extractFileNameAndType };
-export default itemHandleData;
+export default buildItemDataHandler;

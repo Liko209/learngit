@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { BaseResponse, ok, err } from 'foundation';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
-import AccountService from '../../account';
+import { UserConfig } from '../../account/UserConfig';
 import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
@@ -34,7 +34,7 @@ jest.mock('../../../dao');
 jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
-jest.mock('../../../service/account');
+jest.mock('../../account/UserConfig');
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/company');
 jest.mock('../../../service/post');
@@ -42,14 +42,12 @@ jest.mock('../../../api/glip/group');
 
 const profileService = new ProfileService();
 const personService = new PersonService();
-const accountService = new AccountService();
 
 beforeEach(() => {
   jest.clearAllMocks();
 
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 });
 
 describe('GroupService', () => {
@@ -209,7 +207,7 @@ describe('GroupService', () => {
 
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
-    accountService.getCurrentUserId.mockReturnValueOnce(1);
+    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
     daoManager.getKVDao.mockReturnValueOnce(accountDao);
     daoManager.getDao.mockReturnValueOnce(groupDao);
     accountDao.get.mockReturnValue(1); // userId
@@ -621,7 +619,7 @@ describe('GroupService', () => {
   describe('doFuzzySearch', () => {
     function prepareGroupsForSearch() {
       personService.enableCache();
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
 
       const person1: Person = {
         id: 11001,
@@ -809,7 +807,7 @@ describe('GroupService', () => {
     const groupService: GroupService = new GroupService();
 
     beforeEach(() => {
-      accountService.getCurrentUserId.mockReturnValueOnce(3);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(3);
     });
 
     const mockNormal = { id: 1 };
@@ -823,7 +821,7 @@ describe('GroupService', () => {
       const result1 = await groupService.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(accountService.getCurrentUserId).toBeCalled();
+      expect(UserConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(result1).toHaveProperty('data', mockNormal);
     });
@@ -838,7 +836,7 @@ describe('GroupService', () => {
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(accountService.getCurrentUserId).toBeCalled();
+      expect(UserConfig.getCurrentUserId).toBeCalled();
       expect(result2).toHaveProperty('data', mockNormal);
     });
 
@@ -862,7 +860,7 @@ describe('GroupService', () => {
       const curUserId = 3;
       daoManager.getKVDao.mockReturnValue(accountDao);
       accountDao.get.mockReturnValue(3);
-      accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
@@ -907,7 +905,7 @@ describe('GroupService', () => {
         favorite_group_ids: groupIds,
       });
 
-      accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');
@@ -956,7 +954,7 @@ describe('GroupService', () => {
   describe('buildGroupFeatureMap', () => {
     const userId = 3;
     beforeEach(() => {
-      accountService.getCurrentUserId.mockReturnValueOnce(userId);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(userId);
     });
 
     it('should have message permission when the user is not in group', async () => {

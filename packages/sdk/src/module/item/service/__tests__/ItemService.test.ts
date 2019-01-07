@@ -12,14 +12,12 @@ import { ItemFile, Item } from '../../entity';
 import { postFactory } from '../../../../__tests__/factories';
 import { ItemActionController } from '../../controller/ItemActionController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import handleData from '../handleData';
 import { SubscribeController } from '../../../base/controller/SubscribeController';
 import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
 
 jest.mock('../../controller/ItemActionController');
-jest.mock('../handleData');
 jest.mock('../../../../dao');
 jest.mock('../../../../api');
 jest.mock('../../module/file');
@@ -400,6 +398,7 @@ describe('ItemService', () => {
         ),
       );
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+      itemService.handleIncomingData = jest.fn();
     });
 
     afterAll(() => {
@@ -410,7 +409,7 @@ describe('ItemService', () => {
       itemService.getRightRailItemsOfGroup(123, 1);
       expect(ItemAPI.requestRightRailItems).toHaveBeenCalledWith(123);
       expect(itemDao.getItemsByGroupId).toHaveBeenCalledWith(123, 1);
-      expect(handleData).not.toHaveBeenCalled();
+      expect(itemService.handleIncomingData).not.toHaveBeenCalled();
     });
 
     it('should call handleData if api gets the data', (done: any) => {
@@ -425,7 +424,7 @@ describe('ItemService', () => {
       );
       itemService.getRightRailItemsOfGroup(123);
       setTimeout(() => {
-        expect(handleData).toHaveBeenCalled();
+        expect(itemService.handleIncomingData).toHaveBeenCalled();
         done();
       });
     });

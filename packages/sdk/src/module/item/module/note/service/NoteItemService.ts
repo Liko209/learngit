@@ -25,6 +25,10 @@ class NoteItemService extends EntityBaseService implements ISubItemService {
 
   updateItem(item: Item) {}
 
+  createItem(item: Item) {}
+
+  deleteItem(itemId: number) {}
+
   getSortedIds(
     groupId: number,
     limit: number,

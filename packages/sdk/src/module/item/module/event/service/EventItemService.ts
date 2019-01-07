@@ -23,6 +23,10 @@ class EventItemService extends EntityBaseService implements ISubItemService {
   }
 
   updateItem(item: Item) {}
+
+  createItem(item: Item) {}
+
+  deleteItem(itemId: number) {}
 }
 
 export { EventItemService };
