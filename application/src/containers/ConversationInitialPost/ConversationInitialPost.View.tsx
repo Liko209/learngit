@@ -29,13 +29,14 @@ class ConversationInitialPost extends React.Component<
 
   private get _name() {
     const { creator, creatorGroupId } = this.props;
+
     return (
       <JuiLink
         Component={props => (
           <Link to={`/messages/${creatorGroupId}`} {...props} />
         )}
       >
-        {creator.displayName}
+        {creator.userDisplayName}
       </JuiLink>
     );
   }
@@ -56,7 +57,7 @@ class ConversationInitialPost extends React.Component<
             {t('directMessageDescription', { displayName })}
           </StyledSpan>
         )}
-        {(isTeam && groupDescription) ? (
+        {isTeam && groupDescription ? (
           <StyledDescription>{groupDescription}</StyledDescription>
         ) : null}
       </JuiConversationInitialPostHeader>
