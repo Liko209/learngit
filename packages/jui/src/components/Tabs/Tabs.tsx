@@ -96,8 +96,8 @@ class JuiTabs extends PureComponent<Props, States> {
         parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    console.log('tabs', `_moreWidth: ${this._moreWidth}`);
-    console.log('tabs', `_containerWidth: ${this._containerWidth}`);
+    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+    // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
     this._measureTabWidths();
     this._calculateIndexTabsAndIndexMenus();
     // todo resize listener
