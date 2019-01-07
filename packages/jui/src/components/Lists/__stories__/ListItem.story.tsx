@@ -19,7 +19,7 @@ import {
   JuiListItemSecondaryAction,
 } from '../index';
 import styled from '../../../foundation/styled-components';
-import pdfIcon from '../statics/pdf_conversation_xxh.png';
+import pdfIcon from '../../../assets/pdf_conversation_xxh.png';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
 import { width, height } from '../../../foundation/utils';
 // import { spacing } from '../../../foundation/utils';
