@@ -585,7 +585,7 @@ describe('RTC call', () => {
         done();
       });
     });
-    it('should notify transfer failed when transfer in connected state and session notify transfer failed. [JPT-674]', done => {
+    it('should notify transfer failed when transfer in connected state and session notify transfer failed. [JPT-675]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
