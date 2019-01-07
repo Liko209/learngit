@@ -674,13 +674,19 @@ class GroupService extends BaseService<Group> {
             break;
           }
 
-          if (this.isStartWithMatched(team.set_abbreviation, terms)) {
-            sortValue = 1;
-            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
-          } else if (this.isFuzzyMatched(team.set_abbreviation, terms)) {
-            sortValue = 0;
-            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          if (!this.isFuzzyMatched(team.set_abbreviation, terms)) {
+            break;
           }
+
+          if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
+            break;
+          }
+
+          if (this.isStartWithMatched(team.set_abbreviation, [terms[0]])) {
+            sortValue = 1;
+          }
+
+          isMatched = true;
         } while (false);
 
         return isMatched
