@@ -89,10 +89,15 @@ class JuiTabs extends PureComponent<Props, States> {
     }
     const domContainer = this._containerRef.current;
     if (domContainer) {
-      this._containerWidth = domContainer.getBoundingClientRect().width - 16; // reduce padding
+      const cs = window.getComputedStyle(domContainer);
+      const paddingX =
+        parseFloat(cs.paddingLeft!) + parseFloat(cs.paddingRight!);
+      const borderX =
+        parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
+      this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
-    // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
+    console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+    console.log('tabs', `_containerWidth: ${this._containerWidth}`);
     this._measureTabWidths();
     this._calculateIndexTabsAndIndexMenus();
     // todo resize listener
@@ -280,18 +285,20 @@ class JuiTabs extends PureComponent<Props, States> {
       return null; // select menu list tab
     }
     return (
-      <div ref={this._containerRef}>
-        <StyledTabs
-          value={indexSelected}
-          onChange={this._handleChangeTab}
-          indicatorColor="primary"
-          textColor="primary"
-          classes={CLASSES.tabs}
-        >
-          {indexTabs.length === 0 && indexMenus.length === 0
-            ? this._renderAllTab()
-            : this._renderFinalTab()}
-        </StyledTabs>
+      <div>
+        <RootRef rootRef={this._containerRef}>
+          <StyledTabs
+            value={indexSelected}
+            onChange={this._handleChangeTab}
+            indicatorColor="primary"
+            textColor="primary"
+            classes={CLASSES.tabs}
+          >
+            {indexTabs.length === 0 && indexMenus.length === 0
+              ? this._renderAllTab()
+              : this._renderFinalTab()}
+          </StyledTabs>
+        </RootRef>
       </div>
     );
   }
