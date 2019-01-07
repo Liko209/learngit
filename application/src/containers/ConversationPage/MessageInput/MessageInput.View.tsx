@@ -44,6 +44,12 @@ class MessageInputViewComponent extends Component<
     this.props.forceSaveDraft();
   }
 
+  componentWillReceiveProps(nextProps: MessageInputViewProps) {
+    if (this.props.id !== nextProps.id) {
+      this.props.cellWillChange(nextProps.id, this.props.id);
+    }
+  }
+
   updateModules() {
     const mention = this._mentionRef.current;
     const { keyboardEventHandler } = this.props;
@@ -91,7 +97,6 @@ class MessageInputViewComponent extends Component<
       </MessageActionBar>
     );
     const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
-
     return (
       <JuiMessageInput
         value={draft}

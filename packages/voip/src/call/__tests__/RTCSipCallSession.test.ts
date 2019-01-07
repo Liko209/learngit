@@ -1,9 +1,9 @@
 /*
- * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
- * @Date: 2018-12-29 16:08:05
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2019-01-03 19:44:57
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../__tests__/types.d.ts" />
+
 import { RTCSipCallSession, WEBPHONE_STATE } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
 
