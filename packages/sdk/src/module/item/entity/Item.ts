@@ -57,6 +57,7 @@ export type TaskItem = Item & {
   complete_people_ids: number[];
   attachment_ids: number[];
   complete_percentage: number;
+  hasDueTime: boolean;
 };
 
 export type EventItem = Item & {

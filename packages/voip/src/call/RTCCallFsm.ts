@@ -10,6 +10,9 @@ import { CALL_FSM_NOTIFY } from './types';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
+  FLIP: 'flipEvent',
+  START_RECORD: 'startRecord',
+  STOP_RECORD: 'stopRecord',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
@@ -31,6 +34,18 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
           this._onHangup();
+          break;
+        }
+        case CallFsmEvent.FLIP: {
+          this._onFlip(task.params);
+          break;
+        }
+        case CallFsmEvent.START_RECORD: {
+          this._onStartRecord();
+          break;
+        }
+        case CallFsmEvent.STOP_RECORD: {
+          this._onStopRecord();
           break;
         }
         case CallFsmEvent.ANSWER: {
@@ -110,6 +125,21 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.HANGUP }, () => {});
   }
 
+  flip(target: number) {
+    this._eventQueue.push(
+      { name: CallFsmEvent.FLIP, params: target },
+      () => {},
+    );
+  }
+
+  startRecord(): void {
+    this._eventQueue.push({ name: CallFsmEvent.START_RECORD }, () => {});
+  }
+
+  stopRecord(): void {
+    this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
+  }
+
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
   }
@@ -153,8 +183,36 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION);
   }
 
+  onFlipAction(target: number) {
+    this.emit(CALL_FSM_NOTIFY.FLIP_ACTION, target);
+  }
+
+  onStartRecordAction() {
+    this.emit(CALL_FSM_NOTIFY.START_RECORD_ACTION);
+  }
+
+  onStopRecordAction() {
+    this.emit(CALL_FSM_NOTIFY.STOP_RECORD_ACTION);
+  }
+
+  onReportCallActionFailed(name: string): void {
+    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
+  }
+
+  private _onFlip(target: number) {
+    this._callFsmTable.flip(target);
+  }
+
+  private _onStartRecord() {
+    this._callFsmTable.startRecord();
+  }
+
+  private _onStopRecord() {
+    this._callFsmTable.stopRecord();
   }
 
   private _onAnswer() {

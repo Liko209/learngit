@@ -1,9 +1,9 @@
 /*
- * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
- * @Date: 2018-12-29 16:08:05
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2019-01-03 19:44:57
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../__tests__/types.d.ts" />
+
 import { RTCSipCallSession, WEBPHONE_STATE } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
 
@@ -24,8 +24,11 @@ describe('sip call session', () => {
     emitSessionError() {
       this.emit(WEBPHONE_STATE.FAILED);
     }
-
     terminate() {}
+    flip = jest.fn();
+    startRecord = jest.fn();
+    stopRecord = jest.fn();
+
     accept() {}
     reject() {}
     toVoicemail() {}
@@ -61,6 +64,41 @@ describe('sip call session', () => {
       jest.spyOn(sipcallsession, 'hangup');
       sipcallsession.hangup();
       expect(sipcallsession.hangup).toHaveBeenCalled();
+    });
+  });
+
+  describe('flip()', () => {
+    it('should VirtualSession flip be called when SipCallSession flip be called', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      vsession.flip.mockResolvedValue(null);
+      sipcallsession.flip(5);
+      expect(vsession.flip).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('startRecord()', () => {
+    it('should VirtualSession startRecord be called when SipCallSession startRecord be called', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      vsession.startRecord.mockResolvedValue(null);
+      sipcallsession.startRecord();
+      expect(vsession.startRecord).toHaveBeenCalled();
+    });
+  });
+
+  describe('stopRecord()', () => {
+    it('should VirtualSession stopRecord be called when SipCallSession stopRecord be called', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      vsession.stopRecord.mockResolvedValue(null);
+      vsession.startRecord.mockResolvedValue(null);
+      sipcallsession.startRecord();
+      sipcallsession.stopRecord();
+      expect(vsession.stopRecord).toHaveBeenCalled();
     });
   });
 
@@ -116,7 +154,7 @@ describe('sip call session', () => {
   });
 
   describe('_onSession*******()', () => {
-    it('should _onSessionConfirmed be called when VirtueSession emit Confirmed JPT-576', () => {
+    it('should _onSessionConfirmed be called when VirtualSession emit Confirmed JPT-576', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
@@ -125,7 +163,7 @@ describe('sip call session', () => {
       expect(sipcallsession._onSessionConfirmed).toHaveBeenCalled();
     });
 
-    it('should _onSessionDisconnected be called when VirtueSession emit Disconnected JPT-578', () => {
+    it('should _onSessionDisconnected be called when VirtualSession emit Disconnected JPT-578', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
@@ -134,7 +172,7 @@ describe('sip call session', () => {
       expect(sipcallsession._onSessionDisconnected).toHaveBeenCalled();
     });
 
-    it('should _onSessionError be called when VirtueSession emit Error JPT-579', () => {
+    it('should _onSessionError be called when VirtualSession emit Error JPT-579', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);

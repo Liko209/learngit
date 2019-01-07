@@ -1,6 +1,6 @@
 /*
- * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
- * @Date: 2018-12-29 16:09:22
+ * @Author: Hankin Lin (hankin.lin@ringcentral.com)
+ * @Date: 2018-12-28 15:51:45
  * Copyright © RingCentral. All rights reserved.
  */
 enum CALL_SESSION_STATE {
@@ -25,6 +25,11 @@ enum CALL_FSM_NOTIFY {
   SEND_TO_VOICEMAIL_ACTION = 'sendToVoicemailAction',
   HANGUP_ACTION = 'hangupAction',
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
+  FLIP_ACTION = 'flipAction',
+  START_RECORD_ACTION = 'startRecordAction',
+  STOP_RECORD_ACTION = 'stopRecordAction',
+  CALL_ACTION_SUCCESS = 'callActionSuccess',
+  CALL_ACTION_FAILED = 'callActionFailed',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

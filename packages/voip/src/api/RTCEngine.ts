@@ -8,6 +8,8 @@ import { RTCAccount } from './RTCAccount';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcRestApiManager } from '../utils/RTCRestApiManager';
+import { ITelephonyNetworkDelegate } from 'foundation/src/telephony/ITelephonyNetworkDelegate';
 
 class RTCEngine {
   private static instance: RTCEngine;
@@ -69,6 +71,10 @@ class RTCEngine {
     remote_audio.volume = 1;
     this._mediaRootElement.appendChild(remote_audio);
     this._remoteAudio = remote_audio;
+  }
+
+  public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
+    rtcRestApiManager.setNetworkDelegate(delegate);
   }
 }
 

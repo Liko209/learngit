@@ -26,4 +26,10 @@ enum RTC_CALL_STATE {
   DISCONNECTED = 'Disconnected',
 }
 
-export { RTC_ACCOUNT_STATE, RTCCallInfo, RTC_CALL_STATE };
+enum RTC_CALL_ACTION {
+  FLIP = 'flip',
+  START_RECORD = 'startRecord',
+  STOP_RECORD = 'stopRecord',
+}
+
+export { RTC_ACCOUNT_STATE, RTCCallInfo, RTC_CALL_STATE, RTC_CALL_ACTION };

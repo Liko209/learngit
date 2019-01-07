@@ -15,8 +15,31 @@ const RegistrationState = {
   UN_REGISTERED: 'unRegistered',
 };
 
+type RTCSipProvisionInfo = {
+  sipFlags: object;
+  device: {
+    transport: string;
+    password: string;
+    domain: string;
+    username: string;
+    authorizationID: string;
+    outboundProxy: string;
+  }[];
+  sipInfo: object;
+};
+
+enum RTC_PROV_EVENT {
+  NEW_PROV = 'newProv',
+}
+
 const RegistrationManagerEvent = {
   RECEIVER_INCOMING_SESSION: 'RegitrationManangerEventReceiveIncomingSession',
 };
 
-export { ErrorCode, RegistrationState, RegistrationManagerEvent };
+export {
+  ErrorCode,
+  RegistrationState,
+  RTCSipProvisionInfo,
+  RTC_PROV_EVENT,
+  RegistrationManagerEvent,
+};
