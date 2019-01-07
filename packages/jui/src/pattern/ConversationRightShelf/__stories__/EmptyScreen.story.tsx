@@ -8,12 +8,10 @@ import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
 
-import { JuiConversationInitialPostBody } from '../../ConversationInitialPost';
+import { JuiEmptyScreen } from '../../EmptyScreen';
 import { JuiButton } from '../../../components/Buttons';
 import { JuiLink } from '../../../components/Link';
 import image from './illustrator_2x.png';
-
-const name = <JuiLink>John Smith</JuiLink>;
 
 const Div = styled.div`
   width: 288px;
@@ -26,27 +24,21 @@ const Action1 = (
   </JuiButton>
 );
 
-const ConversationInitialPostBody = () => {
+storiesOf('Pattern/ConversationRightShelf', module).add('EmptyScreen', () => {
   const t = text('text', 'No files shared yet');
   const content = text(
     'content',
     'Files that get shared in your conversation automatically show up here.',
   );
   return (
-    <JuiConversationInitialPostBody
-      align="flex-start"
-      text={t}
-      content={content}
-      actions={[Action1]}
-      image={{ url: image, width: 47, height: 37 }}
-    />
-  );
-};
-
-storiesOf('Pattern/ConversationRightShelf', module).add('EmptyScreen', () => {
-  return (
     <Div>
-      <ConversationInitialPostBody />
+      <JuiEmptyScreen
+        align="flex-start"
+        text={t}
+        content={content}
+        actions={[Action1]}
+        image={{ url: image, width: 47, height: 37 }}
+      />
     </Div>
   );
 });
