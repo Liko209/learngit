@@ -17,10 +17,7 @@ describe('SortableListStore', () => {
     listStore = new SortableListStore<number>();
     listStore.upsert(preInsertItems);
 
-    disposer = autorun(() => {
-      const itemStr = JSON.stringify(listStore.items);
-      console.log(`========> ${itemStr}`);
-    });
+    disposer = autorun(() => {});
   });
 
   afterEach(() => {

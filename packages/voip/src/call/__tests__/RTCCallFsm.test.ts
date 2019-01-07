@@ -1,30 +1,41 @@
+/*
+ * @Author: Jimmy Xu (jimmy.xu@ringcentral.com)
+ * @Date: 2018-12-29 16:07:54
+ * Copyright © RingCentral. All rights reserved.
+ */
 /// <reference path="../../__tests__/types.d.ts" />
 import { RTCCallFsm } from '../RTCCallFsm';
+import { CALL_FSM_NOTIFY } from '../types';
 
 describe('Call FSM UT', async () => {
   class MockCallFsmLisener {
     private _fsm: RTCCallFsm;
     constructor(fsm: RTCCallFsm) {
       this._fsm = fsm;
-      fsm.on('enterPending', () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_ANSWERING, () => {
+        this.onEnterAnswering();
+      });
+      fsm.on(CALL_FSM_NOTIFY.ENTER_PENDING, () => {
         this.onEnterPending();
       });
-      fsm.on('enterConnecting', () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTING, () => {
         this.onEnterConnecting();
       });
-      fsm.on('enterConnected', () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
         this.onEnterConnected();
       });
-      fsm.on('enterDisconnected', () => {
+      fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
         this.onEnterDisconnected();
       });
-      fsm.on('hangupAction', () => {
+      fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
         this.onHangupAction();
       });
-      fsm.on('createOutCallSession', () => {
+      fsm.on(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION, () => {
         this.onCreateOutCallSession();
       });
     }
+
+    public onEnterAnswering() {}
 
     public onEnterPending() {}
 
@@ -82,6 +93,100 @@ describe('Call FSM UT', async () => {
         expect(fsm.state()).toBe('disconnected');
         expect(listener.onEnterDisconnected).toBeCalled();
         expect(listener.onHangupAction).toBeCalled();
+        done();
+      });
+    });
+
+    it("State transition from Idle to Answering when receive 'Answer' event [JPT-619]", done => {
+      const fsm = createFsm();
+      fsm.answer();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('answering');
+        done();
+      });
+    });
+
+    it("State transition from Idle to Disconnected when receive 'Reject' event [JPT-615]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.reject();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it("State transition from Idle to Disconnected when receive 'SendToVoicemail' event [JPT-618]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.sendToVoicemail();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+    it("State transition from Idle to Disconnected when receive 'sessionDisconnected' event [JPT-656]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm.sessionDisconnected();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+  });
+
+  describe('Answering state transitions', () => {
+    it("State transition from Answering to Connected when receive 'Session confirmed' event [JPT-620]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterConnected');
+      fsm._fsmGoto('answering');
+      fsm.sessionConfirmed();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('connected');
+        expect(listener.onEnterConnected).toBeCalled();
+        done();
+      });
+    });
+
+    it("State transition from Answering to Disconnected when receive 'Hangup' event [JPT-622]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm._fsmGoto('answering');
+      fsm.hangup();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        expect(listener.onEnterDisconnected).toBeCalled();
+        done();
+      });
+    });
+
+    it("State transition from Answering to Disconnected when receive 'sessionError' event [JPT-621]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm._fsmGoto('answering');
+      fsm.sessionError();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        expect(listener.onEnterDisconnected).toBeCalled();
+        done();
+      });
+    });
+    it("State transition from Answering to Disconnected when receive 'sessionDisconnected' event [JPT-657]", done => {
+      const fsm = createFsm();
+      const listener = new MockCallFsmLisener(fsm);
+      jest.spyOn(listener, 'onEnterDisconnected');
+      fsm._fsmGoto('answering');
+      fsm.sessionDisconnected();
+      setImmediate(() => {
+        expect(fsm.state()).toBe('disconnected');
+        expect(listener.onEnterDisconnected).toBeCalled();
         done();
       });
     });
@@ -196,6 +301,48 @@ describe('Call FSM UT', async () => {
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
         done();
+      });
+    });
+
+    describe('flip()', async () => {
+      it("should state transition from Connected to Connected when receive 'flip' event", done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onFlipAction');
+        callFsm._fsmGoto('connected');
+        callFsm.flip(5);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onFlipAction).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    describe('startRecord()', async () => {
+      it("should state transition from Connected to Connected when receive 'startRecord' event", done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onStartRecordAction');
+        callFsm._fsmGoto('connected');
+        callFsm.startRecord();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onStartRecordAction).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    describe('stopRecord()', async () => {
+      it("should state transition from Connected to Connected when receive 'stopRecord' event", done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onStopRecordAction');
+        callFsm._fsmGoto('connected');
+        callFsm.stopRecord();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onStopRecordAction).toBeCalled();
+          done();
+        });
       });
     });
   });

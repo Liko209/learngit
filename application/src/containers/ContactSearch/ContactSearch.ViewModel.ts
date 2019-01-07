@@ -94,7 +94,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
         label: member.displayName,
         email: member.entity.email,
       }));
-      this.suggestions = members;
+      this.suggestions = members.slice(0, 20);
     });
   }
 }
