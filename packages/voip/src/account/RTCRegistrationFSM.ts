@@ -53,7 +53,7 @@ class RTCRegistrationFSM extends StateMachine {
         },
         {
           name: RegistrationEvent.REG_SUCCEED,
-          from: RegistrationState.READY,
+          from: [RegistrationState.READY, RegistrationState.REG_FAILURE],
           to: () => {
             handler.onReadyWhenRegSucceedAction();
             return RegistrationState.READY;
