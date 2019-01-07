@@ -22,7 +22,6 @@ import {
 import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ErrorParser } from '../../utils';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 import { ERROR_TYPES } from '../../error';
 
 type SyncListener = {
@@ -68,8 +67,8 @@ export default class SyncService extends BaseService {
   }
 
   private async _preloadPosts() {
-    const handler = new PreloadPostsForGroupHandler();
-    handler.preloadPosts();
+    // const handler = new PreloadPostsForGroupHandler();
+    // handler.preloadPosts();
   }
 
   private async _firstLogin() {
