@@ -360,7 +360,7 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
-  
+
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
@@ -397,19 +397,13 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(CloseConversationModal);
   }
 
-<<<<<<< HEAD
   get deletePostModal() {
     return this.getComponent(ActionBarDeletePostModal);
   }
 
-  get profileModal() {
-    return this.getComponent(ProfileModal);
-  }
-=======
   // get profileModal() {
   //   return this.getComponent(ProfileModal);
   // }
->>>>>>> develop
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');
