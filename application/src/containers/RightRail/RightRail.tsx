@@ -75,11 +75,11 @@ class RightRailComponent extends React.Component<Props, States> {
           <JuiTab key={2} title={t('images')}>
             <div>Images List</div>
           </JuiTab>
-          <JuiTab key={3} title={t('links')}>
-            <div>Links List</div>
-          </JuiTab>
           <JuiTab key={4} title={t('tasks')}>
             <div>Tasks List</div>
+          </JuiTab>
+          <JuiTab key={3} title={t('links')}>
+            <div>Links List</div>
           </JuiTab>
           <JuiTab key={5} title={t('notes')}>
             <div>Notes List</div>
@@ -87,8 +87,8 @@ class RightRailComponent extends React.Component<Props, States> {
           <JuiTab key={6} title={t('events')}>
             <div>Events List</div>
           </JuiTab>
-          <JuiTab key={7} title={t('integration')}>
-            <div>Integration List</div>
+          <JuiTab key={7} title={t('integrations')}>
+            <div>Integrations List</div>
           </JuiTab>
         </JuiTabs>
       </JuiRightShelf>
