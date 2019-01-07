@@ -288,11 +288,14 @@ async (t: TestController)=>{
 const app =new AppRoot(t);
 const users =h(t).rcData.mainCompany.users;
 const user = users[7];
+const otherUser= users[5];
 await h(t).resetGlipAccount(user);
-const userPlatform = await h(t).getPlatform(user);
-const user5Platform = await h(t).getPlatform(users[5]);
+await h(t).platform(user).init();
+await h(t).glip(user).init();
+await h(t).platform(otherUser).init()
+
+
 const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-const postListPage = app.homePage.messageTab.postListPage;
 const conversationPage =app.homePage.messageTab.conversationPage;
 const bookmarkPage = app.homePage.messageTab.bookmarkPage;
 const dmSection = app.homePage.messageTab.directMessagesSection;
@@ -300,15 +303,15 @@ user.sdk = await h(t).getSdk(user);
 
 let group;
 await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-  group = await userPlatform.createGroup({
+  group = await h(t).platform(user).createGroup({
     type: 'Group', members: [user.rcId, users[5].rcId],
   });
-  await user.sdk.glip.showGroups(user.rcId, group.data.id);
+  await h(t).glip(user).showGroups(user.rcId, group.data.id);
 });
 
 let bookmarkPost;
 await h(t).withLog('And I have a post', async () => {
-  bookmarkPost = await user5Platform.sendTextPost(
+  bookmarkPost = await h(t).platform(otherUser).sendTextPost(
     `Hi I'm Bookmarks, (${user.rcId})`,
     group.data.id,
   );
@@ -345,6 +348,6 @@ await h(t).withLog('And I cancel the bookmark in the post then make sure bookmar
 
 await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
   await bookmarksEntry.enter();
-  await t.expect(conversationPage.posts.count).eql(1);
+  await t.expect(conversationPage.posts.count).eql(0);
 }, true);
 })
