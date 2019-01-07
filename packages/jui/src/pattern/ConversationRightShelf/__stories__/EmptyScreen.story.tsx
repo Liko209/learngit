@@ -8,15 +8,10 @@ import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
 
-import { JuiEmptyScreen } from '../../EmptyScreen';
+import { JuiRightShelfEmptyScreen } from '../../EmptyScreen';
 import { JuiButton } from '../../../components/Buttons';
 import { JuiLink } from '../../../components/Link';
-import image from './illustrator_2x.png';
-
-const Div = styled.div`
-  width: 288px;
-  margin: 0 auto;
-`;
+import image from './Files.svg';
 
 const Action1 = (
   <JuiButton variant="outlined" color="primary">
@@ -31,14 +26,11 @@ storiesOf('Pattern/ConversationRightShelf', module).add('EmptyScreen', () => {
     'Files that get shared in your conversation automatically show up here.',
   );
   return (
-    <Div>
-      <JuiEmptyScreen
-        align="flex-start"
-        text={t}
-        content={content}
-        actions={[Action1]}
-        image={{ url: image, width: 47, height: 37 }}
-      />
-    </Div>
+    <JuiRightShelfEmptyScreen
+      text={t}
+      content={content}
+      actions={[Action1]}
+      image={image}
+    />
   );
 });

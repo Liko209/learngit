@@ -12,7 +12,7 @@ import {
   StyledTeamName,
   StyledDescription,
 } from 'jui/pattern/ConversationInitialPost';
-import { JuiEmptyScreen } from 'jui/pattern/EmptyScreen';
+import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
 import { Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
@@ -94,7 +94,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
 
     return (
-      <JuiEmptyScreen
+      <JuiConversationPageInit
         text={t('postInitialTitle')}
         content={t('postInitialContent')}
         actions={[
@@ -102,7 +102,7 @@ class ConversationInitialPost extends React.Component<
           this._handleCreateTask,
           this._handleIntegrateApps,
         ]}
-        image={{ url: image, width: 67, height: 53 }}
+        image={image}
       />
     );
   }
