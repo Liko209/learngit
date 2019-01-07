@@ -3,9 +3,10 @@
  * @Date: 2018-12-24 14:01:17
  * Copyright © RingCentral. All rights reserved.
  */
+import * as assert from 'assert';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
@@ -14,13 +15,14 @@ fixture('ConversationList/OpenConversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Should remains where it is when click a conversation in the conversation list.', ['P2', 'JPT-464', 'ConversationList', 'Yilia Hong']),
+// requirement changed https://jira.ringcentral.com/browse/FIJI-2491 https://jira.ringcentral.com/browse/FIJI-2267
+test.skip(formalName('Should remains where it is when click a conversation in the conversation list.', ['P2', 'JPT-464', 'ConversationList', 'Yilia Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
-   
+
     const teamName1 = `Team 1 ${uuid()}`;
     const teamName2 = `Team 2 ${uuid()}`
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -73,21 +75,23 @@ test(formalName('Should display in the top when open a closed conversation from 
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    await h(t).platform(user).init();
+    await h(t).glip(user).init();
+
     const teamName = `Team ${uuid()}`;
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let teamId, NEW_URL;
     await h(t).withLog('Given I have a conversation', async () => {
-      teamId = (await user.sdk.platform.createGroup({
+      teamId = await h(t).platform(user).createAndGetGroupId({
         name: teamName,
         type: 'Team',
         members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
+      });
     });
 
     await h(t).withLog('The conversation should be closed before login', async () => {
-      await user.sdk.glip.hideGroups(user.rcId, [teamId]);
+      await h(t).glip(user).hideGroups(user.rcId, [teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension} and URL contain ${teamId}`, async () => {
@@ -118,25 +122,26 @@ test(formalName('Should not display in conversation list when last conversation 
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const user = users[7];
-    user.sdk = await h(t).getSdk(user);
+    await h(t).platform(user).init();
+    await h(t).glip(user).init();
     const teamName = `Team ${uuid()}`;
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let teamId;
     await h(t).withLog('Given I have a conversation', async () => {
-      teamId = (await user.sdk.platform.createGroup({
+      teamId = await h(t).platform(user).createAndGetGroupId({
         name: teamName,
         type: 'Team',
         members: [user.rcId, users[5].rcId],
-      })).data.id;
+      });
     });
 
     await h(t).withLog('The conversation should be last conversation', async () => {
-      await user.sdk.glip.setLastGroupId(user.rcId, teamId);
+      await h(t).glip(user).setLastGroupId(user.rcId, teamId);
     });
 
     await h(t).withLog('The last conversation should be closed before login', async () => {
-      await user.sdk.glip.hideGroups(user.rcId, [teamId]);
+      await h(t).glip(user).hideGroups(user.rcId, [teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -146,9 +151,12 @@ test(formalName('Should not display in conversation list when last conversation 
 
     await h(t).withLog('Then the conversation should not display in conversation list', async () => {
       await t.expect(teamsSection.conversationEntryById(teamId).exists).notOk();
-      const url = await h(t).href;
-      const reg = new RegExp("^"+SITE_URL+"\/?messages\/$");
-      await t.expect(url).match(reg);
+      const url = new URL(SITE_URL);
+      const targetUrl = `${url.protocol}//${url.hostname}/messages/`
+      await H.retryUntilPass(async () => {
+        const currentUrl = await h(t).href;
+        assert.strictEqual(currentUrl, targetUrl, `${currentUrl} is invalid`);
+      });
     });
   },
 );
