@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 // import { autorun } from 'mobx';
 import { TypeDictionary } from 'sdk/utils';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';

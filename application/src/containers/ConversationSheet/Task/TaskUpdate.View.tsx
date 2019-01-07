@@ -8,7 +8,7 @@ import { t } from 'i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
-  JuiTaskAvatarName,
+  JuiTaskAvatarNames,
   JuiTaskContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
@@ -44,7 +44,6 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
     const { task, activityData } = this.props;
     const { color, text, complete } = task;
     const { value, key, old_value } = activityData;
-
     return (
       <TaskUpdateViewCard
         title={this._getTitleText(text)}
@@ -58,9 +57,9 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
             >
               {
                 <JuiEventCollapseContent>
-                  <JuiTaskAvatarName>
+                  <JuiTaskAvatarNames>
                     {this._getTaskAvatarNames(old_value)}
-                  </JuiTaskAvatarName>
+                  </JuiTaskAvatarNames>
                 </JuiEventCollapseContent>
               }
             </JuiEventCollapse>
@@ -69,9 +68,9 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
       >
         {key === 'assigned_to_ids' ? (
           <JuiTaskContent title={t('assignee')}>
-            <JuiTaskAvatarName>
+            <JuiTaskAvatarNames>
               {this._getTaskAvatarNames(value)}
-            </JuiTaskAvatarName>
+            </JuiTaskAvatarNames>
           </JuiTaskContent>
         ) : null}
       </TaskUpdateViewCard>

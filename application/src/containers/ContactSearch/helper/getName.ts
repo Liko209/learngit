@@ -3,7 +3,7 @@
  * @Date: 2018-06-14 16:00:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { Person } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
 import { PersonService } from 'sdk/service/index';
 
 export const getName = (item: Person) => {

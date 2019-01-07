@@ -7,7 +7,8 @@ import { observable, action, computed } from 'mobx';
 import { debounce } from 'lodash';
 
 import PersonService from 'sdk/service/person';
-import { Person, SortableModel } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
+import { SortableModel } from 'sdk/models';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, ViewProps, SelectedMember } from './types';
 
@@ -24,9 +25,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
     return this.props.label;
   }
 
-  @computed
-  get onChange() {
-    return this.props.onChange;
+  onSelectChange = (arg: any) => {
+    this.suggestions = [];
+    return this.props.onSelectChange(arg);
   }
 
   @computed
@@ -93,7 +94,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
         label: member.displayName,
         email: member.entity.email,
       }));
-      this.suggestions = members;
+      this.suggestions = members.slice(0, 20);
     });
   }
 }

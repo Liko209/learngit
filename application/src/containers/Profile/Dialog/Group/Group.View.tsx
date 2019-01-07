@@ -18,14 +18,14 @@ import { ProfileDialogGroupViewProps } from './types';
 @observer
 class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
   render() {
-    const { id, dismiss } = this.props;
+    const { id } = this.props;
     return (
       <>
-        <JuiDialogTitleWithAction>
-          <ProfileDialogGroupTitle id={id} dismiss={dismiss} />
+        <JuiDialogTitleWithAction data-test-automation-id="profileDialogTitle">
+          <ProfileDialogGroupTitle id={id} />
         </JuiDialogTitleWithAction>
-        <JuiDialogContentWithFill>
-          <ProfileDialogGroupContent id={id} dismiss={dismiss} />
+        <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
+          <ProfileDialogGroupContent id={id} />
         </JuiDialogContentWithFill>
         <JuiProfileDialogContentMemberShadow />
       </>

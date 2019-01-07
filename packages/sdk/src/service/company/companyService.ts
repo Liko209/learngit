@@ -6,7 +6,7 @@
 
 import CompanyAPI from '../../api/glip/company';
 import { CompanyDao } from '../../dao';
-import { Company } from '../../models';
+import { Company } from '../../module/company/entity';
 import BaseService from '../BaseService';
 import { SOCKET } from '../eventKey';
 import handleData from './handleData';

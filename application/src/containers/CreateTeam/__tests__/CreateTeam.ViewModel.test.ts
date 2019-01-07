@@ -128,13 +128,6 @@ describe('CreateTeamVM', () => {
     expect(createTeamVM.isOffline).toBe(false);
   });
 
-  it('isOpen', () => {
-    (getGlobalValue as jest.Mock).mockReturnValue(undefined);
-    expect(createTeamVM.isOpen).toBe(false);
-    (getGlobalValue as jest.Mock).mockReturnValue(true);
-    expect(createTeamVM.isOpen).toBe(true);
-  });
-
   it('handleNameChange()', () => {
     createTeamVM.handleNameChange({
       target: {

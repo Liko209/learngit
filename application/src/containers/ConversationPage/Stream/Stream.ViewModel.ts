@@ -7,7 +7,9 @@
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
 import { PostService, StateService, ENTITY } from 'sdk/service';
-import { Post, GroupState, Group } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { GroupState } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 
@@ -36,7 +38,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId);
+  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
@@ -46,8 +48,8 @@ const transformFunc = (dataModel: Post) => ({
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _initialized = false;
-
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
@@ -155,16 +157,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @loading
   async loadInitialPosts() {
     if (this.jumpToPostId) {
-      const post = await PostService.getInstance<PostService>().getById(
-        this.jumpToPostId,
-      );
-      if (post) {
-        this._transformHandler.orderListStore.append([transformFunc(post)]);
-        await Promise.all([
-          this._loadPosts(QUERY_DIRECTION.OLDER),
-          this._loadPosts(QUERY_DIRECTION.NEWER),
-        ]);
-      }
+      await this._loadSiblingPosts(this.jumpToPostId);
     } else {
       await this._loadPosts(QUERY_DIRECTION.OLDER);
     }
@@ -232,8 +225,23 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this._transformHandler.hasMore(direction)) return [];
+    if (!this._transformHandler.hasMore(direction)) {
+      return [];
+    }
     return await this._transformHandler.fetchData(direction, limit);
+  }
+
+  private async _loadSiblingPosts(anchorPostId: number) {
+    const post = await this._postService.getById(anchorPostId);
+    if (post) {
+      this._transformHandler.replaceAll([post]);
+      await Promise.all([
+        this._loadPosts(QUERY_DIRECTION.OLDER),
+        this._loadPosts(QUERY_DIRECTION.NEWER),
+      ]);
+    } else {
+      // TODO error handing
+    }
   }
 
   loadPostUntilFirstUnread = async () => {

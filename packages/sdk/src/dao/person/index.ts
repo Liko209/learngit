@@ -5,7 +5,7 @@
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { BaseDao } from '../base';
 import { IPagination } from '../../types';
-import { Person } from '../../models';
+import { Person } from '../../module/person/entity';
 const ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
 const DEFAULT_LIMIT = 50;
 import { IDatabase } from 'foundation';

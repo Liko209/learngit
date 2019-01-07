@@ -9,6 +9,8 @@ import { AbstractViewModel } from '@/base';
 import { IndicatorProps, IndicatorViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GroupConfig } from 'sdk/src/models';
+import GroupConfigModel from '@/store/models/GroupConfig';
 
 class IndicatorViewModel extends AbstractViewModel
   implements IndicatorViewProps {
@@ -22,18 +24,21 @@ class IndicatorViewModel extends AbstractViewModel
   }
 
   @computed
-  get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this.id);
+  get groupConfig() {
+    return getEntity<GroupConfig, GroupConfigModel>(
+      ENTITY_NAME.GROUP_CONFIG,
+      this.id,
+    );
   }
 
   @computed
-  get draft() {
-    return this._group.draft;
+  get hasDraft() {
+    return !!this.groupConfig.draft;
   }
 
   @computed
   get sendFailurePostIds() {
-    return this._group.sendFailurePostIds || [];
+    return this.groupConfig.sendFailurePostIds || [];
   }
 }
 export { IndicatorViewModel };

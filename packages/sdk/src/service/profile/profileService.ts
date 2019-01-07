@@ -9,13 +9,14 @@ import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
 import AccountService from '../account';
-import { Profile, Raw } from '../../models';
+import { Profile } from '../../module/profile/entity';
+import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { BaseError, ErrorTypes } from '../../utils';
 import { transform } from '../utils';
 import PersonService from '../person';
-import handleData from './handleData';
+import handleData, { hiddenGroupsChange } from './handleData';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -192,7 +193,7 @@ class ProfileService extends BaseService<Profile> {
   ): Promise<ServiceResult<Profile>> {
     const profile = await this.getProfile();
     if (profile) {
-      let oldFavPostIds = profile.favorite_post_ids || [];
+      let oldFavPostIds = _.cloneDeep(profile.favorite_post_ids) || [];
       const shouldDoNothing =
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);
@@ -290,6 +291,7 @@ class ProfileService extends BaseService<Profile> {
           favorite_group_ids: favIds,
         };
       }
+      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
@@ -314,6 +316,7 @@ class ProfileService extends BaseService<Profile> {
         ...partialModel,
         [`hide_group_${groupId}`]: false,
       };
+      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
@@ -342,8 +345,7 @@ class ProfileService extends BaseService<Profile> {
 
   private async _requestUpdateProfile(
     newProfile: Profile,
-    handleDataFunc?: (profile: Raw<Profile> | null) => Promise<Profile | null>,
-  ): Promise<Profile | null> {
+  ): Promise<Profile | BaseError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
 
@@ -354,17 +356,10 @@ class ProfileService extends BaseService<Profile> {
 
     return apiResult.match({
       Ok: async (rawProfile: Raw<Profile>) => {
-        if (handleDataFunc) {
-          const profile = await handleDataFunc(rawProfile);
-          if (profile) {
-            return profile;
-          }
-          return null;
-        }
         const latestProfileModel: Profile = transform(rawProfile);
         return latestProfileModel;
       },
-      Err: () => null,
+      Err: (error: BaseError) => error,
     });
   }
 

@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/models';
+import { Profile } from 'sdk/module/profile/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
@@ -18,10 +18,6 @@ type Props = FavoriteViewProps & WithNamespaces;
 class FavoriteViewComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
-  }
-
-  componentDidMount() {
-    this.props.getConversationId();
   }
 
   onClickFavorite = async () => {
@@ -56,6 +52,8 @@ class FavoriteViewComponent extends Component<Props> {
         color="accent.gold"
         onClick={this.onClickFavorite}
         tooltipTitle={t(tooltipKey)}
+        ariaLabel={t(tooltipKey)}
+        data-test-automation-id="favorite-icon"
       >
         {isFavorite ? 'star' : 'star_border'}
       </JuiIconButton>

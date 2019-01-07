@@ -15,15 +15,19 @@ import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
-import { Post, Item, Raw, Group } from '../../models';
-import { PostStatusHandler } from './postStatusHandler';
-import { POST_STATUS } from '../constants';
-import { ENTITY, SOCKET } from '../eventKey';
+import { Post } from '../../module/post/entity';
+import { Item } from '../../module/item/entity';
+import { Raw } from '../../framework/model';
+import { Group } from '../../module/group/entity';
+import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
-import { RawPostInfo, RawPostInfoWithFile } from './types';
+import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
 import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
+import { uniqueArray } from '../../utils';
+import GroupConfigService from '../groupConfig';
+import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
 
 interface IPostResult {
   posts: Post[];
@@ -50,11 +54,6 @@ type PostData = {
   data: Post;
 };
 
-type PostSendData = {
-  id: number;
-  status: POST_STATUS;
-};
-
 class PostService extends BaseService<Post> {
   static serviceName = 'PostService';
 
@@ -67,13 +66,11 @@ class PostService extends BaseService<Post> {
     return false;
   }
 
-  private _postStatusHandler: PostStatusHandler;
   constructor() {
     const subscriptions = {
       [SOCKET.POST]: handleDataFromSexio,
     };
     super(PostDao, PostAPI, baseHandleData, subscriptions);
-    this._postStatusHandler = new PostStatusHandler();
   }
 
   async getPostsFromLocal({
@@ -109,17 +106,6 @@ class PostService extends BaseService<Post> {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult> {
-    const groupService: GroupService = GroupService.getInstance();
-    const group = await groupService.getById(groupId);
-    if (group && !group.most_recent_post_created_at) {
-      // The group has no post
-      return {
-        posts: [],
-        items: [],
-        hasMore: false,
-      };
-    }
-
     const params: any = {
       limit,
       direction,
@@ -249,59 +235,205 @@ class PostService extends BaseService<Post> {
     return result;
   }
 
-  isInPreInsert(id: number) {
-    return this._postStatusHandler.isInPreInsert(id);
-  }
-
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
-    // handle params, if has file item, should send file first then send post
     mainLogger.info('start to send post log');
-    const buildPost: Post = PostServiceHandler.buildPostInfo(params);
-    return this.innerSendPost(buildPost);
+    const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
+    return await this.innerSendPost(buildPost, false);
   }
 
   async reSendPost(postId: number): Promise<PostData[] | null> {
-    if (this.isInPreInsert(postId)) {
+    if (postId < 0) {
       const dao = daoManager.getDao(PostDao);
-      let post = await dao.get(postId);
+      const post = await dao.get(postId);
       if (post) {
-        post = PostServiceHandler.buildResendPostInfo(post);
-        return this.innerSendPost(post);
+        return this.innerSendPost(post, true);
       }
     }
+    mainLogger.warn(
+      `PostService, resend post should have a negative, but receive ${postId}`,
+    );
     return null;
   }
 
-  async innerSendPost(buildPost: Post): Promise<PostData[]> {
-    await this.handlePreInsertProcess(buildPost);
-    const { id: preInsertId } = buildPost;
+  async innerSendPost(buildPost: Post, isResend: boolean): Promise<PostData[]> {
+    if (!isResend && buildPost.item_ids.length > 0) {
+      this._cleanUploadingFiles(buildPost.group_id, buildPost.item_ids);
+    }
+
+    await this._handlePreInsertProcess(buildPost);
+    if (buildPost.item_ids.length > 0) {
+      const pseudoItems = this._getPseudoItemIdsFromPost(buildPost);
+      if (pseudoItems.length > 0) {
+        if (isResend) {
+          this._resendFailedItems(pseudoItems);
+        } else {
+          if (
+            !this._hasItemInTargetStatus(buildPost, PROGRESS_STATUS.INPROGRESS) // no item in progress
+          ) {
+            return await this.handleSendPostFail(
+              buildPost.id,
+              buildPost.group_id,
+            );
+          }
+        }
+
+        return await this._sendPostWithPreInsertItems(buildPost);
+      }
+    }
+
+    return await this._sendPost(buildPost);
+  }
+
+  private async _resendFailedItems(pseudoItemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.resendFailedItems(pseudoItemIds);
+  }
+
+  private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.cleanUploadingFiles(groupId, itemIds);
+  }
+
+  private _getPseudoItemStatusInPost(post: Post) {
+    const itemService: ItemService = ItemService.getInstance();
+    return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
+  }
+
+  private _hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
+    return this._getPseudoItemStatusInPost(post).indexOf(status) > -1;
+  }
+
+  private _isValidPost(post: Post) {
+    return post && (post.text.length > 0 || post.item_ids.length > 0);
+  }
+
+  private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
+    let isPostSent: boolean = false;
+    const listener = async (params: {
+      status: PROGRESS_STATUS;
+      preInsertId: number;
+      updatedId: number;
+    }) => {
+      const { status, preInsertId, updatedId } = params;
+      if (!post.item_ids.includes(preInsertId)) {
+        return;
+      }
+
+      let shouldUpdatePost: boolean = true;
+      if (status === PROGRESS_STATUS.CANCELED) {
+        _.remove(post.item_ids, (id: number) => {
+          return id === preInsertId;
+        });
+      } else if (status === PROGRESS_STATUS.SUCCESS) {
+        // update post to db
+        if (updatedId !== preInsertId) {
+          post.item_ids = post.item_ids.map((id: number) => {
+            return id === preInsertId ? updatedId : id;
+          });
+
+          if (post.item_data && post.item_data.version_map) {
+            const versionMap = post.item_data.version_map;
+            Object.keys(versionMap).forEach((strKey: string) => {
+              if (strKey === preInsertId.toString()) {
+                versionMap[updatedId] = versionMap[preInsertId];
+                delete versionMap[preInsertId];
+              }
+            });
+          }
+        }
+      } else {
+        shouldUpdatePost = false;
+      }
+
+      const clonePost = _.cloneDeep(post);
+      if (shouldUpdatePost) {
+        await this.handlePartialUpdate(
+          {
+            id: clonePost.id,
+            _id: clonePost.id,
+            item_ids: clonePost.item_ids,
+          },
+          undefined,
+          async (updatedPost: Post) => {
+            return updatedPost;
+          },
+        );
+
+        const itemService: ItemService = ItemService.getInstance();
+        itemService.deleteFileItemCache(preInsertId);
+      }
+
+      if (this._isValidPost(clonePost)) {
+        if (
+          !isPostSent &&
+          this._getPseudoItemIdsFromPost(clonePost).length === 0
+        ) {
+          isPostSent = true;
+          await this._sendPost.bind(this)(clonePost);
+        }
+      } else {
+        await this.deletePost(clonePost.id);
+      }
+
+      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
+      // remove listener if item files are not in progress
+      if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
+        // has failed
+        if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
+          this.handleSendPostFail(clonePost.id, post.group_id);
+        }
+
+        notificationCenter.removeListener(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          listener,
+        );
+      }
+    };
+
+    notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.sendItemData(post.group_id, post.item_ids);
+
+    return [];
+  }
+
+  private _getPseudoItemIdsFromPost(post: Post) {
+    return post.item_ids.filter(x => x < 0);
+  }
+
+  private async _handlePreInsertProcess(buildPost: Post): Promise<void> {
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.addProgress(buildPost.id, {
+      id: buildPost.id,
+      status: PROGRESS_STATUS.INPROGRESS,
+    });
+    const dao = daoManager.getDao(PostDao);
+    await dao.put(buildPost);
+    notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
+  }
+
+  private async _sendPost(buildPost: Post): Promise<PostData[]> {
+    const preInsertId = buildPost.id;
     delete buildPost.id;
-    delete buildPost.status;
 
     try {
       const resp = await PostAPI.sendPost(buildPost);
       const data = resp.expect('send post failed');
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
-      this.handleSendPostFail(preInsertId);
+      this.handleSendPostFail(preInsertId, buildPost.group_id);
       throw ErrorParser.parse(e);
     }
-  }
-
-  async handlePreInsertProcess(buildPost: Post): Promise<void> {
-    this._postStatusHandler.setPreInsertId(buildPost.id);
-    const dao = daoManager.getDao(PostDao);
-    await dao.put(buildPost);
-    try {
-      notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
-    } catch (err) {}
   }
 
   async handleSendPostSuccess(
     data: Raw<Post>,
     preInsertId: number,
   ): Promise<PostData[]> {
-    this._postStatusHandler.removePreInsertId(preInsertId);
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.deleteProgress(preInsertId);
+
     const post = transform<Post>(data);
     const obj: PostData = {
       id: preInsertId,
@@ -314,14 +446,14 @@ class PostService extends BaseService<Post> {
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);
 
-    const groupService: GroupService = GroupService.getInstance();
-    const failIds = await groupService.getGroupSendFailurePostIds(
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const failIds = await groupConfigService.getGroupSendFailurePostIds(
       post.group_id,
     );
     const index = failIds.indexOf(preInsertId);
     if (index > -1) {
       failIds.splice(index, 1);
-      groupService.updateGroupSendFailurePostIds({
+      groupConfigService.updateGroupSendFailurePostIds({
         id: post.group_id,
         send_failure_post_ids: failIds,
       });
@@ -331,60 +463,49 @@ class PostService extends BaseService<Post> {
     return result;
   }
 
-  async handleSendPostFail(preInsertId: number) {
-    this._postStatusHandler.setPreInsertId(preInsertId, POST_STATUS.FAIL);
-    const updateData = {
+  async handleSendPostFail(preInsertId: number, groupId: number) {
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.updateProgress(preInsertId, {
       id: preInsertId,
-      _id: preInsertId,
-      status: POST_STATUS.FAIL,
-    };
-    let groupId: number = 0;
+      status: PROGRESS_STATUS.FAIL,
+    });
 
-    await this.handlePartialUpdate(
-      updateData,
-      undefined,
-      async (updatedPost: Post) => {
-        groupId = updatedPost.group_id;
-        return updatedPost;
-      },
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const failIds = await groupConfigService.getGroupSendFailurePostIds(
+      groupId,
     );
-
-    const groupService: GroupService = GroupService.getInstance();
-    const failIds = await groupService.getGroupSendFailurePostIds(groupId);
-    groupService.updateGroupSendFailurePostIds({
+    groupConfigService.updateGroupSendFailurePostIds({
       id: groupId,
       send_failure_post_ids: [...new Set([...failIds, preInsertId])],
     });
     return [];
   }
 
-  async sendItemFile(params: RawPostInfoWithFile): Promise<Post | null> {
-    try {
-      // {groupId, file}
-      if (!params.groupId) {
-        return null;
-      }
-      const itemService: ItemService = ItemService.getInstance();
-      const result = await itemService.sendFile(params);
-      if (result) {
-        // result is file item
-        const options = {
-          text: '',
-          itemIds: [Number(result.id)],
-          groupId: Number(params.groupId),
-        };
-        const info = PostServiceHandler.buildPostInfo(options);
-        delete info.id; // should merge sendItemFile function into sendPost
-        const sendPostResult = await PostAPI.sendPost(info);
-        const rawPost = sendPostResult.expect('Send post failed.');
-        const posts = await baseHandleData(rawPost);
-        return posts[0];
-      }
-      return null;
-    } catch (e) {
-      mainLogger.error(`post service sendItemFile error${e}`);
-      return null;
-    }
+  async cancelUpload(postId: number, itemId: number) {
+    const preHandlePartialPost = (
+      partialModel: Partial<Raw<Post>>,
+      originalModel: Post,
+    ): Partial<Raw<Post>> => {
+      const itemIds = originalModel.item_ids.filter((value: number) => {
+        return value !== itemId;
+      });
+      const partialPost = {
+        ...partialModel,
+        item_ids: itemIds,
+      };
+      return partialPost;
+    };
+
+    const partialModel = { id: postId };
+    await this.handlePartialUpdate(
+      partialModel,
+      preHandlePartialPost,
+      async (updatedModel: Post) => {
+        const itemService: ItemService = ItemService.getInstance();
+        await itemService.cancelUpload(itemId);
+        return updatedModel;
+      },
+    );
   }
 
   /**
@@ -411,19 +532,21 @@ class PostService extends BaseService<Post> {
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
 
-    if (this.isInPreInsert(id)) {
-      this._postStatusHandler.removePreInsertId(id);
+    if (id < 0) {
+      const progressService: ProgressService = ProgressService.getInstance();
+      progressService.deleteProgress(id);
+
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
-      const groupService: GroupService = GroupService.getInstance();
-      const failIds = await groupService.getGroupSendFailurePostIds(
+      const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+      const failIds = await groupConfigService.getGroupSendFailurePostIds(
         post.group_id,
       );
       const index = failIds.indexOf(id);
       if (index > -1) {
         failIds.splice(index, 1);
-        groupService.updateGroupSendFailurePostIds({
+        groupConfigService.updateGroupSendFailurePostIds({
           id: post.group_id,
           send_failure_post_ids: failIds,
         });
@@ -473,7 +596,7 @@ class PostService extends BaseService<Post> {
   ): Promise<Result<Post>> {
     const post = await this.getById(postId);
     if (post) {
-      const likes = post.likes || [];
+      const likes = post.likes ? [...post.likes] : [];
       const index = likes.indexOf(personId);
       if (toLike) {
         if (index === -1) {
@@ -605,11 +728,4 @@ class PostService extends BaseService<Post> {
   }
 }
 
-export {
-  IPostResult,
-  IRawPostResult,
-  IPostQuery,
-  PostData,
-  PostSendData,
-  PostService,
-};
+export { IPostResult, IRawPostResult, IPostQuery, PostData, PostService };

@@ -1,34 +1,32 @@
-import * as lighthouse from 'lighthouse';
-import * as core from 'core-js';
 /*
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require('lighthouse/lighthouse-core/gather/gatherers/gatherer');
-import { LoginPage2 } from '../pages/LoginPage';
-import { HomePage } from '../pages/HomePage';
+const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { jupiterUtils } from "../utils/JupiterUtils";
+import { HomePage } from "../pages/HomePage";
 
 class LoginGatherer extends Gatherer {
+  async beforePass(passContext) {
+    let { url } = passContext.settings;
 
-    async beforePass(passContext) {
-        let loginPage = new LoginPage2(passContext);
-        await loginPage.login();
+    let homePage = new HomePage(passContext);
 
-        let homePage = new HomePage(passContext);
-        
-        await homePage.waitForCompleted();
+    let authUrl = await jupiterUtils.getAuthUrl(url);
+    let page = await homePage.newPage();
 
-        await homePage.close();
-    }
+    await page.goto(authUrl);
 
-    afterPass(passContext) {
-        return {};
-    }
+    await homePage.waitForCompleted();
 
-    pass(passContext) {
-    }
+    await homePage.close();
+  }
+
+  afterPass(passContext) {
+    return {};
+  }
+
+  pass(passContext) {}
 }
 
-export {
-    LoginGatherer
-}
+export { LoginGatherer };

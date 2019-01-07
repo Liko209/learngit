@@ -22,6 +22,8 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 import { ContactSearch } from '@/containers/ContactSearch';
+import portalManager from '@/common/PortalManager';
+
 import { ViewProps } from './types';
 
 interface IState {
@@ -59,11 +61,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   }
 
   static getDerivedStateFromProps(props: any, state: any) {
-    let items = [];
+    let items = CreateTeam.initItems;
 
-    if (props.isOpen) {
-      items = CreateTeam.initItems;
-    }
     if (state.items.length) {
       items = state.items;
     }
@@ -104,10 +103,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     }
   }
 
-  onClose = () => {
-    const { updateCreateTeamDialogState } = this.props;
-    updateCreateTeamDialogState();
-  }
+  onClose = () => portalManager.dismiss();
 
   renderServerUnknownError() {
     const message = 'WeWerentAbleToCreateTheTeamTryAgain';
@@ -124,7 +120,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { items } = this.state;
     const {
       t,
-      isOpen,
       nameError,
       emailError,
       emailErrorMsg,
@@ -143,7 +138,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     }
     return (
       <JuiModal
-        open={isOpen}
+        open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: isOffline || disabledOkBtn }}
@@ -173,7 +168,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           onChange={handleNameChange}
         />
         <ContactSearch
-          onChange={handleSearchContactChange}
+          onSelectChange={handleSearchContactChange}
           label={t('Members')}
           placeholder={t('Search Contact Placeholder')}
           error={emailError}

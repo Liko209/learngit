@@ -10,7 +10,7 @@ import GroupService, {
   FEATURE_STATUS,
 } from '../../../service/group';
 import { daoManager, PersonDao, AuthDao } from '../../../dao';
-import { Person } from '../../../models';
+import { Person } from '../../../module/person/entity';
 import { AccountService } from '../../account/accountService';
 import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
 import { personFactory } from '../../../__tests__/factories';
@@ -384,6 +384,7 @@ describe('PersonService', () => {
       jest
         .spyOn(personService, 'getMultiEntitiesFromCache')
         .mockResolvedValueOnce(persons);
+      jest.spyOn(personService, 'isCacheInitialized').mockReturnValueOnce(true);
 
       personDao.getPersonsByIds.mockResolvedValueOnce(persons);
       groupService.getGroupById.mockResolvedValueOnce(group);
@@ -408,7 +409,7 @@ describe('PersonService', () => {
       expect(res).toMatchObject(persons);
       expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
       expect(groupService.getGroupById).toBeCalledWith(group.id);
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toBeCalledTimes(0);
     });
 
     it('should return null when no group exist', async () => {

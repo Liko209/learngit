@@ -1,0 +1,63 @@
+h3. Requirement
+
+*Upload a file*
+# User should be able to find an option above input box (position and display see design) to select and share file(s) from computer.
+#* Since we will support multiple sources where user can select files to share, the app should allow user to pick a file source. For now Computer is the only source. Other sources will be tracked in separate user stories.
+#** Label for the general share files option: Share files
+#** Label for the source Computer: Computer
+# The app should leverage the computer built-in file uploader to upload the file
+# User should be allowed to drag a file from file manager onto the conversation 
+# User should have the choice to input text with the file before sending it. 
+#* User should be able to input/edit text before, during and after the file is uploaded.
+# While the file is being uploaded before it's successfully sent, the app should show the upload progress
+# There is no limitation on the file size and file types user can upload.
+
+*Cancel upload*
+# User should be able to cancel while the file is being uploaded.
+#* The file should be removed and only input box will be left on page.
+#* Label for cancel button: Cancel uploading the file
+
+*Remove a uploaded file before sending the post*
+# User should be able to remove the uploaded file(s) one by one before sending the post.
+#* The file(s) should be removed and only the input box with entered text, if any, should be left on the page.
+#* Label for the remove button: Remove the file
+
+*Retry upload*
+# If a file failed to be uploaded, the app should allow the user to re-upload the file.
+
+*Re-upload existing file*
+# If user uploads file(s) that have been sent by any member in the conversation already, user should be prompted {quote}
+Update Files?
+The following files already exist.
+[File name]
+Do you want to update the existing files or do you wish to create new files?
+{quote}
+#* if there are multiple files to be uploaded the file names should be displayed in a list.
+# User should be able to choose one of the following options
+#* Update
+#** Label for screenreader: Update
+#** By clicking it the prompt is dismissed and the file is uploaded as the user uploaded a version N of the file.
+#* Create
+#** Label for screenreader: Create
+#** By clicking it the prompt is dismissed and the file is uploaded as the user shares a file
+#** -In this case, the app should automatically append (1) after the file name to distinguish it from the original file.-
+#* Cancel
+#** Label for screenreader: Cancel
+#** By clicking it the prompt is dismissed and the upload is canceled.
+
+
+*Display after sending the post* (Implemented with separate user stories, listed here as reference only)
+# There should be notification with the message card FIJI-911
+# The post with image should be properly rendered FIJI-909
+
+h3. Error handling
+*ERROR CASE 1* FIJI-1071 Unexpected backend error
+Content: Sorry, we weren't able to upload the file. Try again.
+
+
+*ERROR CASE 2* Cannot retry upload because the file has been deleted
+When user clicks retry to upload file(s) that were failed to be sent, if any of the file(s) in the post has been deleted, the app should prompt user in flash toast 'The file no longer exists.'
+
+
+
+*ERROR CASE 3*FIJI-1565 Offline

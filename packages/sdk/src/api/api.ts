@@ -8,7 +8,7 @@ import NetworkClient, { INetworkRequests } from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
 import { Throw, ErrorTypes, Aware } from '../utils';
 import { defaultConfig } from './defaultConfig';
-import { Raw } from '../models';
+import { Raw } from '../framework/model';
 
 import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
 import {
@@ -16,12 +16,14 @@ import {
   HandleByRingCentral,
   HandleByGlip2,
   HandleByUpload,
+  HandleByCustom,
 } from './handlers';
 const types = [
   HandleByGlip,
   HandleByRingCentral,
   HandleByGlip2,
   HandleByUpload,
+  HandleByCustom,
 ];
 class Api {
   static basePath = '';
@@ -68,7 +70,6 @@ class Api {
     type: IHandleType,
   ): NetworkClient {
     if (!this._httpConfig) Throw(ErrorTypes.API, 'Api not initialized');
-
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
       const currentConfig = this._httpConfig[name];
@@ -81,6 +82,25 @@ class Api {
         currentConfig.apiPlatform,
         type.defaultVia,
         currentConfig.apiPlatformVersion,
+        this.networkManager,
+      );
+      this.httpSet.set(name, networkClient);
+    }
+    return networkClient;
+  }
+
+  static getCustomNetworkClient(host: string, type: IHandleType) {
+    let networkClient = this.httpSet.get(host);
+    if (!networkClient) {
+      const networkRequests: INetworkRequests = {
+        host,
+        handlerType: type,
+      };
+      networkClient = new NetworkClient(
+        networkRequests,
+        '',
+        type.defaultVia,
+        '',
         this.networkManager,
       );
       this.httpSet.set(name, networkClient);
@@ -106,6 +126,10 @@ class Api {
 
   static get uploadNetworkClient() {
     return this.getNetworkClient('upload', HandleByUpload);
+  }
+
+  static customNetworkClient(host: string) {
+    return this.getCustomNetworkClient(host, HandleByCustom);
   }
 
   static getDataById<T>(id: number) {

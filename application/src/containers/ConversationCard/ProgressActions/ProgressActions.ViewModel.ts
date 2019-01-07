@@ -7,31 +7,38 @@
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
-import { PostService, POST_STATUS } from 'sdk/service';
-import { Post } from 'sdk/models';
+import { PostService, ItemService } from 'sdk/service';
+import { Post } from 'sdk/module/post/entity';
+import { Progress } from 'sdk/models';
+import { PROGRESS_STATUS } from 'sdk/module';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
+import { Notification } from '@/containers/Notification';
+import ProgressModel from '@/store/models/Progress';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
   private _postService: PostService = PostService.getInstance();
+  private _itemService: ItemService = ItemService.getInstance();
   private _timer: NodeJS.Timer;
   @observable
-  postStatus?: POST_STATUS;
+  postStatus?: PROGRESS_STATUS;
 
   constructor(props: ProgressActionsProps) {
     super(props);
-    this.autorun(() => {
-      if (this.post.status === POST_STATUS.INPROGRESS) {
-        clearTimeout(this._timer);
-        this._timer = setTimeout(() => {
-          this.postStatus = this.post.status;
-        },                       500);
-      } else {
-        this.postStatus = this.post.status;
-      }
-    });
+    if (this.props.id < 0) {
+      this.autorun(() => {
+        if (this.postProgress === PROGRESS_STATUS.INPROGRESS) {
+          clearTimeout(this._timer);
+          this._timer = setTimeout(() => {
+            this.postStatus = this.postProgress;
+          },                       500);
+        } else {
+          this.postStatus = this.postProgress;
+        }
+      });
+    }
   }
 
   @computed
@@ -44,8 +51,33 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
   }
 
+  @computed
+  get postProgress() {
+    if (this.id < 0) {
+      const progress = getEntity<Progress, ProgressModel>(
+        ENTITY_NAME.PROGRESS,
+        this.id,
+      );
+      return progress.progressStatus;
+    }
+    return PROGRESS_STATUS.SUCCESS;
+  }
+
   resend = async () => {
-    await this._postService.reSendPost(this.id);
+    const canResend = await this._itemService.canResendFailedItems(
+      this.post.itemIds,
+    );
+    if (canResend) {
+      await this._postService.reSendPost(this.id);
+    } else {
+      Notification.flashToast({
+        message: 'fileNoLongerExists',
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
   }
 
   deletePost = async () => {

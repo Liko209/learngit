@@ -3,11 +3,11 @@
  * @Date: 2018-12-17 14:08:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { TaskItem } from 'sdk/models';
+import { TaskItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class TaskItemModal extends ItemModel {
+export default class TaskItemModel extends ItemModel {
   @observable color: string;
   @observable complete: boolean;
   @observable notes: string;
@@ -25,6 +25,7 @@ export default class TaskItemModal extends ItemModel {
   @observable attachmentIds: number[];
   @observable completePeopleIds: number[];
   @observable completePercentage: number;
+  @observable hasDueTime: boolean;
 
   constructor(data: TaskItem) {
     super(data);
@@ -41,6 +42,7 @@ export default class TaskItemModal extends ItemModel {
       repeat_ending_on,
       text,
       due,
+      hasDueTime,
       complete_type,
       assigned_to_ids,
       attachment_ids,
@@ -59,6 +61,7 @@ export default class TaskItemModal extends ItemModel {
     this.repeatEndingOn = repeat_ending_on;
     this.text = text;
     this.due = due;
+    this.hasDueTime = hasDueTime;
     this.completeType = complete_type;
     this.assignedToIds = assigned_to_ids;
     this.attachmentIds = attachment_ids;
@@ -67,6 +70,6 @@ export default class TaskItemModal extends ItemModel {
   }
 
   static fromJS(data: TaskItem) {
-    return new TaskItemModal(data);
+    return new TaskItemModel(data);
   }
 }

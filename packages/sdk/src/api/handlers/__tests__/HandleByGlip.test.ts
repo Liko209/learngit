@@ -1,4 +1,9 @@
-import { NETWORK_VIA, OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
+import {
+  NETWORK_VIA,
+  OAuthTokenHandler,
+  NETWORK_METHOD,
+  NetworkRequestBuilder,
+} from 'foundation';
 import HandleByGlip from '../HandleByGlip';
 
 const handler = new OAuthTokenHandler(HandleByGlip, null);
@@ -23,9 +28,7 @@ const postRequest = () => {
 };
 
 describe('HandleByGlip', () => {
-
   describe('requestDecoration', () => {
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -75,7 +78,9 @@ describe('HandleByGlip', () => {
     it('should not add x_rc_access_token_data to headers', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => false);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
-      HandleByGlip.rcTokenProvider = jest.fn().mockImplementationOnce(() => 'access_token');
+      HandleByGlip.rcTokenProvider = jest
+        .fn()
+        .mockImplementationOnce(() => 'access_token');
       const decoration = HandleByGlip.requestDecoration(handler);
       const request = postRequest();
       request.needAuth = jest.fn().mockImplementation(() => true);

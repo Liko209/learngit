@@ -88,8 +88,15 @@ const JuiProfileDialogContentFormValue = styled<PropsFormValue, 'div'>('div')`
   ${typography('body2')};
   ${ellipsis()};
   padding-right: ${spacing(4)};
+  margin-top: ${spacing(1)};
   color: ${({ emphasize }: PropsFormValue) =>
     emphasize ? primary('700') : grey('900')};
+  a {
+    color: ${primary('700')};
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 const JuiProfileDialogContentFormEmail = styled('div')`

@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
-import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
+import { JuiNewActions } from 'jui/pattern/TopBar';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
@@ -35,20 +35,16 @@ class NewActions extends React.Component<NewActionsProps> {
     );
   }
 
-  handleCreateTeam = () => {
-    this.props.updateCreateTeamDialogState();
-  }
+  handleCreateTeam = () => CreateTeam.show();
 
-  handleNewMessage = () => {
-    this.props.updateNewMessageDialogState();
-  }
+  handleNewMessage = () => NewMessage.show();
 
   render() {
-    const { t, isShowCreateTeamDialog, isShowNewMessageDialog } = this.props;
+    const { t } = this.props;
 
     return (
       <>
-        <JuiPopoverMenu
+        <JuiNewActions
           Anchor={this._Anchor}
           anchorOrigin={{
             vertical: 'bottom',
@@ -70,11 +66,7 @@ class NewActions extends React.Component<NewActionsProps> {
               {t('SendNewMessage')}
             </JuiMenuItem>
           </JuiMenuList>
-        </JuiPopoverMenu>
-        {isShowCreateTeamDialog && <CreateTeam />}
-        {isShowNewMessageDialog && (
-          <NewMessage data-test-automation-id="newMessageModal" />
-        )}
+        </JuiNewActions>
       </>
     );
   }

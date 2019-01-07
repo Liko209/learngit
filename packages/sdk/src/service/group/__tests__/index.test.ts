@@ -13,6 +13,7 @@ import {
   GroupDao,
   ConfigDao,
   GroupConfigDao,
+  QUERY_DIRECTION,
 } from '../../../dao';
 
 import { Group, Raw, Person } from '../../../models';
@@ -283,38 +284,6 @@ describe('GroupService', () => {
     expect(result).toEqual(true);
   });
 
-  it('updateGroupDraf({id, draft}) is update success', async () => {
-    const result = await groupService.updateGroupDraft({
-      id: 1,
-      draft: 'draft',
-    });
-    expect(result).toEqual(true);
-  });
-
-  it('updateGroupSendFailurePostIds({id, __send_failure_post_ids}) is update success', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-
-    const result = await groupService.updateGroupSendFailurePostIds({
-      id: 123,
-      send_failure_post_ids: [12, 13],
-    });
-    expect(result).toEqual(true);
-  });
-
-  it('getGroupSendFailurePostIds(id) will be return number array', async () => {
-    const mock = { id: 1, __send_failure_post_ids: [12, 13] };
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.get.mockResolvedValueOnce(mock);
-    const result = await groupService.getGroupSendFailurePostIds(1);
-    expect(result).toEqual(mock.__send_failure_post_ids);
-  });
-
-  it('getGroupSendFailurePostIds(id) will be return error', async () => {
-    daoManager.getDao.mockReturnValueOnce(groupDao);
-    groupDao.get.mockRejectedValueOnce(new Error());
-    await expect(groupService.getGroupSendFailurePostIds(1)).rejects.toThrow();
-  });
-
   // it('levelToPermissionArray(level)', () => {
   //   const mock = [1, 2, 4, 8, 16];
   //   const result = groupService.levelToPermissionArray(31);
@@ -508,6 +477,23 @@ describe('GroupService', () => {
         }),
       );
       expect(groupService.handleRawGroup).toHaveBeenCalled();
+    });
+
+    it('updateGroupPrivacy({id, privacy}) is update success', async () => {
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.putTeamById.mockResolvedValue(
+        new ApiResultOk(group, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
+      );
+      const result = groupService.updateGroupPrivacy({
+        id: 1,
+        privacy: 'privacy',
+      });
+      result.then((bool: boolean) => {
+        expect(bool).toEqual(true);
+      });
     });
 
     it('data should have correct permission level if passed in options', async () => {
@@ -1165,6 +1151,42 @@ describe('GroupService', () => {
       );
       const result = await groupService.markGroupAsFavorite(1, true);
       expect(result.isErr()).toBeTruthy();
+    });
+  });
+
+  describe('handleMarkGroupHasMoreAsTrue', () => {
+    it('should do nothing when ids is empty', async () => {
+      await groupService.setAsTrue4HasMoreConfigByDirection(
+        [],
+        QUERY_DIRECTION.OLDER,
+      );
+      expect(groupConfigDao.bulkUpdate).toHaveBeenCalledTimes(0);
+    });
+    it('should update group config has_more_older as true', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      await groupService.setAsTrue4HasMoreConfigByDirection(
+        [2],
+        QUERY_DIRECTION.OLDER,
+      );
+      expect(groupConfigDao.bulkUpdate).toHaveBeenCalledWith([
+        {
+          id: 2,
+          has_more_older: true,
+        },
+      ]);
+    });
+    it('should update group config has_more_newer as true', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      await groupService.setAsTrue4HasMoreConfigByDirection(
+        [2],
+        QUERY_DIRECTION.NEWER,
+      );
+      expect(groupConfigDao.bulkUpdate).toHaveBeenCalledWith([
+        {
+          id: 2,
+          has_more_newer: true,
+        },
+      ]);
     });
   });
 });

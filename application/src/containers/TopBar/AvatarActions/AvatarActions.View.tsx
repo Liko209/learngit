@@ -8,11 +8,11 @@ import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
-import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
+import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
 
 @observer
@@ -39,7 +39,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
         uid={currentUserId}
         presence={this._presence}
         size="large"
-        autoMationId="topBarAvatar"
+        automationId="topBarAvatar"
       />
     );
   }
@@ -48,10 +48,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
 
   handleViewYourProfile = () => {
     const { currentUserId } = this.props;
-    JuiModal.open(ProfileDialogPerson, {
-      componentProps: {
-        id: currentUserId,
-      },
+    Dialog.simple(<ProfileDialogPerson id={currentUserId} />, {
       size: 'medium',
     });
   }
@@ -60,7 +57,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
     const { handleSignOut } = this.props;
 
     return (
-      <JuiPopoverMenu
+      <JuiAvatarActions
         Anchor={this._Anchor}
         anchorOrigin={{
           vertical: 'bottom',
@@ -96,7 +93,7 @@ class AvatarActionsView extends React.Component<ViewProps> {
             {t('SignOut')}
           </JuiMenuItem>
         </JuiMenuList>
-      </JuiPopoverMenu>
+      </JuiAvatarActions>
     );
   }
 }

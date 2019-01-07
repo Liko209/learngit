@@ -50,11 +50,11 @@ describe('OAuthTokenHandler', () => {
       expect(handler.isTokenExpired(true)).toBeTruthy();
 
       handler.token = getFakeToken();
-      handler.token.accessTokenExpireIn = null;
+      handler.token.expires_in = null;
       expect(handler.isTokenExpired(true)).toBeTruthy();
 
       handler.token = getFakeToken();
-      handler.token.refreshTokenExpireIn = null;
+      handler.token.refresh_token_expires_in = null;
       expect(handler.isTokenExpired(false)).toBeTruthy();
 
       handler.token = getFakeToken();

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import ReactQuill from 'react-quill';
 import { Delta } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
@@ -16,12 +16,17 @@ import { handleAtMention } from './Mention/handleAtMention';
 
 import 'react-quill/dist/quill.snow.css';
 
+const MessageInputDropZoneClasses: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+};
+
 const Wrapper = styled.div<{
   isEditMode?: boolean;
 }>`
   position: relative;
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
-  padding: ${props => (props.isEditMode ? 0 : spacing(4))};
+  padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   z-index: ${({ theme }) => `${theme.zIndex.mobileStepper}`};
 `;
 
@@ -90,7 +95,10 @@ type Props = {
   error: string;
   children: React.ReactNode;
   modules: object;
+  toolbarNode?: React.ReactNode;
+  attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
+  didDropFile?: (file: File[]) => void;
   id?: number;
 };
 
@@ -125,9 +133,27 @@ class JuiMessageInput extends React.Component<Props> {
     }
   }
 
+  private _handlePaste = (event: any) => {
+    if (event.clipboardData) {
+      const files: FileList = event.clipboardData.files;
+      if (files && files.length > 0) {
+        // access data directly
+        const result: File[] = [];
+        for (let i = 0; i < files.length; ++i) {
+          const file = files[i];
+          result.push(file);
+        }
+        const { didDropFile } = this.props;
+        didDropFile && files && didDropFile(result);
+        event.preventDefault();
+      }
+    }
+  }
   render() {
     const {
       value,
+      toolbarNode,
+      attachmentsNode,
       defaultValue,
       error,
       children,
@@ -142,7 +168,8 @@ class JuiMessageInput extends React.Component<Props> {
         value,
       };
     return (
-      <Wrapper isEditMode={isEditMode}>
+      <Wrapper isEditMode={isEditMode} onPaste={this._handlePaste}>
+        {toolbarNode}
         <ReactQuill
           {...reactQuillValueProp}
           onChange={this.onChange}
@@ -153,9 +180,10 @@ class JuiMessageInput extends React.Component<Props> {
         {error ? <StyledError>{error}</StyledError> : null}
         {children}
         <GlobalStyle />
+        {attachmentsNode}
       </Wrapper>
     );
   }
 }
 
-export { JuiMessageInput, Props };
+export { JuiMessageInput, Props, MessageInputDropZoneClasses };

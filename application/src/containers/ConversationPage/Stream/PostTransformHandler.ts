@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, transaction } from 'mobx';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { ISortableModel, TUpdated } from '@/store/base/fetch/types';
 import { TransformHandler } from '@/store/base/TransformHandler';
@@ -61,7 +61,7 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
           direction,
           addedItems,
           this.orderListStore.items,
-          this.hasMore(direction),
+          this.hasMore(QUERY_DIRECTION.OLDER), // separatorHandler should only care whether the older posts loaded yet.
         );
       });
     });
@@ -81,6 +81,18 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
         this.orderListStore.replaceAt(item.index, item.value),
       );
     });
+  }
+
+  removeByIds(ids: number[]) {
+    this._orderListHandler.removeByIds(ids);
+  }
+
+  upsert(posts: Post[]) {
+    this._orderListHandler.upsert(posts);
+  }
+
+  replaceAll(posts: Post[]) {
+    this._orderListHandler.replaceAll(posts);
   }
 
   static combineSeparatorHandlersMaps(handlers: ISeparatorHandler[]) {

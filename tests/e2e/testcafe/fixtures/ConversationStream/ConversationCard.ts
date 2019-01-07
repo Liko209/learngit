@@ -21,29 +21,29 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     const postContent = `some random text post on ${Date.now()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    const userPlatform = await h(t).getPlatform(user);
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
     const format = 'hh:mm A';
 
     let groupId, postData, targetPost;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
-      await userPlatform.createGroup({
+      await h(t).platform(loginUser).createAndGetGroupId({
         isPublic: true,
         name: `Team ${uuid()}`,
         type: 'Team',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
 
     await h(t).withLog(`Then I enter a random conversation in teams section`, async () => {
-      const conversations = app.homePage.messageTab.teamsSection.conversations;
+      const conversations = app.homePage.messageTab.teamsSection.conversations
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
       await app.homePage.messageTab.teamsSection.nthConversationEntry(n).enter();
@@ -51,7 +51,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await userPlatform.createPost({ text: postContent }, groupId)).data;
+      postData = (await h(t).platform(loginUser).createPost({ text: postContent }, groupId)).data;
       targetPost = app.homePage.messageTab.conversationPage.postItemById(postData.id);
       await t.expect(targetPost.exists).ok(postData)
     });
@@ -70,14 +70,15 @@ test(formalName('When update user name, can sync dynamically in message metadata
     const postContent = `some random text post ${Date.now()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    const userGlip = await h(t).getGlip(user);
+    const loginUser = users[4];
+    await h(t).glip(loginUser).init();
+
     const changedName = `first name ${uuid()}`;
 
     let groupId, postData, targetPost;
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
@@ -87,18 +88,18 @@ test(formalName('When update user name, can sync dynamically in message metadata
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await userGlip.sendPost(groupId, postContent)).data;
+      postData = (await h(t).glip(loginUser).sendPost(groupId, postContent)).data;
       targetPost = app.homePage.messageTab.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok();
     });
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
-      await userGlip.updatePerson(null, { first_name: changedName });
+      await h(t).glip(loginUser).updatePerson(null, { first_name: changedName });
     });
 
     await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
       await t.expect(targetPost.child().withText(changedName).exists).ok();
-      await userGlip.updatePerson(null, { first_name: 'John' }); // reset first_name
+      await h(t).glip(loginUser).updatePerson(null, { first_name: 'John' }); // reset first_name
     }, true);
   },
 );
@@ -109,13 +110,13 @@ test(formalName('When update custom status, can sync dynamically in message meta
     const postContent = `JPT-95 ${uuid()}`;
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[4];
-    const userGlip = await h(t).getGlip(user);
+    const loginUser = users[4];
+    await h(t).glip(loginUser).init();
 
-    let groupId, postData, targetPost;
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, user);
+    let groupId, postDataId, targetPost;
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
@@ -125,15 +126,17 @@ test(formalName('When update custom status, can sync dynamically in message meta
     });
 
     await h(t).withLog(`And I send one text post to current conversation`, async () => {
-      postData = (await userGlip.sendPost(groupId, postContent)).data;
-      targetPost = app.homePage.messageTab.conversationPage.postItemById(postData['_id']);
-      await t.expect(targetPost.exists).ok(postData);
+      postDataId = await h(t).glip(loginUser).sendPost(groupId, postContent).then(res => {
+        return res.data._id;
+      });
+      targetPost = app.homePage.messageTab.conversationPage.postItemById(postDataId);
+      await t.expect(targetPost.exists).ok();
     });
 
     const userStatusList = ['In a meeting', 'content of user modify']
     for (const userStatus of userStatusList) {
       await h(t).withLog(`When I modify user status "${userStatus}" through api`, async () => {
-        await userGlip.updatePerson(null, { away_status: userStatus });
+        await h(t).glip(loginUser).updatePerson(null, { away_status: userStatus });
       });
 
       await h(t).withLog(`Then I can find user status display change to "${userStatus}"`, async () => {
@@ -142,7 +145,7 @@ test(formalName('When update custom status, can sync dynamically in message meta
     }
 
     await h(t).withLog(`When I delete user status through api request`, async () => {
-      await userGlip.updatePerson(null, { away_status: null });
+      await h(t).glip(loginUser).updatePerson(null, { away_status: null });
     });
 
     await h(t).withLog(`Then I only can find username display without status`, async () => {

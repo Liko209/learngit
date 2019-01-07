@@ -5,7 +5,8 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group, Profile } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Profile } from 'sdk/module/profile/entity';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
@@ -31,10 +32,6 @@ export default class GroupModel extends Base<Group> {
   @observable
   privacy?: string;
   @observable
-  draft?: string;
-  @observable
-  sendFailurePostIds?: number[];
-  @observable
   creatorId: number;
   @observable
   guestUserCompanyIds?: number[];
@@ -54,8 +51,6 @@ export default class GroupModel extends Base<Group> {
       description,
       pinned_post_ids,
       privacy,
-      __draft,
-      __send_failure_post_ids,
       most_recent_post_created_at,
       created_at,
       most_recent_post_id,
@@ -70,8 +65,6 @@ export default class GroupModel extends Base<Group> {
     this.isTeam = is_team;
     this.pinnedPostIds = pinned_post_ids;
     this.privacy = privacy;
-    this.draft = __draft;
-    this.sendFailurePostIds = __send_failure_post_ids;
     this.latestTime = most_recent_post_created_at
       ? most_recent_post_created_at
       : created_at;
@@ -90,6 +83,11 @@ export default class GroupModel extends Base<Group> {
       ) || [];
 
     return favoriteGroupIds.some(groupId => groupId === this.id);
+  }
+
+  get isAdmin() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.isThePersonAdmin(currentUserId);
   }
 
   @computed

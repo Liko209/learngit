@@ -3,17 +3,19 @@
  * @Date: 2018-12-11 11:59:55
  */
 import { SceneConfig } from './config/SceneConfig';
-import * as puppeteer from 'puppeteer';
 import * as lighthouse from 'lighthouse';
-import * as url from 'url';
 import { logUtils } from '../utils/LogUtils';
+import { puppeteerUtils } from '../utils/PuppeteerUtils';
 import { TaskDto } from '../models';
 import { fileService } from '../services/FileService';
 import { metriceService } from '../services/MetricService';
+import { mockHelper } from '../mock';
 import * as reportGenerater from 'lighthouse/lighthouse-core/report/report-generator';
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
 type Timing = { startTime: Date, endTime: Date, total: number };
+
+const RETRY_COUNT = 3;
 
 class Scene {
     protected url: string;
@@ -33,27 +35,39 @@ class Scene {
     /**
      * @description: run scene. don't override this method
      */
-    async run() {
-        try {
-            const startTime = new Date();
+    async run(): Promise<boolean> {
+        this.logger.info(`start run scene --> ${this.constructor.name}`);
+        for (let i = 0; i < RETRY_COUNT; i++) {
+            try {
+                const startTime = new Date();
 
-            await this.preHandle();
+                await this.preHandle();
 
-            await this.collectData();
+                await this.clearCustomGathererWraning();
 
-            const endTime = new Date();
-            this.timing = {
-                startTime,
-                endTime,
-                total: endTime.getTime() - startTime.getTime()
+                await this.collectData();
+
+                const endTime = new Date();
+                this.timing = {
+                    startTime,
+                    endTime,
+                    total: endTime.getTime() - startTime.getTime()
+                }
+            } catch (err) {
+                this.logger.error(err);
             }
 
-            await this.saveMetircsIntoDisk();
+            if (this.isSuccess()) {
+                await this.saveMetircsIntoDisk();
 
-            await this.saveMetircsIntoDb();
-        } catch (err) {
-            this.logger.error(err);
+                await this.saveMetircsIntoDb();
+                return true;
+            }
         }
+
+        // save last failure report, and not save result into db.
+        await this.saveMetircsIntoDisk();
+        return false;
     }
 
     /**
@@ -73,19 +87,54 @@ class Scene {
     }
 
     /**
-     * @description: scene pre handle  
+     * @description: scene pre handle
      */
     async preHandle() {
         this.config = new SceneConfig();
+
+        mockHelper.open();
+    }
+
+    async clearCustomGathererWraning() {
+        this.config.settings.url = this.url;
+
+        let passes = this.config.passes;
+        let customGatherers = new Array<string>();
+
+        for (let pass of passes) {
+            let gatherers = pass.gatherers;
+            for (let g of gatherers) {
+                if (g.instance) {
+                    customGatherers.push(g.instance.constructor.name);
+                }
+            }
+        }
+
+        let requiredArtifacts = Array.from(new Set(customGatherers));
+        this.config.audits.push({
+            implementation: class NoWarningAudit {
+                static get meta() {
+                    return {
+                        id: 'no-warning-audit',
+                        title: 'No warning audit',
+                        failureTitle: 'no failure',
+                        description: 'no warning audit',
+                        requiredArtifacts: requiredArtifacts,
+                    };
+                }
+
+                static audit(artifacts) {
+                    return { rawValue: true };
+                }
+            }
+        });
     }
 
     /**
      * @description: collect performance metrics
      */
     async collectData() {
-        const browser = await puppeteer.launch({
-            headless: false,
-            defaultViewport: null,
+        const browser = await puppeteerUtils.launch({
             args: [
                 `--disable-extensions-except=${EXTENSION_PATH}`,
                 `--load-extension=${EXTENSION_PATH}`,
@@ -100,7 +149,7 @@ class Scene {
             }, this.config.toLightHouseConfig());
 
             lhr['finalUrl'] = this.url;
-            lhr['uri'] = url.parse(this.url).pathname;
+            lhr['uri'] = new URL(this.url).pathname;
             lhr['aliasUri'] = lhr['uri'];
             lhr['requestedUrl'] = this.url;
 
@@ -123,6 +172,30 @@ class Scene {
         await metriceService.createPerformance(sceneDto, this);
 
         await metriceService.createPerformanceItem(sceneDto, this);
+    }
+
+    isSuccess(): boolean {
+        if (this.data) {
+            let { categories } = this.data;
+            if (categories) {
+                let scores = {
+                    'performance': -1, 'pwa': -1, 'accessibility': -1, 'best-practices': -1, 'seo': -1
+                };
+                let cnt = 0;
+                let keys = Object.keys(scores);
+                for (let key of keys) {
+                    if (categories[key] && (categories[key].score || categories[key].score >= 0)) {
+                        cnt++;
+                        scores[key] = categories[key].score * 100;
+                    }
+                }
+
+                this.logger.info(`isSuccess : ${JSON.stringify(scores)}`);
+
+                return cnt === keys.length;
+            }
+        }
+        return false;
     }
 
     /**

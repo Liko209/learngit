@@ -17,9 +17,9 @@ class JuiMiniCardHeader extends PureComponent<JuiMiniCardHeaderProps> {
     super(props);
   }
   render() {
-    const { emphasize, children } = this.props;
+    const { emphasize, children, ...rest } = this.props;
     return (
-      <StyledMiniCardHeader emphasize={emphasize}>
+      <StyledMiniCardHeader emphasize={emphasize} {...rest}>
         {children}
       </StyledMiniCardHeader>
     );

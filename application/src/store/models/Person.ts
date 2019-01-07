@@ -1,7 +1,11 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person, PhoneNumberModel, SanitizedExtensionModel } from 'sdk/models';
+import {
+  Person,
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+} from 'sdk/module/person/entity';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,
@@ -23,7 +27,7 @@ export default class PersonModel extends Base<Person> {
     url: string;
   };
   @observable
-  headShotVersion?: string | undefined;
+  headshotVersion?: string;
   @observable
   email: string;
   @observable
@@ -75,7 +79,7 @@ export default class PersonModel extends Base<Person> {
     this.firstName = first_name;
     this.lastName = last_name;
     this.headshot = headshot;
-    this.headShotVersion = headshot_version;
+    this.headshotVersion = headshot_version;
     this.email = email;
     this.rcPhoneNumbers = rc_phone_numbers || [];
     this.isPseudoUser = is_pseudo_user;
@@ -152,7 +156,7 @@ export default class PersonModel extends Base<Person> {
   }
   @computed
   get hasHeadShot() {
-    return this.headShotVersion || this.headshot;
+    return this.headshotVersion || this.headshot;
   }
 
   @computed

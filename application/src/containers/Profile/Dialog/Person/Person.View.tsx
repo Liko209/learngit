@@ -17,14 +17,14 @@ import { ProfileDialogPersonViewProps } from './types';
 @observer
 class ProfileDialogPersonView extends Component<ProfileDialogPersonViewProps> {
   render() {
-    const { id, dismiss } = this.props;
+    const { id } = this.props;
     return (
       <>
-        <JuiDialogTitleWithAction>
-          <ProfileDialogPersonTitle id={id} dismiss={dismiss} />
+        <JuiDialogTitleWithAction data-test-automation-id="profileDialogTitle">
+          <ProfileDialogPersonTitle id={id} />
         </JuiDialogTitleWithAction>
-        <JuiDialogContentWithFill>
-          <ProfileDialogPersonContent id={id} dismiss={dismiss} />
+        <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
+          <ProfileDialogPersonContent id={id} />
         </JuiDialogContentWithFill>
       </>
     );

@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { Markdown } from 'glipdown';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
@@ -28,13 +29,13 @@ import {
   JuiProfileDialogContentFormLabel as FormLabel,
   JuiProfileDialogContentFormValue as FormValue,
   JuiProfileDialogContentFormCopy as FormCopy,
-  JuiProfileDialogContentFormEmail as FormEmail,
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/service/person';
 import { JuiIconButton } from 'jui/components/Buttons';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -67,7 +68,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <JuiIconography fontSize="small">{key}</JuiIconography>;
   }
 
-  renderCopy = (value: string) => {
+  renderCopy = (value: string, aria?: string) => {
     const { t } = this.props;
     return (
       <FormCopy>
@@ -75,6 +76,9 @@ class ProfileDialogPersonContentViewComponent extends Component<
           size="small"
           onClick={this.onClickCopy.bind(this, value)}
           tooltipTitle={t('copy')}
+          ariaLabel={t('ariaCopy', {
+            value: aria || value,
+          })}
         >
           file_copy
         </JuiIconButton>
@@ -91,24 +95,32 @@ class ProfileDialogPersonContentViewComponent extends Component<
     label,
     value,
     valueEmphasize = false,
+    copyAria,
     copyValue,
   }: FormGroupType) => {
     return (
-      <FormGroup>
+      <FormGroup key={value}>
         <FormLeft>{icon && this.renderIcon(icon)}</FormLeft>
         <FormRight>
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderCopy(copyValue)}
+        {copyValue && this.renderCopy(copyValue, copyAria)}
       </FormGroup>
     );
   }
 
   renderEmail(value: string) {
     const html = `<a href="mailto:${value}">${value}</a>`;
-    return <FormEmail dangerouslySetInnerHTML={{ __html: html }} />;
+    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
   }
+
+  renderHomepage(value: string) {
+    const html = Markdown(value);
+    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+
+  messageAfterClick = () => portalManager.dismiss();
 
   render() {
     const {
@@ -118,26 +130,43 @@ class ProfileDialogPersonContentViewComponent extends Component<
       company,
       extensionNumbers,
       directNumbers,
-      dismiss,
       isMe,
     } = this.props;
     return (
       <>
-        <Summary emphasize={isMe}>
+        <Summary
+          emphasize={isMe}
+          data-test-automation-id="profileDialogSummary"
+        >
           <Left>
-            <Avatar uid={id} size="xlarge" presence={this.renderPresence()} />
+            <Avatar
+              uid={id}
+              size="xlarge"
+              presence={this.renderPresence()}
+              automationId="profileAvatar"
+            />
           </Left>
           <Right>
-            <Name>{person.userDisplayName}</Name>
-            <Status>{person.awayStatus}</Status>
-            <Title>{person.jobTitle}</Title>
+            <Name data-test-automation-id="profileDialogSummaryName">
+              {person.userDisplayName}
+            </Name>
+            <Status data-test-automation-id="profileDialogSummaryStatus">
+              {person.awayStatus}
+            </Status>
+            <Title data-test-automation-id="profileDialogSummaryTitle">
+              {person.jobTitle}
+            </Title>
             <Buttons>
-              <Message id={id} dismiss={dismiss} render={this.renderMessage} />
+              <Message
+                id={id}
+                afterClick={this.messageAfterClick}
+                render={this.renderMessage}
+              />
             </Buttons>
           </Right>
         </Summary>
         <JuiDivider />
-        <Form>
+        <Form data-test-automation-id="profileDialogForm">
           <Grid container={true}>
             <Grid item={true} xs={12} sm={6}>
               {company.name &&
@@ -160,6 +189,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('ext'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
+                  copyAria: t('ariaExt'),
                   copyValue: info.phoneNumber,
                 });
               })}
@@ -172,6 +202,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('directNumber'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
+                  copyAria: t('ariaDirectNumber'),
                   copyValue: info.phoneNumber,
                 });
               })}
@@ -181,6 +212,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   label: t('email'),
                   value: this.renderEmail(person.email),
                   valueEmphasize: true,
+                  copyAria: t('ariaEmail'),
                   copyValue: person.email,
                 })}
             </Grid>
@@ -202,7 +234,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
                     this.renderFormGroup({
                       icon: 'link',
                       label: t('webpage'),
-                      value: person.homepage,
+                      value: this.renderHomepage(person.homepage),
+                      copyAria: t('ariaWebpage'),
                       copyValue: person.homepage,
                     })}
                 </Grid>

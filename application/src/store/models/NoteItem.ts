@@ -3,11 +3,11 @@
  * @Date: 2018-12-17 15:28:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { NoteItem } from 'sdk/models';
+import { NoteItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
-export default class NoteItemModal extends ItemModel {
+export default class NoteItemModel extends ItemModel {
   @observable title: string;
   @observable summary: string;
 
@@ -19,6 +19,6 @@ export default class NoteItemModal extends ItemModel {
   }
 
   static fromJS(data: NoteItem) {
-    return new NoteItemModal(data);
+    return new NoteItemModel(data);
   }
 }

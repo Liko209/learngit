@@ -12,7 +12,7 @@ type Props = {
 };
 
 const StyledTaskSection = styled.div`
-  ${typography('caption1')};
+  ${typography('body1')};
   color: ${grey('500')};
   overflow: hidden;
   text-overflow: ellipsis;

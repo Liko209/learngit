@@ -4,4 +4,8 @@
  */
 export * from './groupService';
 export { GroupService as default, CreateTeamOptions } from './groupService';
-export { FEATURE_STATUS, FEATURE_TYPE, TeamPermission } from './types';
+export {
+  FEATURE_STATUS,
+  FEATURE_TYPE,
+  TeamPermission,
+} from '../../module/group/entity';

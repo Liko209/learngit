@@ -11,7 +11,8 @@ import {
   AccountDao,
   ACCOUNT_USER_ID,
 } from '../../dao';
-import { GroupState, MyState, Post } from '../../models';
+import { GroupState, MyState } from '../../models';
+import { Post } from '../../module/post/entity';
 import StateAPI from '../../api/glip/state';
 import BaseService from '../BaseService';
 import PostService from '../post';
@@ -166,9 +167,9 @@ class StateService extends BaseService<GroupState> {
     const dao: AccountDao = daoManager.getKVDao(AccountDao);
     const currentPersonId = dao.get(ACCOUNT_USER_ID);
     const isSelf =
-      groupState.trigger_ids &&
+      groupState.__trigger_ids &&
       currentPersonId &&
-      groupState.trigger_ids.includes(currentPersonId);
+      groupState.__trigger_ids.includes(currentPersonId);
     const hasUmiMetric = _.some(UMI_METRICS, (umiMetric: string) => {
       return _.has(groupState, umiMetric);
     });
@@ -274,7 +275,7 @@ class StateService extends BaseService<GroupState> {
           group_cursor - state_cursor,
           0,
         );
-        delete resultGroupState.trigger_ids;
+        delete resultGroupState.__trigger_ids;
         return resultGroupState;
       }),
     );

@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 
 
 class Entry extends BaseWebComponent {
@@ -58,7 +58,7 @@ class UnReadToggler extends BaseWebComponent {
   }
 }
 
-class MoreMenu extends BaseWebComponent {
+class MoreMenu extends Entry {
   get self() {
     return this.getSelector('*[role="document"]');
   }
@@ -81,7 +81,25 @@ class MoreMenu extends BaseWebComponent {
   }
 
   get close() {
-    return this.getEntry('Close');
+    return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+  }
+}
+
+class MenuItem extends Entry {
+  async click() {
+    await this.t.click(this.self);
+  }
+
+  get disabled(): Promise<string> {
+    return this.self.getAttribute("data-disabled");
+  }
+
+  async shouldBeDisabled() {
+    await this.t.expect(this.disabled).eql('true');
+  }
+
+  async shouldBeEnabled() {
+    await this.t.expect(this.disabled).eql('false');
   }
 }
 
@@ -178,7 +196,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   get hasDraftMessage() {
-    return this.self.find('.material-icons').withText('border_color').exists;
+    return this.getSelectorByIcon('border_color').exists;
   }
 
   async enter() {
@@ -242,13 +260,13 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
-  async isExpand() {
+  get isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return this.self.child().withText('keyboard_arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
-    const isExpand = await this.isExpand();
+    const isExpand = await this.isExpand;
     if (isExpand != expand) {
       await this.t.click(this.toggleButton);
     }
@@ -312,30 +330,7 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-class ProfileModal extends BaseWebComponent {
-  get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
-  }
 
-  get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').find('span').withText('close');
-  }
-
-  get messageButton() {
-    this.warnFlakySelector();
-    return this.self.find('span').find('span').withText('chat_bubble');
-  }
-
-  async close() {
-    await this.t.click(this.closeButton);
-  }
-
-  async message() {
-    await this.t.click(this.messageButton);
-  }
-}
 
 export class MessageTab extends BaseWebComponent {
   get self() {
@@ -365,15 +360,21 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
+  
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
+
   get conversationPage() {
     return this.getComponent(ConversationPage);
   }
 
   get mentionPage() {
     return this.getComponent(MentionPage);
+  }
+
+  get duplicatePromptPage() {
+    return this.getComponent(DuplicatePromptPage);
   }
 
   get postListPage() {
@@ -396,6 +397,7 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(CloseConversationModal);
   }
 
+<<<<<<< HEAD
   get deletePostModal() {
     return this.getComponent(ActionBarDeletePostModal);
   }
@@ -403,6 +405,11 @@ export class MessageTab extends BaseWebComponent {
   get profileModal() {
     return this.getComponent(ProfileModal);
   }
+=======
+  // get profileModal() {
+  //   return this.getComponent(ProfileModal);
+  // }
+>>>>>>> develop
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');

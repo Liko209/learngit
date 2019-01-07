@@ -13,7 +13,9 @@ import {
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
-import { Group, Profile, GroupState } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Profile } from 'sdk/module/profile/entity';
+import { GroupState } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -284,10 +286,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
+    const currentGroupId = storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (type === EVENT_TYPES.DELETE) {
-      const currentGroupId = storeManager
-        .getGlobalStore()
-        .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
       if (ids.includes(currentGroupId)) {
         history.replace('/messages');
       }

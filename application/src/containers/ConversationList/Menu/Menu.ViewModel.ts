@@ -6,7 +6,7 @@
 
 import { computed } from 'mobx';
 import { service } from 'sdk';
-import { Profile } from 'sdk/models';
+import { Profile } from 'sdk/module/profile/entity';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
 import { ENTITY_NAME } from '@/store';
@@ -63,12 +63,12 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   @computed
-  get showClose() {
+  get closable() {
     const groupState = getEntity(
       ENTITY_NAME.GROUP_STATE,
       this.groupId,
     ) as GroupStateModel;
-    return !groupState.unreadCount && !this.isFavorite;
+    return !(groupState.unreadCount || this.isFavorite);
   }
 
   @computed
