@@ -331,7 +331,7 @@ await h(t).withLog('And I bookmark the post then make sure bookmark icon is corr
 
 await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
   await bookmarksEntry.enter();
-  await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(1);
+  await t.expect(conversationPage.posts.count).eql(1);
 }, true);
 
 await h(t).withLog('When I click the post and jump to the conversation', async () => {
@@ -345,6 +345,6 @@ await h(t).withLog('And I cancel the bookmark in the post then make sure bookmar
 
 await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
   await bookmarksEntry.enter();
-  await t.expect(postListPage.find('[data-name="conversation-card"]').count).eql(0);
+  await t.expect(conversationPage.posts.count).eql(1);
 }, true);
 })

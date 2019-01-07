@@ -155,11 +155,11 @@ export class PostItem extends BaseWebComponent {
   }
 
   get bookmarkIcon() {
-    return this.self.find(`span`).withText('bookmark');
+    return this.self.find('.material-icons').withExactText('bookmark');
   }
 
   get unBookmarkIcon() {
-    return this.self.find(`span`).withText('bookmark_border');
+    return this.self.find('.material-icons').withExactText('bookmark_border')
   }
 
   get moreMenu() {
