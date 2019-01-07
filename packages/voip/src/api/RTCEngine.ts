@@ -4,9 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCAccount, IRTCAccountListener } from './RTCAccount';
+import { RTCAccount } from './RTCAccount';
+import { IRTCAccountListener } from './IRTCAccountListener';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcRestApiManager } from '../utils/RTCRestApiManager';
+import { ITelephonyNetworkDelegate } from 'foundation/src/telephony/ITelephonyNetworkDelegate';
 
 class RTCEngine {
   private static instance: RTCEngine;
@@ -26,6 +29,10 @@ class RTCEngine {
 
   public static setLogger(logger: IRTCLogger): void {
     rtcLogger.setLogger(logger);
+  }
+
+  public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
+    rtcRestApiManager.setNetworkDelegate(delegate);
   }
 }
 

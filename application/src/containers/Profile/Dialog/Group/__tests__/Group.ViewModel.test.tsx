@@ -17,7 +17,6 @@ const mockData = {
 
 const props = {
   id: 1,
-  dismiss: jest.fn(),
 };
 let vm: ProfileDialogGroupViewModel;
 
@@ -47,13 +46,6 @@ describe('ProfileDialogGroupViewModel', () => {
       mockData.isTeam = false;
       mockData.description = 'description 2';
       expect(vm.group).toEqual(mockData);
-    });
-  });
-
-  describe('dismiss()', () => {
-    it('should be called when invoke class instance method dismiss', () => {
-      vm.dismiss();
-      expect(props.dismiss).toBeCalled();
     });
   });
 });

@@ -4,38 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
-
-enum AccountState {
-  IDLE,
-  REGISTERED,
-  FAILED,
-  UNREGISTERED,
-  IN_PROGRESS,
-}
-
-interface IRTCAccountListener {
-  onAccountStateChanged(
-    updateState: AccountState,
-    originalState: AccountState,
-  ): void;
-}
+// import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
+import { IRTCAccountListener } from './IRTCAccountListener';
 
 class RTCAccount {
-  private _registrationManager: RTCRegistrationManager;
+  // private _registrationManager: RTCRegistrationManager;
 
   constructor(listener: IRTCAccountListener) {
     console.log('RTCAccout created');
-    this._registrationManager = new RTCRegistrationManager(listener);
   }
 
-  public deRegister() {
-    this._registrationManager.deRegister();
-  }
+  public deRegister() {}
 
-  public doRegister() {
-    this._registrationManager.doRegister();
-  }
+  public doRegister() {}
 }
 
-export { AccountState, IRTCAccountListener, RTCAccount };
+export { RTCAccount };

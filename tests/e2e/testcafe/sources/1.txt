@@ -1,0 +1,5 @@
+*Background*
+This is a demo feedback. Currently the close(hide) conversation option is not available for conversations with unread messages, to keep message options consistent, the feedback is that we show the close conversation option with conversations with unread messages, but disable it. 
+
+*Requirement*
+Show close conversation option with conversations where there are unread messages, but the option should be disabled.

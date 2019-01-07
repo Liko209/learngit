@@ -11,6 +11,7 @@ const JuiStreamWrapper = styled(Div)`
   position: relative;
   display: flex;
   flex-direction: column;
+  flex: 1;
   height: 100%;
   overflow: hidden;
 `;
