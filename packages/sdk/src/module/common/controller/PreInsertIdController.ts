@@ -5,7 +5,6 @@
  */
 
 import { daoManager, ConfigDao } from '../../../dao';
-import { Throw } from '../../../utils';
 
 type PreInsertIdType = {
   id: number;
@@ -14,7 +13,7 @@ type PreInsertIdType = {
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
-class PreInsertIdController<BaseDao> {
+class PreInsertIdController {
   private _versionIdMap: { [version: number]: number };
   private _modelName: string;
   constructor(public DaoClass: any) {
@@ -23,7 +22,7 @@ class PreInsertIdController<BaseDao> {
     this._initVersionIdMap();
   }
 
-  private _initVersionIdMap<T>() {
+  private _initVersionIdMap() {
     const dao: ConfigDao = daoManager.getKVDao(ConfigDao);
     this._versionIdMap = dao.get(this._modelName) || {};
   }
@@ -38,6 +37,7 @@ class PreInsertIdController<BaseDao> {
       throw new Error(`Already has the version ${version}`);
     }
     this._versionIdMap[version] = id;
+    this._syncDataDB();
   }
 
   async removeIdByVersion(version: number): Promise<void> {
@@ -45,6 +45,11 @@ class PreInsertIdController<BaseDao> {
     const id = this._versionIdMap[version];
     id && (await dao.delete(id));
     delete this._versionIdMap[version];
+    this._syncDataDB();
+  }
+
+  getAll() {
+    return this._versionIdMap;
   }
 }
 
