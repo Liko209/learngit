@@ -10,7 +10,6 @@ import { TypeDictionary } from 'sdk/utils';
 
 jest.mock('../../../../store/utils');
 
-let activityViewModel: ActivityViewModel;
 const mockPostEntityData: {
   activityData?: {
     key: string;
@@ -27,13 +26,13 @@ const mockPostEntityData: {
   itemTypeIds?: { [key: number]: number[] };
 } = {};
 
-beforeAll(() => {
-  (getEntity as jest.Mock).mockReturnValue(mockPostEntityData);
-
-  activityViewModel = new ActivityViewModel({ id: 1 });
-});
-
 describe('activityViewModel', () => {
+  let activityViewModel: ActivityViewModel;
+  beforeEach(() => {
+    activityViewModel = new ActivityViewModel({ id: 1 });
+    (getEntity as jest.Mock).mockReturnValue(mockPostEntityData);
+    mockPostEntityData.itemTypeIds = {};
+  });
   it('lifecycle method', () => {
     expect(activityViewModel._id).toBe(1);
   });
@@ -139,7 +138,27 @@ describe('activityViewModel', () => {
 
     mockPostEntityData.source = '';
     mockPostEntityData.parentId = 0;
-
+    const itemData = {
+      version_map: {
+        10: 2,
+      },
+    };
+    mockPostEntityData.itemTypeIds = {
+      [TypeDictionary.TYPE_ID_FILE]: [TypeDictionary.TYPE_ID_FILE],
+    };
+    mockPostEntityData.itemData = itemData;
+    expect(activityViewModel.activity).toEqual({
+      parameter: {
+        count: 2,
+        verb: 'uploaded',
+        noun: 'version',
+      },
+      key: 'verb-noun-numerals',
+    });
+    mockPostEntityData.itemTypeIds = {
+      [TypeDictionary.TYPE_ID_PAGE]: [TypeDictionary.TYPE_ID_PAGE],
+      [TypeDictionary.TYPE_ID_FILE]: [TypeDictionary.TYPE_ID_FILE],
+    };
     expect(activityViewModel.activity).toEqual({
       parameter: {
         verb: 'shared',
