@@ -9,6 +9,8 @@ import { AbstractViewModel } from '@/base';
 import { IndicatorProps, IndicatorViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+
+import { ItemService } from 'sdk/service';
 import { GroupConfig } from 'sdk/src/models';
 import GroupConfigModel from '@/store/models/GroupConfig';
 
@@ -33,7 +35,9 @@ class IndicatorViewModel extends AbstractViewModel
 
   @computed
   get hasDraft() {
-    return !!this.groupConfig.draft;
+    const itemService: ItemService = ItemService.getInstance();
+    const result = itemService.getUploadItems(this.id);
+    return !!this.groupConfig.draft || result.length > 0;
   }
 
   @computed
