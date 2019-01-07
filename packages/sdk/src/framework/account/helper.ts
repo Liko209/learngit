@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export async function fetchWhiteList() {
-  return await (await fetch('/whiteListedId.json')).json();
+  return (await axios.get('/whiteListedId.json')).data;
 }

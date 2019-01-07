@@ -2,43 +2,31 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-const Gatherer = require('lighthouse/lighthouse-core/gather/gatherers/gatherer');
-import { jupiterUtils } from '../utils/JupiterUtils';
-import { mockHelper } from '../mock/MockHelper';
-import { HomePage } from '../pages/HomePage';
+const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
+import { jupiterUtils } from "../utils/JupiterUtils";
+import { HomePage } from "../pages/HomePage";
 
 class LoginGatherer extends Gatherer {
+  async beforePass(passContext) {
+    let { url } = passContext.settings;
 
-    async beforePass(passContext) {
-        let { url } = passContext.settings;
+    let homePage = new HomePage(passContext);
 
-        let homePage = new HomePage(passContext);
+    let authUrl = await jupiterUtils.getAuthUrl(url);
+    let page = await homePage.newPage();
 
-        let browser = await homePage.browser();
+    await page.goto(authUrl);
 
-        mockHelper.close();
+    await homePage.waitForCompleted();
 
-        let authUrl = await jupiterUtils.getAuthUrl(url);
-        let page = await homePage.newPage();
+    await homePage.close();
+  }
 
-        await page.goto(authUrl);
+  afterPass(passContext) {
+    return {};
+  }
 
-        await homePage.waitForCompleted();
-
-        await homePage.close();
-
-        mockHelper.open();
-        mockHelper.register(browser);
-    }
-
-    afterPass(passContext) {
-        return {};
-    }
-
-    pass(passContext) {
-    }
+  pass(passContext) {}
 }
 
-export {
-    LoginGatherer
-}
+export { LoginGatherer };

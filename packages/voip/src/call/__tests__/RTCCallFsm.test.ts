@@ -303,5 +303,47 @@ describe('Call FSM UT', async () => {
         done();
       });
     });
+
+    describe('flip()', async () => {
+      it("should state transition from Connected to Connected when receive 'flip' event", done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onFlipAction');
+        callFsm._fsmGoto('connected');
+        callFsm.flip(5);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onFlipAction).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    describe('startRecord()', async () => {
+      it("should state transition from Connected to Connected when receive 'startRecord' event", done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onStartRecordAction');
+        callFsm._fsmGoto('connected');
+        callFsm.startRecord();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onStartRecordAction).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    describe('stopRecord()', async () => {
+      it("should state transition from Connected to Connected when receive 'stopRecord' event", done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onStopRecordAction');
+        callFsm._fsmGoto('connected');
+        callFsm.stopRecord();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onStopRecordAction).toBeCalled();
+          done();
+        });
+      });
+    });
   });
 });

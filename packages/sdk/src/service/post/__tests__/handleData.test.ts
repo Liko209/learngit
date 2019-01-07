@@ -152,10 +152,9 @@ describe('handlePreInsertedPosts', () => {
   });
 
   it('handlePreInsertedPosts should be [1] with valid parameter', async () => {
-    postService.isInPreInsert.mockResolvedValueOnce(true);
     const result = await handlePreInsertPosts([
       postFactory.build({
-        id: 1,
+        id: -1,
         version: 100,
         modified_at: 101,
         created_at: 101,

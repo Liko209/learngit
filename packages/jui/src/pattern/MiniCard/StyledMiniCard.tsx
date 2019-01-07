@@ -14,6 +14,7 @@ const StyledMiniCard = styled<StyledMiniCardProps, 'div'>('div')`
   background-color: ${palette('common', 'white')};
   box-shadow: ${props => props.theme.shadows[5]};
   border-radius: ${spacing(1)};
+  outline: 0;
 `;
 
 export { StyledMiniCard };

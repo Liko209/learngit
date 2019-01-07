@@ -8,7 +8,6 @@ import { WithNamespaces } from 'react-i18next';
 
 type ViewProps = WithNamespaces & {
   create: Function;
-  isOpen: boolean;
   disabledOkBtn: boolean;
   isOffline: boolean;
   nameError: boolean;
@@ -20,8 +19,6 @@ type ViewProps = WithNamespaces & {
   serverError: boolean;
   members: (number | string)[];
   errorEmail: string;
-  updateCreateTeamDialogState: () => void;
-  inputReset: () => void;
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;

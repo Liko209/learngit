@@ -35,16 +35,12 @@ class NewActions extends React.Component<NewActionsProps> {
     );
   }
 
-  handleCreateTeam = () => {
-    this.props.updateCreateTeamDialogState();
-  }
+  handleCreateTeam = () => CreateTeam.show();
 
-  handleNewMessage = () => {
-    this.props.updateNewMessageDialogState();
-  }
+  handleNewMessage = () => NewMessage.show();
 
   render() {
-    const { t, isShowCreateTeamDialog, isShowNewMessageDialog } = this.props;
+    const { t } = this.props;
 
     return (
       <>
@@ -71,10 +67,6 @@ class NewActions extends React.Component<NewActionsProps> {
             </JuiMenuItem>
           </JuiMenuList>
         </JuiNewActions>
-        {isShowCreateTeamDialog && <CreateTeam />}
-        {isShowNewMessageDialog && (
-          <NewMessage data-test-automation-id="newMessageModal" />
-        )}
       </>
     );
   }

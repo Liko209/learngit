@@ -25,11 +25,11 @@ describe('IndicatorViewModel', () => {
   });
 
   it.skip('get computed _group', () => {
-    expect(indicatorViewModel._group).toBe(mockGroupEntityData);
+    expect(indicatorViewModel.groupConfig).toBe(mockGroupEntityData);
   });
 
   it.skip('get computed draft', () => {
-    expect(indicatorViewModel.draft).toBe(mockGroupEntityData.draft);
+    expect(indicatorViewModel.hasDraft).toBe(true);
   });
 
   it.skip('get computed sendFailurePostIds', () => {
