@@ -92,6 +92,12 @@ class Search extends BaseWebComponent {
   nthTeam(n: number) {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
+
+  itemEntryByCid(cid: string) {
+    const root = this.getSelectorByAutomationId("search-item-avatar", this.allResultItems)
+      .find('div').withAttribute('cid').filter(`[cid="${cid}"]`).parent('.search-items');
+    return this.getComponent(SearchItem, root);
+  }
 }
 
 class SearchItem extends BaseWebComponent {
@@ -122,6 +128,22 @@ class SearchItem extends BaseWebComponent {
 
   async enter() {
     await this.t.click(this.self);
+  }
+
+  get joinButton() {
+    return this.getSelectorByAutomationId('joinButton', this.self);
+  }
+
+  async shouldHasJoinButton() {
+    await this.t.expect(this.joinButton.visible).ok();
+  }
+
+  async shouldNotJoinButton() {
+    await this.t.expect(this.joinButton.visible).notOk();
+  }
+
+  async join() {
+    await this.t.hover(this.self).click(this.joinButton);
   }
 
   async clickAvatar() {
