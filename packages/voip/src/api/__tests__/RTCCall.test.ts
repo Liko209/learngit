@@ -14,7 +14,7 @@ import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../types';
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
     public callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
-    public callAction: RTC_CALL_STATE;
+    public callAction: RTC_CALL_ACTION;
     public isReadyReturnValue: boolean = false;
     public toNum: string = '';
 
@@ -79,15 +79,16 @@ describe('RTC call', () => {
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
       call.setCallSession(session);
-      call._fsm._fsmGoto('connected');
       session.flip.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.flip(5);
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
         RTC_CALL_ACTION.FLIP,
       );
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.flip).toHaveBeenCalledWith(5);
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
@@ -102,15 +103,16 @@ describe('RTC call', () => {
       const call = new RTCCall(false, '123', null, account, account);
       const session = new MockSession();
       call.setCallSession(session);
-      call._fsm._fsmGoto('connected');
       session.flip.mockRejectedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.flip(5);
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
         RTC_CALL_ACTION.FLIP,
       );
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.flip).toHaveBeenCalledWith(5);
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
@@ -127,7 +129,6 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.flip.mockResolvedValue(null);
-        call._fsm._fsmGoto('idle');
         call.flip(5);
         const fsmState = call._fsm.state();
         setImmediate(() => {
@@ -145,10 +146,9 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.flip.mockResolvedValue(null);
-        call._fsm._fsmGoto('pending');
         call.flip(5);
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
@@ -163,10 +163,10 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.flip.mockResolvedValue(null);
-        call._fsm._fsmGoto('connecting');
+        call.onAccountReady();
         call.flip(5);
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
@@ -181,10 +181,10 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.flip.mockResolvedValue(null);
-        call._fsm._fsmGoto('disconnected');
+        call.hangup();
         call.flip(5);
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
@@ -195,14 +195,14 @@ describe('RTC call', () => {
 
       it('should report flip failed when FSM in answering state', done => {
         const account = new VirturlAccountAndCallObserver();
-        const call = new RTCCall(false, '123', null, account, account);
         const session = new MockSession();
+        const call = new RTCCall(true, '', session, account, account);
         call.setCallSession(session);
         session.flip.mockResolvedValue(null);
-        call._fsm._fsmGoto('answering');
+        call.answer();
         call.flip(5);
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.FLIP,
@@ -217,17 +217,18 @@ describe('RTC call', () => {
     it('should report startRecord success when FSM in connected state and startRecord success [JPT-686]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
-      call._fsm._fsmGoto('connected');
       const session = new MockSession();
       call.setCallSession(session);
       session.startRecord.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.startRecord();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
         RTC_CALL_ACTION.START_RECORD,
       );
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.startRecord).toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
@@ -240,18 +241,19 @@ describe('RTC call', () => {
     it('should report startRecord success when FSM in connected state and is recording [JPT-685]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
-      call._fsm._fsmGoto('connected');
       const session = new MockSession();
       call.setCallSession(session);
       session.startRecord.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.startRecord();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
         RTC_CALL_ACTION.START_RECORD,
       );
       call.startRecord();
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.startRecord).toHaveBeenCalledTimes(1);
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
@@ -264,17 +266,18 @@ describe('RTC call', () => {
     it('should report startRecord failed when FSM in connected state but startRecord failed [JPT-687]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
-      call._fsm._fsmGoto('connected');
       const session = new MockSession();
       call.setCallSession(session);
       session.startRecord.mockRejectedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.startRecord();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
         RTC_CALL_ACTION.START_RECORD,
       );
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.startRecord).toHaveBeenCalled();
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
@@ -287,14 +290,12 @@ describe('RTC call', () => {
     describe('should report startRecord failed when FSM not in connected state [JPT-684]', async () => {
       it('should report startRecord failed when FSM in idle state', done => {
         const account = new VirturlAccountAndCallObserver();
-        const call = new RTCCall(false, '123', null, account, account);
         const session = new MockSession();
-        call.setCallSession(session);
+        const call = new RTCCall(true, '', session, account, account);
         session.startRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('idle');
         call.startRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('idle');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
@@ -309,10 +310,9 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.startRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('pending');
         call.startRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
@@ -327,10 +327,10 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.startRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('connecting');
+        call.onAccountReady();
         call.startRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
@@ -345,10 +345,10 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.startRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('disconnected');
+        call.hangup();
         call.startRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
@@ -359,14 +359,13 @@ describe('RTC call', () => {
 
       it('should report startRecord failed when FSM in answering state', done => {
         const account = new VirturlAccountAndCallObserver();
-        const call = new RTCCall(false, '123', null, account, account);
         const session = new MockSession();
-        call.setCallSession(session);
+        const call = new RTCCall(true, '', session, account, account);
         session.startRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('answering');
+        call.answer();
         call.startRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.START_RECORD,
@@ -381,11 +380,12 @@ describe('RTC call', () => {
     it('should report stopRecord success when FSM in connected state and stopRecord success [JPT-690]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
-      call._fsm._fsmGoto('connected');
       const session = new MockSession();
       call.setCallSession(session);
       session.startRecord.mockResolvedValue(null);
       session.stopRecord.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.startRecord();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -396,8 +396,8 @@ describe('RTC call', () => {
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
         RTC_CALL_ACTION.STOP_RECORD,
       );
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.stopRecord).toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
@@ -410,13 +410,14 @@ describe('RTC call', () => {
     it('should report stopRecord success when FSM in connected state and is not recording [JPT-689]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
-      call._fsm._fsmGoto('connected');
       const session = new MockSession();
       call.setCallSession(session);
       session.stopRecord.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.stopRecord();
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.stopRecord).not.toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
@@ -429,11 +430,12 @@ describe('RTC call', () => {
     it('should report stopRecord failed when FSM in connected state but stopRecord failed [JPT-691]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
-      call._fsm._fsmGoto('connected');
       const session = new MockSession();
       call.setCallSession(session);
       session.startRecord.mockResolvedValue(null);
       session.stopRecord.mockRejectedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
       call.startRecord();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -444,8 +446,8 @@ describe('RTC call', () => {
         CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
         RTC_CALL_ACTION.STOP_RECORD,
       );
-      const fsmState = call._fsm.state();
       setImmediate(() => {
+        const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.STOP_RECORD,
@@ -457,15 +459,13 @@ describe('RTC call', () => {
     describe('should report stopRecord failed when FSM not in connected state [JPT-688]', async () => {
       it('should report stopRecord failed when FSM in idle state', done => {
         const account = new VirturlAccountAndCallObserver();
-        const call = new RTCCall(false, '123', null, account, account);
         const session = new MockSession();
-        call.setCallSession(session);
+        const call = new RTCCall(true, '', session, account, account);
         session.stopRecord.mockRejectedValue(null);
-        call._fsm._fsmGoto('idle');
         call._isRecording = true;
         call.stopRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('idle');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
@@ -480,11 +480,10 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.stopRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('pending');
         call._isRecording = true;
         call.stopRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('pending');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
@@ -499,11 +498,11 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.stopRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('connecting');
+        call.onAccountReady();
         call._isRecording = true;
         call.stopRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('connecting');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
@@ -518,11 +517,11 @@ describe('RTC call', () => {
         const session = new MockSession();
         call.setCallSession(session);
         session.stopRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('disconnected');
+        call.hangup();
         call._isRecording = true;
         call.stopRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('disconnected');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
@@ -533,15 +532,14 @@ describe('RTC call', () => {
 
       it('should report stopRecord failed when FSM in answering state', done => {
         const account = new VirturlAccountAndCallObserver();
-        const call = new RTCCall(false, '123', null, account, account);
         const session = new MockSession();
-        call.setCallSession(session);
+        const call = new RTCCall(true, '', session, account, account);
         session.stopRecord.mockResolvedValue(null);
-        call._fsm._fsmGoto('answering');
         call._isRecording = true;
+        call.answer();
         call.stopRecord();
-        const fsmState = call._fsm.state();
         setImmediate(() => {
+          const fsmState = call._fsm.state();
           expect(fsmState).toBe('answering');
           expect(account.onCallActionFailed).toHaveBeenCalledWith(
             RTC_CALL_ACTION.STOP_RECORD,
@@ -774,7 +772,10 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
         expect(account.callState).toBe(RTC_CALL_STATE.DISCONNECTED);
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/FIJI-2555
         done();
       });
     });

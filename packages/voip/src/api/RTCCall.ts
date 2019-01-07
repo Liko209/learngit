@@ -211,11 +211,11 @@ class RTCCall {
         break;
       }
     }
-    this._observer.onCallActionSuccess(callAction);
+    this._delegate.onCallActionSuccess(callAction);
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
-    this._observer.onCallActionFailed(callAction);
+    this._delegate.onCallActionFailed(callAction);
   }
 
   // session listener

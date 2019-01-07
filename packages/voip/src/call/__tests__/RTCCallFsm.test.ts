@@ -321,7 +321,8 @@ describe('Call FSM UT', async () => {
       it("should state transition from Connected to Connected when receive 'flip' event", done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onFlipAction');
-        callFsm._fsmGoto('connected');
+        callFsm.accountReady();
+        callFsm.sessionConfirmed();
         callFsm.flip(5);
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
@@ -335,7 +336,8 @@ describe('Call FSM UT', async () => {
       it("should state transition from Connected to Connected when receive 'startRecord' event", done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onStartRecordAction');
-        callFsm._fsmGoto('connected');
+        callFsm.accountReady();
+        callFsm.sessionConfirmed();
         callFsm.startRecord();
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
@@ -349,7 +351,8 @@ describe('Call FSM UT', async () => {
       it("should state transition from Connected to Connected when receive 'stopRecord' event", done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onStopRecordAction');
-        callFsm._fsmGoto('connected');
+        callFsm.accountReady();
+        callFsm.sessionConfirmed();
         callFsm.stopRecord();
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');

@@ -36,10 +36,6 @@ class RTCEngine {
     rtcLogger.setLogger(logger);
   }
 
-  public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
-    rtcRestApiManager.setNetworkDelegate(delegate);
-  }
-
   public getLocalAudio(): any {
     return this._localAudio;
   }
@@ -75,6 +71,10 @@ class RTCEngine {
     remote_audio.volume = 1;
     this._mediaRootElement.appendChild(remote_audio);
     this._remoteAudio = remote_audio;
+  }
+
+  public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
+    rtcRestApiManager.setNetworkDelegate(delegate);
   }
 }
 

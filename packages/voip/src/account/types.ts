@@ -36,4 +36,10 @@ const RegistrationManagerEvent = {
   RECEIVER_INCOMING_SESSION: 'RegitrationManangerEventReceiveIncomingSession',
 };
 
-export { ErrorCode, RegistrationState, RTCSipProvisionInfo, RTC_PROV_EVENT, RegistrationManagerEvent };
+export {
+  ErrorCode,
+  RegistrationState,
+  RTCSipProvisionInfo,
+  RTC_PROV_EVENT,
+  RegistrationManagerEvent,
+};
