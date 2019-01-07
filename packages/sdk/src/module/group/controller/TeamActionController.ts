@@ -7,13 +7,14 @@
 import { Group } from '../entity';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { ControllerBuilder } from '../../../framework/controller/impl/ControllerBuilder';
 import { Api } from '../../../api';
+import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 
 class TeamActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Group>,
     public requestController: IRequestController<Group>,
+    public controllerBuilder: IControllerBuilder<Group>,
   ) { }
 
   isInTeam(userId: number, team: Group) {
@@ -37,16 +38,20 @@ class TeamActionController {
         };
       },
       async (newEntity: Group) => {
-        return new ControllerBuilder<Group>()
-          .buildRequestController({
-            basePath: '/add_team_members',
-            networkClient: Api.glipNetworkClient,
-          }).put({
-            id: teamId,
-            members: [userId],
-          });
+        return await this.addTeamMembers(teamId, [userId]);
       },
     );
+  }
+
+  async addTeamMembers(teamId: number, members: number[]) {
+    return this.controllerBuilder
+      .buildRequestController({
+        basePath: '/add_team_members',
+        networkClient: Api.glipNetworkClient,
+      }).put({
+        members,
+        id: teamId,
+      });
   }
 }
 
