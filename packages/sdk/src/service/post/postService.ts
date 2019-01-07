@@ -23,12 +23,11 @@ import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
-import { ErrorParser } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
-import { JSdkError, ERROR_CODES_SDK } from '../../error';
 import GroupConfigService from '../groupConfig';
 import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
+import { JSdkError, ERROR_CODES_SDK, errorParser } from '../../error';
 
 interface IPostResult {
   posts: Post[];
@@ -424,7 +423,7 @@ class PostService extends BaseService<Post> {
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId, buildPost.group_id);
-      throw ErrorParser.parse(e);
+      throw errorParser.parse(e);
     }
   }
 
@@ -564,7 +563,7 @@ class PostService extends BaseService<Post> {
         resp.expect('delete post failed');
         return true;
       } catch (e) {
-        throw ErrorParser.parse(e);
+        throw errorParser.parse(e);
       }
     }
     return false;
@@ -623,7 +622,6 @@ class PostService extends BaseService<Post> {
     return err(
       new JSdkError(
         ERROR_CODES_SDK.GENERAL,
-        // ErrorTypes.UNDEFINED_ERROR,
         `Post can not find with id ${postId}`,
       ),
     );

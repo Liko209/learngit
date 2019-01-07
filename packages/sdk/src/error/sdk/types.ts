@@ -14,6 +14,7 @@ export class JSdkError extends JError {
 
 export const ERROR_CODES_SDK = {
   GENERAL: 'GENERAL_ERROR',
+  UNDEFINED: 'UNDEFINED_ERROR',
   // OAUTH
   OAUTH: 'OAUTH',
   OAUTH_INVALID_GRANT: 'OAUTH_INVALID_GRANT',

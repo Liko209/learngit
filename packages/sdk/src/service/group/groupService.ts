@@ -30,7 +30,6 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -60,7 +59,7 @@ import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
 import { ServiceResult } from '../ServiceResult';
-import { JSdkError, ERROR_CODES_SDK } from '../../error';
+import { JSdkError, ERROR_CODES_SDK, errorParser } from '../../error';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -483,7 +482,7 @@ class GroupService extends BaseService<Group> {
       );
       return true;
     } catch (error) {
-      throw ErrorParser.parse(error);
+      throw errorParser.parse(error);
     }
   }
 

@@ -5,12 +5,24 @@
  */
 import { ErrorParser } from './ErrorParser';
 import { runtimeErrorParser } from './runtime';
+import { errorConditionSelector, ErrorCondition } from './types';
 const errorParser = new ErrorParser();
 errorParser.register(runtimeErrorParser);
 
+const isErrorMatch = (error: Error, ...conditions: ErrorCondition[]) => {
+  return errorConditionSelector(errorParser.parse(error), conditions);
+};
+
 export {
   errorParser,
+  isErrorMatch,
 };
-export * from './types';
+
+export {
+  IErrorParser,
+  JError,
+  ERROR_TYPES,
+  ErrorCondition,
+} from './types';
 export * from './network';
 export * from './runtime';
