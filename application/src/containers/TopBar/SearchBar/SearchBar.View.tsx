@@ -14,7 +14,8 @@ import {
   JuiSearchItem,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
-// import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
+import { JuiButton } from 'jui/components/Buttons';
+import { Dialog } from '@/containers/Dialog';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
 // import { MiniCard } from '@/containers/MiniCard';
@@ -146,19 +147,37 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await this._goToConversation(id);
   }
 
-  // private _Actions = () => {
-  //   return (
-  //     <JuiButtonBar size="small">
-  //       <JuiIconButton
-  //         onClick={this.goToContacts()}
-  //         variant="plain"
-  //         tooltipTitle={t('contacts')}
-  //       >
-  //         contacts
-  //       </JuiIconButton>
-  //     </JuiButtonBar>
-  //   );
-  // }
+  addPublicTeam = (id: number, teamName: string) => (
+    e: React.MouseEvent<HTMLElement>,
+  ) => {
+    e.stopPropagation();
+    // const { joinTeam } = this.props;
+    Dialog.confirm({
+      title: t('joinTeamTitle'),
+      content: t('joinTeamContent', { teamName }),
+      okText: t('Done'),
+      cancelText: t('Cancel'),
+      onOK: async () => {
+        try {
+          // await joinTeam(id);
+          // await this._goToConversation(id);
+        } catch (error) {}
+      },
+    });
+  }
+
+  private _Actions = (id: number, displayName: string) => {
+    return (
+      <JuiButton
+        onClick={this.addPublicTeam(id, displayName)}
+        data-test-automation-id="joinButton"
+        variant="round"
+        size="small"
+      >
+        {t('join')}
+      </JuiButton>
+    );
+  }
 
   goToContacts = () => (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -170,7 +189,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     terms: string[],
   ) {
     const { currentUserId } = this.props;
-
     return (
       <>
         {type.sortableModel.length > 0 && (
@@ -183,6 +201,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
         )}
         {type.sortableModel.map((item: any) => {
           const { id, displayName, entity } = item;
+          const { is_team, privacy, members } = entity;
+          const Actions =
+            is_team &&
+            privacy === 'protected' &&
+            !members.includes(currentUserId)
+              ? { Actions: this._Actions(id, displayName) }
+              : {};
           return (
             <JuiSearchItem
               key={id}
@@ -191,7 +216,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
               value={displayName}
               terms={terms}
               data-test-automation-id={`search-${title}-item`}
-              // Actions={this._Actions()}
+              {...Actions}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
                 entity.is_team &&
