@@ -9,7 +9,10 @@ import { AbstractViewModel } from '@/base';
 import { IndicatorProps, IndicatorViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+
 import { ItemService } from 'sdk/service';
+import { GroupConfig } from 'sdk/src/models';
+import GroupConfigModel from '@/store/models/GroupConfig';
 
 class IndicatorViewModel extends AbstractViewModel
   implements IndicatorViewProps {
@@ -23,20 +26,23 @@ class IndicatorViewModel extends AbstractViewModel
   }
 
   @computed
-  get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this.id);
+  get groupConfig() {
+    return getEntity<GroupConfig, GroupConfigModel>(
+      ENTITY_NAME.GROUP_CONFIG,
+      this.id,
+    );
   }
 
   @computed
-  get draft() {
+  get hasDraft() {
     const itemService: ItemService = ItemService.getInstance();
     const result = itemService.getUploadItems(this.id);
-    return this._group.draft || result.length > 0;
+    return !!this.groupConfig.draft || result.length > 0;
   }
 
   @computed
   get sendFailurePostIds() {
-    return this._group.sendFailurePostIds || [];
+    return this.groupConfig.sendFailurePostIds || [];
   }
 }
 export { IndicatorViewModel };

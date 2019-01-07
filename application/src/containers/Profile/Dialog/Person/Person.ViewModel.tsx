@@ -27,10 +27,6 @@ class ProfileDialogPersonViewModel
   get person() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
   }
-
-  dismiss() {
-    this.props.dismiss();
-  }
 }
 
 export { ProfileDialogPersonViewModel };

@@ -23,28 +23,6 @@ class TopBarViewModel extends AbstractViewModel {
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLeftNavOpen);
   }
 
-  @action
-  updateCreateTeamDialogState = () => {
-    const isShowCreateTeamDialog = !globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-    );
-    globalStore.set(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-      isShowCreateTeamDialog,
-    );
-  }
-
-  @action
-  updateNewMessageDialogState = () => {
-    const isShowNewMessageDialog = !globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG,
-    );
-    globalStore.set(
-      GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG,
-      isShowNewMessageDialog,
-    );
-  }
-
   @computed
   get currentUserId() {
     return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -56,6 +34,7 @@ class TopBarViewModel extends AbstractViewModel {
     authService.logout();
     window.location.href = '/';
   }
+
   @action
   handleAboutPage = (
     event: React.MouseEvent<HTMLElement>,

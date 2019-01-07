@@ -42,29 +42,12 @@ type JuiModalProps = {
   content?: string | JSX.Element;
 };
 
-type ModalFunc = (
-  props: JuiModalProps,
-) => {
-  dismiss: () => void;
-};
-
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
   JuiDialogProps,
   'open'
 >;
 
-type DialogFunc = (
-  component: React.ComponentType<any>,
-  props?: JuiDialogFuncProps,
-) => {
-  dismiss: () => void;
-};
-
 class JuiModal extends Component<JuiModalProps, {}> {
-  static alert: ModalFunc;
-  static confirm: ModalFunc;
-  static open: DialogFunc;
-
   defaultFooter() {
     const {
       onCancel,
