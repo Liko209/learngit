@@ -5,11 +5,15 @@
  */
 
 import { action, observable, computed } from 'mobx';
-import { GroupService, StateService, PERMISSION_ENUM } from 'sdk/service';
-import { Group } from 'sdk/models';
+import { GroupService, StateService } from 'sdk/service';
+import { Group } from 'sdk/module/group/entity';
+import { getEntity } from '@/store/utils';
 import { AbstractViewModel } from '@/base';
+import GroupModel from '@/store/models/Group';
+import { ENTITY_NAME } from '@/store';
 import { ConversationPageProps } from './types';
 import _ from 'lodash';
+import history from '@/history';
 
 class ConversationPageViewModel extends AbstractViewModel {
   private _groupService: GroupService = GroupService.getInstance();
@@ -29,25 +33,32 @@ class ConversationPageViewModel extends AbstractViewModel {
   );
 
   @observable
-  private _permissions: null | PERMISSION_ENUM[] = null;
-
-  @observable
   groupId: number;
 
   @computed
+  private get _group() {
+    return this.groupId
+      ? getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId)
+      : ({} as GroupModel);
+  }
+
+  @computed
   get canPost() {
-    if (this._permissions === null) {
-      return true;
-    }
-    return this._permissions.includes(PERMISSION_ENUM.TEAM_POST);
+    return this._group.canPost;
   }
 
   @action
   async onReceiveProps({ groupId }: ConversationPageProps) {
     if (!_.isEqual(groupId, this.groupId) && groupId) {
-      const group = (await this._groupService.getById(groupId)) as Group;
+      const group = await this._groupService.getById(groupId);
+      if (!group) {
+        history.replace('/messages/loading', {
+          id: groupId,
+          error: true,
+        });
+        return;
+      }
       this.groupId = group.id;
-      this._permissions = this._groupService.getPermissions(group);
       this.groupId && this._readGroup(groupId);
     }
   }

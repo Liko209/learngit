@@ -8,10 +8,10 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/UnreadToggle')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName(`Display a toggle that controls whether to show only new messages on the conversation list &
@@ -22,63 +22,67 @@ test(formalName(`Display a toggle that controls whether to show only new message
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user)
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    
+    const otherUser = users[5];
+    await h(t).platform(otherUser).init(); 
 
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const unreadToggler = app.homePage.messageTab.unReadToggler;
-    const user5Platform = await h(t).getPlatform(users[5]);
+    
 
     let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
     await h(t).withLog('Given I have an extension with some conversations', async () => {
-      favPrivateChatId = (await user.sdk.platform.createGroup({
+      favPrivateChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
-      favTeamId = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      favTeamId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: `My Team ${uuid()}`,
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
-      groupId1 = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      groupId1 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group',
-        members: [user.rcId, users[5].rcId, users[6].rcId],
-      })).data.id;
-      groupId2 = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
+      groupId2 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group',
-        members: [user.rcId, users[5].rcId, users[1].rcId],
-      })).data.id;
-      groupId3 = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId, users[1].rcId],
+      });
+      groupId3 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group',
-        members: [user.rcId, users[5].rcId, users[2].rcId],
-      })).data.id;
-      teamId1 = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId, users[2].rcId],
+      });
+      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: `My Team ${uuid()}`,
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
-      teamId2 = (await user.sdk.platform.createGroup({
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
         name: `My Team ${uuid()}`,
-        members: [user.rcId, users[5].rcId],
-      })).data.id;
+        members: [loginUser.rcId, users[5].rcId],
+      });
     });
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await user.sdk.glip.showAllGroups();
-      await user.sdk.glip.favoriteGroups(user.rcId, [+favPrivateChatId, +favTeamId]);
+      await h(t).glip(loginUser).showAllGroups();
+      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favPrivateChatId, +favTeamId]);
     });
 
     await h(t).withLog('And clear all UMIs before login', async () => {
-      await user.sdk.glip.clearAllUmi();
+      await h(t).glip(loginUser).clearAllUmi();
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       },
     );
@@ -87,7 +91,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
       await directMessagesSection.conversationEntryById(groupId3).enter();
     });
 
-    // JPT-194 
+    // JPT-194
     await h(t).withLog('Then I Should find unread toggle and the default state is off', async () => {
       await t.expect(unreadToggler.exists).ok();
       await unreadToggler.shouldBeOff();
@@ -103,16 +107,16 @@ test(formalName(`Display a toggle that controls whether to show only new message
     }, true);
 
     await h(t).withLog('When other user send posts to some specific conversations', async () => {
-      await user5Platform.createPost(
+      await h(t).platform(otherUser).createPost(
         { text: 'TestGroupUMI' },
         favPrivateChatId,
       );
-      await user5Platform.createPost(
+      await h(t).platform(otherUser).createPost(
         { text: 'TestGroupUMI' },
         groupId1,
       );
 
-      await user5Platform.createPost(
+      await h(t).platform(otherUser).createPost(
         { text: 'TestGroupUMI' },
         teamId1,
       );
@@ -164,7 +168,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
     }, true);
 
     await h(t).withLog('Then groupId3 received a new message', async () => {
-      await user5Platform.createPost(
+      await h(t).platform(otherUser).createPost(
         { text: 'TestGroupUMI' },
         groupId3,
       );

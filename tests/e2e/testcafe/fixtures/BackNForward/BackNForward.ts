@@ -7,12 +7,11 @@ import 'testcafe';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import { setupCase, teardownCase } from '../../init';
-import { BackNForward } from '../../v2/page-models/AppRoot/HomePage/header';
 
 fixture('BackNForward/BackNForward')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 
@@ -24,12 +23,12 @@ test(formalName('test navigation on electron backwards and forwards functions', 
     }
 
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, 
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded(); 
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
       }
     );
 
@@ -70,11 +69,11 @@ test(formalName('Check the back and forward buttons are disabled after user logi
     }
 
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       }
     );
@@ -94,11 +93,11 @@ test(formalName('reLoad should disable backward and forward button', ['P2', 'JPT
     }
 
     const app = new AppRoot(t);
-    const user = h(t).rcData.mainCompany.users[0];
+    const loginUser = h(t).rcData.mainCompany.users[0];
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`,
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
       async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
         await app.homePage.ensureLoaded();
       }
     );

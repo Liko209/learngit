@@ -12,15 +12,17 @@ import {
   JuiDialogTitleWithActionLeft,
   JuiDialogTitleWithActionRight,
 } from 'jui/components/Dialog';
-import { Favorite } from '@/containers/common';
+import { Favorite } from '@/containers/common/Favorite';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogPersonTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogPersonTitleViewProps
 > {
+  onClick = () => portalManager.dismiss();
   render() {
-    const { id, t, dismiss } = this.props;
+    const { id, t } = this.props;
     return (
       <>
         <JuiDialogTitleWithActionLeft>
@@ -28,7 +30,11 @@ class ProfileDialogPersonTitleViewComponent extends Component<
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
           <Favorite id={id} size="medium" />
-          <JuiIconButton onClick={dismiss} tooltipTitle={t('close')}>
+          <JuiIconButton
+            onClick={this.onClick}
+            tooltipTitle={t('close')}
+            ariaLabel={t('close')}
+          >
             close
           </JuiIconButton>
         </JuiDialogTitleWithActionRight>

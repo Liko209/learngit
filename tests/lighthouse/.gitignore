@@ -1,0 +1,11 @@
+# node
+node_modules
+.env
+# auto generate file
+reports
+
+# Mac
+.DS_Store
+
+# vs code
+.vscode

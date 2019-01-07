@@ -1,16 +1,21 @@
 enum ENTITY_NAME {
   'GROUP' = 'group',
+  'GROUP_CONFIG' = 'groupConfig',
   'PERSON' = 'person',
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',
   'ITEM' = 'item',
   'FILE_ITEM' = 'fileItem',
+  'TASK_ITEM' = 'taskItem',
+  'EVENT_ITEM' = 'eventItem',
+  'LINK_ITEM' = 'linkItem',
+  'NOTE_ITEM' = 'noteItem',
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
   'PROFILE' = 'profile',
-  'POST_SENT_STATUS' = 'postSendStatus',
   'GLOBAL' = 'global',
+  'PROGRESS' = 'progress',
 }
 
 enum HANDLER_TYPE {
@@ -24,8 +29,6 @@ enum GLOBAL_KEYS {
   IS_SHOW_ABOUT_DIALOG = 'IS_SHOW_ABOUT_DIALOG',
   WINDOW_FOCUS = 'WINDOW_FOCUS',
   NETWORK = 'NETWORK',
-  IS_SHOW_CREATE_TEAM_DIALOG = 'IS_SHOW_CREATE_TEAM_DIALOG',
-  IS_SHOW_NEW_MESSAGE_DIALOG = 'IS_SHOW_NEW_MESSAGE_DIALOG',
   IS_LEFT_NAV_OPEN = 'IS_LEFT_NAV_OPEN',
   CURRENT_USER_ID = 'CURRENT_USER_ID',
   CURRENT_COMPANY_ID = 'CURRENT_COMPANY_ID',

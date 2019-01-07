@@ -22,6 +22,8 @@ import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { extractView } from 'jui/hoc/extractView';
 import { mainLogger } from 'sdk';
+import RO from 'resize-observer-polyfill';
+import { noop } from 'jui/foundation/utils';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -40,6 +42,7 @@ class StreamViewComponent extends Component<Props> {
   private _scrollTop = 0;
   private _ro: ResizeObserver;
   private _globalStore = storeManager.getGlobalStore();
+  private _listLastWidth = 0;
   @observable
   private _jumpToFirstUnreadLoading = false;
 
@@ -58,13 +61,14 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
+    const { _jumpToPostId } = this.state;
     await this.props.loadInitialPosts();
     if (!this._listRef.current) {
       return; // the current component is unmounted
     }
-    await this.scrollToPost(
-      this.state._jumpToPostId || this.props.mostRecentPostId,
-    );
+    _jumpToPostId
+      ? await this.scrollToPost(_jumpToPostId)
+      : await this.scrollToBottom();
     this._stickToBottom();
     this._visibilitySensorEnabled = true;
     this.props.updateHistoryHandler();
@@ -122,13 +126,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private async _stickToBottom() {
-    const win = window as any;
-    let RO = win.ResizeObserver;
-    if (typeof win.ResizeObserver === 'undefined') {
-      RO = (await import(/* webpackMode: "eager" */
-      /*  webpackChunkName: "ro" */
-      'resize-observer-polyfill')).default;
-    }
     const el = this._listRef.current;
     if (!el) {
       return;
@@ -137,13 +134,18 @@ class StreamViewComponent extends Component<Props> {
     this._ro.observe(el);
   }
 
-  private _heightChangedHandler = (entries: any) => {
+  private _heightChangedHandler = (entries: any[]) => {
     const listEl = this._listRef.current;
     if (!listEl) {
       return;
     }
     if (this._temporaryDisableAutoScroll) {
       this._temporaryDisableAutoScroll = false;
+      return;
+    }
+    const width = entries[0].contentRect.width;
+    if (this._listLastWidth !== width) {
+      this._listLastWidth = width;
       return;
     }
     const { hasMoreDown } = this.props;
@@ -220,41 +222,43 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _viewedPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(
-      this._handleFirstUnreadPostVisibilityChange,
+    return this._visibilityPostWrapper({
       streamItem,
-    );
+      onChangeHandler: this._handleFirstUnreadPostVisibilityChange,
+    });
   }
 
   private _mostRecentPostFactory(streamItem: StreamItem) {
-    return this._visibilityPostWrapper(
-      this._handleMostRecentPostRead,
+    return this._visibilityPostWrapper({
       streamItem,
-    );
+      onChangeHandler: this._handleMostRecentPostRead,
+    });
   }
 
   private _ordinaryPostFactory(streamItem: StreamItem) {
-    const { loading } = this.props;
-
-    return (
-      <ConversationPost
-        id={streamItem.value}
-        key={`ConversationPost${streamItem.value}`}
-        ref={this._setPostRef}
-        highlight={streamItem.value === this.state._jumpToPostId && !loading}
-      />
-    );
+    return this._visibilityPostWrapper({
+      streamItem,
+      onChangeHandler: noop,
+      active: false,
+    });
   }
-  private _visibilityPostWrapper(
-    onChangeHandler: (isVisible: boolean) => void,
-    streamItem: StreamItem,
-  ) {
+
+  private _visibilityPostWrapper({
+    onChangeHandler,
+    streamItem,
+    active,
+  }: {
+    onChangeHandler: (isVisible: boolean) => void;
+    streamItem: StreamItem;
+    active?: boolean;
+  }) {
     const { loading } = this.props;
     return (
       <VisibilitySensor
         key={`VisibilitySensor${streamItem.value}`}
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={onChangeHandler}
+        active={active}
       >
         <ConversationPost
           ref={this._setPostRef}
@@ -267,7 +271,7 @@ class StreamViewComponent extends Component<Props> {
   }
   private get _streamItems() {
     if (this.props.loading) {
-      return null;
+      return [];
     }
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
@@ -366,8 +370,7 @@ class StreamViewComponent extends Component<Props> {
   scrollToBottom = async () => {
     const lastItem = _(this.props.items).nth(-1);
     if (lastItem) {
-      await nextTick();
-      this.scrollToPost(lastItem.value);
+      await this.scrollToPost(lastItem.value, false);
     }
   }
 

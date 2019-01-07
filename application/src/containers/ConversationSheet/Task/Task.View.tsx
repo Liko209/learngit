@@ -12,7 +12,7 @@ import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationIt
 import {
   JuiTaskSection,
   JuiTaskNotes,
-  JuiTaskAvatarName,
+  JuiTaskAvatarNames,
   JuiTaskContent,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
@@ -23,7 +23,7 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 
 import { AvatarName } from './AvatarName';
-import { getDurationTime, getDurationTimeText } from '../helper';
+import { getDateAndTime, getDateMessage, getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 
 type taskViewProps = WithNamespaces & ViewProps;
@@ -43,28 +43,32 @@ const downloadBtn = (downloadUrl: string) => (
 const FILE_COMPS = {
   [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
     const { item, previewUrl } = file;
-    const { id, name, downloadUrl } = item;
+    const { id, name, downloadUrl, deactivated } = item;
     return (
-      <JuiExpandImage
-        key={id}
-        previewUrl={previewUrl}
-        fileName={name}
-        i18UnfoldLess={t('collapse')}
-        i18UnfoldMore={t('expand')}
-        Actions={downloadBtn(downloadUrl)}
-        ImageActions={downloadBtn(downloadUrl)}
-      />
+      !deactivated && (
+        <JuiExpandImage
+          key={id}
+          previewUrl={previewUrl}
+          fileName={name}
+          i18UnfoldLess={t('collapse')}
+          i18UnfoldMore={t('expand')}
+          Actions={downloadBtn(downloadUrl)}
+          ImageActions={downloadBtn(downloadUrl)}
+        />
+      )
     );
   },
   [FileType.others]: (file: ExtendFileItem) => {
     const { item } = file;
-    const { name, downloadUrl, id } = item;
+    const { name, downloadUrl, id, deactivated } = item;
     return (
-      <JuiFileWithExpand
-        key={id}
-        fileName={name}
-        Actions={downloadBtn(downloadUrl)}
-      />
+      !deactivated && (
+        <JuiFileWithExpand
+          key={id}
+          fileName={name}
+          Actions={downloadBtn(downloadUrl)}
+        />
+      )
     );
   },
 };
@@ -113,19 +117,27 @@ class Task extends React.Component<taskViewProps> {
       complete,
       assignedToIds,
       start,
-      end,
+      due,
+      hasDueTime,
       repeat,
       repeatEndingAfter,
       repeatEnding,
       repeatEndingOn,
     } = task;
-    const time = getDurationTime(start, end);
+    let startTime = '';
+    let endTime = '';
+    const hasTime = start && due;
+    if (hasTime) {
+      startTime = getDateMessage(start);
+      endTime = hasDueTime ? getDateAndTime(due) : getDateMessage(due);
+    }
     const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
       repeatEndingOn,
       repeatEnding,
     );
+
     return (
       <JuiConversationItemCard
         complete={complete}
@@ -133,26 +145,30 @@ class Task extends React.Component<taskViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
-        {start && (
+        {hasTime && (
           <JuiTaskContent title={t('due')}>
-            <JuiTimeMessage time={`${time} ${timeText}`} />
+            <JuiTimeMessage time={`${startTime} - ${endTime} ${timeText}`} />
           </JuiTaskContent>
         )}
         {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskContent title={t('assignee')}>
-            <JuiTaskAvatarName
+            <JuiTaskAvatarNames
               count={assignedToIds && assignedToIds.length}
               otherText={t('avatarnamesWithOthers', {
                 count: assignedToIds.length - 2,
               })}
             >
               {this._taskAvatarNames}
-            </JuiTaskAvatarName>
+            </JuiTaskAvatarNames>
           </JuiTaskContent>
         )}
-        {(section || notes) && (
-          <JuiTaskContent>
+        {section && (
+          <JuiTaskContent title={t('section')}>
             <JuiTaskSection section={section} />
+          </JuiTaskContent>
+        )}
+        {notes && (
+          <JuiTaskContent title={t('descriptionNotes')}>
             <JuiTaskNotes notes={notes} />
           </JuiTaskContent>
         )}

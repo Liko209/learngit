@@ -35,6 +35,7 @@ function resetMockedServices() {
     async isConversationHidden() {
       return this.hidden;
     },
+    reopenConversation: jest.fn(),
   };
   mockedGroupService = {
     valid: true,
@@ -72,6 +73,7 @@ function mockDependencies() {
     .fn()
     .mockImplementation(() => mockedGlobalStore);
   history.push = jest.fn().mockImplementation(jest.fn());
+  history.replace = jest.fn().mockImplementation(jest.fn());
 }
 
 describe('MessageRouterChangeHelper', () => {
@@ -87,6 +89,7 @@ describe('MessageRouterChangeHelper', () => {
         source: 'leftRail',
       },
     };
+    MessageRouterChangeHelper.isIndexDone = true;
   });
   afterEach(() => {
     // jest.clearAllMocks();
@@ -94,7 +97,7 @@ describe('MessageRouterChangeHelper', () => {
   describe('go to last group()', () => {
     it('should go to the last group when group is valid', async () => {
       await MessageRouterChangeHelper.goToLastOpenedGroup();
-      expect(history.push).toBeCalledWith('/messages/110');
+      expect(history.replace).toBeCalledWith('/messages/110');
       expect(mockedGlobalStore.set).toBeCalledWith(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         110,
@@ -103,7 +106,7 @@ describe('MessageRouterChangeHelper', () => {
     it('should go to the default page when last group is invalid', async () => {
       mockedGroupService.valid = false;
       await MessageRouterChangeHelper.goToLastOpenedGroup();
-      expect(history.push).toBeCalledWith('/messages/');
+      expect(history.replace).toBeCalledWith('/messages/');
       expect(mockedGlobalStore.set).toBeCalledWith(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         0,
@@ -112,7 +115,7 @@ describe('MessageRouterChangeHelper', () => {
     it('should go to the default page when last group is hidden', async () => {
       mockedProfileService.hidden = true;
       await MessageRouterChangeHelper.goToLastOpenedGroup();
-      expect(history.push).toBeCalledWith('/messages/');
+      expect(history.replace).toBeCalledWith('/messages/');
       expect(mockedGlobalStore.set).toBeCalledWith(
         GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         0,
@@ -133,6 +136,66 @@ describe('MessageRouterChangeHelper', () => {
     it('should access Group when the state is leftRail', () => {
       MessageRouterChangeHelper.handleSourceOfRouter(110);
       expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(0);
+    });
+  });
+});
+
+describe('ensureGroupOpened', () => {
+  beforeEach(() => {
+    mockDependencies();
+    resetMockedServices();
+    Object.defineProperty(window.history, 'state', {
+      writable: true,
+      value: {},
+    });
+    window.history.state = {
+      state: {
+        source: '',
+      },
+    };
+    mockedProfileService = {
+      isConversationHidden: jest.fn(),
+      reopenConversation: jest.fn(),
+    };
+    ProfileService.getInstance = jest
+      .fn()
+      .mockImplementation(() => mockedProfileService);
+  });
+  it('should call service to reopen', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockResolvedValueOnce({ isErr: () => false });
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      done();
+    });
+  });
+  it('should not call service to reopen when it is not hidden', () => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValue(false);
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    expect(mockedProfileService.reopenConversation).not.toHaveBeenCalled();
+  });
+  it('should show loading page with error when reopen failed', (done: any) => {
+    mockedProfileService.isConversationHidden = jest
+      .fn()
+      .mockResolvedValueOnce(true);
+    mockedProfileService.reopenConversation = jest
+      .fn()
+      .mockResolvedValueOnce({ isErr: () => true });
+    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    setTimeout(() => {
+      expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
+      expect(history.replace).toBeCalledWith('/messages/loading', {
+        error: true,
+        id: 110,
+      });
+      done();
     });
   });
 });

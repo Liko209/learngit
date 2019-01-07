@@ -6,8 +6,10 @@
 
 import { daoManager } from '../../dao';
 import PostDao from '../../dao/post';
-import { Post } from '../../models';
+import { Post } from '../../module/post/entity';
 import { mainLogger } from 'foundation';
+import notificationCenter from '../notificationCenter';
+import { SERVICE } from '../eventKey';
 
 // greater than or equal to this indicate the local post
 // should be dirty since they can not use anymore because
@@ -109,12 +111,14 @@ class IncomingPostHandler {
 
       // 1 filter out the post which could cause discontinuous
       let shouldBeMovedPosts: Post[] = [];
+      const shouldBeMovedPostsOwnedGroupId: number[] = [];
       for (let i = 0; i < groupIds.length; i += 1) {
         // if (result[i] === undefined) {
         if (!result || !result[i]) {
           shouldBeMovedPosts = shouldBeMovedPosts.concat(
             groupPosts[groupIds[i]],
           );
+          shouldBeMovedPostsOwnedGroupId.push(groupIds[i]);
         } else {
           let tmpPosts = groupPosts[groupIds[i]];
           tmpPosts = tmpPosts.sort(
@@ -137,12 +141,18 @@ class IncomingPostHandler {
             shouldBeMovedPosts = shouldBeMovedPosts.concat(
               tmpPosts.slice(0, lastModifiedIndex + 1),
             );
+            shouldBeMovedPostsOwnedGroupId.push(groupIds[i]);
           }
         }
       }
 
       // 2 remove posts
       if (shouldBeMovedPosts.length > 0) {
+        // mark group has more as true
+        notificationCenter.emit(
+          SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE,
+          shouldBeMovedPostsOwnedGroupId,
+        );
         const ids = [];
         for (let i = 0; i < shouldBeMovedPosts.length; i += 1) {
           ids.push(shouldBeMovedPosts[i].id);

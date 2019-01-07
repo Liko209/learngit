@@ -13,7 +13,9 @@ import {
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
-import { Group, Profile, GroupState } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Profile } from 'sdk/module/profile/entity';
+import { GroupState } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -127,7 +129,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _removeGroupsIfExistedInHiddenGroups() {
     const inters = _.intersection(this._hiddenGroupIds, [...this._idSet]);
     if (inters.length) {
-      inters.forEach(id => this._idSet.delete(id));
+      this._updateIdSet(EVENT_TYPES.DELETE, inters);
       Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
         this._removeByIds(key, inters);
       });
@@ -172,14 +174,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
       if (less.length) {
         await this._changeGroupsInGroupSections(less, false);
-        let shouldReportChanged = false;
-        less.forEach((id: number) => {
-          if (!this._idSet.has(id)) {
-            this._idSet.add(id);
-            shouldReportChanged = true;
-          }
-        });
-        shouldReportChanged && this._idSetAtom.reportChanged();
+        this._updateIdSet(EVENT_TYPES.UPDATE, less);
       }
     }
   }
@@ -291,10 +286,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
+    const currentGroupId = storeManager
+      .getGlobalStore()
+      .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (type === EVENT_TYPES.DELETE) {
-      const currentGroupId = storeManager
-        .getGlobalStore()
-        .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
       if (ids.includes(currentGroupId)) {
         history.replace('/messages');
       }
@@ -371,7 +366,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isTeamInTeamSection = model.is_team as boolean;
-      return notInFav && isTeamInTeamSection;
+      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      const includesMe =
+        userId && model.members ? model.members.includes(userId) : true;
+      return notInFav && isTeamInTeamSection && includesMe;
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
@@ -385,13 +383,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._handlersMap[sectionType]) {
       await this._handlersMap[sectionType].fetchData(direction);
       const ids = this._handlersMap[sectionType].sortableListStore.getIds();
-      ids.forEach((id: number) => {
-        this._idSet.add(id);
-      });
-
-      if (ids.length) {
-        this._idSetAtom.reportChanged();
-      }
+      this._updateIdSet(EVENT_TYPES.UPDATE, ids);
     }
   }
 
@@ -433,7 +425,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
     const handler = this._handlersMap[type];
     handler.removeByIds(ids);
-    ids.forEach(id => this._idSet.delete(id));
+    this._updateIdSet(EVENT_TYPES.DELETE, ids);
   }
 
   private async _getStates(groupIds: number[]): Promise<GroupState[]> {

@@ -6,8 +6,10 @@
 
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
-import { PostService, StateService, ENTITY, ItemService } from 'sdk/service';
-import { Post, GroupState, Group } from 'sdk/models';
+import { PostService, StateService, ENTITY } from 'sdk/service';
+import { Post } from 'sdk/module/post/entity';
+import { GroupState } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 
@@ -36,7 +38,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId);
+  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 const transformFunc = (dataModel: Post) => ({
   id: dataModel.id,
@@ -46,8 +48,8 @@ const transformFunc = (dataModel: Post) => ({
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _initialized = false;
-
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
@@ -154,26 +156,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @loading
   async loadInitialPosts() {
-    let posts: Post[] = [];
     if (this.jumpToPostId) {
-      const post = await PostService.getInstance<PostService>().getById(
-        this.jumpToPostId,
-      );
-      if (post) {
-        this._transformHandler.orderListStore.append([transformFunc(post)]);
-        const result = await Promise.all([
-          this._loadPosts(QUERY_DIRECTION.OLDER),
-          this._loadPosts(QUERY_DIRECTION.NEWER),
-        ]);
-        posts = _(result)
-          .flatten()
-          .value();
-      }
+      await this._loadSiblingPosts(this.jumpToPostId);
     } else {
-      posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
-    }
-    if (posts && posts.length) {
-      await this._prepareAllData(posts);
+      await this._loadPosts(QUERY_DIRECTION.OLDER);
     }
   }
 
@@ -235,24 +221,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
-  private async _prepareAllData(posts: Post[]) {
-    const itemService = ItemService.getInstance();
-    const itemIds = _(posts)
-      .map('item_ids')
-      .flatMap((i: number[]) => i.slice())
-      .value();
-    const items = await Promise.all(
-      itemIds.map(itemService.getById.bind(itemService)),
-    );
-    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
-  }
-
   private async _loadPosts(
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this._transformHandler.hasMore(direction)) return [];
+    if (!this._transformHandler.hasMore(direction)) {
+      return [];
+    }
     return await this._transformHandler.fetchData(direction, limit);
+  }
+
+  private async _loadSiblingPosts(anchorPostId: number) {
+    const post = await this._postService.getById(anchorPostId);
+    if (post) {
+      this._transformHandler.replaceAll([post]);
+      await Promise.all([
+        this._loadPosts(QUERY_DIRECTION.OLDER),
+        this._loadPosts(QUERY_DIRECTION.NEWER),
+      ]);
+    } else {
+      // TODO error handing
+    }
   }
 
   loadPostUntilFirstUnread = async () => {
@@ -276,12 +265,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       fetchData: async (direction, pageSize, anchor) => {
         try {
           const postService: PostService = PostService.getInstance();
-          const { posts, hasMore } = await postService.getPostsByGroupId({
-            direction,
-            groupId,
-            postId: anchor && anchor.id,
-            limit: pageSize,
-          });
+          const { posts, hasMore, items } = await postService.getPostsByGroupId(
+            {
+              direction,
+              groupId,
+              postId: anchor && anchor.id,
+              limit: pageSize,
+            },
+          );
+          storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+          storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
           return { hasMore, data: posts };
         } catch (err) {
           if (err.code === ErrorTypes.API_NETWORK) {

@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger } from 'foundation';
+import { mainLogger, BaseError } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { ErrorTypes } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { BaseModel, Raw, SortableModel } from '../models'; // eslint-disable-line
+import { IdModel, Raw } from '../framework/model';
+import { SortableModel } from '../models'; // eslint-disable-line
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
@@ -28,9 +29,7 @@ const throwError = (text: string): never => {
   );
 };
 
-class BaseService<
-  SubModel extends BaseModel = BaseModel
-> extends AbstractService {
+class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   static serviceName = 'BaseService';
   private _cachedManager: EntityCacheManager<SubModel>;
 
@@ -55,7 +54,12 @@ class BaseService<
   }
 
   async getById(id: number): Promise<SubModel | null> {
-    const result = await this.getByIdFromDao(id);
+    let result: SubModel | null = null;
+    if (this.isCacheInitialized()) {
+      result = this._cachedManager.getEntity(id);
+    } else {
+      result = await this.getByIdFromDao(id);
+    }
     if (!result) {
       return this.getByIdFromAPI(id);
     }
@@ -104,7 +108,7 @@ class BaseService<
       throwError('ApiClass || HandleData');
     }
     if (id <= 0) {
-      throwError('invalid id, should not do network request');
+      throwError(`invalid id(${id}), should not do network request`);
     }
     const result: ApiResult<any> = await this.ApiClass.getDataById(id);
     if (result.isOk()) {
@@ -132,7 +136,15 @@ class BaseService<
   }
 
   async getAll({ offset = 0, limit = Infinity } = {}): Promise<SubModel[]> {
+    if (this.isCacheInitialized()) {
+      const values = await this.getEntitiesFromCache();
+      return values.slice(0, limit === Infinity ? values.length : limit);
+    }
     return this.getAllFromDao({ offset, limit });
+  }
+
+  isCacheInitialized() {
+    return this.isCacheEnable() && this._cachedManager.isInitialized();
   }
 
   isCacheEnable(): boolean {
@@ -251,7 +263,7 @@ class BaseService<
 
   protected async initialEntitiesCache() {
     mainLogger.debug('initialEntitiesCache begin');
-    if (this._cachedManager && !this._cachedManager.isInitialized()) {
+    if (this._cachedManager && !this._cachedManager.isStartInitial()) {
       const eventKey: string = this._getModelEventKey();
       if (eventKey.length > 0) {
         notificationCenter.on(
@@ -334,7 +346,7 @@ class BaseService<
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | null>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -349,12 +361,6 @@ class BaseService<
     let result: ServiceResult<SubModel>;
 
     do {
-      if (id <= 0) {
-        mainLogger.warn('handlePartialUpdate: Invalid model id');
-        result = serviceErr(ErrorTypes.SERVICE_INVALID_MODEL_ID);
-        break;
-      }
-
       const originalModel = await this.getById(id);
 
       if (!originalModel) {
@@ -459,7 +465,7 @@ class BaseService<
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | null>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -496,9 +502,10 @@ class BaseService<
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
 
-      const updatedModel = await doUpdateModel(mergedModel);
+      const updateResult = await doUpdateModel(mergedModel);
 
-      if (!updatedModel) {
+      if (updateResult instanceof BaseError) {
+        const error = updateResult;
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
           rollbackPartialModel,
@@ -510,11 +517,13 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed');
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', {
+          apiError: error,
+        });
         break;
       }
 
-      result = serviceOk(updatedModel);
+      result = serviceOk(updateResult);
     } while (false);
 
     return result;

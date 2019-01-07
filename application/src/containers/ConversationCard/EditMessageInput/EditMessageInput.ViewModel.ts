@@ -13,7 +13,8 @@ import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
-import { Post, Group } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { Group } from 'sdk/module/group/entity';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from '@/containers/ConversationPage/MessageInput/handler';
@@ -74,13 +75,13 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   }
 
   @computed
-  private get _membersExcludeMe() {
-    return this._group.membersExcludeMe;
+  private get _members() {
+    return this._group.members;
   }
 
   @computed
   private get _users() {
-    return this._membersExcludeMe.map((id: number) => {
+    return this._members.map((id: number) => {
       const { userDisplayName } = getEntity(
         ENTITY_NAME.PERSON,
         id,

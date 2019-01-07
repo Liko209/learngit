@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import debounce from 'lodash/debounce';
-import { RawPresence } from '../../models';
+import { RawPresence } from '../../module/presence/entity';
 import Worker from './subscribeWorker';
 
 const RETRY_COUNT = 2;

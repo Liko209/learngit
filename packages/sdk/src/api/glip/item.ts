@@ -6,22 +6,23 @@
 import { NETWORK_METHOD, NETWORK_VIA, Result } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
-import {
-  FileItem,
-  Item,
-  BaseModel,
-  StoredFile,
-  Raw,
-  NoteItem,
-} from '../../models';
+import { IdModel, Raw } from '../../framework/model';
 
-interface IRightRailItemModel extends BaseModel {
+import { ItemFile, Item, StoredFile, NoteItem } from '../../module/item/entity';
+
+import { RequestHolder } from '../requestHolder';
+import {
+  AmazonFilePolicyRequestModel,
+  AmazonFileUploadPolicyData,
+} from './types';
+
+interface IRightRailItemModel extends IdModel {
   items: Raw<Item>[];
 }
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 type UploadFileResult = Result<StoredFile>;
-type FileResult = Result<Raw<FileItem>>;
+type FileResult = Result<Raw<ItemFile>>;
 
 const ITEMPATH = {
   [TypeDictionary.TYPE_ID_TASK]: 'task',
@@ -50,27 +51,71 @@ function getItemServerUrl(id: number): string {
 class ItemAPI extends Api {
   static basePath = '/item';
   static sendFileItem(data: object) {
-    return this.glipNetworkClient.post<Raw<FileItem>>('/file', data);
+    return this.glipNetworkClient.post<Raw<ItemFile>>('/file', data);
   }
 
-  static uploadFileItem(files: FormData, callback?: ProgressCallback) {
-    return this.uploadNetworkClient.http<StoredFile>({
-      path: '/upload',
-      method: NETWORK_METHOD.POST,
-      via: NETWORK_VIA.HTTP,
-      data: files,
-      requestConfig: {
-        onUploadProgress(event: ProgressEventInit): void {
-          if (callback) {
-            callback(event);
-          }
+  static requestAmazonFilePolicy(fileInfo: AmazonFilePolicyRequestModel) {
+    return this.glipNetworkClient.post<AmazonFileUploadPolicyData>(
+      '/s3/v1/post-policy',
+      fileInfo,
+    );
+  }
+
+  static uploadFileToAmazonS3(
+    host: string,
+    formFile: FormData,
+    callback: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    return this.customNetworkClient(host).http<string>(
+      {
+        path: '',
+        method: NETWORK_METHOD.POST,
+        via: NETWORK_VIA.HTTP,
+        data: formFile,
+        requestConfig: {
+          onUploadProgress(event: ProgressEventInit): void {
+            if (callback) {
+              callback(event);
+            }
+          },
         },
       },
-    });
+      requestHolder,
+    );
+  }
+
+  static uploadFileItem(
+    files: FormData,
+    callback: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    return this.uploadNetworkClient.http<StoredFile>(
+      {
+        path: '/upload',
+        method: NETWORK_METHOD.POST,
+        via: NETWORK_VIA.HTTP,
+        data: files,
+        requestConfig: {
+          onUploadProgress(event: ProgressEventInit): void {
+            if (callback) {
+              callback(event);
+            }
+          },
+        },
+      },
+      requestHolder,
+    );
+  }
+
+  static cancelUploadRequest(requestHolder: RequestHolder) {
+    if (requestHolder && requestHolder.request) {
+      this.uploadNetworkClient.cancelRequest(requestHolder.request);
+    }
   }
 
   static requestById(id: number) {
-    return this.glipNetworkClient.get<Raw<FileItem>>(getItemServerUrl(id));
+    return this.glipNetworkClient.get<Raw<ItemFile>>(getItemServerUrl(id));
   }
 
   static requestRightRailItems(groupId: number) {
@@ -92,4 +137,10 @@ class ItemAPI extends Api {
 }
 
 export default ItemAPI;
-export { IRightRailItemModel, FileResult, ProgressCallback, UploadFileResult };
+export {
+  IRightRailItemModel,
+  FileResult,
+  ProgressCallback,
+  UploadFileResult,
+  RequestHolder,
+};

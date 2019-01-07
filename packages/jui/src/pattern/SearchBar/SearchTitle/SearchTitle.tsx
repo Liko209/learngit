@@ -39,16 +39,17 @@ const ShowMoreBtn = styled.span`
 
 type JuiSearchTitleProps = {
   title: String;
-  showMore?: boolean;
+  isShowMore?: boolean;
+  showMore: string;
 };
 
 const JuiSearchTitle = (props: JuiSearchTitleProps) => {
-  const { title, showMore } = props;
+  const { title, isShowMore, showMore, ...rest } = props;
 
   return (
-    <SearchTitleWrapper>
+    <SearchTitleWrapper {...rest}>
       <SearchTitleText>{title}</SearchTitleText>
-      {showMore && <ShowMoreBtn>Show More</ShowMoreBtn>}
+      {isShowMore && <ShowMoreBtn>{showMore}</ShowMoreBtn>}
     </SearchTitleWrapper>
   );
 };

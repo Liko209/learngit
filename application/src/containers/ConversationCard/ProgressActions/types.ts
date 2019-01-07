@@ -5,6 +5,7 @@
  */
 
 import PostModel from '@/store/models/Post';
+import { PROGRESS_STATUS } from 'sdk/module';
 
 type ProgressActionsProps = {
   id: number; // post id
@@ -15,6 +16,7 @@ type ProgressActionsViewProps = {
   post: PostModel;
   resend: Function;
   deletePost: Function;
+  postStatus?: PROGRESS_STATUS;
 };
 
 export { ProgressActionsProps, ProgressActionsViewProps };

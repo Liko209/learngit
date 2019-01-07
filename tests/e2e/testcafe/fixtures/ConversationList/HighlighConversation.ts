@@ -7,80 +7,60 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ConversationList/HighlightConversation')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Open last conversation when login and group show in the top of conversation list', ['JPT-144', 'JPT-463', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const user = users[7];
-    user.sdk = await h(t).getSdk(user);
-    const directMessageSection =
-      app.homePage.messageTab.directMessagesSection;
+    const loginUser = users[7];
+    const directMessageSection = app.homePage.messageTab.directMessagesSection;
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
 
-    let group;
-    await h(t).withLog(
-      'Given I have an extension with a group chat',
-      async () => {
-        group = await user.sdk.platform.createGroup({
-          type: 'Group',
-          members: [user.rcId, users[5].rcId, users[6].rcId],
-        });
-      },
-    );
+    let groupId;
+    await h(t).withLog('Given I have an extension with a group chat', async () => {
+      groupId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group',
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
+    });
 
-    await h(t).withLog(
-      'And the conversation should not be hidden and not favorite',
-      async () => {
-        await user.sdk.glip.showGroups(user.rcId, group.data.id);
-        await user.sdk.glip.clearFavoriteGroups();
-      },
-    );
+    await h(t).withLog('And the conversation should not be hidden and not favorite', async () => {
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
+      await h(t).glip(loginUser).clearFavoriteGroups();
+    });
 
-    await h(t).withLog(
-      `Given the group chat ${group.data.id} is last group selected`,
-      async () => {
-        await user.sdk.glip.setLastGroupId(user.rcId, group.data.id)
-      },
-    );
+    await h(t).withLog(`Given the group chat ${groupId} is last group selected`, async () => {
+      await h(t).glip(loginUser).setLastGroupId(loginUser.rcId, groupId)
+    });
 
-    await h(t).withLog(
-      `When I login Jupiter with this extension: ${user.company.number}#${
-        user.extension
-      }`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, user);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
 
-    await h(t).withLog(
-      'Then the group should be opened automatically after login',
-      async () => {
-        await t.expect(h(t).href).match(new RegExp(`${group.data.id}$`));
-      },
-    );
+    await h(t).withLog('Then the group should be opened automatically after login', async () => {
+      await t.expect(h(t).href).match(new RegExp(`${groupId}$`));
+    });
 
     await h(t).withLog('And the group is highlighted', async () => {
       const textStyle = await directMessageSection.conversations
-        .filter(`[data-group-id="${group.data.id}"]`)
+        .filter(`[data-group-id="${groupId}"]`)
         .find('p').style;
       await t.expect(textStyle.color).eql('rgb(6, 132, 189)');
     });
 
     await h(t).withLog('And the group should display in the top of conversation list', async () => {
-      await directMessageSection.nthConversationEntry(0).groupIdShouldBe(group.data.id);
+      await directMessageSection.nthConversationEntry(0).groupIdShouldBe(groupId);
     });
 
-    await h(t).withLog(
-      'And the content is shown on the conversation page',
-      async () => {
-        await app.homePage.messageTab.conversationPage.groupIdShouldBe(group.data.id);
-      },
-    );
+    await h(t).withLog('And the content is shown on the conversation page', async () => {
+      await app.homePage.messageTab.conversationPage.groupIdShouldBe(groupId);
+    });
   },
 );

@@ -10,7 +10,6 @@ import AccountService from 'sdk/service/account';
 import { BaseError, ErrorTypes } from 'sdk/utils';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
-import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
 
@@ -39,25 +38,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   serverUnknownError: boolean = false;
 
   @computed
-  get isOpen() {
-    return getGlobalValue(GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG) || false;
-  }
-
-  @computed
   get isOffline() {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
-  }
-
-  @action
-  updateCreateTeamDialogState = () => {
-    const globalStore = storeManager.getGlobalStore();
-    const isShowCreateTeamDialog = !globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-    );
-    globalStore.set(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-      isShowCreateTeamDialog,
-    );
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

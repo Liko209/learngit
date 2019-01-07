@@ -13,7 +13,8 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
 import PostModel from '@/store/models/Post';
-import { Person, Post } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
+import { Post } from 'sdk/module/post/entity';
 
 class TeamViewModel extends AbstractViewModel<TeamProps>
   implements TeamViewProps {

@@ -1,8 +1,7 @@
 import EntityCacheManager from '../entityCacheManager';
-import { BaseModel, Raw } from '../../models';
-import { number } from '@storybook/addon-knobs';
+import { IdModel, Raw } from '../../framework/model';
 
-type EntityCacheTestModel = BaseModel & {
+type EntityCacheTestModel = IdModel & {
   name: string;
   age: number;
 };
@@ -113,5 +112,41 @@ describe('Entity Cache Manager', () => {
     entity = manager.getEntity(entityC.id);
     expect(entity.name).toBe(entityD.name);
     expect(entity.age).toBe(entityC.age);
+  });
+
+  it('should not change key when update', async () => {
+    const entityC = {
+      id: 1,
+      name: 'fish',
+      age: 3,
+    };
+
+    const eMap = new Map<number, EntityCacheTestModel>();
+    eMap.set(entityC.id, entityC);
+
+    const entityD = {
+      id: 1,
+      name: 'fish two',
+      __additionalKey: 'additionalKey',
+    };
+    const eMap2 = new Map<number, Partial<Raw<EntityCacheTestModel>>>();
+    eMap2.set(entityA.id, entityD);
+    await manager.update(eMap, eMap2);
+
+    const entity = manager.getEntity(entityC.id);
+    expect(entity.name).toBe(entityD.name);
+    expect(entity['__additionalKey']).toBe(entityD.__additionalKey);
+    expect(entity.age).toBe(entityC.age);
+  });
+
+  it('should return not initialized when just new entityCacheManager', async () => {
+    expect(manager.isInitialized()).toEqual(false);
+    expect(manager.isStartInitial()).toEqual(false);
+  });
+
+  it('should return initialized after initialized entityCacheManager', async () => {
+    manager.initialize([]);
+    expect(manager.isInitialized()).toEqual(true);
+    expect(manager.isStartInitial()).toEqual(true);
   });
 });

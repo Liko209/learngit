@@ -78,7 +78,6 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         this._canDoFuzzySearch = false;
         this.open = false;
         this.currentIndex = 0;
-        this.searchTerm = undefined;
         this.members = [];
       },
     );
@@ -105,7 +104,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     searchTerm: string,
     denotationChar: string,
   ) => {
-    this.searchTerm = searchTerm;
+    if (searchTerm !== undefined) {
+      this.searchTerm =
+        this.searchTerm === searchTerm ? `${searchTerm} ` : searchTerm;
+    }
     if (!match) {
       this.open = false;
       return;
@@ -130,6 +132,9 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     );
     if (res) {
       runInAction(() => {
+        if (res.sortableModels.length > 20) {
+          res.sortableModels.length = 20;
+        }
         this.currentIndex = 0;
         this.members = res.sortableModels;
       });
@@ -162,7 +167,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       const { pid } = this.props;
       const query = pid
         ? `[data-id='${pid}'] .ql-container`
-        : '.conversation-page>div>.quill>.ql-container';
+        : '.conversation-page>div>div>.quill>.ql-container';
       this._selectHandler(this).apply({
         quill: (document.querySelector(query) as any).__quill,
       });

@@ -6,14 +6,19 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
+import GroupModel from '@/store/models/Group';
 import CompanyModel from '@/store/models/Company';
 import { getEntity, getGlobalValue } from '@/store/utils';
-import { Post, Person, Company } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { Person } from 'sdk/module/person/entity';
+import { Group } from 'sdk/module/group/entity';
+import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
 import { FormatToHtml } from './FormatToHtml';
 import { TextMessageProps } from './types';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   @computed
@@ -21,16 +26,36 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
+  getGroup(id: number) {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
+  }
+
+  getPerson(id: number) {
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
+  }
+
+  private _getDisplayName(id: number) {
+    const type = GlipTypeUtil.extractTypeId(id);
+
+    switch (type) {
+      case TypeDictionary.TYPE_ID_TEAM:
+        return this.getGroup(id).displayName;
+
+      case TypeDictionary.TYPE_ID_PERSON:
+        return this.getPerson(id).userDisplayName;
+
+      default:
+        return undefined;
+    }
+  }
+
   @computed
   private get _atMentions() {
     const post = this._post;
     const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
     const kv = {};
-    atMentionNonItemIds.forEach((personId: number) => {
-      kv[personId] = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        personId,
-      ).displayName;
+    atMentionNonItemIds.forEach((id: number) => {
+      kv[id] = this._getDisplayName(id);
     });
     return kv;
   }
@@ -46,7 +71,9 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     if (currentCompanyId <= 0) {
       return {};
     }
-    const company = getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) || {};
+    const company =
+      getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) ||
+      {};
     return company.customEmoji || {};
   }
 

@@ -7,10 +7,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
-import { LinkItem } from '@/store/models/Items';
+import LinkItemModel from '@/store/models/LinkItem';
 
 type Props = {
-  postItems: LinkItem[];
+  postItems: LinkItemModel[];
   onLinkItemClose: Function;
 };
 @observer
@@ -23,11 +23,21 @@ class LinkItemView extends React.Component<Props> {
     const { postItems } = this.props;
     return (
       <>
-        {postItems.map((item: LinkItem) => {
+        {postItems.map((item: LinkItemModel) => {
+          // In Glip must has this key
           // hard code in order to show the current image
-          const image = item.image
-            ? `${item.image}&key=4527f263d6e64d7a8251b007b1ba9972`
-            : '';
+          let itemUrlWithProtocol;
+          const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
+          const itemUrl = item.url;
+          if (itemUrl) {
+            itemUrlWithProtocol =
+              itemUrl.match('http://|https://')
+                ? itemUrl
+                : `http://${itemUrl}`;
+          } else {
+            itemUrlWithProtocol = itemUrl;
+          }
+          const image = item.image ? `${item.image}${imgStamp}` : '';
           return (item.title || item.image || item.summary) &&
             !item.doNotRender &&
             !item.deactivated ? (
@@ -36,11 +46,11 @@ class LinkItemView extends React.Component<Props> {
               title={item.title}
               summary={item.summary}
               thumbnail={image}
-              url={item.url}
+              url={itemUrlWithProtocol}
               onLinkItemClose={this.onLinkItemClose(item.id)}
               favicon={
                 item.favicon
-                  ? `${item.favicon}&key=4527f263d6e64d7a8251b007b1ba9972` // hard code in order to show the current image
+                  ? `${item.favicon}${imgStamp}` // hard code in order to show the current image
                   : ''
               }
               faviconName={item.providerName}

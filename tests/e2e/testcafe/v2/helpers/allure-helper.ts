@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
-import { identity } from 'lodash';
-import { IStep, IConsoleLog } from '../models'
+import { identity, findKey } from 'lodash';
+import { IStep, IConsoleLog } from '../models';
+import { BrandTire } from "../../config";
 
 const testStatusEnum = {
   passed: 'passed',
@@ -52,9 +53,10 @@ export class AllureHelper {
     this.allureReporter.endSuite(endTime);
   }
 
-  startCase(caseName, startTime, userAgent) {
+  startCase(caseName, startTime, userAgent, accountType) {
     this.allureReporter.startCase(caseName, startTime);
     this.allure.addArgument('User Agent', userAgent);
+    this.allure.addArgument('Account Type', findKey(BrandTire, (value) => value === accountType) || accountType);
   }
 
   endCase(status, testInfo, endTime) {
@@ -73,7 +75,7 @@ export class AllureHelper {
     this.allure.addArgument(argument, value);
   }
 
-  writeReport(consoleLog: IConsoleLog) {
+  writeReport(consoleLog: IConsoleLog, accountType: string) {
     this.configure();
     const testRun = this.t['testRun'];
     const {
@@ -98,7 +100,7 @@ export class AllureHelper {
     const { testStatus, testInfo } = this.buildErrorTestInfo(testRun.errs[0]);
     const failScreenShotPath = testRun.errs.length > 0 ? testRun.errs[0].screenshotPath : null;
     this.startSuite(fixtureName, fixtureStartTime);
-    this.startCase(testCaseName, testCaseStartTime, userAgent);
+    this.startCase(testCaseName, testCaseStartTime, userAgent, accountType);
     this.writeSteps(steps);
     if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot On Fail');
     this.addAttachment(consoleLog.consoleLogPath, 'Console Full Log');
@@ -126,12 +128,12 @@ export class AllureHelper {
   addAttachment(attachmentPath: string, attachmentName?: string) {
     if (attachmentName === undefined)
       attachmentName = path.basename(attachmentPath)
-    
+
     if (attachmentPath && fs.existsSync(attachmentPath)) {
       const img = fs.readFileSync(attachmentPath);
-      if (path.extname(attachmentPath) == '.webp'){
+      if (path.extname(attachmentPath) == '.webp') {
         this.allureReporter.addAttachment(attachmentName, img, 'image/png');
-      }else {
+      } else {
         this.allureReporter.addAttachment(attachmentName, img);
       }
     }

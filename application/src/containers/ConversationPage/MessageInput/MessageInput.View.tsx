@@ -4,13 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { MessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
+import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
+import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { Attachments } from './Attachments';
+import { extractView } from 'jui/hoc/extractView';
 
 @observer
 class MessageInputViewComponent extends Component<
@@ -19,7 +23,8 @@ class MessageInputViewComponent extends Component<
     modules: object;
   }
 > {
-  private _mentionRef: React.RefObject<any> = React.createRef();
+  private _mentionRef: RefObject<any> = createRef();
+  private _attachmentsRef: RefObject<any> = createRef();
 
   state = {
     modules: {},
@@ -27,10 +32,22 @@ class MessageInputViewComponent extends Component<
 
   componentDidMount() {
     this.updateModules();
+    this.props.addOnPostCallback(() => {
+      const { current } = this._attachmentsRef;
+      if (current) {
+        current.vm.cleanFiles();
+      }
+    });
   }
 
   componentWillUnmount() {
     this.props.forceSaveDraft();
+  }
+
+  componentWillReceiveProps(nextProps: MessageInputViewProps) {
+    if (this.props.id !== nextProps.id) {
+      this.props.cellWillChange(nextProps.id, this.props.id);
+    }
   }
 
   updateModules() {
@@ -40,22 +57,56 @@ class MessageInputViewComponent extends Component<
       modules: {
         toolbar: false,
         keyboard: {
-          bindings: { ...keyboardEventHandler, ...keyboardEventDefaultHandler },
+          bindings: {
+            ...keyboardEventHandler,
+            ...keyboardEventDefaultHandler,
+          },
         },
         mention: mention.vm.mentionOptions,
       },
     });
   }
 
+  private _autoUploadFile = (files: FileList) => {
+    const array: File[] = [];
+    for (let i = 0; i < files.length; ++i) {
+      array.push(files[i]);
+    }
+    const { current } = this._attachmentsRef;
+    if (current) {
+      current.vm.autoUploadFiles(array);
+    }
+  }
+
+  handleDropFile = (files: File[]) => {
+    const { current } = this._attachmentsRef;
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files);
+    }
+  }
+
   render() {
-    const { draft, changeDraft, error, id, t } = this.props;
+    const { draft, contentChange, error, id, t } = this.props;
     const { modules } = this.state;
+    const toolbarNode = (
+      <MessageActionBar>
+        <AttachmentView
+          onFileChanged={this._autoUploadFile}
+          data-test-automation-id="message-action-bar-attachment"
+        />
+      </MessageActionBar>
+    );
+    const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
     return (
       <JuiMessageInput
         value={draft}
-        onChange={changeDraft}
+        onChange={contentChange}
         error={error ? t(error) : error}
         modules={modules}
+        id={id}
+        toolbarNode={toolbarNode}
+        attachmentsNode={attachmentsNode}
+        didDropFile={this.handleDropFile}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>
@@ -63,6 +114,9 @@ class MessageInputViewComponent extends Component<
   }
 }
 
-const MessageInputView = translate('Conversations')(MessageInputViewComponent);
+const view = extractView<WithNamespaces & MessageInputViewProps>(
+  MessageInputViewComponent,
+);
+const MessageInputView = translate('Conversations')(view);
 
-export { MessageInputView };
+export { MessageInputView, MessageInputViewComponent };

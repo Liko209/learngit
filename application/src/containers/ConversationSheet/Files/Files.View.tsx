@@ -10,7 +10,11 @@ import {
   JuiFileWithPreview,
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
-import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { JuiIconButton } from 'jui/components/Buttons';
+import {
+  AttachmentItem,
+  ITEM_STATUS,
+} from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
@@ -28,14 +32,48 @@ const downloadBtn = (downloadUrl: string) => (
 );
 
 class FilesView extends React.Component<FilesViewProps> {
+  componentWillUnmount() {
+    this.props.dispose();
+  }
+  private _renderItem = (
+    id: number,
+    progresses: Map<number, number>,
+    name: string,
+  ) => {
+    const progress = progresses.get(id);
+    let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
+    if (typeof progress !== 'undefined') {
+      if (progress < 0) {
+        realStatus = ITEM_STATUS.ERROR;
+      } else if (progress >= 0 && progress < 100) {
+        realStatus = ITEM_STATUS.LOADING;
+      } else {
+        realStatus = ITEM_STATUS.NORMAL;
+      }
+    } else if (id < 0) {
+      realStatus = ITEM_STATUS.ERROR;
+    }
+    return (
+      <AttachmentItem
+        hideRemoveButton={true}
+        status={realStatus}
+        key={id}
+        name={name}
+        progress={progress}
+        onClickDeleteButton={() => this.props.removeFile(id)}
+      />
+    );
+  }
   render() {
-    const { files } = this.props;
-
+    const { files, progresses } = this.props;
     return (
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
           const { item, previewUrl } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
+          if (id < 0) {
+            return this._renderItem(id, progresses, name);
+          }
           return (
             <JuiPreviewImage
               key={id}
@@ -50,6 +88,9 @@ class FilesView extends React.Component<FilesViewProps> {
           const { item, previewUrl } = file;
           const { size, type, id, name, downloadUrl } = item;
           const iconType = getFileIcon(type);
+          if (id < 0) {
+            return this._renderItem(id, progresses, name);
+          }
           return (
             <JuiFileWithPreview
               key={id}
@@ -65,6 +106,9 @@ class FilesView extends React.Component<FilesViewProps> {
           const { item } = file;
           const { size, type, name, downloadUrl, id } = item;
           const iconType = getFileIcon(type);
+          if (id < 0) {
+            return this._renderItem(id, progresses, name);
+          }
           return (
             <JuiFileWithoutPreview
               key={id}

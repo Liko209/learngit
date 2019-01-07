@@ -7,7 +7,7 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { FooterProps, FooterViewProps } from './types';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';

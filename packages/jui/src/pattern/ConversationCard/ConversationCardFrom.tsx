@@ -22,28 +22,28 @@ type ConversationCardFromProps = {
 };
 const StyledName = styled('div')`
   color: ${primary('700')};
-  font-size: 0;
-  overflow: hidden;
-  flex-shrink: 1;
+  ${typography('caption')};
   ${ellipsis()};
+  box-sizing: border-box;
+  padding-left: ${spacing(2)};
+  display: flex;
+  align-items: center;
   .preposition {
-    margin: ${spacing(0, 2, 0, 1)};
+    margin-right: ${spacing(2)};
     color: ${grey('900')};
-  }
-  span {
-    vertical-align: middle;
-  }
-  span.conversation-name,
-  .preposition {
-    ${typography('caption')};
   }
 `;
 
-const JuiConversationCardFrom = (props: ConversationCardFromProps) => (
-  <StyledName onClick={props.onClick}>
+const JuiConversationCardFrom = ({
+  onClick,
+  isTeam,
+  name,
+  ...rest
+}: ConversationCardFromProps) => (
+  <StyledName onClick={onClick} {...rest}>
     <span className="preposition">in</span>
-    {props.isTeam ? <MuiIcon fontSize="small">people_outline</MuiIcon> : null}
-    <span className="conversation-name">{props.name}</span>
+    {isTeam ? <MuiIcon fontSize="small">people_outline</MuiIcon> : null}
+    <span className="conversation-name">{name}</span>
   </StyledName>
 );
 export { JuiConversationCardFrom };

@@ -9,7 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PostService } from 'sdk/service';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { Props, ViewProps } from './types';
 

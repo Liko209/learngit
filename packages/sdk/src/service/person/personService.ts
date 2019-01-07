@@ -13,10 +13,12 @@ import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import {
   Person,
-  SortableModel,
   PhoneNumberModel,
   SanitizedExtensionModel,
-} from '../../models';
+} from '../../module/person/entity';
+
+import { SortableModel } from '../../models';
+
 import {
   CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,
@@ -74,6 +76,9 @@ class PersonService extends BaseService<Person> {
   }
 
   async getAllCount() {
+    if (this.isCacheInitialized()) {
+      return this.getEntitiesFromCache().then(persons => persons.length);
+    }
     const personDao = daoManager.getDao(PersonDao);
     return personDao.getAllCount();
   }
@@ -99,16 +104,14 @@ class PersonService extends BaseService<Person> {
     if (group) {
       const memberIds = group.members;
       if (memberIds.length > 0) {
-        const catchData = await this.getMultiEntitiesFromCache(
-          memberIds,
-          (entity: Person) => {
-            return this._isValid(entity);
-          },
-        );
-        if (catchData.length > 0) {
-          return catchData;
+        if (this.isCacheInitialized()) {
+          return await this.getMultiEntitiesFromCache(
+            memberIds,
+            (entity: Person) => {
+              return this._isValid(entity);
+            },
+          );
         }
-
         const personDao = daoManager.getDao(PersonDao);
         return await personDao.getPersonsByIds(memberIds);
       }

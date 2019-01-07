@@ -7,17 +7,17 @@ import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
 import { ListStore } from './fetch/ListStore';
 import { ISortableModel, TDelta, TUpdated } from './fetch/types';
-import { BaseModel } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
-abstract class TransformHandler<T, K extends BaseModel> {
+abstract class TransformHandler<T, K extends IdModel> {
   fetchData: (direction: QUERY_DIRECTION, pageSize?: number) => any;
 
   constructor(
     protected _orderListHandler: FetchSortableDataListHandler<K>,
     public listStore = new ListStore<T>(),
   ) {
-    this._orderListHandler.setUpDataChangeCallback(this.modificationHandler);
+    this._orderListHandler.setUpDataChangeCallback(this._modificationHandler);
     this.fetchData = async (...args) => {
       return this._orderListHandler.fetchData(...args);
     };
@@ -27,11 +27,11 @@ abstract class TransformHandler<T, K extends BaseModel> {
     return this._orderListHandler.hasMore(direction);
   }
 
-  get orderListStore() {
+  protected get orderListStore() {
     return this._orderListHandler.sortableListStore;
   }
 
-  modificationHandler = (delta: TDelta) => {
+  private _modificationHandler = (delta: TDelta) => {
     const { updated, deleted, added, direction } = delta;
     if (deleted.length) {
       this.onDeleted(deleted);

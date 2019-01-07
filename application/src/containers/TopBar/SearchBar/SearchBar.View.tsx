@@ -17,7 +17,7 @@ import { HotKeys } from 'jui/hoc/HotKeys';
 // import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
-import { MiniCard } from '@/containers/MiniCard';
+// import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
   SearchResult,
@@ -27,7 +27,7 @@ import {
   Group,
 } from './types';
 
-const SEARCH_DELAY = 300;
+const SEARCH_DELAY = 100;
 
 type State = {
   terms: string[];
@@ -48,6 +48,7 @@ type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
+  private timer: number;
 
   state = {
     terms: [],
@@ -118,27 +119,27 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  private _openMiniCard = (uid: number) => (
-    e: React.MouseEvent<HTMLElement>,
-  ) => {
-    e.stopPropagation();
-    MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
-  }
+  // private _openMiniCard = (uid: number) => (
+  //   e: React.MouseEvent<HTMLElement>,
+  // ) => {
+  //   e.stopPropagation();
+  //   MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
+  // }
 
   private _Avatar(uid: number) {
     const { isTeamOrGroup } = this.props;
 
     return isTeamOrGroup(uid) ? (
-      <GroupAvatar cid={uid} size="small" onClick={this._openMiniCard(uid)} />
+      <GroupAvatar cid={uid} size="small" />
     ) : (
-      <Avatar uid={uid} size="small" onClick={this._openMiniCard(uid)} />
+      <Avatar uid={uid} size="small" />
     );
   }
 
   private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
-    await goToConversation(id);
+    await goToConversation({ id });
   }
 
   searchItemClickHandler = (id: number) => async () => {
@@ -173,7 +174,12 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     return (
       <>
         {type.sortableModel.length > 0 && (
-          <JuiSearchTitle showMore={type.hasMore} title={title} />
+          <JuiSearchTitle
+            isShowMore={type.hasMore}
+            showMore={t('showMore')}
+            title={title}
+            data-test-automation-id={`search-${title}`}
+          />
         )}
         {type.sortableModel.map((item: any) => {
           const { id, displayName, entity } = item;
@@ -184,6 +190,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
               Avatar={this._Avatar(id)}
               value={displayName}
               terms={terms}
+              data-test-automation-id={`search-${title}-item`}
               // Actions={this._Actions()}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
@@ -257,11 +264,27 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
   }
 
+  searchBarBlur = () => {
+    this.timer = setTimeout(() => {
+      this.onClose();
+    });
+  }
+
+  searchBarFocus = () => {
+    clearTimeout(this.timer);
+  }
+
   render() {
     const { terms, persons, groups, teams, focus } = this.state;
     const { searchValue } = this.props;
     return (
-      <JuiSearchBar onClose={this.onClose} focus={focus}>
+      <JuiSearchBar
+        onClose={this.onClose}
+        focus={focus}
+        tabIndex={0}
+        onBlur={this.searchBarBlur}
+        onFocus={this.searchBarFocus}
+      >
         <HotKeys
           keyMap={{
             enter: this.onEnter,

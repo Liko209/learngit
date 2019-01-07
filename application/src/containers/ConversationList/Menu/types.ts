@@ -5,7 +5,7 @@
  */
 
 import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/models';
+import { Profile } from 'sdk/module/profile/entity';
 import { MouseEvent } from 'react';
 
 type MenuProps = {
@@ -22,7 +22,7 @@ type MenuViewProps = {
   isFavorite: boolean;
   favoriteText: string;
   shouldSkipCloseConfirmation: boolean;
-  showClose?: boolean;
+  closable: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => Promise<ServiceResult<Profile>>;
   closeConversation: (

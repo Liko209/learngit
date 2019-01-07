@@ -167,7 +167,7 @@ function ellipsis() {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-break: break-all;
+    word-break: break-word;
   `;
 }
 
@@ -179,7 +179,7 @@ function lineClamp(lineNumber: number, maxHeight: number) {
     -webkit-line-clamp: ${lineNumber};
     -webkit-box-orient: vertical;
     max-height: ${height(maxHeight)};
-    word-break: break-all;
+    word-break: break-word;
   `;
 }
 

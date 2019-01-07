@@ -3,7 +3,9 @@
  * @Date: 2018-03-05 13:29:50
  */
 import Api from '../api';
-import { Post, Item, Raw } from '../../models';
+import { Raw } from '../../framework/model';
+import { Post } from '../../module/post/entity';
+import { Item } from '../../module/item/entity';
 
 export interface IPostsModel {
   posts: Raw<Post>[];

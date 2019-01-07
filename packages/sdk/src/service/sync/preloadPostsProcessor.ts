@@ -3,16 +3,16 @@
  * @Date: 2018-09-03 15:18:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { Group } from '../../models';
+import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
-import PostAPI from '../../api/glip/post';
 import { baseHandleData } from '../post/handleData';
 import itemHandleData from '../item/handleData';
 import { mainLogger } from 'foundation';
+import StateService from '../state';
 
-const DEFAULT_LIMIT: number = 20;
 const DEFAULT_DIRECTION: string = 'order';
+const MAX_UNREAD_COUNT: number = 100;
 class PreloadPostsProcessor implements IProcessor {
   private _name: string;
   private _canContinue: boolean;
@@ -24,31 +24,25 @@ class PreloadPostsProcessor implements IProcessor {
   }
 
   async process(): Promise<boolean> {
-    try {
-      const needPreload = await this._needPreload();
-      mainLogger.info(
-        `group id: ${this._group.id}, needPreload: ${needPreload}`,
-      );
-      if (needPreload) {
-        const params: any = {
-          limit: DEFAULT_LIMIT,
-          direction: DEFAULT_DIRECTION,
-          group_id: this._group.id,
-        };
-        const requestResult = await PostAPI.requestPosts(params);
-        if (requestResult.status && requestResult.status >= 500) {
-          this._canContinue = false;
-          return false;
-        }
-        if (requestResult.data) {
-          baseHandleData(requestResult.data.posts || []);
-          itemHandleData(requestResult.data.items || []);
-        }
-      }
-      return true;
-    } catch (error) {
-      return false;
+    const result = await this.needPreload();
+    mainLogger.info(
+      `group id: ${this._group.id}, needPreload: ${
+        result.shouldPreload
+      } count:${result.unread_count}`,
+    );
+    if (result.shouldPreload) {
+      const params: any = {
+        limit: result.unread_count,
+        direction: DEFAULT_DIRECTION,
+        groupId: this._group.id,
+      };
+      const postService: PostService = PostService.getInstance();
+      const requestResult = await postService.getPostsFromRemote(params);
+      requestResult.posts.length &&
+        (await baseHandleData(requestResult.posts, true));
+      requestResult.items.length && (await itemHandleData(requestResult.items));
     }
+    return true;
   }
   canContinue(): boolean {
     return this._canContinue;
@@ -58,13 +52,30 @@ class PreloadPostsProcessor implements IProcessor {
     return this._name;
   }
 
-  private async _needPreload(): Promise<boolean> {
-    if (this._group.most_recent_post_id) {
-      const postService: PostService = PostService.getInstance();
-      const inLocal = await postService.groupHasPostInLocal(this._group.id);
-      return !inLocal;
+  async needPreload(): Promise<{
+    unread_count: number;
+    shouldPreload: boolean;
+  }> {
+    let shouldPreload = false;
+    let unread_count = 0;
+    if (this._group && this._group.most_recent_post_id) {
+      const stateService: StateService = StateService.getInstance();
+      const state = await stateService.getById(this._group.id);
+      if (state && state.unread_count) {
+        if (state.unread_count > 0 && state.unread_count <= MAX_UNREAD_COUNT) {
+          const postService: PostService = PostService.getInstance();
+          const post = await postService.getByIdFromDao(
+            state.read_through || 0,
+          );
+          shouldPreload = !post || !!post.deactivated;
+          unread_count = state.unread_count;
+        }
+      }
     }
-    return false;
+    return {
+      unread_count,
+      shouldPreload,
+    };
   }
 }
 

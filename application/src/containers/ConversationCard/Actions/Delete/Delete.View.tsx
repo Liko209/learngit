@@ -7,14 +7,14 @@ import * as React from 'react';
 import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 import { ViewProps } from './types';
 
 @observer
 class DeleteView extends React.Component<ViewProps> {
   private _handleDelete = () => {
     const { deletePost } = this.props;
-    JuiModal.confirm({
+    Dialog.confirm({
       title: t('deletePostTitle'),
       content: t('deletePostContent'),
       okText: t('delete'),
@@ -35,7 +35,7 @@ class DeleteView extends React.Component<ViewProps> {
         disabled={disabled}
         icon="delete"
       >
-        {t('DeletePost')}
+        {t('deletePost')}
       </JuiMenuItem>
     );
   }
