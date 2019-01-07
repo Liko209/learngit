@@ -19,6 +19,12 @@ enum RTCCALL_STATE {
   DISCONNECTED = 'Disconnected',
 }
 
+enum RTC_CALL_ACTION {
+  FLIP = 'flip',
+  START_RECORD = 'startRecord',
+  STOP_RECORD = 'stopRecord',
+}
+
 enum CALL_SESSION_STATE {
   CONFIRMED = 'callsessionstate.confirmed',
   DISCONNECTED = 'callsessionstate.disconnected',
@@ -41,6 +47,17 @@ enum CALL_FSM_NOTIFY {
   SEND_TO_VOICEMAIL_ACTION = 'sendToVoicemailAction',
   HANGUP_ACTION = 'hangupAction',
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
+  FLIP_ACTION = 'flipAction',
+  START_RECORD_ACTION = 'startRecordAction',
+  STOP_RECORD_ACTION = 'stopRecordAction',
+  CALL_ACTION_SUCCESS = 'callActionSuccess',
+  CALL_ACTION_FAILED = 'callActionFailed',
 }
 
-export { RTCCallInfo, RTCCALL_STATE, CALL_SESSION_STATE, CALL_FSM_NOTIFY };
+export {
+  RTCCallInfo,
+  RTCCALL_STATE,
+  RTC_CALL_ACTION,
+  CALL_SESSION_STATE,
+  CALL_FSM_NOTIFY,
+};

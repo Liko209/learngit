@@ -6,7 +6,7 @@
 
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from './IRTCCallSession';
-import { CALL_SESSION_STATE } from './types';
+import { CALL_SESSION_STATE, CALL_FSM_NOTIFY, RTC_CALL_ACTION } from './types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',
@@ -51,6 +51,51 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._session != null) {
       this._session.hangup();
     }
+  }
+
+  flip(target: number) {
+    this._session.flip(target).then(
+      () => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.FLIP);
+      },
+      () => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.FLIP);
+      },
+    );
+  }
+
+  startRecord() {
+    this._session.startRecord().then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_RECORD,
+        );
+      },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.START_RECORD,
+        );
+      },
+    );
+  }
+
+  stopRecord() {
+    this._session.stopRecord().then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
+      },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
+      },
+    );
   }
 
   answer() {

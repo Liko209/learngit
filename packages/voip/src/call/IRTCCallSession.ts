@@ -9,6 +9,9 @@ import { EventEmitter2 } from 'eventemitter2';
 interface IRTCCallSession extends EventEmitter2 {
   setSession(session: any): void;
   hangup(): void;
+  flip(target: number): void;
+  startRecord(): void;
+  stopRecord(): void;
   answer(): void;
   reject(): void;
   sendToVoicemail(): void;
