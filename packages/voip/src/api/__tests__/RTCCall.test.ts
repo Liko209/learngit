@@ -628,7 +628,6 @@ describe('RTC call', () => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
       const call = new RTCCall(true, '', session, account, account);
-      call.answer();
       session.mockSignal('failed');
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);

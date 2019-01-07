@@ -11,6 +11,7 @@ import { RTCCall } from './RTCCall';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { RegistrationManagerEvent } from '../account/types';
 import { RTCEngine } from './RTCEngine';
+import { v4 as uuid } from 'uuid';
 
 const provisionData = {
   data: {
@@ -98,7 +99,7 @@ class RTCAccount implements IRTCAccount {
       appKey: options.appKey,
       appName: options.appName,
       appVersion: options.appVersion,
-      endPointId: options.endPointId,
+      endPointId: uuid(),
       audioHelper: options.audioHelper,
       logLevel: options.logLevel,
       media: {
