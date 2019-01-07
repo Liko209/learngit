@@ -139,7 +139,6 @@ class PostServiceHandler {
       at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
       company_id: companyId,
       deactivated: false,
-      activity_data: {},
     };
 
     if (params.groupId && params.itemIds && params.itemIds.length > 0) {

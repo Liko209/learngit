@@ -70,6 +70,12 @@ describe('PostServiceHandler', () => {
       mockAccountDao.get.mockReturnValue(123);
     });
 
+    it('should not build activity_data for post if there is not activity [FIJI-2740]', async () => {
+      const ret = await PostServiceHandler.buildPostInfo({ text: 'FIJI-2740' });
+      expect(ret.text).toEqual('FIJI-2740');
+      expect(ret['activity_data']).toBe(undefined);
+    });
+
     const expectData = (hasItemIds: boolean) => ({
       id: expect.any(Number),
       created_at: 123123,
@@ -90,7 +96,6 @@ describe('PostServiceHandler', () => {
       links: [],
       company_id: 123,
       deactivated: false,
-      activity_data: {},
     });
 
     it('params has itemsIds', async () => {
