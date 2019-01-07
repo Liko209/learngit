@@ -124,7 +124,7 @@ describe('StreamViewModel', () => {
       jest
         .spyOn(storeManager, 'getEntityMapStore')
         .mockImplementationOnce(() => mockedStore);
-      jest.spyOn(utils, 'getEntity').mockImplementationOnce(() => null);
+      jest.spyOn(utils, 'getEntity').mockReturnValue({});
       data.splice(0, data.length);
     });
     afterEach(() => jest.clearAllMocks());

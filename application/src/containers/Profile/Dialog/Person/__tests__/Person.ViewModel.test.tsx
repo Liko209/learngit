@@ -17,7 +17,6 @@ const mockData = {
 
 const props = {
   id: 1,
-  dismiss: jest.fn(),
 };
 let vm: ProfileDialogPersonViewModel;
 
@@ -47,13 +46,6 @@ describe('ProfileDialogPersonViewModel', () => {
       mockData.awayStatus = 'Status 2';
       mockData.jobTitle = 'Title 2';
       expect(vm.person).toEqual(mockData);
-    });
-  });
-
-  describe('dismiss()', () => {
-    it('should be called when invoke class instance method dismiss', () => {
-      vm.dismiss();
-      expect(props.dismiss).toBeCalled();
     });
   });
 });

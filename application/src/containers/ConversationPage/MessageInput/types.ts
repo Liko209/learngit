@@ -21,6 +21,7 @@ type MessageInputViewProps = {
   forceSendPost(): void;
   addOnPostCallback(callback: OnPostCallback): void;
   contentChange(draft: string): void;
+  cellWillChange(newGroupId: number, oldGroupId: number): void;
   keyboardEventHandler: {
     enter: {
       key: number;
