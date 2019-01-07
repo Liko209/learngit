@@ -8,7 +8,6 @@ import * as module from './module';
 import * as dao from './dao';
 import * as utils from './utils';
 import * as api from './api';
-import * as module from './module';
 
 export * from './framework';
 export {

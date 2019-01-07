@@ -5,9 +5,10 @@
  */
 
 import { Group } from '../entity';
-import pick from 'lodash/pick';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
+import { ControllerBuilder } from '../../../framework/controller/impl/ControllerBuilder';
+import { Api } from '../../../api';
 
 class TeamActionController {
   constructor(
@@ -26,23 +27,24 @@ class TeamActionController {
     return team.privacy === 'protected';
   }
 
-  async joinTeam(userId: number, teamId: number) {
+  async joinTeam(userId: number, teamId: number): Promise<Group | null> {
     return this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
-        if (this.isInTeam(userId, originalEntity)) {
-          throw 'already in team!';
-        }
-        if (!this.canJoinTeam(originalEntity)) {
-          throw 'can not join team';
-        }
         return {
           ...partialEntity,
           members: originalEntity.members.concat([userId]),
         };
       },
       async (newEntity: Group) => {
-        return this.requestController.put(pick(newEntity, ['id', '_id', 'members']));
+        return new ControllerBuilder<Group>()
+          .buildRequestController({
+            basePath: '/add_team_members',
+            networkClient: Api.glipNetworkClient,
+          }).put({
+            id: teamId,
+            members: [userId],
+          });
       },
     );
   }
