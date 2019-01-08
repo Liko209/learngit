@@ -8,7 +8,7 @@ import MuiListItemText, {
   ListItemTextProps as MuiListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import styled from '../../foundation/styled-components';
-import { typography, ellipsis } from '../../foundation/utils';
+import { typography, ellipsis, grey } from '../../foundation/utils';
 
 type JuiListItemTextProps = MuiListItemTextProps;
 
@@ -16,12 +16,14 @@ const StyledListItemText = styled(MuiListItemText)`
   && {
     padding: 0;
     .list-item-primary {
+      color: ${grey('900')};
       ${typography('body1')};
       ${ellipsis};
     }
     .list-item-secondary {
       display: flex;
       justify-content: space-between;
+      color: ${grey('500')};
       ${typography('caption1')};
       ${ellipsis};
       span {
