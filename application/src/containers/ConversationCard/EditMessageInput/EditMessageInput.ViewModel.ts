@@ -11,13 +11,7 @@ import { getEntity } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import PostModel from '@/store/models/Post';
-<<<<<<< HEAD
-import PersonModel from '@/store/models/Person';
 import { Post } from 'sdk/module/post/entity';
-import { Group } from 'sdk/module/group/entity';
-=======
-import { Post } from 'sdk/models';
->>>>>>> stage/0.1.181227
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';

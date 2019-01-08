@@ -529,11 +529,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
           rollbackPartialModel,
           doPartialNotify,
         );
-<<<<<<< HEAD
         result = serviceErr(ERROR_CODES_SDK.GENERAL, 'doUpdateModel failed', {
-=======
-        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', {
->>>>>>> stage/0.1.181227
           apiError: error,
         });
         break;

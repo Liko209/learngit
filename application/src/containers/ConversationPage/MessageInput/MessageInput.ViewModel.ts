@@ -22,13 +22,7 @@ import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-<<<<<<< HEAD
-import { isAtMentions } from './handler';
 import { Group } from 'sdk/module/group/entity';
-=======
-import { Group } from 'sdk/models';
-
->>>>>>> stage/0.1.181227
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
 
