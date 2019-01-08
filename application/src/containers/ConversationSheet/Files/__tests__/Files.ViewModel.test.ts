@@ -17,7 +17,7 @@ ItemService.getInstance = jest.fn().mockReturnValue({});
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 const postService = {
-  cancelUpload: jest.fn(),
+  removeItemFromPost: jest.fn(),
 };
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 
@@ -73,13 +73,15 @@ describe('filesItemVM', () => {
   describe('removeFile()', () => {
     it('should call post service', async () => {
       await filesItemVM.removeFile(123);
-      expect(postService.cancelUpload).toBeCalledTimes(1);
+      expect(postService.removeItemFromPost).toBeCalledTimes(1);
     });
 
     it('should show service error', async () => {
-      (postService.cancelUpload as jest.Mock).mockImplementationOnce(() => {
-        throw new Error('error');
-      });
+      (postService.removeItemFromPost as jest.Mock).mockImplementationOnce(
+        () => {
+          throw new Error('error');
+        },
+      );
       await filesItemVM.removeFile(123);
       const p = new Promise((resolve: any) => {
         setTimeout(() => {

@@ -6,19 +6,26 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 
+import { BaseResponse } from 'foundation';
 import ItemService from '../../../service/item';
-import { daoManager } from '../../../dao';
+import { daoManager, ItemDao } from '../../../dao';
 import ItemAPI from '../../../api/glip/item';
 import { postFactory } from '../../../__tests__/factories';
 import { ApiResultOk } from '../../../api/ApiResult';
 import { ItemFileUploadHandler } from '../itemFileUploadHandler';
 import handleData from '../../../service/item/handleData';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils/glip-type-dictionary';
+import notificationCenter from '../../notificationCenter';
+import ProgressService from '../../../module/progress';
 
+jest.mock('../../../module/progress');
 jest.mock('../itemFileUploadHandler');
 jest.mock('../handleData');
 
 const itemService = new ItemService();
-
 describe('ItemService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -401,6 +408,55 @@ describe('ItemService', () => {
         itemFileUploadHandler.getUpdateItemVersion.mockResolvedValue(true);
         await itemService.getItemVersion(1);
         expect(itemFileUploadHandler.getUpdateItemVersion).toBeCalledWith(1);
+      });
+    });
+
+    describe('deleteItem()', () => {
+      const itemDao = {
+        get: jest.fn(),
+        delete: jest.fn(),
+      };
+      const progressService = new ProgressService();
+      beforeEach(() => {
+        ProgressService.getInstance = jest
+          .fn()
+          .mockReturnValue(progressService);
+        progressService.deleteProgress = jest.fn();
+        daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+        notificationCenter.emitEntityDelete = jest.fn();
+      });
+
+      it('should call ItemAPI when item id > 0', async () => {
+        const normalId = Math.abs(
+          GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
+        );
+
+        const item = { id: 10, deactivated: false };
+        itemDao.get = jest.fn().mockResolvedValue(item);
+        ItemAPI.putItem = jest.fn().mockResolvedValue(
+          new ApiResultOk([{ item }], {
+            status: 200,
+            headers: {},
+          } as BaseResponse),
+        );
+        await itemService.deleteItem(normalId);
+        expect(ItemAPI.putItem).toBeCalled();
+        expect(notificationCenter.emitEntityDelete).not.toBeCalled();
+        expect(item.deactivated).toBeTruthy();
+      });
+
+      it('should just delete item when item id < 0', async () => {
+        const negativeId = GlipTypeUtil.generatePseudoIdByType(
+          TypeDictionary.TYPE_ID_FILE,
+        );
+
+        itemDao.delete = jest.fn();
+        ItemAPI.putItem = jest.fn();
+        await itemService.deleteItem(negativeId);
+        expect(ItemAPI.putItem).not.toBeCalled();
+        expect(notificationCenter.emitEntityDelete).toBeCalled();
+        expect(itemDao.delete).toBeCalled();
+        expect(progressService.deleteProgress).toBeCalled();
       });
     });
   });

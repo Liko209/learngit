@@ -13,13 +13,13 @@ import { Progress } from '../../models';
 import { Item, ItemFile, NoteItem } from '../../module/item/entity';
 import { Raw } from '../../framework/model';
 import { Post } from '../../module/post/entity';
-
 import { BaseError } from '../../utils';
-import { SOCKET } from '../eventKey';
+import { SOCKET, ENTITY } from '../eventKey';
 import { ApiResult } from '../../api/ApiResult';
 import { ItemFileUploadHandler } from './itemFileUploadHandler';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
-
+import ProgressService from '../../module/progress';
+import notificationCenter from '../notificationCenter';
 class ItemService extends BaseService<Item> {
   static serviceName = 'ItemService';
   _itemFileUploadHandler: ItemFileUploadHandler;
@@ -218,6 +218,35 @@ class ItemService extends BaseService<Item> {
       this._itemFileUploadHandler = new ItemFileUploadHandler();
     }
     return this._itemFileUploadHandler;
+  }
+
+  async deleteItem(itemId: number) {
+    const itemDao = daoManager.getDao(ItemDao) as ItemDao;
+    if (itemId > 0) {
+      const itemInDB = (await itemDao.get(itemId)) as Item;
+      itemInDB.deactivated = true;
+      const result = await ItemAPI.putItem(
+        itemId,
+        this._getItemApiPaths(GlipTypeUtil.extractTypeId(itemId)) as string,
+        itemInDB,
+      );
+      result.expect('failed to delete item');
+    } else {
+      await itemDao.delete(itemId);
+      notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
+      const progressService: ProgressService = ProgressService.getInstance();
+      progressService.deleteProgress(itemId);
+    }
+  }
+
+  private _getItemApiPaths(typeId: number) {
+    return new Map([
+      [TypeDictionary.TYPE_ID_FILE, 'file'],
+      [TypeDictionary.TYPE_ID_TASK, 'task'],
+      [TypeDictionary.TYPE_ID_PAGE, 'page'],
+      [TypeDictionary.TYPE_ID_EVENT, 'event'],
+      [TypeDictionary.TYPE_ID_LINK, 'link'],
+    ]).get(typeId);
   }
 }
 

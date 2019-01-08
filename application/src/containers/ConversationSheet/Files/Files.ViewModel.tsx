@@ -129,7 +129,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       });
     } else {
       try {
-        await this._postService.cancelUpload(this._postId, id);
+        await this._postService.removeItemFromPost(this._postId, id);
       } catch (e) {
         Notification.flashToast({
           message: t('notAbleToCancelUploadTryAgain'),

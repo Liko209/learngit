@@ -984,14 +984,44 @@ describe('PostService', () => {
     });
   });
 
-  describe('cancelUpload', async () => {
-    it('should call partial update once ', async () => {
+  describe('removeItemFromPost', () => {
+    const post1 = {
+      id: -1,
+      item_ids: [3],
+      text: '',
+    };
+
+    const post2 = {
+      id: -2,
+      item_ids: [1, 2],
+    };
+
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      daoManager.getDao.mockReturnValue(postDao);
+      itemService.deleteItem = jest.fn();
+    });
+
+    it('should delete post when post is invalid  after remvoe item id ', async () => {
+      const spyDelete = jest.spyOn(postService, 'deletePost');
+      spyDelete.mockImplementation(() => {});
+      postDao.get = jest.fn().mockResolvedValue(post1);
+      await postService.removeItemFromPost(post1.id, post1.item_ids[0]);
+      expect(spyDelete).toBeCalledWith(post1.id);
+      expect(itemService.deleteItem).toBeCalled();
+    });
+
+    it('should update post when post is valid after remvoe item id', async () => {
       jest
         .spyOn(postService, 'handlePartialUpdate')
         .mockImplementation(() => {});
-
-      await postService.cancelUpload(1, 1);
-
+      const spyDelete = jest.spyOn(postService, 'deletePost');
+      spyDelete.mockImplementation(() => {});
+      postDao.get = jest.fn().mockResolvedValue(post2);
+      await postService.removeItemFromPost(post2.id, post2.item_ids[0]);
+      expect(itemService.deleteItem).toBeCalled();
+      expect(spyDelete).not.toBeCalled();
       expect(postService.handlePartialUpdate).toBeCalledTimes(1);
     });
   });
