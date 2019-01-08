@@ -39,7 +39,7 @@ const env = getClientEnvironment(publicUrl);
 
 // number of circular dependencies allowed, for the purpose of integrate with
 // current state of system, will reduce to 0 when these are fixed.
-const MAX_CYCLES = 43;
+const MAX_CYCLES = 45;
 let numCyclesDetected;
 
 /**
