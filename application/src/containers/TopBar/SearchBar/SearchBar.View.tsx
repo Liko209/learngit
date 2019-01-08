@@ -202,12 +202,15 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
         {type.sortableModel.map((item: any) => {
           const { id, displayName, entity } = item;
           const { is_team, privacy, members } = entity;
-          const Actions =
+          const hasAction =
             is_team &&
             privacy === 'protected' &&
-            !members.includes(currentUserId)
-              ? { Actions: this._Actions(id, displayName) }
-              : {};
+            !members.includes(currentUserId);
+
+          const Actions = hasAction
+            ? { Actions: this._Actions(id, displayName) }
+            : null;
+
           return (
             <JuiSearchItem
               key={id}
