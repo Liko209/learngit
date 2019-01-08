@@ -5,7 +5,7 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
-import { ItemService } from 'sdk/module';
+import { ItemService } from 'sdk/module/item';
 
 const itemService = {
   deleteItem: jest.fn(),

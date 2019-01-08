@@ -14,12 +14,12 @@ import {
 import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { GroupConfigService } from 'sdk/service';
-import { ItemService } from 'sdk/module';
+import { ItemService } from 'sdk/module/item';
 
 const groupConfigService = new GroupConfigService();
 (GroupConfigService as any).getInstance = () => groupConfigService;
 jest.mock('sdk/service/groupConfig');
-jest.mock('sdk/module');
+jest.mock('sdk/module/item');
 
 const mockGroupEntityData = {
   draft: 'draft',

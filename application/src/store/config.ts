@@ -1,4 +1,6 @@
-import { service, module } from 'sdk';
+import { service } from 'sdk';
+import { ItemService } from 'sdk/module/item';
+import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 
 const {
@@ -12,10 +14,6 @@ const {
   ProfileService,
   ENTITY,
 } = service;
-
-const { ItemService } = module;
-
-const { ProgressService } = module;
 
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {

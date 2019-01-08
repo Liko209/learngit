@@ -8,7 +8,8 @@ import { PostService } from 'sdk/service';
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 import { getEntity } from '../../../../store/utils';
 import { Notification } from '@/containers/Notification';
-import { PROGRESS_STATUS, ItemService } from 'sdk/module';
+import { PROGRESS_STATUS } from 'sdk/module/progress';
+import { ItemService } from 'sdk/module/item';
 
 jest.mock('../../../../store/utils');
 jest.mock('sdk/service');

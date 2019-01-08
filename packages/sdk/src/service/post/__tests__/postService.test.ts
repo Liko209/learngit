@@ -22,8 +22,8 @@ import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
 import { err, ok, BaseResponse } from 'foundation';
 import GroupConfigService from '../../groupConfig';
-import ItemService from '../../../module/item';
-import ProgressService, { PROGRESS_STATUS } from '../../../module/progress';
+import { ItemService } from '../../../module/item';
+import { ProgressService, PROGRESS_STATUS } from '../../../module/progress';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');

@@ -6,4 +6,4 @@
 
 import { ItemService } from './service';
 
-export { ItemService as default };
+export { ItemService };

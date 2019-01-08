@@ -5,7 +5,7 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
-import { ItemService } from 'sdk/module';
+import { ItemService } from 'sdk/module/item';
 jest.mock('../../../../store/utils');
 // import ItemModel from '@/store/models/Item';
 // import { FileType } from '../types';

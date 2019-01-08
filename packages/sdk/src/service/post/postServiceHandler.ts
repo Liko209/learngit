@@ -14,7 +14,7 @@ import { RawPostInfo } from './types';
 import { GlipTypeUtil, TypeDictionary } from '../../utils';
 import { Post, PostItemData } from '../../module/post/entity';
 import { ItemFile } from '../../module/item/entity';
-import ItemService from '../../module/item';
+import { ItemService } from '../../module/item';
 
 // global_url_regex
 export type LinksArray = { url: string }[];

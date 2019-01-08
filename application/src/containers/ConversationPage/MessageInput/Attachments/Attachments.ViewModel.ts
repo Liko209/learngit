@@ -20,7 +20,7 @@ import {
   EVENT_TYPES,
 } from 'sdk/service';
 
-import { ItemService } from 'sdk/module';
+import { ItemService } from 'sdk/module/item';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';

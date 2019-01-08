@@ -4,5 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { ProgressService as default } from './service/ProgressService';
+export { ProgressService } from './service/ProgressService';
 export { Progress, PROGRESS_STATUS } from './entity';

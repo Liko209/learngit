@@ -9,7 +9,7 @@ import PostService from '../../service/post';
 import { baseHandleData } from '../post/handleData';
 import { mainLogger } from 'foundation';
 import StateService from '../state';
-import ItemService from '../../module/item';
+import { ItemService } from '../../module/item';
 
 const DEFAULT_DIRECTION: string = 'order';
 const MAX_UNREAD_COUNT: number = 100;

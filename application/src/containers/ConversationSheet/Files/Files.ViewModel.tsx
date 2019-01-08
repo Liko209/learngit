@@ -17,7 +17,7 @@ import {
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
-import { ItemService } from 'sdk/module';
+import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';

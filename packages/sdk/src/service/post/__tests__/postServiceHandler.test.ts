@@ -8,7 +8,7 @@ import { daoManager, AccountDao, PostDao } from '../../../dao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
-import ItemService from '../../../module/item';
+import { ItemService } from '../../../module/item';
 import { number } from '@storybook/addon-knobs';
 
 jest.mock('../../../dao');

@@ -26,7 +26,7 @@ import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
 import { Raw } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
-import ItemService from '../../module/item';
+import { ItemService } from '../../module/item';
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
     user_id: userId,
