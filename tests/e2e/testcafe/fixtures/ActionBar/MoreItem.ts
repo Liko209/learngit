@@ -4,10 +4,10 @@ import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL } from '../../config';
+import { SITE_URL, BrandTire} from '../../config';
 
 fixture('ActionBar/MoreItem')
-  .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-564', 'zack']), async (t: TestController) => {
