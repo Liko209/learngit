@@ -33,6 +33,9 @@ const JuiListItem = (props: JuiListItemProps) => {
   );
 };
 
+JuiListItem.defaultProps = {
+  singleLine: false,
+};
 JuiListItem.displayName = 'JuiListItem';
 
 export { JuiListItem, JuiListItemProps };
