@@ -5,50 +5,55 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
-import { WebPhone } from './WebPhone';
 import { UA_EVENT } from './types';
+
+const WebPhone = require('ringcentral-web-phone');
 
 enum WEBPHONE_REGISTER_EVENT {
   REG_SUCCESS = 'registered',
   REG_FAILED = 'registrationFailed',
+  INVITE = 'invite',
 }
 
 class RTCSipUserAgent implements IRTCUserAgent {
-  private _userAgent: WebPhone;
+  private _webphone: any;
   private _eventEmitter: EventEmitter2;
 
   constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
-    // to be modify when import ringcentral-web-phone library
-    this._userAgent = new WebPhone(provisionData, options);
-    this._initListener();
     this._eventEmitter = eventEmitter;
-    this.register(options);
+    this._createWebPhone(provisionData, options);
+  }
+
+  private _createWebPhone(provisionData: any, options: any) {
+    this._webphone = new WebPhone(provisionData, options);
+    this._initListener();
   }
 
   public register(options?: any): any {
-    return this._userAgent.register(options);
+    return this._webphone.userAgent.register(options);
   }
 
   public makeCall(phoneNumber: string, options: any): any {
-    return this._userAgent.invite(phoneNumber, options);
+    return this._webphone.userAgent.invite(phoneNumber, options);
   }
 
   private _initListener(): void {
-    this._subscribeRegEvent();
-    this._subscribeRegFailedEvent();
-  }
-
-  private _subscribeRegEvent(): void {
-    this._userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
+    if (!this._webphone || !this._webphone.userAgent) {
+      return;
+    }
+    this._webphone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
       this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
     });
-  }
-
-  private _subscribeRegFailedEvent(): void {
-    this._userAgent.on(
+    this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
         this._eventEmitter.emit(UA_EVENT.REG_FAILED, response, cause);
+      },
+    );
+    this._webphone.userAgent.on(
+      WEBPHONE_REGISTER_EVENT.INVITE,
+      (session: any) => {
+        this._eventEmitter.emit(UA_EVENT.RECEIVE_INVITE, session);
       },
     );
   }

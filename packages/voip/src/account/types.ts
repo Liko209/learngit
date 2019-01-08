@@ -32,4 +32,14 @@ enum RTC_PROV_EVENT {
   NEW_PROV = 'newProv',
 }
 
-export { ErrorCode, RegistrationState, RTCSipProvisionInfo, RTC_PROV_EVENT };
+const RegistrationManagerEvent = {
+  RECEIVER_INCOMING_SESSION: 'RegitrationManangerEventReceiveIncomingSession',
+};
+
+export {
+  ErrorCode,
+  RegistrationState,
+  RTCSipProvisionInfo,
+  RTC_PROV_EVENT,
+  RegistrationManagerEvent,
+};
