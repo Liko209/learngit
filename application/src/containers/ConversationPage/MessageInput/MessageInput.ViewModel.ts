@@ -191,9 +191,13 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const atMentions = isAtMentions(content);
     const items = this.items;
     try {
+      let realContent: string = content;
+      if (content.trim().length === 0) {
+        realContent = '';
+      }
       await this._postService.sendPost({
         atMentions,
-        text: content,
+        text: realContent,
         groupId: this.id,
         users: atMentions ? this._users : undefined,
         itemIds: items.map(item => item.id),
