@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { serviceErr } from 'sdk/service/ServiceResult';
 import { Notification } from '@/containers/Notification';
 import { MenuViewComponent } from '../Menu.View';
-import { ERROR_CODES_SDK } from 'sdk';
+import { ERROR_CODES_SDK } from 'sdk/error';
 
 jest.mock('@/common/genDivAndDismiss');
 jest.mock('@/containers/Notification');

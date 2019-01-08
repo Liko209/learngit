@@ -21,8 +21,7 @@ import {
 } from './fetchIndexData';
 import handleData from './handleData';
 import { notificationCenter } from '..';
-import { ErrorParser } from '../../utils';
-import { ERROR_TYPES } from '../../error';
+import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
@@ -121,7 +120,7 @@ export default class SyncService extends BaseService {
   }
 
   private async _handleSyncIndexError(result: any) {
-    const error = ErrorParser.parse(result);
+    const error = ErrorParserHolder.getErrorParser().parse(result);
     if (error.isMatch({ type: ERROR_TYPES.NETWORK, codes: [ERROR_CODES_NETWORK.GATEWAY_TIMEOUT] })) {
       notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.START_CLEAR_DATA);
       await this._handle504GateWayError();

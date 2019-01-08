@@ -22,6 +22,7 @@ import notificationCenter from '../../notificationCenter';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
 import { err, ok, BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { JServerError, ERROR_CODES_SERVER } from '../../../error';
 import GroupConfigService from '../../groupConfig';
 import ProgressService, { PROGRESS_STATUS } from '../../../module/progress';
 
@@ -447,18 +448,28 @@ describe('PostService', () => {
       });
     });
 
-    it('should error case', async () => {
-      postDao.queryPostsByGroupId.mockResolvedValue(null);
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-      expect(result).toEqual({
-        posts: [],
-        items: [],
-        hasMore: true,
-        limit: 20,
-      });
+    it.only('should throw error when error occur', async () => {
+      jest.spyOn(postService, 'getPostsFromLocal')
+        .mockResolvedValueOnce({
+          posts: [],
+          items: [],
+          hasMore: true,
+          limit: 20,
+        });
+      const error = new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, 'NOT_AUTHORIZED');
+      jest.spyOn(postService, 'getPostsFromRemote')
+        .mockImplementationOnce(async () => {
+          throw error;
+        });
+
+      try {
+        await postService.getPostsByGroupId({
+          groupId: 1,
+          limit: 20,
+        });
+      } catch (e) {
+        expect(e).toEqual(error);
+      }
     });
   });
 
@@ -791,7 +802,7 @@ describe('PostService', () => {
 
   describe('bookMark Post', () => {
     it('book post should return serviceErr', async () => {
-      profileService.putFavoritePost.mockResolvedValueOnce(serviceErr(500, ''));
+      profileService.putFavoritePost.mockResolvedValueOnce(serviceErr(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '500'));
       const result = await postService.bookmarkPost(1, true);
       expect(result.isErr()).toBe(true);
     });

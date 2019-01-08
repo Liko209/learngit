@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { err, ok } from 'foundation';
-import { service, JNetworkError, ERROR_CODES_NETWORK, ERROR_CODES_SERVER, JServerError } from 'sdk';
+import { service } from 'sdk';
+import { JNetworkError, ERROR_CODES_NETWORK, ERROR_CODES_SERVER, JServerError } from 'sdk/error';
 
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';

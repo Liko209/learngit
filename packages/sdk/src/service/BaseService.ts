@@ -20,10 +20,11 @@ import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
-import { ERROR_CODES_SDK } from '../error';
+import { ERROR_CODES_SDK, JSdkError } from '../error';
 
 const throwError = (text: string): never => {
-  throw new Error(
+  throw new JSdkError(
+    ERROR_CODES_SDK.GENERAL,
     // tslint:disable-next-line:max-line-length
     `${text} is undefined! ${text} must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)`,
   );
