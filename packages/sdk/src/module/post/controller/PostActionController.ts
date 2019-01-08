@@ -9,12 +9,17 @@ import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
+import { daoManager, PostDao } from '../../../dao';
+import PostActionControllerHelper from './PostActionControllerHelper';
 
 class PostActionController {
+  private _helper: PostActionControllerHelper;
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
     public requestController: IRequestController<Post>,
-  ) {}
+  ) {
+    this._helper = new PostActionControllerHelper();
+  }
 
   async likePost(
     postId: number,
@@ -48,6 +53,19 @@ class PostActionController {
         return this.requestController.put(newPost);
       },
     );
+  }
+
+  /**
+   * edit post does not need to do pre-insert
+   */
+  async editPost(postId: number, text: string) {
+    const postDao = daoManager.getDao(PostDao);
+    const oldPost = await postDao.get(postId);
+    if (!oldPost) {
+      throw new Error(`invalid post id: ${postId}`);
+    }
+    // const newPostInfo = this._helper.buildModifiedPostInfo(text, oldPost);
+    // this.requestController.put(newPostInfo);
   }
 }
 

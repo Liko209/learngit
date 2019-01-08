@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../../dao';
+import { daoManager, ConfigDao, BaseDao } from '../../../dao';
 
 type PreInsertIdType = {
   id: number;
@@ -13,12 +13,13 @@ type PreInsertIdType = {
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
-class PreInsertIdController {
+class PreInsertIdController<T> {
   private _versionIdMap: { [version: number]: number };
   private _modelName: string;
-  constructor(public DaoClass: any) {
-    this._modelName = daoManager.getDao(this.DaoClass).modelName;
-    this._modelName = `${this._modelName}_${PREINSERT_KEY_ID}`;
+  private _dao: BaseDao<T>;
+  constructor(dao: BaseDao<T>) {
+    this._modelName = `${dao.modelName}_${PREINSERT_KEY_ID}`;
+    this._dao = dao;
     this._initVersionIdMap();
   }
 
@@ -41,9 +42,8 @@ class PreInsertIdController {
   }
 
   async removeIdByVersion(version: number): Promise<void> {
-    const dao = daoManager.getDao(this.DaoClass);
     const id = this._versionIdMap[version];
-    id && (await dao.delete(id));
+    id && (await this._dao.delete(id));
     delete this._versionIdMap[version];
     this._syncDataDB();
   }

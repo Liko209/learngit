@@ -33,10 +33,9 @@ class PostServiceHandler {
       const ids = [];
 
       for (let i = 0; i < users.length; i += 1) {
-        const userDisplay: string = users[i].display.replace(
-          /([.?*+^$[\]\\(){}|-])/g,
-          '\\$1',
-        );
+        const userDisplay: string = users[i].display
+          ? users[i].display.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1')
+          : '';
         const key = new RegExp(`@\\[${userDisplay}\\]:${users[i].id}:`, 'g');
 
         // tslint:disable-next-line:max-line-length

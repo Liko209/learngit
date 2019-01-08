@@ -33,6 +33,9 @@ describe('PostController', () => {
       testRequestController,
     );
   });
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
 
   describe('likePost()', () => {
     it('should call partial modify controller', async () => {
