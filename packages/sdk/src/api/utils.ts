@@ -5,14 +5,15 @@
  */
 import { BaseResponse } from 'foundation';
 
-import { BaseError, ErrorParser } from '../utils/error';
+import { ErrorParser } from '../utils/error';
 import { ApiResultErr, ApiResultOk } from './ApiResult';
+import { JError } from '../error';
 
-function apiOk<T>(resp: BaseResponse): ApiResultOk<T, BaseError> {
+function apiOk<T>(resp: BaseResponse): ApiResultOk<T, JError> {
   return new ApiResultOk(resp.data, resp);
 }
 
-function apiErr<T, E extends BaseError = BaseError>(resp: BaseResponse) {
+function apiErr<T, E extends JError = JError>(resp: BaseResponse) {
   const error = ErrorParser.parseApiError(resp) as E;
   return new ApiResultErr<T, E>(error, resp);
 }

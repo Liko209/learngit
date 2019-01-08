@@ -174,6 +174,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     });
 
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.groupIdShouldBe(teamId);
       await conversationPage.expectStreamScrollToBottom();
     });
@@ -184,8 +185,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
   },
 );
 
-//skip due to feature bug FIJI-1900
-test.skip(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
+test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;

@@ -323,6 +323,15 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarBookmark"]`);
   }
 
+  get bookmarkIcon() {
+    return this.getSelectorByIcon('bookmark', this.self);
+  }
+
+  get unBookmarkIcon() {
+
+    return this.getSelectorByIcon('bookmark_border', this.self);
+  }
+
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
   }

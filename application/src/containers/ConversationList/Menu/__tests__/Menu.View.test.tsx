@@ -1,9 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ErrorTypes } from 'sdk/utils';
 import { serviceErr } from 'sdk/service/ServiceResult';
 import { Notification } from '@/containers/Notification';
 import { MenuViewComponent } from '../Menu.View';
+import { ERROR_CODES_SDK } from 'sdk';
 
 jest.mock('@/common/genDivAndDismiss');
 jest.mock('@/containers/Notification');
@@ -21,9 +21,9 @@ describe('MenuView', () => {
         groupId: 1,
         showClose: true,
         closeConversation: () =>
-          serviceErr(ErrorTypes.SERVICE, 'Failed to close conversation'),
+          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to close conversation'),
         shouldSkipCloseConfirmation: true,
-        onClose: () => {},
+        onClose: () => { },
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
@@ -46,9 +46,9 @@ describe('MenuView', () => {
     it('should display flash toast notification when favorite conversation failed [JPT-488]', (done: jest.DoneCallback) => {
       const props: any = {
         isFavorite: false,
-        onClose: () => {},
+        onClose: () => { },
         toggleFavorite: () =>
-          serviceErr(ErrorTypes.SERVICE, 'Failed to favorite conversation'),
+          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to favorite conversation'),
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
@@ -69,9 +69,9 @@ describe('MenuView', () => {
     it('should display flash toast notification when unFavorite conversation failed [JPT-489]', (done: jest.DoneCallback) => {
       const props: any = {
         isFavorite: true,
-        onClose: () => {},
+        onClose: () => { },
         toggleFavorite: () =>
-          serviceErr(ErrorTypes.SERVICE, 'Failed to unFavorite conversation'),
+          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to unFavorite conversation'),
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
