@@ -70,7 +70,7 @@ class TwoLineItem extends React.Component {
             <JuiListItemIcon>
               <JuiIconButton
                 variant="plain"
-                tooltipTitle="download"
+                tooltipTitle="Download"
                 disabled={disabled}
               >
                 get_app
@@ -80,11 +80,7 @@ class TwoLineItem extends React.Component {
         ) : (
           <JuiListItemSecondaryAction>
             <JuiListItemIcon>
-              <JuiIconButton
-                variant="plain"
-                tooltipTitle="info"
-                disabled={disabled}
-              >
+              <JuiIconButton variant="plain" disabled={disabled}>
                 info
               </JuiIconButton>
             </JuiListItemIcon>
