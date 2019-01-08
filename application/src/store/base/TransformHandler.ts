@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
 import { ListStore } from './fetch/ListStore';
-import { ISortableModel, TDelta, TUpdated } from './fetch/types';
+import { ISortableModel, TDelta } from './fetch/types';
 import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
@@ -32,15 +32,12 @@ abstract class TransformHandler<T, K extends IdModel> {
   }
 
   private _modificationHandler = (delta: TDelta) => {
-    const { updated, deleted, added, direction } = delta;
+    const { deleted, added, direction } = delta;
     if (deleted.length) {
       this.onDeleted(deleted);
     }
     if (added.length) {
       this.onAdded(direction, added);
-    }
-    if (updated) {
-      this.onUpdated(updated);
     }
   }
 
@@ -50,7 +47,7 @@ abstract class TransformHandler<T, K extends IdModel> {
   ): any;
 
   abstract onDeleted(deletedItems: number[]): any;
-  abstract onUpdated(updatedIds: TUpdated): any;
+
   dispose() {
     this._orderListHandler.dispose();
   }

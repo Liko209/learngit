@@ -18,7 +18,6 @@ import { transform2Map } from '@/store/utils';
 
 import {
   ISortableModel,
-  TUpdated,
   IMatchFunc,
   ITransformFunc,
   ISortFunc,
@@ -29,6 +28,7 @@ import {
   IFetchDataListHandlerOptions,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
+import { mainLogger } from 'sdk/src';
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -50,10 +50,10 @@ export class FetchSortableDataListHandler<
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;
-  private _sortableDataProvider: IFetchSortableDataProvider<T>;
+  private _sortableDataProvider?: IFetchSortableDataProvider<T>;
 
   constructor(
-    dataProvider: IFetchSortableDataProvider<T>,
+    dataProvider: IFetchSortableDataProvider<T> | undefined,
     options: IFetchSortableDataListHandlerOptions<T>,
     listStore: SortableListStore<T> = new SortableListStore<T>(options.sortFunc),
   ) {
@@ -79,6 +79,9 @@ export class FetchSortableDataListHandler<
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
+    if (!this._sortableDataProvider) {
+      return mainLogger.warn('data fetcher should be defined ');
+    }
     const { data, hasMore } = await this._sortableDataProvider.fetchData(
       direction,
       pageSize,
@@ -116,7 +119,6 @@ export class FetchSortableDataListHandler<
       this._dataChangeCallBack({
         deleted: _.intersection(originalSortableIds, payload.body.ids),
         added: [],
-        updated: [],
         direction: QUERY_DIRECTION.NEWER,
       });
     }
@@ -130,8 +132,6 @@ export class FetchSortableDataListHandler<
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
-    let updatedSortableItems: TUpdated = [];
-    let updatedSortableModels: ISortableModel[] = [];
 
     const entities = payload.body.entities;
     const keys = Array.from(payload.body.ids);
@@ -203,26 +203,6 @@ export class FetchSortableDataListHandler<
           originalSortableModels,
           item => item.id,
         );
-
-        // calculate updated models
-        updatedSortableModels = _.differenceBy(
-          matchedSortableModels,
-          addedSortableModels,
-          item => item.id,
-        );
-      }
-
-      if (updatedSortableModels.length) {
-        const storeIds = this.sortableListStore.getIds();
-        updatedSortableItems = updatedSortableModels.map(
-          (item: ISortableModel) => {
-            return {
-              value: item,
-              index: storeIds.indexOf(item.id),
-              oldValue: originalSortableModels.find(iter => iter.id === item.id),
-            };
-          },
-        );
       }
     }
 
@@ -230,7 +210,6 @@ export class FetchSortableDataListHandler<
       this._dataChangeCallBack({
         deleted: deletedSortableModelIds,
         added: addedSortableModels,
-        updated: updatedSortableItems,
         direction: QUERY_DIRECTION.NEWER,
       });
   }

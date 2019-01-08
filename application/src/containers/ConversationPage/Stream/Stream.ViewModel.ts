@@ -1,3 +1,4 @@
+import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
 /*
  * @Author: Andy Hu
  * @Date: 2018-10-08 18:18:39
@@ -6,7 +7,7 @@
 
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
-import { PostService, StateService, ENTITY } from 'sdk/service';
+import { PostService, StateService, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
@@ -25,24 +26,24 @@ import {
   loadingTop,
   loadingBottom,
 } from '@/plugins/InfiniteListPlugin';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getGlobalValue, transform2Map } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItem } from './types';
-import { PostTransformHandler } from './PostTransformHandler';
+import { StreamProps, StreamItem, TDeltaWithData } from './types';
 import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
-import { DateSeparatorHandler } from './DateSeparatorHandler';
+
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
+import { OrdinaryPostWrapper, DateSeparator } from './StreamItemAssemblyLine';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
-const transformFunc = (dataModel: Post) => ({
+const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
-  sortValue: dataModel.created_at,
+  sortValue: dataModel.id,
   data: dataModel,
 });
 
@@ -50,14 +51,26 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
   private _initialized = false;
+  private assemblyLine: StreamItemAssemblyLine;
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
   @observable
   private _historyHandler: HistoryHandler;
 
+  @computed
+  get postIds() {
+    return this.orderListHandler.sortableListStore.getIds();
+  }
+
+  @computed
+  get items() {
+    return this.streamListHandler.sortableListStore.items.map(i => i.data);
+  }
+
   @observable
-  private _transformHandler: PostTransformHandler;
+  private orderListHandler: FetchSortableDataListHandler<Post>;
+  private streamListHandler: FetchSortableDataListHandler<StreamItem>;
 
   @computed
   get hasHistoryUnread() {
@@ -99,13 +112,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @observable
   groupId: number;
-  @observable
-  postIds: number[] = [];
 
   jumpToPostId: number;
-
-  @observable
-  items: StreamItem[] = [];
 
   @computed
   private get _groupState() {
@@ -128,11 +136,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get hasMoreUp() {
-    return this._transformHandler.hasMore(QUERY_DIRECTION.OLDER);
+    return this.orderListHandler.hasMore(QUERY_DIRECTION.OLDER);
   }
   @computed
   get hasMoreDown() {
-    return this._transformHandler.hasMore(QUERY_DIRECTION.NEWER);
+    return this.orderListHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
   @computed
@@ -145,6 +153,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
+    this.streamListHandler = new FetchSortableDataListHandler<StreamItem>(
+      undefined,
+      {
+        transformFunc,
+        isMatchFunc: () => true,
+      },
+    );
+    this.assemblyLine = new StreamItemAssemblyLine([
+      new DateSeparator(),
+      new OrdinaryPostWrapper(),
+    ]);
   }
 
   onReceiveProps(props: StreamProps) {
@@ -213,9 +232,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   dispose() {
     super.dispose();
-    if (this._transformHandler) {
-      this._transformHandler.dispose();
+    if (this.orderListHandler) {
+      this.orderListHandler.dispose();
     }
+    if (this.streamListHandler) {
+      this.streamListHandler.dispose();
+    }
+
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
@@ -225,16 +248,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this._transformHandler.hasMore(direction)) {
+    if (!this.orderListHandler.hasMore(direction)) {
       return [];
     }
-    return await this._transformHandler.fetchData(direction, limit);
+    return await this.orderListHandler.fetchData(direction, limit);
   }
 
   private async _loadSiblingPosts(anchorPostId: number) {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
-      this._transformHandler.replaceAll([post]);
+      this.orderListHandler.replaceAll([post]);
       await Promise.all([
         this._loadPosts(QUERY_DIRECTION.OLDER),
         this._loadPosts(QUERY_DIRECTION.NEWER),
@@ -285,18 +308,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       },
     };
 
-    const orderListHandler = new FetchSortableDataListHandler(
-      postDataProvider,
-      {
-        transformFunc,
-        hasMoreUp: true,
-        hasMoreDown: !!this.jumpToPostId,
-        isMatchFunc: isMatchedFunc(groupId),
-        entityName: ENTITY_NAME.POST,
-        eventName: ENTITY.POST,
-        dataChangeCallBack: () => {},
-      },
-    );
+    this.orderListHandler = new FetchSortableDataListHandler(postDataProvider, {
+      transformFunc,
+      hasMoreUp: true,
+      hasMoreDown: !!this.jumpToPostId,
+      isMatchFunc: isMatchedFunc(groupId),
+      entityName: ENTITY_NAME.POST,
+      eventName: ENTITY.POST,
+    });
+
+    this.orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
 
     this._historyHandler = new HistoryHandler();
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
@@ -304,23 +325,31 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._readThrough,
     );
 
-    this._transformHandler = new PostTransformHandler({
-      separatorHandlers: [
-        this._newMessageSeparatorHandler,
-        new DateSeparatorHandler(),
-      ],
-      handler: orderListHandler,
-    });
-
-    this.autorun(() => (this.postIds = this._transformHandler.postIds));
-    this.autorun(() => (this.items = this._transformHandler.items));
     this.autorun(() =>
       this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
         this._readThrough,
       ),
     );
-
     this._initialized = false;
+  }
+
+  handlePostsChanged = (delta: TDeltaWithData) => {
+    const { newItems } = this.assemblyLine.process(
+      delta,
+      this.orderListHandler.listStore.items,
+      this.hasMoreUp,
+    );
+    if (newItems) {
+      this.streamListHandler.onDataChanged({
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: _(newItems)
+            .map('id')
+            .value(),
+          entities: transform2Map(newItems),
+        },
+      });
+    }
   }
 }
 

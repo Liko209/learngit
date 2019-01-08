@@ -255,17 +255,21 @@ class StreamViewComponent extends Component<Props> {
     const { loading } = this.props;
     return (
       <VisibilitySensor
-        key={`VisibilitySensor${streamItem.value}`}
+        key={`VisibilitySensor${streamItem.id}`}
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={onChangeHandler}
         active={active}
       >
-        <ConversationPost
-          ref={this._setPostRef}
-          id={streamItem.value}
-          key={`ConversationPost${streamItem.value}`}
-          highlight={streamItem.value === this.state._jumpToPostId && !loading}
-        />
+        <>
+          {streamItem.value.map((postId: number) => (
+            <ConversationPost
+              ref={this._setPostRef}
+              id={postId}
+              key={`ConversationPost${postId}`}
+              highlight={postId === this.state._jumpToPostId && !loading}
+            />
+          ))}
+        </>
       </VisibilitySensor>
     );
   }
@@ -273,6 +277,7 @@ class StreamViewComponent extends Component<Props> {
     if (this.props.loading) {
       return [];
     }
+
     return this.props.items.map(this._renderStreamItem.bind(this));
   }
 

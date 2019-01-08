@@ -29,7 +29,6 @@ export interface ISortFunc<T> {
 }
 
 export type TDelta = {
-  updated?: TUpdated;
   added: ISortableModel[];
   deleted: number[];
   direction: QUERY_DIRECTION;

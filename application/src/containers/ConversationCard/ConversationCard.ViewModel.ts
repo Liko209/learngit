@@ -92,7 +92,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get createTime() {
-    return moment(this.post.createdAt).format('hh:mm A');
+    return moment(this.post.createdAt).format('dd:hh:mm A');
   }
 
   onAnimationStart = (evt: React.AnimationEvent) => {
