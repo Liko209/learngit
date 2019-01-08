@@ -25,9 +25,10 @@ import { JuiMenuList, JuiMenuItem } from '../Menus';
 
 type States = {
   openMenu: boolean;
-  indexSelected: number;
-  indexTabs: number[];
-  indexMenus: number[]; // length > 0, has more tab
+  indexSelected: number; // selected tab index
+  indexTabs: number[]; // show tab index
+  indexMenus: number[]; // menu tab index, when length > 0, then it has more tab
+  indexLazyLoadComponents: number[]; // lazy load container component index
 };
 
 type Props = {
@@ -76,8 +77,10 @@ class JuiTabs extends PureComponent<Props, States> {
     );
     this._moreRef = createRef();
     this._containerRef = createRef();
+    const indexSelected = props.defaultActiveIndex || 0;
     this.state = {
-      indexSelected: props.defaultActiveIndex || 0,
+      indexSelected,
+      indexLazyLoadComponents: [indexSelected],
       openMenu: false,
       indexTabs: [],
       indexMenus: [],
@@ -161,7 +164,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (indexSelected === MORE) {
       return;
     }
-    this.setState({ indexSelected });
+    this._setSelectedTabIndex(indexSelected);
   }
 
   private _showMenuList = () => {
@@ -177,7 +180,15 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   private _handleMenuItemClick = (index: number, event: MouseEvent) => {
-    this.setState({ indexSelected: index });
+    this._setSelectedTabIndex(index);
+  }
+
+  private _setSelectedTabIndex = (indexSelected: number) => {
+    let { indexLazyLoadComponents } = this.state;
+    if (!indexLazyLoadComponents.includes(indexSelected)) {
+      indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
+    }
+    this.setState({ indexSelected, indexLazyLoadComponents });
   }
 
   private _renderMoreAndMenu = () => {
@@ -278,7 +289,7 @@ class JuiTabs extends PureComponent<Props, States> {
 
   renderContainer = () => {
     const { children } = this.props;
-    const { indexSelected } = this.state;
+    const { indexSelected, indexLazyLoadComponents } = this.state;
     return Children.map(
       children,
       (child: ReactElement<JuiTabProps>, index: number) => {
@@ -288,7 +299,7 @@ class JuiTabs extends PureComponent<Props, States> {
         }
         return (
           <StyledContainer key={index} className={className}>
-            {child.props.children}
+            {indexLazyLoadComponents.includes(index) && child.props.children}
           </StyledContainer>
         );
       },
