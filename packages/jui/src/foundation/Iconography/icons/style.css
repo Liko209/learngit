@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'jupiter_icon';
-  src:  url('fonts/jupiter_icon.eot?wnzt3j');
-  src:  url('fonts/jupiter_icon.eot?wnzt3j#iefix') format('embedded-opentype'),
-    url('fonts/jupiter_icon.woff2?wnzt3j') format('woff2'),
-    url('fonts/jupiter_icon.ttf?wnzt3j') format('truetype'),
-    url('fonts/jupiter_icon.woff?wnzt3j') format('woff'),
-    url('fonts/jupiter_icon.svg?wnzt3j#jupiter_icon') format('svg');
+  src:  url('fonts/jupiter_icon.eot?x61aem');
+  src:  url('fonts/jupiter_icon.eot?x61aem#iefix') format('embedded-opentype'),
+    url('fonts/jupiter_icon.woff2?x61aem') format('woff2'),
+    url('fonts/jupiter_icon.ttf?x61aem') format('truetype'),
+    url('fonts/jupiter_icon.woff?x61aem') format('woff'),
+    url('fonts/jupiter_icon.svg?x61aem#jupiter_icon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -27,6 +27,9 @@
 
 .delete_circle:before {
   content: "\e941";
+}
+.draft:before {
+  content: "\e942";
 }
 .edit:before {
   content: "\e939";

@@ -51,6 +51,7 @@ const name2icon = {
   edit: 'edit',
   remove: 'delete_circle',
   refresh: 'refresh',
+  draft: 'draft',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

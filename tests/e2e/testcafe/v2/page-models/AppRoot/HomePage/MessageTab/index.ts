@@ -171,7 +171,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   get hasDraftMessage() {
-    return this.getSelectorByIcon('border_color').exists;
+    return this.getSelectorByIcon('draft').exists;
   }
 
   async enter() {
@@ -312,7 +312,7 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
-  
+
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
