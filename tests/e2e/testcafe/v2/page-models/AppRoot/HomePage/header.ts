@@ -138,7 +138,7 @@ class SearchItem extends BaseWebComponent {
     await this.t.expect(this.joinButton.visible).ok();
   }
 
-  async shouldNotJoinButton() {
+  async shouldNotHasJoinButton() {
     await this.t.expect(this.joinButton.visible).notOk();
   }
 

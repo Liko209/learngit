@@ -29,18 +29,29 @@ test(formalName(`Display Join button for public team which login user doesn't jo
   const joinedTeamName = uuid();
 
   let publicTeamId, joinedTeamId;
-  await h(t).withLog('Given I have a public team A but loginUser did not join it, team B (loginUser joined)', async () => {
-    publicTeamId = await h(t).platform(loginUser).createAndGetGroupId({
+  await h(t).withLog('Given I have a public team A but loginUser did not join it, team B (loginUser joined),and some group', async () => {
+    publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
       isPublic: true,
       name: publicTeamName,
       type: 'Team',
       members: [otherUser.rcId],
     });
-    joinedTeamId = await h(t).platform(loginUser).createAndGetGroupId({
+
+    joinedTeamId = await h(t).platform(otherUser).createAndGetGroupId({
       isPublic: true,
       name: joinedTeamName,
       type: 'Team',
       members: [otherUser.rcId, loginUser.rcId],
+    });
+
+    await h(t).platform(otherUser).createGroup({
+      type: 'Group',
+      members: [loginUser.rcId, otherUser.rcId],
+    });
+
+    await h(t).platform(otherUser).createGroup({
+      type: 'Group',
+      members: [otherUser.rcId,],
     });
   });
 
@@ -50,21 +61,35 @@ test(formalName(`Display Join button for public team which login user doesn't jo
   });
 
   const search = app.homePage.header.search;
-  const publicTeam = search.itemEntryByCid(publicTeamId);
-  const joinedTeam = search.itemEntryByCid(joinedTeamId);
-  const 
+
   await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
-    
+    await t.hover(search.itemEntryByCid(publicTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await t
+    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
   })
 
-  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
+  await h(t).withLog(`When I search and hover the joined team B ${joinedTeamName}`, async () => {
+    await search.typeText(joinedTeamName, { replace: true, paste: true });
+    await t.hover(search.itemEntryByCid(joinedTeamId).self);
+  });
+
+  await h(t).withLog(`Then the join button should not be showed `, async () => {
+    await search.itemEntryByCid(joinedTeamId).shouldNotHasJoinButton();
+  });
+
+  const steps = async () => {
+    
+  }
+
+  await h(t).withLog(`When I search and hover the people ${otherUserName}`, async () => {
     await search.typeText(otherUserName, { replace: true, paste: true });
-    await t.wait(3e3);
+  });
+
+  await h(t).withLog(`Then the join button should not be showed `, async () => {
+    await search.itemEntryByCid(publicTeamId).shouldNotHasJoinButton();
   });
 
 });
