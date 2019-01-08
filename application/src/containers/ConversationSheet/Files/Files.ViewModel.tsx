@@ -7,6 +7,7 @@ import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
 import { Progress } from 'sdk/models';
+import ProgressModel from '@/store/models/Progress';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -25,6 +26,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 import PostModel from '@/store/models/Post';
+import { PROGRESS_STATUS } from 'sdk/module';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -117,7 +119,15 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
   }
 
-  removeFile = async (id: number, itemLoading: boolean) => {
+  _getPostStatus = () => {
+    const progress = getEntity<Progress, ProgressModel>(
+      ENTITY_NAME.PROGRESS,
+      this._postId,
+    );
+    return progress.progressStatus;
+  }
+
+  removeFile = async (id: number) => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
@@ -129,7 +139,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       });
     } else {
       try {
-        if (itemLoading) {
+        const postLoading =
+          this._getPostStatus() === PROGRESS_STATUS.INPROGRESS;
+        if (postLoading) {
           this._itemService.cancelUpload(id);
         } else {
           await this._postService.removeItemFromPost(this._postId, id);

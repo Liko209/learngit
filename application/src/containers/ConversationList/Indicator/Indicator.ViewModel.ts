@@ -11,7 +11,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
 import { ItemService } from 'sdk/service';
-import { GroupConfig } from 'sdk/src/models';
+import { GroupConfig } from 'sdk/models';
 import GroupConfigModel from '@/store/models/GroupConfig';
 
 class IndicatorViewModel extends AbstractViewModel

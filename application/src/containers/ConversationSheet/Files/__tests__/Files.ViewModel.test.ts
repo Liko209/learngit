@@ -7,8 +7,9 @@ import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
 import { service } from 'sdk';
 jest.mock('../../../../store/utils');
-import { FileType } from '../types';
+import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
+import { PROGRESS_STATUS } from 'sdk/module';
 jest.mock('@/containers/Notification');
 
 const { ItemService, PostService } = service;
@@ -74,7 +75,7 @@ describe('filesItemVM', () => {
 
   describe('removeFile()', () => {
     it('should call post service', async () => {
-      await filesItemVM.removeFile(123, false);
+      await filesItemVM.removeFile(123);
       expect(postService.removeItemFromPost).toBeCalledTimes(1);
     });
 
@@ -84,7 +85,7 @@ describe('filesItemVM', () => {
           throw new Error('error');
         },
       );
-      await filesItemVM.removeFile(123, false);
+      await filesItemVM.removeFile(123);
       const p = new Promise((resolve: any) => {
         setTimeout(() => {
           expect(Notification.flashToast).toHaveBeenCalled();
@@ -96,7 +97,7 @@ describe('filesItemVM', () => {
 
     it('should show network error', async () => {
       (getGlobalValue as jest.Mock).mockImplementationOnce(() => 'offline');
-      await filesItemVM.removeFile(123, false);
+      await filesItemVM.removeFile(123);
       const p = new Promise((resolve: any) => {
         setTimeout(() => {
           expect(Notification.flashToast).toHaveBeenCalled();
@@ -107,7 +108,9 @@ describe('filesItemVM', () => {
     });
 
     it('should cancel upload file', async () => {
-      await filesItemVM.removeFile(123, true);
+      const vm = new FilesViewModel({} as FilesViewProps);
+      vm._getPostStatus = () => PROGRESS_STATUS.INPROGRESS;
+      await vm.removeFile(123);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
     });
   });
