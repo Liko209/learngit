@@ -119,7 +119,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
   }
 
-  _getPostStatus = () => {
+  private _getPostStatus() {
     const progress = getEntity<Progress, ProgressModel>(
       ENTITY_NAME.PROGRESS,
       this._postId,
@@ -142,7 +142,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         const postLoading =
           this._getPostStatus() === PROGRESS_STATUS.INPROGRESS;
         if (postLoading) {
-          this._itemService.cancelUpload(id);
+          await this._itemService.cancelUpload(id);
         } else {
           await this._postService.removeItemFromPost(this._postId, id);
         }

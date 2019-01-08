@@ -108,10 +108,20 @@ describe('filesItemVM', () => {
     });
 
     it('should cancel upload file', async () => {
-      const vm = new FilesViewModel({} as FilesViewProps);
-      vm._getPostStatus = () => PROGRESS_STATUS.INPROGRESS;
+      (getEntity as jest.Mock).mockReturnValue({
+        ...mockItemValue,
+        progressStatus: PROGRESS_STATUS.INPROGRESS,
+      });
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      const vm = new FilesViewModel({ ids: [123, 2, 3] } as FilesViewProps);
       await vm.removeFile(123);
-      expect(itemService.cancelUpload).toBeCalledTimes(1);
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          expect(itemService.cancelUpload).toBeCalledTimes(1);
+          resolve();
+        },         0);
+      });
+      await p;
     });
   });
 });
