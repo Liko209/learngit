@@ -361,5 +361,68 @@ describe('Call FSM UT', async () => {
         });
       });
     });
+
+    describe('stopRecord()', async () => {
+      it('should notify transfer failed when transfer call in idle state [JPT-672]', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.transfer('123');
+        setImmediate(() => {
+          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          done();
+        });
+      });
+      it('should notify transfer failed when transfer call in pending state [JPT-672]', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.accountNotReady();
+        callFsm.transfer('123');
+        setImmediate(() => {
+          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          done();
+        });
+      });
+      it('should notify transfer failed when transfer call in answering state [JPT-672]', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.answer();
+        callFsm.transfer('123');
+        setImmediate(() => {
+          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          done();
+        });
+      });
+      it('should notify transfer failed when transfer call in connecting state [JPT-672]', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.accountReady();
+        callFsm.transfer('123');
+        setImmediate(() => {
+          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          done();
+        });
+      });
+      it('should notify transfer failed when transfer call in disconnected state [JPT-672]', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.hangup();
+        callFsm.transfer('123');
+        setImmediate(() => {
+          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          done();
+        });
+      });
+      it('should trigger transfer action when transfer call in connected state', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onTransferAction');
+        callFsm.accountReady();
+        callFsm.sessionConfirmed();
+        callFsm.transfer('123');
+        setImmediate(() => {
+          expect(callFsm.onTransferAction).toBeCalled();
+          done();
+        });
+      });
+    });
   });
 });

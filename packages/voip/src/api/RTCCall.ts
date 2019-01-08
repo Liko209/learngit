@@ -3,7 +3,6 @@
  * @Date: 2018-12-28 15:51:14
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
@@ -103,6 +102,14 @@ class RTCCall {
       : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
   }
 
+  transfer(target: string): void {
+    if (target.length === 0) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER);
+      return;
+    }
+    this._fsm.transfer(target);
+  }
+
   onAccountReady(): void {
     this._fsm.accountReady();
   }
@@ -166,6 +173,9 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.FLIP_ACTION, (target: number) => {
       this._onFlipAction(target);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
+      this._onTransferAction(target);
     });
     this._fsm.on(CALL_FSM_NOTIFY.START_RECORD_ACTION, () => {
       this._onStartRecordAction();
@@ -239,6 +249,10 @@ class RTCCall {
 
   private _onFlipAction(target: number) {
     this._callSession.flip(target);
+  }
+
+  private _onTransferAction(target: string) {
+    this._callSession.transfer(target);
   }
 
   private _onStartRecordAction() {
