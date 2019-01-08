@@ -124,11 +124,14 @@ class Task extends React.Component<taskViewProps> {
       repeatEnding,
       repeatEndingOn,
     } = task;
+    console.log(task, 'nello---- task');
     let startTime = '';
     let endTime = '';
     const hasTime = start && due;
-    if (hasTime) {
+    if (start) {
       startTime = recentlyTwoDayAndOther(start);
+    }
+    if (due) {
       endTime = getDateAndTime(due);
     }
     const timeText = getDurationTimeText(
@@ -145,11 +148,14 @@ class Task extends React.Component<taskViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
-        {hasTime && (
+        {endTime && (
           <JuiTaskContent title={t('due')}>
-            <JuiTimeMessage time={`${startTime} - ${endTime} ${timeText}`} />
+            <JuiTimeMessage
+              time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
+            />
           </JuiTaskContent>
         )}
+
         {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskContent title={t('assignee')}>
             <JuiTaskAvatarNames
