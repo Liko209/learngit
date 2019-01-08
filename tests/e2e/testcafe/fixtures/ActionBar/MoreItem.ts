@@ -4,7 +4,7 @@ import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL, BrandTire} from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 fixture('ActionBar/MoreItem')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
