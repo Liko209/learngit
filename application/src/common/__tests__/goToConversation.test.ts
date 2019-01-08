@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import history from '@/history';
-import { service } from 'sdk';
-import { GlipTypeUtil, TypeDictionary, BaseError } from 'sdk/utils';
+import { service, JNetworkError, ERROR_CODES_NETWORK } from 'sdk';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';
 jest.mock('@/history');
@@ -81,7 +81,7 @@ describe('getConversationId() with person type conversationId', () => {
 
   it('groupService should return err', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new BaseError(500, '')),
+      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
     );
     expect(await goToConversation({ id: 1 })).toEqual(false);
     expect(history.push).toHaveBeenCalledWith('/messages/loading');
@@ -111,7 +111,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
 
   it('groupService should return err', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new BaseError(500, '')),
+      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
     );
     expect(await goToConversation({ id: [1, 2, 3] })).toEqual(false);
     expect(history.push).toHaveBeenCalledWith('/messages/loading');
@@ -149,7 +149,7 @@ describe('getConversationId() with message', () => {
   it('should show loading then show error page if failed', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new BaseError(500, '')),
+      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
     );
     expect(
       await goToConversation({ id: [1, 2, 3], message: 'hahahah' }),

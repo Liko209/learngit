@@ -38,9 +38,5 @@ Object.keys(HttpStatus).forEach((key: string) => {
   ErrorTypes[key] = ErrorTypes.API + HttpStatus[key];
 });
 
-const HttpError = {
-  GATE_WAY_504: 1504,
-};
-
 export default ErrorTypes;
-export { HttpError, ErrorTypes };
+export { ErrorTypes };

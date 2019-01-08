@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import StateMachine from 'ts-javascript-state-machine';
-import { RTC_CALL_ACTION } from './types';
+import { RTC_CALL_ACTION } from '../api/types';
 const CallFsmState = {
   IDLE: 'idle',
   PENDING: 'pending',
@@ -181,6 +181,7 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.SESSION_ERROR,
           from: [
+            CallFsmState.IDLE,
             CallFsmState.ANSWERING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,

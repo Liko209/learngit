@@ -15,7 +15,7 @@ jest.mock('@/common/goToConversation');
 const { PostService } = service;
 
 const postService = {
-  sendPost() {},
+  sendPost() { },
 };
 
 const newMessageVM = new NewMessageViewModel();

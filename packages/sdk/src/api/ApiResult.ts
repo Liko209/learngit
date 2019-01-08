@@ -3,15 +3,9 @@
  * @Date: 2018-11-26 14:20:33
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseError, ResultErr, ResultOk, BaseResponse } from 'foundation';
+import { JError, ResultErr, ResultOk, BaseResponse } from 'foundation';
 
-const ApiErrorTypes = {
-  ALREADY_TAKEN: 1,
-  INVALID_FIELD: 2,
-  UNKNOWN: 99,
-};
-
-class ApiResultOk<T, E extends BaseError = BaseError> extends ResultOk<T, E> {
+class ApiResultOk<T, E extends JError = JError> extends ResultOk<T, E> {
   readonly status: number;
   readonly headers: object;
   readonly response: BaseResponse;
@@ -24,7 +18,7 @@ class ApiResultOk<T, E extends BaseError = BaseError> extends ResultOk<T, E> {
   }
 }
 
-class ApiResultErr<T, E extends BaseError = BaseError> extends ResultErr<T, E> {
+class ApiResultErr<T, E extends JError = JError> extends ResultErr<T, E> {
   readonly status: number;
   readonly headers: object;
   readonly response: BaseResponse;
@@ -37,8 +31,8 @@ class ApiResultErr<T, E extends BaseError = BaseError> extends ResultErr<T, E> {
   }
 }
 
-type ApiResult<T, E extends BaseError = BaseError> =
+type ApiResult<T, E extends JError = JError> =
   | ApiResultOk<T, E>
   | ApiResultErr<T, E>;
 
-export { ApiResult, ApiResultOk, ApiResultErr, ApiErrorTypes };
+export { ApiResult, ApiResultOk, ApiResultErr };

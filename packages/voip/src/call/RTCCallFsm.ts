@@ -5,7 +5,7 @@
  */
 import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
-import queue from 'async/queue';
+import async from 'async';
 import { CALL_FSM_NOTIFY } from './types';
 
 const CallFsmEvent = {
@@ -30,7 +30,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   constructor() {
     super();
     this._callFsmTable = new RTCCallFsmTable(this);
-    this._eventQueue = new queue((task: any, callback: any) => {
+    this._eventQueue = async.queue((task: any, callback: any) => {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
           this._onHangup();
@@ -46,6 +46,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.STOP_RECORD: {
           this._onStopRecord();
+          break;
         }
         case CallFsmEvent.ANSWER: {
           this._onAnswer();
@@ -264,11 +265,6 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onEnterDisconnected() {
     this.emit(CALL_FSM_NOTIFY.ENTER_DISCONNECTED);
-  }
-
-  // Only for unit test
-  private _fsmGoto(state: string) {
-    this._callFsmTable.goto(state);
   }
 }
 

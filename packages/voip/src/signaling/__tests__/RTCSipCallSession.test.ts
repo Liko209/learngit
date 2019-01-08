@@ -24,16 +24,14 @@ describe('sip call session', () => {
     emitSessionError() {
       this.emit(WEBPHONE_STATE.FAILED);
     }
-
-    hangup() {}
-
+    terminate() {}
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();
 
     accept() {}
     reject() {}
-    sendToVoicemail() {}
+    toVoicemail() {}
   }
 
   describe('setsession()', () => {
@@ -51,13 +49,13 @@ describe('sip call session', () => {
   });
 
   describe('hangup()', () => {
-    it('should VirtualSession hangup be called when SipCallSession hangup be called .JPT-575', () => {
+    it('should VirtueSession terminate be called when SipCallSession hangup be called .JPT-575', () => {
       const sipcallsession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
-      jest.spyOn(vsession, 'hangup');
+      jest.spyOn(vsession, 'terminate');
       sipcallsession.hangup();
-      expect(vsession.hangup).toHaveBeenCalled();
+      expect(vsession.terminate).toHaveBeenCalled();
     });
 
     it('should no exception when hangup() is called if setSession() not called JPT-577', () => {
@@ -143,9 +141,9 @@ describe('sip call session', () => {
       const callSession = new RTCSipCallSession();
       const vsession = new VirtualSession();
       callSession.setSession(vsession);
-      jest.spyOn(vsession, 'sendToVoicemail');
+      jest.spyOn(vsession, 'toVoicemail');
       callSession.sendToVoicemail();
-      expect(vsession.sendToVoicemail).toHaveBeenCalled();
+      expect(vsession.toVoicemail).toHaveBeenCalled();
     });
     it('Should not crash when reject() is called and setSession() is not called', () => {
       const callSession = new RTCSipCallSession();
