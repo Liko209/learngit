@@ -56,6 +56,16 @@ describe('StreamViewModel', () => {
     jest.resetAllMocks();
   });
 
+  it('should sort ids in descending order', async () => {
+    postService.getPostsByIds.mockResolvedValue({
+      posts: [],
+    });
+    await vm.onReceiveProps({
+      postIds: [1, 10, 2, 33, 512, 0, 100, 521, 345345],
+    });
+    expect(vm._postIds).toEqual([345345, 521, 512, 100, 33, 10, 2, 1, 0]);
+  });
+
   it('should add new post if the postIds added', async () => {
     const localProps = { ...newProps };
     postService.getPostsByIds.mockResolvedValue({

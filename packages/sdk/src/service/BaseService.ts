@@ -258,6 +258,17 @@ class BaseService<
       : false;
   }
 
+  protected isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   protected getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
   }
@@ -518,7 +529,9 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', { apiError: error });
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', {
+          apiError: error,
+        });
         break;
       }
 

@@ -78,33 +78,14 @@ describe('EditMessageInputViewModel', () => {
       expect(editMessageInputViewModel.text).toBe(mockPostEntityData.text);
     });
   });
-  describe('_group', () => {
-    it('should return group', () => {
-      expect(editMessageInputViewModel._group).toBe(mockGroupEntityData);
-    });
-  });
-  describe('_members', () => {
-    it('should return members', () => {
-      expect(editMessageInputViewModel._members).toBe(
-        mockGroupEntityData.members,
-      );
-    });
-  });
-  describe('_users', () => {
-    it('should return users', () => {
-      expect(editMessageInputViewModel._users).toEqual([
-        {
-          id: 1,
-          display: 'userName',
-        },
-      ]);
-    });
-  });
   describe('_enterHandler', () => {
-    const mockThis = (content: string) => {
+    const mockThis = (markdownFromDeltaRes: {
+      content: string;
+      mentionsIds: number[];
+    }) => {
       const that = {
         quill: {
-          getText: jest.fn().mockReturnValue(content),
+          getText: jest.fn().mockReturnValue(markdownFromDeltaRes.content),
           getContents: jest.fn(),
         },
       };
@@ -112,38 +93,50 @@ describe('EditMessageInputViewModel', () => {
     };
 
     it('should edit post success', () => {
-      const content = 'text';
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(postService.modifyPost).toBeCalled();
     });
     it('should edit post failure when content is empty', () => {
-      const content = '';
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: '',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(postService.modifyPost).not.toBeCalled();
     });
     it('should edit post failure when content is illegal', () => {
-      const content = CONTENT_ILLEGAL;
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: CONTENT_ILLEGAL,
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
       expect(postService.modifyPost).not.toBeCalled();
     });
     it('should edit post failure when content is over length', () => {
-      const content = _.pad('test', CONTENT_LENGTH + 1);
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: _.pad('test', CONTENT_LENGTH + 1),
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);

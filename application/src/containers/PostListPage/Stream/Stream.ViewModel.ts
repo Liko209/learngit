@@ -106,7 +106,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   async onReceiveProps(props: StreamProps) {
-    const postIds = props.postIds.sort().reverse();
+    const postIds = props.postIds.sort((a, b) => b - a);
     // when comp did mount
     if (!this._postIds.length && postIds.length) {
       this._postIds = postIds;
