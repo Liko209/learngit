@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Progress } from 'sdk/module/progress';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import ProgressModel from '../Progress';
 
