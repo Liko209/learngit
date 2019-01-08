@@ -12,7 +12,7 @@ const config: SubModuleConfig = {
   nav: (currentConversationId: number, groupIds: number[]) => {
     return {
       url: `/messages/${currentConversationId}`,
-      icon: 'message',
+      icon: 'messages',
       title: t('Messages'),
       umi: <Umi ids={groupIds} global="UMI.app" />,
       placement: 'top',

@@ -4,7 +4,7 @@ import { SubModuleConfig } from '../types';
 const config: SubModuleConfig = {
   nav: () => ({
     url: '/meetings',
-    icon: 'videocam',
+    icon: 'mettings',
     title: t('Meetings'),
     placement: 'top',
   }),

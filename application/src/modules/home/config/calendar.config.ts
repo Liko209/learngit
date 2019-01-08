@@ -4,7 +4,7 @@ import { SubModuleConfig } from '../types';
 const config: SubModuleConfig = {
   nav: () => ({
     url: '/calendar',
-    icon: 'date_range',
+    icon: 'calendar',
     title: t('Calendar'),
     placement: 'bottom',
   }),

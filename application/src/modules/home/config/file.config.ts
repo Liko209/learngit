@@ -4,7 +4,7 @@ import { SubModuleConfig } from '../types';
 const config: SubModuleConfig = {
   nav: () => ({
     url: '/files',
-    icon: 'file_copy',
+    icon: 'files',
     title: t('Files'),
     placement: 'bottom',
   }),

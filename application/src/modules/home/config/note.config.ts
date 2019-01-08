@@ -4,7 +4,7 @@ import { SubModuleConfig } from '../types';
 const config: SubModuleConfig = {
   nav: () => ({
     url: '/notes',
-    icon: 'library_books',
+    icon: 'notes',
     title: t('Notes'),
     placement: 'bottom',
   }),
