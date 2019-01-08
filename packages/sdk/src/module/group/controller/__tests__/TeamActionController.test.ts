@@ -9,6 +9,10 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { Group } from '../../entity/Group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { groupFactory } from './factory';
+import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import { IControllerBuilder } from '../../../../framework/controller/interface/IControllerBuilder';
+import { Api } from '../../../../api';
+import { NetworkManager, OAuthTokenManager } from 'foundation/src';
 
 class TestPartialModifyController implements IPartialModifyController<Group> {
   updatePartially = jest.fn();
@@ -23,15 +27,20 @@ class TestRequestController implements IRequestController<Group> {
 }
 
 describe('TeamController', () => {
+  let testControllerBuilder: IControllerBuilder<Group>;
   let teamActionController: TeamActionController;
   let testPartialModifyController: TestPartialModifyController;
   let testRequestController: TestRequestController;
   beforeEach(() => {
+    testControllerBuilder = new ControllerBuilder<Group>();
     testPartialModifyController = new TestPartialModifyController();
     testRequestController = new TestRequestController();
+    testControllerBuilder.buildRequestController = jest.fn().mockReturnValue(testRequestController);
+    testControllerBuilder.buildPartialModifyController = jest.fn().mockReturnValue(testPartialModifyController);
     teamActionController = new TeamActionController(
       testPartialModifyController,
       testRequestController,
+      testControllerBuilder,
     );
   });
 
@@ -80,9 +89,20 @@ describe('TeamController', () => {
   });
 
   describe('joinTeam()', () => {
-    it('should call partial modify controller', async () => {
+    it('should call partial modify controller. [JPT-719]', async () => {
       await teamActionController.joinTeam(123, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
+    });
+  });
+  describe('addTeamMember()', () => {
+    it('should call api with correct params. [JPT-719]', async () => {
+      Api.init({}, new NetworkManager(new OAuthTokenManager()));
+      await teamActionController.addTeamMembers(2, [123]);
+
+      expect(testRequestController.put).toBeCalledWith({
+        id: 2,
+        members: [123],
+      });
     });
   });
 });

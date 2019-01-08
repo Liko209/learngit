@@ -35,6 +35,7 @@ class TeamController {
       this._actionController = new TeamActionController(
         partialModifyController,
         requestController,
+        this.controllerBuilder,
       );
     }
     return this._actionController;
