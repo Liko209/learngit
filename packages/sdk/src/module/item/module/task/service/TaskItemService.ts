@@ -7,11 +7,15 @@
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { TaskItemController } from '../controller/TaskItemController';
 import { Item } from '../../../entity';
+import { EntityBaseService } from '../../../../../framework/service';
+import { IItemService } from '../../../service/IItemService';
 
-class TaskItemService implements ISubItemService {
+class TaskItemService extends EntityBaseService implements ISubItemService {
   private _taskItemController: TaskItemController;
 
-  constructor() {}
+  constructor(itemService: IItemService) {
+    super();
+  }
 
   protected get fileItemController() {
     if (!this._taskItemController) {

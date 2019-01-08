@@ -21,8 +21,8 @@ const mockItemValue = {
   deactivated: false,
   id: 24936465,
   image: null,
-  summary: "React Components that Implement Google's Material Design.",
-  title: "The world's most popular React UI framework - Material-UI",
+  summary: "React Components that Implement Google\\'s Material Design.",
+  title: "The world\\'s most popular React UI framework - Material-UI",
   url: 'https://material-ui.com/',
 };
 describe('LinkItemViewModel', () => {

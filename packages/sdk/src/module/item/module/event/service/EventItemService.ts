@@ -6,9 +6,10 @@
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
 import { Item } from '../../../entity';
+import { IItemService } from '../../../service/IItemService';
 
 class EventItemService extends EntityBaseService implements ISubItemService {
-  constructor() {
+  constructor(itemService: IItemService) {
     super();
   }
 

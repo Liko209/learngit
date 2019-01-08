@@ -8,11 +8,12 @@ import { ISubItemService } from '../../base/service/ISubItemService';
 import { NoteItemController } from '../controller/NoteItemController';
 import { EntityBaseService } from '../../../../../framework/service';
 import { Item } from '../../../entity';
+import { IItemService } from '../../../service/IItemService';
 
 class NoteItemService extends EntityBaseService implements ISubItemService {
   private _noteItemController: NoteItemController;
 
-  constructor() {
+  constructor(itemService: IItemService) {
     super();
   }
 
