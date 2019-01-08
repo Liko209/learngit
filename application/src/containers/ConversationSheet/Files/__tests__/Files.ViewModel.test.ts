@@ -3,7 +3,6 @@
  * @Date: 2018-10-25 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { GLOBAL_KEYS } from '@/store/constants';
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
 import { service } from 'sdk';
@@ -13,7 +12,10 @@ import { Notification } from '@/containers/Notification';
 jest.mock('@/containers/Notification');
 
 const { ItemService, PostService } = service;
-ItemService.getInstance = jest.fn().mockReturnValue({});
+const itemService = {
+  cancelUpload: jest.fn(),
+};
+ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 const postService = {
@@ -72,7 +74,7 @@ describe('filesItemVM', () => {
 
   describe('removeFile()', () => {
     it('should call post service', async () => {
-      await filesItemVM.removeFile(123);
+      await filesItemVM.removeFile(123, false);
       expect(postService.removeItemFromPost).toBeCalledTimes(1);
     });
 
@@ -82,7 +84,7 @@ describe('filesItemVM', () => {
           throw new Error('error');
         },
       );
-      await filesItemVM.removeFile(123);
+      await filesItemVM.removeFile(123, false);
       const p = new Promise((resolve: any) => {
         setTimeout(() => {
           expect(Notification.flashToast).toHaveBeenCalled();
@@ -94,7 +96,7 @@ describe('filesItemVM', () => {
 
     it('should show network error', async () => {
       (getGlobalValue as jest.Mock).mockImplementationOnce(() => 'offline');
-      await filesItemVM.removeFile(123);
+      await filesItemVM.removeFile(123, false);
       const p = new Promise((resolve: any) => {
         setTimeout(() => {
           expect(Notification.flashToast).toHaveBeenCalled();
@@ -102,6 +104,11 @@ describe('filesItemVM', () => {
         },         0);
       });
       await p;
+    });
+
+    it('should cancel upload file', async () => {
+      await filesItemVM.removeFile(123, true);
+      expect(itemService.cancelUpload).toBeCalledTimes(1);
     });
   });
 });

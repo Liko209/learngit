@@ -21,7 +21,7 @@ type FilesViewProps = {
   };
   progresses: Map<number, number>;
   ids: number[];
-  removeFile: (id: number) => void;
+  removeFile: (id: number, itemLoading: boolean) => void;
   dispose: () => void;
 };
 

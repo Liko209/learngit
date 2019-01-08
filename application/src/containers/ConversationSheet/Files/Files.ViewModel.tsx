@@ -117,7 +117,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
   }
 
-  removeFile = async (id: number) => {
+  removeFile = async (id: number, itemLoading: boolean) => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
@@ -129,7 +129,11 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       });
     } else {
       try {
-        await this._postService.removeItemFromPost(this._postId, id);
+        if (itemLoading) {
+          this._itemService.cancelUpload(id);
+        } else {
+          await this._postService.removeItemFromPost(this._postId, id);
+        }
       } catch (e) {
         Notification.flashToast({
           message: t('notAbleToCancelUploadTryAgain'),
