@@ -136,7 +136,9 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     } else {
       props.deferredMeasurementCache = this.cache;
       props.estimatedRowSize = JuiVirtualList.MIN_CELL_HEIGHT;
-      props.overscanRowCount = JuiVirtualList.OVERSCAN_ROW_COUNT;
+      props.overscanRowCount = this._dataSource.overscanCount
+        ? this._dataSource.overscanCount()
+        : JuiVirtualList.OVERSCAN_ROW_COUNT;
       props.rowHeight = this.cache.rowHeight;
       props.rowRenderer = this._renderDynamicCell;
     }
