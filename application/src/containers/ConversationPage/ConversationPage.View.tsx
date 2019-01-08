@@ -31,6 +31,9 @@ import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
 
+const STREAM = 'stream';
+const INPUT = 'input';
+
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
@@ -82,13 +85,11 @@ class ConversationPageViewComponent extends Component<
   }
 
   private _preventStreamFolderDrop = () => {
-    this._folderDetectMap['stream'] = true;
-    console.log(86, this._folderDetectMap);
+    this._folderDetectMap[STREAM] = true;
   }
 
   private _preventInputFolderDrop = () => {
-    this._folderDetectMap['input'] = true;
-    console.log(90, this._folderDetectMap);
+    this._folderDetectMap[INPUT] = true;
   }
 
   render() {
@@ -116,8 +117,8 @@ class ConversationPageViewComponent extends Component<
             onDrop={this._handleDropFileInStream}
             dropzoneClass={StreamDropZoneClasses}
             detectedFolderDrop={this._preventStreamFolderDrop}
-            hasDroppedFolder={() => this._folderDetectMap['stream']}
-            clearFolderDetection={() => delete this._folderDetectMap['stream']}
+            hasDroppedFolder={() => this._folderDetectMap[STREAM]}
+            clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
           >
             {streamNode}
           </JuiDropZone>
@@ -130,8 +131,8 @@ class ConversationPageViewComponent extends Component<
             onDrop={this._handleDropFileInMessageInput}
             dropzoneClass={MessageInputDropZoneClasses}
             detectedFolderDrop={this._preventInputFolderDrop}
-            hasDroppedFolder={() => this._folderDetectMap['input']}
-            clearFolderDetection={() => delete this._folderDetectMap['input']}
+            hasDroppedFolder={() => this._folderDetectMap[INPUT]}
+            clearFolderDetection={() => delete this._folderDetectMap[INPUT]}
           >
             <MessageInput
               viewRef={this._messageInputRef}
