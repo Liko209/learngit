@@ -17,7 +17,7 @@ class Entry extends BaseWebComponent {
 }
 class ActionBarMoreMenu extends BaseWebComponent {
   get self() {
-    return this.getSelector('*[role="menu"]');
+    return this.getSelector('*[role="menuitem"]');
   }
 
   private getEntry(icon: string) {
@@ -25,7 +25,7 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 
   get quoteItem() {
-    return this.getEntry('feedback');
+    return this.getEntry('quote');
   }
 
   get deletePost() {
