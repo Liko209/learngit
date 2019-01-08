@@ -8,6 +8,7 @@ import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../Buttons/IconButton';
+import { JuiThumbnail } from '../../Thumbnail';
 import { JuiAvatar } from '../../Avatar';
 import { JuiToggleButton } from '../../Buttons';
 import {
@@ -18,18 +19,7 @@ import {
   JuiListItemIcon,
   JuiListItemSecondaryAction,
 } from '../index';
-import styled from '../../../foundation/styled-components';
-import pdfIcon from '../../../assets/pdf_conversation_xxh.png';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
-import { width, height } from '../../../foundation/utils';
-// import { spacing } from '../../../foundation/utils';
-
-const FileIcon = styled.div`
-  background-image: url(${pdfIcon});
-  background-size: cover;
-  width: ${width(9)};
-  height: ${height(9)};
-`;
 
 class TwoLineItem extends React.Component {
   state = {
@@ -54,7 +44,7 @@ class TwoLineItem extends React.Component {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <FileIcon />
+          <JuiThumbnail url="pdf" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={primary}
@@ -92,7 +82,7 @@ class TwoLineItem extends React.Component {
 }
 
 storiesOf('Components/Lists/ListItem', module)
-  .addDecorator(withInfoDecorator(JuiListItemText, { inline: true }))
+  // .addDecorator(withInfoDecorator(JuiListItem, { inline: true }))
   .add('Single-line item with Avatar and controls', () => {
     const primary = text('primary', 'Single-line item name');
 
