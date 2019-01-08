@@ -14,6 +14,7 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { FilesList } from './FilesList';
 
 type States = {
   isOpen: boolean;
@@ -70,7 +71,7 @@ class RightRailComponent extends React.Component<Props, States> {
             <div>Pinned List</div>
           </JuiTab>
           <JuiTab key={1} title={t('files')}>
-            <div>Files List</div>
+            <FilesList />
           </JuiTab>
           <JuiTab key={2} title={t('images')}>
             <div>Images List</div>
