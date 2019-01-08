@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { Item } from '../entity';
 interface ISubItemService {
   getSortedIds(
     groupId: number,
@@ -12,7 +13,12 @@ interface ISubItemService {
     sortKey: string,
     desc: boolean,
   ): number[];
-  updateItem(): void;
+
+  updateItem(item: Item): void;
+
+  deleteItem(itemId: number): void;
+
+  createItem(item: Item): void;
 }
 
 export { ISubItemService };

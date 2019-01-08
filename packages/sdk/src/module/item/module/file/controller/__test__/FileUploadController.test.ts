@@ -1,31 +1,40 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-04 08:52:26
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
+import { ItemFile } from '../../../../../../module/item/entity';
+import { daoManager, ItemDao } from '../../../../../../dao';
+import ItemAPI from '../../../../../../api/glip/item';
+import { ApiResultOk, ApiResultErr } from '../../../../../../api/ApiResult';
+import notificationCenter from '../../../../../../service/notificationCenter';
+import { RequestHolder } from '../../../../../../api/requestHolder';
+import { Progress, PROGRESS_STATUS } from '../../../../../progress';
+import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
+import { BaseError } from '../../../../../../utils';
+import { UserConfig } from '../../../../../../service/account/UserConfig';
+import { isInBeta } from '../../../../../../service/account/clientConfig';
+import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
+import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
+import {
+  FileUploadController,
+  ItemFileUploadStatus,
+} from '../FileUploadController';
+import { ItemService } from '../../../../service/ItemService';
 
-import { Progress } from '../../../models';
-
-import { ItemFile } from '../../../module/item/entity';
-import { ItemFileUploadHandler } from '../itemFileUploadHandler';
-import AccountService from '../../account';
-import { daoManager, ItemDao } from '../../../dao';
-import ItemAPI from '../../../api/glip/item';
-import handleData from '../handleData';
-import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
-import notificationCenter from '../../notificationCenter';
-import { ItemService } from '../itemService';
-import { ItemFileUploadStatus } from '../itemFileUploadStatus';
-import { RequestHolder } from '../../../api/requestHolder';
-import { PROGRESS_STATUS } from '../../../module';
-import { SERVICE, ENTITY } from '../../eventKey';
-import { BaseError } from '../../../utils';
-import { isInBeta } from '../../account/clientConfig';
-
-jest.mock('../../account/clientConfig');
-jest.mock('../../../service/item');
-jest.mock('../../../service/account');
-jest.mock('../../../api/glip/item');
-jest.mock('../../../dao');
-jest.mock('../handleData');
-jest.mock('../../notificationCenter');
+jest.mock('../../../../service/ItemService');
+jest.mock(
+  '../../../../../../framework/controller/impl/PartialModifyController',
+);
+jest.mock('../../../../../../framework/controller/impl/RequestController');
+jest.mock('../../../../../../service/account/clientConfig');
+jest.mock('../../../../../../service/account/UserConfig');
+jest.mock('../../../../../../api/glip/item');
+jest.mock('../../../../../../dao');
+jest.mock('../../../../../../service/notificationCenter');
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 
@@ -35,33 +44,35 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('ItemFileUploadHandler', () => {
+describe('fileUploadController', () => {
   const itemService = new ItemService();
-  const accountService = new AccountService();
   const itemDao = new ItemDao(null);
-  let itemFileUploadHandler: ItemFileUploadHandler = undefined;
+  const partialModifyController = new PartialModifyController(null);
+  const fileRequestController = new RequestController(null);
+  let fileUploadController: FileUploadController;
 
   function setup() {
     const userId = 2;
     const companyId = 3;
     daoManager.getDao.mockReturnValue(itemDao);
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-    itemService.handlePartialUpdate = jest.fn();
+    UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
+    UserConfig.getCurrentUserId.mockReturnValue(userId);
 
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-    accountService.getCurrentCompanyId.mockReturnValue(companyId);
-    accountService.getCurrentUserId.mockReturnValue(userId);
-
-    itemDao.put.mockImplementation(() => {});
-    itemDao.update.mockImplementation(() => {});
-    itemDao.delete.mockImplementation(() => {});
+    itemService.createItem.mockImplementation(() => {});
+    itemService.updateItem.mockImplementation(() => {});
+    itemService.deleteItem.mockImplementation(() => {});
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
 
-    itemFileUploadHandler = new ItemFileUploadHandler();
+    fileUploadController = new FileUploadController(
+      itemService,
+      partialModifyController,
+      fileRequestController,
+    );
+    partialModifyController.updatePartially = jest.fn();
   }
 
   beforeEach(() => {
@@ -81,12 +92,12 @@ describe('ItemFileUploadHandler', () => {
         itemFile: { group_ids: [groupId], versions: [{ size: 0.1 * 1 }] },
         progress: { rate: { loaded: 10 } },
       } as ItemFileUploadStatus);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
       expect(progressCaches.get(-1)).not.toBeUndefined();
-      itemFileUploadHandler.deleteFileCache(-1);
+      fileUploadController.deleteFileCache(-1);
       expect(progressCaches.get(-1)).toBeUndefined();
     });
   });
@@ -104,12 +115,9 @@ describe('ItemFileUploadHandler', () => {
 
     it('should update local upload file record', async () => {
       jest
-        .spyOn(itemFileUploadHandler, '_sendItemFile')
+        .spyOn(fileUploadController, '_sendItemFile')
         .mockImplementation(() => {});
-      const spy_cancelUpload = jest.spyOn(
-        itemFileUploadHandler,
-        'cancelUpload',
-      );
+      const spy_cancelUpload = jest.spyOn(fileUploadController, 'cancelUpload');
 
       const uploadingFiles = new Map();
       const itemFiles = [
@@ -118,12 +126,12 @@ describe('ItemFileUploadHandler', () => {
       ];
       uploadingFiles.set(1, itemFiles);
       uploadingFiles.set(2, itemFiles);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _uploadingFiles: uploadingFiles,
       });
 
       const file = { name: 'name', type: 'ts', size: 123 } as File;
-      await itemFileUploadHandler.sendItemFile(1, file, true);
+      await fileUploadController.sendItemFile(1, file, true);
 
       expect(uploadingFiles.get(1).length).toBe(2);
       expect(uploadingFiles.get(1)[0].id).toBe(-1);
@@ -133,7 +141,7 @@ describe('ItemFileUploadHandler', () => {
 
     it('should return null when no valid file', async () => {
       const file = undefined as File;
-      const result = await itemFileUploadHandler.sendItemFile(
+      const result = await fileUploadController.sendItemFile(
         groupId,
         file,
         false,
@@ -163,7 +171,6 @@ describe('ItemFileUploadHandler', () => {
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
       itemDao.get.mockResolvedValue(itemFile);
-      handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockImplementation(
         (files: FormData, callback: ProgressCallback) => {
           callback({ lengthComputable: false, loaded: 0, total: 100 });
@@ -171,14 +178,13 @@ describe('ItemFileUploadHandler', () => {
           return Promise.resolve(mockStoredFileRes);
         },
       );
-      itemService.handlePartialUpdate = jest.fn();
 
       const file = { name: '1.ts', type: 'ts', size: 123 } as File;
-      const res = await itemFileUploadHandler.sendItemFile(
+      const res = (await fileUploadController.sendItemFile(
         groupId,
         file,
         false,
-      );
+      )) as ItemFile;
 
       expect(res.id).toBeLessThan(0);
       expect(res.creator_id).toBe(userId);
@@ -190,12 +196,12 @@ describe('ItemFileUploadHandler', () => {
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
-        expect(itemDao.put).toBeCalledTimes(1);
+        expect(itemService.createItem).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
           [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
         );
-        expect(itemService.handlePartialUpdate).toBeCalledTimes(1);
+        expect(partialModifyController.updatePartially).toBeCalledTimes(1);
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
@@ -215,15 +221,14 @@ describe('ItemFileUploadHandler', () => {
       } as BaseResponse);
 
       itemDao.get.mockResolvedValue(itemFile);
-      handleData.mockResolvedValue(null);
       ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
 
-      itemService.handlePartialUpdate = jest.fn();
+      // fileService.handlePartialUpdate = jest.fn();
 
       const file = new FormData();
       file.append('file', { name: '1.ts', type: 'ts' } as File);
-      await itemFileUploadHandler.sendItemFile(groupId, file, false);
-      const fileItem = itemFileUploadHandler.getUploadItems(groupId)[0];
+      await fileUploadController.sendItemFile(groupId, file, false);
+      const fileItem = fileUploadController.getUploadItems(groupId)[0];
       setTimeout(() => {
         expect(ItemAPI.uploadFileItem).toBeCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalled();
@@ -231,11 +236,11 @@ describe('ItemFileUploadHandler', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
-        expect(itemFileUploadHandler.getItemsSendStatus([fileItem.id])).toEqual(
-          [PROGRESS_STATUS.FAIL],
-        );
+        expect(fileUploadController.getItemsSendStatus([fileItem.id])).toEqual([
+          PROGRESS_STATUS.FAIL,
+        ]);
         expect(
-          itemFileUploadHandler.getUploadProgress(fileItem.id).rate.loaded,
+          fileUploadController.getUploadProgress(fileItem.id).rate.loaded,
         ).toBe(-1);
         done();
       },         1000);
@@ -248,22 +253,24 @@ describe('ItemFileUploadHandler', () => {
         headers: {},
       } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(errRes);
-      itemService.handlePartialUpdate = jest.fn();
-
       jest
-        .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
+        .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
 
-      const file = new FormData();
-      file.append('file', { name: '1.ts', type: 'ts' } as File);
-      await itemFileUploadHandler.sendItemFile(groupId, file, true);
+      const progressCaches = new Map();
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+      const file = { name: '1.ts', type: 'ts' } as File;
+      await fileUploadController.sendItemFile(groupId, file, true);
+      progressCaches.clear();
 
       setTimeout(() => {
         expect(ItemAPI.uploadFileItem).toBeCalled();
-        expect(ItemAPI.sendFileItem).not.toBeCalled();
+        expect(fileRequestController.post).not.toBeCalled();
 
         expect(notificationCenter.emit).not.toBeCalled();
-        expect(itemService.handlePartialUpdate).not.toBeCalled();
+        expect(partialModifyController.updatePartially).not.toBeCalled();
 
         done();
       },         1000);
@@ -295,7 +302,7 @@ describe('ItemFileUploadHandler', () => {
         } as ItemFileUploadStatus);
       }
 
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
@@ -331,7 +338,7 @@ describe('ItemFileUploadHandler', () => {
       'should return true when file size and count matched: $comment',
       ({ files, includeUnSendFiles, expectRes }) => {
         const { groupId } = setUp_canUploadFiles();
-        const result = itemFileUploadHandler.canUploadFiles(
+        const result = fileUploadController.canUploadFiles(
           groupId,
           files,
           includeUnSendFiles,
@@ -350,7 +357,7 @@ describe('ItemFileUploadHandler', () => {
       ${[oneGBMinusOne]} | ${false}           | ${true}   | ${' size < 1GB'}
       ${[oneGBPlusOne]}  | ${false}           | ${false}  | ${' size > 1GB'}
     `('border test: $comment', ({ files, includeUnSendFiles, expectRes }) => {
-      const result = itemFileUploadHandler.canUploadFiles(
+      const result = fileUploadController.canUploadFiles(
         1,
         files,
         includeUnSendFiles,
@@ -359,13 +366,13 @@ describe('ItemFileUploadHandler', () => {
     });
   });
 
-  describe('getUpdateItemVersion()', () => {
+  describe('getFileVersion()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
     });
 
-    function setup_getUpdateItemVersion() {
+    function setup_getFileVersion() {
       const realItemFile = {
         created_at: 10,
         id: 10,
@@ -383,15 +390,15 @@ describe('ItemFileUploadHandler', () => {
     }
 
     it('should just return number of versions in the itemFile when its id > 0', async () => {
-      const { realItemFile } = setup_getUpdateItemVersion();
-      const result = await itemFileUploadHandler.getUpdateItemVersion(
+      const { realItemFile } = setup_getFileVersion();
+      const result = await fileUploadController.getFileVersion(
         realItemFile as ItemFile,
       );
       expect(result).toBe(realItemFile.versions.length);
     });
 
     it('should return version number base on the history item in the group', async () => {
-      const { pseudoItemFile, realItemFile } = setup_getUpdateItemVersion();
+      const { pseudoItemFile, realItemFile } = setup_getFileVersion();
 
       const realItemFile2 = _.cloneDeep(realItemFile);
       realItemFile2.created_at = 9;
@@ -399,16 +406,16 @@ describe('ItemFileUploadHandler', () => {
         realItemFile,
         realItemFile2,
       ]);
-      const result = await itemFileUploadHandler.getUpdateItemVersion(
+      const result = await fileUploadController.getFileVersion(
         pseudoItemFile as ItemFile,
       );
       expect(result).toBe(realItemFile.versions.length + 1);
     });
 
     it('should return 0 when can not find history item in the group', async () => {
-      const { pseudoItemFile } = setup_getUpdateItemVersion();
+      const { pseudoItemFile } = setup_getFileVersion();
       itemDao.getExistGroupFilesByName.mockResolvedValue([]);
-      const result = await itemFileUploadHandler.getUpdateItemVersion(
+      const result = await fileUploadController.getFileVersion(
         pseudoItemFile as ItemFile,
       );
       expect(result).toBe(0);
@@ -480,7 +487,14 @@ describe('ItemFileUploadHandler', () => {
         headers: {},
       } as BaseResponse);
 
-      return { progressCaches, groupId, validStoredFile, errRes, okRes };
+      return {
+        progressCaches,
+        groupId,
+        validStoredFile,
+        errRes,
+        okRes,
+        fileItem,
+      };
     }
 
     beforeEach(() => {
@@ -490,26 +504,27 @@ describe('ItemFileUploadHandler', () => {
     });
 
     it('should just send item to server when all file has beed uploaded and has stored file', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, okRes } = sendItemData_setUp();
-      Object.assign(itemFileUploadHandler, {
+      const { progressCaches, groupId, fileItem } = sendItemData_setUp();
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
       const spy_waitUntilAllItemCreated = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_waitUntilAllItemCreated',
       );
 
-      ItemAPI.putItem.mockResolvedValue(okRes);
-      ItemAPI.sendFileItem.mockResolvedValue(okRes);
+      const responseItem = { id: 10 };
+      fileRequestController.put.mockResolvedValue(responseItem);
+      fileRequestController.post.mockResolvedValue(responseItem);
 
       itemDao.getExistGroupFilesByName.mockResolvedValue([]);
 
-      await itemFileUploadHandler.sendItemData(groupId, [-3]);
+      await fileUploadController.sendItemData(groupId, [-3]);
 
       setTimeout(() => {
-        expect(ItemAPI.putItem).not.toBeCalled();
-        expect(ItemAPI.sendFileItem).toBeCalled();
+        expect(fileRequestController.put).not.toBeCalled();
+        expect(fileRequestController.post).toBeCalled();
         expect(notificationCenter.emit).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
@@ -528,39 +543,44 @@ describe('ItemFileUploadHandler', () => {
     it('should update item when user want to update the file item', async (done: jest.DoneCallback) => {
       const { progressCaches, groupId, okRes } = sendItemData_setUp();
       progressCaches.get(-3).itemFile.is_new = false;
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
       const spy_handleItemUploadSuccess = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleItemUploadSuccess',
       );
 
-      ItemAPI.putItem.mockResolvedValue(okRes);
-      ItemAPI.sendFileItem.mockResolvedValue(okRes);
+      const responseItem = { id: 10 };
+      fileRequestController.put.mockResolvedValue(responseItem);
+      fileRequestController.post.mockResolvedValue(responseItem);
+
       itemDao.getExistGroupFilesByName.mockResolvedValue([{ id: 99 }]);
 
-      await itemFileUploadHandler.sendItemData(groupId, [-3]);
+      await fileUploadController.sendItemData(groupId, [-3]);
 
       setTimeout(() => {
-        expect(ItemAPI.putItem).toBeCalled();
-        expect(ItemAPI.sendFileItem).not.toBeCalled();
+        expect(fileRequestController.put).toBeCalled();
+        expect(fileRequestController.post).not.toBeCalled();
         expect(spy_handleItemUploadSuccess).toBeCalled();
         done();
       });
     });
 
     it('should send failed notification when send item failed', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, errRes } = sendItemData_setUp();
-      Object.assign(itemFileUploadHandler, {
+      const { progressCaches, groupId } = sendItemData_setUp();
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
-      ItemAPI.sendFileItem.mockResolvedValue(errRes);
+      fileRequestController.post.mockImplementation(() => {
+        throw new BaseError(1, 'error');
+      });
+
       itemDao.getExistGroupFilesByName.mockResolvedValue([]);
 
-      await itemFileUploadHandler.sendItemData(groupId, [-3]);
+      await fileUploadController.sendItemData(groupId, [-3]);
 
       setTimeout(() => {
         expect(progressCaches.get(-3).progress.rate.loaded).toBe(-1);
@@ -572,15 +592,15 @@ describe('ItemFileUploadHandler', () => {
             updatedId: -3,
           },
         );
-        expect(ItemAPI.putItem).not.toBeCalled();
-        expect(ItemAPI.sendFileItem).toBeCalled();
+        expect(fileRequestController.put).not.toBeCalled();
+        expect(fileRequestController.post).toBeCalled();
         done();
       });
     });
 
-    it('should send item data to server until all file has beed sent to server ', async (done: jest.DoneCallback) => {
+    it('should send item data to server and remove listener until file has beed sent to server ', async (done: jest.DoneCallback) => {
       const { progressCaches, groupId, validStoredFile } = sendItemData_setUp();
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
@@ -608,9 +628,9 @@ describe('ItemFileUploadHandler', () => {
         },
       );
 
-      const spy_uploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
-
-      await itemFileUploadHandler.sendItemData(groupId, [-4, -5]);
+      const spy_uploadItem = jest.spyOn(fileUploadController, '_uploadItem');
+      spy_uploadItem.mockImplementation(() => {});
+      await fileUploadController.sendItemData(groupId, [-4, -5]);
 
       setTimeout(() => {
         expect(progressCaches.get(-3)).toBeUndefined;
@@ -674,7 +694,7 @@ describe('ItemFileUploadHandler', () => {
       const { groupId, errRes, okRes, file } = uploadFileToAmazonS3_setUp();
 
       const spyHandleFailed = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleItemFileSendFailed',
       );
       spyHandleFailed.mockImplementation(() => {});
@@ -682,7 +702,7 @@ describe('ItemFileUploadHandler', () => {
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(errRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
 
-      await itemFileUploadHandler.sendItemFile(groupId, file, false);
+      await fileUploadController.sendItemFile(groupId, file, false);
       setTimeout(() => {
         expect(ItemAPI.requestAmazonFilePolicy).toBeCalled();
         expect(ItemAPI.uploadFileToAmazonS3).not.toBeCalled();
@@ -695,13 +715,13 @@ describe('ItemFileUploadHandler', () => {
       const { groupId, errRes, okRes, file } = uploadFileToAmazonS3_setUp();
 
       const spyHandleSuccess = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleFileUploadSuccess',
       );
       spyHandleSuccess.mockImplementation(() => {});
 
       const spyHandleFailed = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleItemFileSendFailed',
       );
       spyHandleFailed.mockImplementation(() => {});
@@ -709,7 +729,7 @@ describe('ItemFileUploadHandler', () => {
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(errRes);
 
-      await itemFileUploadHandler.sendItemFile(groupId, file, false);
+      await fileUploadController.sendItemFile(groupId, file, false);
       setTimeout(() => {
         expect(ItemAPI.requestAmazonFilePolicy).toBeCalled();
         expect(ItemAPI.uploadFileToAmazonS3).toBeCalled();
@@ -723,13 +743,13 @@ describe('ItemFileUploadHandler', () => {
       const { groupId, okRes, file } = uploadFileToAmazonS3_setUp();
 
       const spyHandleSuccess = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleFileUploadSuccess',
       );
       spyHandleSuccess.mockImplementationOnce(() => {});
 
       const spyHandleFailed = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleItemFileSendFailed',
       );
       spyHandleFailed.mockImplementationOnce(() => {});
@@ -737,7 +757,7 @@ describe('ItemFileUploadHandler', () => {
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
 
-      await itemFileUploadHandler.sendItemFile(groupId, file, false);
+      await fileUploadController.sendItemFile(groupId, file, false);
 
       setTimeout(() => {
         expect(spyHandleFailed).not.toBeCalled();
@@ -780,7 +800,7 @@ describe('ItemFileUploadHandler', () => {
       uploadingFiles.set(3, [itemFile]);
       uploadingFiles.set(5, [itemFile2]);
 
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
         _uploadingFiles: uploadingFiles,
       });
@@ -788,13 +808,13 @@ describe('ItemFileUploadHandler', () => {
 
     it('should not call cancel api and update when item id is not in progress', async () => {
       const itemId = 10;
-      await itemFileUploadHandler.cancelUpload(itemId);
+      await fileUploadController.cancelUpload(itemId);
       expect(ItemAPI.cancelUploadRequest).not.toBeCalled();
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
         ENTITY.ITEM,
         expect.anything(),
       );
-      expect(itemDao.delete).toBeCalledTimes(1);
+      expect(itemService.deleteItem).toBeCalledTimes(1);
       expect(uploadingFiles.get(1)).toHaveLength(1);
       expect(uploadingFiles.get(2)).toHaveLength(3);
       expect(progressCaches.get(-3)).not.toBeUndefined();
@@ -803,8 +823,8 @@ describe('ItemFileUploadHandler', () => {
 
     it('should delete item and send notification', async () => {
       const itemId = -3;
-      await itemFileUploadHandler.cancelUpload(itemId);
-      expect(itemDao.delete).toBeCalledTimes(1);
+      await fileUploadController.cancelUpload(itemId);
+      expect(itemService.deleteItem).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
       expect(progressCaches.get(itemId)).toBeUndefined();
       expect(progressCaches.get(-4)).not.toBeUndefined();
@@ -825,24 +845,32 @@ describe('ItemFileUploadHandler', () => {
       setup();
     });
 
-    it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
-      const itemWithVersion = {
-        id: -10,
-        group_ids: [1],
-        is_new: true,
-        name: 'name',
-        versions: [
-          {
-            stored_file_id: 798197170188,
-            url: 'url',
-            download_url: 'download_url',
-            date: 1543821518511,
-            size: 13220,
-            creator_id: 17814773763,
-          },
-        ],
-      };
+    const itemWithVersion = {
+      id: -10,
+      group_ids: [1],
+      is_new: false,
+      name: 'name',
+      versions: [
+        {
+          stored_file_id: 798197170188,
+          url: 'url',
+          download_url: 'download_url',
+          date: 1543821518511,
+          size: 13220,
+          creator_id: 17814773763,
+        },
+      ],
+    };
 
+    const itemWithOutVersion = {
+      id: -3,
+      group_ids: [1],
+      is_new: true,
+      name: 'name',
+      versions: [],
+    };
+
+    it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
       const existItem = { id: 11, versions: [] };
       itemDao.getExistGroupFilesByName.mockResolvedValue([existItem]);
       itemDao.get.mockResolvedValue(itemWithVersion);
@@ -852,9 +880,10 @@ describe('ItemFileUploadHandler', () => {
       };
       const mockItemFileRes = new ApiResultOk(serverItemFile, 200, undefined);
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
-      const spyNewItem = jest.spyOn(itemFileUploadHandler, '_newItem');
+      fileRequestController.put.mockResolvedValue(serverItemFile);
+      const spyNewItem = jest.spyOn(fileUploadController, '_newItem');
 
-      itemFileUploadHandler.resendFailedFile(itemWithVersion.id);
+      fileUploadController.resendFailedFile(itemWithVersion.id);
 
       setTimeout(() => {
         expect(itemDao.getExistGroupFilesByName).toBeCalledWith(
@@ -862,9 +891,9 @@ describe('ItemFileUploadHandler', () => {
           itemWithVersion.name,
           true,
         );
-        expect(itemDao.delete).toBeCalledWith(itemWithVersion.id);
-        expect(itemDao.put).toBeCalledWith(serverItemFile);
-        expect(ItemAPI.putItem).toBeCalledTimes(1);
+        expect(itemService.deleteItem).toBeCalledWith(itemWithVersion.id);
+        expect(itemService.updateItem).toBeCalledWith(serverItemFile);
+        expect(fileRequestController.put).toBeCalledTimes(1);
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         done();
@@ -872,22 +901,12 @@ describe('ItemFileUploadHandler', () => {
     });
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
-      const itemWithOutVersion = {
-        id: -3,
-        group_ids: [1],
-        is_new: true,
-        name: 'name',
-        versions: [],
-      };
       itemDao.get.mockResolvedValue(itemWithOutVersion);
-      const spySendItemFile = jest.spyOn(
-        itemFileUploadHandler,
-        '_sendItemFile',
-      );
+      const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       spySendItemFile.mockImplementation(() => {});
-      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
+      const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
       const spyHandleFileItemSendFailed = jest.spyOn(
-        itemFileUploadHandler,
+        fileUploadController,
         '_handleItemFileSendFailed',
       );
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
@@ -901,11 +920,11 @@ describe('ItemFileUploadHandler', () => {
       } as ItemFileUploadStatus;
       progressCaches.set(-3, itemFileUploadStatus);
       progressCaches.set(-4, itemFileUploadStatus);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
-      itemFileUploadHandler.resendFailedFile(itemWithOutVersion.id);
+      fileUploadController.resendFailedFile(itemWithOutVersion.id);
       setTimeout(() => {
         expect(spyUploadItem).not.toHaveBeenCalled();
         expect(spyHandleFileItemSendFailed).not.toBeCalled();
@@ -916,14 +935,11 @@ describe('ItemFileUploadHandler', () => {
 
     it('should notify upload failed when the file does not exist in db', async (done: jest.DoneCallback) => {
       itemDao.get.mockResolvedValue(null);
-      const spySendItemFile = jest.spyOn(
-        itemFileUploadHandler,
-        '_sendItemFile',
-      );
-      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
+      const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
+      const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
 
       const itemId = 5;
-      await itemFileUploadHandler.resendFailedFile(itemId);
+      await fileUploadController.resendFailedFile(itemId);
 
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
@@ -945,20 +961,17 @@ describe('ItemFileUploadHandler', () => {
         requestHolder: r,
       } as ItemFileUploadStatus;
       progressCaches.set(5, itemFileUploadStatus);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
       const itemId = 5;
       const item = { id: itemId, group_ids: [1], versions: [] };
       itemDao.get.mockResolvedValue(item);
-      const spySendItemFile = jest.spyOn(
-        itemFileUploadHandler,
-        '_sendItemFile',
-      );
-      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
+      const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
+      const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
 
-      itemFileUploadHandler.resendFailedFile(itemId);
+      fileUploadController.resendFailedFile(itemId);
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
@@ -966,7 +979,7 @@ describe('ItemFileUploadHandler', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
-        expect(itemFileUploadHandler.getUploadProgress(5).rate.loaded).toBe(-1);
+        expect(fileUploadController.getUploadProgress(5).rate.loaded).toBe(-1);
         done();
       },         1000);
     });
@@ -979,25 +992,24 @@ describe('ItemFileUploadHandler', () => {
       setup();
 
       uploadingFiles = new Map();
-      itemFileUploadHandler = new ItemFileUploadHandler();
       const itemFiles = { id: 1 } as ItemFile;
       uploadingFiles.set(1, [itemFiles, itemFiles]);
       uploadingFiles.set(2, [itemFiles, itemFiles, itemFiles]);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _uploadingFiles: uploadingFiles,
       });
     });
 
     it('should return recorded items by group id', () => {
       const gId = 1;
-      const result = itemFileUploadHandler.getUploadItems(gId);
+      const result = fileUploadController.getUploadItems(gId);
       expect(result).toEqual(uploadingFiles.get(gId));
       expect(result).toHaveLength(2);
     });
 
     it('should return [] when can not find the group id', () => {
       const gId = 666;
-      const result = itemFileUploadHandler.getUploadItems(gId);
+      const result = fileUploadController.getUploadItems(gId);
       expect(result).toEqual([]);
     });
   });
@@ -1017,18 +1029,18 @@ describe('ItemFileUploadHandler', () => {
       } as ItemFileUploadStatus;
       progressCaches.set(3, itemFileUploadStatus);
       progressCaches.set(4, itemFileUploadStatus);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
     });
     it('should return recorded progress by item id', () => {
       const gId = 3;
-      const result = itemFileUploadHandler.getUploadProgress(gId);
+      const result = fileUploadController.getUploadProgress(gId);
       expect(result).toEqual(progressCaches.get(gId).progress);
     });
 
     it('should return undefined when the id is not recorded', () => {
-      const result = itemFileUploadHandler.getUploadProgress(666);
+      const result = fileUploadController.getUploadProgress(666);
       expect(result).toBeUndefined();
     });
   });
@@ -1052,14 +1064,14 @@ describe('ItemFileUploadHandler', () => {
         progress: { id: -5, rate: { total: 3, loaded: -1 } },
         requestHolder: r,
       });
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
     });
 
     it('should return SUCCESS when id > 0', () => {
       const ids = [1, 2];
-      const result = itemFileUploadHandler.getItemsSendStatus(ids);
+      const result = fileUploadController.getItemsSendStatus(ids);
       expect(result).toEqual([
         PROGRESS_STATUS.SUCCESS,
         PROGRESS_STATUS.SUCCESS,
@@ -1068,19 +1080,19 @@ describe('ItemFileUploadHandler', () => {
 
     it('should return FAIL when id is not in progress cache', () => {
       const ids = [-999];
-      const result = itemFileUploadHandler.getItemsSendStatus(ids);
+      const result = fileUploadController.getItemsSendStatus(ids);
       expect(result).toEqual([PROGRESS_STATUS.FAIL]);
     });
 
     it('should return FAIL when progress is -1', () => {
       const ids = [-5];
-      const result = itemFileUploadHandler.getItemsSendStatus(ids);
+      const result = fileUploadController.getItemsSendStatus(ids);
       expect(result).toEqual([PROGRESS_STATUS.FAIL]);
     });
 
     it('should return IN_PROGRESS when id is not in progress cache and has positive progress', () => {
       const ids = [-3, -4];
-      const result = itemFileUploadHandler.getItemsSendStatus(ids);
+      const result = fileUploadController.getItemsSendStatus(ids);
       expect(result).toEqual([
         PROGRESS_STATUS.INPROGRESS,
         PROGRESS_STATUS.INPROGRESS,
@@ -1088,7 +1100,7 @@ describe('ItemFileUploadHandler', () => {
     });
   });
 
-  describe('canResendFailedFile', () => {
+  describe('hasValidItemFile', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -1109,24 +1121,24 @@ describe('ItemFileUploadHandler', () => {
           },
         ],
       });
-      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeTruthy();
+      expect(await fileUploadController.hasValidItemFile(-1)).toBeTruthy();
       expect(itemDao.get).toBeCalledWith(-1);
     });
 
     it('should return true input id > 0', async () => {
-      expect(await itemFileUploadHandler.canResendFailedFile(1)).toBeTruthy();
+      expect(await fileUploadController.hasValidItemFile(1)).toBeTruthy();
       expect(itemDao.get).not.toBeCalled();
     });
 
     it('should return false when can not find item in db', async () => {
       itemDao.get.mockResolvedValue(null);
-      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
       expect(itemDao.get).toBeCalledWith(-1);
     });
 
     it('should return true when has valid file', async () => {
       const progressCaches = new Map();
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
@@ -1147,13 +1159,13 @@ describe('ItemFileUploadHandler', () => {
           },
         ],
       });
-      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeTruthy();
+      expect(await fileUploadController.hasValidItemFile(-1)).toBeTruthy();
       expect(itemDao.get).toBeCalledWith(-1);
     });
 
     it('should return false when the cached file has no size', async () => {
       const progressCaches = new Map();
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
 
@@ -1174,13 +1186,13 @@ describe('ItemFileUploadHandler', () => {
           },
         ],
       });
-      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
       expect(itemDao.get).toBeCalledWith(-1);
     });
 
     it('should return false when can not find file cache', async () => {
       const progressCaches = new Map();
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
       itemDao.get.mockResolvedValue({
@@ -1194,7 +1206,7 @@ describe('ItemFileUploadHandler', () => {
           },
         ],
       });
-      expect(await itemFileUploadHandler.canResendFailedFile(-1)).toBeFalsy();
+      expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
       expect(itemDao.get).toBeCalledWith(-1);
     });
   });
@@ -1206,23 +1218,22 @@ describe('ItemFileUploadHandler', () => {
       setup();
 
       uploadingFiles = new Map();
-      itemFileUploadHandler = new ItemFileUploadHandler();
       const itemFiles = [{ id: 1 } as ItemFile, { id: 2 } as ItemFile];
       uploadingFiles.set(1, itemFiles);
       uploadingFiles.set(2, itemFiles);
-      Object.assign(itemFileUploadHandler, {
+      Object.assign(fileUploadController, {
         _uploadingFiles: uploadingFiles,
       });
     });
     it('should clean recorded uploading files by groupid and itemId', () => {
-      itemFileUploadHandler.cleanUploadingFiles(1, [1]);
+      fileUploadController.cleanUploadingFiles(1, [1]);
       expect(uploadingFiles.get(1)).toHaveLength(1);
       expect(uploadingFiles.get(1)[0].id).toBe(2);
       expect(uploadingFiles.get(2)).not.toBeUndefined();
     });
 
     it('should clean group when no item left after clean', () => {
-      itemFileUploadHandler.cleanUploadingFiles(1, [1, 2]);
+      fileUploadController.cleanUploadingFiles(1, [1, 2]);
       expect(uploadingFiles.get(1)).toBeUndefined();
       expect(uploadingFiles.get(2)).not.toBeUndefined();
     });

@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IDatabase } from 'foundation/src/db';
-import { BaseDao } from '../../../../../dao';
-
+import { IDatabase } from 'foundation';
+import { BaseDao } from '../../../../../dao/base';
 class SubItemDao<T> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);

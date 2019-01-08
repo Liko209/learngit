@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { IItemService } from '../service/IItemService';
+import { FileItemService } from '../module/file';
 import { EventItemService } from '../module/event/service';
-import { FileItemService } from '../module/file/service';
 import { TaskItemService } from '../module/task/service';
 import { NoteItemService } from '../module/note/service';
 import { LinkItemService } from '../module/link/service';
@@ -17,18 +18,21 @@ type ClassConfig = {
 };
 
 const itemServiceConfigs: ClassConfig[] = [
-  { typeId: TypeDictionary.TYPE_ID_FILE, value: new FileItemService() },
-  { typeId: TypeDictionary.TYPE_ID_TASK, value: new TaskItemService() },
-  { typeId: TypeDictionary.TYPE_ID_PAGE, value: new NoteItemService() },
-  { typeId: TypeDictionary.TYPE_ID_LINK, value: new LinkItemService() },
-  { typeId: TypeDictionary.TYPE_ID_EVENT, value: new EventItemService() },
+  {
+    typeId: TypeDictionary.TYPE_ID_FILE,
+    value: FileItemService,
+  },
+  { typeId: TypeDictionary.TYPE_ID_TASK, value: TaskItemService },
+  { typeId: TypeDictionary.TYPE_ID_PAGE, value: NoteItemService },
+  { typeId: TypeDictionary.TYPE_ID_LINK, value: LinkItemService },
+  { typeId: TypeDictionary.TYPE_ID_EVENT, value: EventItemService },
 ];
 
 class SubItemServiceRegister {
-  static buildSubItemServices() {
+  static buildSubItemServices(itemService: IItemService) {
     const serviceMap: Map<number, ISubItemService> = new Map();
     itemServiceConfigs.forEach((serviceInfo: ClassConfig) => {
-      serviceMap.set(serviceInfo.typeId, serviceInfo.value);
+      serviceMap.set(serviceInfo.typeId, new serviceInfo.value(itemService));
     });
     return serviceMap;
   }

@@ -6,12 +6,14 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { TaskItemController } from '../controller/TaskItemController';
+import { Item } from '../../../entity';
 import { EntityBaseService } from '../../../../../framework/service';
+import { IItemService } from '../../../service/IItemService';
 
 class TaskItemService extends EntityBaseService implements ISubItemService {
   private _taskItemController: TaskItemController;
 
-  constructor() {
+  constructor(itemService: IItemService) {
     super();
   }
 
@@ -22,6 +24,12 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
     return this._taskItemController;
   }
 
+  updateItem(item: Item) {}
+
+  createItem(item: Item) {}
+
+  deleteItem(itemId: number) {}
+
   getSortedIds(
     groupId: number,
     limit: number,
@@ -31,8 +39,6 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
   ): number[] {
     return [];
   }
-
-  updateItem(): void {}
 }
 
 export { TaskItemService };

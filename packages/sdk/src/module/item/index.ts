@@ -1,7 +1,9 @@
 /*
  * @Author: Thomas thomas.yang@ringcentral.com
- * @Date: 2018-12-26 15:14:30
+ * @Date: 2019-01-02 16:03:08
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { default as ProgressService, PROGRESS_STATUS } from './progress';
+import { ItemService } from './service';
+
+export { ItemService };

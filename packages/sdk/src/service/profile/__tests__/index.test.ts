@@ -10,11 +10,8 @@ import { BaseError } from '../../../utils';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
+import { UserConfig } from '../../../service/account/UserConfig';
 
-const mockAccountService = {
-  getCurrentUserProfileId: jest.fn(),
-  getCurrentUserId: jest.fn().mockImplementationOnce(() => 1),
-};
 const mockPersonService = {
   getById: jest.fn().mockImplementation(() => {
     return { me_group_id: 2 };
@@ -22,15 +19,7 @@ const mockPersonService = {
 };
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
-jest.mock('../../../service/account', () => {
-  class MockAccountService {
-    static getInstance() {
-      return mockAccountService;
-    }
-  }
-
-  return MockAccountService;
-});
+jest.mock('../../../service/account/UserConfig');
 jest.mock('../../../service/person', () => {
   class MockPersonService {
     static getInstance() {
@@ -59,9 +48,7 @@ describe('ProfileService', () => {
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValue(2);
-      mockAccountService.getCurrentUserProfileId.mockImplementationOnce(
-        () => 2,
-      );
+      UserConfig.getCurrentUserProfileId.mockImplementationOnce(() => 2);
       jest.spyOn(profileService, 'getById').mockImplementationOnce(id => id);
 
       const result = await profileService.getProfile();
@@ -226,7 +213,7 @@ describe('ProfileService', () => {
       jest
         .spyOn(profileService, 'getCurrentProfileId')
         .mockReturnValueOnce(profile.id);
-      jest.spyOn(mockAccountService, 'getCurrentUserId').mockReturnValueOnce(1);
+      jest.spyOn(UserConfig, 'getCurrentUserId').mockReturnValueOnce(1);
       jest.spyOn(mockPersonService, 'getById').mockResolvedValueOnce(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
         new ApiResultOk(returnValue, {

@@ -7,10 +7,13 @@
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { LinkItemController } from '../controller/LinkItemController';
 import { EntityBaseService } from '../../../../../framework/service';
+import { Item } from '../../../entity';
+import { IItemService } from '../../../service/IItemService';
 
 class LinkItemService extends EntityBaseService implements ISubItemService {
   private _linkItemController: LinkItemController;
-  constructor() {
+
+  constructor(itemService: IItemService) {
     super();
   }
 
@@ -31,7 +34,11 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
     return [];
   }
 
-  updateItem(): void {}
+  updateItem(item: Item) {}
+
+  createItem(item: Item) {}
+
+  deleteItem(itemId: number) {}
 }
 
 export { LinkItemService };
