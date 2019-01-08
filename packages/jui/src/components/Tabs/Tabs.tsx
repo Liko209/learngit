@@ -306,30 +306,38 @@ class JuiTabs extends PureComponent<Props, States> {
     );
   }
 
-  render() {
+  renderTabs = () => {
     const { indexSelected, indexTabs, indexMenus } = this.state;
-    // Notice: first execute render indexTabs & indexMenus length equal 0
+    // Notice:
+    // 1. first execute render indexTabs & indexMenus length equal 0
+    // 2. select menu list tab
     if (
       indexTabs.length > 0 &&
       indexMenus.length > 0 &&
       !indexTabs.includes(indexSelected)
     ) {
-      return null; // select menu list tab
+      return null;
     }
     return (
+      <StyledTabs
+        value={indexSelected}
+        onChange={this._handleChangeTab}
+        indicatorColor="primary"
+        textColor="primary"
+        classes={CLASSES.tabs}
+        ref={this._containerRef}
+      >
+        {indexTabs.length === 0 && indexMenus.length === 0
+          ? this._renderAllTab()
+          : this._renderFinalTab()}
+      </StyledTabs>
+    );
+  }
+
+  render() {
+    return (
       <StyledWrapper>
-        <StyledTabs
-          value={indexSelected}
-          onChange={this._handleChangeTab}
-          indicatorColor="primary"
-          textColor="primary"
-          classes={CLASSES.tabs}
-          ref={this._containerRef}
-        >
-          {indexTabs.length === 0 && indexMenus.length === 0
-            ? this._renderAllTab()
-            : this._renderFinalTab()}
-        </StyledTabs>
+        {this.renderTabs()}
         {this.renderContainer()}
       </StyledWrapper>
     );
