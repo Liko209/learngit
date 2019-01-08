@@ -15,9 +15,7 @@ describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
     public callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
     public callAction: RTC_CALL_ACTION;
-
     public isReadyReturnValue: boolean = false;
-
     public toNum: string = '';
 
     onCallStateChange(state: RTC_CALL_STATE): void {
@@ -46,6 +44,7 @@ describe('RTC call', () => {
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();
+    transfer = jest.fn();
 
     mockSignal(signal: string): void {
       this.emit(signal);
@@ -548,6 +547,63 @@ describe('RTC call', () => {
           );
           done();
         });
+      });
+    });
+  });
+
+  describe('Transfer call', async () => {
+    it('should notify transfer failed when transfer to empty number. [JPT-673]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.answer();
+      session.mockSignal('accepted');
+      call.transfer('');
+      setImmediate(() => {
+        expect(account.onCallActionFailed).toBeCalledWith(
+          RTC_CALL_ACTION.TRANSFER,
+        );
+        done();
+      });
+    });
+
+    it('should notify transfer success when transfer in connected state and session notify transfer success. [JPT-674]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      session.transfer.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal('accepted');
+      call.transfer('123');
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.TRANSFER,
+      );
+      setImmediate(() => {
+        expect(account.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.TRANSFER,
+        );
+        done();
+      });
+    });
+
+    it('should notify transfer failed when transfer in connected state and session notify transfer failed. [JPT-675]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      session.transfer.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal('accepted');
+      call.transfer('123');
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+        RTC_CALL_ACTION.TRANSFER,
+      );
+      setImmediate(() => {
+        expect(account.onCallActionFailed).toBeCalledWith(
+          RTC_CALL_ACTION.TRANSFER,
+        );
+        done();
       });
     });
   });

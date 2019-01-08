@@ -11,8 +11,9 @@ import { CALL_FSM_NOTIFY } from './types';
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
   FLIP: 'flipEvent',
-  START_RECORD: 'startRecord',
-  STOP_RECORD: 'stopRecord',
+  START_RECORD: 'startRecordEvent',
+  STOP_RECORD: 'stopRecordEvent',
+  TRANSFER: 'transferEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
@@ -46,6 +47,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.STOP_RECORD: {
           this._onStopRecord();
+          break;
+        }
+        case CallFsmEvent.TRANSFER: {
+          this._onTransfer(task.params);
           break;
         }
         case CallFsmEvent.ANSWER: {
@@ -140,6 +145,13 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
   }
 
+  transfer(target: string): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.TRANSFER, params: target },
+      () => {},
+    );
+  }
+
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
   }
@@ -187,6 +199,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.FLIP_ACTION, target);
   }
 
+  onTransferAction(target: string) {
+    this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
+  }
+
   onStartRecordAction() {
     this.emit(CALL_FSM_NOTIFY.START_RECORD_ACTION);
   }
@@ -205,6 +221,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onFlip(target: number) {
     this._callFsmTable.flip(target);
+  }
+
+  private _onTransfer(target: string) {
+    this._callFsmTable.transfer(target);
   }
 
   private _onStartRecord() {
