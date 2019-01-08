@@ -30,6 +30,10 @@ export class GlipResponseParser implements IResponseParser {
         httpErrorMessage = data.error.message;
       }
 
+      if (!httpErrorCode) {
+        return null;
+      }
+
       if (ERROR_CODES_SERVER[httpErrorCode.toUpperCase()]) {
         return new JServerError(httpErrorCode.toUpperCase(), httpErrorMessage);
       }
