@@ -40,6 +40,7 @@ class ConversationPageViewComponent extends Component<
   private _attachmentManagerRef: RefObject<
     AttachmentManagerViewComponent
   > = createRef();
+  private _folderDetectMap: { string: boolean } = {} as { string: boolean };
 
   @observable
   streamKey = 0;
@@ -80,6 +81,16 @@ class ConversationPageViewComponent extends Component<
     }
   }
 
+  private _preventStreamFolderDrop = () => {
+    this._folderDetectMap['stream'] = true;
+    console.log(86, this._folderDetectMap);
+  }
+
+  private _preventInputFolderDrop = () => {
+    this._folderDetectMap['input'] = true;
+    console.log(90, this._folderDetectMap);
+  }
+
   render() {
     const { t, groupId, canPost } = this.props;
     const streamNode = (
@@ -104,6 +115,9 @@ class ConversationPageViewComponent extends Component<
             accepts={[NativeTypes.FILE]}
             onDrop={this._handleDropFileInStream}
             dropzoneClass={StreamDropZoneClasses}
+            detectedFolderDrop={this._preventStreamFolderDrop}
+            hasDroppedFolder={() => this._folderDetectMap['stream']}
+            clearFolderDetection={() => delete this._folderDetectMap['stream']}
           >
             {streamNode}
           </JuiDropZone>
@@ -115,6 +129,9 @@ class ConversationPageViewComponent extends Component<
             accepts={[NativeTypes.FILE]}
             onDrop={this._handleDropFileInMessageInput}
             dropzoneClass={MessageInputDropZoneClasses}
+            detectedFolderDrop={this._preventInputFolderDrop}
+            hasDroppedFolder={() => this._folderDetectMap['input']}
+            clearFolderDetection={() => delete this._folderDetectMap['input']}
           >
             <MessageInput
               viewRef={this._messageInputRef}
