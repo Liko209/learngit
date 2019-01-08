@@ -3,16 +3,23 @@
  * @Date: 2018-10-25 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
 import { service } from 'sdk';
 jest.mock('../../../../store/utils');
-// import ItemModel from '@/store/models/Item';
-// import { FileType } from '../types';
 import { FileType } from '../types';
+import { Notification } from '@/containers/Notification';
+jest.mock('@/containers/Notification');
 
-const { ItemService } = service;
+const { ItemService, PostService } = service;
 ItemService.getInstance = jest.fn().mockReturnValue({});
+Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+
+const postService = {
+  cancelUpload: jest.fn(),
+};
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const filesItemVM = new FilesViewModel();
 filesItemVM.props.ids = [1, 2, 3];
@@ -61,5 +68,38 @@ describe('filesItemVM', () => {
       { ...mockItemValue },
       { ...mockItemValue },
     ]);
+  });
+
+  describe('removeFile()', () => {
+    it('should call post service', async () => {
+      await filesItemVM.removeFile(123);
+      expect(postService.cancelUpload).toBeCalledTimes(1);
+    });
+
+    it('should show service error', async () => {
+      (postService.cancelUpload as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('error');
+      });
+      await filesItemVM.removeFile(123);
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          expect(Notification.flashToast).toHaveBeenCalled();
+          resolve();
+        },         0);
+      });
+      await p;
+    });
+
+    it('should show network error', async () => {
+      (getGlobalValue as jest.Mock).mockImplementationOnce(() => 'offline');
+      await filesItemVM.removeFile(123);
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          expect(Notification.flashToast).toHaveBeenCalled();
+          resolve();
+        },         0);
+      });
+      await p;
+    });
   });
 });

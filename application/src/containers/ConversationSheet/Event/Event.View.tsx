@@ -12,7 +12,11 @@ import {
   JuiEventDescription,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { getDurationTime, getDurationTimeText } from '../helper';
+import {
+  getDurationTime,
+  getDurationTimeText,
+  getDurationDate,
+} from '../helper';
 import { EventViewProps } from './types';
 
 type Props = WithNamespaces & EventViewProps;
@@ -28,11 +32,14 @@ class Event extends React.Component<Props, {}> {
       start,
       end,
       repeat,
+      allDay,
       repeatEndingAfter,
       repeatEnding,
       repeatEndingOn,
     } = event;
-    const time = getDurationTime(start, end);
+    const time = allDay
+      ? getDurationDate(start, end)
+      : getDurationTime(start, end);
     const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,

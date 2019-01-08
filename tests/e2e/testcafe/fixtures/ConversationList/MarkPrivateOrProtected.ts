@@ -23,7 +23,7 @@ fixture('ConversationList/MarkPrivateOrProtected')
 
 //   const teamsSection = app.homePage.messageTab.teamsSection;
 
-//   let teamId;
+//   let teamId
 //   await h(t).withLog('Given I have a team.', async () => {
 //     teamId = (await loginUser.sdk.platform.createGroup({
 //       privacy: 'protected',
@@ -50,7 +50,7 @@ fixture('ConversationList/MarkPrivateOrProtected')
 //     await app.homePage.messageTab.moreMenu.profile.enter();
 //   });
 
-//   const dialog = app.homePage.profileDialog;
+//   const dialog = app.homePage.messageTab.profileModal;
 //   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
 //     await t.expect(dialog.getSelector('hr').exists).ok();
 //     await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
@@ -58,7 +58,7 @@ fixture('ConversationList/MarkPrivateOrProtected')
 
 //   await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
 //     await t.wait(2e3);
-//     await dialog.clickPrivate();
+//     await dialog.clickPrivacy();
 //     await t.wait(2e3);
 //     await dialog.close();
 //     await t.wait(2e3);
@@ -75,7 +75,6 @@ fixture('ConversationList/MarkPrivateOrProtected')
 //   await h(t).withLog(`Given I login Jupiter with ${users[6].company.number}#${users[6].extension}`, async () => {
 //     await h(t).directLoginWithUser(SITE_URL, users[6]);
 //     await app.homePage.ensureLoaded();
-//     await h(t).refresh();
 //   });
 
 //   const search = app.homePage.header.search;
@@ -135,16 +134,17 @@ fixture('ConversationList/MarkPrivateOrProtected')
 //     await app.homePage.messageTab.moreMenu.profile.enter();
 //   });
 
-//   const profileDialog = app.homePage.profileDialog;
+//   const dialog = app.homePage.messageTab.profileModal;
 //   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-//     await profileDialog.shouldBePopUp();
+//     await t.expect(dialog.getSelector('hr').exists).ok();
+//     await t.expect(dialog.getSelector('div').withText('Profile').exists).ok();
 //   });
 
 //   await h(t).withLog(`When I click a team conversation profile dialog message button`, async () => {
 //     await t.wait(2e3);
-//     await profileDialog.clickPrivate();
+//     await dialog.clickPrivacy();
 //     await t.wait(2e3);
-//     await profileDialog.close();
+//     await dialog.close();
 //     await t.wait(2e3);
 //   });
 
@@ -159,7 +159,6 @@ fixture('ConversationList/MarkPrivateOrProtected')
 //   await h(t).withLog(`Given I login Jupiter with ${users[6].company.number}#${users[6].extension}`, async () => {
 //     await h(t).directLoginWithUser(SITE_URL, users[6]);
 //     await app.homePage.ensureLoaded();
-//     await h(t).refresh();
 //   });
 
 //   const search = app.homePage.header.search;

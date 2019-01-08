@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseError } from './BaseError';
 import { ResultOk } from './ResultOk';
 import { ResultErr } from './ResultErr';
 import { ResultType, ResultCases } from './types';
+import { JError } from '../error';
 
-abstract class Result<T, E extends BaseError = BaseError> {
+abstract class Result<T, E extends JError = JError> {
   type: ResultType;
 
   constructor(type: ResultType) {

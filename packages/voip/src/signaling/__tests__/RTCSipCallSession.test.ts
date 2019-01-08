@@ -28,7 +28,6 @@ describe('sip call session', () => {
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();
-
     accept() {}
     reject() {}
     toVoicemail() {}

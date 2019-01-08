@@ -39,7 +39,7 @@ class UnReadToggler extends BaseWebComponent {
 
   async isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return await this.self.child().withText('arrow_up').exists;
   }
 
   private async turn(on: boolean) {
@@ -171,7 +171,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   get hasDraftMessage() {
-    return this.getSelectorByIcon('border_color').exists;
+    return this.getSelectorByIcon('draft').exists;
   }
 
   async enter() {
@@ -237,7 +237,7 @@ class ConversationListSection extends BaseWebComponent {
 
   get isExpand() {
     this.warnFlakySelector();
-    return this.self.child().withText('keyboard_arrow_up').exists;
+    return this.self.child().withText('arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
@@ -312,7 +312,7 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
-  
+
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }

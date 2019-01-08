@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import React from 'react';
+import RootRef from '@material-ui/core/RootRef';
 import MuiTab, { TabProps as MuiTabProps } from '@material-ui/core/Tab';
 import styled from '../../foundation/styled-components';
 import {
@@ -16,9 +18,9 @@ import {
   spacing,
 } from '../../foundation/utils';
 
-type StyledTabProps = MuiTabProps;
+type StyledTabProps = MuiTabProps & { ref?: React.RefObject<any> };
 
-const StyledTab = styled<MuiTabProps>(MuiTab)`
+const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
   &.root {
     min-width: ${width(8)};
     max-width: ${width(30)};
@@ -41,5 +43,15 @@ const StyledTab = styled<MuiTabProps>(MuiTab)`
     color: ${grey('900')}
   }
 `;
+
+const StyledTab = React.forwardRef(
+  ({ children, ...rest }: StyledTabProps, ref: React.RefObject<any>) => {
+    const Tab = <StyledMuiTab {...rest}>{children}</StyledMuiTab>;
+    if (ref) {
+      return <RootRef rootRef={ref}>{Tab}</RootRef>;
+    }
+    return Tab;
+  },
+);
 
 export { StyledTab, StyledTabProps };
