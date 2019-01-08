@@ -354,6 +354,7 @@ module.exports = {
     }),
     // Detect circular dependencies
     new CircularDependencyPlugin({
+      exclude: /node_modules/,
       onStart({ compilation }) {
         numCyclesDetected = 0;
       },
