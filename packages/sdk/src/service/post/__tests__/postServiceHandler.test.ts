@@ -32,58 +32,6 @@ describe('PostServiceHandler', () => {
     mockItemService.getUploadItems.mockReturnValue([]);
   });
 
-  describe('buildAtMentionsPeopleInfo()', () => {
-    it('atMentions = true', () => {
-      const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
-        atMentions: true,
-        text: '@[display (xxx)]:1:',
-        users: [
-          {
-            display: 'display (xxx)',
-            id: 1,
-          },
-        ],
-      });
-      expect(ret).toEqual({
-        text:
-          "<a class='at_mention_compose' rel='{\"id\":1}'>@display (xxx)</a>",
-        at_mention_non_item_ids: [1],
-      });
-    });
-    it('atMentions = false', () => {
-      const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
-        atMentions: false,
-        text: 'text',
-      });
-      expect(ret).toEqual({
-        text: 'text',
-        at_mention_non_item_ids: [],
-      });
-    });
-
-    it('should not crash when passed users have not display name FIJI-2762', () => {
-      const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
-        atMentions: true,
-        text: '@[display (xxx)]:1:',
-        users: [
-          {
-            display: 'display (xxx)',
-            id: 1,
-          },
-          {
-            display: undefined,
-            id: 2,
-          },
-        ],
-      });
-      expect(ret).toEqual({
-        text:
-          "<a class='at_mention_compose' rel='{\"id\":1}'>@display (xxx)</a>",
-        at_mention_non_item_ids: [1],
-      });
-    });
-  });
-
   describe('buildPostInfo()', () => {
     beforeEach(() => {
       versionHash.mockReturnValue('versionHash');
@@ -123,16 +71,9 @@ describe('PostServiceHandler', () => {
     it('params has itemsIds', async () => {
       mockItemService.getUploadItems.mockReturnValue([]);
       const ret = await PostServiceHandler.buildPostInfo({
-        atMentions: true,
         text: 'text',
         groupId: 123,
         itemIds: [1, 2],
-        users: [
-          {
-            display: 'display',
-            id: 1,
-          },
-        ],
       });
       expect(ret).toEqual(expectData(true));
     });
@@ -192,13 +133,6 @@ describe('PostServiceHandler', () => {
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
         text: 'new text',
-        atMentions: true,
-        users: [
-          {
-            display: 'display',
-            id: 1,
-          },
-        ],
       });
       expect(ret).toEqual({
         _id: 1,
@@ -215,7 +149,6 @@ describe('PostServiceHandler', () => {
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
         text: 'text',
-        atMentions: true,
       });
 
       expect(ret).toEqual({

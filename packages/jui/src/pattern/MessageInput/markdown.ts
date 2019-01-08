@@ -43,6 +43,7 @@ function markdownFromDelta(delta: Delta) {
   let block = false;
   const lines: string[] = [];
   const extra: { ordered: number } = { ordered: 0 };
+  const mentionIds: number[] = [];
   delta.forEach((op: DeltaOperation) => {
     const attr = op.attributes;
     let insert = op.insert;
@@ -52,7 +53,8 @@ function markdownFromDelta(delta: Delta) {
 
     if (insert.mention) {
       const { denotationChar, name, id } = insert.mention;
-      insert = `${denotationChar}[${name}]:${id}:`;
+      mentionIds.push(Number(id));
+      insert = `<a class='at_mention_compose' rel='{"id":${id}}'>${denotationChar}${name}</a>`;
     }
 
     if (attr) {
@@ -100,7 +102,10 @@ function markdownFromDelta(delta: Delta) {
     }
     block = false;
   });
-  return lines.join('\n');
+  return {
+    mentionIds,
+    content: lines.join('\n'),
+  };
 }
 
 export { markdownFromDelta };
