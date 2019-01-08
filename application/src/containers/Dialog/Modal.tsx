@@ -5,10 +5,8 @@
  */
 import React from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import ReactDOM from 'react-dom';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
-import { genDivAndDismiss } from '@/common/genDivAndDismiss';
-import ThemeProvider from '@/containers/ThemeProvider';
+import portalManager from '@/common/PortalManager';
 
 type BaseType = {
   isAlert?: boolean;
@@ -38,9 +36,9 @@ const BaseModal = (props: BaseModalType) => {
 const TranslateModal = translate('translates')(BaseModal);
 
 function modal(config: BaseType) {
-  const { container, dismiss } = genDivAndDismiss();
-
   const { onOK, onCancel, isAlert, ...newConfig } = config;
+
+  const { dismiss, show } = portalManager.wrapper(TranslateModal);
 
   const currentConfig = {
     ...newConfig,
@@ -56,17 +54,7 @@ function modal(config: BaseType) {
     },
   };
 
-  function render(props: JuiModalProps) {
-    ReactDOM.render(
-      <ThemeProvider>
-        <TranslateModal {...props} />
-      </ThemeProvider>,
-      container,
-    );
-  }
-
-  render(currentConfig);
-
+  show(undefined, currentConfig);
   return {
     dismiss,
   };

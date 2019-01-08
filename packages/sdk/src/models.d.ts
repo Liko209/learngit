@@ -3,12 +3,13 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { POST_STATUS, PRESENCE } from './service';
 import { TeamPermission } from './service/group';
+
 import { ExtendedBaseModel } from './module/models';
 import { GroupCommon } from './module/group/entity';
 import { IdModel } from './framework/model';
 import { State } from './module/state/entity';
+import { PROGRESS_STATUS } from './module/progress/types';
 
 export type SortableModel<T> = {
   id: number;
@@ -51,10 +52,11 @@ export type GroupConfig = {
   has_more_older?: boolean;
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
+  draft?: string;
+  send_failure_post_ids?: number[];
 };
 
 export type Progress = IdModel & {
-  total: number;
-  loaded: number;
-  groupId?: number;
+  rate?: { total: number; loaded: number };
+  status?: PROGRESS_STATUS;
 };

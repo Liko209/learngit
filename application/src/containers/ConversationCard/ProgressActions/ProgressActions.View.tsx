@@ -12,8 +12,8 @@ import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
 
-import { POST_STATUS } from 'sdk/service';
-import { JuiModal } from '@/containers/Dialog';
+import { PROGRESS_STATUS } from 'sdk/module';
+import { Dialog } from '@/containers/Dialog';
 
 type Props = ProgressActionsViewProps & WithNamespaces;
 
@@ -21,9 +21,9 @@ type Props = ProgressActionsViewProps & WithNamespaces;
 class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost, t } = this.props;
-    JuiModal.confirm({
-      title: t('deletePostTitle'),
-      content: t('deletePostContent'),
+    Dialog.confirm({
+      title: t('deleteMessageTitle'),
+      content: t('deleteMessageContent'),
       okText: t('deletePostOk'),
       cancelText: t('deletePostCancel'),
       async onOK() {
@@ -44,7 +44,7 @@ class ProgressActionsViewComponent extends Component<Props> {
 
   private _renderLoading = () => {
     const { postStatus } = this.props;
-    if (postStatus === POST_STATUS.INPROGRESS) {
+    if (postStatus === PROGRESS_STATUS.INPROGRESS) {
       return <JuiCircularProgress size={12} />;
     }
     return null;
@@ -52,7 +52,7 @@ class ProgressActionsViewComponent extends Component<Props> {
 
   private _renderResend = () => {
     const { postStatus, t } = this.props;
-    if (postStatus === POST_STATUS.FAIL) {
+    if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
           variant="plain"
@@ -70,7 +70,7 @@ class ProgressActionsViewComponent extends Component<Props> {
 
   private _renderDelete = () => {
     const { postStatus, t } = this.props;
-    if (postStatus === POST_STATUS.FAIL) {
+    if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
           variant="plain"

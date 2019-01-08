@@ -7,10 +7,26 @@ import MuiListSubheader, {
   ListSubheaderProps as MuiListSubheaderProps,
 } from '@material-ui/core/ListSubheader';
 import styled from '../../foundation/styled-components';
+import {
+  height,
+  spacing,
+  palette,
+  grey,
+  typography,
+} from '../../foundation/utils/styles';
 
 type JuiListSubheaderProps = MuiListSubheaderProps;
 
-const JuiListSubheader = styled(MuiListSubheader)``;
+const JuiListSubheader = styled(MuiListSubheader)`
+  && {
+    height: ${height(9)};
+    display: flex;
+    padding: ${spacing(3, 2, 1, 2)} !important;
+    background: ${palette('primary', 'while')};
+    color: ${grey('700')};
+    ${typography('body1')}
+  }
+`;
 
 JuiListSubheader.displayName = 'JuiListSubheader';
 

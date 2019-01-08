@@ -7,7 +7,7 @@
 type MessageProps = {
   id: number; // personId || conversationId
   render: () => any;
-  dismiss: () => void;
+  afterClick?: () => void;
 };
 
 type MessageViewProps = {

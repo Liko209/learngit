@@ -51,7 +51,7 @@ ENV_OPTS.RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 const TMPFILE_PATH = process.env.TMPFILE_PATH || '/tmp';
 
 const configLoader = new ConfigLoader(
-  (process.env.BRANCH || '').toLocaleLowerCase(),
+  (process.env.BRANCH || ''),
   (process.env.ACTION || '').toLocaleLowerCase(),
   CONFIGS_ROOT,
 );
