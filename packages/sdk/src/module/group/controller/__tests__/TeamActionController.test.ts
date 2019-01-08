@@ -89,13 +89,13 @@ describe('TeamController', () => {
   });
 
   describe('joinTeam()', () => {
-    it('should call partial modify controller. [JPT-717]', async () => {
+    it('should call partial modify controller. [JPT-719]', async () => {
       await teamActionController.joinTeam(123, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
     });
   });
   describe('addTeamMember()', () => {
-    it('should call partial modify controller. [JPT-717]', async () => {
+    it('should call api with correct params. [JPT-719]', async () => {
       Api.init({}, new NetworkManager(new OAuthTokenManager()));
       await teamActionController.addTeamMembers(2, [123]);
 
