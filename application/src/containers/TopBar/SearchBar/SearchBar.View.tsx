@@ -207,9 +207,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             privacy === 'protected' &&
             !members.includes(currentUserId);
 
-          const Actions = hasAction
-            ? { Actions: this._Actions(id, displayName) }
-            : null;
+          const Actions = hasAction ? this._Actions(id, displayName) : null;
 
           return (
             <JuiSearchItem
@@ -219,7 +217,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
               value={displayName}
               terms={terms}
               data-test-automation-id={`search-${title}-item`}
-              {...Actions}
+              Actions={Actions}
               isPrivate={entity.is_team && entity.privacy === 'private'}
               isJoined={
                 entity.is_team &&
