@@ -157,15 +157,16 @@ class GroupService extends BaseService<Group> {
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const userId = profile ? profile.creator_id : undefined;
+      const accountService: AccountService = AccountService.getInstance();
+      const userId = accountService.getCurrentUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.isCacheInitialized()) {
         result = await this.getEntitiesFromCache(
           (item: Group) =>
             this.isValid(item) &&
-            item.is_team === isTeam &&
             !excludeIds.includes(item.id) &&
-            (userId ? item.members.includes(userId) : true),
+            (userId ? item.members.includes(userId) : true) &&
+            (isTeam ? item.is_team === isTeam : !item.is_team),
         );
         if (offset !== 0) {
           result = result.slice(offset + 1, result.length);
@@ -524,7 +525,6 @@ class GroupService extends BaseService<Group> {
     return apiResult.error;
   }
 
-  // update partial group data, for message draft
   async updateGroupPrivacy(params: {
     id: number;
     privacy: string;
@@ -533,40 +533,6 @@ class GroupService extends BaseService<Group> {
       privacy: params.privacy,
     });
     return result;
-  }
-
-  // update partial group data, for message draft
-  async updateGroupDraft(params: {
-    id: number;
-    draft: string;
-  }): Promise<boolean> {
-    const result = await this.updateGroupPartialData({
-      id: params.id,
-      __draft: params.draft,
-    });
-    return result;
-  }
-
-  // update partial group data, for send failure post ids
-  async updateGroupSendFailurePostIds(params: {
-    id: number;
-    send_failure_post_ids: number[];
-  }): Promise<boolean> {
-    const result = await this.updateGroupPartialData({
-      id: params.id,
-      __send_failure_post_ids: params.send_failure_post_ids,
-    });
-    return result;
-  }
-
-  // get group data, for send failure post ids
-  async getGroupSendFailurePostIds(id: number): Promise<number[]> {
-    try {
-      const group = (await this.getGroupById(id)) as Group;
-      return group.__send_failure_post_ids || [];
-    } catch (error) {
-      throw ErrorParser.parse(error);
-    }
   }
 
   async buildGroupFeatureMap(

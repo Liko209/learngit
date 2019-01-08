@@ -17,6 +17,7 @@ type PopperMenuProps = {
   placement?: PopperPlacementType;
   setMoreItemState?: (value: boolean) => void;
   open: boolean;
+  value?: number;
 };
 
 const StyledAnchorWrapper = styled.div`

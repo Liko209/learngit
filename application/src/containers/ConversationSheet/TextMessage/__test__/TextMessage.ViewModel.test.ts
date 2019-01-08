@@ -44,6 +44,8 @@ describe('TextMessageViewModel', () => {
 
   beforeEach(() => {
     vm = new TextMessageViewModel();
+    jest.spyOn(vm, 'getGroup');
+    jest.spyOn(vm, 'getPerson');
   });
 
   describe('html', () => {
@@ -80,6 +82,8 @@ describe('TextMessageViewModel', () => {
           mockPersonData.userDisplayName
         }</a>`,
       );
+      expect(vm.getGroup).toHaveBeenCalledTimes(0);
+      expect(vm.getPerson).toHaveBeenCalledTimes(1);
     });
 
     it('should be get new person name link when person name be changed', () => {
@@ -107,6 +111,8 @@ describe('TextMessageViewModel', () => {
           mockGroupData.displayName
         }</a>`,
       );
+      expect(vm.getGroup).toHaveBeenCalledTimes(1);
+      expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
 
     it('should be get new team name link when team name be changed', () => {
@@ -118,6 +124,22 @@ describe('TextMessageViewModel', () => {
           mockGroupData.displayName
         }</a>`,
       );
+    });
+  });
+
+  describe('at mentions for unknown item (not a team/person)', () => {
+    const atMentionNonItemIds = [123];
+    const originalText = 'Jupiter profile mini card';
+    const text = `<a class='at_mention_compose' rel='{"id":123}'>@${originalText}</a>`;
+
+    it('should be get original text when at mention an unknown item', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+      expect(vm.html).toBe(
+        `<a class='at_mention_compose' href='javascript:void(0)' id='123'>${originalText}</a>`,
+      );
+      expect(vm.getGroup).toHaveBeenCalledTimes(0);
+      expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
   });
 });
