@@ -3,7 +3,7 @@
  * @Date: 2019-01-04 10:53:56
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './AbstractErrorParser';
+export * from './IErrorParser';
 export * from './ErrorParser';
 export * from './JError';
 export * from './network';

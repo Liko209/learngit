@@ -1,12 +1,13 @@
 
-import { JError, AbstractErrorParser } from 'foundation';
+import { JError, IErrorParser } from 'foundation';
 import { DBCriticalError, DBNeedRetryError, DBUnsupportedError, DBInvalidUsageError, DBError } from '../../dao/errors/handler';
 import { ERROR_CODES_DB } from './types';
 import { JDBError } from './JDBError';
 
-export class DBErrorParser extends AbstractErrorParser {
-  constructor() {
-    super('DBErrorParser');
+export class DBErrorParser implements IErrorParser {
+
+  getName() {
+    return 'DBErrorParser';
   }
 
   parse(error: Error): JError | null {

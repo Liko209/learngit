@@ -7,12 +7,12 @@
 import { ERROR_CODES_RUNTIME } from './types';
 import { JRuntimeError } from './JRuntimeError';
 import { JError } from '../JError';
-import { AbstractErrorParser } from '../AbstractErrorParser';
+import { IErrorParser } from '../IErrorParser';
 
-export class RuntimeErrorParser extends AbstractErrorParser {
+export class RuntimeErrorParser implements IErrorParser {
 
-  constructor() {
-    super('RuntimeErrorParser');
+  getName() {
+    return 'RuntimeErrorParser';
   }
 
   parse(error: Error): JError | null {

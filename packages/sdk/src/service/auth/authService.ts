@@ -18,7 +18,7 @@ import { Aware } from '../../utils/error';
 import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
-import { ERROR_CODES_SDK, errorParser } from '../../error';
+import { ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 interface ILogin {
   username: string;
@@ -50,7 +50,7 @@ class AuthService extends BaseService {
       this.onLogin();
     } catch (err) {
       mainLogger.error(`unified login error: ${err}`);
-      throw errorParser.parse(err);
+      throw ErrorParserHolder.getErrorParser().parse(err);
     }
   }
 
@@ -70,7 +70,7 @@ class AuthService extends BaseService {
       await this._accountManager.login(RCPasswordAuthenticator.name, params);
     } catch (err) {
       mainLogger.error(`err: ${err}`);
-      throw errorParser.parse(err);
+      throw ErrorParserHolder.getErrorParser().parse(err);
     }
   }
 

@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ErrorParser } from '../ErrorParser';
-import { AbstractErrorParser } from '../AbstractErrorParser';
+import { IErrorParser } from '../IErrorParser';
 import { JError } from '../JError';
 
-class MockParser extends AbstractErrorParser {
+class MockParser implements IErrorParser {
 
-  constructor(name: string) {
-    super(name);
+  constructor(public name: string) {
   }
+  getName = () => this.name;
   parse = jest.fn().mockReturnValue(null);
 }
 

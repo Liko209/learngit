@@ -4,5 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ErrorParser } from 'foundation';
-export default new ErrorParser();
+import { ErrorParserHolder } from './ErrorParserHolder';
+ErrorParserHolder.init();
+const errorParser = ErrorParserHolder.getErrorParser();
+export {
+  errorParser,
+};

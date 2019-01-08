@@ -59,7 +59,7 @@ import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
 import { ServiceResult } from '../ServiceResult';
-import { JSdkError, ERROR_CODES_SDK, errorParser } from '../../error';
+import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -482,7 +482,7 @@ class GroupService extends BaseService<Group> {
       );
       return true;
     } catch (error) {
-      throw errorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
 

@@ -11,6 +11,7 @@ export * from './sdk';
 export * from './server';
 export * from './types';
 export * from './constants';
+export * from './ErrorParserHolder';
 export {
   JError,
   JNetworkError,
@@ -18,5 +19,4 @@ export {
   ERROR_CODES_NETWORK,
   ERROR_CODES_RUNTIME,
 } from 'foundation';
-export { default as errorParser } from './errorParser';
 export { default as errorHelper } from './helper';

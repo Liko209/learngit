@@ -5,7 +5,7 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import { Foundation, NetworkManager, Token, RuntimeErrorParser } from 'foundation';
+import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
@@ -32,7 +32,6 @@ import notificationCenter from './service/notificationCenter';
 import SyncService from './service/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
-import { errorParser, DBErrorParser } from './error';
 
 const AM = AccountManager;
 
@@ -53,8 +52,6 @@ class Sdk {
     // Use default config value
     const apiConfig: ApiConfig = merge({}, defaultApiConfig, config.api);
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
-    errorParser.register(new RuntimeErrorParser());
-    errorParser.register(new DBErrorParser());
     // Initialize foundation
     Foundation.init({
       // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.

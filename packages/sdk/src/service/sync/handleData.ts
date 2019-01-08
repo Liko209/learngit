@@ -26,7 +26,7 @@ import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
 import { Raw } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
-import { errorParser } from '../../error';
+import { ErrorParserHolder } from '../../error';
 
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
@@ -112,7 +112,7 @@ const handleData = async (
   } catch (error) {
     mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
     notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
-      error: errorParser.parse(error),
+      error: ErrorParserHolder.getErrorParser().parse(error),
     });
   }
 };

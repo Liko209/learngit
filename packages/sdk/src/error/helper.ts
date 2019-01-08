@@ -1,18 +1,18 @@
 import { errorUtils } from 'foundation';
 import { ERROR_CONDITIONS } from './constants';
-import errorParser from './errorParser';
+import { ErrorParserHolder } from './ErrorParserHolder';
 
 class Helper {
   isNotNetworkError(error: Error) {
-    return errorUtils.errorConditionSelector(errorParser.parse(error), ERROR_CONDITIONS.NOT_NETWORK);
+    return errorUtils.errorConditionSelector(ErrorParserHolder.getErrorParser().parse(error), ERROR_CONDITIONS.NOT_NETWORK);
   }
 
   isNotAuthorizedError(error: Error) {
-    return errorUtils.errorConditionSelector(errorParser.parse(error), ERROR_CONDITIONS.NOT_AUTHORIZED);
+    return errorUtils.errorConditionSelector(ErrorParserHolder.getErrorParser().parse(error), ERROR_CONDITIONS.NOT_AUTHORIZED);
   }
 
   isBackEndError(error: Error) {
-    return errorUtils.errorConditionSelector(errorParser.parse(error), ERROR_CONDITIONS.BACKEND_ERROR);
+    return errorUtils.errorConditionSelector(ErrorParserHolder.getErrorParser().parse(error), ERROR_CONDITIONS.BACKEND_ERROR);
   }
 }
 

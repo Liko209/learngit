@@ -27,7 +27,7 @@ import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
 import GroupConfigService from '../groupConfig';
 import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
-import { JSdkError, ERROR_CODES_SDK, errorParser } from '../../error';
+import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 interface IPostResult {
   posts: Post[];
@@ -414,7 +414,7 @@ class PostService extends BaseService<Post> {
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId, buildPost.group_id);
-      throw errorParser.parse(e);
+      throw ErrorParserHolder.getErrorParser().parse(e);
     }
   }
 
@@ -554,7 +554,7 @@ class PostService extends BaseService<Post> {
         resp.expect('delete post failed');
         return true;
       } catch (e) {
-        throw errorParser.parse(e);
+        throw ErrorParserHolder.getErrorParser().parse(e);
       }
     }
     return false;

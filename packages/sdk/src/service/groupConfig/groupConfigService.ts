@@ -5,7 +5,7 @@
  */
 import { GroupConfig } from '../../models';
 import BaseService from '../../service/BaseService';
-import { errorParser } from '../../error';
+import { ErrorParserHolder } from '../../error';
 import { daoManager, GroupConfigDao } from '../../dao';
 import notificationCenter from '../notificationCenter';
 import { ENTITY } from '../eventKey';
@@ -33,7 +33,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
       );
       return true;
     } catch (error) {
-      throw errorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
   async saveAndDoNotify(params: GroupConfig) {
@@ -81,7 +81,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
       const group = (await this.getById(id)) as GroupConfig;
       return group.send_failure_post_ids || [];
     } catch (error) {
-      throw errorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
 }
