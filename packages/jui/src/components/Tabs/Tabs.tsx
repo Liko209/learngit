@@ -189,6 +189,7 @@ class JuiTabs extends PureComponent<Props, States> {
         placement="bottom-start"
         open={openMenu}
         value={MORE}
+        key={MORE}
       >
         <JuiMenuList onClick={this._hideMenuList}>
           {indexMenus.map((item: number) => (
