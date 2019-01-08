@@ -279,8 +279,9 @@ node(buildNode) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install --only=dev --ignore-scripts --unsafe-perm --cache-min 9999999'
-                sh 'npm install --unsafe-perm --cache-min 9999999'
+                sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
+                sh 'npm install --ignore-scripts --unsafe-perm'
+                sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
             }
         }
 
@@ -374,12 +375,6 @@ node(buildNode) {
                         }
                     }
                     report.juiUrl = juiUrl
-                    safeMail(
-                            reportChannels,
-                            "Storybook Deployment Successful",
-                            "**Storybook deployment successful**: ${report.juiUrl}"
-
-                    )
                 },
 
                 'Build Application': {
@@ -409,15 +404,10 @@ node(buildNode) {
                         }
                     }
                     report.appUrl = appUrl
-                    safeMail(
-                            reportChannels,
-                            "Jupiter Deployment Successful",
-                            "**Jupiter deployment successful**: ${report.appUrl}"
-                    )
                 }
         )
 
-        condStage (name: 'E2E Automation', timeout: 1800, enable: !skipEndToEnd) {
+        condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
             withEnv([
@@ -439,7 +429,7 @@ node(buildNode) {
             ]) {dir("tests/e2e/testcafe") {
                 sh 'env'
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
-                sh 'npm install --unsafe-perm --cache-min 9999999'
+                sh 'npm install --unsafe-perm'
                 if ('true' == env.E2E_ENABLE_REMOTE_DASHBOARD){
                     sh 'npx ts-node create-run-id.ts'
                     report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl').trim()
