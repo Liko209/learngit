@@ -133,7 +133,7 @@ export class ProfileDialog extends BaseWebComponent {
   async clickPrivate() {
     await this.t.click(this.privateButton);
   }
-  
+
   get unFavoriteStatusIcon() {
     return this.getSelectorByIcon("star_border", this.profileTitle);
   }

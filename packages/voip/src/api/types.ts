@@ -30,6 +30,7 @@ enum RTC_CALL_ACTION {
   FLIP = 'flip',
   START_RECORD = 'startRecord',
   STOP_RECORD = 'stopRecord',
+  TRANSFER = 'transfer',
 }
 
 export { RTC_ACCOUNT_STATE, RTCCallInfo, RTC_CALL_STATE, RTC_CALL_ACTION };

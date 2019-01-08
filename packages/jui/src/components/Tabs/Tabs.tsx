@@ -13,7 +13,6 @@ import React, {
   MouseEvent,
   Children,
 } from 'react';
-import RootRef from '@material-ui/core/RootRef';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { StyledTabs } from './StyledTabs';
 import { StyledTab, StyledTabProps } from './StyledTab';
@@ -60,7 +59,7 @@ class JuiTabs extends PureComponent<Props, States> {
   private _moreRef: RefObject<HTMLElement>;
   private _moreWidth: number = 0;
   // right rail container
-  private _containerRef: RefObject<HTMLDivElement>;
+  private _containerRef: RefObject<any>;
   private _containerWidth: number = 0;
 
   constructor(props: Props) {
@@ -189,6 +188,7 @@ class JuiTabs extends PureComponent<Props, States> {
         placement="bottom-start"
         open={openMenu}
         value={MORE}
+        key={MORE}
       >
         <JuiMenuList onClick={this._hideMenuList}>
           {indexMenus.map((item: number) => (
@@ -210,6 +210,7 @@ class JuiTabs extends PureComponent<Props, States> {
       icon: <MoreHoriz />,
       onClick: this._showMenuList,
       style: STYLE,
+      ref: this._moreRef,
     });
   }
 
@@ -231,6 +232,7 @@ class JuiTabs extends PureComponent<Props, States> {
     icon,
     onClick,
     style,
+    ref,
   }: StyledTabProps) => {
     return (
       <StyledTab
@@ -241,6 +243,7 @@ class JuiTabs extends PureComponent<Props, States> {
         onClick={onClick}
         classes={CLASSES.tab}
         style={style}
+        ref={ref}
       />
     );
   }
@@ -249,17 +252,14 @@ class JuiTabs extends PureComponent<Props, States> {
     const { children } = this.props;
     const tabs = Children.map(
       children,
-      (child: ReactElement<JuiTabProps>, index: number) => (
-        <RootRef rootRef={this._tabRefs[index]} key={index}>
-          {this._renderStyledTab({ value: index, label: child.props.title })}
-        </RootRef>
-      ),
+      (child: ReactElement<JuiTabProps>, index: number) =>
+        this._renderStyledTab({
+          value: index,
+          label: child.props.title,
+          ref: this._tabRefs[index],
+        }),
     );
-    tabs.push(
-      <RootRef rootRef={this._moreRef} key={MORE}>
-        {this._renderMore()}
-      </RootRef>,
-    ); // add more tab
+    tabs.push(this._renderMore()); // add more tab
     return tabs;
   }
 
@@ -286,19 +286,18 @@ class JuiTabs extends PureComponent<Props, States> {
     }
     return (
       <div>
-        <RootRef rootRef={this._containerRef}>
-          <StyledTabs
-            value={indexSelected}
-            onChange={this._handleChangeTab}
-            indicatorColor="primary"
-            textColor="primary"
-            classes={CLASSES.tabs}
-          >
-            {indexTabs.length === 0 && indexMenus.length === 0
-              ? this._renderAllTab()
-              : this._renderFinalTab()}
-          </StyledTabs>
-        </RootRef>
+        <StyledTabs
+          value={indexSelected}
+          onChange={this._handleChangeTab}
+          indicatorColor="primary"
+          textColor="primary"
+          classes={CLASSES.tabs}
+          ref={this._containerRef}
+        >
+          {indexTabs.length === 0 && indexMenus.length === 0
+            ? this._renderAllTab()
+            : this._renderFinalTab()}
+        </StyledTabs>
       </div>
     );
   }

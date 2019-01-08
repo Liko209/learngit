@@ -26,6 +26,7 @@ enum CALL_FSM_NOTIFY {
   HANGUP_ACTION = 'hangupAction',
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
   FLIP_ACTION = 'flipAction',
+  TRANSFER_ACTION = 'transferAction',
   START_RECORD_ACTION = 'startRecordAction',
   STOP_RECORD_ACTION = 'stopRecordAction',
   CALL_ACTION_SUCCESS = 'callActionSuccess',
