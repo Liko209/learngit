@@ -124,7 +124,6 @@ class Task extends React.Component<taskViewProps> {
       repeatEnding,
       repeatEndingOn,
     } = task;
-    console.log(task, 'nello---- task');
     let startTime = '';
     let endTime = '';
     const hasTime = start && due;
