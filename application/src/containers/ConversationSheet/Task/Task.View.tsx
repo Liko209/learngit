@@ -37,7 +37,7 @@ const downloadBtn = (downloadUrl: string) => (
     variant="plain"
     tooltipTitle={t('download')}
   >
-    get_app
+    download
   </JuiIconButton>
 );
 

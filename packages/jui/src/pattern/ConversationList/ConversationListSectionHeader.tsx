@@ -132,7 +132,7 @@ const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
     ...rest
   } = props;
 
-  const arrow = expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+  const arrow = expanded ? 'arrow_up' : 'arrow_down';
 
   return (
     <StyledListItem

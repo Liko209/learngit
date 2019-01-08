@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiIcon from '@material-ui/core/Icon';
+import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
@@ -25,7 +25,7 @@ const ItemCardWrapper = styled(JuiCard)`
   margin-bottom: ${spacing(3)};
 `;
 
-const ItemIcon = styled(MuiIcon)`
+const ItemIcon = styled(JuiIconography)`
   && {
     font-size: ${spacing(5)};
   }
