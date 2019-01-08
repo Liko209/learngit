@@ -49,6 +49,8 @@ const name2icon = {
   mention: 'mention',
   quote: 'quote',
   edit: 'edit',
+  remove: 'delete_circle',
+  refresh: 'refresh',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

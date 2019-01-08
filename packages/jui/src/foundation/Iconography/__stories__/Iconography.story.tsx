@@ -9,8 +9,6 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '..';
 import '../icons/style.css';
 
-console.log(document.documentElement.style);
-
 storiesOf('Foundation', module)
   .addDecorator(
     withInfoDecorator(JuiIconography, {
