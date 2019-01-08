@@ -1,4 +1,11 @@
-import { stringMatch, errorConditionSelector, ErrorCondition, JError } from '../types';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-01-08 13:17:12
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { JError } from '../JError';
+import { stringMatch, errorConditionSelector } from '../utils';
+
 describe('types', () => {
   describe('stringMatch()', () => {
     it('should match when target === str', () => {

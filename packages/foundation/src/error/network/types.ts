@@ -3,13 +3,6 @@
  * @Date: 2019-01-04 10:54:09
  * Copyright © RingCentral. All rights reserved.
  */
-import { JError, ERROR_TYPES } from '../types';
-
-export class JNetworkError extends JError {
-  constructor(code: string, message: string, payload?: { [key: string]: string }) {
-    super(ERROR_TYPES.NETWORK, code, message, payload);
-  }
-}
 
 export const ERROR_CODES_NETWORK = {
   GENERAL: 'GENERAL_ERROR',

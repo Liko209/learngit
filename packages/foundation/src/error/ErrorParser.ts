@@ -3,16 +3,21 @@
  * @Date: 2019-01-04 10:54:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { IErrorParser, JError, ERROR_TYPES } from './types';
+import { ERROR_TYPES } from './types';
+import { AbstractErrorParser } from './AbstractErrorParser';
+import { JError } from './JError';
 
-export class ErrorParser implements IErrorParser {
-  readonly name = 'ErrorParser';
-  private _errorParser: IErrorParser[] = [];
+export class ErrorParser extends AbstractErrorParser {
+  private _errorParser: AbstractErrorParser[] = [];
 
-  register(parser: IErrorParser) {
-    if (this._errorParser.some(item => item.name === parser.name)) {
-      console.info(`errorParser ${parser.name} replaced`);
-      this._errorParser = this._errorParser.filter(item => item.name !== parser.name);
+  constructor() {
+    super('ErrorParser');
+  }
+
+  register(parser: AbstractErrorParser) {
+    if (this._errorParser.some(item => item.getName() === parser.getName())) {
+      console.info(`errorParser ${parser.getName()} replaced`);
+      this._errorParser = this._errorParser.filter(item => item.getName() !== parser.getName());
     }
     this._errorParser.push(parser);
   }

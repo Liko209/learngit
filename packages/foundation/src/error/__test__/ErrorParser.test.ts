@@ -1,9 +1,17 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-01-08 13:15:25
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ErrorParser } from '../ErrorParser';
-import { IErrorParser, JError } from '../types';
+import { AbstractErrorParser } from '../AbstractErrorParser';
+import { JError } from '../JError';
 
-class MockParser implements IErrorParser {
+class MockParser extends AbstractErrorParser {
 
-  constructor(readonly name: string) { }
+  constructor(name: string) {
+    super(name);
+  }
   parse = jest.fn().mockReturnValue(null);
 }
 

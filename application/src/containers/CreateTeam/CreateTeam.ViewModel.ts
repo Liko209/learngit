@@ -11,7 +11,7 @@ import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
-import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk';
+import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable

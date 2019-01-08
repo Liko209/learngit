@@ -1,9 +1,16 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-01-08 15:22:24
+ * Copyright © RingCentral. All rights reserved.
+ */
 
-import { BaseResponse } from 'foundation';
+import { BaseResponse, HTTP_STATUS_CODE } from 'foundation';
 import isNumber from 'lodash/isNumber';
 import isString from 'lodash/isString';
 import { JError, JNetworkError, ERROR_CODES_NETWORK } from '../../error';
 import { IResponseParser } from './types';
+
+const REGEXP_4XX_5XX = /^[4-5]\d\d$/;
 
 export class CommonResponseParser implements IResponseParser {
 
@@ -11,26 +18,28 @@ export class CommonResponseParser implements IResponseParser {
 
   parse(response: BaseResponse): JError | null {
     const { status, statusText } = response;
-    /**
-        * From resp.statusText
-        */
-    if (statusText === 'Network Error') {
-      return new JNetworkError(
-        ERROR_CODES_NETWORK.NETWORK_ERROR,
-        'Api Error: Please check whether server crash');
-    }
+    return this._parseByStatusText(statusText)
+      || this._parseByStatus(status, statusText);
+  }
 
-    if (statusText === 'NOT NETWORK CONNECTION') {
-      return new JNetworkError(
-        ERROR_CODES_NETWORK.NOT_NETWORK,
-        'Api Error: Please check network connection');
+  private _parseByStatusText(statusText: string) {
+    switch (statusText) {
+      case 'Network Error':
+        return new JNetworkError(
+          ERROR_CODES_NETWORK.NETWORK_ERROR,
+          'Api Error: Please check whether server crash');
+      case 'NOT NETWORK CONNECTION':
+        return new JNetworkError(
+          ERROR_CODES_NETWORK.NOT_NETWORK,
+          'Api Error: Please check network connection');
+      default:
+        return null;
     }
+  }
 
-    /**
-     * From resp.status
-     */
+  private _parseByStatus(status: HTTP_STATUS_CODE, statusText: string) {
     if ((isNumber(status) && 399 < status && 600 > status)
-      || (isString(status) && /^[4-5]\d\d$/.test(status))) {
+      || (isString(status) && REGEXP_4XX_5XX.test(status))) {
       return new JNetworkError(`HTTP_${status}`, statusText);
     }
     return null;

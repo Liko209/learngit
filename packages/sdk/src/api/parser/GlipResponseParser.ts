@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-01-08 15:22:27
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { BaseResponse } from 'foundation';
 import { JError, JServerError, ERROR_CODES_SERVER } from '../../error';
 import { IResponseParser } from './types';
@@ -17,9 +22,7 @@ export class GlipResponseParser implements IResponseParser {
       if (typeof data.error === 'string') {
         httpErrorCode = data.error;
         httpErrorMessage = data.error_description;
-      }
-
-      if (
+      } else if (
         typeof data.error === 'object' &&
         typeof data.error.code === 'string'
       ) {

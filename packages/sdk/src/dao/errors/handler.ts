@@ -3,7 +3,14 @@
  * @Date: 2018-08-16 17:51:20
  * Copyright © RingCentral. All rights reserved.
  */
-class DBError extends Error { }
+class DBError extends Error {
+  __proto__: Error;
+  constructor(message?: string) {
+    const trueProto = new.target.prototype;
+    super(message);
+    this.__proto__ = trueProto;
+  }
+}
 class DBCriticalError extends Error {
   __proto__: Error;
   constructor(message?: string) {
