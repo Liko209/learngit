@@ -45,7 +45,7 @@ describe('ResultOk', () => {
 
   describe('expect()', () => {
     it('should return data', () => {
-      expect(new ResultOk('message').expect()).toBe('message');
+      expect(new ResultOk('message').expect('')).toBe('message');
     });
   });
 
@@ -57,7 +57,7 @@ describe('ResultOk', () => {
   });
 
   describe('isErr()', () => {
-    it('should be falsy', () => {});
+    it('should be falsy', () => { });
     const result = new ResultOk(1);
     expect(result.isErr()).toBeFalsy();
   });

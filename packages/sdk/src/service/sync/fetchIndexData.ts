@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseError } from 'foundation';
 import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { progressBar } from '../../utils/progress';
 import { ApiResult } from '../../api/ApiResult';
 import { IndexDataModel } from '../../api/glip/user';
+import { JError } from '../../error';
 
 interface IParams {
   newer_than?: string;
@@ -18,7 +18,7 @@ interface IParams {
 
 const fetchInitialData = async (currentTime: number) => {
   progressBar.start();
-  let promise: Promise<ApiResult<IndexDataModel, BaseError>>;
+  let promise: Promise<ApiResult<IndexDataModel, JError>>;
   try {
     promise = initialData({ _: currentTime });
   } finally {
@@ -44,7 +44,7 @@ const fetchIndexData = async (timeStamp: string) => {
       progressBar.update(e);
     },
   };
-  let result: ApiResult<IndexDataModel, BaseError>;
+  let result: ApiResult<IndexDataModel, JError>;
 
   try {
     result = await indexData(params, requestConfig);

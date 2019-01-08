@@ -2,10 +2,7 @@ import { HttpResponse, HttpResponseBuilder } from 'foundation';
 
 import ErrorParser from '../parser';
 import { DBCriticalError } from '../../../dao/errors/handler';
-import { ErrorTypes } from '..';
-
-const DB_CRITICAL_ERROR = 2001;
-const HTTP_BASE_CODE = 1000;
+import { ERROR_CODES_SERVER, ERROR_TYPES, ERROR_CODES_DB } from '../../../error';
 
 function createResponse(obj: any) {
   const builder = new HttpResponseBuilder();
@@ -17,7 +14,7 @@ describe('ErrorParser', () => {
   describe('parse()', () => {
     it('should parse dexie error', () => {
       const dexieError: DBCriticalError = new DBCriticalError();
-      expect(ErrorParser.parse(dexieError).code).toBe(DB_CRITICAL_ERROR);
+      expect(ErrorParser.parse(dexieError).code).toBe(ERROR_CODES_DB.CRITICAL_ERROR);
     });
 
     it('should parse when response.data.error is object', () => {
@@ -28,7 +25,8 @@ describe('ErrorParser', () => {
 
       const error = ErrorParser.parse(response);
 
-      expect(error.code).toBe(ErrorTypes.API_INVALID_FIELD);
+      expect(error.type === ERROR_TYPES.SERVER).toBeTruthy();
+      expect(error.code).toBe(ERROR_CODES_SERVER.INVALID_FIELD);
     });
 
     it('should parse when response.data.error is string', () => {
@@ -41,8 +39,8 @@ describe('ErrorParser', () => {
       });
 
       const error = ErrorParser.parse(response);
-
-      expect(error.code).toBe(ErrorTypes.API_INVALID_GRANT);
+      expect(error.type === ERROR_TYPES.SERVER).toBeTruthy();
+      expect(error.code).toBe(ERROR_CODES_SERVER.INVALID_GRANT);
     });
 
     it('should return UNDEFINED_ERROR when then input can not be parse', () => {
@@ -52,7 +50,7 @@ describe('ErrorParser', () => {
 
       const error = ErrorParser.parse(obj);
 
-      expect(error.code).toBe(ErrorTypes.UNDEFINED_ERROR);
+      expect(error.type).toBe(ERROR_TYPES.UNDEFINED);
     });
   });
 });

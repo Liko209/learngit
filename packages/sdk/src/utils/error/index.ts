@@ -6,9 +6,8 @@
 
 import notificationCenter from '../../service/notificationCenter';
 
-import BaseError from './base';
-import ErrorTypes, { HttpError } from './types';
 import ErrorParser from './parser';
+import { JSdkError } from '../../error';
 
 if (typeof window !== 'undefined') {
   window.addEventListener('error', (err: any) => {
@@ -16,12 +15,12 @@ if (typeof window !== 'undefined') {
   });
 }
 
-const Throw = (code: number, message: string) => {
-  throw new BaseError(code, message);
+const Throw = (code: string, message: string) => {
+  throw new JSdkError(code, message);
 };
 
-const Aware = (code: number, message: string) => {
-  notificationCenter.emit('Error', { error: new BaseError(code, message) });
+const Aware = (code: string, message: string) => {
+  notificationCenter.emit('Error', { error: new JSdkError(code, message) });
 };
 
-export { BaseError, ErrorTypes, ErrorParser, Throw, Aware, HttpError };
+export { ErrorParser, Throw, Aware };

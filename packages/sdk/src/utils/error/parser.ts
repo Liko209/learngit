@@ -5,20 +5,19 @@
  */
 
 // import _ from 'lodash';
-import { BaseResponse } from 'foundation';
+import { BaseResponse, ERROR_TYPES } from 'foundation';
 import {
   DBCriticalError,
   DBNeedRetryError,
   DBUnsupportedError,
 } from '../../dao/errors/handler';
-import BaseError from './base';
-import ErrorTypes from './types';
+import { ERROR_CODES_SERVER, JServerError, JNetworkError, ERROR_CODES_NETWORK, JError, dbErrorParser } from '../../error';
 // import BaseResponse from 'foundation/network/BaseResponse';
 
 class ErrorParser {
-  static parse(arg: any): BaseError {
+  static parse(arg: any): JError {
     // Is BaseError, don't need parse
-    if (arg instanceof BaseError) {
+    if (arg instanceof JError) {
       return arg;
     }
 
@@ -32,10 +31,10 @@ class ErrorParser {
     if (parsedError) return parsedError;
 
     // Unknown
-    return new BaseError(ErrorTypes.UNDEFINED_ERROR, 'Undefined error!');
+    return new JError(ERROR_TYPES.UNDEFINED, '', 'Undefined error!');
   }
 
-  static parseApiError(resp: BaseResponse) {
+  static parseApiError(resp: BaseResponse): JError {
     const { data, status, statusText } = resp;
 
     /**
@@ -58,10 +57,8 @@ class ErrorParser {
         httpErrorMessage = data.error.message;
       }
 
-      const code = ErrorTypes[`API_${httpErrorCode.toUpperCase()}`];
-
-      if (code) {
-        return new BaseError(code, httpErrorMessage);
+      if (ERROR_CODES_SERVER[httpErrorCode.toUpperCase()]) {
+        return new JServerError(httpErrorCode.toUpperCase(), httpErrorMessage);
       }
     }
 
@@ -69,48 +66,35 @@ class ErrorParser {
      * From resp.statusText
      */
     if (statusText === 'Network Error') {
-      return new BaseError(
-        ErrorTypes.API_SERVER_ERROR,
-        'Api Error: Please check whether server crash',
-      );
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.NETWORK_ERROR,
+        'Api Error: Please check whether server crash');
     }
 
     if (statusText === 'NOT NETWORK CONNECTION') {
-      return new BaseError(
-        ErrorTypes.API_NETWORK,
-        'Api Error: Please check network connection',
-      );
+      return new JNetworkError(
+        ERROR_CODES_NETWORK.NOT_NETWORK,
+        'Api Error: Please check network connection');
     }
 
     /**
      * From resp.status
      */
-    if (Object.values(ErrorTypes).includes(status + ErrorTypes.API)) {
-      return new BaseError(status + ErrorTypes.API, '');
+    if (Object.values(ERROR_CODES_NETWORK).includes(`HTTP_${status}`)) {
+      return new JNetworkError(`HTTP_${status}`, '');
     }
 
     /**
      * Default Api error
      */
-    return new BaseError(ErrorTypes.API, 'Api Error: Unknown error.');
+    return new JServerError(ERROR_CODES_SERVER.GENERAL, 'Api Error: Unknown error.');
   }
 
   static parseDBError(
     error: DBCriticalError | DBNeedRetryError | DBUnsupportedError,
   ) {
-    if (error instanceof DBCriticalError) {
-      return new BaseError(ErrorTypes.DB_CRITICAL_ERROR, error.message);
-    }
 
-    if (error instanceof DBNeedRetryError) {
-      return new BaseError(ErrorTypes.DB_NEED_RETRY_ERROR, error.message);
-    }
-
-    if (error instanceof DBUnsupportedError) {
-      return new BaseError(ErrorTypes.DB_UNSUPPORTED_ERROR, error.message);
-    }
-
-    return null;
+    return dbErrorParser.parse(error);
   }
 }
 export default ErrorParser;
