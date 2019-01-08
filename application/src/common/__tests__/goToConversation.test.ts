@@ -38,7 +38,7 @@ describe('goToConversation() with group or team type', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 
-  it('getConversationId() with team type conversationId', async () => {
+  it('getConversationId() with team type conversationId [JPT-717]', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_TEAM,
     );
