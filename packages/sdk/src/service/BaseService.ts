@@ -258,6 +258,17 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       : false;
   }
 
+  protected isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   protected getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
   }
@@ -518,7 +529,11 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
           rollbackPartialModel,
           doPartialNotify,
         );
+<<<<<<< HEAD
         result = serviceErr(ERROR_CODES_SDK.GENERAL, 'doUpdateModel failed', {
+=======
+        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', {
+>>>>>>> stage/0.1.181227
           apiError: error,
         });
         break;

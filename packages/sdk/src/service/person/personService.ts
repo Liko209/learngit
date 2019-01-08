@@ -23,6 +23,7 @@ import {
   CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,
   PhoneNumberInfo,
+  SortingOrder,
 } from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
@@ -30,6 +31,7 @@ import { AccountService } from '../account/accountService';
 
 class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
+
   constructor() {
     const subscription = {
       [SOCKET.PERSON]: handleData,
@@ -166,21 +168,33 @@ class PersonService extends BaseService<Person> {
             break;
           }
 
-          let name: string = this.getName(person);
-          let sortValue = 0;
-
           if (!fetchAllIfSearchKeyEmpty && terms.length === 0) {
             break;
           }
 
+          let name: string = this.getName(person);
+          let sortValue = 0;
+
           if (terms.length > 0) {
             if (this.isFuzzyMatched(name, terms)) {
-              sortValue = 100;
+              sortValue = SortingOrder.FullNameMatching;
+              if (
+                person.first_name &&
+                this.isStartWithMatched(person.first_name, [terms[0]])
+              ) {
+                sortValue += SortingOrder.FirstNameMatching;
+              }
+              if (
+                person.last_name &&
+                this.isStartWithMatched(person.last_name, terms)
+              ) {
+                sortValue += SortingOrder.LastNameMatching;
+              }
             } else if (
               person.email &&
               this.isFuzzyMatched(person.email, terms)
             ) {
-              sortValue = 0;
+              sortValue = SortingOrder.EmailMatching;
             } else {
               break;
             }

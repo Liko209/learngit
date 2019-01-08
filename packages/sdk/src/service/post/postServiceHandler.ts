@@ -19,49 +19,6 @@ import { GlipTypeUtil, TypeDictionary } from '../../utils';
 // global_url_regex
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
-  // <a class='at_mention_compose' rel='{"id":21952077827}'>@Jeffrey Huang</a>
-  static buildAtMentionsPeopleInfo(
-    params: RawPostInfo,
-  ): {
-    text: string;
-    at_mention_non_item_ids: number[];
-  } {
-    const { atMentions, users = [], text } = params;
-
-    if (atMentions) {
-      let renderedText = text;
-      const ids = [];
-
-      for (let i = 0; i < users.length; i += 1) {
-        const userDisplay: string = users[i].display.replace(
-          /([.?*+^$[\]\\(){}|-])/g,
-          '\\$1',
-        );
-        const key = new RegExp(`@\\[${userDisplay}\\]:${users[i].id}:`, 'g');
-
-        // tslint:disable-next-line:max-line-length
-        const replacedText = `<a class='at_mention_compose' rel='{"id":${
-          users[i].id
-        }}'>@${users[i].display}</a>`;
-        const text = renderedText.replace(key, replacedText);
-        if (text !== renderedText) {
-          renderedText = text;
-          ids.push(users[i].id);
-        }
-      }
-
-      return {
-        text: renderedText,
-        at_mention_non_item_ids: ids,
-      };
-    }
-
-    return {
-      at_mention_non_item_ids: [],
-      text: params.text,
-    };
-  }
-
   static buildLinksInfo(params: RawPostInfo): LinksArray {
     const { text } = params;
     let res: any;
@@ -115,9 +72,6 @@ class PostServiceHandler {
       .getKVDao(AccountDao)
       .get(ACCOUNT_COMPANY_ID);
     const vers = versionHash();
-    const atMentionsPeopleInfo = PostServiceHandler.buildAtMentionsPeopleInfo(
-      params,
-    );
     const links = PostServiceHandler.buildLinksInfo(params);
     const now = Date.now();
     const buildPost: Post = {
@@ -130,17 +84,16 @@ class PostServiceHandler {
       new_version: vers,
       is_new: true,
       model_size: 0,
-      text: atMentionsPeopleInfo.text,
+      text: params.text,
       group_id: Number(params.groupId),
       from_group_id: Number(params.groupId),
       item_id: params.itemId,
       item_ids: params.itemIds || [],
       post_ids: [],
       at_mention_item_ids: [],
-      at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
+      at_mention_non_item_ids: params.mentionsIds || [],
       company_id: companyId,
       deactivated: false,
-      activity_data: {},
     };
 
     if (params.groupId && params.itemIds && params.itemIds.length > 0) {
@@ -174,12 +127,9 @@ class PostServiceHandler {
     }
     oldPost.new_version = versionHash();
     oldPost.is_new = false;
-    const atMentionsInfo: any = PostServiceHandler.buildAtMentionsPeopleInfo(
-      params,
-    );
-    oldPost.text = atMentionsInfo.text;
-    if (atMentionsInfo.at_mention_non_item_ids.length) {
-      oldPost.at_mention_non_item_ids = atMentionsInfo.at_mention_non_item_ids;
+    oldPost.text = params.text;
+    if (params.mentionsIds !== undefined && params.mentionsIds.length) {
+      oldPost.at_mention_non_item_ids = params.mentionsIds;
     }
     delete oldPost.likes; // do we need this ?
     oldPost._id = oldPost.id;

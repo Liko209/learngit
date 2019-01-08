@@ -20,4 +20,11 @@ type PhoneNumberInfo = {
   phoneNumber: string;
 };
 
-export { CALL_ID_USAGE_TYPE, PHONE_NUMBER_TYPE, PhoneNumberInfo };
+class SortingOrder {
+  public static FullNameMatching: number = 1;
+  public static FirstNameMatching: number = 3;
+  public static LastNameMatching: number = 2;
+  public static EmailMatching: number = 0;
+}
+
+export { CALL_ID_USAGE_TYPE, PHONE_NUMBER_TYPE, PhoneNumberInfo, SortingOrder };
