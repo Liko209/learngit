@@ -154,3 +154,40 @@ class SearchItem extends BaseWebComponent {
     await this.t.click(this.name);
   }
 }
+
+
+export class joinTeamDialog extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get title() {
+    return this.getSelector('h2', this.self).withText('Join team?')
+  }
+
+  get content() {
+    return this.self.find('p').withText("You are not currently a member of the");
+  }
+
+  async shouldBeTeam(teamName: string) {
+    const reg = new RegExp(`You are not currently a member of the ${teamName} team. Would you like to join the team?`)
+    await this.t.expect(this.content.textContent).match(reg);
+  }
+  
+  get joinButton() {
+    return this.self.find('button').withText('Join');
+  }
+
+  get cancelButton() {
+    return this.self.find('button').withText('Cancel');
+  }
+
+  async join() {
+    await this.t.click(this.joinButton);
+  }
+
+  async cancel() {
+    await this.t.click(this.cancelButton);
+  }
+}
