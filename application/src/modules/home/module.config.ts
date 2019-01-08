@@ -1,5 +1,5 @@
-import { HomeService } from './services';
-import { HomeStore } from './stores';
+import { HomeService } from './service';
+import { HomeStore } from './store';
 import { HomeModule } from './HomeModule';
 
 const config = {

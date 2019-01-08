@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject } from 'framework';
-import { HomeService } from './services';
+import { HomeService } from './service';
 import { config } from './home.config';
 
 class HomeModule extends AbstractModule {

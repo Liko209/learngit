@@ -1,5 +1,5 @@
 import { RouterStore } from './stores';
-import { RouterService } from './services';
+import { RouterService } from './service';
 import { RouterModule } from './RouterModule';
 
 const config = {

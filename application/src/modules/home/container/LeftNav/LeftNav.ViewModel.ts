@@ -11,7 +11,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import StoreViewModel from '@/store/ViewModel';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
-import { HomeStore } from '../../stores';
+import { HomeStore } from '../../store';
 import { NavConfig } from '../../types';
 import { LeftNavProps } from './types';
 

@@ -14,7 +14,7 @@ import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import '@/i18n';
 
-import { App } from './containers/App';
+import { App } from './container';
 
 import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';

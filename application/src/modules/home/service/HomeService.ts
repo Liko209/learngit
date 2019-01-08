@@ -1,5 +1,5 @@
 import { inject } from 'framework';
-import { HomeStore, SubModuleConfig } from '../stores';
+import { HomeStore, SubModuleConfig } from '../store';
 
 class HomeService {
   @inject(HomeStore)
