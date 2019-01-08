@@ -17,6 +17,8 @@ import RootRef from '@material-ui/core/RootRef';
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { StyledTabs } from './StyledTabs';
 import { StyledTab, StyledTabProps } from './StyledTab';
+import { StyledContainer } from './StyledContainer';
+import { StyledWrapper } from './StyledWrapper';
 import { JuiTabProps } from './Tab';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
@@ -96,8 +98,8 @@ class JuiTabs extends PureComponent<Props, States> {
         parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
-    // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
+    console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+    console.log('tabs', `_containerWidth: ${this._containerWidth}`);
     this._measureTabWidths();
     this._calculateIndexTabsAndIndexMenus();
     // todo resize listener
@@ -113,8 +115,8 @@ class JuiTabs extends PureComponent<Props, States> {
       }
       return 0;
     });
-    // console.log('tabs', `_tabWidths: ${this._tabWidths}`);
-    // console.log('tabs', `_tabWidthsTotal: ${this._tabWidthsTotal}`);
+    console.log('tabs', `_tabWidths: ${this._tabWidths}`);
+    console.log('tabs', `_tabWidthsTotal: ${this._tabWidthsTotal}`);
   }
 
   private _calculateIndexTabsAndIndexMenus = () => {
@@ -148,7 +150,7 @@ class JuiTabs extends PureComponent<Props, States> {
       // 5. change original array
       indexTabs.sort();
     }
-    // console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
+    console.log('tabs', `indexTabs: ${indexTabs}`, `indexMenus: ${indexMenus}`);
     this.setState({
       indexMenus,
       indexTabs,
@@ -274,9 +276,28 @@ class JuiTabs extends PureComponent<Props, States> {
     }
   }
 
+  renderContainer = () => {
+    const { children } = this.props;
+    const { indexSelected } = this.state;
+    return Children.map(
+      children,
+      (child: ReactElement<JuiTabProps>, index: number) => {
+        let className = '';
+        if (index === indexSelected) {
+          className = 'show';
+        }
+        return (
+          <StyledContainer key={index} className={className}>
+            {child.props.children}
+          </StyledContainer>
+        );
+      },
+    );
+  }
+
   render() {
     const { indexSelected, indexTabs, indexMenus } = this.state;
-    // first execute render indexTabs & indexMenus length equal 0
+    // Notice: first execute render indexTabs & indexMenus length equal 0
     if (
       indexTabs.length > 0 &&
       indexMenus.length > 0 &&
@@ -285,7 +306,7 @@ class JuiTabs extends PureComponent<Props, States> {
       return null; // select menu list tab
     }
     return (
-      <div>
+      <StyledWrapper>
         <RootRef rootRef={this._containerRef}>
           <StyledTabs
             value={indexSelected}
@@ -299,7 +320,8 @@ class JuiTabs extends PureComponent<Props, States> {
               : this._renderFinalTab()}
           </StyledTabs>
         </RootRef>
-      </div>
+        {this.renderContainer()}
+      </StyledWrapper>
     );
   }
 }
