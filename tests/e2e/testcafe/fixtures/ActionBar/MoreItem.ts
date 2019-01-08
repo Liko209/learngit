@@ -25,15 +25,6 @@ test(formalName('Jump to post position when click button or clickable area of po
   const addText = uuid();
   const newText = `${originalText}${addText}`
 
-  function convert(str) {
-    var arr1 = [];
-    for (var n = 0, l = str.length; n < l; n++) {
-      var hex = Number(str.charCodeAt(n)).toString(16);
-      arr1.push(hex);
-    }
-    return arr1.join('');
-  }
-
   let teamId, postId, userName;
   await h(t).withLog('Given I have 1 Bookmarks post in team ,one in group', async () => {
     teamId = await h(t).platform(user).createAndGetGroupId({
@@ -79,11 +70,8 @@ test(formalName('Jump to post position when click button or clickable area of po
   });
 
   await h(t).withLog('And the input box message should be correct', async () => {
-    await H.retryUntilPass(async () => {
-      const reg = new RegExp(`@${userName}.*wrote:.*>.*${newText}`, 'gm');
-      const quoteMessage = await conversationPage.messageInputArea.textContent;
-      assert.ok(reg.test(quoteMessage), "quote message incorrect");
-    })
+    const reg = new RegExp(`@${userName}.*wrote:.*>.*${newText}`, 'gm');
+    await t.expect(conversationPage.messageInputArea.textContent).match(reg);
   });
 
   await h(t).withLog('When I delete the post', async () => {
