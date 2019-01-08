@@ -1,13 +1,13 @@
 import React from 'react';
 import { t } from 'i18next';
 import { Umi } from '@/containers/Umi';
-import { Messages } from '@/modules/message';
+import { Message } from '@/modules/message';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    component: Messages,
+    component: Message,
   },
   nav: (currentConversationId: number, groupIds: number[]) => {
     return {

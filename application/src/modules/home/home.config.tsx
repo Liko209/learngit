@@ -1,13 +1,13 @@
-import * as dashboard from './configs/dashboard.config';
-import * as message from './configs/message.config';
-import * as phone from './configs/phone.config';
-import * as meeting from './configs/meeting.config';
-import * as contact from './configs/contact.config';
-import * as calendar from './configs/calendar.config';
-import * as task from './configs/task.config';
-import * as note from './configs/note.config';
-import * as file from './configs/file.config';
-import * as setting from './configs/setting.config';
+import * as dashboard from './config/dashboard.config';
+import * as message from './config/message.config';
+import * as phone from './config/phone.config';
+import * as meeting from './config/meeting.config';
+import * as contact from './config/contact.config';
+import * as calendar from './config/calendar.config';
+import * as task from './config/task.config';
+import * as note from './config/note.config';
+import * as file from './config/file.config';
+import * as setting from './config/setting.config';
 
 const config = {
   subModules: [

@@ -9,7 +9,7 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 import { DialogPortal } from '@/containers/Dialog';
-import { Messages } from '@/modules/message';
+import { Message } from '@/modules/message';
 import { analytics } from '@/Analytics';
 import { LeftNav } from '../LeftNav';
 import { TopBar } from '../TopBar';
@@ -33,7 +33,7 @@ class Home extends Component<HomeViewProps> {
           <LeftNav />
           <Switch>
             <Redirect exact={true} from="/" to="/messages/" />
-            <Route path="/messages/:id?" component={Messages} />
+            <Route path="/messages/:id?" component={Message} />
             <Route component={NotFound} />
           </Switch>
           <DialogPortal />

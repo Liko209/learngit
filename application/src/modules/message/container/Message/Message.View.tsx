@@ -29,7 +29,7 @@ type State = {
 };
 
 @observer
-class MessagesViewComponent extends Component<MessagesViewProps, State> {
+class MessageViewComponent extends Component<MessagesViewProps, State> {
   state = {
     messageError: false,
     retryParams: null,
@@ -134,6 +134,6 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
   }
 }
 
-const MessagesView = withRouter(MessagesViewComponent);
+const MessageView = withRouter(MessageViewComponent);
 
-export { MessagesView };
+export { MessageView };

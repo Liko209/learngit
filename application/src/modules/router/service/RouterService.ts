@@ -5,7 +5,7 @@
  */
 import { RouteProps } from 'react-router-dom';
 import { inject } from 'framework';
-import { RouterStore } from '../stores/RouterStore';
+import { RouterStore } from '../store/RouterStore';
 
 type RegisterRouteConfig = RouteProps & { needAuth?: boolean };
 

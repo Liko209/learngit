@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { container } from 'framework';
 import history from '../../../../history';
-import { RouterStore } from '../../stores/RouterStore';
+import { RouterStore } from '../../store/RouterStore';
 import { AuthRoute } from '../AuthRoute';
 
 class Router extends React.Component {

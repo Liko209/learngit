@@ -12,11 +12,11 @@ import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { MessagesProps } from './types';
 
-class MessagesViewModel extends AbstractViewModel<MessagesProps> {
+class MessageViewModel extends AbstractViewModel<MessagesProps> {
   @computed
   get isLeftNavOpen() {
     return getGlobalValue(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
   }
 }
 
-export { MessagesViewModel };
+export { MessageViewModel };

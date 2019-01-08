@@ -1,4 +1,4 @@
-import { RouterStore } from './stores';
+import { RouterStore } from './store';
 import { RouterService } from './service';
 import { RouterModule } from './RouterModule';
 
