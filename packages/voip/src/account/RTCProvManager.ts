@@ -7,7 +7,13 @@
 import { rtcRestApiManager } from '../utils/RTCRestApiManager';
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCSipProvisionInfo, RTC_PROV_EVENT } from './types';
-import { IResponse } from 'foundation/src/network/network';
+import {
+  IResponse,
+  NETWORK_VIA,
+  NETWORK_METHOD,
+} from 'foundation/src/network/network';
+import { HttpRequest } from 'foundation/src/network/client/http';
+import NetworkRequestBuilder from 'foundation/src/network/client/NetworkRequestBuilder';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import {
   kRTCProvRequestErrorRertyTimerMin,
@@ -17,6 +23,8 @@ import {
 } from './constants';
 
 import { isNotEmptyString } from '../utils/utils';
+import { RTC_REST_API } from '../utils/types';
+import _ from 'lodash';
 
 enum ERROR_TYPE {
   REQUEST_ERROR,
@@ -44,7 +52,26 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private async _sendSipProvRequest() {
-    const response: IResponse = await rtcRestApiManager.sendRequest(null);
+    rtcLogger.info('RTCProvManager', 'start send SipProv Request');
+    const provRequest: HttpRequest = new NetworkRequestBuilder()
+      .setPath(RTC_REST_API.API_SIP_PROVISION)
+      .setMethod(NETWORK_METHOD.POST)
+      .setAuthfree(false)
+      .setVia(NETWORK_VIA.HTTP)
+      .setData({ sipInfo: [{ transport: 'WSS' }] })
+      .build();
+
+    let response: IResponse = null as any;
+    try {
+      response = await rtcRestApiManager.sendRequest(provRequest);
+    } catch (error) {
+      rtcLogger.error('RTCProvManager', `the request error is: ${error}`);
+    }
+
+    rtcLogger.info(
+      'RTCProvManager',
+      `the response is: ${JSON.stringify(response)}`,
+    );
 
     if (!response) {
       rtcLogger.error('RTCProvManager', 'the response is null');
@@ -52,6 +79,10 @@ class RTCProvManager extends EventEmitter2 {
     }
 
     if (<number>response.status < 200 || <number>response.status >= 400) {
+      rtcLogger.info(
+        'RTCProvManager',
+        `the response is error:${response.status}`,
+      );
       this._errorHandling(ERROR_TYPE.REQUEST_ERROR, response.retryAfter);
       return;
     }
@@ -59,6 +90,7 @@ class RTCProvManager extends EventEmitter2 {
     const responseData: RTCSipProvisionInfo = response.data;
 
     if (!this._checkSipProvInfoParame(responseData)) {
+      rtcLogger.info('RTCProvManager', 'the response param is error');
       this._errorHandling(ERROR_TYPE.PARAMS_ERROR, response.retryAfter);
       return;
     }
@@ -66,24 +98,26 @@ class RTCProvManager extends EventEmitter2 {
     this._resetFreshTimer();
     this._requestErrorRetryInterval = kRTCProvRequestErrorRertyTimerMin;
 
-    if (responseData !== this._sipProvisionInfo) {
+    if (!_.isEqual(responseData, this._sipProvisionInfo)) {
+      rtcLogger.info('RTCProvManager', 'emit new prov');
       this._sipProvisionInfo = responseData;
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: responseData });
     }
   }
 
   private _resetFreshTimer() {
+    rtcLogger.info('RTCProvManager', 'set fresh timer');
     this._clearFreshTimer();
     this._reFreshTimerId = setTimeout(() => {
       this._sendSipProvRequest();
-    },                                this._reFreshInterval);
+    },                                this._reFreshInterval * 1000);
   }
 
   private _clearFreshTimer() {
     if (this._reFreshTimerId) {
       clearTimeout(this._reFreshTimerId);
     }
-    this._reFreshTimerId = null;
+    this._reFreshTimerId = null as any;
   }
 
   private _errorHandling(type: ERROR_TYPE, retryAfter: number): void {
@@ -116,6 +150,7 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _retryRequestForError(seconds: number) {
+    rtcLogger.info('RTCProvManager', `set ${seconds} s error retry timer`);
     this._clearFreshTimer();
     this._canAcquireSipProv = false;
     this.retrySeconds = seconds;
@@ -126,18 +161,19 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _checkSipProvInfoParame(info: RTCSipProvisionInfo): boolean {
+    rtcLogger.info('RTCProvManager', `the prov info: ${JSON.stringify(info)}`);
     let parameCorrect: boolean = false;
     try {
-      const parameDevice =
-        info.device instanceof Array ? info.device[0] : info.device;
+      const paramesipInfo =
+        info.sipInfo instanceof Array ? info.sipInfo[0] : info.sipInfo;
 
       parameCorrect =
-        isNotEmptyString(parameDevice.authorizationID) &&
-        isNotEmptyString(parameDevice.domain) &&
-        isNotEmptyString(parameDevice.outboundProxy) &&
-        isNotEmptyString(parameDevice.password) &&
-        isNotEmptyString(parameDevice.transport) &&
-        isNotEmptyString(parameDevice.username);
+        isNotEmptyString(paramesipInfo.authorizationId) &&
+        isNotEmptyString(paramesipInfo.domain) &&
+        isNotEmptyString(paramesipInfo.outboundProxy) &&
+        isNotEmptyString(paramesipInfo.password) &&
+        isNotEmptyString(paramesipInfo.transport) &&
+        isNotEmptyString(paramesipInfo.username);
     } catch (error) {
       rtcLogger.error(
         'RTCProvManager',
