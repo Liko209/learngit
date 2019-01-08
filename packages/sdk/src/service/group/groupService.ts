@@ -30,7 +30,6 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -40,7 +39,7 @@ import handleData, {
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
-import { mainLogger, err, ok, Result } from 'foundation';
+import { mainLogger, err, ok, Result, JError } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import { extractHiddenGroupIds } from '../profile/handleData';
@@ -60,6 +59,7 @@ import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
 import { ServiceResult } from '../ServiceResult';
+import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -67,12 +67,6 @@ type CreateTeamOptions = {
   canPost?: boolean;
   canAddIntegrations?: boolean;
   canPin?: boolean;
-};
-
-const GroupErrorTypes = {
-  ALREADY_TAKEN: 1,
-  INVALID_FIELD: 2,
-  UNKNOWN: 99,
 };
 
 const handleTeamsRemovedFrom = async (ids: number[]) => {
@@ -271,7 +265,7 @@ class GroupService extends BaseService<Group> {
         await handleData([rawGroup]);
         return ok(group);
       },
-      Err: (error: BaseError) => err(error),
+      Err: (error: JError) => err(error),
     });
   }
 
@@ -417,7 +411,7 @@ class GroupService extends BaseService<Group> {
         const newGroup = await this.handleRawGroup(rawGroup);
         return ok(newGroup);
       },
-      Err: (error: BaseError) => err(error),
+      Err: (error: JError) => err(error),
     });
     return result;
   }
@@ -488,7 +482,7 @@ class GroupService extends BaseService<Group> {
       );
       return true;
     } catch (error) {
-      throw ErrorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
 
@@ -508,7 +502,7 @@ class GroupService extends BaseService<Group> {
       return true;
     }
     if (!result.apiError) {
-      throw ErrorTypes.UNDEFINED_ERROR;
+      throw new JSdkError(ERROR_CODES_SDK.GENERAL, 'undefined ERROR');
     }
     throw result.apiError.code;
   }
@@ -517,7 +511,7 @@ class GroupService extends BaseService<Group> {
   private async _doUpdateGroup(
     id: number,
     group: Group,
-  ): Promise<Group | BaseError> {
+  ): Promise<Group | JError> {
     const apiResult = await GroupAPI.putTeamById(id, group);
     if (apiResult.isOk()) {
       return transform<Group>(apiResult.data);
@@ -762,7 +756,7 @@ class GroupService extends BaseService<Group> {
         if (group.email_friendly_abbreviation) {
           email = `${
             group.email_friendly_abbreviation
-          }@${companyReplyDomain}.${envDomain}`;
+            }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {
@@ -859,4 +853,4 @@ class GroupService extends BaseService<Group> {
   }
 }
 
-export { CreateTeamOptions, GroupService, GroupErrorTypes };
+export { CreateTeamOptions, GroupService };

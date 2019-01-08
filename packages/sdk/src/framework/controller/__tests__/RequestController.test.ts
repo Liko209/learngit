@@ -6,8 +6,8 @@
 
 import { RequestController } from '../impl/RequestController';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
-import { BaseResponse, BaseError } from 'foundation/src';
 import { IdModel } from '../../../framework/model';
+import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation/src';
 import NetworkClient from '../../../api/NetworkClient';
 
 type TestEntity = IdModel & {
@@ -56,7 +56,7 @@ describe('RequestController', () => {
     });
 
     it('should return exception when error', async () => {
-      const error = new BaseError(404, 'Not Found');
+      const error = new JNetworkError(ERROR_CODES_NETWORK.NOT_FOUND, 'Not Found');
       jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
         new ApiResultErr(error, {
           status: 404,
@@ -125,7 +125,7 @@ describe('RequestController', () => {
     });
 
     it('should throw exception when api fail', async () => {
-      const error = new BaseError(500, 'Not Found');
+      const error = new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'Not Found');
       jest.spyOn(networkConfig.networkClient, 'put').mockResolvedValueOnce(
         new ApiResultErr(error, {
           status: 500,
@@ -144,7 +144,7 @@ describe('RequestController', () => {
 
   describe('postData()', () => {
     it('should throw exception api error', async () => {
-      const error = new BaseError(400, 'Not Found');
+      const error = new JNetworkError(ERROR_CODES_NETWORK.BAD_REQUEST, 'Not Found');
       jest.spyOn(networkConfig.networkClient, 'post').mockResolvedValueOnce(
         new ApiResultErr(error, {
           status: 400,

@@ -5,7 +5,7 @@
  */
 import { err, ok } from 'foundation';
 import { service } from 'sdk';
-import { BaseError, ErrorTypes } from 'sdk/utils';
+import { JNetworkError, ERROR_CODES_NETWORK, ERROR_CODES_SERVER, JServerError } from 'sdk/error';
 
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
@@ -18,17 +18,17 @@ jest.mock('../../../store/index');
 const { GroupService, AccountService } = service;
 
 const groupService = {
-  createTeam() {},
+  createTeam() { },
 };
 const accountService = {
-  getCurrentUserId() {},
+  getCurrentUserId() { },
 };
 // GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 // AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 const createTeamVM = new CreateTeamViewModel();
-function getNewBaseError(type: ErrorTypes, message: string = '') {
-  return new BaseError(type, message);
+function getNewJServerError(code: string, message: string = '') {
+  return new JServerError(code, message);
 }
 describe('CreateTeamVM', () => {
   beforeAll(() => {
@@ -73,7 +73,7 @@ describe('CreateTeamVM', () => {
       .mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
-      .mockResolvedValue(err(getNewBaseError(ErrorTypes.API_ALREADY_TAKEN)));
+      .mockResolvedValue(err(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN)));
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
@@ -90,7 +90,7 @@ describe('CreateTeamVM', () => {
       options,
     );
     if (result.isErr()) {
-      expect(result.error.code).toBe(ErrorTypes.API_ALREADY_TAKEN);
+      expect(result.error.code).toBe(ERROR_CODES_SERVER.ALREADY_TAKEN);
     } else {
       expect(result).toBe(false);
     }
@@ -103,8 +103,7 @@ describe('CreateTeamVM', () => {
       .mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
-      .mockResolvedValueOnce(err(new BaseError(500, '')));
-
+      .mockResolvedValueOnce(err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')));
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
@@ -160,13 +159,13 @@ describe('CreateTeamVM', () => {
   });
 
   it('createErrorHandle()', () => {
-    let error = getNewBaseError(ErrorTypes.API_ALREADY_TAKEN);
+    let error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     createTeamVM.createErrorHandler(error);
     expect(createTeamVM.errorMsg).toBe('alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
-    error = getNewBaseError(
-      ErrorTypes.API_INVALID_FIELD,
+    error = getNewJServerError(
+      ERROR_CODES_SERVER.INVALID_FIELD,
       'This is not a valid email address: q@qq.com.',
     );
     createTeamVM.createErrorHandler(error);

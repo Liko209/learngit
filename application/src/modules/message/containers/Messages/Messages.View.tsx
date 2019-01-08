@@ -126,7 +126,9 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
             }
           />
         </Switch>
-        {currentConversationId ? <RightRail /> : null}
+        {currentConversationId ? (
+          <RightRail id={currentConversationId} />
+        ) : null}
       </JuiResponsiveLayout>
     );
   }

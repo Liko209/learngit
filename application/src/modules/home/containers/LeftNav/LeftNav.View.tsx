@@ -58,6 +58,6 @@ class LeftNav extends Component<LeftNavProps> {
   }
 }
 
-const LeftNavView = translate(['translations'])(withRouter(LeftNav));
+const LeftNavView = translate('translations')(withRouter(LeftNav));
 
 export { LeftNavView };

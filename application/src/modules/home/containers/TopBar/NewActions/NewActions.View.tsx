@@ -30,7 +30,7 @@ class NewActions extends React.Component<NewActionsProps> {
         tooltipTitle={t('newActions')}
         data-test-automation-id="addMenuBtn"
       >
-        add_circle
+        new_actions
       </JuiIconButton>
     );
   }

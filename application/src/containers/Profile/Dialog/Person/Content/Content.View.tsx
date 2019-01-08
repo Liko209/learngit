@@ -80,7 +80,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
             value: aria || value,
           })}
         >
-          file_copy
+          copy
         </JuiIconButton>
       </FormCopy>
     );
