@@ -4,13 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export type RawPostInfo = {
-  atMentions?: boolean;
-  users?: any[];
   text: string;
   groupId?: number;
   itemIds?: number[];
   postId?: number;
   itemId?: number;
+  mentionsIds?: number[];
 };
 
 export type RawFilePostInfo = RawPostInfo & {

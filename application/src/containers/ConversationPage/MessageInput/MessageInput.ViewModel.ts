@@ -22,8 +22,8 @@ import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { isAtMentions } from './handler';
 import { Group } from 'sdk/models';
+
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
 
@@ -169,7 +169,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      const content = markdownFromDelta(quill.getContents());
+      const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -181,23 +181,21 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       vm.error = '';
       const items = vm.items;
       if (content.trim() || items.length > 0) {
-        vm._sendPost(content);
+        vm._sendPost(content, mentionIds);
       }
     };
   }
 
-  private async _sendPost(content: string) {
+  private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
     this.forceSaveDraft();
-    const atMentions = isAtMentions(content);
     const items = this.items;
     try {
       await this._postService.sendPost({
-        atMentions,
         text: content,
         groupId: this.id,
-        users: atMentions ? this._users : undefined,
         itemIds: items.map(item => item.id),
+        mentionsIds: ids,
       });
       // clear context (attachments) after post
       //
@@ -211,7 +209,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   forceSendPost = () => {
-    this._sendPost('');
+    this._sendPost('', []);
   }
 
   addOnPostCallback = (callback: OnPostCallback) => {
