@@ -16,7 +16,7 @@ fixture('PublicTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PubilcTeam', 'Potar.He']), async t => {
+test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -64,6 +64,7 @@ test(formalName(`Display Join button for public team which login user doesn't jo
 
   await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
+    await t.debug();
     await t.hover(search.itemEntryByCid(publicTeamId).self);
   });
 
@@ -80,16 +81,87 @@ test(formalName(`Display Join button for public team which login user doesn't jo
     await search.itemEntryByCid(joinedTeamId).shouldNotHasJoinButton();
   });
 
-  const steps = async () => {
-    
-  }
-
-  await h(t).withLog(`When I search and hover the people ${otherUserName}`, async () => {
+  let peopleCount, groupCount;
+  await h(t).withLog(`When I search the people ${otherUserName}`, async () => {
     await search.typeText(otherUserName, { replace: true, paste: true });
+
+  });
+  await h(t).withLog(`Then at least one people and one group should be showed`, async () => {
+    await t.expect(search.peoples.count).gte(1);
+    await t.expect(search.groups.count).gte(1);
+    peopleCount = await search.peoples.count;
+    groupCount = await search.groups.count;
   });
 
-  await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldNotHasJoinButton();
+  for (let i in _.range(peopleCount)) {
+    const item = search.nthPeople(Number(i));
+    await h(t).withLog(`When I hover each one group result ${i}/${peopleCount}`, async () => {
+      await t.hover(item.self);
+    });
+
+    await h(t).withLog(`Then the join button should not be showed`, async () => {
+      await item.shouldNotHasJoinButton();
+    });
+  }
+  for (let i in _.range(groupCount)) {
+    const item = search.nthGroup(Number(i));
+    await h(t).withLog(`When I hover each one people result ${i}/${groupCount}`, async () => {
+      await t.hover(item.self);
+    });
+
+    await h(t).withLog(`Then the join button should not be showed`, async () => {
+      await item.shouldNotHasJoinButton();
+    });
+  }
+});
+
+test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'JPT-704', 'PublicTeam', 'Potar.He']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const otherUser = h(t).rcData.mainCompany.users[5];
+  await h(t).platform(otherUser).init();
+  await h(t).glip(otherUser).init()
+
+  const publicTeamName = uuid();
+  const joinedTeamName = uuid();
+
+  let publicTeamId;
+  await h(t).withLog('Given I have a public team A but loginUser did not join it, team B (loginUser joined),and some group', async () => {
+    publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
+      isPublic: true,
+      name: publicTeamName,
+      type: 'Team',
+      members: [otherUser.rcId],
+    });
+
   });
+
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const search = app.homePage.header.search;
+
+  await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
+    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await t.hover(search.itemEntryByCid(publicTeamId).self);
+  });
+
+  await h(t).withLog(`Then the join button should be showed `, async () => {
+    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
+  })
+
+
+  await h(t).withLog(`When I click join button`, async () => {
+    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await t.hover(search.itemEntryByCid(publicTeamId).self);
+  });
+
+  await h(t).withLog(`Then search result list dismiss`, async () => {
+   })
+
+  await h(t).withLog(`And display a confirmation`, async () => {
+  })
 
 });
