@@ -1,3 +1,4 @@
+import { VersionInfo } from '@/containers/VersionInfo';
 import { Home } from '@/modules/home';
 import { UnifiedLogin } from '@/modules/login';
 
@@ -11,6 +12,14 @@ const config = {
     {
       path: '/unified-login',
       component: UnifiedLogin,
+    },
+    {
+      path: '/commit-info',
+      component: VersionInfo,
+    },
+    {
+      path: '/version',
+      component: VersionInfo,
     },
   ],
 };
