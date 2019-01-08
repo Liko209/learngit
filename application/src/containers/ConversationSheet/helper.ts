@@ -10,11 +10,15 @@ import FileItemModel, {
   FileType,
 } from '@/store/models/FileItem';
 
-import { getDateMessage } from '@/utils/date';
+import {
+  dateFormatter,
+  recentlyTwoDayAndOther,
+  getDateMessage,
+} from '@/utils/date';
 
 function getDateAndTime(timestamp: number) {
-  const getAMOrPM = moment(timestamp).format('h:mm A');
-  const date = getDateMessage(timestamp);
+  const getAMOrPM = dateFormatter.localTime(moment(timestamp));
+  const date = recentlyTwoDayAndOther(timestamp);
 
   return `${date} ${t('at')} ${getAMOrPM}`;
 }
@@ -25,9 +29,18 @@ function getDurationTime(startTimestamp: number, endTimestamp: number) {
   const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
 
   if (isToday) {
-    endTime = endTime.replace(endTime.split(' ')[0], '');
+    const endTimeArr = endTime.split(' ');
+    endTime = endTime.replace(`${endTimeArr[0]} ${endTimeArr[1]} `, '');
   }
   return `${startTime} - ${endTime}`;
+}
+
+function getDurationDate(startTimestamp: number, endTimestamp: number) {
+  const startTime = recentlyTwoDayAndOther(startTimestamp);
+  const endTime = recentlyTwoDayAndOther(endTimestamp);
+  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
+  const endTimeString = isToday ? '' : ` - ${endTime}`;
+  return `${startTime}${endTimeString}`;
 }
 
 function getI18Text(type: string, count: number) {
@@ -62,7 +75,7 @@ function getDurationTimeText(
     '';
 
   const date = repeatEndingOn
-    ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
+    ? dateFormatter.exactDate(moment(repeatEndingOn))
     : '';
   const hideUntil = (repeat: string, repeatEnding: string) =>
     repeat === '' || // task not set repeat will be ''
@@ -169,6 +182,7 @@ export {
   getDateMessage,
   getDateAndTime,
   getDurationTime,
+  getDurationDate,
   getDurationTimeText,
   getFileIcon,
   getFileType,

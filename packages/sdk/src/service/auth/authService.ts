@@ -14,10 +14,11 @@ import {
 import { AuthDao, daoManager } from '../../dao';
 import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
-import { Aware, ErrorParser, ErrorTypes } from '../../utils/error';
+import { Aware, ErrorParser } from '../../utils/error';
 import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
+import { ERROR_CODES_SDK } from '../../error';
 
 interface ILogin {
   username: string;
@@ -84,7 +85,7 @@ class AuthService extends BaseService {
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors
-      Aware(ErrorTypes.OAUTH, err.message);
+      Aware(ERROR_CODES_SDK.OAUTH, err.message);
     }
   }
 

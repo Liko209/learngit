@@ -1,18 +1,19 @@
-import { BaseError, ResultOk, ResultErr } from 'foundation';
+import { JError, ResultOk, ResultErr } from 'foundation';
+import { JSdkError } from '../error';
 
-type RawErrors = { apiError?: BaseError; dbError?: BaseError };
+type RawErrors = { apiError?: JError; dbError?: JError };
 
-class ServiceResultOk<T, E extends BaseError = BaseError> extends ResultOk<
+class ServiceResultOk<T, E extends JError = JError> extends ResultOk<
   T,
   E
-> {}
+  > { }
 
-class ServiceResultErr<T, E extends BaseError = BaseError> extends ResultErr<
+class ServiceResultErr<T, E extends JError = JError> extends ResultErr<
   T,
   E
-> {
-  readonly apiError?: BaseError;
-  readonly dbError?: BaseError;
+  > {
+  readonly apiError?: JError;
+  readonly dbError?: JError;
 
   constructor(error: E, { apiError, dbError }: RawErrors = {}) {
     super(error);
@@ -21,7 +22,7 @@ class ServiceResultErr<T, E extends BaseError = BaseError> extends ResultErr<
   }
 }
 
-type ServiceResult<T, E extends BaseError = BaseError> =
+type ServiceResult<T, E extends JError = JError> =
   | ServiceResultOk<T, E>
   | ServiceResultErr<T, E>;
 
@@ -29,14 +30,14 @@ function serviceOk<T>(data: T) {
   return new ServiceResultOk(data);
 }
 
-function serviceErr<E extends BaseError = BaseError>(
-  type: number,
+function serviceErr<E extends JError = JError>(
+  code: string,
   message?: string,
   rawErrors: RawErrors = {},
 ): ServiceResultErr<any, E> {
   const prefix = 'ServiceError: ';
   const errorMessage = message || 'Common service error.';
-  const error = new BaseError(type, `${prefix}${errorMessage}`);
+  const error = new JSdkError(code, `${prefix}${errorMessage}`);
   return new ServiceResultErr(error as E, rawErrors);
 }
 

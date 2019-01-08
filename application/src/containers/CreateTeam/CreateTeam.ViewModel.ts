@@ -7,11 +7,11 @@ import { action, computed, observable } from 'mobx';
 
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
 import AccountService from 'sdk/service/account';
-import { BaseError, ErrorTypes } from 'sdk/utils';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
+import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -93,13 +93,12 @@ class CreateTeamViewModel extends AbstractViewModel {
     return result;
   }
 
-  createErrorHandler(error: BaseError) {
+  createErrorHandler(error: JError) {
     this.serverUnknownError = false;
-    const code = error.code;
-    if (code === ErrorTypes.API_ALREADY_TAKEN) {
+    if (error.isMatch({ type: ERROR_TYPES.SERVER, codes: [ERROR_CODES_SERVER.ALREADY_TAKEN] })) {
       this.errorMsg = 'alreadyTaken';
       this.nameError = true;
-    } else if (code === ErrorTypes.API_INVALID_FIELD) {
+    } else if (error.isMatch({ type: ERROR_TYPES.SERVER, codes: [ERROR_CODES_SERVER.INVALID_FIELD] })) {
       const message = error.message;
       if (matchInvalidEmail(message).length > 0) {
         this.errorEmail = matchInvalidEmail(message);

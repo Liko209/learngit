@@ -10,15 +10,14 @@ import dataDispatcher from '../../component/DataDispatcher/index';
 
 import { SortableModel } from '../../models';
 import { IdModel, Raw } from '../../framework/model';
-import { BaseError, ErrorTypes } from '../../utils';
 import _ from 'lodash';
 import { ApiResultOk } from '../../api/ApiResult';
-import { BaseResponse } from 'foundation/src';
+import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation/src';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
 
-class MyDao extends BaseDao<{}> {}
+class MyDao extends BaseDao<{}> { }
 const fakeApi = {
   getDataById: jest.fn(),
 };
@@ -292,7 +291,7 @@ describe('BaseService', () => {
       jest
         .spyOn(service, 'doUpdateModel')
         .mockResolvedValue(
-          new BaseError(ErrorTypes.API_NETWORK, 'fake network error'),
+          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'fake network error'),
         );
 
       jest

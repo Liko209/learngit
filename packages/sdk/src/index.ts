@@ -10,12 +10,9 @@ import * as utils from './utils';
 import * as api from './api';
 
 export * from './framework';
-export {
-  default as GlipTypeDictionary,
-} from './utils/glip-type-dictionary/types';
-export {
-  default as LogControlManager,
-} from './service/uploadLogControl/logControlManager';
+export * from './error';
+export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
+export { default as LogControlManager } from './service/uploadLogControl/logControlManager';
 
 import Sdk from './Sdk';
 import { container } from './container';
