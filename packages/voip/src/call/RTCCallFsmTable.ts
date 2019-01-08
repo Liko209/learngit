@@ -127,9 +127,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
           ],
-          to: (target: string) => {
+          to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.TRANSFER);
-            return null;
+            return s;
           },
         },
         {
@@ -141,9 +141,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
           ],
-          to: (target: number) => {
+          to: (target: number, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FLIP);
-            return null;
+            return s;
           },
         },
         {
@@ -163,9 +163,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
           ],
-          to: () => {
+          to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_RECORD);
-            return null;
+            return s;
           },
         },
         {
@@ -185,9 +185,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
           ],
-          to: () => {
+          to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
-            return null;
+            return s;
           },
         },
         {
