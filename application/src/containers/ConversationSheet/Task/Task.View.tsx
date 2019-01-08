@@ -23,8 +23,9 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 
 import { AvatarName } from './AvatarName';
-import { getDateAndTime, getDateMessage, getDurationTimeText } from '../helper';
+import { getDateAndTime, getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
+import { recentlyTwoDayAndOther } from '@/utils/date';
 
 type taskViewProps = WithNamespaces & ViewProps;
 
@@ -36,7 +37,7 @@ const downloadBtn = (downloadUrl: string) => (
     variant="plain"
     tooltipTitle={t('download')}
   >
-    get_app
+    download
   </JuiIconButton>
 );
 
@@ -118,7 +119,6 @@ class Task extends React.Component<taskViewProps> {
       assignedToIds,
       start,
       due,
-      hasDueTime,
       repeat,
       repeatEndingAfter,
       repeatEnding,
@@ -128,8 +128,8 @@ class Task extends React.Component<taskViewProps> {
     let endTime = '';
     const hasTime = start && due;
     if (hasTime) {
-      startTime = getDateMessage(start);
-      endTime = hasDueTime ? getDateAndTime(due) : getDateMessage(due);
+      startTime = recentlyTwoDayAndOther(start);
+      endTime = getDateAndTime(due);
     }
     const timeText = getDurationTimeText(
       repeat,

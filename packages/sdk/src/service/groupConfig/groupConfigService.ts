@@ -79,7 +79,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.getById(id)) as GroupConfig;
-      return group.send_failure_post_ids || [];
+      return (group && group.send_failure_post_ids) || [];
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
     }

@@ -22,7 +22,7 @@ const icons = [
     { icon: 'date_range', title: 'Calendar', url: '' },
     { icon: 'assignment_turned_in', title: 'Tasks', url: '' },
     { icon: 'library_books', title: 'Notes', url: '' },
-    { icon: 'file_copy', title: 'Files', url: '' },
+    { icon: 'files', title: 'Files', url: '' },
     { icon: 'settings', title: 'Settings', url: '' },
   ],
 ];
