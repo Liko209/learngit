@@ -9,6 +9,7 @@ import styled from '../../foundation/styled-components';
 const StyledContainer = styled('div')`
   flex: 1;
   display: none;
+  overflow-y: auto;
   &.show {
     display: block;
   }

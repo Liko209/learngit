@@ -14,6 +14,7 @@ const StyledTabs = styled<MuiTabsProps>(MuiTabs)`
   &.root {
     padding: ${spacing(0, 2)};
     min-height: ${height(8)};
+    height: ${height(8)};
     position: relative;
     border-bottom: 1px solid ${grey('300')};
   }

@@ -67,7 +67,54 @@ class RightRailComponent extends React.Component<Props, States> {
         </JuiRightShelfHeader>
         <JuiTabs defaultActiveIndex={0}>
           <JuiTab key={0} title={t('pinned')}>
+            <div>Pinned List Pinned List Pinned List Pinned List</div>
             <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List80</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List90</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List</div>
+            <div>Pinned List100</div>
           </JuiTab>
           <JuiTab key={1} title={t('files')}>
             <div>Files List</div>

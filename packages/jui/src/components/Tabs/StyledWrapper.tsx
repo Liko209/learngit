@@ -9,7 +9,7 @@ import styled from '../../foundation/styled-components';
 const StyledWrapper = styled('div')`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
 `;
 
 export { StyledWrapper };
