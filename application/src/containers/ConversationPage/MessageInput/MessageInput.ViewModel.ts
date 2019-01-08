@@ -25,6 +25,7 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { isAtMentions } from './handler';
 import { Group } from 'sdk/models';
 import { UI_NOTIFICATION_KEY } from '@/constants';
+import { mainLogger } from 'sdk';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -204,6 +205,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       onPostHandler && onPostHandler();
       this._onPostCallbacks.forEach(callback => callback());
     } catch (e) {
+      mainLogger.error(`send post error ${e}`);
       // You do not need to handle the error because the message will display a resend
     }
   }

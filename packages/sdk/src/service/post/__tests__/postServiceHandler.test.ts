@@ -60,6 +60,28 @@ describe('PostServiceHandler', () => {
         at_mention_non_item_ids: [],
       });
     });
+
+    it('should not crash when passed users have not display name FIJI-2762', () => {
+      const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
+        atMentions: true,
+        text: '@[display (xxx)]:1:',
+        users: [
+          {
+            display: 'display (xxx)',
+            id: 1,
+          },
+          {
+            display: undefined,
+            id: 2,
+          },
+        ],
+      });
+      expect(ret).toEqual({
+        text:
+          "<a class='at_mention_compose' rel='{\"id\":1}'>@display (xxx)</a>",
+        at_mention_non_item_ids: [1],
+      });
+    });
   });
 
   describe('buildPostInfo()', () => {
