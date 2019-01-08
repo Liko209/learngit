@@ -317,7 +317,7 @@ class JuiTabs extends PureComponent<Props, States> {
       return null; // select menu list tab
     }
     return (
-      <div>
+      <StyledWrapper>
         <StyledTabs
           value={indexSelected}
           onChange={this._handleChangeTab}
@@ -331,7 +331,7 @@ class JuiTabs extends PureComponent<Props, States> {
             : this._renderFinalTab()}
         </StyledTabs>
         {this.renderContainer()}
-      </div>
+      </StyledWrapper>
     );
   }
 }
