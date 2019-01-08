@@ -296,11 +296,11 @@ class ActionBarDeletePostModal extends BaseWebComponent {
     return this.self.find('button').withText('Cancel');
   }
 
-  async confrimDeleteButton() {
+  async delete() {
     await this.t.click(this.deleteButton);
   }
 
-  async confirmCancelButton() {
+  async cancel() {
     await this.t.click(this.cancelButton);
   }
 }

@@ -17,12 +17,11 @@ class Entry extends BaseWebComponent {
 }
 class ActionBarMoreMenu extends BaseWebComponent {
   get self() {
-    return this.getSelector('*[role="document"]');
+    return this.getSelector('*[role="menu"]');
   }
 
-  private getEntry(name: string) {
-    this.warnFlakySelector();
-    return this.getComponent(Entry, this.self.find('li').withText(name));
+  private getEntry(icon: string) {
+    return this.getComponent(Entry, this.getSelectorByIcon(icon, this.self).parent('li'));
   }
 
   get quoteItem() {
@@ -33,7 +32,7 @@ class ActionBarMoreMenu extends BaseWebComponent {
     return this.getEntry('delete');
   }
 
-  get eidtPost() {
+  get editPost() {
     return this.getEntry('edit');
   }
 }
@@ -330,15 +329,14 @@ export class PostItem extends BaseWebComponent {
   }
 
 
-  get editTextArea()
-  {
+  get editTextArea() {
     return this.self.find('[data-placeholder="Type new message"]');
   }
 
-  async editMessage(message: string) {
+  async editMessage(message: string, options?) {
     await this.t
-      .typeText(this.editTextArea, message)
-      .click(this.editTextArea)
+      .wait(1e3) // need time to wait edit text area loaded
+      .typeText(this.editTextArea, message, options)
       .pressKey('enter');
   }
 

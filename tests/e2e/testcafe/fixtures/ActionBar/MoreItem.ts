@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import * as assert from 'assert';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
@@ -9,38 +9,42 @@ import { SITE_URL } from '../../config';
 fixture('ActionBar/MoreItem')
   .beforeEach(setupCase('GlipBetaUser(1210,4488)'))
   .afterEach(teardownCase());
-test(formalName('Jump to post position when click button or clickable area of post.',['P1','JPT-564','zack']),
-  async (t: TestController)=>{
-  const app =new AppRoot(t);
-  const users =h(t).rcData.mainCompany.users;
+
+test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-564', 'zack']), async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
   const user = users[4];
-  const userPlatform = await h(t).getPlatform(users[4]);
-  user.sdk = await h(t).getSdk(user);
+  await h(t).platform(user).init();
+  await h(t).glip(user).init();
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  const deletePostDailog= app.homePage.messageTab.deletePostModal;
+  const deletePostDialog = app.homePage.messageTab.deletePostModal;
 
-  let originalPost = 'Original';
-  let editPost = uuid();
+  const originalText = 'Original';
+  const addText = uuid();
+  const newText = `${originalText}${addText}`
 
-  let teamId, newPost, bookmarksPostChat;
+  function convert(str) {
+    var arr1 = [];
+    for (var n = 0, l = str.length; n < l; n++) {
+      var hex = Number(str.charCodeAt(n)).toString(16);
+      arr1.push(hex);
+    }
+    return arr1.join('');
+  }
+
+  let teamId, postId, userName;
   await h(t).withLog('Given I have 1 Bookmarks post in team ,one in group', async () => {
-    teamId = (await user.sdk.platform.createGroup({
+    teamId = await h(t).platform(user).createAndGetGroupId({
       isPublic: true,
       name: `Team ${uuid()}`,
       type: 'Team',
       members: [user.rcId, users[5].rcId, users[6].rcId],
-    })).data.id;
-
-    newPost = await userPlatform.createPost(
-      { text: originalPost },
-      teamId,
-    );
-    await user.sdk.glip.updateProfile(user.rcId, {
-      [`hide_group_${teamId}`]: false,
     });
-    ;
+
+    postId = await h(t).platform(user).sentAndGetTextPostId(originalText, teamId);
+    await h(t).glip(user).showGroups(user.rcId, teamId);
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
@@ -51,41 +55,44 @@ test(formalName('Jump to post position when click button or clickable area of po
   await h(t).withLog('And I enter the team conversation page', async () => {
     await teamsSection.expand();
     await teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
   });
 
   await h(t).withLog('And I click Edit Post in Action bar more item', async () => {
-    await t.expect(conversationPage.nthPostItem(-1).body.withText(originalPost).exists).ok();
-    await conversationPage.postItemById(newPost.data.id).clickMoreItemOnActionBar();
-    await conversationPage.postItemById(newPost.data.id).actionBarMoreMenu.eidtPost.enter();
+    await t.expect(conversationPage.nthPostItem(-1).body.withText(originalText).exists).ok();
+    userName = await conversationPage.nthPostItem(-1).name.textContent;
+    await conversationPage.postItemById(postId).clickMoreItemOnActionBar();
+    await conversationPage.postItemById(postId).actionBarMoreMenu.editPost.enter();
   });
 
   await h(t).withLog('Then I edit post in the text', async () => {
-    await conversationPage.postItemById(newPost.data.id).editMessage(editPost);
+    await conversationPage.postItemById(postId).editMessage(addText);
   });
 
   await h(t).withLog('And the latest post text should correct', async () => {
-     await t.expect(conversationPage.postItemById(newPost.data.id).text
-     .withText(`${originalPost}${editPost}`).exists).ok();
+    await t.expect(conversationPage.postItemById(postId).text.withText(newText).exists).ok();
   });
 
   await h(t).withLog('When I quote this post', async () => {
-    await conversationPage.postItemById(newPost.data.id).clickMoreItemOnActionBar();
-    await conversationPage.postItemById(newPost.data.id).actionBarMoreMenu.quoteItem.enter();
+    await conversationPage.postItemById(postId).clickMoreItemOnActionBar();
+    await conversationPage.postItemById(postId).actionBarMoreMenu.quoteItem.enter();
   });
 
   await h(t).withLog('And the input box message should be correct', async () => {
-    await conversationPage.messageInputArea.withText(`${user.rcId} wrote:`);
-    await conversationPage.messageInputArea.withText('>');
-    await conversationPage.messageInputArea.withText(`${originalPost}${editPost}`);
+    await H.retryUntilPass(async () => {
+      const reg = new RegExp(`@${userName}.*wrote:.*>.*${newText}`, 'gm');
+      const quoteMessage = await conversationPage.messageInputArea.textContent;
+      assert.ok(reg.test(quoteMessage), "quote message incorrect");
+    })
   });
 
   await h(t).withLog('When I delete the post', async () => {
-    await conversationPage.postItemById(newPost.data.id).clickMoreItemOnActionBar();
-    await conversationPage.postItemById(newPost.data.id).actionBarMoreMenu.deletePost.enter();
-    await deletePostDailog.confrimDeleteButton();
+    await conversationPage.postItemById(postId).clickMoreItemOnActionBar();
+    await conversationPage.postItemById(postId).actionBarMoreMenu.deletePost.enter();
+    await deletePostDialog.delete();
   });
 
   await h(t).withLog('And the post should be removed', async () => {
-    await t.expect(conversationPage.postItemById(newPost.data.id).exists).notOk();
+    await t.expect(conversationPage.postItemById(postId).exists).notOk();
   });
 });;
