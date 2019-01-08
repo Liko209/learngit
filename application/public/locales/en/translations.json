@@ -182,6 +182,8 @@
   "fileNoLongerExists": "The file no longer exists.",
   "section": "Section",
   "descriptionNotes": "Description",
+  "notAbleToCancelUpload": "Sorry, we weren't able to cancel the upload.",
+  "notAbleToCancelUploadTryAgain": "Sorry, we weren't able to cancel the upload. Try again.",
   "conversationDetails": "Conversation Details",
   "conversationDetailsShow": "Show details",
   "conversationDetailsHide": "Hide details",
