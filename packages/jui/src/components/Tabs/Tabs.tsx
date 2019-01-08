@@ -31,6 +31,7 @@ type States = {
 };
 
 type Props = {
+  tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
 };
@@ -76,7 +77,9 @@ class JuiTabs extends PureComponent<Props, States> {
     );
     this._moreRef = createRef();
     this._containerRef = createRef();
-    const indexSelected = props.defaultActiveIndex || 0;
+
+    const indexSelected =
+      this._getLocalSelectedIndex() || props.defaultActiveIndex || 0;
     this.state = {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
@@ -184,10 +187,28 @@ class JuiTabs extends PureComponent<Props, States> {
 
   private _setSelectedTabIndex = (indexSelected: number) => {
     let { indexLazyLoadComponents } = this.state;
+    const { tag } = this.props;
     if (!indexLazyLoadComponents.includes(indexSelected)) {
       indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
     }
     this.setState({ indexSelected, indexLazyLoadComponents });
+    if (tag) {
+      this._setLocalSelectedIndex(indexSelected);
+    }
+  }
+
+  private _getLocalKey = () => {
+    const { tag } = this.props;
+    return `tabs-${tag}`;
+  }
+
+  private _getLocalSelectedIndex = () => {
+    const value = localStorage.getItem(this._getLocalKey());
+    return Number(value) || 0;
+  }
+
+  private _setLocalSelectedIndex = (index: number) => {
+    return localStorage.setItem(this._getLocalKey(), String(index));
   }
 
   private _renderMoreAndMenu = () => {

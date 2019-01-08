@@ -65,7 +65,7 @@ class RightRailComponent extends React.Component<Props, States> {
             </JuiIconButton>
           </JuiRightShelfHeaderIcon>
         </JuiRightShelfHeader>
-        <JuiTabs defaultActiveIndex={0}>
+        <JuiTabs defaultActiveIndex={0} tag="rightShelf">
           <JuiTab title={t('pinned')}>
             <div>Pinned List</div>
           </JuiTab>
