@@ -5,7 +5,6 @@
  */
 import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
-import moment from 'moment';
 
 jest.mock('i18next', () => ({
   t: (text: string) => text,

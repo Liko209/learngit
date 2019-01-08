@@ -86,7 +86,7 @@ const condition = {
     return 0 > diff || diff >= 7;
   },
   overOne: (diff: number) => {
-    return diff > 1;
+    return !_.inRange(diff, 0, 1);
   },
 };
 
@@ -167,14 +167,12 @@ const postTimestamp = buildFormatter([
   },
 ]);
 
-const onlyDateAndTime = dateFormatter.dateAndTime;
-
 export {
   getDateMessage,
   recentlyTwoDayAndOther,
   dividerTimestamp,
   postTimestamp,
-  onlyDateAndTime,
+  dateFormatter,
 };
 
 // 7 days inside
