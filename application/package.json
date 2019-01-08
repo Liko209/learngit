@@ -32,6 +32,7 @@
     "react-router-dom": "4.3.1",
     "react-visibility-sensor": "5.0.2",
     "sdk": "0.1.0",
+    "framework": "0.1.0",
     "styled-components": "4.0.2",
     "typeface-roboto": "0.0.54"
   },
