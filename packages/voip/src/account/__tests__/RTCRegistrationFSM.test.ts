@@ -7,15 +7,15 @@ import { RTCRegistrationFSM } from '../RTCRegistrationFSM';
 import { IConditionalHandler } from '../IConditionalHandler';
 import { RegistrationState } from '../types';
 
-describe('RTCRegistrationFSM', async () => {
-  class MockHandler implements IConditionalHandler {
-    onReadyWhenRegSucceedAction = jest.fn();
-    onProvisionReadyAction = jest.fn();
-  }
+class MockHandler implements IConditionalHandler {
+  onReadyWhenRegSucceedAction = jest.fn();
+  onProvisionReadyAction = jest.fn();
+}
 
-  const provisionData = 'provisionData';
-  const options = 'options';
+const provisionData = 'provisionData';
+const options = 'options';
 
+describe('RTCRegistrationFSM', () => {
   describe('create', () => {
     it('Should be idle state when create', () => {
       const mockHandler = new MockHandler();
@@ -51,6 +51,16 @@ describe('RTCRegistrationFSM', async () => {
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
       fsm.regSucceed();
+      fsm.regSucceed();
+      expect(fsm.state).toBe(RegistrationState.READY);
+      expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
+    });
+
+    it('Should transition from failed state to ready state when regSucceed fired in ready state [JPT-529]', () => {
+      const mockHandler = new MockHandler();
+      const fsm = new RTCRegistrationFSM(mockHandler);
+      fsm.provisionReady(provisionData, options);
+      fsm.regError();
       fsm.regSucceed();
       expect(fsm.state).toBe(RegistrationState.READY);
       expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();

@@ -40,6 +40,9 @@ const GlobalStyle = createGlobalStyle<{}>`
     width: 100%;
     align-self: flex-end;
   }
+  .ql-container {
+    max-height: ${height(28.5)};
+  }
   .ql-snow {
     .mention {
       padding: ${spacing(0.5)};
@@ -55,7 +58,7 @@ const GlobalStyle = createGlobalStyle<{}>`
         ${typography('body1')};
         padding: ${spacing(2)};
         min-height: ${height(9)};
-        max-height: ${height(36.5)};
+        max-height: ${height(28.5)};
         height: auto;
         border-radius: ${spacing(1)};
         color: ${grey('700')};

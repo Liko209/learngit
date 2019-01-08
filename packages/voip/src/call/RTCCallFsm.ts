@@ -5,11 +5,15 @@
  */
 import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
-import queue from 'async/queue';
+import async from 'async';
 import { CALL_FSM_NOTIFY } from './types';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
+  FLIP: 'flipEvent',
+  START_RECORD: 'startRecordEvent',
+  STOP_RECORD: 'stopRecordEvent',
+  TRANSFER: 'transferEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
@@ -27,10 +31,26 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   constructor() {
     super();
     this._callFsmTable = new RTCCallFsmTable(this);
-    this._eventQueue = new queue((task: any, callback: any) => {
+    this._eventQueue = async.queue((task: any, callback: any) => {
       switch (task.name) {
         case CallFsmEvent.HANGUP: {
           this._onHangup();
+          break;
+        }
+        case CallFsmEvent.FLIP: {
+          this._onFlip(task.params);
+          break;
+        }
+        case CallFsmEvent.START_RECORD: {
+          this._onStartRecord();
+          break;
+        }
+        case CallFsmEvent.STOP_RECORD: {
+          this._onStopRecord();
+          break;
+        }
+        case CallFsmEvent.TRANSFER: {
+          this._onTransfer(task.params);
           break;
         }
         case CallFsmEvent.ANSWER: {
@@ -110,6 +130,28 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.HANGUP }, () => {});
   }
 
+  flip(target: number) {
+    this._eventQueue.push(
+      { name: CallFsmEvent.FLIP, params: target },
+      () => {},
+    );
+  }
+
+  startRecord(): void {
+    this._eventQueue.push({ name: CallFsmEvent.START_RECORD }, () => {});
+  }
+
+  stopRecord(): void {
+    this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
+  }
+
+  transfer(target: string): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.TRANSFER, params: target },
+      () => {},
+    );
+  }
+
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
   }
@@ -153,8 +195,44 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION);
   }
 
+  onFlipAction(target: number) {
+    this.emit(CALL_FSM_NOTIFY.FLIP_ACTION, target);
+  }
+
+  onTransferAction(target: string) {
+    this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
+  }
+
+  onStartRecordAction() {
+    this.emit(CALL_FSM_NOTIFY.START_RECORD_ACTION);
+  }
+
+  onStopRecordAction() {
+    this.emit(CALL_FSM_NOTIFY.STOP_RECORD_ACTION);
+  }
+
+  onReportCallActionFailed(name: string): void {
+    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
+  }
+
+  private _onFlip(target: number) {
+    this._callFsmTable.flip(target);
+  }
+
+  private _onTransfer(target: string) {
+    this._callFsmTable.transfer(target);
+  }
+
+  private _onStartRecord() {
+    this._callFsmTable.startRecord();
+  }
+
+  private _onStopRecord() {
+    this._callFsmTable.stopRecord();
   }
 
   private _onAnswer() {
@@ -207,11 +285,6 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onEnterDisconnected() {
     this.emit(CALL_FSM_NOTIFY.ENTER_DISCONNECTED);
-  }
-
-  // Only for unit test
-  private _fsmGoto(state: string) {
-    this._callFsmTable.goto(state);
   }
 }
 

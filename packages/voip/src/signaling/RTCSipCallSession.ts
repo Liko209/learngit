@@ -5,8 +5,9 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallSession } from './IRTCCallSession';
-import { CALL_SESSION_STATE } from './types';
+import { IRTCCallSession } from '../signaling/IRTCCallSession';
+import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
+import { RTC_CALL_ACTION } from '../api/types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',
@@ -49,8 +50,67 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hangup() {
     if (this._session != null) {
-      this._session.hangup();
+      this._session.terminate();
     }
+  }
+
+  flip(target: number) {
+    this._session.flip(target).then(
+      () => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.FLIP);
+      },
+      () => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.FLIP);
+      },
+    );
+  }
+
+  transfer(target: string) {
+    this._session.transfer(target).then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.TRANSFER,
+        );
+      },
+      () => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.TRANSFER);
+      },
+    );
+  }
+
+  startRecord() {
+    this._session.startRecord().then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_RECORD,
+        );
+      },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.START_RECORD,
+        );
+      },
+    );
+  }
+
+  stopRecord() {
+    this._session.stopRecord().then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
+      },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
+      },
+    );
   }
 
   answer() {
@@ -67,7 +127,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   sendToVoicemail() {
     if (this._session != null) {
-      this._session.sendToVoicemail();
+      this._session.toVoicemail();
     }
   }
 

@@ -23,9 +23,10 @@ import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
-import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
+import { ErrorParser } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
+import { JSdkError, ERROR_CODES_SDK } from '../../error';
 import GroupConfigService from '../groupConfig';
 import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
 
@@ -620,8 +621,9 @@ class PostService extends BaseService<Post> {
       );
     }
     return err(
-      new BaseError(
-        ErrorTypes.UNDEFINED_ERROR,
+      new JSdkError(
+        ERROR_CODES_SDK.GENERAL,
+        // ErrorTypes.UNDEFINED_ERROR,
         `Post can not find with id ${postId}`,
       ),
     );

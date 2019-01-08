@@ -513,23 +513,18 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       }
     });
 
-    let favoriteItem, directMessageItem, teamItem;
-    await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section',
-      async () => {
-        await t.wait(3e3);
-        await favoritesSection.expand();
-        favoriteItem = favoritesSection.conversationEntryById(favGroupId);
-        await t.expect(await favoriteItem.getUmi()).eql(1);
-        await directMessagesSection.expand();
-        directMessageItem = directMessagesSection.conversationEntryById(
-          pvtChatId,
-        );
-        await t.expect(await directMessageItem.getUmi()).eql(1);
-        await teamsSection.expand();
-        teamItem = teamsSection.conversationEntryById(teamId1);
-        await t.expect(await teamItem.getUmi()).eql(1);
-      },
-    );
+
+    const favoriteItem = favoritesSection.conversationEntryById(favGroupId);
+    const directMessageItem = directMessagesSection.conversationEntryById(pvtChatId);
+    const teamItem = teamsSection.conversationEntryById(teamId1);
+    await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section', async () => {
+      await favoritesSection.expand();
+      await favoriteItem.expectUmi(1);
+      await directMessagesSection.expand();
+      await directMessageItem.expectUmi(1);
+      await teamsSection.expand();
+      await teamItem.expectUmi(1);
+    });
 
     const groupList = {
       favorite: favoriteItem,

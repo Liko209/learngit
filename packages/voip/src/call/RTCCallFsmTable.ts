@@ -4,6 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import StateMachine from 'ts-javascript-state-machine';
+import { RTC_CALL_ACTION } from '../api/types';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { format as StringFormat } from 'util';
 
 const CallFsmState = {
   IDLE: 'idle',
@@ -21,6 +24,10 @@ const CallFsmEvent = {
   REJECT: 'reject',
   SEND_TO_VOICEMAIL: 'sendToVoicemail',
   HANGUP: 'hangup',
+  FLIP: 'flip',
+  TRANSFER: 'transfer',
+  START_RECORD: 'startRecord',
+  STOP_RECORD: 'stopRecord',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
@@ -32,6 +39,11 @@ interface IRTCCallFsmTableDependency {
   onRejectAction(): void;
   onSendToVoicemailAction(): void;
   onHangupAction(): void;
+  onFlipAction(target: number): void;
+  onTransferAction(target: string): void;
+  onStartRecordAction(): void;
+  onStopRecordAction(): void;
+  onReportCallActionFailed(name: string): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -91,6 +103,94 @@ class RTCCallFsmTable extends StateMachine {
           },
         },
         {
+          name: CallFsmEvent.FLIP,
+          from: CallFsmState.CONNECTED,
+          to: (target: number) => {
+            dependency.onFlipAction(target);
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.TRANSFER,
+          from: CallFsmState.CONNECTED,
+          to: (target: string) => {
+            dependency.onTransferAction(target);
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.TRANSFER,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (target: string, s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.TRANSFER);
+            return s;
+          },
+        },
+        {
+          name: CallFsmEvent.FLIP,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (target: number, s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.FLIP);
+            return s;
+          },
+        },
+        {
+          name: CallFsmEvent.START_RECORD,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onStartRecordAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.START_RECORD,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_RECORD);
+            return s;
+          },
+        },
+        {
+          name: CallFsmEvent.STOP_RECORD,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onStopRecordAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.STOP_RECORD,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
+            return s;
+          },
+        },
+        {
           name: CallFsmEvent.SESSION_CONFIRMED,
           from: [CallFsmState.ANSWERING, CallFsmState.CONNECTING],
           to: CallFsmState.CONNECTED,
@@ -108,45 +208,47 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.SESSION_ERROR,
           from: [
+            CallFsmState.IDLE,
             CallFsmState.ANSWERING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
           ],
           to: CallFsmState.DISCONNECTED,
         },
-        // Only for unit test
-        {
-          name: 'goto',
-          from: '*',
-          to: (s: any) => {
-            return s;
-          },
-        },
       ],
       methods: {
         onTransition(lifecycle) {
-          console.log(
-            'Call FSM: Transition: %s from: %s to: %s',
-            String(lifecycle.transition),
-            String(lifecycle.from),
-            String(lifecycle.to),
+          rtcLogger.debug(
+            'RTC_Call_FSM',
+            StringFormat(
+              'Transition: %s from: %s to: %s',
+              String(lifecycle.transition),
+              String(lifecycle.from),
+              String(lifecycle.to),
+            ),
           );
           return true;
         },
         onInvalidTransition(transition: any, from: any, to: any) {
-          console.log(
-            'Call FSM: Invalid transition: %s from: %s to: %s',
-            String(transition),
-            String(from),
-            String(to),
+          rtcLogger.debug(
+            'RTC_Call_FSM',
+            StringFormat(
+              'Invalid transition: %s from: %s to: %s',
+              String(transition),
+              String(from),
+              String(to),
+            ),
           );
         },
         onPendingTransition(transition: any, from: any, to: any) {
-          console.log(
-            'Call FSM: Pending transition: %s from: %s to: %s',
-            String(transition),
-            String(from),
-            String(to),
+          rtcLogger.debug(
+            'RTC_Call_FSM',
+            StringFormat(
+              'Call FSM: Pending transition: %s from: %s to: %s',
+              String(transition),
+              String(from),
+              String(to),
+            ),
           );
         },
       },

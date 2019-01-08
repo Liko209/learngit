@@ -4,16 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseError } from './BaseError';
 import { ResultOk } from './ResultOk';
 import { ResultErr } from './ResultErr';
+import { JError } from '../error';
 
-function ok<T>(data: T): ResultOk<T, BaseError> {
+function ok<T>(data: T): ResultOk<T, JError> {
   return new ResultOk(data);
 }
 
-function err<E extends BaseError = BaseError>(
-  error: BaseError,
+function err<E extends JError = JError>(
+  error: JError,
 ): ResultErr<any, E> {
   return new ResultErr(error as E);
 }

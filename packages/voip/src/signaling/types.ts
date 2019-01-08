@@ -7,6 +7,7 @@ enum UA_EVENT {
   REG_SUCCESS = 'uaRegisterSuccess',
   REG_FAILED = 'uaRegisterFailed',
   REG_UNREGISTER = 'uaUnRegisterFailed',
+  RECEIVE_INVITE = 'uaReceiveInvite',
 }
 
 export { UA_EVENT };
