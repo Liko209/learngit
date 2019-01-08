@@ -11,6 +11,9 @@ import {
   ListRowProps,
   CellMeasurer,
   CellMeasurerCache,
+  InfiniteLoader,
+  Index,
+  IndexRange,
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
@@ -72,6 +75,29 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     );
   }
 
+  private _isRowLoaded = (params: Index) => {
+    const { isRowLoaded } = this._dataSource;
+    if (isRowLoaded) {
+      return isRowLoaded(params);
+    }
+    return false;
+  }
+
+  private _loadMoreRows = async (params: IndexRange) => {
+    const { loadMore } = this._dataSource;
+    if (loadMore) {
+      return await loadMore(params);
+    }
+  }
+
+  private _renderEmptyContent = (): JSX.Element => {
+    const { renderEmptyContent } = this._dataSource;
+    if (renderEmptyContent) {
+      return renderEmptyContent();
+    }
+    return <></>;
+  }
+
   scrollToCell = (index: number) => {
     const { current } = this._listRef;
     if (current) {
@@ -86,6 +112,11 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     }
   }
 
+  private _registerRef = (ref: any, callback: (args: any) => void) => {
+    this._listRef = ref;
+    callback(ref);
+  }
+
   render() {
     const cellCount = this._dataSource.countOfCell();
     const fixedHeight = this._dataSource.fixedCellHeight
@@ -96,14 +127,26 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       return (
         <AutoSizer>
           {({ width, height }: { width: number; height: number }) => (
-            <List
-              ref={this._listRef}
-              height={height}
-              width={width}
+            <InfiniteLoader
+              isRowLoaded={this._isRowLoaded}
+              loadMoreRows={this._loadMoreRows}
               rowCount={cellCount}
-              rowHeight={fixedHeight}
-              rowRenderer={this._renderFixedCell}
-            />
+            >
+              {({ onRowsRendered, registerChild }) => {
+                return (
+                  <List
+                    ref={ref => this._registerRef(ref, registerChild)}
+                    onRowsRendered={onRowsRendered}
+                    height={height}
+                    width={width}
+                    rowCount={cellCount}
+                    rowHeight={fixedHeight}
+                    rowRenderer={this._renderFixedCell}
+                    noRowsRenderer={this._renderEmptyContent}
+                  />
+                );
+              }}
+            </InfiniteLoader>
           )}
         </AutoSizer>
       );
@@ -122,6 +165,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
               overscanRowCount={JuiVirtualList.OVERSCAN_ROW_COUNT}
               rowHeight={this.cache.rowHeight}
               rowRenderer={this._renderDynamicCell}
+              noRowsRenderer={this._renderEmptyContent}
             />
           );
         }}

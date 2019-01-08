@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { CSSProperties, ReactElement } from 'react';
+import { IndexRange, Index } from 'react-virtualized';
 import { JuiVirtualCellProps, JuiVirtualCellOnLoadFunc } from './VirtualCell';
 
 interface IVirtualListDataSource {
@@ -18,6 +19,14 @@ interface IVirtualListDataSource {
   ): ReactElement<P & JuiVirtualCellProps>;
 
   fixedCellHeight?: () => number;
+
+  // for infinite lad
+  loadMore?: (params: IndexRange) => Promise<any>;
+
+  isRowLoaded?: (params: Index) => boolean;
+
+  // empty content
+  renderEmptyContent?: () => JSX.Element;
 }
 
 export { IVirtualListDataSource };
