@@ -7,13 +7,13 @@ export class ErrorParserHolder {
   static getErrorParser(): ErrorParser {
     if (!ErrorParserHolder._errorParser) {
       ErrorParserHolder._errorParser = new ErrorParser();
+      ErrorParserHolder._init();
     }
 
     return ErrorParserHolder._errorParser;
   }
 
-  static init() {
-    ErrorParserHolder.getErrorParser();
+  private static _init() {
     ErrorParserHolder._errorParser.register(new RuntimeErrorParser());
     ErrorParserHolder._errorParser.register(new DBErrorParser());
   }

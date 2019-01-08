@@ -5,7 +5,6 @@
  */
 
 import { ErrorParserHolder } from './ErrorParserHolder';
-ErrorParserHolder.init();
 const errorParser = ErrorParserHolder.getErrorParser();
 export {
   errorParser,
