@@ -23,6 +23,8 @@ import { generalErrorHandler } from '@/utils/error';
 class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
   implements ProfileMiniCardGroupViewProps {
+  private _fetchingState: Map<number, boolean> = new Map();
+
   @computed
   get id() {
     return this.props.id; // conversation id
@@ -31,6 +33,7 @@ class ProfileMiniCardGroupViewModel
   @computed
   get group() {
     const onError = (error: Error) => {
+      this._fetchingState.set(this.id, false);
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
           message: 'SorryWeWereNotAbleToOpenThisProfile',
@@ -47,11 +50,13 @@ class ProfileMiniCardGroupViewModel
     const groupStore = storeManager.getEntityMapStore(
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
-    if (!entity.members) {
+    if (!this._fetchingState.get(this.id) && !entity.members) {
+      this._fetchingState.set(this.id, true);
       groupStore
         .getByService(this.id)
         .then((group: Group | null) => {
           if (group) {
+            this._fetchingState.set(this.id, false);
             groupStore.set(group);
           } else {
             onError(new JServerError(ERROR_CODES_NETWORK.GENERAL, ''));

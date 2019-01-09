@@ -38,6 +38,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 import { Notification } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
+import { mainLogger } from 'sdk';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -243,7 +244,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ]);
     } else {
       // TODO error handing
-      console.error('Anchor post does not exist');
+      mainLogger.error('Anchor post does not exist');
     }
   }
 
