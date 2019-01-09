@@ -33,7 +33,6 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
   state = {
     messageError: false,
     retryParams: null,
-    needTryAgain: false,
   };
 
   constructor(props: MessagesViewProps) {

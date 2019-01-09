@@ -150,7 +150,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await this._goToConversation(id);
   }
 
-  addPublicTeam = (item: SortableModel<object>) => (
+  addPublicTeam = (item: SortableModel<Group>) => (
     e: React.MouseEvent<HTMLElement>,
   ) => {
     e.stopPropagation();
@@ -164,7 +164,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  private _Actions = (item: SortableModel<object>) => {
+  private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
         onClick={this.addPublicTeam(item)}
