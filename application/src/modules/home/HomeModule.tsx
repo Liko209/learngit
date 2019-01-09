@@ -12,7 +12,7 @@ class HomeModule extends AbstractModule {
   private _homeService: HomeService;
 
   async bootstrap() {
-    this._homeService.registerSubModules(config.subModules);
+    this._homeService.loadConfig(config);
   }
 }
 
