@@ -65,5 +65,7 @@ interface IItemService {
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]>;
 
   doNotRenderItem(id: number, type: string): Promise<void>;
+
+  getGroupItemsCount(groupId: number, typeId: number): Promise<number>;
 }
 export { IItemService };
