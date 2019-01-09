@@ -14,7 +14,7 @@ const RegistrationEvent = {
   REG_TIMEOUT: 'regTimeOut',
   REG_ERROR: 'regError',
   UN_REGISTER: 'unRegister',
-  RE_REG: 'reRegister',
+  RE_REGISTE: 'reRegister',
 };
 
 class RTCRegistrationFSM extends StateMachine {
@@ -31,7 +31,7 @@ class RTCRegistrationFSM extends StateMachine {
           },
         },
         {
-          name: RegistrationEvent.RE_REG,
+          name: RegistrationEvent.RE_REGISTE,
           from: [
             RegistrationState.REG_IN_PROGRESS,
             RegistrationState.REG_FAILURE,
