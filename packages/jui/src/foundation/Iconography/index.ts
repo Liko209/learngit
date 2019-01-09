@@ -4,4 +4,3 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './Iconography';
-export * from './SVGIcons';

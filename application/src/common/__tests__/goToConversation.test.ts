@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import history from '@/history';
-import { service, JNetworkError, ERROR_CODES_NETWORK } from 'sdk';
+import { service } from 'sdk';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';

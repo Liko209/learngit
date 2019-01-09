@@ -31,7 +31,7 @@ storiesOf('Pattern', module)
               tooltipTitle="This is a public team"
               checkedIconName="lock"
               color="grey.500"
-              iconName="lock_open"
+              iconName="unlock"
             />
             <JuiCheckboxButton
               tooltipTitle="Add to Favorite"

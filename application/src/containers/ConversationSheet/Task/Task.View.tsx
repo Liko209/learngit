@@ -23,7 +23,7 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 
 import { AvatarName } from './AvatarName';
-import { getDateAndTime, getDateMessage, getDurationTimeText } from '../helper';
+import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 
 type taskViewProps = WithNamespaces & ViewProps;
@@ -36,7 +36,7 @@ const downloadBtn = (downloadUrl: string) => (
     variant="plain"
     tooltipTitle={t('download')}
   >
-    get_app
+    download
   </JuiIconButton>
 );
 
@@ -108,7 +108,7 @@ class Task extends React.Component<taskViewProps> {
   }
 
   render() {
-    const { task, files, t } = this.props;
+    const { task, files, startTime, endTime, hasTime, t } = this.props;
     const {
       section,
       color,
@@ -116,21 +116,11 @@ class Task extends React.Component<taskViewProps> {
       notes,
       complete,
       assignedToIds,
-      start,
-      due,
-      hasDueTime,
       repeat,
       repeatEndingAfter,
       repeatEnding,
       repeatEndingOn,
     } = task;
-    let startTime = '';
-    let endTime = '';
-    const hasTime = start && due;
-    if (hasTime) {
-      startTime = getDateMessage(start);
-      endTime = hasDueTime ? getDateAndTime(due) : getDateMessage(due);
-    }
     const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
@@ -145,11 +135,14 @@ class Task extends React.Component<taskViewProps> {
         titleColor={color}
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
-        {hasTime && (
+        {endTime && (
           <JuiTaskContent title={t('due')}>
-            <JuiTimeMessage time={`${startTime} - ${endTime} ${timeText}`} />
+            <JuiTimeMessage
+              time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
+            />
           </JuiTaskContent>
         )}
+
         {assignedToIds && assignedToIds.length > 0 && (
           <JuiTaskContent title={t('assignee')}>
             <JuiTaskAvatarNames

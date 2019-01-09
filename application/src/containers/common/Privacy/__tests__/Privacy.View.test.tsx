@@ -9,7 +9,7 @@ import { shallow } from 'enzyme';
 import { PrivacyView } from '../Privacy.View';
 import { Notification } from '@/containers/Notification';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk';
+import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 jest.mock('@/containers/Notification');
 
 const someProps = {

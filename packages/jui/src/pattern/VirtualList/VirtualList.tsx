@@ -11,6 +11,11 @@ import {
   ListRowProps,
   CellMeasurer,
   CellMeasurerCache,
+  InfiniteLoader,
+  Index,
+  IndexRange,
+  Size,
+  ListProps,
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
@@ -72,6 +77,29 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     );
   }
 
+  private _isRowLoaded = (params: Index) => {
+    const { isRowLoaded } = this._dataSource;
+    if (isRowLoaded) {
+      return isRowLoaded(params);
+    }
+    return false;
+  }
+
+  private _loadMoreRows = async (params: IndexRange) => {
+    const { loadMore } = this._dataSource;
+    if (loadMore) {
+      return await loadMore(params);
+    }
+  }
+
+  private _renderEmptyContent = (): JSX.Element => {
+    const { renderEmptyContent } = this._dataSource;
+    if (renderEmptyContent) {
+      return renderEmptyContent();
+    }
+    return <></>;
+  }
+
   scrollToCell = (index: number) => {
     const { current } = this._listRef;
     if (current) {
@@ -86,45 +114,56 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     }
   }
 
+  private _registerRef = (ref: any, callback: (args: any) => void) => {
+    this._listRef = ref;
+    callback(ref);
+  }
+
   render() {
     const cellCount = this._dataSource.countOfCell();
     const fixedHeight = this._dataSource.fixedCellHeight
       ? this._dataSource.fixedCellHeight()
       : undefined;
 
+    const props: ListProps = {
+      rowCount: cellCount,
+      noRowsRenderer: this._renderEmptyContent,
+    } as ListProps;
+
     if (typeof fixedHeight !== 'undefined') {
-      return (
-        <AutoSizer>
-          {({ width, height }: { width: number; height: number }) => (
-            <List
-              ref={this._listRef}
-              height={height}
-              width={width}
-              rowCount={cellCount}
-              rowHeight={fixedHeight}
-              rowRenderer={this._renderFixedCell}
-            />
-          )}
-        </AutoSizer>
-      );
+      props.rowRenderer = this._renderFixedCell;
+      props.rowHeight = fixedHeight;
+    } else {
+      props.deferredMeasurementCache = this.cache;
+      props.estimatedRowSize = JuiVirtualList.MIN_CELL_HEIGHT;
+      props.overscanRowCount = this._dataSource.overscanCount
+        ? this._dataSource.overscanCount()
+        : JuiVirtualList.OVERSCAN_ROW_COUNT;
+      props.rowHeight = this.cache.rowHeight;
+      props.rowRenderer = this._renderDynamicCell;
     }
+
     return (
       <AutoSizer>
-        {({ width, height }: { width: number; height: number }) => {
-          return (
-            <List
-              ref={this._listRef}
-              deferredMeasurementCache={this.cache}
-              estimatedRowSize={JuiVirtualList.MIN_CELL_HEIGHT}
-              height={height}
-              width={width}
-              rowCount={cellCount}
-              overscanRowCount={JuiVirtualList.OVERSCAN_ROW_COUNT}
-              rowHeight={this.cache.rowHeight}
-              rowRenderer={this._renderDynamicCell}
-            />
-          );
-        }}
+        {({ width, height }: Size) => (
+          <InfiniteLoader
+            isRowLoaded={this._isRowLoaded}
+            loadMoreRows={this._loadMoreRows}
+            rowCount={cellCount}
+          >
+            {({ onRowsRendered, registerChild }) => {
+              return (
+                <List
+                  ref={ref => this._registerRef(ref, registerChild)}
+                  onRowsRendered={onRowsRendered}
+                  height={height}
+                  width={width}
+                  {...props}
+                />
+              );
+            }}
+          </InfiniteLoader>
+        )}
       </AutoSizer>
     );
   }

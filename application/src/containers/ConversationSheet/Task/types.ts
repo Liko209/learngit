@@ -21,6 +21,9 @@ type TaskUpdateProps = {
 type ViewProps = {
   task: TaskItemModel;
   files: ExtendFileItem[];
+  startTime: string;
+  endTime: string;
+  hasTime: boolean;
 };
 
 type TaskUpdateViewProps = {
