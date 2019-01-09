@@ -3,11 +3,6 @@
  * @Date: 2019-01-09 12:28:12
  * Copyright © RingCentral. All rights reserved.
  */
-/*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2019-01-09 12:25:22
- * Copyright © RingCentral. All rights reserved.
- */
 import { StoreViewModel } from '@/store/ViewModel';
 import { container } from 'framework';
 import { computed } from 'mobx';
