@@ -17,7 +17,7 @@ import {
   JuiProfileMiniCardPersonName,
   JuiProfileMiniCardPersonStatus,
   JuiProfileMiniCardPersonTitle,
-} from 'jui/pattern/ProfileMiniCard';
+} from 'jui/pattern/Profile/MiniCard';
 import { Favorite } from '@/containers/common';
 
 @observer

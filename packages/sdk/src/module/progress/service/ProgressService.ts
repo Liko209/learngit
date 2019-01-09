@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Progress } from '../../../models';
+import { Progress } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ProgressCacheController } from '../controller/ProgressCacheController';
 

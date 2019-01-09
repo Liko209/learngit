@@ -3,10 +3,11 @@
  * @Date: 2019-01-07 11:25:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { Sdk, LogControlManager, service } from 'sdk';
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
+import { Sdk, LogControlManager, service } from 'sdk';
+import { UserConfig } from 'sdk/service/account';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
@@ -78,8 +79,8 @@ class AppModule extends AbstractModule {
       const accountService: service.AccountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
-        const currentUserId = accountService.getCurrentUserId();
-        const currentCompanyId = accountService.getCurrentCompanyId();
+        const currentUserId = UserConfig.getCurrentUserId();
+        const currentCompanyId = UserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
       }

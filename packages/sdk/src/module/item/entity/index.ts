@@ -8,13 +8,16 @@ import {
   ItemVersionPage,
   ItemVersions,
   Item,
-  TaskItem,
-  EventItem,
-  ItemFile,
-  NoteItem,
-  LinkItem,
   StoredFile,
-} from './Item';
+} from '../module/base/entity';
+
+import { TaskItem } from '../module/task/entity';
+import { EventItem } from '../module/event/entity';
+import { FileItem } from '../module/file/entity';
+import { NoteItem } from '../module/note/entity';
+import { LinkItem } from '../module/link/entity';
+
+type ItemFile = FileItem;
 
 export {
   ItemVersionPage,

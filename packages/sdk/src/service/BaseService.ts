@@ -258,6 +258,17 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       : false;
   }
 
+  protected isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   protected getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
   }
