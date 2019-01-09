@@ -9,7 +9,7 @@ export type PerformanceItem = {
   endTime: number;
 };
 
-export enum PERFORMANCE_SCENARIO {
+export enum PERFORMANCE_KEYS {
   GROUP_SECTION_FETCH_FAVORITES = 'groupSectionFetchFavorites',
   GROUP_SECTION_FETCH_DIRECT_MESSAGES = 'groupSectionFetchDirectMessages',
   GROUP_SECTION_FETCH_TEAMS = 'groupSectionFetchTeams',

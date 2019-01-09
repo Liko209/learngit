@@ -3,5 +3,5 @@
  * @Date: 2019-01-03 21:20:32
  * Copyright © RingCentral. All rights reserved.
  */
-export { trackPerformance } from './performanceUtils';
-export { PERFORMANCE_SCENARIO } from './types';
+export { performanceTrace } from './Performance';
+export { PERFORMANCE_KEYS } from './types';
