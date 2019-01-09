@@ -638,12 +638,9 @@ test(formalName('JPT-138 Can display conversation history when receiving message
 
     await posts.push(new_post);
 
-    // await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
-    //   posts.forEach(async (post) => {
-    //     await t.expect(conversationPage.nthPostItem(-1).body.withText(post).exists).ok();
-    //   });
-    //   for(){
-
-    //   }
-    // },true); 
+    await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
+      for(let i= 0; i< posts.length; i++){
+        await t.expect(conversationPage.nthPostItem(-1-i).body.withText(posts[i]).exists).ok();
+      }
+    },true); 
   });
