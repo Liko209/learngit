@@ -27,7 +27,7 @@ import storeManager from '@/store';
 import history from '@/history';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { performanceTrace, PERFORMANCE_KEYS } from 'sdk/utils';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 
 const { GroupService, StateService, ProfileService } = service;
 
@@ -391,11 +391,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      performanceTrace.start(performanceKey);
+      PerformanceTracerHolder.getPerformanceTracer().start(performanceKey);
       await this._handlersMap[sectionType].fetchData(direction);
       const ids = this._handlersMap[sectionType].sortableListStore.getIds();
       this._updateIdSet(EVENT_TYPES.UPDATE, ids);
-      performanceTrace.end(performanceKey);
+      PerformanceTracerHolder.getPerformanceTracer().end(performanceKey);
     }
   }
 

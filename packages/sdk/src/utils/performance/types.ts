@@ -10,7 +10,11 @@ export type PerformanceItem = {
 };
 
 export enum PERFORMANCE_KEYS {
-  GROUP_SECTION_FETCH_FAVORITES = 'groupSectionFetchFavorites',
-  GROUP_SECTION_FETCH_DIRECT_MESSAGES = 'groupSectionFetchDirectMessages',
-  GROUP_SECTION_FETCH_TEAMS = 'groupSectionFetchTeams',
+  GROUP_SECTION_FETCH_FAVORITES = 'group_section_fetch_favorites',
+  GROUP_SECTION_FETCH_DIRECT_MESSAGES = 'group_section_fetch_direct_messages',
+  GROUP_SECTION_FETCH_TEAMS = 'group_section_fetch_teams',
+  SWITCH_CONVERSATION = 'switch_conversation',
+  SEARCH_PERSON = 'search_people',
+  SEARCH_GROUP = 'search_group',
+  SEARCH_TEAM = 'search_team',
 }

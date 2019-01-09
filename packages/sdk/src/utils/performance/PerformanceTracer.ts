@@ -6,7 +6,7 @@
 import { PerformanceItem } from './types';
 import { mainLogger } from 'foundation/src';
 
-class Performance {
+class PerformanceTracer {
   PERFORMANCE_KEY = 'jupiter';
   scenarios: Map<string, number>;
 
@@ -44,6 +44,4 @@ class Performance {
   }
 }
 
-const performanceTrace = new Performance();
-
-export { performanceTrace };
+export { PerformanceTracer };

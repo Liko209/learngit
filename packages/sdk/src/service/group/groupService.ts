@@ -28,7 +28,11 @@ import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
 
-import { uniqueArray } from '../../utils';
+import {
+  uniqueArray,
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+} from '../../utils';
 import { transform } from '../utils';
 import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
@@ -643,12 +647,15 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_GROUP,
+    );
     const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
-    return this.searchEntitiesFromCache(
+    const result = await this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
         if (this._isValidGroup(group) && group.members.length > 2) {
           const groupName = this.getGroupNameByMultiMembers(
@@ -674,6 +681,10 @@ class GroupService extends BaseService<Group> {
       undefined,
       this._orderByName.bind(this),
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.SEARCH_GROUP,
+    );
+    return result;
   }
 
   private _orderByName(
@@ -696,13 +707,16 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_TEAM,
+    );
     const accountService: AccountService = AccountService.getInstance();
     const currentUserId = accountService.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
 
-    return this.searchEntitiesFromCache(
+    const result = await this.searchEntitiesFromCache(
       (team: Group, terms: string[]) => {
         return this._idValidTeam(team) &&
           ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
@@ -721,6 +735,10 @@ class GroupService extends BaseService<Group> {
       undefined,
       this._orderByName.bind(this),
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.SEARCH_TEAM,
+    );
+    return result;
   }
 
   getGroupNameByMultiMembers(members: number[], currentUserId: number) {
