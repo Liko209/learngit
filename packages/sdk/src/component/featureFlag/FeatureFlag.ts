@@ -4,8 +4,11 @@ import IFlagCalculator from './FlagCalculator';
 import { strictDiff } from './utils';
 import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
-import { fetchServicePermission } from '../../api/ringcentral/extensionInfo';
-type IBETA_FLAG_SOURCE = 'Client_Config' | 'RC_PERMISSION' |'Split.io_Flag';
+import {
+  fetchServicePermission,
+  IServiceFeatures,
+} from '../../api/ringcentral/extensionInfo';
+type IBETA_FLAG_SOURCE = 'Client_Config' | 'RC_PERMISSION' | 'Split.io_Flag';
 class FeatureFlag {
   private _flags: IFlag;
   constructor(
@@ -24,7 +27,7 @@ class FeatureFlag {
     return this._calculator.isFeatureEnabled(this._flags, featureName);
   }
 
-  handleData(flags: IFlag, source:IBETA_FLAG_SOURCE = 'Client_Config') {
+  handleData(flags: IFlag, source: IBETA_FLAG_SOURCE = 'Client_Config') {
     const oldFlag = this._getFromStorage(source);
     const touchedFlags = strictDiff([oldFlag, flags]);
     Object.keys(touchedFlags).length && this._notify(touchedFlags);
@@ -33,12 +36,19 @@ class FeatureFlag {
   }
 
   async getServicePermission() {
-    const { data:{ serviceFeatures } } = await fetchServicePermission();
-    const permissions = {};
-    serviceFeatures.forEach((item) => {
-      permissions[item.featureName] = item.enabled;
-    });
-    this.handleData(permissions, 'RC_PERMISSION');
+    const result = await fetchServicePermission();
+    if (result.isOk()) {
+      const {
+        data: { serviceFeatures },
+      } = result;
+      const permissions = {};
+      serviceFeatures.forEach((item: IServiceFeatures) => {
+        permissions[item.featureName] = item.enabled;
+      });
+      this.handleData(permissions, 'RC_PERMISSION');
+    } else {
+      throw result.error;
+    }
   }
 
   getFlagValue(key: string) {

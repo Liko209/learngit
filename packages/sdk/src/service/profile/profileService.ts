@@ -8,7 +8,7 @@ import ProfileDao from '../../dao/profile';
 import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
-import AccountService from '../account';
+import { UserConfig } from '../account/UserConfig';
 import { Profile } from '../../module/profile/entity';
 import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
@@ -149,8 +149,7 @@ class ProfileService extends BaseService<Profile> {
       return serviceOk(profile);
     }
 
-    const accountService = AccountService.getInstance<AccountService>();
-    const currentId = accountService.getCurrentUserId();
+    const currentId = UserConfig.getCurrentUserId();
     const profileId = this.getCurrentProfileId();
 
     const personService = PersonService.getInstance<PersonService>();
@@ -230,8 +229,7 @@ class ProfileService extends BaseService<Profile> {
   }
 
   getCurrentProfileId(): number {
-    const accountService: AccountService = AccountService.getInstance();
-    return accountService.getCurrentUserProfileId();
+    return UserConfig.getCurrentUserProfileId();
   }
 
   async handleGroupIncomesNewPost(groupIds: number[]) {

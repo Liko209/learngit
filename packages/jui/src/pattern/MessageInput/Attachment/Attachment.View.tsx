@@ -23,14 +23,7 @@ import {
   JuiMenuList,
   JuiDivider,
 } from '../../../components';
-import {
-  JuiAttachmentIcon,
-  JuiGoogleDriveIcon,
-  JuiDropboxIcon,
-  JuiOneboxIcon,
-  JuiOneDriveIcon,
-  JuiEvernoteIcon,
-} from '../../../foundation/Iconography';
+import { JuiIconography } from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
 const Menu = styled(JuiMenu)`
@@ -83,26 +76,25 @@ class AttachmentView extends Component<Props> {
     const { onFileChanged } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
-    const viewBox = '0 0 16 16';
     const menus = [
       {
-        icon: <JuiGoogleDriveIcon viewBox={viewBox} />,
+        icon: <JuiIconography>google</JuiIconography>,
         label: 'Google Drive',
       },
       {
-        icon: <JuiDropboxIcon viewBox={viewBox} />,
+        icon: <JuiIconography>dropbox</JuiIconography>,
         label: 'Dropbox',
       },
       {
-        icon: <JuiOneboxIcon viewBox={viewBox} />,
+        icon: <JuiIconography>box</JuiIconography>,
         label: 'Box',
       },
       {
-        icon: <JuiEvernoteIcon viewBox={viewBox} />,
+        icon: <JuiIconography>evernote</JuiIconography>,
         label: 'Evernote',
       },
       {
-        icon: <JuiOneDriveIcon viewBox={viewBox} />,
+        icon: <JuiIconography>onedrive</JuiIconography>,
         label: 'OneDrive',
       },
     ];
@@ -114,7 +106,7 @@ class AttachmentView extends Component<Props> {
           onClick={this._handleClickEvent}
           size="medium"
         >
-          <JuiAttachmentIcon viewBox="-2 -2 24 24" />
+          attachment
         </JuiIconButton>
         <UploadArea onFileChanged={onFileChanged} ref={this._uploadRef} />
         {open && (

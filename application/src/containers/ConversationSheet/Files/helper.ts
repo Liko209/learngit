@@ -4,6 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 function getFileSize(bytes: number) {
+  if (typeof bytes !== 'number') {
+    return '0B';
+  }
   if (bytes < 100) {
     return `${bytes && bytes.toFixed(1)}B`;
   }

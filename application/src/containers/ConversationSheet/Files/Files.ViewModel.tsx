@@ -6,7 +6,7 @@
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
-import { Progress } from 'sdk/models';
+import { Progress } from 'sdk/module/progress';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -16,11 +16,11 @@ import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
   PostService,
-  ItemService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';

@@ -65,29 +65,29 @@ class RightRailComponent extends React.Component<Props, States> {
             </JuiIconButton>
           </JuiRightShelfHeaderIcon>
         </JuiRightShelfHeader>
-        <JuiTabs defaultActiveIndex={0}>
-          <JuiTab key={0} title={t('pinned')}>
+        <JuiTabs defaultActiveIndex={0} tag="rightShelf">
+          <JuiTab title={t('pinned')}>
             <div>Pinned List</div>
           </JuiTab>
-          <JuiTab key={1} title={t('files')}>
+          <JuiTab title={t('files')}>
             <div>Files List</div>
           </JuiTab>
-          <JuiTab key={2} title={t('images')}>
+          <JuiTab title={t('images')}>
             <div>Images List</div>
           </JuiTab>
-          <JuiTab key={4} title={t('tasks')}>
+          <JuiTab title={t('tasks')}>
             <div>Tasks List</div>
           </JuiTab>
-          <JuiTab key={3} title={t('links')}>
+          <JuiTab title={t('links')}>
             <div>Links List</div>
           </JuiTab>
-          <JuiTab key={5} title={t('notes')}>
+          <JuiTab title={t('notes')}>
             <div>Notes List</div>
           </JuiTab>
-          <JuiTab key={6} title={t('events')}>
+          <JuiTab title={t('events')}>
             <div>Events List</div>
           </JuiTab>
-          <JuiTab key={7} title={t('integrations')}>
+          <JuiTab title={t('integrations')}>
             <div>Integrations List</div>
           </JuiTab>
         </JuiTabs>

@@ -11,7 +11,7 @@ import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
-} from 'jui/pattern/ProfileMiniCard';
+} from 'jui/pattern/Profile/MiniCard';
 import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';

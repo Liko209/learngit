@@ -8,12 +8,12 @@ import { daoManager, AccountDao, PostDao } from '../../../dao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
-import ItemService from '../../item';
+import { ItemService } from '../../../module/item';
 import { number } from '@storybook/addon-knobs';
 
 jest.mock('../../../dao');
 jest.mock('../../../utils/mathUtils');
-jest.mock('../../item');
+jest.mock('../../../module/item');
 
 describe('PostServiceHandler', () => {
   const mockPostDao = new PostDao(null);
@@ -32,42 +32,18 @@ describe('PostServiceHandler', () => {
     mockItemService.getUploadItems.mockReturnValue([]);
   });
 
-  describe('buildAtMentionsPeopleInfo()', () => {
-    it('atMentions = true', () => {
-      const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
-        atMentions: true,
-        text: '@[display (xxx)]:1:',
-        users: [
-          {
-            display: 'display (xxx)',
-            id: 1,
-          },
-        ],
-      });
-      expect(ret).toEqual({
-        text:
-          "<a class='at_mention_compose' rel='{\"id\":1}'>@display (xxx)</a>",
-        at_mention_non_item_ids: [1],
-      });
-    });
-    it('atMentions = false', () => {
-      const ret = PostServiceHandler.buildAtMentionsPeopleInfo({
-        atMentions: false,
-        text: 'text',
-      });
-      expect(ret).toEqual({
-        text: 'text',
-        at_mention_non_item_ids: [],
-      });
-    });
-  });
-
   describe('buildPostInfo()', () => {
     beforeEach(() => {
       versionHash.mockReturnValue('versionHash');
       randomInt.mockReturnValue(1000);
       Date.now = jest.fn().mockReturnValue(123123);
       mockAccountDao.get.mockReturnValue(123);
+    });
+
+    it('should not build activity_data for post if there is not activity [FIJI-2740]', async () => {
+      const ret = await PostServiceHandler.buildPostInfo({ text: 'FIJI-2740' });
+      expect(ret.text).toEqual('FIJI-2740');
+      expect(ret['activity_data']).toBe(undefined);
     });
 
     const expectData = (hasItemIds: boolean) => ({
@@ -90,22 +66,14 @@ describe('PostServiceHandler', () => {
       links: [],
       company_id: 123,
       deactivated: false,
-      activity_data: {},
     });
 
     it('params has itemsIds', async () => {
       mockItemService.getUploadItems.mockReturnValue([]);
       const ret = await PostServiceHandler.buildPostInfo({
-        atMentions: true,
         text: 'text',
         groupId: 123,
         itemIds: [1, 2],
-        users: [
-          {
-            display: 'display',
-            id: 1,
-          },
-        ],
       });
       expect(ret).toEqual(expectData(true));
     });
@@ -165,13 +133,6 @@ describe('PostServiceHandler', () => {
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
         text: 'new text',
-        atMentions: true,
-        users: [
-          {
-            display: 'display',
-            id: 1,
-          },
-        ],
       });
       expect(ret).toEqual({
         _id: 1,
@@ -188,7 +149,6 @@ describe('PostServiceHandler', () => {
       const ret = await PostServiceHandler.buildModifiedPostInfo({
         postId: 1,
         text: 'text',
-        atMentions: true,
       });
 
       expect(ret).toEqual({
