@@ -13,7 +13,6 @@ import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import { errorHelper } from 'sdk/error';
 import {
   goToConversation,
   GoToConversationParams,
@@ -27,7 +26,6 @@ import { MessageRouterChangeHelper } from './helper';
 type State = {
   messageError: boolean;
   retryParams: GoToConversationParams | null;
-  needTryAgain: boolean;
 };
 
 @observer
@@ -63,19 +61,10 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
 
   componentWillReceiveProps(props: MessagesViewProps) {
     const { location } = props;
-    const { needTryAgain } = this.state;
     const { state } = location;
-    let needTryAgainSet = needTryAgain;
 
-    if (state && state.errObj) {
-      if (errorHelper.isBackEndError(state.errObj)) {
-        needTryAgainSet = true;
-      } else if (errorHelper.isNotNetworkError(state.errObj)) {
-        needTryAgainSet = false;
-      }
-      console.log('errors', state.errObj);
+    if (state && state.error) {
       this.setState({
-        needTryAgain: needTryAgainSet,
         messageError: true,
         retryParams: state.params,
       });
@@ -90,7 +79,7 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
 
   render() {
     const { isLeftNavOpen } = this.props;
-    const { messageError, needTryAgain } = this.state;
+    const { messageError } = this.state;
     const id = this.props.match.params.id;
 
     const currentConversationId = id ? Number(id) : 0;
@@ -112,7 +101,7 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
               <JuiConversationLoading
                 showTip={messageError}
                 tip={t('messageLoadingErrorTip')}
-                linkText={needTryAgain ? t('tryAgain') : ''}
+                linkText={t('tryAgain')}
                 onClick={this.retryMessage}
               />
             )}

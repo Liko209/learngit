@@ -72,34 +72,9 @@ async function goToConversation(params: GoToConversationParams) {
     history.replace('/messages/loading', {
       params,
       error: true,
-      errObj: err,
     });
     return false;
   }
 }
-
-// async function goToConversation(params: GoToConversationParams) {
-//   const { id, message } = params;
-//   const { PostService } = service;
-//   history.push('/messages/loading');
-//   try {
-//     const conversationId = await getConversationId(id);
-//     if (!conversationId) {
-//       throw new Error('Conversation not found.');
-//     }
-//     if (message && conversationId) {
-//       const postService: service.PostService = PostService.getInstance();
-//       await postService.sendPost({ groupId: conversationId, text: message });
-//     }
-//     history.replace(`/messages/${conversationId}`);
-//     return true;
-//   } catch (err) {
-//     history.replace('/messages/loading', {
-//       params,
-//       error: true,
-//     });
-//     return false;
-//   }
-// }
 
 export { goToConversation, getConversationId, GoToConversationParams };
