@@ -131,6 +131,7 @@ class PostActionController {
 
   async checkGroups(groupIds: number[]) {
     // call group service to make sure all groups in local
+    return true;
   }
 
   async sendPost() {}
