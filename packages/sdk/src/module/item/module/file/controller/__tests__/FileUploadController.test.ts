@@ -3,7 +3,7 @@
  * @Date: 2019-01-04 08:52:26
  * Copyright © RingCentral. All rights reserved.
  */
-
+/// <reference path="../../../../../../__tests__/types.d.ts" />
 import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
@@ -113,6 +113,7 @@ describe('fileUploadController', () => {
     const companyId = 3;
 
     const itemDao = new ItemDao(null);
+
     beforeEach(() => {
       clearMocks();
       setup();
