@@ -101,8 +101,6 @@ describe('PostActionControllerHelper', () => {
       );
       expect(result.text).toEqual('This is modified Post');
       expect(result.is_new).toBeFalsy();
-      expect(result.id).toBe(undefined);
-      expect(result._id).toBe(7267105619972);
     });
   });
 });
