@@ -23,7 +23,7 @@ const DIV3 = () => (
 );
 
 const Div1 = withResponsive(DIV1, {
-  maxWidth: 300,
+  maxWidth: 360,
   minWidth: 180,
   defaultWidth: 268,
   visualMode: VISUAL_MODE.AUTOMATIC,
@@ -37,7 +37,7 @@ const Div2 = withResponsive(DIV2, {
   priority: 2,
 });
 const Div3 = withResponsive(DIV3, {
-  maxWidth: 300,
+  maxWidth: 360,
   minWidth: 180,
   defaultWidth: 268,
   visualMode: VISUAL_MODE.BOTH,

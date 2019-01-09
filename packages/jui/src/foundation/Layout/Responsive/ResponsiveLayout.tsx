@@ -22,7 +22,7 @@ type State = {
 class JuiResponsiveLayout extends PureComponent<Props, State> {
   responsiveInfo: { [key: string]: ResponsiveProps } = {};
   hasSortedResponsiveInfo: ResponsiveProps[] = [];
-  prevWidth: number = Number.MAX_SAFE_INTEGER;
+  prevWidth: number = 0;
   visualWidth: number = 0;
   contentWidth: number = 0;
   hasInit: boolean = false;
@@ -100,14 +100,14 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
       },      0);
   }
 
-  smallHandler = (width: number) => {
-    const diffWidth = this.prevWidth - width;
+  smallHandler = (width: number, diffWidth: number) => {
     const canChangeWidth = this.hasSortedResponsiveInfo.some(
       (info: ResponsiveProps) => {
         const checkWidth = Number(info.defaultWidth) || Number(info.minWidth);
         const infoDiffWidth = Number(info.width) - checkWidth;
         if (infoDiffWidth > 0) {
           const panelWidth = Number(info.width) - diffWidth;
+          debugger;
           this.setState({
             width: {
               ...this.state.width,
@@ -146,7 +146,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
     if (diffWidth < 0) {
       this.largeHandler(width);
     } else {
-      this.smallHandler(width);
+      this.smallHandler(width, diffWidth);
     }
   }
 

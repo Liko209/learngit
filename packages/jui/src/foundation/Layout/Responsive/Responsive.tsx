@@ -85,14 +85,11 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       };
     }
     const { width } = props;
-    const { lastWidth } = state;
-    const newState = {} as ResponsiveState;
-    if (width && lastWidth !== width) {
-      newState.width = width;
-      newState.lastWidth = width;
-    }
-    if (Object.keys(newState).length) {
-      return newState;
+    const { lastWidth, width: stateWidth } = state;
+    if (width && (lastWidth !== width || stateWidth < width)) {
+      return {
+        width,
+      };
     }
     return null;
   }
