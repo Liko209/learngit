@@ -21,16 +21,30 @@ export type LinksArray = { url: string }[];
 class PostServiceHandler {
   static buildLinksInfo(params: RawPostInfo): LinksArray {
     const { text } = params;
-    let res: any;
+    let res: string[] = [];
+    let matchedUrl: string[] = [];
+    const urlArray: string[] = [];
     const links: LinksArray = [];
-
-    res = text.match(Markdown.global_url_regex);
-    res &&
-      res.forEach((item: string) => {
-        links.push({
-          url: item,
-        });
+    res = res.concat(text);
+    res && res.forEach((item: string, index: number) => {
+      matchedUrl = res[index].match(/[^\(\)]+(?=\))/g) || [];
+      if (!matchedUrl.length) {
+        urlArray.push(item);
+      }
+    });
+    if (matchedUrl.length) {
+      for (const k of matchedUrl) {
+        if (k) {
+          urlArray.push(k);
+        }
+      }
+    }
+    const matchedNoneMdUrl = urlArray.toString().match(Markdown.global_url_regex);
+    matchedNoneMdUrl && matchedNoneMdUrl.forEach((item: string) => {
+      links.push({
+        url: item,
       });
+    });
     return links;
   }
 
