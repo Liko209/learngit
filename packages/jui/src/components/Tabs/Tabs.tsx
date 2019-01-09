@@ -78,8 +78,11 @@ class JuiTabs extends PureComponent<Props, States> {
     this._moreRef = createRef();
     this._containerRef = createRef();
 
-    const indexSelected =
+    let indexSelected =
       this._getLocalSelectedIndex() || props.defaultActiveIndex || 0;
+    if (indexSelected > Children.count(props.children) - 1) {
+      indexSelected = 0;
+    }
     this.state = {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
