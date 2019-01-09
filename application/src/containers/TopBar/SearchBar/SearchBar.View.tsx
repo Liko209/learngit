@@ -150,24 +150,24 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await this._goToConversation(id);
   }
 
-  addPublicTeam = (id: number, teamName: string) => (
+  addPublicTeam = (item: SortableModel<object>) => (
     e: React.MouseEvent<HTMLElement>,
   ) => {
     e.stopPropagation();
     const { joinTeam } = this.props;
     Dialog.confirm({
       title: t('joinTeamTitle'),
-      content: t('joinTeamContent', { teamName }),
+      content: t('joinTeamContent', { teamName: item.displayName }),
       okText: t('Done'),
       cancelText: t('Cancel'),
-      onOK: () => this._goToConversation(id, joinTeam),
+      onOK: () => this._goToConversation(item.id, joinTeam),
     });
   }
 
-  private _Actions = (id: number, displayName: string) => {
+  private _Actions = (item: SortableModel<object>) => {
     return (
       <JuiButton
-        onClick={this.addPublicTeam(id, displayName)}
+        onClick={this.addPublicTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
@@ -205,7 +205,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             privacy === 'protected' &&
             !members.includes(currentUserId);
 
-          const Actions = hasAction ? this._Actions(id, displayName) : null;
+          const Actions = hasAction ? this._Actions(item) : null;
 
           return (
             <JuiSearchItem
