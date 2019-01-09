@@ -56,7 +56,6 @@ const StyledNotification = styled.div`
   ${typography('caption1')};
   span:first-child {
     padding-left: ${spacing(1)};
-    display: inline-block;
   }
 `;
 
