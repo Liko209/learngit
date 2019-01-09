@@ -54,6 +54,7 @@ const name2icon = {
   draft: 'draft',
   location: 'location',
   link: 'webpage',
+  send_failure: 'refresh',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

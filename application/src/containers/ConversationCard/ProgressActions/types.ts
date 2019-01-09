@@ -5,7 +5,7 @@
  */
 
 import PostModel from '@/store/models/Post';
-import { PROGRESS_STATUS } from 'sdk/module';
+import { PROGRESS_STATUS } from 'sdk/module/progress';
 
 type ProgressActionsProps = {
   id: number; // post id

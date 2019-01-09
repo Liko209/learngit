@@ -27,7 +27,7 @@ import {
 } from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
-import { AccountService } from '../account/accountService';
+import { UserConfig } from '../account/UserConfig';
 
 class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
@@ -155,8 +155,7 @@ class PersonService extends BaseService<Person> {
   } | null> {
     let currentUserId: number | null = null;
     if (excludeSelf) {
-      const accountService: AccountService = AccountService.getInstance();
-      currentUserId = accountService.getCurrentUserId();
+      currentUserId = UserConfig.getCurrentUserId();
     }
     return this.searchEntitiesFromCache(
       (person: Person, terms: string[]) => {
@@ -282,8 +281,7 @@ class PersonService extends BaseService<Person> {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const accountService: AccountService = AccountService.getInstance();
-    const isCoWorker = accountService.getCurrentCompanyId() === companyId;
+    const isCoWorker = UserConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,

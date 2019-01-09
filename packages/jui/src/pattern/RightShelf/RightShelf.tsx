@@ -12,6 +12,8 @@ const JuiRightShelf = styled('div')`
   height: 100%;
   background-color: ${palette('common', 'white')};
   border-left: 1px solid ${grey('300')};
+  display: flex;
+  flex-direction: column;
 `;
 
 export { JuiRightShelf };
