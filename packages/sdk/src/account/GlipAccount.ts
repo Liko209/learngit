@@ -7,13 +7,13 @@ import { AbstractAccount } from '../framework';
 import PostService from '../service/post';
 import GroupService from '../service/group';
 import CompanyService from '../service/company';
-import ItemService from '../service/item';
 import PersonService from '../service/person';
 import PresenceService from '../service/presence';
 import ProfileService from '../service/profile';
 import SearchService from '../service/search';
 import StateService from '../service/state';
 import { TelephonyService } from '../module/telephony';
+import { ItemService } from '../module/item';
 
 class GlipAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {

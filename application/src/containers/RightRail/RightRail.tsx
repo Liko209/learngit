@@ -70,7 +70,7 @@ class RightRailComponent extends React.Component<Props, States> {
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
-          <JuiTabs defaultActiveIndex={0} width={width}>
+          <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
             <JuiTab key={0} title={t('pinned')}>
               <div>Pinned List</div>
             </JuiTab>

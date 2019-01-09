@@ -7,9 +7,9 @@ import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
 import { baseHandleData } from '../post/handleData';
-import itemHandleData from '../item/handleData';
 import { mainLogger } from 'foundation';
 import StateService from '../state';
+import { ItemService } from '../../module/item';
 
 const DEFAULT_DIRECTION: string = 'order';
 const MAX_UNREAD_COUNT: number = 100;
@@ -40,7 +40,10 @@ class PreloadPostsProcessor implements IProcessor {
       const requestResult = await postService.getPostsFromRemote(params);
       requestResult.posts.length &&
         (await baseHandleData(requestResult.posts, true));
-      requestResult.items.length && (await itemHandleData(requestResult.items));
+      requestResult.items.length &&
+        (await (ItemService.getInstance() as ItemService).handleIncomingData(
+          requestResult.items,
+        ));
     }
     return true;
   }
