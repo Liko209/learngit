@@ -250,6 +250,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
