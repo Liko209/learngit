@@ -76,8 +76,8 @@ test(formalName('UMI should be added received messages count in conversations', 
     groupConversation = directMessagesSection.conversationEntryById(groupId);
     await teamsSection.expand();
     teamConversation = teamsSection.conversationEntryById(teamId);
-    await groupConversation.headerUmi.shouldBeNumber(1);
-    await teamConversation.headerUmi.shouldBeNumber(1);
+    await groupConversation.umi.shouldBeNumber(1);
+    await teamConversation.umi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
@@ -86,7 +86,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`The group should have 2 umi`, async () => {
-    await groupConversation.headerUmi.shouldBeNumber(2);
+    await groupConversation.umi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When other user send a post with @mention to the team', async () => {
@@ -95,7 +95,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the team should have 2 umi`, async () => {
-    await teamConversation.headerUmi.shouldBeNumber(2);
+    await teamConversation.umi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When other user send a post without @mention to the group', async () => {
@@ -104,7 +104,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the group should have 3 umi`, async () => {
-    await groupConversation.headerUmi.shouldBeNumber(3);
+    await groupConversation.umi.shouldBeNumber(3);
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
@@ -113,7 +113,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
-    await teamConversation.headerUmi.shouldBeNumber(2);
+    await teamConversation.umi.shouldBeNumber(2);
   });
 },
 );
