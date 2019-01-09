@@ -3,17 +3,27 @@
  * @Date: 2019-01-08 12:41:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { RouteProps } from 'react-router-dom';
-import { SubModuleConfig } from '../types';
+import { SubModuleConfig, NavConfig } from '../types';
 
 class HomeStore {
-  @observable
-  subModuleConfigs: SubModuleConfig[] = [];
+  @observable private _subModuleConfigs: SubModuleConfig[] = [];
+  @observable private _defaultRouterPath: string;
+
+  @computed
+  get defaultRouterPath() {
+    return this._defaultRouterPath;
+  }
+
+  @action
+  setDefaultRouterPath(path: string) {
+    this._defaultRouterPath = path;
+  }
 
   @computed
   get subRoutes() {
-    return this.subModuleConfigs
+    return this._subModuleConfigs
       .filter(subModule => subModule.route)
       .map(subModule => subModule.route) as RouteProps[];
   }
@@ -23,19 +33,21 @@ class HomeStore {
       return !!config.nav;
     };
 
-    return this.subModuleConfigs
+    return this._subModuleConfigs
       .filter(hasNav)
-      .map((config: SubModuleConfig) => {
-        return config.nav!(currentConversationId, currentGroupIds);
+      .map((config: { nav: (arg0: number, arg1: number[]) => NavConfig }) => {
+        return config.nav(currentConversationId, currentGroupIds);
       });
   }
 
-  addSubModule(route: SubModuleConfig) {
-    this.subModuleConfigs.push(route);
+  @action
+  addSubModule(config: SubModuleConfig) {
+    this._subModuleConfigs.push(config);
   }
 
-  addSubSubModules(routes: SubModuleConfig[]) {
-    routes.forEach(route => this.addSubModule(route));
+  @action
+  addSubSubModules(configs: SubModuleConfig[]) {
+    configs.forEach(route => this.addSubModule(route));
   }
 }
 

@@ -3,12 +3,12 @@
  * @Date: 2018-10-11 19:12:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { Location, Action } from 'history';
-import { action, observable } from 'mobx';
-import history from '@/history';
 import historyStack from '@/common/HistoryStack';
-import { StoreViewModel } from '@/store/ViewModel';
 import isElectron from '@/common/isElectron';
+import history from '@/history';
+import { StoreViewModel } from '@/store/ViewModel';
+import { Action, Location } from 'history';
+import { action, observable } from 'mobx';
 
 class HomeViewModel extends StoreViewModel {
   @observable

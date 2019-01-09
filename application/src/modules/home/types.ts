@@ -16,6 +16,12 @@ type NavConfig = {
 type SubModuleConfig = {
   route?: RouteProps;
   nav?: ((currentConversationId: number, groupIds: number[]) => NavConfig);
+  isDefault?: boolean;
 };
 
-export { NavConfig, SubModuleConfig };
+type HomeConfig = {
+  defaultRouterPath: string;
+  subModules: SubModuleConfig[];
+};
+
+export { HomeConfig, NavConfig, SubModuleConfig };

@@ -11,7 +11,7 @@ import {
   RouteProps,
 } from 'react-router-dom';
 import { container } from 'framework';
-import history from '../../../../history';
+import history from '@/history';
 import { RouterStore } from '../../store/RouterStore';
 import { AuthRoute } from '../AuthRoute';
 
