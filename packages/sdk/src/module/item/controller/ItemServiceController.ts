@@ -81,7 +81,6 @@ class ItemServiceController {
         desc,
       );
     }
-
     const itemDao = daoManager.getDao(ItemDao);
     return await itemDao.getItemsByIds(ids);
   }
