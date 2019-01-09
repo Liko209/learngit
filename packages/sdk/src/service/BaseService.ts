@@ -20,10 +20,11 @@ import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
-import { ERROR_CODES_SDK } from '../error';
+import { ERROR_CODES_SDK, JSdkError } from '../error';
 
 const throwError = (text: string): never => {
-  throw new Error(
+  throw new JSdkError(
+    ERROR_CODES_SDK.GENERAL,
     // tslint:disable-next-line:max-line-length
     `${text} is undefined! ${text} must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)`,
   );
@@ -255,6 +256,17 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
         true,
       )
       : false;
+  }
+
+  protected isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   protected getTermsFromSearchKey(searchKey: string) {

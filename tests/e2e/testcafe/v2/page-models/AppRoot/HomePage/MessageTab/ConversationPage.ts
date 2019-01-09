@@ -10,6 +10,34 @@ import * as assert from 'assert';
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../../helpers';
 
+class Entry extends BaseWebComponent {
+  async enter() {
+    await this.t.click(this.self);
+  }
+}
+class ActionBarMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="menuitem"]');
+  }
+
+  private getEntry(icon: string) {
+    return this.getComponent(Entry, this.getSelectorByIcon(icon, this.self).parent('li'));
+  }
+
+  get quoteItem() {
+    return this.getEntry('quote');
+  }
+
+  get deletePost() {
+    return this.getEntry('delete');
+  }
+
+  get editPost() {
+    return this.getEntry('edit');
+  }
+}
+
+
 class BaseConversationPage extends BaseWebComponent {
 
   get jumpToFirstUnreadButtonWrapper() {
@@ -271,6 +299,11 @@ export class BookmarkPage extends BaseConversationPage {
 }
 
 export class PostItem extends BaseWebComponent {
+
+  get actionBarMoreMenu() {
+    return this.getComponent(ActionBarMoreMenu);
+  }
+
   get avatar() {
     return this.self.find(`[data-name="avatar"]`);
   }
@@ -293,6 +326,18 @@ export class PostItem extends BaseWebComponent {
 
   get text() {
     return this.self.find(`[data-name="text"]`);
+  }
+
+
+  get editTextArea() {
+    return this.self.find('[data-placeholder="Type new message"]');
+  }
+
+  async editMessage(message: string, options?) {
+    await this.t
+      .wait(1e3) // need time to wait edit text area loaded
+      .typeText(this.editTextArea, message, options)
+      .pressKey('enter');
   }
 
   get mentions() {
@@ -334,6 +379,10 @@ export class PostItem extends BaseWebComponent {
 
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
+  }
+
+  async clickMoreItemOnActionBar() {
+    await this.t.hover(this.self).click(this.moreMenu);
   }
 
   get prompt() {

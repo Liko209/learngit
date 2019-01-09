@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import history from '@/history';
-import { service, JNetworkError, ERROR_CODES_NETWORK } from 'sdk';
+import { service } from 'sdk';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';
@@ -38,7 +39,7 @@ describe('goToConversation() with group or team type', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 
-  it('getConversationId() with team type conversationId', async () => {
+  it('getConversationId() with team type conversationId [JPT-717]', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_TEAM,
     );
