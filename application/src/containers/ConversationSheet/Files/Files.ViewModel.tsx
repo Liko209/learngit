@@ -6,7 +6,7 @@
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
-import { Progress } from 'sdk/models';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
 import ProgressModel from '@/store/models/Progress';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -17,16 +17,15 @@ import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
   PostService,
-  ItemService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 import PostModel from '@/store/models/Post';
-import { PROGRESS_STATUS } from 'sdk/module';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;

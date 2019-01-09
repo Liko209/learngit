@@ -6,23 +6,29 @@
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
 import { service } from 'sdk';
-jest.mock('../../../../store/utils');
+
 import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
-import { PROGRESS_STATUS } from 'sdk/module';
+import { PROGRESS_STATUS } from 'sdk/module/progress';
+import { ItemService } from 'sdk/module/item';
+
+jest.mock('sdk/service/post');
+jest.mock('../../../../store/utils');
 jest.mock('@/containers/Notification');
 
-const { ItemService, PostService } = service;
 const itemService = {
   cancelUpload: jest.fn(),
 };
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
+const { PostService } = service;
 const postService = {
   removeItemFromPost: jest.fn(),
 };
 PostService.getInstance = jest.fn().mockReturnValue(postService);
+
+ItemService.getInstance = jest.fn().mockReturnValue({});
+Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 const filesItemVM = new FilesViewModel();
 filesItemVM.props.ids = [1, 2, 3];

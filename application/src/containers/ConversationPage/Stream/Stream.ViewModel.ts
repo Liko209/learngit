@@ -11,7 +11,7 @@ import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { JNetworkError } from 'sdk';
+import { JNetworkError } from 'sdk/error';
 
 import {
   FetchSortableDataListHandler,

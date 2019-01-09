@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service, JSdkError, ERROR_CODES_SDK } from 'sdk';
+import { service } from 'sdk';
+import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
 import { PrivacyProps } from '../types';

@@ -10,8 +10,8 @@ import { IndicatorProps, IndicatorViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
-import { ItemService } from 'sdk/service';
-import { GroupConfig } from 'sdk/models';
+import { ItemService } from 'sdk/module/item';
+import { GroupConfig } from 'sdk/src/models';
 import GroupConfigModel from '@/store/models/GroupConfig';
 
 class IndicatorViewModel extends AbstractViewModel
