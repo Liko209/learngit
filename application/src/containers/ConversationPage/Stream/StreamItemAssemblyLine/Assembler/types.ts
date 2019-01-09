@@ -6,26 +6,22 @@
 import { ISortableModel } from '@/store/base/fetch/types';
 import { Post } from 'sdk/module/post/entity';
 import { StreamItem } from '../../types';
-export type AssemblerAddFunc = (
-  args: {
-    added: (ISortableModel<Post> & { data: Post })[];
-    postList: ISortableModel<Post>[];
-    newItems: StreamItem[];
-    hasMore: boolean;
-  },
-) => {
+export type AssemblerAddFuncArgs = {
   added: (ISortableModel<Post> & { data: Post })[];
   postList: ISortableModel<Post>[];
   newItems: StreamItem[];
+  hasMore: boolean;
+  streamItemList: StreamItem[];
 };
-export type AssemblerDelFunc = (
-  args: {
-    deleted: number[];
-    postList: ISortableModel<Post>[];
-    deletedIds: number[];
-  },
-) => {
+export type AssemblerDelFuncArgs = {
   deleted: number[];
   postList: ISortableModel<Post>[];
   deletedIds: number[];
+  streamItemList: StreamItem[];
 };
+export type AssemblerAddFunc = (
+  args: AssemblerAddFuncArgs,
+) => AssemblerAddFuncArgs;
+export type AssemblerDelFunc = (
+  args: AssemblerDelFuncArgs,
+) => AssemblerDelFuncArgs;

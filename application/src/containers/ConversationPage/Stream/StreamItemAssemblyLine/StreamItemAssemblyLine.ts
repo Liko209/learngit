@@ -14,6 +14,7 @@ export class StreamItemAssemblyLine {
     delta: TDeltaWithData,
     postList: ISortableModel<Post>[],
     hasMore: boolean,
+    streamItemList: StreamItem[],
   ) => {
     const { added, deleted } = delta;
     let itemsShouldBeAdded;
@@ -27,6 +28,7 @@ export class StreamItemAssemblyLine {
           postList,
           newItems,
           hasMore,
+          streamItemList,
         },
       ).newItems;
     }
@@ -39,6 +41,7 @@ export class StreamItemAssemblyLine {
           deleted,
           postList,
           deletedIds,
+          streamItemList,
         },
       ).deletedIds;
     }

@@ -11,22 +11,25 @@ import { ISortableModel } from '@/store/base';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 
-import { NewSeparator, SeparatorType } from '../../types';
+import { StreamItemType } from '../../types';
 import { Assembler } from './Assembler';
-import { AssemblerAddFunc, AssemblerDelFunc } from './types';
+import {
+  AssemblerAddFuncArgs,
+  AssemblerAddFunc,
+  AssemblerDelFuncArgs,
+  AssemblerDelFunc,
+} from './types';
 
 class NewMessageSeparatorHandler extends Assembler {
   priority = 2;
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
+  private separatorId?: number;
   _oldestPost?: ISortableModel<Post>;
 
   @observable
   private _hasNewMessagesSeparator = false;
-
-  @observable
-  separatorMap = new Map<number, NewSeparator>();
 
   @observable
   firstUnreadPostId?: number;
@@ -41,8 +44,10 @@ class NewMessageSeparatorHandler extends Assembler {
     this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
-  onAdd: AssemblerAddFunc = ({ added, postList, newItems, hasMore }) => {
-    if (this._disabled) return;
+  onAdd: AssemblerAddFunc = (args: AssemblerAddFuncArgs) => {
+    const { postList, hasMore, newItems } = args;
+
+    if (this._disabled) return args;
     this._oldestPost = _.first(postList);
 
     /*
@@ -50,19 +55,20 @@ class NewMessageSeparatorHandler extends Assembler {
      * If the `New Messages` separator already existed,
      * it will never be modified when receive new posts
      */
-    if (this.separatorMap.size > 0) return;
+    if (this.separatorId) return args;
 
     /*
      * (2)
      * Check if there is a `New Messages` separator
      */
+
     const lastPost = _.last(postList);
     const readThrough = this._readThrough || 0;
     const hasSeparator = !!lastPost && lastPost.id > readThrough;
     this._hasNewMessagesSeparator = hasSeparator;
 
     // No separator
-    if (!this._hasNewMessagesSeparator) return;
+    if (!this._hasNewMessagesSeparator) return args;
 
     /*
      * (3)
@@ -76,7 +82,7 @@ class NewMessageSeparatorHandler extends Assembler {
 
     // Separator in other page, we'll handle it next
     // time when onAdded() was called
-    if (hasSeparatorInOtherPage) return;
+    if (hasSeparatorInOtherPage) return args;
 
     /*
      * (4)
@@ -84,37 +90,33 @@ class NewMessageSeparatorHandler extends Assembler {
      */
     const firstUnreadPost = this._findNextOthersPost(postList, readThrough);
     if (firstUnreadPost) {
-      this._setSeparator(firstUnreadPost.id);
+      const separatorId = firstUnreadPost.data!.created_at - 1;
+      this._setSeparator(firstUnreadPost.id, separatorId);
+      newItems.push({
+        id: separatorId,
+        type: StreamItemType.NEW_MSG_SEPARATOR,
+        timeStart: firstUnreadPost.data!.created_at - 1,
+      });
+      return { ...args, newItems };
     }
+    return args;
   }
 
-  onDelete: AssemblerDelFunc = (
-    deletedPostIds: number[],
-    allPosts: ISortableModel[],
-  ) => {
-    const deletedPostWithSeparator = deletedPostIds.find(postId =>
-      this.separatorMap.has(postId),
-    );
-
-    if (!deletedPostWithSeparator) return;
-
-    this.separatorMap.delete(deletedPostWithSeparator);
-
-    // Find first post next to the deleted post
-    const postNext = _.find(
-      allPosts,
-      ({ id }) => id > deletedPostWithSeparator,
-    );
-
-    // The deleted one is the last post
-    if (!postNext) return;
-
-    this._setSeparator(postNext.id);
+  onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => {
+    if (!this.separatorId) {
+      return args;
+    }
+    const { deleted, postList, deletedIds } = args;
+    const latestDeletedPostId = _.max(deleted) as number;
+    const postNext = _.find(postList, ({ id }) => id >= latestDeletedPostId);
+    if (!postNext) {
+      deletedIds.push(this.separatorId);
+    }
+    return { ...args, deletedIds };
   }
 
   setReadThroughIfNoSeparator(readThrough?: number) {
     if (this._hasNewMessagesSeparator) return;
-
     this._readThrough = readThrough;
   }
 
@@ -154,12 +156,9 @@ class NewMessageSeparatorHandler extends Assembler {
     return targetPost;
   }
 
-  private _setSeparator(postId: number) {
-    const separator: NewSeparator = {
-      type: SeparatorType.NEW_MSG,
-    };
+  private _setSeparator(postId: number, separatorId: number) {
     this.firstUnreadPostId = postId;
-    this.separatorMap.set(postId, separator);
+    this.separatorId = separatorId;
   }
 }
 

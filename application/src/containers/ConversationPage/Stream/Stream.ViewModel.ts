@@ -1,3 +1,4 @@
+import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
 /*
  * @Author: Andy Hu
@@ -29,7 +30,6 @@ import {
 import { getEntity, getGlobalValue, transform2Map } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps, StreamItem, TDeltaWithData } from './types';
-import { NewMessageSeparatorHandler } from './NewMessageSeparatorHandler';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -37,6 +37,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 import { OrdinaryPostWrapper, DateSeparator } from './StreamItemAssemblyLine';
+import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -65,7 +66,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get items() {
-    return this.streamListHandler.sortableListStore.items.map(i => i.data);
+    return _(this.streamListHandler.sortableListStore.items)
+      .map('data')
+      .compact()
+      .value();
   }
 
   @observable
@@ -160,9 +164,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         isMatchFunc: () => true,
       },
     );
+    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this.assemblyLine = new StreamItemAssemblyLine([
       new DateSeparator(),
+      this._newMessageSeparatorHandler,
       new OrdinaryPostWrapper(),
+      new SingletonTagChecker(),
     ]);
   }
 
@@ -219,7 +226,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    this._stateService.markAsRead(this.groupId);
+    false && this._stateService.markAsRead(this.groupId);
   }
 
   enableNewMessageSeparatorHandler = () => {
@@ -320,11 +327,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
 
     this._historyHandler = new HistoryHandler();
-    this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
-    this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
-      this._readThrough,
-    );
-
     this.autorun(() =>
       this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
         this._readThrough,
@@ -334,15 +336,31 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   handlePostsChanged = (delta: TDeltaWithData) => {
-    const { newItems } = this.assemblyLine.process(
-      delta,
+    const { deletedIds } = this.assemblyLine.process(
+      { ...delta, added: [] },
       this.orderListHandler.listStore.items,
       this.hasMoreUp,
+      this.items,
+    );
+    if (deletedIds) {
+      this.streamListHandler.onDataChanged({
+        type: EVENT_TYPES.DELETE,
+        body: {
+          ids: deletedIds,
+        },
+      });
+    }
+    const { newItems } = this.assemblyLine.process(
+      { ...delta, deleted: [] },
+      this.orderListHandler.listStore.items,
+      this.hasMoreUp,
+      this.items,
     );
     if (newItems) {
       this.streamListHandler.onDataChanged({
-        type: EVENT_TYPES.UPDATE,
+        type: EVENT_TYPES.REPLACE,
         body: {
+          isReplaceAll: true,
           ids: _(newItems)
             .map('id')
             .value(),

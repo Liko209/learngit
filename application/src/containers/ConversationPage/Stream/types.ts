@@ -24,7 +24,6 @@ type NewSeparator = {
 
 enum StreamItemType {
   POST = 'POST',
-  GROUPED_POSTS = 'GROUPED_POSTS',
   DATE_SEPARATOR = 'DATE_SEPARATOR',
   NEW_MSG_SEPARATOR = 'NEW_MSG_SEPARATOR',
 }
