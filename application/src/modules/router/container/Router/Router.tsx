@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-01-09 10:22:42
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as React from 'react';
 import {
   Router as ReactRouter,
@@ -23,11 +28,6 @@ class Router extends React.Component {
           {this._routerStore.authRoutes.map((routeProps: RouteProps, i) => (
             <AuthRoute key={`AUTH_ROUTE_${i}`} {...routeProps} />
           ))}
-          {/* <Route path="/commit-info" component={VersionInfo} />
-          <Route path="/version" component={VersionInfo} />
-          <Route path="/login" component={Login} />
-          <Route path="/unified-login" component={UnifiedLogin} /> */}
-          {/* <AuthRoute path="/" component={Home} /> */}
         </Switch>
       </ReactRouter>
     );

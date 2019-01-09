@@ -7,12 +7,6 @@ import * as React from 'react';
 import { hot } from 'react-hot-loader';
 import { container } from 'framework';
 import ThemeProvider from '@/containers/ThemeProvider';
-
-// import { AuthRoute } from '@/containers/AuthRoute';
-// import Login from '@/containers/Login';
-// import { Home } from '@/containers/Home';
-// import UnifiedLogin from '@/containers/UnifiedLogin';
-// import VersionInfo from '@/containers/VersionInfo';
 import { autorun, computed } from 'mobx';
 import history from '@/history';
 import _ from 'lodash';
