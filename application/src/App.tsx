@@ -25,11 +25,16 @@ import { analytics } from '@/Analytics';
 import { AboutView } from './containers/About';
 import { upgradeHandler } from '@/upgrade';
 import { TopBanner } from './containers/TopBanner';
+import { generalErrorHandler } from './utils/error';
 
 @observer
 class App extends React.Component {
   private appName = process.env.APP_NAME || '';
   private _unListenHistory: VoidFunction;
+
+  componentDidCatch(error: Error) {
+    generalErrorHandler(error);
+  }
 
   componentWillUnmount() {
     this._unListenHistory && this._unListenHistory();

@@ -11,7 +11,7 @@ import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { JNetworkError } from 'sdk/error';
+import { errorHelper } from 'sdk/error';
 
 import {
   FetchSortableDataListHandler,
@@ -36,6 +36,8 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
+import { Notification } from '@/containers/Notification';
+import { generalErrorHandler } from '@/utils/error';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -241,6 +243,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ]);
     } else {
       // TODO error handing
+      console.error('Anchor post does not exist');
     }
   }
 
@@ -277,8 +280,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
           return { hasMore, data: posts };
         } catch (err) {
-          if (err instanceof JNetworkError) {
-            // TODO error handle
+          if (errorHelper.isBackEndError(err)) {
+            Notification.flashToast({
+              message: `SorryWeWereNotAbleToLoad${
+                direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
+              }Messages`,
+              type: 'error',
+              messageAlign: 'left',
+              fullWidth: false,
+              dismissible: false,
+            });
+          } else {
+            generalErrorHandler(err);
           }
           return { data: [], hasMore: true };
         }
@@ -294,7 +307,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
-        dataChangeCallBack: () => { },
+        dataChangeCallBack: () => {},
       },
     );
 

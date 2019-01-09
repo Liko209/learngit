@@ -74,6 +74,9 @@ export default class PostModel extends Base<Post> {
 
   @computed
   get itemTypeIds() {
+    if (!this.existItemIds) {
+      return undefined;
+    }
     const itemTypeIds = {};
     this.existItemIds.forEach((id: number) => {
       const typeId = GlipTypeUtil.extractTypeId(id);

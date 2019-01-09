@@ -5,9 +5,14 @@
  */
 
 import { getEntity } from '../../../../../store/utils';
+import * as errorUtil from '@/utils/error';
 import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
+import storeManager from '@/store';
+import { Notification } from '@/containers/Notification';
+import { errorHelper } from 'sdk/error';
 
 jest.mock('../../../../../store/utils');
+jest.mock('@/utils/error');
 
 const mockData = {
   displayName: 'Group name',
@@ -44,6 +49,95 @@ describe('ProfileMiniCardGroupViewModel', () => {
       mockData.displayName = 'Group name 2';
       mockData.isTeam = false;
       expect(vm.group).toEqual(mockData);
+    });
+
+    it('should set to store after get from service successfully', (done: Function) => {
+      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+      const groupStore = {
+        getByService: jest.fn(() => Promise.resolve(mockData)),
+        set: jest.fn(),
+      };
+      storeManager.getEntityMapStore = jest
+        .fn()
+        .mockReturnValueOnce(groupStore);
+      vm.group;
+      setTimeout(() => {
+        expect(groupStore.getByService).toHaveBeenCalled();
+        expect(groupStore.set).toHaveBeenCalled();
+        done();
+      },         500);
+    });
+
+    it('should show error toast when server response with error', (done: Function) => {
+      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+      const groupStore = {
+        getByService: jest.fn(() => Promise.reject(new Error())),
+        set: jest.fn(),
+      };
+      Notification.flashToast = jest.fn();
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
+      storeManager.getEntityMapStore = jest
+        .fn()
+        .mockReturnValueOnce(groupStore);
+      vm.group;
+      setTimeout(() => {
+        expect(groupStore.getByService).toHaveBeenCalled();
+        expect(groupStore.set).not.toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith({
+          dismissible: false,
+          fullWidth: false,
+          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          messageAlign: 'left',
+          type: 'error',
+        });
+        done();
+      },         500);
+    });
+
+    it('should show error toast when server response null', (done: Function) => {
+      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+      const groupStore = {
+        getByService: jest.fn(() => Promise.resolve(null)),
+        set: jest.fn(),
+      };
+      Notification.flashToast = jest.fn();
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
+      storeManager.getEntityMapStore = jest
+        .fn()
+        .mockReturnValueOnce(groupStore);
+      vm.group;
+      setTimeout(() => {
+        expect(groupStore.getByService).toHaveBeenCalled();
+        expect(groupStore.set).not.toHaveBeenCalled();
+        expect(Notification.flashToast).toHaveBeenCalledWith({
+          dismissible: false,
+          fullWidth: false,
+          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          messageAlign: 'left',
+          type: 'error',
+        });
+        done();
+      },         500);
+    });
+
+    it('should use generalErrorHandler if error is not from backend', (done: Function) => {
+      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+      const groupStore = {
+        getByService: jest.fn(() => Promise.reject(new Error())),
+        set: jest.fn(),
+      };
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(false);
+      jest.spyOn(errorUtil, 'generalErrorHandler');
+      storeManager.getEntityMapStore = jest
+        .fn()
+        .mockReturnValueOnce(groupStore);
+      vm.group;
+      setTimeout(() => {
+        expect(groupStore.getByService).toHaveBeenCalled();
+        expect(groupStore.set).not.toHaveBeenCalled();
+        expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
+        done();
+      },         500);
     });
   });
 });

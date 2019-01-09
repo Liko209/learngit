@@ -113,29 +113,21 @@ class PostService extends BaseService<Post> {
     if (postId) {
       params.post_id = postId;
     }
-    try {
-      const requestResult = await PostAPI.requestPosts(params);
-      const result: IRawPostResult = {
-        posts: [],
-        items: [],
-        hasMore: false,
-      };
-      const data = requestResult.expect('Get Remote post failed');
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        if (result.posts.length === limit) {
-          result.hasMore = true;
-        }
+    const requestResult = await PostAPI.requestPosts(params);
+    const result: IRawPostResult = {
+      posts: [],
+      items: [],
+      hasMore: false,
+    };
+    const data = requestResult.expect('Get Remote post failed');
+    if (data) {
+      result.posts = data.posts;
+      result.items = data.items;
+      if (result.posts.length === limit) {
+        result.hasMore = true;
       }
-      return result;
-    } catch (e) {
-      return {
-        posts: [],
-        items: [],
-        hasMore: true,
-      };
     }
+    return result;
   }
 
   async getPostsByGroupId({
