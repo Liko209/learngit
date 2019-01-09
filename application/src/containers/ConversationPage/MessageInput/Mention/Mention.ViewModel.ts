@@ -190,6 +190,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     return function () {
       vm.currentIndex =
         (vm.currentIndex + vm.members.length - 1) % vm.members.length;
+      if (vm.members.length && vm.open) {
+        return false;
+      }
+      return true;
     };
   }
 
@@ -197,6 +201,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   private _downHandler(vm: MentionViewModel) {
     return function () {
       vm.currentIndex = (vm.currentIndex + 1) % vm.members.length;
+      if (vm.members.length && vm.open) {
+        return false;
+      }
+      return true;
     };
   }
 
