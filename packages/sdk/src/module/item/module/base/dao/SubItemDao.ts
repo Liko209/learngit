@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { SortUtils } from '../../../SortUtils';
+import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
 import { BaseDao } from '../../../../../dao/base';
 import { SanitizedItem } from '../entity';
@@ -21,7 +21,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   async getSortedIds(
     groupId: number,
     limit: number,
-    offsetItemId: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ): Promise<number[]> {
@@ -31,12 +31,23 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     };
 
     const sortedItems = sanitizedItems.sort(sortFunc);
-    const itemIds = sortedItems.map(item => item.id);
-    let offset = itemIds.indexOf(offsetItemId);
-    offset = offset > -1 ? offset : 0;
-    const slicedItems = sortedItems.slice(offset, offset + limit);
+    const itemIds: number[] = [];
+    let insertAble: boolean = offsetItemId ? false : true;
+    for (let i = 0; i < sortedItems.length; ++i) {
+      const itemId = sortedItems[i].id;
+      if (!insertAble && itemId === offsetItemId) {
+        insertAble = true;
+      }
+      if (insertAble) {
+        if (itemIds.length < limit) {
+          itemIds.push(itemId);
+        } else {
+          break;
+        }
+      }
+    }
 
-    return slicedItems.map(item => item.id);
+    return itemIds;
   }
 
   async getGroupItemCount(groupId: number) {

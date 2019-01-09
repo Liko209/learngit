@@ -25,7 +25,7 @@ class FileItemService extends EntityBaseService<ItemFile>
   async getSortedIds(
     groupId: number,
     limit: number,
-    offsetItemId: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ): Promise<number[]> {

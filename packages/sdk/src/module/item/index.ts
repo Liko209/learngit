@@ -6,5 +6,4 @@
 
 import { ItemService } from './service';
 import { ITEM_SORT_KEYS } from './constants';
-import { SortUtils } from './SortUtils';
-export { ItemService, ITEM_SORT_KEYS, SortUtils };
+export { ItemService, ITEM_SORT_KEYS };

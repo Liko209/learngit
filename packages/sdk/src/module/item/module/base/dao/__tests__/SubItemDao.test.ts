@@ -7,7 +7,6 @@
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { SubItemDao } from '../SubItemDao';
 import { SanitizedItem } from '../../entity';
-import { async } from 'q';
 
 describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
@@ -117,11 +116,11 @@ describe('Event Item Dao', () => {
 
     it.each`
       groupId     | sortKey         | limit | offsetItemId | expects                           | desc     | comment
-      ${groupId}  | ${'name'}       | ${3}  | ${0}         | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by name desc'}
-      ${groupId}  | ${'name'}       | ${3}  | ${0}         | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by name asc'}
-      ${groupId}  | ${'created_at'} | ${3}  | ${0}         | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by created_at desc'}
-      ${groupId}  | ${'created_at'} | ${3}  | ${0}         | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by created_at asc'}
-      ${groupId}  | ${'created_at'} | ${2}  | ${0}         | ${[item1.id, item2.id]}           | ${false} | ${'slice limit 2, offset item 0'}
+      ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by name desc'}
+      ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by name asc'}
+      ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by created_at desc'}
+      ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by created_at asc'}
+      ${groupId}  | ${'created_at'} | ${2}  | ${1}         | ${[item1.id, item2.id]}           | ${false} | ${'slice limit 2, offset item 1'}
       ${groupId}  | ${'created_at'} | ${2}  | ${2}         | ${[item2.id, item3.id]}           | ${false} | ${'slice limit 2, offset item 2'}
       ${groupId2} | ${'name'}       | ${3}  | ${5}         | ${[item5.id, item4.id, item6.id]} | ${true}  | ${'compare incomplete item desc'}
       ${groupId2} | ${'name'}       | ${3}  | ${4}         | ${[item4.id, item6.id, item5.id]} | ${false} | ${'compare incomplete item asc'}

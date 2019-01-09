@@ -13,7 +13,7 @@ interface IItemService {
     typeId: number,
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ): Promise<Item[]>;

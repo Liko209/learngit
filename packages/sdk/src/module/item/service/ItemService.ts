@@ -83,7 +83,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     typeId: number,
     groupId: number,
     limit: number,
-    offsetItemId: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ) {

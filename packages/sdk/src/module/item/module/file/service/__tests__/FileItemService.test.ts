@@ -11,7 +11,6 @@ import { IItemService } from '../../../../service/IItemService';
 import { FileItemDao } from '../../dao/FileItemDao';
 import { FileItemService } from '../FileItemService';
 import { FileItem } from '../../entity';
-import { async } from 'q';
 
 jest.mock('../../controller/FileUploadController');
 jest.mock('../../controller/FileItemController');

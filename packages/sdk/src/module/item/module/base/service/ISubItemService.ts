@@ -9,7 +9,7 @@ interface ISubItemService {
   getSortedIds(
     groupId: number,
     limit: number,
-    offsetItemId: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ): Promise<number[]>;
