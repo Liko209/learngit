@@ -12,7 +12,7 @@ import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
 
-import { PROGRESS_STATUS } from 'sdk/module';
+import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
 
 type Props = ProgressActionsViewProps & WithNamespaces;

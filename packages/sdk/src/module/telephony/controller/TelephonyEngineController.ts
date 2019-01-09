@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ITelephonyNetworkDelegate, IRequest } from 'foundation';
-import RTCEngine from 'voip/src';
+import RTCEngine from 'voip';
 import { Api } from '../../../api';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {

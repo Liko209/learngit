@@ -30,7 +30,6 @@ import GroupAPI from '../../api/glip/group';
 
 import { uniqueArray } from '../../utils';
 import { transform } from '../utils';
-import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import handleData, {
   handlePartialData,
   filterGroups,
@@ -40,13 +39,13 @@ import handleData, {
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
-import { mainLogger, err, ok, Result } from 'foundation';
+import { mainLogger, err, ok, Result, JError } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
-import AccountService from '../account';
+import { UserConfig } from '../account';
 import PersonService from '../person';
 import { compareName } from '../../utils/helper';
 import {
@@ -60,6 +59,7 @@ import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
 import { ServiceResult } from '../ServiceResult';
+import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -67,12 +67,6 @@ type CreateTeamOptions = {
   canPost?: boolean;
   canAddIntegrations?: boolean;
   canPin?: boolean;
-};
-
-const GroupErrorTypes = {
-  ALREADY_TAKEN: 1,
-  INVALID_FIELD: 2,
-  UNKNOWN: 99,
 };
 
 const handleTeamsRemovedFrom = async (ids: number[]) => {
@@ -157,8 +151,7 @@ class GroupService extends BaseService<Group> {
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const accountService: AccountService = AccountService.getInstance();
-      const userId = accountService.getCurrentUserId();
+      const userId = UserConfig.getCurrentUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.isCacheInitialized()) {
         result = await this.getEntitiesFromCache(
@@ -271,7 +264,7 @@ class GroupService extends BaseService<Group> {
         await handleData([rawGroup]);
         return ok(group);
       },
-      Err: (error: BaseError) => err(error),
+      Err: (error: JError) => err(error),
     });
   }
 
@@ -417,7 +410,7 @@ class GroupService extends BaseService<Group> {
         const newGroup = await this.handleRawGroup(rawGroup);
         return ok(newGroup);
       },
-      Err: (error: BaseError) => err(error),
+      Err: (error: JError) => err(error),
     });
     return result;
   }
@@ -488,7 +481,7 @@ class GroupService extends BaseService<Group> {
       );
       return true;
     } catch (error) {
-      throw ErrorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
 
@@ -508,7 +501,7 @@ class GroupService extends BaseService<Group> {
       return true;
     }
     if (!result.apiError) {
-      throw ErrorTypes.UNDEFINED_ERROR;
+      throw new JSdkError(ERROR_CODES_SDK.GENERAL, 'undefined ERROR');
     }
     throw result.apiError.code;
   }
@@ -517,7 +510,7 @@ class GroupService extends BaseService<Group> {
   private async _doUpdateGroup(
     id: number,
     group: Group,
-  ): Promise<Group | BaseError> {
+  ): Promise<Group | JError> {
     const apiResult = await GroupAPI.putTeamById(id, group);
     if (apiResult.isOk()) {
       return transform<Group>(apiResult.data);
@@ -595,8 +588,7 @@ class GroupService extends BaseService<Group> {
   }
 
   private _isCurrentUserInGroup(group: Group) {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+    const currentUserId = UserConfig.getCurrentUserId();
     return group
       ? group.members.some((x: number) => x === currentUserId)
       : false;
@@ -609,8 +601,7 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+    const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
@@ -638,21 +629,16 @@ class GroupService extends BaseService<Group> {
       },
       searchKey,
       undefined,
-      this._orderByName.bind(this),
+      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return -1;
+        }
+        if (groupA.firstSortKey > groupB.firstSortKey) {
+          return 1;
+        }
+        return 0;
+      },
     );
-  }
-
-  private _orderByName(
-    groupA: SortableModel<Group>,
-    groupB: SortableModel<Group>,
-  ) {
-    if (groupA.firstSortKey < groupB.firstSortKey) {
-      return -1;
-    }
-    if (groupA.firstSortKey > groupB.firstSortKey) {
-      return 1;
-    }
-    return 0;
   }
 
   async doFuzzySearchTeams(
@@ -662,31 +648,77 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    const accountService: AccountService = AccountService.getInstance();
-    const currentUserId = accountService.getCurrentUserId();
+    const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
 
     return this.searchEntitiesFromCache(
       (team: Group, terms: string[]) => {
-        return this._idValidTeam(team) &&
-          ((fetchAllIfSearchKeyEmpty && terms.length === 0) ||
-            (terms.length > 0 &&
-              this.isFuzzyMatched(team.set_abbreviation, terms))) &&
-          (team.privacy === 'protected' || team.members.includes(currentUserId))
+        let isMatched: boolean = false;
+        let sortValue: number = 0;
+
+        do {
+          if (!this._idValidTeam(team)) {
+            break;
+          }
+
+          if (fetchAllIfSearchKeyEmpty && terms.length === 0) {
+            isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          }
+
+          if (isMatched || terms.length === 0) {
+            break;
+          }
+
+          if (!this.isFuzzyMatched(team.set_abbreviation, terms)) {
+            break;
+          }
+
+          if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
+            break;
+          }
+
+          if (this.isStartWithMatched(team.set_abbreviation, [terms[0]])) {
+            sortValue = 1;
+          }
+
+          isMatched = true;
+        } while (false);
+
+        return isMatched
           ? {
             id: team.id,
             displayName: team.set_abbreviation,
-            firstSortKey: team.set_abbreviation.toLowerCase(),
+            firstSortKey: sortValue,
+            secondSortKey: team.set_abbreviation.toLowerCase(),
             entity: team,
           }
           : null;
       },
       searchKey,
       undefined,
-      this._orderByName.bind(this),
+      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
+        if (groupA.firstSortKey > groupB.firstSortKey) {
+          return -1;
+        }
+        if (groupA.firstSortKey < groupB.firstSortKey) {
+          return 1;
+        }
+
+        if (groupA.secondSortKey < groupB.secondSortKey) {
+          return -1;
+        }
+        if (groupA.secondSortKey > groupB.secondSortKey) {
+          return 1;
+        }
+        return 0;
+      },
     );
+  }
+
+  private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
+    return team.privacy === 'protected' || team.members.includes(userId);
   }
 
   getGroupNameByMultiMembers(members: number[], currentUserId: number) {
@@ -731,8 +763,7 @@ class GroupService extends BaseService<Group> {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const accountService: AccountService = AccountService.getInstance();
-    const userId = accountService.getCurrentUserId();
+    const userId = UserConfig.getCurrentUserId();
     if (userId) {
       ids.push(userId);
     }
@@ -762,7 +793,7 @@ class GroupService extends BaseService<Group> {
         if (group.email_friendly_abbreviation) {
           email = `${
             group.email_friendly_abbreviation
-          }@${companyReplyDomain}.${envDomain}`;
+            }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {
@@ -859,4 +890,4 @@ class GroupService extends BaseService<Group> {
   }
 }
 
-export { CreateTeamOptions, GroupService, GroupErrorTypes };
+export { CreateTeamOptions, GroupService };

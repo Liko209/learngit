@@ -42,7 +42,7 @@ export class HomePage extends BaseWebComponent {
 
   get addActionButton() {
     this.warnFlakySelector();
-    return this.self.find('button').child().withText('add_circle').parent().parent();
+    return this.self.find('button').child().withText('new_actions').parent().parent();
   }
 
   get addActionMenu() {
@@ -64,7 +64,7 @@ export class HomePage extends BaseWebComponent {
   get profileDialog() {
     return this.getComponent(ProfileDialog);
   }
-  
+
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
   }

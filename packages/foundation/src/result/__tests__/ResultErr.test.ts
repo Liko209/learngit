@@ -5,10 +5,10 @@
  */
 
 import { ResultErr } from '../ResultErr';
-import { BaseError } from '../BaseError';
+import { JError } from '../../error';
 
 function setup() {
-  const error = new BaseError(1, 'Something wrong happened.');
+  const error = new JError('1', '1', 'Something wrong happened.');
   const result = new ResultErr(error);
   return { error, result };
 }
@@ -69,7 +69,7 @@ describe('ResultErr', () => {
   });
 
   describe('isErr()', () => {
-    it('should be falsy', () => {});
+    it('should be falsy', () => { });
     const { result } = setup();
 
     expect(result.isErr()).toBeTruthy();

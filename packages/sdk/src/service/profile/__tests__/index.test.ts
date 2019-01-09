@@ -3,18 +3,14 @@
  * @Date: 2018-03-01 10:49:44
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import { BaseResponse } from 'foundation';
+import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import ProfileService from '../../../service/profile';
 import ProfileAPI from '../../../api/glip/profile';
-import { BaseError } from '../../../utils';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
+import { UserConfig } from '../../../service/account/UserConfig';
 
-const mockAccountService = {
-  getCurrentUserProfileId: jest.fn(),
-  getCurrentUserId: jest.fn().mockImplementationOnce(() => 1),
-};
 const mockPersonService = {
   getById: jest.fn().mockImplementation(() => {
     return { me_group_id: 2 };
@@ -22,15 +18,7 @@ const mockPersonService = {
 };
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
-jest.mock('../../../service/account', () => {
-  class MockAccountService {
-    static getInstance() {
-      return mockAccountService;
-    }
-  }
-
-  return MockAccountService;
-});
+jest.mock('../../../service/account/UserConfig');
 jest.mock('../../../service/person', () => {
   class MockPersonService {
     static getInstance() {
@@ -59,9 +47,7 @@ describe('ProfileService', () => {
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValue(2);
-      mockAccountService.getCurrentUserProfileId.mockImplementationOnce(
-        () => 2,
-      );
+      UserConfig.getCurrentUserProfileId.mockImplementationOnce(() => 2);
       jest.spyOn(profileService, 'getById').mockImplementationOnce(id => id);
 
       const result = await profileService.getProfile();
@@ -160,10 +146,10 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementationOnce(() => {});
+        .mockImplementationOnce(() => { });
       jest
         .spyOn<ProfileService, any>(profileService, '_doDefaultPartialNotify')
-        .mockImplementationOnce(() => {});
+        .mockImplementationOnce(() => { });
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
@@ -222,11 +208,11 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementationOnce(() => {});
+        .mockImplementationOnce(() => { });
       jest
         .spyOn(profileService, 'getCurrentProfileId')
         .mockReturnValueOnce(profile.id);
-      jest.spyOn(mockAccountService, 'getCurrentUserId').mockReturnValueOnce(1);
+      jest.spyOn(UserConfig, 'getCurrentUserId').mockReturnValueOnce(1);
       jest.spyOn(mockPersonService, 'getById').mockResolvedValueOnce(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
         new ApiResultOk(returnValue, {
@@ -325,7 +311,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
 
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(
@@ -389,7 +375,7 @@ describe('ProfileService', () => {
       const profile = {
         id: 10,
       };
-      const apiError = new BaseError(403, '');
+      const apiError = new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, '');
 
       setupMock(profile, apiError, false);
 
@@ -406,7 +392,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
 
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(
@@ -461,7 +447,7 @@ describe('ProfileService', () => {
       const profile = {
         id: 10,
       };
-      const apiError = new BaseError(403, '');
+      const apiError = new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, '');
 
       setupMock(profile, apiError, false);
 
@@ -477,7 +463,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
       ProfileAPI.putDataById.mockResolvedValueOnce(
         new ApiResultOk(apiReturnProfile, {
           status: 200,
@@ -537,7 +523,7 @@ describe('ProfileService', () => {
       expect(result).toBe(20);
     });
     it('should return default value 20 because of key max_leftrail_group_tabs2 in profile', async () => {
-      profileService.getProfile = jest.fn().mockImplementationOnce(() => {});
+      profileService.getProfile = jest.fn().mockImplementationOnce(() => { });
       const result = await profileService.getMaxLeftRailGroup();
       expect(result).toBe(20);
     });

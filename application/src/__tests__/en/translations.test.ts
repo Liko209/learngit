@@ -305,7 +305,7 @@ describe('i18next-en', () => {
   it('should check duplicate alert text JPT-455', () => {
     expect(i18next.t('updateFiles')).toEqual('Update File(s)?');
     expect(i18next.t('theFollowingFilesAlreadyExist')).toEqual(
-      'The following file(s) already exist',
+      'The following file(s) already exist.',
     );
     expect(
       i18next.t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne'),
@@ -317,6 +317,15 @@ describe('i18next-en', () => {
   it('should check file no longer exist JPT-617', () => {
     expect(i18next.t('fileNoLongerExists')).toEqual(
       'The file no longer exists.',
+    );
+  });
+
+  it('should check translation for error handle in cancel file upload', () => {
+    expect(i18next.t('notAbleToCancelUpload')).toEqual(
+      "Sorry, we weren't able to cancel the upload.",
+    );
+    expect(i18next.t('notAbleToCancelUploadTryAgain')).toEqual(
+      "Sorry, we weren't able to cancel the upload. Try again.",
     );
   });
 });

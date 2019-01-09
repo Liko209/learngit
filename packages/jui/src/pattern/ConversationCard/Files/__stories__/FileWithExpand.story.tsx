@@ -23,7 +23,7 @@ storiesOf('Pattern/ConversationCard', module)
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -34,7 +34,7 @@ storiesOf('Pattern/ConversationCard', module)
             ratio={0.5}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
@@ -45,7 +45,7 @@ storiesOf('Pattern/ConversationCard', module)
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -56,7 +56,7 @@ storiesOf('Pattern/ConversationCard', module)
             ratio={0.5}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
@@ -67,7 +67,7 @@ storiesOf('Pattern/ConversationCard', module)
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -78,7 +78,7 @@ storiesOf('Pattern/ConversationCard', module)
             ratio={0.5}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
@@ -89,7 +89,7 @@ storiesOf('Pattern/ConversationCard', module)
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -100,7 +100,7 @@ storiesOf('Pattern/ConversationCard', module)
             ratio={0.5}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
@@ -111,7 +111,7 @@ storiesOf('Pattern/ConversationCard', module)
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -122,7 +122,7 @@ storiesOf('Pattern/ConversationCard', module)
             ratio={0.5}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />

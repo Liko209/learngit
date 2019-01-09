@@ -6,29 +6,19 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import {
-  JuiIconography,
-  JuiGoogleDriveIcon,
-  JuiOneDriveIcon,
-  JuiAttachmentIcon,
-  JuiDropboxIcon,
-  JuiEvernoteIcon,
-  JuiOneboxIcon,
-} from '..';
+import { JuiIconography } from '..';
+import '../icons/style.css';
 
 storiesOf('Foundation', module)
-  .addDecorator(withInfoDecorator(JuiIconography, { inline: true }))
+  .addDecorator(
+    withInfoDecorator(JuiIconography, {
+      inline: true,
+      text:
+        'for complete list of icons, visit [jira](https://jira.ringcentral.com/browse/FIJI-2311?filter=-1)',
+    }),
+  )
   .add('Iconography', () => (
     <div>
-      <JuiIconography>star</JuiIconography>
-      <JuiIconography>people</JuiIconography>
-      <JuiIconography>keyboard_arrow_up</JuiIconography>
-      <JuiIconography>keyboard_arrow_down</JuiIconography>
-      <JuiGoogleDriveIcon color="primary" />
-      <JuiOneDriveIcon />
-      <JuiAttachmentIcon />
-      <JuiDropboxIcon />
-      <JuiEvernoteIcon />
-      <JuiOneboxIcon />
+      <JuiIconography color="primary">star</JuiIconography>
     </div>
   ));

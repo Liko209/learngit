@@ -1,4 +1,5 @@
 import { IErrorHandlingController } from '../interface/IErrorHandlingController';
+import { JSdkError, ERROR_CODES_SDK } from '../../../error';
 
 /*
  * @Author: Jerry Cai (jerry.cai@ringcentral.com)
@@ -8,11 +9,11 @@ import { IErrorHandlingController } from '../interface/IErrorHandlingController'
 
 class ErrorHandlingController implements IErrorHandlingController {
   throwUndefinedError(key: string): never {
-    throw new Error(`${key} is undefined!`);
+    throw new JSdkError(ERROR_CODES_SDK.UNDEFINED, `${key} is undefined!`);
   }
 
   throwInvalidParameterError(key: string, value: any): never {
-    throw new Error(`${key} is invalid! it is ${value}`);
+    throw new JSdkError(ERROR_CODES_SDK.INVALID_FIELD, `${key} is invalid! it is ${value}`);
   }
 }
 

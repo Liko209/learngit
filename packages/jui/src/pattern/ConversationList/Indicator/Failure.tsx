@@ -17,9 +17,7 @@ const StyledIconographyFailure = styled(JuiIconography)`
 `;
 
 const JuiIndicatorFailure = () => {
-  return (
-    <StyledIconographyFailure>replay</StyledIconographyFailure>
-  );
+  return <StyledIconographyFailure>send_failure</StyledIconographyFailure>;
 };
 
 export { StyledIconographyFailure, JuiIndicatorFailure };

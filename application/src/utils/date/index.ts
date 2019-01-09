@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { t } from 'i18next';
+import _ from 'lodash';
 
 function getDateMessage(
   timestamp: any,
@@ -31,7 +32,148 @@ function getDateMessage(
   return m.format('l'); // 30/10/2018  2018/10/30
 }
 
-export { getDateMessage };
+const WEEKDAY = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+type Moment = moment.Moment;
+const dateFormatter = {
+  localTime: (m: Moment) => {
+    return m.format('LT');
+  },
+  today: () => {
+    return t('today');
+  },
+  yesterday: () => {
+    return t('yesterday');
+  },
+  weekday: (m: Moment) => {
+    const date = new Date(m.format());
+    return t(WEEKDAY[date.getDay()]);
+  },
+  exactDate: (m: Moment) => {
+    return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
+  },
+  weekdayAndTime: (m: Moment) => {
+    return `${dateFormatter.weekday(m).slice(0, 3)}, ${dateFormatter.localTime(
+      m,
+    )}`;
+  },
+  dateAndTime: (m: Moment) => {
+    return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
+  },
+};
+
+const condition = {
+  isZero: (diff: number) => {
+    return diff === 0;
+  },
+  isOne: (diff: number) => {
+    return diff === 1;
+  },
+  fromTwoToSix: (diff: number) => {
+    return _.inRange(diff, 2, 6);
+  },
+  fromOneToSix: (diff: number) => {
+    return _.inRange(diff, 1, 6);
+  },
+  overSevenOrLessZero: (diff: number) => {
+    return 0 > diff || diff >= 7;
+  },
+  overOne: (diff: number) => {
+    return !_.inRange(diff, 0, 1);
+  },
+};
+
+function buildFormatter(
+  buildCondition: { condition: Function; formatter: Function }[],
+): Function {
+  return function (timestamp: Date): string {
+    const mInit = moment(timestamp);
+    const m = moment(timestamp)
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .millisecond(0);
+    const now = moment()
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .millisecond(0);
+    const diff = now.diff(m, 'days', true);
+    let formatDate = '';
+    buildCondition.some((v, i) => {
+      if (v.condition(diff)) {
+        formatDate = v.formatter(mInit);
+        return true;
+      }
+      return false;
+    });
+    return formatDate;
+  };
+}
+
+const recentlyTwoDayAndOther = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.today,
+  },
+  {
+    condition: condition.isOne,
+    formatter: dateFormatter.yesterday,
+  },
+  {
+    condition: condition.overOne,
+    formatter: dateFormatter.exactDate,
+  },
+]);
+
+const dividerTimestamp = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.today,
+  },
+  {
+    condition: condition.isOne,
+    formatter: dateFormatter.yesterday,
+  },
+  {
+    condition: condition.fromTwoToSix,
+    formatter: dateFormatter.weekday,
+  },
+  {
+    condition: condition.overSevenOrLessZero,
+    formatter: dateFormatter.exactDate,
+  },
+]);
+
+const postTimestamp = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.localTime,
+  },
+  {
+    condition: condition.fromOneToSix,
+    formatter: dateFormatter.weekdayAndTime,
+  },
+  {
+    condition: condition.overSevenOrLessZero,
+    formatter: dateFormatter.dateAndTime,
+  },
+]);
+
+export {
+  getDateMessage,
+  recentlyTwoDayAndOther,
+  dividerTimestamp,
+  postTimestamp,
+  dateFormatter,
+};
 
 // 7 days inside
 // moment().format("ddd, MMM Do");

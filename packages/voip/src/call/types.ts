@@ -3,28 +3,6 @@
  * @Date: 2018-12-28 15:51:45
  * Copyright © RingCentral. All rights reserved.
  */
-
-type RTCCallInfo = {
-  fromName: string;
-  fromNum: string;
-  toName: string;
-  toNum: string;
-  uuid: string;
-};
-
-enum RTCCALL_STATE {
-  IDLE = 'Idle',
-  CONNECTING = 'Connecting',
-  CONNECTED = 'Connected',
-  DISCONNECTED = 'Disconnected',
-}
-
-enum RTC_CALL_ACTION {
-  FLIP = 'flip',
-  START_RECORD = 'startRecord',
-  STOP_RECORD = 'stopRecord',
-}
-
 enum CALL_SESSION_STATE {
   CONFIRMED = 'callsessionstate.confirmed',
   DISCONNECTED = 'callsessionstate.disconnected',
@@ -48,16 +26,11 @@ enum CALL_FSM_NOTIFY {
   HANGUP_ACTION = 'hangupAction',
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
   FLIP_ACTION = 'flipAction',
+  TRANSFER_ACTION = 'transferAction',
   START_RECORD_ACTION = 'startRecordAction',
   STOP_RECORD_ACTION = 'stopRecordAction',
   CALL_ACTION_SUCCESS = 'callActionSuccess',
   CALL_ACTION_FAILED = 'callActionFailed',
 }
 
-export {
-  RTCCallInfo,
-  RTCCALL_STATE,
-  RTC_CALL_ACTION,
-  CALL_SESSION_STATE,
-  CALL_FSM_NOTIFY,
-};
+export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };
