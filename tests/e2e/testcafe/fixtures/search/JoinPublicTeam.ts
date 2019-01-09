@@ -17,29 +17,34 @@ fixture('search/PublicTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
+// skip due to join button css does not change to display when testcafe hover a public team of search result
+test.skip(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
   await h(t).platform(otherUser).init();
-  await h(t).glip(otherUser).init()
+  await h(t).glip(otherUser).init();
   const otherUserName = await h(t).glip(otherUser).getPerson(otherUser.rcId)
     .then(res => res.data.display_name);
 
   const publicTeamName = uuid();
+  console.log(publicTeamName);
   const joinedTeamName = uuid();
 
   let publicTeamId, joinedTeamId;
   await h(t).withLog('Given I have a public team A but loginUser did not join it, team B (loginUser joined),and some group', async () => {
     publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      isPublic: true,
       name: publicTeamName,
       type: 'Team',
       members: [otherUser.rcId],
     });
-
+    await h(t).glip(otherUser).updateGroup(publicTeamId, {
+      privacy: 'protected',
+      is_public: true
+    })
     joinedTeamId = await h(t).platform(otherUser).createAndGetGroupId({
       isPublic: true,
+      privacy: 'protected',
       name: joinedTeamName,
       type: 'Team',
       members: [otherUser.rcId, loginUser.rcId],
@@ -52,7 +57,7 @@ test(formalName(`Display Join button for public team which login user doesn't jo
 
     await h(t).platform(otherUser).createGroup({
       type: 'Group',
-      members: [otherUser.rcId,],
+      members: [otherUser.rcId],
     });
   });
 
@@ -64,6 +69,10 @@ test(formalName(`Display Join button for public team which login user doesn't jo
   const search = app.homePage.header.search;
 
   await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
+    await search.typeText(publicTeamName, { replace: true, paste: true });
+    // https://jira.ringcentral.com/browse/FIJI-2500
+    await h(t).refresh();
+    await app.homePage.ensureLoaded();
     await search.typeText(publicTeamName, { replace: true, paste: true });
     await t.hover(search.itemEntryByCid(publicTeamId).self);
   });
@@ -128,10 +137,13 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   let publicTeamId;
   await h(t).withLog('Given I have a public team A but loginUser did not join it', async () => {
     publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      isPublic: true,
       name: publicTeamName,
       type: 'Team',
       members: [otherUser.rcId],
+    });
+    await h(t).glip(otherUser).updateGroup(publicTeamId, {
+      privacy: 'protected',
+      is_public: true
     });
   });
 
@@ -142,18 +154,19 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
 
   const search = app.homePage.header.search;
 
-  await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
+  await h(t).withLog(`When I search the public team A ${publicTeamName}`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+    await t.wait(3e3);
+    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    await h(t).refresh();
+    await app.homePage.ensureLoaded();
+    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await t.wait(3e3); // wait search result show;
   });
+  await h(t).withLog(`And I click join button of the public team A`, async () => {
+    await t.hover(search.itemEntryByCid(publicTeamId).self)
 
-  await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
-  })
-
-  await h(t).withLog(`When I click join button`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+    await search.itemEntryByCid(publicTeamId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
@@ -177,11 +190,7 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   });
 
   await h(t).withLog(`When I click cancel button`, async () => {
-    await h(t).glip(otherUser).updateTeamName(publicTeamId, newTeamName);
-  });
-
-  await h(t).withLog(`Then the join team confirmation should dismiss`, async () => {
-    await joinTeamDialog.shouldBeTeam(newTeamName);
+    await joinTeamDialog.cancel();
   });
 
   await h(t).withLog(`And loginUser did not join team A`, async () => {
@@ -202,10 +211,13 @@ test(formalName(`Joined team successful after clicking join button in confirmati
   let publicTeamId;
   await h(t).withLog('Given I have a public team A but loginUser did not join it', async () => {
     publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      isPublic: true,
       name: publicTeamName,
       type: 'Team',
       members: [otherUser.rcId],
+    });
+    await h(t).glip(otherUser).updateGroup(publicTeamId, {
+      privacy: 'protected',
+      is_public: true
     });
   });
 
@@ -215,18 +227,27 @@ test(formalName(`Joined team successful after clicking join button in confirmati
   });
 
   const search = app.homePage.header.search;
-  await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
+  await h(t).withLog(`When I search the public team A ${publicTeamName}, and click Join button of team A`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    await h(t).refresh();
+    await app.homePage.ensureLoaded();
+    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await t.wait(3e3); // wait search result show;
+    await search.itemEntryByCid(publicTeamId).join();
   });
 
-  await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
-  })
 
-  await h(t).withLog(`When I click join button`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+  const joinTeamDialog = app.homePage.joinTeamDialog;
+  await h(t).withLog(`Then display a confirmation`, async () => {
+    await t.expect(joinTeamDialog.title.exists).ok();
+    await joinTeamDialog.shouldBeTeam(publicTeamName);
+    await t.expect(joinTeamDialog.joinButton.exists).ok();
+    await t.expect(joinTeamDialog.cancelButton.exists).ok();
+  });
+
+  await h(t).withLog(`When I click Join confirm button`, async () => {
+    await joinTeamDialog.join();
   });
 
   await h(t).withLog(`Then team A should be opened, and displayed on the top of conversation list`, async () => {
@@ -241,7 +262,7 @@ test(formalName(`Joined team successful after clicking join button in confirmati
 
   await h(t).withLog(`Then can see loginUser in it`, async () => {
     const loginUserGlipId = await h(t).glip(otherUser).toPersonId(loginUser.rcId);
-    assert.ok(_.includes(members, loginUser.rcId), "loginUser is not in team A");
+    assert.ok(_.includes(members, loginUserGlipId), "loginUser is not in team A");
   });
 
 });
