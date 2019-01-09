@@ -15,6 +15,8 @@ import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { Notification } from '@/containers/Notification';
+import { CreateTeam } from '@/containers/CreateTeam';
+import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
 
 type State = {
@@ -48,12 +50,14 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const { message } = this.state;
     const { newMessage } = this.props;
     newMessage(message);
+    this.onClose();
   }
 
-  onClose = () => {
-    const { updateNewMessageDialogState, inputReset } = this.props;
-    updateNewMessageDialogState();
-    inputReset();
+  onClose = () => portalManager.dismiss();
+
+  openCreateTeam = () => {
+    this.onClose();
+    CreateTeam.show();
   }
 
   handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,12 +78,10 @@ class NewMessage extends React.Component<NewMessageProps, State> {
   render() {
     const {
       t,
-      isOpen,
       emailError,
       emailErrorMsg,
       disabledOkBtn,
       handleSearchContactChange,
-      updateCreateTeamDialogState,
       isOffline,
       serverError,
       errorEmail,
@@ -90,7 +92,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     }
     return (
       <JuiModal
-        open={isOpen}
+        open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: isOffline || disabledOkBtn }}
@@ -129,7 +131,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
           <JuiTextWithLink
             text={t('newMessageTip')}
             linkText={t('newMessageTipLink')}
-            onClick={updateCreateTeamDialogState}
+            onClick={this.openCreateTeam}
           />
         </StyledTextWithLink>
       </JuiModal>

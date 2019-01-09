@@ -23,7 +23,7 @@ import PostModel from '@/store/models/Post';
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
-    return !post.deactivated;
+    return !post.deactivated && this._postIds.includes(post.id);
   }
 
   private _options = {
@@ -79,9 +79,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
     let postsFromService: Post[] = [];
 
-    const postsFromStore = idsInStore.map(id =>
-      getEntity(ENTITY_NAME.POST, id),
-    );
+    const postsFromStore = idsInStore
+      .map(id => getEntity(ENTITY_NAME.POST, id))
+      .filter((post: Post) => !post.deactivated);
     try {
       if (idsOutOfStore.length) {
         const results = await postService.getPostsByIds(idsOutOfStore);
@@ -106,7 +106,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   async onReceiveProps(props: StreamProps) {
-    const postIds = props.postIds.sort().reverse();
+    const postIds = props.postIds.sort((a, b) => b - a);
     // when comp did mount
     if (!this._postIds.length && postIds.length) {
       this._postIds = postIds;
@@ -164,12 +164,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   hackPostChange() {
     this.subscribeNotification(ENTITY.POST, ({ type, body }) => {
-      if (type !== EVENT_TYPES.DELETE) {
+      if (type !== EVENT_TYPES.UPDATE) {
         return;
       }
       this._sortableListHandler.onDataChanged({
         body,
-        type: EVENT_TYPES.DELETE,
+        type: EVENT_TYPES.UPDATE,
       });
     });
   }

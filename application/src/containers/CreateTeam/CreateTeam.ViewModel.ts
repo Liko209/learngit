@@ -6,13 +6,12 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { CreateTeamOptions } from 'sdk/service/group';
-import AccountService from 'sdk/service/account';
-import { BaseError, ErrorTypes } from 'sdk/utils';
+import { UserConfig } from 'sdk/service/account';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
-import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
+import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -39,25 +38,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   serverUnknownError: boolean = false;
 
   @computed
-  get isOpen() {
-    return getGlobalValue(GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG) || false;
-  }
-
-  @computed
   get isOffline() {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
-  }
-
-  @action
-  updateCreateTeamDialogState = () => {
-    const globalStore = storeManager.getGlobalStore();
-    const isShowCreateTeamDialog = !globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-    );
-    globalStore.set(
-      GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG,
-      isShowCreateTeamDialog,
-    );
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,8 +75,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   ) => {
     const { isPublic, canPost } = options;
     const groupService: GroupService = GroupService.getInstance();
-    const accountService: AccountService = AccountService.getInstance();
-    const creatorId = Number(accountService.getCurrentUserId());
+    const creatorId = Number(UserConfig.getCurrentUserId());
     const result = await groupService.createTeam(
       name,
       creatorId,
@@ -111,13 +92,22 @@ class CreateTeamViewModel extends AbstractViewModel {
     return result;
   }
 
-  createErrorHandler(error: BaseError) {
+  createErrorHandler(error: JError) {
     this.serverUnknownError = false;
-    const code = error.code;
-    if (code === ErrorTypes.API_ALREADY_TAKEN) {
+    if (
+      error.isMatch({
+        type: ERROR_TYPES.SERVER,
+        codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
+      })
+    ) {
       this.errorMsg = 'alreadyTaken';
       this.nameError = true;
-    } else if (code === ErrorTypes.API_INVALID_FIELD) {
+    } else if (
+      error.isMatch({
+        type: ERROR_TYPES.SERVER,
+        codes: [ERROR_CODES_SERVER.INVALID_FIELD],
+      })
+    ) {
       const message = error.message;
       if (matchInvalidEmail(message).length > 0) {
         this.errorEmail = matchInvalidEmail(message);

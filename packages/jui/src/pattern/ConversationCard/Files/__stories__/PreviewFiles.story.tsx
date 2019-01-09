@@ -32,7 +32,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               fileName={fileName}
               Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
-                  get_app
+                  download
                 </JuiIconButton>
               }
             />
@@ -50,7 +50,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               iconType={'pdf'}
               Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
-                  get_app
+                  download
                 </JuiIconButton>
               }
             />
@@ -65,7 +65,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               fileName={fileName}
               Actions={
                 <JuiIconButton variant="plain" tooltipTitle="download">
-                  get_app
+                  download
                 </JuiIconButton>
               }
             />
@@ -82,7 +82,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
               Actions={
                 <>
                   <JuiIconButton variant="plain" tooltipTitle="download">
-                    get_app
+                    download
                   </JuiIconButton>
                 </>
               }

@@ -5,7 +5,8 @@
  */
 import history from '@/history';
 import { service } from 'sdk';
-import { GlipTypeUtil, TypeDictionary, BaseError } from 'sdk/utils';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';
 jest.mock('@/history');
@@ -23,11 +24,6 @@ beforeAll(() => {
     writable: true,
     value: {},
   });
-  window.history.state = {
-    state: {
-      source: 'leftRail',
-    },
-  };
   history.push = jest.fn().mockImplementation(jest.fn());
   history.replace = jest.fn().mockImplementation(jest.fn());
 });
@@ -43,7 +39,7 @@ describe('goToConversation() with group or team type', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 
-  it('getConversationId() with team type conversationId', async () => {
+  it('getConversationId() with team type conversationId [JPT-717]', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_TEAM,
     );
@@ -86,7 +82,7 @@ describe('getConversationId() with person type conversationId', () => {
 
   it('groupService should return err', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new BaseError(500, '')),
+      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
     );
     expect(await goToConversation({ id: 1 })).toEqual(false);
     expect(history.push).toHaveBeenCalledWith('/messages/loading');
@@ -116,7 +112,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
 
   it('groupService should return err', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new BaseError(500, '')),
+      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
     );
     expect(await goToConversation({ id: [1, 2, 3] })).toEqual(false);
     expect(history.push).toHaveBeenCalledWith('/messages/loading');
@@ -154,7 +150,7 @@ describe('getConversationId() with message', () => {
   it('should show loading then show error page if failed', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new BaseError(500, '')),
+      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
     );
     expect(
       await goToConversation({ id: [1, 2, 3], message: 'hahahah' }),

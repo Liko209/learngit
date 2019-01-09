@@ -28,8 +28,8 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
   const lastPost = conversationPage.nthPostItem(-1);
-  const filesNames = ['1.txt', '3.txt',];
-  const filesSize = ['0.4Kb', '2.0Kb'];
+  const filesNames = ['1.txt', '3.txt'];
+  const filesSize = ['0.4KB', '2.0KB'];
   const filesPath = ['../../sources/1.txt', '../../sources/3.txt'];
   const message = uuid();
   const NOTIFICATIONS = `shared ${filesPath.length} files`;
@@ -124,6 +124,7 @@ test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing fi
   });
 
   await h(t).withLog('Then shouldn\'t show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).notOk();
   });
 });
@@ -205,8 +206,8 @@ test(formalName('JPT-499 Can update files when click update the button in the du
   const fileName = '1.txt';
   const filesPath1 = ['../../sources/1.txt'];
   const filesPath2 = ['../../sources/files/1.txt'];
-  const files1Size = '0.4Kb';
-  const files2Size = '3.2Kb';
+  const files1Size = '0.4KB';
+  const files2Size = '3.2KB';
   const message = uuid();
   const V2 = 'uploaded version 2';
 
@@ -250,6 +251,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -289,7 +291,7 @@ test(formalName('JPT-532 Can update files when re-select the file and local exis
   const filesPath1 = ['../../sources/1.txt'];
   const filesPath2 = ['../../sources/files/1.txt'];
   const filesPath3 = ['../../sources/files1/1.txt'];
-  const filesSize = ['0.4Kb', '3.2Kb', '0.5Kb'];
+  const filesSize = ['0.4KB', '3.2KB', '0.5KB'];
   const message = uuid();
   const V2 = 'uploaded version 2';
 
@@ -381,8 +383,8 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
   const duplicatePromptPage = app.homePage.messageTab.duplicatePromptPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
   const fileName = '1.txt';
-  const file1Size = '0.4Kb';
-  const file2Size = '3.2Kb';
+  const file1Size = '0.4KB';
+  const file2Size = '3.2KB';
   const filesPath1 = ['../../sources/1.txt'];
   const filesPath2 = ['../../sources/files/1.txt'];
   const message = uuid();
@@ -419,6 +421,7 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -456,7 +459,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
   const filesPath1 = ['../../sources/1.txt'];
   const filesPath2 = ['../../sources/files/1.txt'];
   const filesPath3 = ['../../sources/files1/1.txt'];
-  const filesSize = ['0.4Kb', '3.2Kb', '0.5Kb'];
+  const filesSize = ['0.4KB', '3.2KB', '0.5KB'];
   const message = uuid();
 
   let teamId;
@@ -495,6 +498,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -512,6 +516,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -547,7 +552,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
   const filesPath1 = ['../../sources/1.txt'];
   const filesPath2 = ['../../sources/files/1.txt'];
   const filesPath3 = ['../../sources/files1/1.txt'];
-  const filesSize = ['0.4Kb', '3.2Kb', '0.5Kb'];
+  const filesSize = ['0.4KB', '3.2KB', '0.5KB'];
   const V2 = 'uploaded version 2';
 
   let teamId;
@@ -582,6 +587,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 

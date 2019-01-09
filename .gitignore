@@ -14,6 +14,7 @@
 /packages/jui/storybook-static
 /application/node_modules/
 /application/build/
+/application/dist/
 /application/build-es/
 
 # misc

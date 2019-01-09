@@ -3,7 +3,6 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { POST_STATUS, PRESENCE } from './service';
 import { TeamPermission } from './service/group';
 import { ExtendedBaseModel } from './module/models';
 import { GroupCommon } from './module/group/entity';
@@ -51,10 +50,6 @@ export type GroupConfig = {
   has_more_older?: boolean;
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
-};
-
-export type Progress = IdModel & {
-  total: number;
-  loaded: number;
-  groupId?: number;
+  draft?: string;
+  send_failure_post_ids?: number[];
 };

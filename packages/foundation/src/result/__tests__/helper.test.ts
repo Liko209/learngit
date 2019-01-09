@@ -7,7 +7,7 @@
 import { ok, err } from '../helper';
 import { ResultOk } from '../ResultOk';
 import { ResultErr } from '../ResultErr';
-import { BaseError } from '../BaseError';
+import { JError } from '../../error';
 
 describe('ok()', () => {
   it('should create a ResultOk', () => {
@@ -19,23 +19,27 @@ describe('ok()', () => {
 
 describe('err()', () => {
   it('should create a ResultErr', () => {
-    const CODE = 1;
+    const TYPE = '1';
+    const CODE = '1';
     const MESSAGE = 'Something wrong happened.';
 
-    const result = err(new BaseError(CODE, MESSAGE));
+    const result = err(new JError(TYPE, CODE, MESSAGE));
 
     expect(result).toBeInstanceOf(ResultErr);
+    expect(result.error.type).toBe(TYPE);
     expect(result.error.code).toBe(CODE);
     expect(result.error.message).toBe(MESSAGE);
   });
 
   it('should use default message', () => {
-    const CODE = 1;
+    const TYPE = '1';
+    const CODE = '1';
     const MESSAGE = undefined;
 
-    const result = err(new BaseError(CODE, MESSAGE));
+    const result = err(new JError(TYPE, CODE, MESSAGE));
 
     expect(result).toBeInstanceOf(ResultErr);
+    expect(result.error.type).toBe(TYPE);
     expect(result.error.code).toBe(CODE);
     expect(result.error.message).toBe('');
   });

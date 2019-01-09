@@ -10,15 +10,21 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import { GroupService, PostService, ItemService } from 'sdk/service';
+import {
+  PostService,
+  GroupConfigService,
+  notificationCenter,
+} from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { isAtMentions } from './handler';
 import { Group } from 'sdk/module/group/entity';
+import { UI_NOTIFICATION_KEY } from '@/constants';
+import { mainLogger } from 'sdk';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -29,11 +35,15 @@ enum ERROR_TYPES {
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
-  private _groupService: GroupService;
   private _postService: PostService;
   private _itemService: ItemService;
 
   private _onPostCallbacks: OnPostCallback[] = [];
+  private _groupConfigService: GroupConfigService;
+
+  @observable
+  private _memoryDraftMap: Map<number, string> = new Map();
+
   @computed
   get id() {
     return this.props.id;
@@ -57,10 +67,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._groupService = GroupService.getInstance();
     this._postService = PostService.getInstance();
 
     this._itemService = ItemService.getInstance();
+    this._groupConfigService = GroupConfigService.getInstance();
     this._sendPost = this._sendPost.bind(this);
     this.reaction(
       () => this.id,
@@ -70,6 +80,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         this.forceSaveDraft();
       },
     );
+    notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, ({ quote, groupId }) => {
+      console.log(
+        '--------UI_NOTIFICATION_KEY.QUOTE-----------',
+        groupId,
+        quote,
+      );
+      this._memoryDraftMap.set(groupId, quote);
+    });
   }
 
   private _isEmpty = (content: string) => {
@@ -84,9 +102,20 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.draft = this._isEmpty(draft) ? '' : draft;
   }
 
+  @action
+  cellWillChange = (newGroupId: number, oldGroupId: number) => {
+    const draft = this._isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
+      ? ''
+      : this._memoryDraftMap.get(oldGroupId) || '';
+    this._groupConfigService.updateDraft({
+      draft,
+      id: oldGroupId,
+    });
+  }
+
   forceSaveDraft = () => {
     const draft = this._isEmpty(this.draft) ? '' : this.draft;
-    this._groupService.updateGroupDraft({
+    this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
     });
@@ -99,11 +128,20 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @computed
   get draft() {
-    return this._group.draft || '';
+    if (this._memoryDraftMap.has(this.id)) {
+      return this._memoryDraftMap.get(this.id) || '';
+    }
+    this.getDraftFromLocal();
+    return '';
+  }
+
+  async getDraftFromLocal() {
+    const draft = await this._groupConfigService.getDraft(this.id);
+    this._memoryDraftMap.set(this.id, draft);
   }
 
   set draft(draft: string) {
-    this._group.draft = draft;
+    this._memoryDraftMap.set(this.id, draft);
   }
 
   @computed
@@ -130,7 +168,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      const content = markdownFromDelta(quill.getContents());
+      const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -142,23 +180,21 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       vm.error = '';
       const items = vm.items;
       if (content.trim() || items.length > 0) {
-        vm._sendPost(content);
+        vm._sendPost(content, mentionIds);
       }
     };
   }
 
-  private async _sendPost(content: string) {
+  private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
     this.forceSaveDraft();
-    const atMentions = isAtMentions(content);
     const items = this.items;
     try {
       await this._postService.sendPost({
-        atMentions,
         text: content,
         groupId: this.id,
-        users: atMentions ? this._users : undefined,
         itemIds: items.map(item => item.id),
+        mentionsIds: ids,
       });
       // clear context (attachments) after post
       //
@@ -166,12 +202,13 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       onPostHandler && onPostHandler();
       this._onPostCallbacks.forEach(callback => callback());
     } catch (e) {
+      mainLogger.error(`send post error ${e}`);
       // You do not need to handle the error because the message will display a resend
     }
   }
 
   forceSendPost = () => {
-    this._sendPost('');
+    this._sendPost('', []);
   }
 
   addOnPostCallback = (callback: OnPostCallback) => {

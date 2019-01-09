@@ -30,21 +30,17 @@ class NewActions extends React.Component<NewActionsProps> {
         tooltipTitle={t('newActions')}
         data-test-automation-id="addMenuBtn"
       >
-        add_circle
+        new_actions
       </JuiIconButton>
     );
   }
 
-  handleCreateTeam = () => {
-    this.props.updateCreateTeamDialogState();
-  }
+  handleCreateTeam = () => CreateTeam.show();
 
-  handleNewMessage = () => {
-    this.props.updateNewMessageDialogState();
-  }
+  handleNewMessage = () => NewMessage.show();
 
   render() {
-    const { t, isShowCreateTeamDialog, isShowNewMessageDialog } = this.props;
+    const { t } = this.props;
 
     return (
       <>
@@ -71,10 +67,6 @@ class NewActions extends React.Component<NewActionsProps> {
             </JuiMenuItem>
           </JuiMenuList>
         </JuiNewActions>
-        {isShowCreateTeamDialog && <CreateTeam />}
-        {isShowNewMessageDialog && (
-          <NewMessage data-test-automation-id="newMessageModal" />
-        )}
       </>
     );
   }
