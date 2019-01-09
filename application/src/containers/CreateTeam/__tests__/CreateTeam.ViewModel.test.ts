@@ -5,23 +5,27 @@
  */
 import { err, ok } from 'foundation';
 import { service } from 'sdk';
-import { JNetworkError, ERROR_CODES_NETWORK, ERROR_CODES_SERVER, JServerError } from 'sdk/error';
+import {
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+  ERROR_CODES_SERVER,
+  JServerError,
+} from 'sdk/error';
 
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
+import { UserConfig } from 'sdk/service/account';
 
+jest.mock('sdk/service/account');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 
-const { GroupService, AccountService } = service;
+const { GroupService } = service;
 
 const groupService = {
-  createTeam() { },
-};
-const accountService = {
-  getCurrentUserId() { },
+  createTeam() {},
 };
 // GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 // AccountService.getInstance = jest.fn().mockReturnValue(accountService);
@@ -34,7 +38,6 @@ describe('CreateTeamVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
-    jest.spyOn(AccountService, 'getInstance').mockReturnValue(accountService);
     const gs = {
       get: jest.fn(),
       set: jest.fn(),
@@ -44,9 +47,7 @@ describe('CreateTeamVM', () => {
 
   it('create team success', async () => {
     const creatorId = 1;
-    accountService.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => creatorId);
+    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
     groupService.createTeam = jest.fn().mockImplementation(() => ok(''));
 
     const name = 'name';
@@ -68,12 +69,12 @@ describe('CreateTeamVM', () => {
 
   it('create team success handle error', async () => {
     const creatorId = 1;
-    accountService.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => creatorId);
+    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
-      .mockResolvedValue(err(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN)));
+      .mockResolvedValue(
+        err(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN)),
+      );
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
@@ -98,12 +99,12 @@ describe('CreateTeamVM', () => {
 
   it('create team server error', async () => {
     const creatorId = 1;
-    accountService.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => creatorId);
+    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
-      .mockResolvedValueOnce(err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')));
+      .mockResolvedValueOnce(
+        err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+      );
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';

@@ -9,7 +9,7 @@ import storeManager from '@/store';
 import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { parse } from 'qs';
-
+import { UserConfig } from 'sdk/service/account';
 // send configs to sdk
 export async function initAll() {
   LogControlManager.instance().setDebugMode(
@@ -54,8 +54,8 @@ export async function initAll() {
     const accountService: service.AccountService = AccountService.getInstance();
 
     if (accountService.isAccountReady()) {
-      const currentUserId = accountService.getCurrentUserId();
-      const currentCompanyId = accountService.getCurrentCompanyId();
+      const currentUserId = UserConfig.getCurrentUserId();
+      const currentCompanyId = UserConfig.getCurrentCompanyId();
       globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
       globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
     }

@@ -1,7 +1,4 @@
 import { GroupService } from '../GroupService';
-import { Api } from '../../../../api';
-import { NetworkManager, OAuthTokenManager } from 'foundation';
-import { daoManager } from '../../../../dao';
 import { groupFactory } from '../../controller/__tests__/factory';
 
 jest.mock('../../controller/TeamActionController');
@@ -34,14 +31,14 @@ describe('GroupService', () => {
       const mockTeam = groupFactory.build();
       const mockFn = jest.fn();
       groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest.fn().mockReturnValue({
-        isInTeam: mockFn,
-
-      });
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          isInTeam: mockFn,
+        });
       await groupService.isInTeam(mockUserId, mockTeam);
       expect(mockFn).toBeCalledWith(mockUserId, mockTeam);
     });
-
   });
   describe('canJoinTeam()', () => {
     beforeEach(() => {
@@ -53,14 +50,14 @@ describe('GroupService', () => {
       const mockTeam = groupFactory.build();
       const mockFn = jest.fn();
       groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest.fn().mockReturnValue({
-        canJoinTeam: mockFn,
-
-      });
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          canJoinTeam: mockFn,
+        });
       await groupService.canJoinTeam(mockTeam);
       expect(mockFn).toBeCalledWith(mockTeam);
     });
-
   });
   describe('joinTeam()', () => {
     beforeEach(() => {
@@ -73,13 +70,13 @@ describe('GroupService', () => {
       const mockTeamId = 44213;
       const mockJoinTeam = jest.fn();
       groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest.fn().mockReturnValue({
-        joinTeam: mockJoinTeam,
-
-      });
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          joinTeam: mockJoinTeam,
+        });
       await groupService.joinTeam(mockUserId, mockTeamId);
       expect(mockJoinTeam).toBeCalledWith(mockUserId, mockTeamId);
     });
-
   });
 });

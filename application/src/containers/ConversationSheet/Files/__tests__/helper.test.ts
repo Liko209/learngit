@@ -6,6 +6,12 @@
 import { getFileSize } from '../helper';
 const Bytes = 100;
 describe('getFileSize', () => {
+  it('should return 0B if bytes not a number', () => {
+    expect(getFileSize(null)).toEqual('0B');
+    expect(getFileSize('xxx')).toEqual('0B');
+    expect(getFileSize()).toEqual('0B');
+  });
+
   it('should return x.xB while bytes less than 0.1kb', () => {
     expect(getFileSize(Bytes - 1)).toEqual('99.0B');
   });
