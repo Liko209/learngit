@@ -8,20 +8,34 @@ import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager, PostDao, AccountDao } from '../../../dao';
+import {
+  ACCOUNT_USER_ID,
+  ACCOUNT_COMPANY_ID,
+} from '../../../dao/account/constants';
 import PostActionControllerHelper from './PostActionControllerHelper';
-import { EditPostType } from '../types';
-import { baseHandleData as utilsBaseHandleData } from '../../../service/utils';
+import { EditPostType, SendPostType } from '../types';
+import {
+  transform,
+  baseHandleData as utilsBaseHandleData,
+} from '../../../service/utils';
 import { ENTITY } from '../../../service/eventKey';
-import { ProgressService } from '../../progress';
+import { ProgressService, PROGRESS_STATUS } from '../../progress';
 import { notificationCenter, GroupConfigService } from '../../../service';
+import PostAPI from '../../../api/glip/post';
 import { mainLogger } from 'foundation';
+import { ErrorParserHolder } from '../../../error';
 
 type HandlePostType = {
   data: Raw<Post> | Raw<Post>[] | Post | Post[];
   shouldCheckGroup: boolean;
   shouldCheckDisContinue: boolean;
   shouldSave: boolean;
+};
+
+type PostData = {
+  id: number;
+  data: Post;
 };
 
 class PostActionController {
@@ -134,7 +148,94 @@ class PostActionController {
     return true;
   }
 
-  async sendPost() {}
+  async sendPost(params: SendPostType) {
+    const userId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
+    const companyId: number = daoManager
+      .getKVDao(AccountDao)
+      .get(ACCOUNT_COMPANY_ID);
+    const paramsInfo = {
+      userId,
+      companyId,
+      ...params,
+    };
+    const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
+    const needBuildItemVersionMap =
+      params.groupId && params.itemIds && params.itemIds.length;
+    if (needBuildItemVersionMap) {
+      // TODO
+    }
+  }
+
+  async innerSendPost(post: Post, isResend: boolean) {
+    const hasItems = post.item_ids.length > 0;
+    if (!isResend && hasItems) {
+      // clean uploading files
+    }
+    if (hasItems) {
+      // send post with items
+    } else {
+      // send plain post
+    }
+  }
+
+  private async _sendPostToServer(post: Post): Promise<PostData[]> {
+    const preInsertId = post.id;
+    delete post.id;
+    try {
+      const resp = await PostAPI.sendPost(post);
+      const data = resp.expect('send post failed');
+      return this.handleSendPostSuccess(data, preInsertId);
+    } catch (e) {
+      // this.handleSendPostFail(preInsertId, buildPost.group_id);
+      throw ErrorParserHolder.getErrorParser().parse(e);
+    }
+  }
+
+  async handleSendPostSuccess(
+    data: Raw<Post>,
+    preInsertId: number,
+  ): Promise<PostData[]> {
+    /**
+     * 1. remove progress
+     * 2. emit replace notification
+     * 3. update failure Ids
+     * 4. delete pre inserted post
+     * 5. put in real post
+     */
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.deleteProgress(preInsertId);
+
+    const post = transform<Post>(data);
+    const obj: PostData = {
+      id: preInsertId,
+      data: post,
+    };
+    const result = [obj];
+    const replacePosts = new Map<number, Post>();
+    replacePosts.set(preInsertId, post);
+
+    notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
+    const dao = daoManager.getDao(PostDao);
+
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    await groupConfigService.deletePostId(post.group_id, preInsertId);
+
+    await dao.delete(preInsertId);
+    await dao.put(post);
+    return result;
+  }
+
+  async handleSendPostFail(preInsertId: number, groupId: number) {
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.updateProgress(preInsertId, {
+      id: preInsertId,
+      status: PROGRESS_STATUS.FAIL,
+    });
+
+    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    await groupConfigService.addPostId(groupId, preInsertId);
+    return [];
+  }
 
   /**
    * deletePost begin
