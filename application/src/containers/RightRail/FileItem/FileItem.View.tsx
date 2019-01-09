@@ -5,13 +5,16 @@
  */
 
 import React, { Component } from 'react';
+import { t } from 'i18next';
 import {
   JuiListItemText,
   JuiListItem,
   JuiListItemIcon,
   JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
+import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { FileItemProps } from './types';
 
 class FileItemView extends Component<FileItemProps> {
@@ -25,7 +28,8 @@ class FileItemView extends Component<FileItemProps> {
     this.setState({ isHover: false });
   }
   render() {
-    const { disabled, icon, name, subtitle, action } = this.props;
+    const { disabled, file, fileType, subTitle } = this.props;
+    const { name, downloadUrl } = file;
     const { isHover } = this.state;
     return (
       <JuiListItem
@@ -33,26 +37,22 @@ class FileItemView extends Component<FileItemProps> {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        <JuiListItemIcon>{icon}</JuiListItemIcon>
-        <JuiListItemText primary={name} secondary={subtitle} />
-        {isHover ? (
+        <JuiThumbnail url={fileType} />
+        <JuiListItemText
+          primary={<FileName filename={name} />}
+          secondary={subTitle}
+        />
+        {isHover && (
           <JuiListItemSecondaryAction>
             <JuiListItemIcon>
               <JuiIconButton
+                component="a"
+                download={true}
+                href={downloadUrl}
                 variant="plain"
-                tooltipTitle="Download"
-                disabled={disabled}
-                onClick={action}
+                tooltipTitle={t('download')}
               >
-                get_app
-              </JuiIconButton>
-            </JuiListItemIcon>
-          </JuiListItemSecondaryAction>
-        ) : (
-          <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton variant="plain" disabled={disabled}>
-                info
+                download
               </JuiIconButton>
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>

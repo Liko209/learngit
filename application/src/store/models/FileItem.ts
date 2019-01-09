@@ -24,18 +24,29 @@ export default class FileItemModel extends ItemModel {
   @observable name: string;
   @observable isDocument?: boolean;
   @observable isNew: boolean;
+  @observable createId: number;
   @observable versions: Item['versions'];
   @observable deactivated: Item['deactivated'];
 
   constructor(data: Item) {
     super(data);
-    const { type, name, versions, is_document, is_new, deactivated } = data;
+    console.log(data, '----nello data');
+    const {
+      type,
+      name,
+      versions,
+      is_document,
+      is_new,
+      deactivated,
+      creator_id,
+    } = data;
     this.type = type;
     this.name = name;
     this.isDocument = is_document;
     this.isNew = is_new;
     this.versions = versions;
     this.deactivated = deactivated;
+    this.createId = creator_id;
   }
 
   hasVersions() {

@@ -3,15 +3,18 @@
  * @Date: 2019-01-08 14:28:15
  * Copyright © RingCentral. All rights reserved.
  */
+import FileItemModel from '@/store/models/FileItem';
 
-import { ReactElement } from 'react';
+type FilesProps = {
+  id: number;
+};
 
 type FileItemProps = {
+  file: FileItemModel;
+  subTitle: string;
+  fileType?: string;
   disabled?: boolean;
-  icon: ReactElement<any>;
-  name: string;
-  subtitle: string;
   action?: () => void;
 };
 
-export { FileItemProps };
+export { FileItemProps, FilesProps };
