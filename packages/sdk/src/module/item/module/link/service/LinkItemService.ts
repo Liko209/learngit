@@ -27,11 +27,11 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
   getSortedIds(
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number,
     sortKey: string,
     desc: boolean,
-  ): number[] {
-    return [];
+  ): Promise<number[]> {
+    return Promise.resolve([]);
   }
 
   updateItem(item: Item) {}
@@ -39,6 +39,10 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
   createItem(item: Item) {}
 
   deleteItem(itemId: number) {}
+
+  async getSubItemsCount(groupId: number) {
+    return 0;
+  }
 }
 
 export { LinkItemService };

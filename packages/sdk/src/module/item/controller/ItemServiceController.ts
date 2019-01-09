@@ -53,18 +53,33 @@ class ItemServiceController {
     return this._itemActionController;
   }
 
+  async getGroupItemsCount(groupId: number, typeId: number) {
+    let totalCount = 0;
+    const subItemService = this.getSubItemService(typeId);
+    if (subItemService) {
+      totalCount = await subItemService.getSubItemsCount(groupId);
+    }
+    return totalCount;
+  }
+
   async getItems(
     typeId: number,
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number,
     sortKey: string,
     desc: boolean,
   ) {
     let ids: number[] = [];
     const subItemService = this.getSubItemService(typeId);
     if (subItemService) {
-      ids = subItemService.getSortedIds(groupId, limit, offset, sortKey, desc);
+      ids = await subItemService.getSortedIds(
+        groupId,
+        limit,
+        offsetItemId,
+        sortKey,
+        desc,
+      );
     }
 
     const itemDao = daoManager.getDao(ItemDao);
@@ -74,21 +89,30 @@ class ItemServiceController {
   async createItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
-    const typeId = GlipTypeUtil.extractTypeId(item.id);
-    await this.getSubItemService(typeId).createItem(item);
+
+    if (item.id > 0) {
+      const typeId = GlipTypeUtil.extractTypeId(item.id);
+      await this.getSubItemService(typeId).createItem(item);
+    }
   }
 
   async updateItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
-    const typeId = GlipTypeUtil.extractTypeId(item.id);
-    await this.getSubItemService(typeId).updateItem(item);
+
+    if (item.id > 0) {
+      const typeId = GlipTypeUtil.extractTypeId(item.id);
+      await this.getSubItemService(typeId).updateItem(item);
+    }
   }
 
   async deleteItem(itemId: number) {
     await daoManager.getDao(ItemDao).delete(itemId);
     const typeId = GlipTypeUtil.extractTypeId(itemId);
-    await this.getSubItemService(typeId).deleteItem(itemId);
+
+    if (itemId > 0) {
+      await this.getSubItemService(typeId).deleteItem(itemId);
+    }
   }
 
   async handleSanitizedItems(incomingItems: Item[]) {
