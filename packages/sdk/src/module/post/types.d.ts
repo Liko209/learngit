@@ -6,8 +6,7 @@
 export type SendPostType = {
   text: string;
   groupId: number;
-  atMentions?: boolean;
-  users?: any[];
+  mentionIds?: number[];
   itemIds?: number[];
   itemId?: number;
 };

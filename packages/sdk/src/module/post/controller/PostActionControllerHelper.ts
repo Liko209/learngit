@@ -23,59 +23,32 @@ export type LinksArray = { url: string }[];
 
 class PostActionControllerHelper {
   constructor() {}
-  /**
-   * return text simple:
-   * <a class='at_mention_compose' rel='{"id":xxxx}'>@Lip Wang</a>
-   */
-  buildAtMentionsPeopleInfo(
-    params: RawPostInfo,
-  ): {
-    text: string;
-    at_mention_non_item_ids: number[];
-  } {
-    const { atMentions, users = [], text } = params;
-
-    if (atMentions) {
-      let renderedText = text;
-      const ids = [];
-
-      // this implementation has efficiency issue
-      // should refactor at_mention with UI
-      for (let i = 0; i < users.length; i += 1) {
-        const userDisplay: string = users[i].display
-          ? users[i].display.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1')
-          : '';
-        const key = new RegExp(`@\\[${userDisplay}\\]:${users[i].id}:`, 'g');
-
-        // tslint:disable-next-line:max-line-length
-        const replacedText = `<a class='at_mention_compose' rel='{"id":${
-          users[i].id
-        }}'>@${users[i].display}</a>`;
-        const text = renderedText.replace(key, replacedText);
-        if (text !== renderedText) {
-          renderedText = text;
-          ids.push(users[i].id);
-        }
-      }
-      return {
-        text: renderedText,
-        at_mention_non_item_ids: ids,
-      };
-    }
-
-    return {
-      at_mention_non_item_ids: [],
-      text: params.text,
-    };
-  }
 
   buildLinksInfo(text: string): LinksArray {
-    let res: any;
+    let res: string[] = [];
+    let matchedUrl: string[] = [];
+    const urlArray: string[] = [];
     const links: LinksArray = [];
-
-    res = text.match(Markdown.global_url_regex);
+    res = res.concat(text);
     res &&
-      res.forEach((item: string) => {
+      res.forEach((item: string, index: number) => {
+        matchedUrl = res[index].match(/[^\(\)]+(?=\))/g) || [];
+        if (!matchedUrl.length) {
+          urlArray.push(item);
+        }
+      });
+    if (matchedUrl.length) {
+      for (const k of matchedUrl) {
+        if (k) {
+          urlArray.push(k);
+        }
+      }
+    }
+    const matchedNoneMdUrl = urlArray
+      .toString()
+      .match(Markdown.global_url_regex);
+    matchedNoneMdUrl &&
+      matchedNoneMdUrl.forEach((item: string) => {
         links.push({
           url: item,
         });
@@ -85,7 +58,6 @@ class PostActionControllerHelper {
 
   buildRawPostInfo(params: RawPostInfo): Post {
     const vers = versionHash();
-    const atMentionsPeopleInfo = this.buildAtMentionsPeopleInfo(params);
     const links = this.buildLinksInfo(params.text);
     const now = Date.now();
     const buildPost: Post = {
@@ -98,14 +70,14 @@ class PostActionControllerHelper {
       new_version: vers,
       is_new: true,
       model_size: 0,
-      text: atMentionsPeopleInfo.text,
+      text: params.text,
       group_id: params.groupId,
       from_group_id: params.groupId,
       item_id: params.itemId,
       item_ids: params.itemIds || [],
       post_ids: [],
       at_mention_item_ids: [],
-      at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
+      at_mention_non_item_ids: params.mentionIds || [],
       company_id: params.companyId,
       deactivated: false,
     };
@@ -130,13 +102,8 @@ class PostActionControllerHelper {
     const params = _.cloneDeep(info);
     params['companyId'] = oldPost.company_id;
     params['userId'] = oldPost.creator_id;
-    const atMentionsInfo: any = this.buildAtMentionsPeopleInfo(
-      params as RawPostInfo,
-    );
-    oldPost.text = atMentionsInfo.text;
-    if (atMentionsInfo.at_mention_non_item_ids.length) {
-      oldPost.at_mention_non_item_ids = atMentionsInfo.at_mention_non_item_ids;
-    }
+    oldPost.text = info.text;
+    oldPost.at_mention_non_item_ids = info.mentionIds || [];
     delete oldPost.likes;
     return oldPost;
   }

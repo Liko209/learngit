@@ -13,7 +13,7 @@ import PostActionControllerHelper from './PostActionControllerHelper';
 import { EditPostType } from '../types';
 import { baseHandleData as utilsBaseHandleData } from '../../../service/utils';
 import { ENTITY } from '../../../service/eventKey';
-import { ProgressService } from '../../index';
+import { ProgressService } from '../../progress';
 import { notificationCenter, GroupConfigService } from '../../../service';
 import { mainLogger } from 'foundation';
 

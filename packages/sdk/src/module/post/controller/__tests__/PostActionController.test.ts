@@ -10,11 +10,11 @@ import { Post } from '../../entity';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { daoManager, PostDao } from '../../../../dao';
 import { localPostJson4UnitTest } from './PostData';
-import { ProgressService } from '../../../index';
+import { ProgressService } from '../../../progress';
 import { notificationCenter, GroupConfigService } from '../../../../service';
 
 jest.mock('../../../../dao');
-jest.mock('../../../index');
+jest.mock('../../../progress');
 jest.mock('../../../../service');
 
 class TestPartialModifyController implements IPartialModifyController<Post> {
