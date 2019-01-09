@@ -77,7 +77,7 @@ test(formalName('UMI should be added received messages count in conversations', 
     await teamsSection.expand();
     teamConversation = teamsSection.conversationEntryById(teamId);
     await groupConversation.headerUmi.shouldBeNumber(1);
-    await teamConversation.eaderUmi.shouldBeNumber(1);
+    await teamConversation.headerUmi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
@@ -86,7 +86,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`The group should have 2 umi`, async () => {
-    await groupConversation.eaderUmi.shouldBeNumber(2);
+    await groupConversation.headerUmi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When other user send a post with @mention to the team', async () => {
@@ -95,7 +95,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the team should have 2 umi`, async () => {
-    await teamConversation.eaderUmi.shouldBeNumber(2);
+    await teamConversation.headerUmi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When other user send a post without @mention to the group', async () => {
@@ -104,7 +104,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the group should have 3 umi`, async () => {
-    await groupConversation.eaderUmi.shouldBeNumber(3);
+    await groupConversation.headerUmi.shouldBeNumber(3);
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
@@ -113,7 +113,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
-    await teamConversation.eaderUmi.shouldBeNumber(2);
+    await teamConversation.headerUmi.shouldBeNumber(2);
   });
 },
 );
@@ -288,40 +288,39 @@ test(formalName('Should not display UMI when section is expended & Should displa
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
 
     let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
-    await h(t).withLog('Given I have an extension with a team and a private chat',
-      async () => {
-        favPrivateChatId = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'PrivateChat',
-          members: [loginUser.rcId, users[5].rcId],
-        });
-        favTeamId = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'Team',
-          name: `My Team ${uuid()}`,
-          members: [loginUser.rcId, users[5].rcId],
-        });
-        groupId1 = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'Group',
-          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-        });
-        groupId2 = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'Group',
-          members: [loginUser.rcId, users[5].rcId, users[1].rcId],
-        });
-        groupId3 = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'Group',
-          members: [loginUser.rcId, users[5].rcId, users[2].rcId],
-        });
-        teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'Team',
-          name: `My Team ${uuid()}`,
-          members: [loginUser.rcId, users[5].rcId],
-        });
-        teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'Team',
-          name: `My Team ${uuid()}`,
-          members: [loginUser.rcId, users[5].rcId],
-        });
-      },
+    await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
+      favPrivateChatId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'PrivateChat',
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      favTeamId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: `My Team ${uuid()}`,
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      groupId1 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group',
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
+      groupId2 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group',
+        members: [loginUser.rcId, users[5].rcId, users[1].rcId],
+      });
+      groupId3 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Group',
+        members: [loginUser.rcId, users[5].rcId, users[2].rcId],
+      });
+      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: `My Team ${uuid()}`,
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: `My Team ${uuid()}`,
+        members: [loginUser.rcId, users[5].rcId],
+      });
+    },
     );
 
     await h(t).withLog('And the conversations should not be hidden before login', async () => {
