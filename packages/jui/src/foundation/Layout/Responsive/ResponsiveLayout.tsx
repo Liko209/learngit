@@ -158,16 +158,25 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
         <ResponsiveContext.Provider
           value={{ responsiveInfo: this.responsiveInfo }}
         >
-          {React.Children.map(children, (child: React.ReactElement<any>) =>
-            React.createElement(child.type, {
-              // @ts-ignore
-              width: width[child.type.tag],
-              // @ts-ignore
-              visual: visual[child.type.tag],
-            }),
-          )}
+          {React.Children.map(children, (child: React.ReactElement<any>) => {
+            return (
+              child &&
+              React.createElement(child.type, {
+                ...child.props,
+                // @ts-ignore
+                width: width[child.type.tag],
+                // @ts-ignore
+                visual: visual[child.type.tag],
+              })
+            );
+          })}
         </ResponsiveContext.Provider>
-        <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
+        <ReactResizeDetector
+          handleWidth={true}
+          onResize={this.onResize}
+          refreshMode="debounce"
+          refreshRate={150}
+        />
       </StyledWrapper>
     );
   }

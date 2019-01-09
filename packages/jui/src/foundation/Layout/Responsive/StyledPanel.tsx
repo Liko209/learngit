@@ -31,6 +31,7 @@ const StyledPanel = styled('div')`
 `;
 
 const StyledContent = styled('div')`
+  height: 100%;
   ${(props: StyledContentProps) =>
     css`
       width: ${props.width === 0 ? 0 : `${props.width}px`};

@@ -8,7 +8,7 @@ import React, { PureComponent, ComponentType } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import Resizable from 're-resizable';
 import { StyledPanel, StyledContent } from './StyledPanel';
-import { StyledButton } from './StyledButton';
+// import { StyledButton } from './StyledButton';
 import { ResponsiveContext } from './responsiveContext';
 import Optimizer from './optimizer';
 
@@ -33,12 +33,14 @@ type ResponsiveProps = {
   tag: string;
   priority?: number;
   visual?: boolean;
+  TriggerButton?: React.ComponentType<any>;
   responsiveInfo: object;
 };
 
 type ResponsiveState = {
   width: number;
   lastWidth: number;
+  localChange: boolean;
   isShow: boolean;
 };
 
@@ -69,6 +71,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   state = {
     lastWidth: this.localWidth,
     width: this.localWidth,
+    localChange: false,
     isShow: false,
   };
 
@@ -76,10 +79,14 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     props: ResponsiveProps,
     state: ResponsiveState,
   ) {
+    if (state.localChange) {
+      return {
+        localChange: false,
+      };
+    }
     const { width } = props;
     const { lastWidth } = state;
     const newState = {} as ResponsiveState;
-
     if (width && lastWidth !== width) {
       newState.width = width;
       newState.lastWidth = width;
@@ -118,9 +125,9 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   get localWidth() {
-    const { defaultWidth, tag } = this.props;
+    const { defaultWidth, tag, width } = this.props;
     const value = Number(localStorage.getItem(tag));
-    return value || defaultWidth || 0;
+    return width || value || defaultWidth || 0;
   }
 
   setLocalWidth = (value: number) => {
@@ -146,17 +153,18 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     info.width = width;
     this.setState({
       width,
+      localChange: true,
     });
   }
 
   handlerClickShowPanel = () => {
-    this.setState({ isShow: true });
+    this.setState({ isShow: true, localChange: true });
   }
 
   handlerClickHidePanel = () => {
     const { isShow } = this.state;
     if (isShow) {
-      this.setState({ isShow: false });
+      this.setState({ isShow: false, localChange: true });
     }
   }
 
@@ -165,15 +173,25 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     const { visual } = this.props;
     if (this.isManualMode) {
       const localShowState = this.localShowState;
-      if (isShow || visual || !localShowState) {
+      if (isShow || visual !== false || !localShowState) {
         this.setLocalShowState(!localShowState);
       }
     }
-    this.setState({ isShow: !isShow });
+    this.setState({ isShow: !isShow, localChange: true });
   }
 
   renderButton = () => {
-    return <StyledButton onClick={this.toggleShowPanel} />;
+    const { TriggerButton, visual } = this.props;
+    if (TriggerButton) {
+      const { isShow } = this.state;
+      let isOpen = visual !== false || isShow;
+      if (this.isManualMode) {
+        const localShowState = this.localShowState;
+        isOpen = !!localShowState && isOpen;
+      }
+      return <TriggerButton onClick={this.toggleShowPanel} isOpen={isOpen} />;
+    }
+    return null;
   }
 
   get isManualMode() {
@@ -185,46 +203,40 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     const { isShow, width } = this.state;
     const { enable = {}, children, minWidth, maxWidth, visual } = this.props;
     if (this.isManualMode && !this.localShowState) {
-      return (
-        <StyledPanel position={enable.left ? 'right' : 'left'}>
-          {enable.left ? this.renderButton() : null}
-          {enable.right ? this.renderButton() : null}
-        </StyledPanel>
-      );
-    }
-    if (visual !== false) {
-      return (
-        <Resizable
-          enable={{ ...Responsive.DEFAULT_OPTIONS.enable, ...enable }}
-          minWidth={minWidth}
-          maxWidth={maxWidth}
-          size={{
-            width,
-            height: 'auto',
-          }}
-          style={{
-            flex: maxWidth ? '0 1 auto' : 1,
-          }}
-        >
-          {this.isManualMode && enable.left ? this.renderButton() : null}
-          {children}
-          {this.isManualMode && enable.right ? this.renderButton() : null}
-          <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
-        </Resizable>
-      );
+      return this.renderButton();
     }
     return (
-      <StyledPanel position={enable.left ? 'right' : 'left'}>
-        {(!this.isManualMode || visual === false) && enable.left
-          ? this.renderButton()
-          : null}
-        <StyledContent width={isShow ? Number(minWidth) : 0}>
-          {children}
-        </StyledContent>
-        {(!this.isManualMode || visual === false) && enable.right
-          ? this.renderButton()
-          : null}
-      </StyledPanel>
+      <>
+        {(this.isManualMode || visual === false) && this.renderButton()}
+        {visual !== false ? (
+          <Resizable
+            enable={{ ...Responsive.DEFAULT_OPTIONS.enable, ...enable }}
+            minWidth={minWidth}
+            maxWidth={maxWidth}
+            size={{
+              width,
+              height: 'auto',
+            }}
+            style={{
+              flex: maxWidth ? '0 1 auto' : 1,
+            }}
+          >
+            {children}
+            <ReactResizeDetector
+              handleWidth={true}
+              onResize={this.onResize}
+              refreshMode="debounce"
+              refreshRate={50}
+            />
+          </Resizable>
+        ) : (
+          <StyledPanel position={enable.left ? 'right' : 'left'}>
+            <StyledContent width={isShow ? Number(minWidth) : 0}>
+              {children}
+            </StyledContent>
+          </StyledPanel>
+        )}
+      </>
     );
   }
 
@@ -237,7 +249,7 @@ const withResponsive = (
   WrappedComponent: ComponentType<any>,
   props?: Partial<ResponsiveProps>,
 ) =>
-  class ResponsiveHOC extends PureComponent {
+  class ResponsiveHOC extends PureComponent<any> {
     static tag = `responsive(${WrappedComponent.displayName ||
       WrappedComponent.name})`;
     render() {

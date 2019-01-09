@@ -26,10 +26,14 @@ const JuiRightShelfHeader = styled('div')`
 
 const JuiRightShelfHeaderText = styled('div')`
   flex: 1;
+  max-width: 80%;
   ${ellipsis}
 `;
 const JuiRightShelfHeaderIcon = styled('div')`
-  display: inline-flex;
+  position: absolute;
+  top: 4px;
+  right: 0;
+  z-index: ${({ theme }) => theme.zIndex.dragging};
 `;
 
 export {

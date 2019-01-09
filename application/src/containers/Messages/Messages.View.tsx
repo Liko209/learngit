@@ -8,17 +8,52 @@ import React, { Component } from 'react';
 import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
+import {
+  JuiResponsiveLayout,
+  withResponsive,
+  VISUAL_MODE,
+} from 'jui/foundation/Layout/Responsive';
 import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
-import { RightRail } from '@/containers/RightRail';
+import { RightRail, TriggerButton } from '@/containers/RightRail';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import { goToConversation, GoToConversationParams } from '@/common/goToConversation';
+import {
+  goToConversation,
+  GoToConversationParams,
+} from '@/common/goToConversation';
 
 import { MessagesViewProps } from './types';
 import { PostListPage } from '../PostListPage';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { MessageRouterChangeHelper } from './helper';
+
+const LeftRailResponsive = withResponsive(LeftRail, {
+  maxWidth: 300,
+  minWidth: 180,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.AUTOMATIC,
+  enable: {
+    right: true,
+  },
+  priority: 1,
+});
+
+const SwitchResponsive = withResponsive(Switch, {
+  minWidth: 400,
+  priority: 2,
+});
+
+const RightRailResponsive = withResponsive(RightRail, {
+  TriggerButton,
+  maxWidth: 300,
+  minWidth: 180,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.BOTH,
+  enable: {
+    left: true,
+  },
+  priority: 3,
+});
 
 type State = {
   messageError: boolean;
@@ -74,23 +109,15 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
   }
 
   render() {
-    const { isLeftNavOpen } = this.props;
     const { messageError } = this.state;
     const id = this.props.match.params.id;
 
     const currentConversationId = id ? Number(id) : 0;
-    let leftNavWidth = 72;
-    if (isLeftNavOpen) {
-      leftNavWidth = 200;
-    }
+
     return (
-      <JuiResponsiveLayout
-        tag="conversation"
-        leftNavWidth={leftNavWidth}
-        mainPanelIndex={1}
-      >
-        <LeftRail />
-        <Switch>
+      <JuiResponsiveLayout>
+        <LeftRailResponsive />
+        <SwitchResponsive>
           <Route
             path={'/messages/loading'}
             render={props => (
@@ -122,9 +149,9 @@ class MessagesViewComponent extends Component<MessagesViewProps, State> {
               ) : null
             }
           />
-        </Switch>
+        </SwitchResponsive>
         {currentConversationId ? (
-          <RightRail id={currentConversationId} />
+          <RightRailResponsive id={currentConversationId} />
         ) : null}
       </JuiResponsiveLayout>
     );

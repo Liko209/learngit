@@ -15,35 +15,43 @@ import {
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 
-type States = {
-  isOpen: boolean;
-};
-
 type Props = {
   id: number;
 } & WithNamespaces;
 
-class RightRailComponent extends React.Component<Props, States> {
-  state = {
-    isOpen: true,
-  };
+type TriggerButtonProps = {
+  isOpen: boolean;
+  onClick: () => {};
+} & WithNamespaces;
 
-  handleExpandAndCollapse = () => {
-    this.setState((prevState: States) => ({
-      isOpen: !prevState.isOpen,
-    }));
-  }
-
+class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
-    const { isOpen } = this.state;
+    const { isOpen } = this.props;
     return isOpen ? 'conversationDetailsHide' : 'conversationDetailsShow';
   }
 
   private _getIconKey = () => {
-    const { isOpen } = this.state;
+    const { isOpen } = this.props;
     return isOpen ? 'chevron_right' : 'chevron_left';
   }
 
+  render() {
+    const { t, onClick } = this.props;
+    return (
+      <JuiRightShelfHeaderIcon>
+        <JuiIconButton
+          tooltipTitle={t(this._getTooltipKey())}
+          ariaLabel={t(this._getTooltipKey())}
+          onClick={onClick}
+        >
+          {this._getIconKey()}
+        </JuiIconButton>
+      </JuiRightShelfHeaderIcon>
+    );
+  }
+}
+
+class RightRailComponent extends React.Component<Props> {
   render() {
     const { id, t } = this.props;
     if (!id) {
@@ -55,15 +63,6 @@ class RightRailComponent extends React.Component<Props, States> {
           <JuiRightShelfHeaderText>
             {t('conversationDetails')}
           </JuiRightShelfHeaderText>
-          <JuiRightShelfHeaderIcon>
-            <JuiIconButton
-              tooltipTitle={t(this._getTooltipKey())}
-              ariaLabel={t(this._getTooltipKey())}
-              onClick={this.handleExpandAndCollapse}
-            >
-              {this._getIconKey()}
-            </JuiIconButton>
-          </JuiRightShelfHeaderIcon>
         </JuiRightShelfHeader>
         <JuiTabs defaultActiveIndex={0}>
           <JuiTab key={0} title={t('pinned')}>
@@ -97,5 +96,6 @@ class RightRailComponent extends React.Component<Props, States> {
 }
 
 const RightRail = translate('translations')(RightRailComponent);
+const TriggerButton = translate('translations')(TriggerButtonComponent);
 
-export { RightRail };
+export { RightRail, TriggerButton };
