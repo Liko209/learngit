@@ -15,6 +15,13 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 
+const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
+  if (vm.members.length && vm.open) {
+    return false;
+  }
+  return true;
+};
+
 const DELAY = 300;
 class MentionViewModel extends StoreViewModel<MentionProps>
   implements MentionViewProps {
@@ -179,9 +186,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     return function () {
       if (vm.open) {
         vm.open = false;
-        return false;
       }
-      return true;
+      return canTriggerDefaultEventHandler(vm);
     };
   }
 
@@ -190,10 +196,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     return function () {
       vm.currentIndex =
         (vm.currentIndex + vm.members.length - 1) % vm.members.length;
-      if (vm.members.length && vm.open) {
-        return false;
-      }
-      return true;
+      return canTriggerDefaultEventHandler(vm);
     };
   }
 
@@ -201,10 +204,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   private _downHandler(vm: MentionViewModel) {
     return function () {
       vm.currentIndex = (vm.currentIndex + 1) % vm.members.length;
-      if (vm.members.length && vm.open) {
-        return false;
-      }
-      return true;
+      return canTriggerDefaultEventHandler(vm);
     };
   }
 
