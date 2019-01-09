@@ -9,8 +9,6 @@ import { daoManager, PostDao, GroupConfigDao } from '../../dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
-import ItemService from '../../service/item';
-import itemHandleData from '../../service/item/handleData';
 import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
@@ -26,7 +24,8 @@ import { mainLogger, err, Result } from 'foundation';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
 import GroupConfigService from '../groupConfig';
-import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
+import { ItemService } from '../../module/item';
+import { ProgressService, PROGRESS_STATUS } from '../../module/progress';
 import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 interface IPostResult {
@@ -185,7 +184,10 @@ class PostService extends BaseService<Post> {
         }
         const posts: Post[] =
           (await baseHandleData(remoteResult.posts, shouldSave)) || [];
-        const items = (await itemHandleData(remoteResult.items)) || [];
+
+        const itemService = ItemService.getInstance() as ItemService;
+        const items =
+          (await itemService.handleIncomingData(remoteResult.items)) || [];
 
         result.posts.push(...posts);
         result.items.push(...items);
@@ -219,7 +221,9 @@ class PostService extends BaseService<Post> {
       const remoteData = remoteResult.expect('getPostsByIds failed');
       const posts: Post[] =
         (await baseHandleData(remoteData.posts, false)) || [];
-      const items = (await itemHandleData(remoteData.items)) || [];
+      const itemService = ItemService.getInstance() as ItemService;
+      const items =
+        (await itemService.handleIncomingData(remoteData.items)) || [];
       result.posts.push(...posts);
       result.items.push(...items);
     }

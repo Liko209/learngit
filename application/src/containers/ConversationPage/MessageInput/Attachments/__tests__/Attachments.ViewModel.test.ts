@@ -6,7 +6,8 @@
 
 import { Notification } from '@/containers/Notification';
 import { service } from 'sdk';
-import { ItemFile } from 'sdk/models';
+import { ItemService } from 'sdk/module/item';
+import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
@@ -22,7 +23,7 @@ jest.mock('@/store/utils', () => ({
   getEntity: jest.fn(() => mockGroupEntityData),
 }));
 
-const { PostService, GroupService, ItemService } = service;
+const { PostService, GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
 };

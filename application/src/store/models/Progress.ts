@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observable } from 'mobx';
-import { Progress } from 'sdk/models';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
 import Base from './Base';
-import { PROGRESS_STATUS } from 'sdk/module';
 
 class ProgressModel extends Base<Progress> {
   @observable

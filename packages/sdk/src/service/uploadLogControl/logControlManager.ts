@@ -6,7 +6,7 @@ import notificationCenter from '../notificationCenter';
 import { SERVICE, WINDOW } from '../../service/eventKey';
 import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import LogUploadManager from './logUploadManager';
-import AccountService from '../account';
+import AccountService, { UserConfig } from '../account';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 
@@ -100,7 +100,7 @@ class LogControlManager {
   private async _getUserInfo() {
     const accountService: AccountService = AccountService.getInstance();
     const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
-    const id = accountService.getCurrentUserId();
+    const id = UserConfig.getCurrentUserId();
     const userId = id ? id.toString() : '';
     const clientId = accountService.getClientId();
     return {
