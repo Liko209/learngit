@@ -52,6 +52,8 @@ const name2icon = {
   remove: 'delete_circle',
   refresh: 'refresh',
   draft: 'draft',
+  location: 'location',
+  link: 'webpage',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

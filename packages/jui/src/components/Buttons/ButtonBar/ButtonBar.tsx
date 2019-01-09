@@ -12,10 +12,6 @@ import { spacing } from '../../../foundation/utils/styles';
 type JuiButtonBarProps = {
   overlapSize: number;
   direction?: 'horizontal' | 'vertical';
-  invisible?: boolean;
-  awake?: boolean;
-  size?: 'small' | 'medium' | 'large';
-  color?: 'primary' | 'secondary';
 } & {
   className?: string;
   style?: React.CSSProperties;
@@ -59,9 +55,6 @@ const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
 JuiButtonBar.defaultProps = {
   overlapSize: 0,
   direction: 'horizontal',
-  size: 'medium',
-  awake: false,
-  invisible: false,
 };
 
 export { JuiButtonBar, JuiButtonBarProps };
