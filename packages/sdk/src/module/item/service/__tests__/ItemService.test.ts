@@ -17,6 +17,8 @@ import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
+import { EPERM } from 'constants';
+import { TypeDictionary } from '../../../../utils';
 
 jest.mock('../../../../service/utils', () => ({
   baseHandleData: jest.fn(),
@@ -442,6 +444,34 @@ describe('ItemService', () => {
       itemDao.getItemsByGroupId.mockResolvedValue(mockLocalData);
       await expect(itemService.getRightRailItemsOfGroup(123)).resolves.toBe(
         mockLocalData,
+      );
+    });
+  });
+
+  describe('getGroupItemsCount', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+
+      Object.assign(itemService, {
+        _itemServiceController: itemServiceController,
+      });
+    });
+
+    it('should call itemServiceController to get data', async () => {
+      const gId = 10;
+      const cnt = 111;
+      itemServiceController.getGroupItemsCount = jest
+        .fn()
+        .mockResolvedValue(cnt);
+      const res = await itemService.getGroupItemsCount(
+        gId,
+        TypeDictionary.TYPE_ID_PAGE,
+      );
+      expect(res).toBe(cnt);
+      expect(itemServiceController.getGroupItemsCount).toBeCalledWith(
+        gId,
+        TypeDictionary.TYPE_ID_PAGE,
       );
     });
   });
