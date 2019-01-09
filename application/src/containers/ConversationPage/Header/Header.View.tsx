@@ -10,10 +10,7 @@ import {
   JuiConversationPageHeader,
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
-import {
-  JuiButtonBar,
-  JuiIconButton,
-} from 'jui/components/Buttons';
+import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
 import { Favorite, Privacy } from '@/containers/common';
 import { translate, WithNamespaces } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
@@ -73,15 +70,16 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 
   private _SubTitle() {
-    const {
-      type,
-      groupId,
-    } = this.props;
+    const { type, groupId } = this.props;
 
     return (
       <JuiConversationPageHeaderSubtitle>
-        {type === CONVERSATION_TYPES.TEAM ? <Privacy id={groupId} size="medium" /> : null}
-        <Favorite id={groupId} size="medium" />
+        <JuiButtonBar overlapSize={2}>
+          {type === CONVERSATION_TYPES.TEAM ? (
+            <Privacy id={groupId} size="medium" />
+          ) : null}
+          <Favorite id={groupId} size="medium" />
+        </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );
   }

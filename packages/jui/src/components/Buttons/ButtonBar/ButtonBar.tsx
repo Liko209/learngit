@@ -7,16 +7,10 @@
 import * as React from 'react';
 import styled, { css } from '../../../foundation/styled-components';
 import { Theme } from '../../../foundation/theme/theme';
-import { JuiIconButton, JuiIconButtonProps } from '../IconButton/IconButton';
-import {
-  JuiCheckboxButton,
-  JuiCheckboxButtonProps,
-} from '../CheckboxButton/CheckboxButton';
-import { styledComponentWrapper } from '../../../foundation/utils/styledComponentWrapper';
 import { spacing } from '../../../foundation/utils/styles';
 
 type JuiButtonBarProps = {
-  overlapSize?: number;
+  overlapSize: number;
   direction?: 'horizontal' | 'vertical';
   invisible?: boolean;
   awake?: boolean;
@@ -27,6 +21,12 @@ type JuiButtonBarProps = {
   style?: React.CSSProperties;
 };
 
+const padding = (theme: Theme, overlapSize?: number) => {
+  return overlapSize && overlapSize > 0
+    ? `-${spacing(overlapSize)({ theme })}`
+    : `${spacing(2)({ theme })}`;
+};
+
 const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   display: flex;
   flex-direction: ${({ direction }) =>
@@ -34,64 +34,26 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   white-space: nowrap;
   flex-wrap: nowrap;
   flex-shrink: 0;
+
+  ${({ overlapSize }) => {
+    return (
+      overlapSize > 0 &&
+      css`
+        && > *:nth-child(n + 2) {
+          margin-left: ${({ theme, direction = 'horizontal', overlapSize }) =>
+            direction === 'horizontal' && padding(theme, overlapSize)};
+
+          margin-top: ${({ theme, direction = 'horizontal', overlapSize }) =>
+            direction === 'vertical' && padding(theme, overlapSize)};
+        }
+      `
+    );
+  }}
 `;
-
-type StyledIconButtonChild = JuiIconButtonProps &
-  JuiButtonBarProps & { index?: number; componentName: string };
-type StyledCheckboxButtonChild = JuiCheckboxButtonProps &
-  JuiButtonBarProps & {
-    index?: number;
-    componentName: string;
-    variant?: string;
-  };
-type StyledChild = StyledIconButtonChild | StyledCheckboxButtonChild;
-
-const padding = (theme: Theme, overlapSize?: number) => {
-  return overlapSize && overlapSize > 0
-    ? `-${spacing(overlapSize)({ theme })}`
-    : `${spacing(2)({ theme })}`;
-};
-
-const StyledChild = styledComponentWrapper<StyledChild>(
-  ({ overlapSize, componentName, ...rest }: StyledChild) => {
-    if (componentName === 'JuiCheckboxButton') {
-      return <JuiCheckboxButton {...rest as JuiCheckboxButtonProps} />;
-    }
-    return <JuiIconButton {...rest as JuiIconButtonProps} />;
-  },
-  css`
-    && {
-      margin-left: ${({
-        theme,
-        direction = 'horizontal',
-        index,
-        overlapSize,
-      }) =>
-        direction === 'horizontal' && index ? padding(theme, overlapSize) : ''};
-
-      margin-top: ${({ theme, direction = 'horizontal', index, overlapSize }) =>
-        direction === 'vertical' && index ? padding(theme, overlapSize) : ''};
-    }
-  `,
-);
 
 type IButtonBar = React.SFC<JuiButtonBarProps>;
 const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
-  return (
-    <StyledButtonBar {...rest}>
-      {React.Children.toArray(children).map(
-        (child: React.ReactElement<any>, index: number) => (
-          <StyledChild
-            key={index}
-            index={index}
-            componentName={(child.type as React.SFC).name}
-            {...child.props}
-            {...rest}
-          />
-        ),
-      )}
-    </StyledButtonBar>
-  );
+  return <StyledButtonBar {...rest}>{children}</StyledButtonBar>;
 };
 
 JuiButtonBar.defaultProps = {
