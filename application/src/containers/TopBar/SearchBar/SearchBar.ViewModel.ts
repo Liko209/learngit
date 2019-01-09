@@ -7,7 +7,7 @@ import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
-import { module } from 'sdk';
+import { GroupService as NGroupService } from 'sdk/module/group';
 import { SectionType, ViewProps, Person, Group, Props } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
@@ -19,14 +19,14 @@ const MORE_SECTION_LENGTH = 3;
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   personService: PersonService;
   groupService: GroupService;
-  nGroupService: module.GroupService;
+  nGroupService: NGroupService;
   @observable value: string = '';
 
   constructor() {
     super();
     this.personService = PersonService.getInstance();
     this.groupService = GroupService.getInstance();
-    this.nGroupService = new module.GroupService();
+    this.nGroupService = new NGroupService();
   }
 
   @computed
