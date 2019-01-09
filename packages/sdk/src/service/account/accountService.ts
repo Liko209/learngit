@@ -23,7 +23,7 @@ import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
 import ProfileService from '../profile/index';
 import { setRcToken } from '../../authenticator';
-import { JServerError, JSdkError, ERROR_CODES_SDK } from '../../error';
+import { ERROR_CODES_SDK } from '../../error';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 class AccountService extends BaseService implements ITokenRefreshDelegate {
@@ -39,54 +39,6 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     return !!this.accountDao.get(ACCOUNT_USER_ID);
   }
 
-<<<<<<< HEAD
-=======
-  getCurrentUserId(): number {
-    const userId: string = this.accountDao.get(ACCOUNT_USER_ID);
-    if (!userId) {
-      // Current user id not found is a unexpected error,
-      // the error should be throw to tell developer that there
-      // must be some bug happened.
-      mainLogger.warn('Current user id not found.');
-      throw new JServerError(
-        ERROR_CODES_SDK.GENERAL,
-        'ServiceError: Current user id not found.',
-      );
-    }
-    return Number(userId);
-  }
-
-  getCurrentUserProfileId(): number {
-    const profileId = this.accountDao.get(ACCOUNT_PROFILE_ID);
-    if (!profileId) {
-      // Current user profileId not found is a unexpected error,
-      // the error should be throw to tell developer that there
-      // must be some bug happened.
-      mainLogger.warn('Current profile id not found.');
-      throw new JServerError(
-        ERROR_CODES_SDK.GENERAL,
-        'ServiceError: Current profile id not found.',
-      );
-    }
-    return Number(profileId);
-  }
-
-  getCurrentCompanyId(): number {
-    const companyId = this.accountDao.get(ACCOUNT_COMPANY_ID);
-    if (!companyId) {
-      // Current user companyId not found is a unexpected error,
-      // the error should be throw to tell developer that there
-      // must be some bug happened.
-      mainLogger.warn('Current company id not found.');
-      throw new JSdkError(
-        ERROR_CODES_SDK.GENERAL,
-        'ServiceError: Current company id not found.',
-      );
-    }
-    return Number(companyId);
-  }
-
->>>>>>> develop
   async getCurrentUserInfo(): Promise<UserInfo | {}> {
     const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
     const company_id = Number(this.accountDao.get(ACCOUNT_COMPANY_ID));

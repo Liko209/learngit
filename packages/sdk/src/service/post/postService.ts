@@ -23,15 +23,10 @@ import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
-import { PROGRESS_STATUS } from '../../module/progress/entity';
 import GroupConfigService from '../groupConfig';
-<<<<<<< HEAD
 import { ItemService } from '../../module/item';
-import { ProgressService } from '../../module/progress';
-=======
-import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
+import { ProgressService, PROGRESS_STATUS } from '../../module/progress';
 import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
->>>>>>> develop
 
 interface IPostResult {
   posts: Post[];
@@ -177,32 +172,6 @@ class PostService extends BaseService<Post> {
           limit: limit - result.posts.length,
         });
 
-<<<<<<< HEAD
-          let shouldSave;
-          const includeNewest = await this.includeNewest(
-            remoteResult.posts.map(({ _id }) => _id),
-            groupId,
-          );
-          if (includeNewest) {
-            shouldSave = true;
-          } else {
-            shouldSave = await this.isNewestSaved(groupId);
-          }
-          const posts: Post[] =
-            (await baseHandleData(remoteResult.posts, shouldSave)) || [];
-
-          const itemService = ItemService.getInstance() as ItemService;
-          const items =
-            (await itemService.handleIncomingData(remoteResult.items)) || [];
-
-          result.posts.push(...posts);
-          result.items.push(...items);
-          result.hasMore = remoteResult.hasMore;
-          await groupConfigDao.update({
-            id: groupId,
-            [`has_more_${direction}`]: remoteResult.hasMore,
-          });
-=======
         let shouldSave;
         const includeNewest = await this.includeNewest(
           remoteResult.posts.map(({ _id }) => _id),
@@ -210,13 +179,15 @@ class PostService extends BaseService<Post> {
         );
         if (includeNewest) {
           shouldSave = true;
->>>>>>> develop
         } else {
           shouldSave = await this.isNewestSaved(groupId);
         }
         const posts: Post[] =
           (await baseHandleData(remoteResult.posts, shouldSave)) || [];
-        const items = (await itemHandleData(remoteResult.items)) || [];
+
+        const itemService = ItemService.getInstance() as ItemService;
+        const items =
+          (await itemService.handleIncomingData(remoteResult.items)) || [];
 
         result.posts.push(...posts);
         result.items.push(...items);

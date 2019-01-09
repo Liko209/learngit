@@ -104,17 +104,12 @@ describe('MessageInputViewModel', () => {
     });
 
     it('should not send when empty draft content', () => {
-<<<<<<< HEAD
       itemService.getUploadItems = jest.fn().mockReturnValue([]);
-      const content = '';
-      const that = mockThis(content);
-=======
       const markdownFromDeltaRes = {
         content: '',
         mentionsIds: [],
       };
       const that = mockThis(markdownFromDeltaRes);
->>>>>>> develop
       // @ts-ignore
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);

@@ -4,15 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger, BaseError } from 'foundation';
-import { ErrorTypes } from '../../utils/error';
+import { mainLogger } from 'foundation';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
 } from '../../dao/account/constants';
 import { daoManager, AccountDao } from '../../dao';
-
+import { JServerError, JSdkError, ERROR_CODES_SDK } from '../../error';
 class UserConfig {
   static getCurrentUserProfileId(): number {
     const accountDao = daoManager.getKVDao(AccountDao);
@@ -22,8 +21,8 @@ class UserConfig {
       // the error should be throw to tell developer that there
       // must be some bug happened.
       mainLogger.warn('Current profile id not found.');
-      throw new BaseError(
-        ErrorTypes.SERVICE,
+      throw new JServerError(
+        ERROR_CODES_SDK.GENERAL,
         'ServiceError: Current profile id not found.',
       );
     }
@@ -38,8 +37,8 @@ class UserConfig {
       // the error should be throw to tell developer that there
       // must be some bug happened.
       mainLogger.warn('Current user id not found.');
-      throw new BaseError(
-        ErrorTypes.SERVICE,
+      throw new JServerError(
+        ERROR_CODES_SDK.GENERAL,
         'ServiceError: Current user id not found.',
       );
     }
@@ -54,8 +53,8 @@ class UserConfig {
       // the error should be throw to tell developer that there
       // must be some bug happened.
       mainLogger.warn('Current company id not found.');
-      throw new BaseError(
-        ErrorTypes.SERVICE,
+      throw new JSdkError(
+        ERROR_CODES_SDK.GENERAL,
         'ServiceError: Current company id not found.',
       );
     }

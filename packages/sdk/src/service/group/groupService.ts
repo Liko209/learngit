@@ -151,8 +151,7 @@ class GroupService extends BaseService<Group> {
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const accountService: AccountService = AccountService.getInstance();
-      const userId = accountService.getCurrentUserId();
+      const userId = UserConfig.getCurrentUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.isCacheInitialized()) {
         result = await this.getEntitiesFromCache(

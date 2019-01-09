@@ -6,7 +6,6 @@
 
 import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
-<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager, ItemDao } from '../../../../../../dao';
 import ItemAPI from '../../../../../../api/glip/item';
@@ -25,6 +24,7 @@ import {
   ItemFileUploadStatus,
 } from '../FileUploadController';
 import { ItemService } from '../../../../service/ItemService';
+import { JServerError, ERROR_CODES_SERVER } from '../../../../../../error';
 
 jest.mock('../../../../service/ItemService');
 jest.mock(
@@ -36,34 +36,6 @@ jest.mock('../../../../../../service/account/UserConfig');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../../../dao');
 jest.mock('../../../../../../service/notificationCenter');
-=======
-
-import { Progress } from '../../../models';
-
-import { ItemFile } from '../../../module/item/entity';
-import { ItemFileUploadHandler } from '../itemFileUploadHandler';
-import AccountService from '../../account';
-import { daoManager, ItemDao } from '../../../dao';
-import ItemAPI from '../../../api/glip/item';
-import handleData from '../handleData';
-import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
-import notificationCenter from '../../notificationCenter';
-import { ItemService } from '../itemService';
-import { ItemFileUploadStatus } from '../itemFileUploadStatus';
-import { RequestHolder } from '../../../api/requestHolder';
-import { PROGRESS_STATUS } from '../../../module';
-import { SERVICE, ENTITY } from '../../eventKey';
-import { isInBeta } from '../../account/clientConfig';
-import { JServerError, ERROR_CODES_SERVER } from '../../../error';
-
-jest.mock('../../account/clientConfig');
-jest.mock('../../../service/item');
-jest.mock('../../../service/account');
-jest.mock('../../../api/glip/item');
-jest.mock('../../../dao');
-jest.mock('../handleData');
-jest.mock('../../notificationCenter');
->>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 
@@ -88,15 +60,9 @@ describe('fileUploadController', () => {
     UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
     UserConfig.getCurrentUserId.mockReturnValue(userId);
 
-<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
     itemService.createItem.mockImplementation(() => {});
     itemService.updateItem.mockImplementation(() => {});
     itemService.deleteItem.mockImplementation(() => {});
-=======
-    itemDao.put.mockImplementation(() => { });
-    itemDao.update.mockImplementation(() => { });
-    itemDao.delete.mockImplementation(() => { });
->>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
     notificationCenter.emitEntityReplace.mockImplementation(() => { });
     notificationCenter.emit.mockImplementation(() => { });
@@ -150,18 +116,9 @@ describe('fileUploadController', () => {
 
     it('should update local upload file record', async () => {
       jest
-<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
         .spyOn(fileUploadController, '_sendItemFile')
         .mockImplementation(() => {});
       const spy_cancelUpload = jest.spyOn(fileUploadController, 'cancelUpload');
-=======
-        .spyOn(itemFileUploadHandler, '_sendItemFile')
-        .mockImplementation(() => { });
-      const spy_cancelUpload = jest.spyOn(
-        itemFileUploadHandler,
-        'cancelUpload',
-      );
->>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
       const uploadingFiles = new Map();
       const itemFiles = [
@@ -298,13 +255,8 @@ describe('fileUploadController', () => {
       } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(errRes);
       jest
-<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
         .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
-=======
-        .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
-        .mockImplementation(() => { });
->>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
       const progressCaches = new Map();
       Object.assign(fileUploadController, {
@@ -406,7 +358,6 @@ describe('fileUploadController', () => {
       ${[oneGBMinusOne]} | ${false}           | ${true}   | ${' size < 1GB'}
       ${[oneGBPlusOne]}  | ${false}           | ${false}  | ${' size > 1GB'}
     `('border test: $comment', ({ files, includeUnSendFiles, expectRes }) => {
-<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
       const result = fileUploadController.canUploadFiles(
         1,
         files,
@@ -414,15 +365,6 @@ describe('fileUploadController', () => {
       );
       expect(result).toEqual(expectRes);
     });
-=======
-        const result = itemFileUploadHandler.canUploadFiles(
-          1,
-          files,
-          includeUnSendFiles,
-        );
-        expect(result).toEqual(expectRes);
-      });
->>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
   });
 
   describe('getFileVersion()', () => {
@@ -961,18 +903,9 @@ describe('fileUploadController', () => {
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
       itemDao.get.mockResolvedValue(itemWithOutVersion);
-<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       spySendItemFile.mockImplementation(() => {});
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
-=======
-      const spySendItemFile = jest.spyOn(
-        itemFileUploadHandler,
-        '_sendItemFile',
-      );
-      spySendItemFile.mockImplementation(() => { });
-      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
->>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
       const spyHandleFileItemSendFailed = jest.spyOn(
         fileUploadController,
         '_handleItemFileSendFailed',
