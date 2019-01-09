@@ -28,7 +28,7 @@ import { POST_LIST_TYPE } from '../PostListPage/types';
 import { MessageRouterChangeHelper } from './helper';
 
 const LeftRailResponsive = withResponsive(LeftRail, {
-  maxWidth: 300,
+  maxWidth: 360,
   minWidth: 180,
   defaultWidth: 268,
   visualMode: VISUAL_MODE.AUTOMATIC,
@@ -45,7 +45,7 @@ const SwitchResponsive = withResponsive(Switch, {
 
 const RightRailResponsive = withResponsive(RightRail, {
   TriggerButton,
-  maxWidth: 300,
+  maxWidth: 360,
   minWidth: 180,
   defaultWidth: 268,
   visualMode: VISUAL_MODE.BOTH,

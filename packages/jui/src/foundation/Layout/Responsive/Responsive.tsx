@@ -130,24 +130,24 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     return width || value || defaultWidth || 0;
   }
 
-  setLocalWidth = (value: number) => {
+  set localWidth(value: number) {
     const { tag } = this.props;
-    return localStorage.setItem(tag, `${value}`);
+    localStorage.setItem(tag, `${value}`);
   }
 
   get localShowState() {
     const { tag } = this.props;
     const value = localStorage.getItem(`${tag}-show-state`);
-    return value ? (value === 'true' ? true : false) : undefined;
+    return value ? (value === 'true' ? true : false) : true;
   }
 
-  setLocalShowState = (value: boolean) => {
+  set localShowState(value: boolean) {
     const { tag } = this.props;
-    return localStorage.setItem(`${tag}-show-state`, `${value}`);
+    localStorage.setItem(`${tag}-show-state`, `${value}`);
   }
 
   onResize = (width: number) => {
-    this.setLocalWidth(width);
+    this.localWidth = width;
     const { tag, responsiveInfo } = this.props;
     const info = responsiveInfo[tag];
     info.width = width;
@@ -174,7 +174,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     if (this.isManualMode) {
       const localShowState = this.localShowState;
       if (isShow || visual !== false || !localShowState) {
-        this.setLocalShowState(!localShowState);
+        this.localShowState = !localShowState;
       }
     }
     this.setState({ isShow: !isShow, localChange: true });

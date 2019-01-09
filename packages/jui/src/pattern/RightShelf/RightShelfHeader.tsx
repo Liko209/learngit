@@ -31,7 +31,7 @@ const JuiRightShelfHeaderText = styled('div')`
 `;
 const JuiRightShelfHeaderIcon = styled('div')`
   position: absolute;
-  top: 4px;
+  top: ${spacing(1)};
   right: 0;
   z-index: ${({ theme }) => theme.zIndex.dragging};
 `;
