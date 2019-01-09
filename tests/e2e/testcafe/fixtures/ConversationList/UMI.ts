@@ -177,21 +177,9 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   });
 
   await h(t).withLog('And I can find the UMI on the team', async () => {
-    // const umi = team.self.find('.umi');
-    // const text = team.self.find('p');
     await team.umi.shouldBeNumber(1);
     await team.umi.shouldBeAtMentionStyle();
-    // await H.retryUntilPass(async () => {
-    //   const umiStyle = await umi.style;
-    //   const umiBgColor = umiStyle['background-color'];
-    //   assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
-    // });
     await team.shouldBeUmiStyle();
-    // await H.retryUntilPass(async () => {
-    //   const textStyle = await text.style;
-    //   const textFontWeight = textStyle['font-weight'];
-    //   assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
-    // });
   });
 
   await h(t).withLog('Then I click the team to open the team conversation', async () => {
@@ -203,11 +191,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
     const text = team.self.find('p');
     await team.umi.shouldBeNumber(0);
     await team.shouldBeNormalStyle();
-    // await H.retryUntilPass(async () => {
-    //   const textStyle = await text.style;
-    //   const textFontWeight = textStyle['font-weight'];
-    //   assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
-    // });
   });
 
 });
