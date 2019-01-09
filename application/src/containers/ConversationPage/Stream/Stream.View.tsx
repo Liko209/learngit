@@ -253,25 +253,21 @@ class StreamViewComponent extends Component<Props> {
     active?: boolean;
   }) {
     const { loading } = this.props;
-    return (
+    return streamItem.value.map((postId: number) => (
       <VisibilitySensor
-        key={`VisibilitySensor${streamItem.id}`}
+        key={`VisibilitySensor${postId}`}
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={onChangeHandler}
         active={active}
       >
-        <>
-          {streamItem.value.map((postId: number) => (
-            <ConversationPost
-              ref={this._setPostRef}
-              id={postId}
-              key={`ConversationPost${postId}`}
-              highlight={postId === this.state._jumpToPostId && !loading}
-            />
-          ))}
-        </>
+        <ConversationPost
+          ref={this._setPostRef}
+          id={postId}
+          key={`ConversationPost${postId}`}
+          highlight={postId === this.state._jumpToPostId && !loading}
+        />
       </VisibilitySensor>
-    );
+    ));
   }
   private get _streamItems() {
     if (this.props.loading) {
@@ -374,8 +370,12 @@ class StreamViewComponent extends Component<Props> {
 
   scrollToBottom = async () => {
     const lastItem = _(this.props.items).nth(-1);
-    if (lastItem) {
-      await this.scrollToPost(lastItem.value, false);
+    if (lastItem && lastItem.value) {
+      const lastPostId = _(lastItem.value as number[]).nth(-1);
+      if (!lastPostId) {
+        return;
+      }
+      await this.scrollToPost(lastPostId, false);
     }
   }
 

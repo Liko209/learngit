@@ -13,8 +13,6 @@ import moment from 'moment';
 import { Post } from 'sdk/module/post/entity';
 import { Assembler } from './Assembler';
 import { StreamItemType } from '../../types';
-import { mainLogger } from 'sdk/src';
-
 export class DateSeparator extends Assembler {
   onAdd: AssemblerAddFunc = ({ added, postList, newItems, ...rest }) => {
     const criteria = (post: Post) =>
@@ -40,31 +38,6 @@ export class DateSeparator extends Assembler {
   }
 
   onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => {
-    const { deleted, streamItemList, deletedIds, postList } = args;
-
-    deleted.forEach((id: number) => {
-      const streamItem = streamItemList.find(
-        item => item.type === StreamItemType.POST && item.value.includes(id),
-      );
-      if (!streamItem) {
-        mainLogger.error('This should not be happened');
-        return args;
-      }
-      const dateSeparatorId = moment(streamItem.id)
-        .startOf('day')
-        .valueOf();
-      const nextPost = postList.find(i => i.id > id);
-      if (!nextPost) {
-        return deletedIds.push(dateSeparatorId);
-      }
-      const nextPostCreatedTime = moment(nextPost.data!.created_at)
-        .startOf('day')
-        .valueOf();
-      if (nextPostCreatedTime !== dateSeparatorId) {
-        return deletedIds.push(dateSeparatorId);
-      }
-      return;
-    });
-    return { ...args, deletedIds };
+    return { ...args };
   }
 }

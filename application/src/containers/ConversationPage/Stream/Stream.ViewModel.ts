@@ -1,5 +1,3 @@
-import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
-import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
 /*
  * @Author: Andy Hu
  * @Date: 2018-10-08 18:18:39
@@ -14,6 +12,9 @@ import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
+import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
+import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
+import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
 
 import {
   FetchSortableDataListHandler,
@@ -36,7 +37,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
-import { OrdinaryPostWrapper, DateSeparator } from './StreamItemAssemblyLine';
+import { OrdinaryPostWrapper } from './StreamItemAssemblyLine';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
@@ -53,10 +54,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postService: PostService = PostService.getInstance();
   private _initialized = false;
   private assemblyLine: StreamItemAssemblyLine;
-  @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
-  @observable
   private _historyHandler: HistoryHandler;
 
   @computed
@@ -72,7 +71,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       .value();
   }
 
-  @observable
   private orderListHandler: FetchSortableDataListHandler<Post>;
   private streamListHandler: FetchSortableDataListHandler<StreamItem>;
 
@@ -152,8 +150,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this.items.length > 0 || this.hasMoreUp;
   }
 
-  constructor() {
-    super();
+  constructor(props: StreamProps) {
+    super(props);
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
@@ -171,12 +169,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       new OrdinaryPostWrapper(),
       new SingletonTagChecker(),
     ]);
-  }
-
-  onReceiveProps(props: StreamProps) {
-    if (this.groupId === props.groupId) {
-      return;
-    }
     this.initialize(props.groupId);
   }
 
@@ -245,7 +237,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.streamListHandler) {
       this.streamListHandler.dispose();
     }
-
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
@@ -316,7 +307,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     };
 
     this.orderListHandler = new FetchSortableDataListHandler(postDataProvider, {
-      transformFunc,
+      transformFunc: (dataModel: Post) => ({
+        id: dataModel.id,
+        sortValue: dataModel.created_at,
+        data: dataModel,
+      }),
       hasMoreUp: true,
       hasMoreDown: !!this.jumpToPostId,
       isMatchFunc: isMatchedFunc(groupId),
@@ -335,23 +330,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._initialized = false;
   }
 
+  @action
   handlePostsChanged = (delta: TDeltaWithData) => {
-    const { deletedIds } = this.assemblyLine.process(
-      { ...delta, added: [] },
-      this.orderListHandler.listStore.items,
-      this.hasMoreUp,
-      this.items,
-    );
-    if (deletedIds) {
-      this.streamListHandler.onDataChanged({
-        type: EVENT_TYPES.DELETE,
-        body: {
-          ids: deletedIds,
-        },
-      });
-    }
+    const t = performance.now();
+
     const { newItems } = this.assemblyLine.process(
-      { ...delta, deleted: [] },
+      delta,
       this.orderListHandler.listStore.items,
       this.hasMoreUp,
       this.items,
@@ -368,6 +352,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         },
       });
     }
+    console.log('sorting used', performance.now() - t);
   }
 }
 

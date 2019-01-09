@@ -17,11 +17,10 @@ export class StreamItemAssemblyLine {
     streamItemList: StreamItem[],
   ) => {
     const { added, deleted } = delta;
-    let itemsShouldBeAdded;
-    let itemsShouldBeDel;
+    let _streamItemList = streamItemList;
     if (added.length) {
       const newItems: StreamItem[] = [];
-      itemsShouldBeAdded = this._assemblers.reduce(
+      _streamItemList = this._assemblers.reduce(
         (prev, current) => current.onAdd(prev),
         {
           added,
@@ -30,22 +29,21 @@ export class StreamItemAssemblyLine {
           hasMore,
           streamItemList,
         },
-      ).newItems;
+      ).streamItemList;
     }
-
     if (deleted.length) {
       const deletedIds: number[] = [];
-      itemsShouldBeDel = this._assemblers.reduce(
+      _streamItemList = this._assemblers.reduce(
         (prev, current) => current.onDelete(prev),
         {
           deleted,
           postList,
           deletedIds,
-          streamItemList,
+          streamItemList: _streamItemList,
         },
-      ).deletedIds;
+      ).streamItemList;
     }
 
-    return { deletedIds: itemsShouldBeDel, newItems: itemsShouldBeAdded };
+    return { newItems: _streamItemList };
   }
 }

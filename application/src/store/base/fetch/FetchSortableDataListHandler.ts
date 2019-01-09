@@ -205,13 +205,14 @@ export class FetchSortableDataListHandler<
         );
       }
     }
-
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        deleted: deletedSortableModelIds,
-        added: addedSortableModels,
-        direction: QUERY_DIRECTION.NEWER,
-      });
+    if (deletedSortableModelIds.length || addedSortableModels.length) {
+      this._dataChangeCallBack &&
+        this._dataChangeCallBack({
+          deleted: deletedSortableModelIds,
+          added: addedSortableModels,
+          direction: QUERY_DIRECTION.NEWER,
+        });
+    }
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {
