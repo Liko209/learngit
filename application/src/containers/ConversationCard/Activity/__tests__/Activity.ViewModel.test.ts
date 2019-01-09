@@ -120,16 +120,7 @@ describe('activityViewModel', () => {
   });
 
   it('activity', () => {
-    const source = 'mobile';
     const parentId = 2;
-    mockPostEntityData.source = source;
-    expect(activityViewModel.activity).toEqual({
-      parameter: {
-        verb: 'via',
-        noun: source,
-      },
-      key: 'verb-noun',
-    });
     mockPostEntityData.source = '';
     mockPostEntityData.parentId = parentId;
     expect(activityViewModel.activity).toEqual({
