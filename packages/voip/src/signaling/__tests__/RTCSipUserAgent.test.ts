@@ -43,7 +43,7 @@ describe('RTCSipUserAgent', async () => {
   });
 
   describe('register', () => {
-    it('Should emit registered event when register success [JPT-599]', () => {
+    it('Should register function have been called [JPT-599]', () => {
       const eventEmitter = new EventEmitter2();
       const userAgent = new RTCSipUserAgent(
         provisionData,
