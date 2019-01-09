@@ -9,9 +9,10 @@ import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
-import { RegistrationManagerEvent } from '../account/types';
+import { REGISTRATION_EVENT } from '../account/types';
 import { RTCEngine } from './RTCEngine';
 import { v4 as uuid } from 'uuid';
+import { RTC_ACCOUNT_STATE } from './types';
 
 const provisionData = {
   data: {
@@ -79,16 +80,13 @@ const options = {
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
+  private _state: RTC_ACCOUNT_STATE;
 
   constructor(listener: IRTCAccountDelegate) {
+    this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
-    this._regManager = new RTCRegistrationManager(this._delegate);
-    this._regManager._eventEmitter.on(
-      RegistrationManagerEvent.RECEIVER_INCOMING_SESSION,
-      (session: any) => {
-        this._onReceiveInvite(session);
-      },
-    );
+    this._regManager = new RTCRegistrationManager();
+    this._initListener();
   }
 
   public handleProvisioning() {
@@ -116,14 +114,36 @@ class RTCAccount implements IRTCAccount {
   }
 
   isReady(): boolean {
-    if (this._regManager === null) {
-      return false;
-    }
-    return this._regManager.isReady();
+    return this._state === RTC_ACCOUNT_STATE.REGISTERED;
   }
 
   createOutCallSession(toNum: string): any {
     return this._regManager.createOutgoingCallSession(toNum, {});
+  }
+
+  private _initListener() {
+    this._regManager.on(
+      REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION,
+      (session: any) => {
+        this._onReceiveInvite(session);
+      },
+    );
+    this._regManager.on(
+      REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
+      (state: RTC_ACCOUNT_STATE) => {
+        this._onAccountStateChanged(state);
+      },
+    );
+  }
+
+  private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
+    if (this._state === state) {
+      return;
+    }
+    this._state = state;
+    if (this._delegate) {
+      this._delegate.onAccountStateChanged(state);
+    }
   }
 
   private _onReceiveInvite(session: any) {

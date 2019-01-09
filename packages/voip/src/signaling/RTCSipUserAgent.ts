@@ -15,12 +15,11 @@ enum WEBPHONE_REGISTER_EVENT {
   INVITE = 'invite',
 }
 
-class RTCSipUserAgent implements IRTCUserAgent {
+class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
-  private _eventEmitter: EventEmitter2;
 
-  constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
-    this._eventEmitter = eventEmitter;
+  constructor(provisionData: any, options: any) {
+    super();
     this._createWebPhone(provisionData, options);
   }
 
@@ -42,18 +41,18 @@ class RTCSipUserAgent implements IRTCUserAgent {
       return;
     }
     this._webphone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
-      this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
+      this.emit(UA_EVENT.REG_SUCCESS);
     });
     this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
-        this._eventEmitter.emit(UA_EVENT.REG_FAILED, response, cause);
+        this.emit(UA_EVENT.REG_FAILED, response, cause);
       },
     );
     this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.INVITE,
       (session: any) => {
-        this._eventEmitter.emit(UA_EVENT.RECEIVE_INVITE, session);
+        this.emit(UA_EVENT.RECEIVE_INVITE, session);
       },
     );
   }

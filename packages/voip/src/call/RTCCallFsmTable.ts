@@ -244,7 +244,7 @@ class RTCCallFsmTable extends StateMachine {
           rtcLogger.debug(
             'RTC_Call_FSM',
             StringFormat(
-              'Call FSM: Pending transition: %s from: %s to: %s',
+              'Pending transition: %s from: %s to: %s',
               String(transition),
               String(from),
               String(to),
