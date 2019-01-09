@@ -9,9 +9,12 @@ import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';
+import { ERROR_CODES_SERVER, JServerError } from 'sdk/error';
+import { Notification } from '@/containers/Notification';
 jest.mock('@/history');
 jest.mock('sdk/service/group');
 jest.mock('sdk/utils');
+jest.mock('@/containers/Notification');
 
 const { GroupService, PostService } = service;
 
@@ -28,7 +31,25 @@ beforeAll(() => {
   history.replace = jest.fn().mockImplementation(jest.fn());
 });
 
-describe('goToConversation() with group or team type', () => {
+describe('goToConversation()', () => {
+  it('should display flash toast notification has message {JoinTeamAuthorizedError} when join a public team then permission changed.[JPT-722]', async (done: jest.DoneCallback) => {
+    (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
+      TypeDictionary.TYPE_ID_TEAM,
+    );
+    const joinTeamFun = () => {
+      throw new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, '');
+    };
+    Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+    await goToConversation({ joinTeamFun, id: 1 });
+    setTimeout(() => {
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'JoinTeamAuthorizedError',
+        }),
+      );
+      done();
+    },         0);
+  });
   it('getConversationId() with group type conversationId', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_GROUP,
@@ -39,7 +60,7 @@ describe('goToConversation() with group or team type', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 
-  it('getConversationId() with team type conversationId', async () => {
+  it('getConversationId() with team type conversationId [JPT-717]', async () => {
     (GlipTypeUtil.extractTypeId as jest.Mock).mockReturnValue(
       TypeDictionary.TYPE_ID_TEAM,
     );
@@ -57,6 +78,7 @@ describe('goToConversation() with group or team type', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
+      errObj: new Error('Conversation not found.'),
     });
   });
 });
@@ -89,6 +111,7 @@ describe('getConversationId() with person type conversationId', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
+      errObj: new Error('Conversation not found.'),
     });
   });
 });
@@ -119,6 +142,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3] },
       error: true,
+      errObj: new Error('Conversation not found.'),
     });
   });
 });
@@ -165,6 +189,7 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
+      errObj: new Error('Conversation not found.'),
     });
   });
 
@@ -192,6 +217,7 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
+      errObj: new Error('Conversation not found.'),
     });
   });
 });
