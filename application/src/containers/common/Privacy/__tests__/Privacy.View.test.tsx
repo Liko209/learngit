@@ -9,11 +9,11 @@ import { shallow } from 'enzyme';
 import { PrivacyView } from '../Privacy.View';
 import { Notification } from '@/containers/Notification';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { ErrorTypes } from 'sdk/utils/';
+import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 jest.mock('@/containers/Notification');
 
 const someProps = {
-  t: (str: string) => {},
+  t: (str: string) => { },
   isPublic: true,
   isAdmin: true,
   id: 123,
@@ -26,10 +26,10 @@ describe('PrivacyView', () => {
       const props: any = {
         ...someProps,
         handlePrivacy: () => {
-          throw ErrorTypes.API_SERVER_ERROR;
+          throw new JServerError(ERROR_CODES_SERVER.GENERAL, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -47,10 +47,10 @@ describe('PrivacyView', () => {
         ...someProps,
         isPublic: false,
         handlePrivacy: () => {
-          throw ErrorTypes.API_SERVER_ERROR;
+          throw new JServerError(ERROR_CODES_SERVER.GENERAL, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -67,10 +67,10 @@ describe('PrivacyView', () => {
       const props: any = {
         ...someProps,
         handlePrivacy: () => {
-          throw ErrorTypes.API_NETWORK;
+          throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -88,10 +88,10 @@ describe('PrivacyView', () => {
         ...someProps,
         isPublic: false,
         handlePrivacy: () => {
-          throw ErrorTypes.API_NETWORK;
+          throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {

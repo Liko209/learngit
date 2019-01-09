@@ -8,32 +8,31 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiTopBar, JuiLogo, JuiAddMenu, JuiAvatarMenu } from '..';
-import { JuiIconButton, JuiIconButtonProps } from '../../../components/Buttons/IconButton';
+import {
+  JuiIconButton,
+  JuiIconButtonProps,
+} from '../../../components/Buttons/IconButton';
 import { MenuListCompositionProps } from '../../MenuListComposition';
 import { JuiAvatar } from '../../../components/Avatar';
 
-const handleClick = () => { };
+const handleClick = () => {};
 
 const MainMenu = (props: JuiIconButtonProps) => {
   return (
     <JuiIconButton size="medium" tooltipTitle="Main menu" {...props}>
-      format_list_bulleted
+      bulleted_menu
     </JuiIconButton>
   );
 };
 
 const Logo = () => {
-  return (
-    <JuiLogo>
-      RingCentral
-    </JuiLogo>
-  );
+  return <JuiLogo>RingCentral</JuiLogo>;
 };
 
 const AddIconButton = (props: JuiIconButtonProps) => {
   return (
     <JuiIconButton size="medium" tooltipTitle="Add" {...props}>
-      add_circle
+      new_actions
     </JuiIconButton>
   );
 };
@@ -41,10 +40,12 @@ const AddIconButton = (props: JuiIconButtonProps) => {
 const AddMenu = (props: MenuListCompositionProps) => {
   return (
     <JuiAddMenu
-      menuItems={[{
-        label: 'Create Team',
-        onClick: handleClick,
-      }]}
+      menuItems={[
+        {
+          label: 'Create Team',
+          onClick: handleClick,
+        },
+      ]}
       MenuExpandTrigger={AddIconButton}
       {...props}
     />
@@ -62,10 +63,12 @@ const Avatar = (props: JuiIconButtonProps) => {
 const AvatarMenu = (props: MenuListCompositionProps) => {
   return (
     <JuiAvatarMenu
-      menuItems={[{
-        label: 'Logout',
-        onClick: handleClick,
-      }]}
+      menuItems={[
+        {
+          label: 'Logout',
+          onClick: handleClick,
+        },
+      ]}
       MenuExpandTrigger={Avatar}
       {...props}
     />
@@ -75,5 +78,10 @@ const AvatarMenu = (props: MenuListCompositionProps) => {
 storiesOf('Pattern/TopBar', module)
   .addDecorator(withInfoDecorator(JuiTopBar, { inline: true }))
   .add('TopBar', () => (
-    <JuiTopBar MainMenu={MainMenu} Logo={Logo} AddMenu={AddMenu} AvatarMenu={AvatarMenu} />
+    <JuiTopBar
+      MainMenu={MainMenu}
+      Logo={Logo}
+      AddMenu={AddMenu}
+      AvatarMenu={AvatarMenu}
+    />
   ));

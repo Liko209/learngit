@@ -69,7 +69,7 @@ storiesOf('Components/CheckboxButton', module)
         />
         <JuiCheckboxButton
           className="checkboxButtonWrapper"
-          iconName="lock_open"
+          iconName="unlock"
           checkedIconName="lock"
           tooltipTitle="lock"
           {...rest}

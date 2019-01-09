@@ -10,14 +10,10 @@ import { PostService } from 'sdk/service';
 import { getEntity } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-import GroupModel from '@/store/models/Group';
 import PostModel from '@/store/models/Post';
-import PersonModel from '@/store/models/Person';
 import { Post } from 'sdk/module/post/entity';
-import { Group } from 'sdk/module/group/entity';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { isAtMentions } from '@/containers/ConversationPage/MessageInput/handler';
 import Keys from 'jui/pattern/MessageInput/keys';
 
 const CONTENT_LENGTH = 10000;
@@ -69,36 +65,12 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     return this._post.text;
   }
 
-  @computed
-  private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.gid);
-  }
-
-  @computed
-  private get _members() {
-    return this._group.members;
-  }
-
-  @computed
-  private get _users() {
-    return this._members.map((id: number) => {
-      const { userDisplayName } = getEntity(
-        ENTITY_NAME.PERSON,
-        id,
-      ) as PersonModel;
-      return {
-        id,
-        display: userDisplayName,
-      };
-    });
-  }
-
   @action
   private _enterHandler(vm: EditMessageInputViewModel) {
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      const content = markdownFromDelta(quill.getContents());
+      const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -109,7 +81,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       }
       vm.error = '';
       if (content.trim()) {
-        vm._editPost(content);
+        vm._editPost(content, mentionIds);
       }
     };
   }
@@ -128,15 +100,13 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     globalStore.set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...inEditModePostIds]);
   }
 
-  private async _editPost(content: string) {
-    const atMentions = isAtMentions(content);
+  private async _editPost(content: string, ids: number[]) {
     try {
       await this._postService.modifyPost({
-        atMentions,
         text: content,
         groupId: this.gid,
         postId: this.id,
-        users: atMentions ? this._users : undefined,
+        mentionsIds: ids,
       });
       this._exitEditMode();
     } catch (e) {

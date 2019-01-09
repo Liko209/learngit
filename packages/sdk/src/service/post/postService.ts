@@ -23,11 +23,11 @@ import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
-import { ErrorParser, BaseError, ErrorTypes } from '../../utils/error';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
 import GroupConfigService from '../groupConfig';
 import ProgressService, { PROGRESS_STATUS } from '../../module/progress';
+import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 interface IPostResult {
   posts: Post[];
@@ -145,72 +145,63 @@ class PostService extends BaseService<Post> {
     limit = 20,
     direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
-    try {
-      const result = await this.getPostsFromLocal({
+    const result = await this.getPostsFromLocal({
+      groupId,
+      postId,
+      direction,
+      limit,
+    });
+
+    if (result.posts.length < limit) {
+      const groupConfigDao = daoManager.getDao(GroupConfigDao);
+      const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
         groupId,
-        postId,
         direction,
-        limit,
-      });
-      if (result.posts.length < limit) {
-        const groupConfigDao = daoManager.getDao(GroupConfigDao);
-        const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
+      );
+      if (hasMoreRemote) {
+        // should try to get more posts from server
+        mainLogger.debug(
+          `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
+        );
+
+        const lastPost = _.last(result.posts);
+
+        const remoteResult = await this.getPostsFromRemote({
           groupId,
           direction,
+          postId: lastPost ? lastPost.id : postId,
+          limit: limit - result.posts.length,
+        });
+
+        let shouldSave;
+        const includeNewest = await this.includeNewest(
+          remoteResult.posts.map(({ _id }) => _id),
+          groupId,
         );
-        if (hasMoreRemote) {
-          // should try to get more posts from server
-          mainLogger.debug(
-            `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
-          );
-
-          const lastPost = _.last(result.posts);
-
-          const remoteResult = await this.getPostsFromRemote({
-            groupId,
-            direction,
-            postId: lastPost ? lastPost.id : postId,
-            limit: limit - result.posts.length,
-          });
-
-          let shouldSave;
-          const includeNewest = await this.includeNewest(
-            remoteResult.posts.map(({ _id }) => _id),
-            groupId,
-          );
-          if (includeNewest) {
-            shouldSave = true;
-          } else {
-            shouldSave = await this.isNewestSaved(groupId);
-          }
-          const posts: Post[] =
-            (await baseHandleData(remoteResult.posts, shouldSave)) || [];
-          const items = (await itemHandleData(remoteResult.items)) || [];
-
-          result.posts.push(...posts);
-          result.items.push(...items);
-          result.hasMore = remoteResult.hasMore;
-          await groupConfigDao.update({
-            id: groupId,
-            [`has_more_${direction}`]: remoteResult.hasMore,
-          });
+        if (includeNewest) {
+          shouldSave = true;
         } else {
-          result.hasMore = false;
+          shouldSave = await this.isNewestSaved(groupId);
         }
+        const posts: Post[] =
+          (await baseHandleData(remoteResult.posts, shouldSave)) || [];
+        const items = (await itemHandleData(remoteResult.items)) || [];
+
+        result.posts.push(...posts);
+        result.items.push(...items);
+        result.hasMore = remoteResult.hasMore;
+        await groupConfigDao.update({
+          id: groupId,
+          [`has_more_${direction}`]: remoteResult.hasMore,
+        });
+      } else {
+        result.hasMore = false;
       }
-
-      result.limit = limit;
-
-      return result;
-    } catch (e) {
-      mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
-      return {
-        limit,
-        posts: [],
-        items: [],
-        hasMore: true,
-      };
     }
+
+    result.limit = limit;
+
+    return result;
   }
 
   async getPostsByIds(
@@ -423,7 +414,7 @@ class PostService extends BaseService<Post> {
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId, buildPost.group_id);
-      throw ErrorParser.parse(e);
+      throw ErrorParserHolder.getErrorParser().parse(e);
     }
   }
 
@@ -563,7 +554,7 @@ class PostService extends BaseService<Post> {
         resp.expect('delete post failed');
         return true;
       } catch (e) {
-        throw ErrorParser.parse(e);
+        throw ErrorParserHolder.getErrorParser().parse(e);
       }
     }
     return false;
@@ -620,8 +611,8 @@ class PostService extends BaseService<Post> {
       );
     }
     return err(
-      new BaseError(
-        ErrorTypes.UNDEFINED_ERROR,
+      new JSdkError(
+        ERROR_CODES_SDK.GENERAL,
         `Post can not find with id ${postId}`,
       ),
     );

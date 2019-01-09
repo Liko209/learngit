@@ -46,13 +46,12 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) {}
+  ) { }
 
   async init(config: ISdkConfig) {
     // Use default config value
     const apiConfig: ApiConfig = merge({}, defaultApiConfig, config.api);
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
-
     // Initialize foundation
     Foundation.init({
       // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
