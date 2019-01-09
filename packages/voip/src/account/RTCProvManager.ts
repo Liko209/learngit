@@ -61,7 +61,7 @@ class RTCProvManager extends EventEmitter2 {
       .setData({ sipInfo: [{ transport: 'WSS' }] })
       .build();
 
-    let response: IResponse = null as any;
+    let response: IResponse | null = null;
     try {
       response = await rtcRestApiManager.sendRequest(provRequest);
     } catch (error) {
@@ -117,7 +117,7 @@ class RTCProvManager extends EventEmitter2 {
     if (this._reFreshTimerId) {
       clearTimeout(this._reFreshTimerId);
     }
-    this._reFreshTimerId = null as any;
+    this._reFreshTimerId = null;
   }
 
   private _errorHandling(type: ERROR_TYPE, retryAfter: number): void {
