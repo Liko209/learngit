@@ -101,7 +101,7 @@ describe('RTCRegistrationManager', () => {
   });
 
   describe('reRegister()', () => {
-    it('Should call the onReRegisterAction function when FSM state in regInProgress, ready, regFailed', () => {
+    it('Should call the onReRegisterAction function when FSM state in regInProgress [JPT-756]', () => {
       const mockListener = new MockAccountListener();
       const regManager = new RTCRegistrationManager(mockListener);
       jest
@@ -113,13 +113,32 @@ describe('RTCRegistrationManager', () => {
       regManager.reRegister();
       expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
       expect(regManager._fsm.state).toBe('regInProgress');
+    });
 
+    it('Should call the onReRegisterAction function when FSM state in ready [JPT-758]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
+      regManager.provisionReady('provisionData', 'options');
       regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
       expect(regManager._fsm.state).toBe('ready');
       regManager.reRegister();
       expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
       expect(regManager._fsm.state).toBe('regInProgress');
+    });
 
+    it('Should call the onReRegisterAction function when FSM state in regFailed [JPT-756]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
+      regManager.provisionReady('provisionData', 'options');
+      expect(regManager._fsm.state).toBe('regInProgress');
       regManager._userAgent = new MockUserAgent(
         regManager._eventEmitter,
         false,
