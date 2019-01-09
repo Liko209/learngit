@@ -78,7 +78,6 @@ describe('goToConversation()', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
-      errObj: new Error('Conversation not found.'),
     });
   });
 });
@@ -111,7 +110,6 @@ describe('getConversationId() with person type conversationId', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
-      errObj: new Error('Conversation not found.'),
     });
   });
 });
@@ -142,7 +140,6 @@ describe('getConversationId() with  multiple person type conversationId', () => 
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3] },
       error: true,
-      errObj: new Error('Conversation not found.'),
     });
   });
 });
@@ -189,7 +186,6 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
-      errObj: new Error('Conversation not found.'),
     });
   });
 
@@ -217,7 +213,6 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
-      errObj: new Error('Conversation not found.'),
     });
   });
 });
