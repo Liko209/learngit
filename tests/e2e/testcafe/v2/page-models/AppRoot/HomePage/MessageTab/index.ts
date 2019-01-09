@@ -162,27 +162,9 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.expect(this.isVisible).notOk();
   }
 
-  async getUmi() {
-    const umi = this.self.find('.umi');
-    if (await umi.exists == false) {
-      return 0;
-    }
-    const text = await umi.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    if (text == '99+') {
-      return 100;
-    }
-    return Number(text);
-  }
 
-  async expectUmi(n: number, maxRetry = 5, interval = 5e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
-  }
+
+
 
   async openMoreMenu() {
     const moreButton = this.moreMenuEntry;
@@ -215,28 +197,6 @@ class ConversationListSection extends BaseWebComponent {
 
   get header() {
     return this.self.find('.conversation-list-section-header');
-  }
-
-  async getUmi() {
-    const umi = this.header.find('.umi');
-    if (!await umi.exists) {
-      return 0;
-    }
-    const text = await umi.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    if (text == '99+') {
-      return 100;
-    }
-    return Number(text);
-  }
-
-  async expectHeaderUmi(n: number, maxRetry = 5, interval = 5e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
   }
 
   get collapse() {

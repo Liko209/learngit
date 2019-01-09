@@ -260,7 +260,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then the UMI should exist', async () => {
       await directMessagesSection.fold();
-      await directMessagesSection.expectHeaderUmi(1);
+      await directMessagesSection.expectUmi(1);
     })
 
     await h(t).withLog('When I click the post and jump to the conversation', async () => {
@@ -268,7 +268,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     });
 
     await h(t).withLog('And the UMI should dismiss', async () => {
-      await directMessagesSection.expectHeaderUmi(0);
+      await directMessagesSection.expectUmi(0);
     }, true);
 
     await h(t).withLog('Then I nagivate away from conversation and refresh browser', async () => {
@@ -280,7 +280,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then the UMI count should still no UMI', async () => {
       await directMessagesSection.fold();
-      await directMessagesSection.expectHeaderUmi(0);
+      await directMessagesSection.expectUmi(0);
     }, true);
   });
 
@@ -340,12 +340,12 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   await h(t).withLog('When I enter Bookmark page and find the Bookmark posts', async () => {
     await bookmarksEntry.enter();
     await bookmarkPage.waitUntilPostsBeLoaded();
-    await dmSection.expectHeaderUmi(0);
+    await dmSection.expectUmi(0);
   });
 
   await h(t).withLog('And I jump to conversation from Bookmarks page should no UMI', async () => {
     await bookmarkPage.postItemById(bookmarkPostId).jumpToConversationByClickPost();
-    await dmSection.expectHeaderUmi(0);
+    await dmSection.expectUmi(0);
   }, true);
 
   await h(t).withLog('Then I received new AtMention post should 1 UMI', async () => {
@@ -354,17 +354,17 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
       groupId,
     );
     await dmSection.fold();
-    await dmSection.expectHeaderUmi(1);
+    await dmSection.expectUmi(1);
   });
 
   await h(t).withLog('And I scroll to middle should still 1 UMI', async () => {
     await conversationPage.scrollToMiddle();
-    await dmSection.expectHeaderUmi(1);
+    await dmSection.expectUmi(1);
   }, true);
 
   await h(t).withLog('When I scroll to conversation bottom should remove UMI', async () => {
     await conversationPage.scrollToBottom();
-    await dmSection.expectHeaderUmi(0);
+    await dmSection.expectUmi(0);
   });
 });
 
