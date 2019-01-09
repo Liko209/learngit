@@ -6,22 +6,8 @@
 
 /**
  * this helper is only used for some simple operations
- * Do not do any DB, Network opertions in this file
+ * Do not do any DB, Network operations in this file
  */
-
-export type SendPostType = {
-  text: string;
-  groupId: number;
-  atMentions?: boolean;
-  users?: any[];
-  itemIds?: number[];
-  itemId?: number;
-};
-
-export type RawPostInfo = {
-  userId: number;
-  companyId: number;
-} & SendPostType;
 
 import _ from 'lodash';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
@@ -29,6 +15,9 @@ import { versionHash } from '../../../utils/mathUtils';
 import { Markdown } from 'glipdown';
 // global_url_regex
 import { Post } from '../entity';
+import { RawPostInfo, SendPostType } from '../types';
+import { Raw } from 'src/framework/model';
+import { transform } from '../../../service/utils';
 
 export type LinksArray = { url: string }[];
 
@@ -149,10 +138,19 @@ class PostActionControllerHelper {
       oldPost.at_mention_non_item_ids = atMentionsInfo.at_mention_non_item_ids;
     }
     delete oldPost.likes;
-    oldPost._id = oldPost.id;
-    delete oldPost.id;
-
     return oldPost;
+  }
+
+  transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
+    return ([] as Raw<Post>[])
+      .concat(data)
+      .map((item: Raw<Post>) => transform<Post>(item));
+  }
+
+  transformLocalToServerType(data: Post): Raw<Post> {
+    data._id = data.id;
+    delete data.id;
+    return data as Raw<Post>;
   }
 }
 
