@@ -181,13 +181,14 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
     await t.expect(joinTeamDialog.cancelButton.exists).ok();
   });
 
-  await h(t).withLog(`When the public team admin update team name to ${newTeamName}`, async () => {
-    await h(t).glip(otherUser).updateTeamName(publicTeamId, newTeamName);
-  });
+  // Not currently available https://jira.ringcentral.com/projects/FIJI/issues/FIJI-2813
+  // await h(t).withLog(`When the public team admin update team name to ${newTeamName}`, async () => {
+  //   await h(t).glip(otherUser).updateTeamName(publicTeamId, newTeamName);
+  // });
 
-  await h(t).withLog(`Then the join team confirmation content should sync`, async () => {
-    await joinTeamDialog.shouldBeTeam(newTeamName);
-  });
+  // await h(t).withLog(`Then the join team confirmation content should sync`, async () => {
+  //   await joinTeamDialog.shouldBeTeam(newTeamName);
+  // });
 
   await h(t).withLog(`When I click cancel button`, async () => {
     await joinTeamDialog.cancel();
@@ -198,8 +199,8 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   });
 });
 
-
-test(formalName(`Joined team successful after clicking join button in confirmation.`, ['P1', 'JPT-718', 'PublicTeam', 'Potar.He']), async t => {
+//https://jira.ringcentral.com/projects/FIJI/issues/FIJI-2802
+test.skip(formalName(`Joined team successful after clicking join button in confirmation.`, ['P1', 'JPT-718', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
