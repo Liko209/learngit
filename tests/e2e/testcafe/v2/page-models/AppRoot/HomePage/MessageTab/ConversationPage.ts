@@ -405,7 +405,7 @@ export class PostItem extends BaseWebComponent {
     return await this.getNumber(this.likeCount);
   }
 
-  async expectLikeCount(n: number, maxRetry = 5, interval = 5e3) {
+  async likeShouleBe(n: number, maxRetry = 5, interval = 5e3) {
     await H.retryUntilPass(async () => {
       const likes = await this.getLikeCount();
       assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);

@@ -76,8 +76,8 @@ test(formalName('UMI should be added received messages count in conversations', 
     groupConversation = directMessagesSection.conversationEntryById(groupId);
     await teamsSection.expand();
     teamConversation = teamsSection.conversationEntryById(teamId);
-    await groupConversation.expectUmi(1);
-    await teamConversation.expectUmi(1);
+    await groupConversation.headerUmi.shouldBeNumber(1);
+    await teamConversation.eaderUmi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
@@ -86,7 +86,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`The group should have 2 umi`, async () => {
-    await groupConversation.expectUmi(2);
+    await groupConversation.eaderUmi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When other user send a post with @mention to the team', async () => {
@@ -95,7 +95,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the team should have 2 umi`, async () => {
-    await teamConversation.expectUmi(2);
+    await teamConversation.eaderUmi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When other user send a post without @mention to the group', async () => {
@@ -104,7 +104,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the group should have 3 umi`, async () => {
-    await groupConversation.expectUmi(3);
+    await groupConversation.eaderUmi.shouldBeNumber(3);
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
@@ -113,7 +113,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
-    await teamConversation.expectUmi(2);
+    await teamConversation.eaderUmi.shouldBeNumber(2);
   });
 },
 );
@@ -177,19 +177,21 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   });
 
   await h(t).withLog('And I can find the UMI on the team', async () => {
-    const umi = team.self.find('.umi');
-    const text = team.self.find('p');
-    await team.expectUmi(1);
-    await H.retryUntilPass(async () => {
-      const umiStyle = await umi.style;
-      const umiBgColor = umiStyle['background-color'];
-      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
-    });
-    await H.retryUntilPass(async () => {
-      const textStyle = await text.style;
-      const textFontWeight = textStyle['font-weight'];
-      assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
-    });
+    // const umi = team.self.find('.umi');
+    // const text = team.self.find('p');
+    await team.umi.shouldBeNumber(1);
+    await team.umi.shouldBeAtMentionStyle();
+    // await H.retryUntilPass(async () => {
+    //   const umiStyle = await umi.style;
+    //   const umiBgColor = umiStyle['background-color'];
+    //   assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
+    // });
+    await team.shouldBeUmiStyle();
+    // await H.retryUntilPass(async () => {
+    //   const textStyle = await text.style;
+    //   const textFontWeight = textStyle['font-weight'];
+    //   assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
+    // });
   });
 
   await h(t).withLog('Then I click the team to open the team conversation', async () => {
@@ -199,12 +201,13 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
     const text = team.self.find('p');
-    await team.expectUmi(0);
-    await H.retryUntilPass(async () => {
-      const textStyle = await text.style;
-      const textFontWeight = textStyle['font-weight'];
-      assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
-    });
+    await team.umi.shouldBeNumber(0);
+    await team.shouldBeNormalStyle();
+    // await H.retryUntilPass(async () => {
+    //   const textStyle = await text.style;
+    //   const textFontWeight = textStyle['font-weight'];
+    //   assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
+    // });
   });
 
 });
@@ -269,7 +272,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
   await h(t).withLog('Then I should not have UMI in the private chat', async () => {
     await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-    await pvtChat.expectUmi(0);
+    await pvtChat.umi.shouldBeNumber(0);
   });
 
   await h(t).withLog('When I open other conversation and reload web page', async () => {
@@ -280,7 +283,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
 
   await h(t).withLog('Then I should not have UMI in the private chat too', async () => {
     await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-    await pvtChat.expectUmi(0);
+    await pvtChat.umi.shouldBeNumber(0);
   });
 },
 );
@@ -381,15 +384,15 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('Then there should not be any umi in header of favorite sections', async () => {
-      await favoritesSection.expectUmi(0);
+      await favoritesSection.headerUmi.shouldBeNumber(0);
     });
 
     await h(t).withLog('and there should not be any umi in header of direct message sections', async () => {
-      await directMessagesSection.expectUmi(0);
+      await directMessagesSection.headerUmi.shouldBeNumber(0);
     });
 
     await h(t).withLog('and there should not be any umi in header of team sections', async () => {
-      await teamsSection.expectUmi(0);
+      await teamsSection.headerUmi.shouldBeNumber(0);
     });
 
     await h(t).withLog('When I fold the sections', async () => {
@@ -399,15 +402,15 @@ test(formalName('Should not display UMI when section is expended & Should displa
     })
 
     await h(t).withLog('Then there should be 1 umi in header of favorite sections', async () => {
-      await favoritesSection.expectUmi(1);
+      await favoritesSection.headerUmi.shouldBeNumber(1);
     });
 
     await h(t).withLog('and there should be 2 umi in header of direct messages sections', async () => {
-      await directMessagesSection.expectUmi(2);
+      await directMessagesSection.headerUmi.shouldBeNumber(2);
     });
 
     await h(t).withLog('and there should not be any umi in header of team sections', async () => {
-      await teamsSection.expectUmi(0);
+      await teamsSection.headerUmi.shouldBeNumber(0);
     });
 
     await h(t).withLog('When other user send posts with mention to specified conversations', async () => {
@@ -418,16 +421,16 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('Then there should be 2 umi in header of favorite sections', async () => {
-      await favoritesSection.expectUmi(2);
+      await favoritesSection.headerUmi.shouldBeNumber(2);
     });
 
     await h(t).withLog('and there should be 3 umi in header of direct messages sections', async () => {
-      await directMessagesSection.expectUmi(3);
+      await directMessagesSection.headerUmi.shouldBeNumber(3);
 
     });
 
     await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
-      await teamsSection.expectUmi(1);
+      await teamsSection.headerUmi.shouldBeNumber(1);
     });
 
     await h(t).withLog('When other user send normal posts to specified conversations', async () => {
@@ -439,15 +442,15 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('Then there should be 3 umi in header of favorite sections', async () => {
-      await favoritesSection.expectUmi(3);
+      await favoritesSection.headerUmi.shouldBeNumber(3);
     });
 
     await h(t).withLog('and there should be 4 umi in header of direct messages sections', async () => {
-      await directMessagesSection.expectUmi(4);
+      await directMessagesSection.headerUmi.shouldBeNumber(4);
     });
 
     await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
-      await teamsSection.expectUmi(1);
+      await teamsSection.headerUmi.shouldBeNumber(1);
     });
   },
 );
@@ -542,7 +545,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 
   await h(t).withLog('Should have 2 umi in header of favorite sections', async () => {
-    await favoritesSection.expectUmi(2);
+    await favoritesSection.headerUmi.shouldBeNumber(2);
   });
 
   await h(t).withLog('Fold direct messages and teams section', async () => {
@@ -552,11 +555,11 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 
   await h(t).withLog('Should not have umi in header of team sections', async () => {
-    await teamsSection.expectUmi(0);
+    await teamsSection.headerUmi.shouldBeNumber(0);
   });
 
   await h(t).withLog('Should not have umi in header of direct messages sections', async () => {
-    await directMessagesSection.expectUmi(0);
+    await directMessagesSection.headerUmi.shouldBeNumber(0);
   });
 
   await h(t).withLog('Expand favorite section', async () => {
@@ -578,15 +581,15 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 
   await h(t).withLog('Should not have umi in header of favorite sections', async () => {
-    await favoritesSection.expectUmi(0);
+    await favoritesSection.headerUmi.shouldBeNumber(0);
   });
 
   await h(t).withLog('Should have 1 umi in header of direct messages sections', async () => {
-    await directMessagesSection.expectUmi(1);
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
   });
 
   await h(t).withLog('Should have 1 umi in header of team sections', async () => {
-    await teamsSection.expectUmi(1);
+    await teamsSection.headerUmi.shouldBeNumber(1);
   });
 },
 );
@@ -640,7 +643,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Then show UMI', async () => {
-      await directMessagesSection.conversationEntryById(pvtChatId).expectUmi(1);
+      await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(1);
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
@@ -651,7 +654,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
 
     await h(t).withLog('Then UMI dismiss', async () => {
       await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-      await directMessagesSection.conversationEntryById(pvtChatId).expectUmi(0);
+      await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(0);
     });
   },
 );
@@ -702,7 +705,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     });
 
     await h(t).withLog(`Then should not show UMI and scroll up automatically`, async () => {
-      await directMessagesSection.conversationEntryById(pvtChatId).expectUmi(0);
+      await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(0);
       const conversationPage = await app.homePage.messageTab.conversationPage;
       await t.expect(conversationPage.nthPostItem(-1).body.withText(postContent).exists).ok();
       await t.expect(conversationPage.nthPostItem(-1).body.withText(postContent).visible).ok();
@@ -754,7 +757,7 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
     );
 
     await h(t).withLog(`Then show UMI`, async () => {
-      await directMessagesSection.conversationEntryById(pvtChatId).expectUmi(1);
+      await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(1);
     });
   },
 );
@@ -792,7 +795,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
 
     await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
       await app.homePage.messageTab.conversationPage.groupIdShouldBe(teamId);
-      await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).expectUmi(0);
+      await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).umi.shouldBeNumber(0);
     });
   },
 );

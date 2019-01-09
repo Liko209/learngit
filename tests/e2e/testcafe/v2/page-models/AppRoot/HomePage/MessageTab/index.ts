@@ -103,31 +103,6 @@ class MenuItem extends Entry {
   }
 }
 
-class ActionBarMoreMenu extends BaseWebComponent {
-  get self() {
-    return this.getSelector('*[role="document"]');
-  }
-
-  private getEntry(name: string) {
-    this.warnFlakySelector();
-    return this.getComponent(Entry, this.self.find('li').withText(name));
-  }
-
-  get quoteItem() {
-    return this.getEntry('feedback');
-  }
-
-  get deletePost() {
-    return this.self.find('span').withText('delete').parent();
-  }
-
-  get eidtPost() {
-    return this.self.find('span').withText('edit').parent();
-  }
-
-
-}
-
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
     this.warnFlakySelector();
@@ -162,9 +137,25 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.expect(this.isVisible).notOk();
   }
 
+  get umi() {
+    return this.getComponent(Umi, this.self.find(".umi"));
+  }
 
+  async shouldBeUmiStyle() {
+    await H.retryUntilPass(async () => {
+      const textStyle = await this.self.find('p').style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
+    });
+  }
 
-
+  async shouldBeNormalStyle() {
+    await H.retryUntilPass(async () => {
+      const textStyle = await this.self.find('p').style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
+    });
+  }
 
   async openMoreMenu() {
     const moreButton = this.moreMenuEntry;
@@ -238,6 +229,10 @@ class ConversationListSection extends BaseWebComponent {
 
   async fold() {
     await this.toggle(false);
+  }
+
+  get headerUmi() {
+    return this.getComponent(Umi, this.header.find(".umi"));
   }
 }
 
@@ -361,9 +356,6 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(ActionBarDeletePostModal);
   }
 
-  // get profileModal() {
-  //   return this.getComponent(ProfileModal);
-  // }
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');
@@ -378,5 +370,34 @@ export class MessageTab extends BaseWebComponent {
     const url = await h(this.t).href;
     const result = /messages\/(\d+)/.test(url);
     assert(result, `invalid url: ${url}`);
+  }
+}
+
+class Umi extends BaseWebComponent {
+  async count() {
+    return await this.getNumber(this.self);
+  }
+
+  async shouldBeNumber(n: number, maxRetry = 5, interval = 5e3) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.count();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
+  }
+
+  async shouldBeAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
+    });
+  }
+
+  async shouldBeNotAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(158, 158, 158)', `${umiBgColor} not eql specify: rgb(158, 158, 158)`)
+    });
   }
 }

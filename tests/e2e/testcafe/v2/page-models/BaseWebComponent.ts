@@ -110,17 +110,4 @@ export abstract class BaseWebComponent {
     return Number(text);
   }
 
-  async getUmi() {
-    const umi = this.self.find('.umi');
-    return await this.getNumber(umi);
-  }
-
-
-  async expectUmi(n: number, maxRetry = 5, interval = 5e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
-  }
-
 }

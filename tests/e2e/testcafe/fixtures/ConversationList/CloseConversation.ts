@@ -92,7 +92,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
         async () => {
           await item.enter();
           currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
-          await item.expectUmi(0);
+          await item.umi.shouldBeNumber(0);
           await item.openMoreMenu();
           await app.homePage.messageTab.moreMenu.close.enter();
         },
@@ -281,7 +281,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)',
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
       await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-      await pvtChat.expectUmi(0);
+      await pvtChat.umi.shouldBeNumber(0);
     });
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
@@ -397,7 +397,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
       await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-      await pvtChat.expectUmi(0);
+      await pvtChat.umi.shouldBeNumber(0);
     });
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
@@ -519,11 +519,11 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     const teamItem = teamsSection.conversationEntryById(teamId1);
     await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section', async () => {
       await favoritesSection.expand();
-      await favoriteItem.expectUmi(1);
+      await favoriteItem.umi.shouldBeNumber(1);
       await directMessagesSection.expand();
-      await directMessageItem.expectUmi(1);
+      await directMessageItem.umi.shouldBeNumber(1);
       await teamsSection.expand();
-      await teamItem.expectUmi(1);
+      await teamItem.umi.shouldBeNumber(1);
     });
 
     const groupList = {
