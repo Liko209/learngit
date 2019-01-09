@@ -23,9 +23,8 @@ import {
 } from 'jui/pattern/ConversationCard/Files';
 
 import { AvatarName } from './AvatarName';
-import { getDateAndTime, getDurationTimeText } from '../helper';
+import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
-import { recentlyTwoDayAndOther } from '@/utils/date';
 
 type taskViewProps = WithNamespaces & ViewProps;
 
@@ -109,7 +108,7 @@ class Task extends React.Component<taskViewProps> {
   }
 
   render() {
-    const { task, files, t } = this.props;
+    const { task, files, startTime, endTime, hasTime, t } = this.props;
     const {
       section,
       color,
@@ -117,22 +116,11 @@ class Task extends React.Component<taskViewProps> {
       notes,
       complete,
       assignedToIds,
-      start,
-      due,
       repeat,
       repeatEndingAfter,
       repeatEnding,
       repeatEndingOn,
     } = task;
-    let startTime = '';
-    let endTime = '';
-    const hasTime = start && due;
-    if (start) {
-      startTime = recentlyTwoDayAndOther(start);
-    }
-    if (due) {
-      endTime = getDateAndTime(due);
-    }
     const timeText = getDurationTimeText(
       repeat,
       repeatEndingAfter,
