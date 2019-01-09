@@ -8,7 +8,8 @@
     "start:prod": "npm run build && serve -s build -p 8888",
     "build": "node scripts/build.js",
     "build:dll": "node scripts/dll.js",
-    "analyze": "npm run build -- --analyze"
+    "analyze": "npm run build -- --analyze",
+    "webpack": "NODE_ENV=development webpack --config ./config/webpack.config.dev.js"
   },
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "7.2.0",

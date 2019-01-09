@@ -5,7 +5,7 @@
  */
 
 import { service } from 'sdk';
-import { ErrorTypes } from 'sdk/utils/';
+import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
 import { PrivacyProps } from '../types';
@@ -19,7 +19,7 @@ const groupService = {
   getLocalGroup: jest.fn().mockResolvedValue(mockGroup),
   updateGroupPrivacy: jest
     .fn()
-    .mockResolvedValue(ErrorTypes.SERVICE_INVALID_MODEL_ID),
+    .mockResolvedValue(new JSdkError(ERROR_CODES_SDK.INVALID_MODEL_ID, '')),
 };
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
@@ -70,8 +70,12 @@ describe('Privacy view model', () => {
 
   describe('privacy', () => {
     it('should return error when service error', async () => {
-      const result = await vm.handlePrivacy();
-      expect(result).toEqual(ErrorTypes.SERVICE_INVALID_MODEL_ID);
+      try {
+        await vm.handlePrivacy();
+      } catch (error) {
+        expect(error instanceof JSdkError).toBeTruthy();
+        expect(error.code).toEqual(ERROR_CODES_SDK.INVALID_MODEL_ID);
+      }
     });
   });
 });

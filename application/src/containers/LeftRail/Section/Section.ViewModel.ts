@@ -54,7 +54,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     title: 'directMessage_plural',
-    iconName: 'person_outline',
+    iconName: 'direct_message',
     eventName: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
@@ -66,7 +66,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
-    iconName: 'people_outline',
+    iconName: 'team',
     eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,

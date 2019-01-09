@@ -10,7 +10,6 @@ import {
   SOCKET_SERVER_HOST,
   STATIC_HTTP_SERVER,
 } from '../../dao/config/constants';
-import { ErrorParser } from '../../utils/error';
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
@@ -27,6 +26,8 @@ import { mainLogger } from 'foundation';
 import { Raw } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
 import { ItemService } from '../../module/item';
+import { ErrorParserHolder } from '../../error';
+
 const dispatchIncomingData = (data: IndexDataModel) => {
   const {
     user_id: userId,
@@ -111,7 +112,7 @@ const handleData = async (
   } catch (error) {
     mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
     notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
-      error: ErrorParser.parse(error),
+      error: ErrorParserHolder.getErrorParser().parse(error),
     });
   }
 };

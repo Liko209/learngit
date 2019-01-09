@@ -6,6 +6,7 @@
 
 import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager, ItemDao } from '../../../../../../dao';
 import ItemAPI from '../../../../../../api/glip/item';
@@ -35,6 +36,34 @@ jest.mock('../../../../../../service/account/UserConfig');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../../../dao');
 jest.mock('../../../../../../service/notificationCenter');
+=======
+
+import { Progress } from '../../../models';
+
+import { ItemFile } from '../../../module/item/entity';
+import { ItemFileUploadHandler } from '../itemFileUploadHandler';
+import AccountService from '../../account';
+import { daoManager, ItemDao } from '../../../dao';
+import ItemAPI from '../../../api/glip/item';
+import handleData from '../handleData';
+import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
+import notificationCenter from '../../notificationCenter';
+import { ItemService } from '../itemService';
+import { ItemFileUploadStatus } from '../itemFileUploadStatus';
+import { RequestHolder } from '../../../api/requestHolder';
+import { PROGRESS_STATUS } from '../../../module';
+import { SERVICE, ENTITY } from '../../eventKey';
+import { isInBeta } from '../../account/clientConfig';
+import { JServerError, ERROR_CODES_SERVER } from '../../../error';
+
+jest.mock('../../account/clientConfig');
+jest.mock('../../../service/item');
+jest.mock('../../../service/account');
+jest.mock('../../../api/glip/item');
+jest.mock('../../../dao');
+jest.mock('../handleData');
+jest.mock('../../notificationCenter');
+>>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
 type ProgressCallback = (e: ProgressEventInit) => any;
 
@@ -59,13 +88,19 @@ describe('fileUploadController', () => {
     UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
     UserConfig.getCurrentUserId.mockReturnValue(userId);
 
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
     itemService.createItem.mockImplementation(() => {});
     itemService.updateItem.mockImplementation(() => {});
     itemService.deleteItem.mockImplementation(() => {});
+=======
+    itemDao.put.mockImplementation(() => { });
+    itemDao.update.mockImplementation(() => { });
+    itemDao.delete.mockImplementation(() => { });
+>>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
-    notificationCenter.emitEntityReplace.mockImplementation(() => {});
-    notificationCenter.emit.mockImplementation(() => {});
-    notificationCenter.removeListener.mockImplementation(() => {});
+    notificationCenter.emitEntityReplace.mockImplementation(() => { });
+    notificationCenter.emit.mockImplementation(() => { });
+    notificationCenter.removeListener.mockImplementation(() => { });
 
     fileUploadController = new FileUploadController(
       itemService,
@@ -115,9 +150,18 @@ describe('fileUploadController', () => {
 
     it('should update local upload file record', async () => {
       jest
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
         .spyOn(fileUploadController, '_sendItemFile')
         .mockImplementation(() => {});
       const spy_cancelUpload = jest.spyOn(fileUploadController, 'cancelUpload');
+=======
+        .spyOn(itemFileUploadHandler, '_sendItemFile')
+        .mockImplementation(() => { });
+      const spy_cancelUpload = jest.spyOn(
+        itemFileUploadHandler,
+        'cancelUpload',
+      );
+>>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
       const uploadingFiles = new Map();
       const itemFiles = [
@@ -211,11 +255,11 @@ describe('fileUploadController', () => {
           },
         );
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
-      const errResponse = new ApiResultErr(new BaseError(1, 'error'), {
+      const errResponse = new ApiResultErr(new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'), {
         status: 403,
         headers: {},
       } as BaseResponse);
@@ -243,19 +287,24 @@ describe('fileUploadController', () => {
           fileUploadController.getUploadProgress(fileItem.id).rate.loaded,
         ).toBe(-1);
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
-      const errRes = new ApiResultErr(new BaseError(1, 'error'), {
+      const errRes = new ApiResultErr(new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'), {
         status: 403,
         statusText: NETWORK_FAIL_TYPE.CANCELLED,
         headers: {},
       } as BaseResponse);
       ItemAPI.uploadFileItem.mockResolvedValue(errRes);
       jest
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
         .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
+=======
+        .spyOn(itemFileUploadHandler, '_handleFileUploadSuccess')
+        .mockImplementation(() => { });
+>>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
 
       const progressCaches = new Map();
       Object.assign(fileUploadController, {
@@ -273,7 +322,7 @@ describe('fileUploadController', () => {
         expect(partialModifyController.updatePartially).not.toBeCalled();
 
         done();
-      },         1000);
+      }, 1000);
     });
   });
 
@@ -345,7 +394,7 @@ describe('fileUploadController', () => {
         );
         expect(result).toEqual(expectRes);
       },
-    );
+      );
 
     const oneGBFile = { size: oneGB };
     const oneGBMinusOne = { size: oneGB - 1 };
@@ -357,6 +406,7 @@ describe('fileUploadController', () => {
       ${[oneGBMinusOne]} | ${false}           | ${true}   | ${' size < 1GB'}
       ${[oneGBPlusOne]}  | ${false}           | ${false}  | ${' size > 1GB'}
     `('border test: $comment', ({ files, includeUnSendFiles, expectRes }) => {
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
       const result = fileUploadController.canUploadFiles(
         1,
         files,
@@ -364,6 +414,15 @@ describe('fileUploadController', () => {
       );
       expect(result).toEqual(expectRes);
     });
+=======
+        const result = itemFileUploadHandler.canUploadFiles(
+          1,
+          files,
+          includeUnSendFiles,
+        );
+        expect(result).toEqual(expectRes);
+      });
+>>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
   });
 
   describe('getFileVersion()', () => {
@@ -482,7 +541,7 @@ describe('fileUploadController', () => {
         headers: {},
       } as BaseResponse);
 
-      const errRes = new ApiResultErr<ItemFile>(new BaseError(1, 'error'), {
+      const errRes = new ApiResultErr<ItemFile>(new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'), {
         status: 403,
         headers: {},
       } as BaseResponse);
@@ -674,7 +733,7 @@ describe('fileUploadController', () => {
         headers: {},
       } as BaseResponse);
 
-      const errRes = new ApiResultErr(new BaseError(1, 'error'), {
+      const errRes = new ApiResultErr(new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'), {
         status: 403,
         headers: {},
       } as BaseResponse);
@@ -697,7 +756,7 @@ describe('fileUploadController', () => {
         fileUploadController,
         '_handleItemFileSendFailed',
       );
-      spyHandleFailed.mockImplementation(() => {});
+      spyHandleFailed.mockImplementation(() => { });
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(errRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
@@ -718,13 +777,13 @@ describe('fileUploadController', () => {
         fileUploadController,
         '_handleFileUploadSuccess',
       );
-      spyHandleSuccess.mockImplementation(() => {});
+      spyHandleSuccess.mockImplementation(() => { });
 
       const spyHandleFailed = jest.spyOn(
         fileUploadController,
         '_handleItemFileSendFailed',
       );
-      spyHandleFailed.mockImplementation(() => {});
+      spyHandleFailed.mockImplementation(() => { });
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(errRes);
@@ -746,13 +805,13 @@ describe('fileUploadController', () => {
         fileUploadController,
         '_handleFileUploadSuccess',
       );
-      spyHandleSuccess.mockImplementationOnce(() => {});
+      spyHandleSuccess.mockImplementationOnce(() => { });
 
       const spyHandleFailed = jest.spyOn(
         fileUploadController,
         '_handleItemFileSendFailed',
       );
-      spyHandleFailed.mockImplementationOnce(() => {});
+      spyHandleFailed.mockImplementationOnce(() => { });
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
@@ -778,7 +837,7 @@ describe('fileUploadController', () => {
       clearMocks();
       setup();
 
-      ItemAPI.cancelUploadRequest.mockImplementation(() => {});
+      ItemAPI.cancelUploadRequest.mockImplementation(() => { });
 
       progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
@@ -897,14 +956,23 @@ describe('fileUploadController', () => {
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
       itemDao.get.mockResolvedValue(itemWithOutVersion);
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__test__/FileUploadController.test.ts
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       spySendItemFile.mockImplementation(() => {});
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
+=======
+      const spySendItemFile = jest.spyOn(
+        itemFileUploadHandler,
+        '_sendItemFile',
+      );
+      spySendItemFile.mockImplementation(() => { });
+      const spyUploadItem = jest.spyOn(itemFileUploadHandler, '_uploadItem');
+>>>>>>> develop:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
       const spyHandleFileItemSendFailed = jest.spyOn(
         fileUploadController,
         '_handleItemFileSendFailed',
@@ -930,7 +998,7 @@ describe('fileUploadController', () => {
         expect(spyHandleFileItemSendFailed).not.toBeCalled();
         expect(spySendItemFile).toBeCalled();
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should notify upload failed when the file does not exist in db', async (done: jest.DoneCallback) => {
@@ -949,7 +1017,7 @@ describe('fileUploadController', () => {
           expect.anything(),
         );
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should notify upload failed when can not find the cache of the item', async (done: jest.DoneCallback) => {
@@ -981,7 +1049,7 @@ describe('fileUploadController', () => {
         );
         expect(fileUploadController.getUploadProgress(5).rate.loaded).toBe(-1);
         done();
-      },         1000);
+      }, 1000);
     });
   });
 

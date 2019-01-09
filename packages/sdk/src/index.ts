@@ -7,14 +7,11 @@ import * as service from './service';
 import * as dao from './dao';
 import * as utils from './utils';
 import * as api from './api';
+import * as error from './error';
 
 export * from './framework';
-export {
-  default as GlipTypeDictionary,
-} from './utils/glip-type-dictionary/types';
-export {
-  default as LogControlManager,
-} from './service/uploadLogControl/logControlManager';
+export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
+export { default as LogControlManager } from './service/uploadLogControl/logControlManager';
 
 import Sdk from './Sdk';
 import { container } from './container';
@@ -28,5 +25,9 @@ registerConfigs.constants.forEach(config =>
 
 const sdk: Sdk = container.get(Sdk.name);
 export { sdk as Sdk };
+<<<<<<< HEAD
 export { sdk, service, utils, dao, api };
+=======
+export { sdk, service, utils, dao, api, module, error };
+>>>>>>> develop
 export { mainLogger } from 'foundation';

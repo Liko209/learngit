@@ -345,12 +345,19 @@ describe('PersonService', () => {
     });
 
     it('search persons, with email matched, name matched, check the priority', async () => {
-      const result = await personService.doFuzzySearchPersons('monkey');
+      let result = await personService.doFuzzySearchPersons('monkey');
       expect(result.sortableModels.length).toBe(20);
       expect(result.sortableModels[0].id).toBe(20011);
       expect(result.sortableModels[9].id).toBe(20020);
       expect(result.sortableModels[10].id).toBe(20001);
       expect(result.sortableModels[19].id).toBe(20010);
+
+      result = await personService.doFuzzySearchPersons('k w');
+      expect(result.sortableModels.length).toBe(20);
+      expect(result.sortableModels[0].id).toBe(20001);
+      expect(result.sortableModels[9].id).toBe(20010);
+      expect(result.sortableModels[10].id).toBe(20011);
+      expect(result.sortableModels[19].id).toBe(20020);
     });
   });
 

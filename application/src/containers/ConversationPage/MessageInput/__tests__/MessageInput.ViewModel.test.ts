@@ -73,10 +73,13 @@ describe.skip('ActionsViewModel', () => {
 
 describe('MessageInputViewModel', () => {
   describe('_sendPost()', () => {
-    const mockThis = (content: string) => {
+    const mockThis = (markdownFromDeltaRes: {
+      content: string;
+      mentionsIds: number[];
+    }) => {
       const that = {
         quill: {
-          getText: jest.fn().mockReturnValue(content),
+          getText: jest.fn().mockReturnValue(markdownFromDeltaRes.content),
           getContents: jest.fn(),
         },
       };
@@ -87,10 +90,13 @@ describe('MessageInputViewModel', () => {
       messageInputViewModel.keyboardEventHandler.enter.handler;
 
     it.skip('should be success when has draft content', () => {
-      const content = 'text';
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(messageInputViewModel.draft).toBe('');
@@ -98,31 +104,45 @@ describe('MessageInputViewModel', () => {
     });
 
     it('should not send when empty draft content', () => {
+<<<<<<< HEAD
       itemService.getUploadItems = jest.fn().mockReturnValue([]);
       const content = '';
       const that = mockThis(content);
+=======
+      const markdownFromDeltaRes = {
+        content: '',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
+>>>>>>> develop
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(postService.sendPost).toBeCalledTimes(0);
     });
 
     it('should not send when draft contains illegal content', () => {
-      const content = CONTENT_ILLEGAL;
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: CONTENT_ILLEGAL,
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
     });
 
     it('should generate length error when draft.length > CONTENT_LENGTH', () => {
-      const content = _.pad('test', CONTENT_LENGTH + 1);
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: _.pad('test', CONTENT_LENGTH + 1),
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
@@ -132,8 +152,11 @@ describe('MessageInputViewModel', () => {
       postService.sendPost = jest
         .fn()
         .mockRejectedValueOnce(new Error('error'));
-      const content = 'text';
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       const result = handler();
       expect(result).toBeUndefined();

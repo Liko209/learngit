@@ -5,6 +5,7 @@
  */
 
 import _ from 'lodash';
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/FileUploadController.ts
 import { mainLogger } from 'foundation';
 import { daoManager, ItemDao } from '../../../../../dao';
 import { Progress, PROGRESS_STATUS } from '../../../../progress';
@@ -25,6 +26,28 @@ import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
+=======
+import { NETWORK_FAIL_TYPE, mainLogger, JError } from 'foundation';
+import { Progress } from '../../models';
+import { Raw } from '../../framework/model';
+import { StoredFile, ItemFile, Item } from '../../module/item/entity';
+import AccountService from '../account';
+import ItemAPI, { RequestHolder } from '../../api/glip/item';
+import { AmazonFileUploadPolicyData } from '../../api/glip/types';
+import { transform } from '../utils';
+import { versionHash } from '../../utils/mathUtils';
+import { daoManager } from '../../dao';
+import ItemDao from '../../dao/item';
+import { ApiResult, ApiResultErr } from '../../api/ApiResult';
+import notificationCenter from '../notificationCenter';
+import { ENTITY, SERVICE } from '../eventKey';
+import { FILE_FORM_DATA_KEYS } from './constants';
+import { ItemFileUploadStatus } from './itemFileUploadStatus';
+import { ItemService } from './itemService';
+import { PROGRESS_STATUS } from '../../module';
+import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
+import { isInBeta, EBETA_FLAG } from '../account/clientConfig';
+>>>>>>> develop:packages/sdk/src/service/item/itemFileUploadHandler.ts
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -83,7 +106,7 @@ class FileUploadController {
       if (
         includeUnSendFiles &&
         currentUploadingInfo.fileCount + newFiles.length >
-          MAX_UPLOADING_FILE_CNT
+        MAX_UPLOADING_FILE_CNT
       ) {
         break;
       }
@@ -504,6 +527,7 @@ class FileUploadController {
       );
     }
 
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/FileUploadController.ts
     try {
       let result: ItemFile | undefined = undefined;
       if (existItemFile) {
@@ -514,6 +538,24 @@ class FileUploadController {
       this._handleItemUploadSuccess(preInsertItem, result);
     } catch (error) {
       this._handleItemFileSendFailed(preInsertItem.id);
+=======
+    let result: ApiResult<Raw<ItemFile>, JError> | undefined = undefined;
+    if (existItemFile) {
+      result = await this._updateItem(existItemFile, preInsertItem);
+    } else {
+      result = await this._newItem(groupId, preInsertItem);
+    }
+
+    if (result && result.isOk()) {
+      const data = result.unwrap();
+      const fileItem = transform<ItemFile>(data);
+      this._handleItemUploadSuccess(preInsertItem, fileItem);
+    } else {
+      this._handleItemFileSendFailed(preInsertItem.id, result as ApiResultErr<
+        ItemFile
+        >);
+      mainLogger.warn(`_uploadItem error =>${result}`);
+>>>>>>> develop:packages/sdk/src/service/item/itemFileUploadHandler.ts
     }
   }
 
