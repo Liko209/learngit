@@ -8,34 +8,60 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../utils/decorators';
 import { JuiResponsiveLayout } from '..';
+import { withResponsive, VISUAL_MODE } from '../Responsive';
+
+const DIV1 = () => (
+  <div style={{ backgroundColor: 'red', height: '100%' }}>Left rail</div>
+);
+const DIV2 = () => (
+  <div style={{ backgroundColor: 'green', height: '100%' }}>
+    Conversation thread
+  </div>
+);
+const DIV3 = () => (
+  <div style={{ backgroundColor: 'blue', height: '100%' }}>Right rail</div>
+);
+
+const Div1 = withResponsive(DIV1, {
+  maxWidth: 300,
+  minWidth: 180,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.AUTOMATIC,
+  enable: {
+    right: true,
+  },
+  priority: 1,
+});
+const Div2 = withResponsive(DIV2, {
+  minWidth: 400,
+  priority: 2,
+});
+const Div3 = withResponsive(DIV3, {
+  maxWidth: 300,
+  minWidth: 180,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.BOTH,
+  enable: {
+    left: true,
+  },
+  priority: 3,
+});
 
 storiesOf('Foundation/Layout', module)
   .addDecorator(withInfoDecorator(JuiResponsiveLayout, { inline: true }))
   .add('ResponsiveLayout', () => (
     <div style={{ position: 'relative', height: '100px' }}>
-      <JuiResponsiveLayout
-        tag="conversation1"
-        leftNavWidth={0}
-        mainPanelIndex={1}
-      >
-        <div style={{ backgroundColor: 'red', height: '100%' }}>Left rail</div>
-        <div style={{ backgroundColor: 'green', height: '100%' }}>
-          Conversation thread
-        </div>
-        <div style={{ backgroundColor: 'blue', height: '100%' }}>
-          Right rail
-        </div>
+      <JuiResponsiveLayout>
+        <Div1 />
+        <Div2 />
+        <Div3 />
       </JuiResponsiveLayout>
-      <br />
-      <JuiResponsiveLayout
-        tag="conversation2"
-        leftNavWidth={0}
-        mainPanelIndex={1}
-      >
+      {/* <br />
+      <JuiResponsiveLayout>
         <div style={{ backgroundColor: 'red', height: '100%' }}>Left rail</div>
         <div style={{ backgroundColor: 'green', height: '100%' }}>
           Conversation for @mentions
         </div>
-      </JuiResponsiveLayout>
+      </JuiResponsiveLayout> */}
     </div>
   ));

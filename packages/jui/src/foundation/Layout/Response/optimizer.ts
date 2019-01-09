@@ -6,30 +6,30 @@
 
 type ResizeFunction = (evt: Event) => void;
 
-let callback: ResizeFunction | null;
-let scheduledAnimationFrame = false;
+export default class Optimizer {
+  callback: ResizeFunction | null;
+  scheduledAnimationFrame = false;
 
-const onResize = (e: UIEvent) => {
-  if (scheduledAnimationFrame) {
-    return;
-  }
-  scheduledAnimationFrame = true;
-  window.requestAnimationFrame(() => {
-    scheduledAnimationFrame = false;
-    if (callback instanceof Function) {
-      callback(e);
+  onResize = (e: UIEvent) => {
+    if (this.scheduledAnimationFrame) {
+      return;
     }
-  });
-};
+    this.scheduledAnimationFrame = true;
+    window.requestAnimationFrame(() => {
+      this.scheduledAnimationFrame = false;
+      if (this.callback instanceof Function) {
+        this.callback(e);
+      }
+    });
+  }
 
-const addResizeListener = function (resize: ResizeFunction) {
-  callback = resize;
-  window.addEventListener('resize', onResize);
-};
+  addResizeListener = (resize: ResizeFunction) => {
+    this.callback = resize;
+    window.addEventListener('resize', this.onResize);
+  }
 
-const removeResizeListener = function () {
-  callback = null;
-  window.removeEventListener('resize', onResize);
-};
-
-export { addResizeListener, removeResizeListener };
+  removeResizeListener = () => {
+    this.callback = null;
+    window.removeEventListener('resize', this.onResize);
+  }
+}
