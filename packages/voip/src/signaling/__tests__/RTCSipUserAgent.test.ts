@@ -56,6 +56,20 @@ describe('RTCSipUserAgent', async () => {
     });
   });
 
+  describe('reRegister()', () => {
+    it('Should reRegister has been called', () => {
+      const eventEmitter = new EventEmitter2();
+      const userAgent = new RTCSipUserAgent(
+        provisionData,
+        options,
+        eventEmitter,
+      );
+      jest.spyOn(userAgent, 'reRegister').mockImplementation(() => {});
+      userAgent.reRegister();
+      expect(userAgent.reRegister).toHaveBeenCalled();
+    });
+  });
+
   describe('makeCall', () => {
     it('Should call the invite function of WebPhone when UserAgent makeCall', async () => {
       const eventEmitter = new EventEmitter2();

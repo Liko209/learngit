@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 interface IRTCUserAgent {
+  reRegister(): void;
   register(options?: any): any;
   makeCall(phoneNumber: string, options: any): any;
 }

@@ -37,6 +37,15 @@ class RTCSipUserAgent implements IRTCUserAgent {
     return this._webphone.userAgent.invite(phoneNumber, options);
   }
 
+  public reRegister() {
+    this._webphone.userAgent.transport.stopSendingKeepAlives();
+    this._webphone.userAgent.transport.connectionTimeout = null;
+    this._webphone.userAgent.transport.connectionPromise = null;
+    this._webphone.userAgent.transport.connectDeferredResolve = null;
+    this._webphone.userAgent.transport.status = 3;
+    this._webphone.userAgent.transport.reconnect();
+  }
+
   private _initListener(): void {
     if (!this._webphone || !this._webphone.userAgent) {
       return;
