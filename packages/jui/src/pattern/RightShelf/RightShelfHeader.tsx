@@ -17,6 +17,8 @@ import {
 const JuiRightShelfHeader = styled('div')`
   ${typography('subheading1')}
   height: ${height(12)};
+  flex-basis: ${height(12)};
+  flex-shrink: 0;
   background-color: ${palette('common', 'white')};
   padding: ${spacing(0, 2)};
   color: ${grey('900')};

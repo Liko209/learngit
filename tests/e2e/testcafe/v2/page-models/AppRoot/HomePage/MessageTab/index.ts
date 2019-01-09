@@ -103,6 +103,31 @@ class MenuItem extends Entry {
   }
 }
 
+class ActionBarMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="document"]');
+  }
+
+  private getEntry(name: string) {
+    this.warnFlakySelector();
+    return this.getComponent(Entry, this.self.find('li').withText(name));
+  }
+
+  get quoteItem() {
+    return this.getEntry('feedback');
+  }
+
+  get deletePost() {
+    return this.self.find('span').withText('delete').parent();
+  }
+
+  get eidtPost() {
+    return this.self.find('span').withText('edit').parent();
+  }
+
+
+}
+
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
     this.warnFlakySelector();
@@ -256,6 +281,29 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
+class ActionBarDeletePostModal extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get deleteButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').withText('Delete');
+  }
+  get cancelButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').withText('Cancel');
+  }
+
+  async delete() {
+    await this.t.click(this.deleteButton);
+  }
+
+  async cancel() {
+    await this.t.click(this.cancelButton);
+  }
+}
 
 class CloseConversationModal extends BaseWebComponent {
   get self() {
@@ -347,6 +395,10 @@ export class MessageTab extends BaseWebComponent {
 
   get closeConversationModal() {
     return this.getComponent(CloseConversationModal);
+  }
+
+  get deletePostModal() {
+    return this.getComponent(ActionBarDeletePostModal);
   }
 
   // get profileModal() {

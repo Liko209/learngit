@@ -644,6 +644,8 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
+      const focus = ClientFunction(() => window.focus());
+      await focus();
       await conversationPage.scrollToBottom();
     });
 

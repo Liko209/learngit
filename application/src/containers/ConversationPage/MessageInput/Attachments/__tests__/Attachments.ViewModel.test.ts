@@ -6,7 +6,8 @@
 
 import { Notification } from '@/containers/Notification';
 import { service } from 'sdk';
-import { ItemFile } from 'sdk/models';
+import { ItemService } from 'sdk/module/item';
+import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
@@ -22,7 +23,7 @@ jest.mock('@/store/utils', () => ({
   getEntity: jest.fn(() => mockGroupEntityData),
 }));
 
-const { PostService, GroupService, ItemService } = service;
+const { PostService, GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
 };
@@ -117,10 +118,13 @@ describe('AttachmentsViewModel', () => {
   });
 
   describe('_sendPost()', () => {
-    const mockThis = (content: string) => {
+    const mockThis = (markdownFromDeltaRes: {
+      content: string;
+      mentionsIds: number[];
+    }) => {
       const that = {
         quill: {
-          getText: jest.fn().mockReturnValue(content),
+          getText: jest.fn().mockReturnValue(markdownFromDeltaRes.content),
           getContents: jest.fn(),
         },
       };
@@ -129,7 +133,12 @@ describe('AttachmentsViewModel', () => {
 
     test.each(['', 'abc'])(
       'should send post with content `%s`',
-      async (content: string) => {
+      async (content1: string) => {
+        const markdownFromDeltaRes = {
+          content: content1,
+          mentionsIds: [],
+        };
+
         const messageInputViewModel = new MessageInputViewModel({ id: 456 });
         const vm1 = new AttachmentsViewModel({
           id: messageInputViewModel.id,
@@ -138,9 +147,9 @@ describe('AttachmentsViewModel', () => {
         const enterHandler =
           messageInputViewModel.keyboardEventHandler.enter.handler;
 
-        const that = mockThis(content);
+        const that = mockThis(markdownFromDeltaRes);
         // @ts-ignore
-        markdownFromDelta = jest.fn().mockReturnValue(content);
+        markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
         await vm1.autoUploadFiles([file]);
         const handler = enterHandler.bind(that);
         handler();

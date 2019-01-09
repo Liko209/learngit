@@ -14,11 +14,11 @@ import {
 import { AuthDao, daoManager } from '../../dao';
 import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
-import { Aware, ErrorParser } from '../../utils/error';
+import { Aware } from '../../utils/error';
 import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
-import { ERROR_CODES_SDK } from '../../error';
+import { ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 
 interface ILogin {
   username: string;
@@ -50,7 +50,7 @@ class AuthService extends BaseService {
       this.onLogin();
     } catch (err) {
       mainLogger.error(`unified login error: ${err}`);
-      throw ErrorParser.parse(err);
+      throw ErrorParserHolder.getErrorParser().parse(err);
     }
   }
 
@@ -70,7 +70,7 @@ class AuthService extends BaseService {
       await this._accountManager.login(RCPasswordAuthenticator.name, params);
     } catch (err) {
       mainLogger.error(`err: ${err}`);
-      throw ErrorParser.parse(err);
+      throw ErrorParserHolder.getErrorParser().parse(err);
     }
   }
 

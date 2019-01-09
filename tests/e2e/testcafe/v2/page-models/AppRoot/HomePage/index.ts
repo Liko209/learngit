@@ -6,7 +6,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
-import { Header } from './header';
+import { Header, joinTeamDialog } from './header';
 import { LeftRail } from './LeftRail';
 import { RightRail } from './RightRail';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
@@ -80,5 +80,8 @@ export class HomePage extends BaseWebComponent {
   async openSettingMenu() {
     await this.t.click(this.topBarAvatar);
   }
-
+  
+  get joinTeamDialog() {
+    return this.getComponent(joinTeamDialog);
+  }
 }
