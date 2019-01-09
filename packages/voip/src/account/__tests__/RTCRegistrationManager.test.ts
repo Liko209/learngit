@@ -101,14 +101,18 @@ describe('RTCRegistrationManager', () => {
   });
 
   describe('reRegister()', () => {
-    it('Should call the onReRegisterAction function when FSM state in regInProgress [JPT-756]', () => {
-      const mockListener = new MockAccountListener();
-      const regManager = new RTCRegistrationManager(mockListener);
+    function initRegManager(regManager: RTCRegistrationManager) {
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
       jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
-      regManager.provisionReady('provisionData', 'options');
+      regManager.provisionReady(provisionData, options);
+    }
+
+    it('Should call the onReRegisterAction function when FSM state in regInProgress [JPT-756]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      initRegManager(regManager);
       expect(regManager._fsm.state).toBe('regInProgress');
       regManager.reRegister();
       expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
@@ -118,11 +122,7 @@ describe('RTCRegistrationManager', () => {
     it('Should call the onReRegisterAction function when FSM state in ready [JPT-758]', () => {
       const mockListener = new MockAccountListener();
       const regManager = new RTCRegistrationManager(mockListener);
-      jest
-        .spyOn(regManager, 'onProvisionReadyAction')
-        .mockImplementation(() => {});
-      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
-      regManager.provisionReady('provisionData', 'options');
+      initRegManager(regManager);
       regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
       expect(regManager._fsm.state).toBe('ready');
       regManager.reRegister();
@@ -130,14 +130,10 @@ describe('RTCRegistrationManager', () => {
       expect(regManager._fsm.state).toBe('regInProgress');
     });
 
-    it('Should call the onReRegisterAction function when FSM state in regFailed [JPT-756]', () => {
+    it('Should call the onReRegisterAction function when FSM state in regFailed [JPT-757]', () => {
       const mockListener = new MockAccountListener();
       const regManager = new RTCRegistrationManager(mockListener);
-      jest
-        .spyOn(regManager, 'onProvisionReadyAction')
-        .mockImplementation(() => {});
-      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
-      regManager.provisionReady('provisionData', 'options');
+      initRegManager(regManager);
       expect(regManager._fsm.state).toBe('regInProgress');
       regManager._userAgent = new MockUserAgent(
         regManager._eventEmitter,

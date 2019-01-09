@@ -6,6 +6,7 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
 import { UA_EVENT } from './types';
+import { RTCOptions } from '../types/sipData';
 
 const WebPhone = require('ringcentral-web-phone');
 
@@ -19,22 +20,26 @@ class RTCSipUserAgent implements IRTCUserAgent {
   private _webphone: any;
   private _eventEmitter: EventEmitter2;
 
-  constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
+  constructor(
+    provisionData: any,
+    options: RTCOptions,
+    eventEmitter: EventEmitter2,
+  ) {
     this._eventEmitter = eventEmitter;
     this._createWebPhone(provisionData, options);
   }
 
-  private _createWebPhone(provisionData: any, options: any) {
+  private _createWebPhone(provisionData: any, options: RTCOptions) {
     this._webphone = new WebPhone(provisionData, options);
     this._initListener();
   }
 
-  public register(options?: any): any {
-    return this._webphone.userAgent.register(options);
+  public register(options?: RTCOptions): void {
+    this._webphone.userAgent.register(options);
   }
 
-  public makeCall(phoneNumber: string, options: any): any {
-    return this._webphone.userAgent.invite(phoneNumber, options);
+  public makeCall(phoneNumber: string, options: RTCOptions): void {
+    this._webphone.userAgent.invite(phoneNumber, options);
   }
 
   public reRegister() {
