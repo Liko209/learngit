@@ -75,11 +75,15 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this._itemServiceController;
   }
 
+  async getGroupItemsCount(groupId: number, typeId: number) {
+    return this.itemServiceController.getGroupItemsCount(groupId, typeId);
+  }
+
   async getItems(
     typeId: number,
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ) {
@@ -87,7 +91,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       typeId,
       groupId,
       limit,
-      offset,
+      offsetItemId,
       sortKey,
       desc,
     );
