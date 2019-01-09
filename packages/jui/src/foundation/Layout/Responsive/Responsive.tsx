@@ -198,14 +198,21 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
 
   renderMode = () => {
     const { isShow, width } = this.state;
-    const { enable = {}, children, minWidth, maxWidth, visual } = this.props;
+    const {
+      enable = {},
+      children,
+      minWidth,
+      maxWidth,
+      visual,
+      visualMode,
+    } = this.props;
     if (this.isManualMode && !this.localShowState) {
       return this.renderButton();
     }
     return (
       <>
         {(this.isManualMode || visual === false) && this.renderButton()}
-        {visual !== false ? (
+        {visual || visualMode === undefined ? (
           <Resizable
             enable={{ ...Responsive.DEFAULT_OPTIONS.enable, ...enable }}
             minWidth={minWidth}
