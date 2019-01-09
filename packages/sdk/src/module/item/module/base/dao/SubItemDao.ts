@@ -38,7 +38,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       if (!insertAble && itemId === offsetItemId) {
         insertAble = true;
       }
-      if (insertAble) {
+      if (insertAble && itemId !== offsetItemId) {
         if (itemIds.length < limit) {
           itemIds.push(itemId);
         } else {

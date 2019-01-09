@@ -120,10 +120,10 @@ describe('Event Item Dao', () => {
       ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by name asc'}
       ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by created_at desc'}
       ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by created_at asc'}
-      ${groupId}  | ${'created_at'} | ${2}  | ${1}         | ${[item1.id, item2.id]}           | ${false} | ${'slice limit 2, offset item 1'}
-      ${groupId}  | ${'created_at'} | ${2}  | ${2}         | ${[item2.id, item3.id]}           | ${false} | ${'slice limit 2, offset item 2'}
-      ${groupId2} | ${'name'}       | ${3}  | ${5}         | ${[item5.id, item4.id, item6.id]} | ${true}  | ${'compare incomplete item desc'}
-      ${groupId2} | ${'name'}       | ${3}  | ${4}         | ${[item4.id, item6.id, item5.id]} | ${false} | ${'compare incomplete item asc'}
+      ${groupId}  | ${'created_at'} | ${2}  | ${1}         | ${[item2.id, item3.id]}           | ${false} | ${'slice limit 2, offset item 1'}
+      ${groupId}  | ${'created_at'} | ${2}  | ${2}         | ${[item3.id]}                     | ${false} | ${'slice limit 2, offset item 2'}
+      ${groupId2} | ${'name'}       | ${3}  | ${5}         | ${[item4.id, item6.id]}           | ${true}  | ${'compare incomplete item desc'}
+      ${groupId2} | ${'name'}       | ${3}  | ${4}         | ${[item6.id, item5.id]}           | ${false} | ${'compare incomplete item asc'}
     `(
       '$comment',
       async ({ groupId, sortKey, limit, offsetItemId, desc, expects }) => {
