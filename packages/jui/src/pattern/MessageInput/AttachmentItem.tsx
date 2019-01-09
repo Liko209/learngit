@@ -70,7 +70,7 @@ const IconWrapper = styled.div`
   width: ${width(5)};
   height: ${height(5)};
   top: ${spacing(0.5)};
-  right: 0;
+  right: ${spacing(-1)};
 `;
 
 type AttachmentItemActionProps = StatusProps & {
