@@ -5,6 +5,9 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { TaskViewModel } from '../Task.ViewModel';
+jest.mock('i18next', () => ({
+  t: (title: string) => title,
+}));
 
 jest.mock('../../../../store/utils');
 
