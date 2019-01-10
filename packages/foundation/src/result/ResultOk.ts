@@ -5,10 +5,10 @@
  */
 
 import { Result } from './Result';
-import { BaseError } from './BaseError';
 import { ResultType, ResultCases } from './types';
+import { JError } from '../error';
 
-class ResultOk<T, E extends BaseError = BaseError> extends Result<T, E> {
+class ResultOk<T, E extends JError = JError> extends Result<T, E> {
   readonly data: T;
 
   constructor(data: T) {

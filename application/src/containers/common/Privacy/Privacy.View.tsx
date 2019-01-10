@@ -8,8 +8,8 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { PrivacyViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { ErrorTypes } from 'sdk/utils/';
 import { Notification } from '@/containers/Notification';
+import { errorHelper } from 'sdk/error';
 
 type Props = PrivacyViewProps & WithNamespaces;
 
@@ -29,7 +29,7 @@ class PrivacyViewComponent extends Component<Props> {
     try {
       await handlePrivacy();
     } catch (error) {
-      if (error === ErrorTypes.API_NETWORK) {
+      if (errorHelper.isNotNetworkError(error)) {
         this.flashToast('teamNetError');
       } else {
         this.flashToast('markPrivateServerErrorForTeam');

@@ -3,20 +3,20 @@
  * @Date: 2018-10-08 16:29:08
  * Copyright © RingCentral. All rights reserved.
  */
-import moment from 'moment';
 import PostModel from '@/store/models/Post';
 import {
   ConversationCardProps,
   ConversationCardViewProps,
 } from '@/containers/ConversationCard/types';
+import moment from 'moment';
 import { computed } from 'mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
-import { PROGRESS_STATUS } from 'sdk/module';
-import { Progress } from 'sdk/models';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { ENTITY_NAME } from '@/store';
+import { postTimestamp, dateFormatter } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
@@ -92,7 +92,11 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get createTime() {
-    return moment(this.post.createdAt).format('hh:mm A');
+    const { createdAt } = this.post;
+    if (this.props.mode === 'navigation') {
+      return dateFormatter.dateAndTime(moment(this.post.createdAt));
+    }
+    return postTimestamp(createdAt);
   }
 
   onAnimationStart = (evt: React.AnimationEvent) => {

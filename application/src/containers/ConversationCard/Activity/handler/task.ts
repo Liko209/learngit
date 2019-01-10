@@ -10,6 +10,15 @@ import buildVerbNounAdjectivesUserText from './text/buildVerbNounAdjectivesUserT
 import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 import buildVerbNumeralsPrepositionsNounText from './text/buildVerbNumeralsPrepositionsNounText';
 
+function filterHTML(text: string): string {
+  const exp = /(.*?)<.*>(.*?)<\/.*>/g;
+  const result = exp.exec(text);
+  if (result && result.length >= 3) {
+    return result[2];
+  }
+  return text;
+}
+
 export default function ({
   activity,
   activityData,
@@ -41,7 +50,8 @@ export default function ({
         verb = 'completed';
         break;
       case 'complete_people_ids':
-        user = activity.slice(activity.indexOf('for ') + 4);
+        const activityText = filterHTML(activity);
+        user = activityText.slice(activityText.indexOf('for ') + 4);
         if (old_value && old_value.length > value.length) {
           buildText = buildVerbNounAdjectivesUserText;
           verb = 'marked';

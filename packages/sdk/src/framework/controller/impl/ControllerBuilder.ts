@@ -53,6 +53,9 @@ class ControllerBuilder<T extends IdModel = IdModel>
   ) {
     return new EntityCacheSearchController(entityCacheController);
   }
-}
 
+  static getControllerBuilder<T extends IdModel = IdModel>() {
+    return new ControllerBuilder<T>();
+  }
+}
 export { ControllerBuilder };

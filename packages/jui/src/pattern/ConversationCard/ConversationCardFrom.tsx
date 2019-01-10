@@ -5,7 +5,7 @@
  */
 
 import * as React from 'react';
-import MuiIcon from '@material-ui/core/Icon';
+import { JuiIconography } from '../../foundation/Iconography';
 import {
   typography,
   ellipsis,
@@ -32,6 +32,9 @@ const StyledName = styled('div')`
     margin-right: ${spacing(2)};
     color: ${grey('900')};
   }
+  .conversation-name {
+    ${ellipsis()}
+  }
 `;
 
 const JuiConversationCardFrom = ({
@@ -42,7 +45,7 @@ const JuiConversationCardFrom = ({
 }: ConversationCardFromProps) => (
   <StyledName onClick={onClick} {...rest}>
     <span className="preposition">in</span>
-    {isTeam ? <MuiIcon fontSize="small">people_outline</MuiIcon> : null}
+    {isTeam ? <JuiIconography fontSize="small">team</JuiIconography> : null}
     <span className="conversation-name">{name}</span>
   </StyledName>
 );

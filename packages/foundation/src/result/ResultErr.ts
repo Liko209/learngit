@@ -5,10 +5,10 @@
  */
 
 import { Result } from './Result';
-import { BaseError } from './BaseError';
 import { ResultType, ResultCases } from './types';
+import { JError } from '../error';
 
-class ResultErr<T, E extends BaseError = BaseError> extends Result<T, E> {
+class ResultErr<T, E extends JError = JError> extends Result<T, E> {
   readonly error: E;
 
   constructor(error: E) {
@@ -32,7 +32,10 @@ class ResultErr<T, E extends BaseError = BaseError> extends Result<T, E> {
   }
 
   expect(message: string): T {
-    throw new BaseError(this.error.code, message);
+    if (message) {
+      this.error.message = message;
+    }
+    throw this.error;
   }
 }
 
