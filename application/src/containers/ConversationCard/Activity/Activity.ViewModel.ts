@@ -41,21 +41,18 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
 
   @computed
   get activity() {
-    const { source, parentId } = this._post;
+    const { parentId } = this._post;
     const types = Object.keys(this._activityData);
     let activity: any = {};
     switch (true) {
-      case !!source:
-        activity = config.source(source!);
-        break;
-      case !!parentId:
-        activity = config.children();
-        break;
       case types.length > 1:
         activity = config.items();
         break;
       case !!types.length:
         activity = this._activityData[types[0]];
+        break;
+      case !!parentId:
+        activity = config.children();
         break;
     }
     return activity;
