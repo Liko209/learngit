@@ -48,8 +48,7 @@ class ProfileMiniCardGroupViewModel
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!groupStore.hasValid(this.id)) {
-      const GroupService_ = GroupService;
-      const groupService = new GroupService_();
+      const groupService = new GroupService();
       groupService
         .getById(this.id)
         .then((group: Group | null) => {
