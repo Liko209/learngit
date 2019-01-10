@@ -44,6 +44,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
 
   initWidthAndResponsiveInfo() {
     this.contentWidth = 0;
+    this.visualWidth = 0;
     this.hasSortedResponsiveInfo = [...Object.values(this.responsiveInfo)].sort(
       (a, b) => Number(b.priority) - Number(a.priority),
     );
