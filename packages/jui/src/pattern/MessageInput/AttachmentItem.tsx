@@ -3,9 +3,9 @@
  * @Date: 2018-12-10 18:40:06
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { PureComponent, MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
+
 import { t } from 'i18next';
 import {
   height,
@@ -69,6 +69,14 @@ const IconWrapper = styled.div`
   color: ${grey('500')};
   width: ${width(5)};
   height: ${height(5)};
+  top: ${spacing(0.5)};
+  right: ${spacing(-1)};
+`;
+
+const ProgressWrapper = styled.div`
+  position: absolute;
+  right: ${spacing(-1.25)};
+  top: ${spacing(0.25)};
 `;
 
 type AttachmentItemActionProps = StatusProps & {
@@ -88,7 +96,9 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
   >
     {typeof props.value !== 'undefined' &&
       props.status === ITEM_STATUS.LOADING && (
-        <JuiCircularProgress variant="static" size={24} value={props.value} />
+        <ProgressWrapper>
+          <JuiCircularProgress variant="static" size={24} value={props.value} />
+        </ProgressWrapper>
       )}
     <IconWrapper>
       {typeof props.icon === 'string'

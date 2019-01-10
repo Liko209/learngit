@@ -26,6 +26,7 @@ enum REGISTRATION_ERROR_CODE {
 
 enum REGISTRATION_EVENT {
   PROVISION_READY = 'provisionReady',
+  RE_REGISTER = 'reRegister',
   ACCOUNT_STATE_CHANGED = 'accountStateChanged',
   RECEIVER_INCOMING_SESSION = 'receiveIncomingSession',
   UA_REGISTER_SUCCESS = 'uaRegisterSuccess',

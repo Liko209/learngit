@@ -10,6 +10,7 @@ import { REGISTRATION_FSM_STATE } from '../types';
 class MockHandler implements IRTCRegistrationFsmDependency {
   onRegistrationAction = jest.fn();
   onProvisionReadyAction = jest.fn();
+  onReRegisterAction = jest.fn();
 }
 
 const provisionData = 'provisionData';

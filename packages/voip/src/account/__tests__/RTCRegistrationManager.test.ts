@@ -27,6 +27,7 @@ class MockUserAgent extends EventEmitter2 {
   }
 
   makeCall = jest.fn();
+  reRegister = jest.fn();
 
   mockSignal(signal: string) {
     this.emit(signal);
@@ -38,7 +39,58 @@ const options = 'options';
 const phoneNumber = 'phoneNumber';
 
 describe('RTCRegistrationManager', () => {
-  describe('makeCall', () => {
+  describe('reRegister()', async () => {
+    function initRegManager(regManager: RTCRegistrationManager) {
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+    }
+
+    it('Should call the onReRegisterAction function when FSM state in regInProgress [JPT-756]', done => {
+      const regManager = new RTCRegistrationManager();
+      initRegManager(regManager);
+      regManager.reRegister();
+      setImmediate(() => {
+        expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+        expect(regManager._fsm.state).toBe('InProgress');
+        done();
+      });
+    });
+
+    it('Should call the onReRegisterAction function when FSM state in ready [JPT-758]', () => {
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
+      initRegManager(regManager);
+      regManager._userAgent = ua;
+      regManager._initUserAgentListener();
+      ua.mockSignal(UA_EVENT.REG_SUCCESS);
+      regManager.reRegister();
+      setImmediate(() => {
+        expect(regManager._fsm.state).toBe('inProgress');
+        expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+        expect(ua.reRegister).toHaveBeenCalled();
+      });
+    });
+
+    it('Should call the onReRegisterAction function when FSM state in regFailed [JPT-757]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      initRegManager(regManager);
+      expect(regManager._fsm.state).toBe('regInProgress');
+      regManager._userAgent = new MockUserAgent(
+        regManager._eventEmitter,
+        false,
+      );
+      expect(regManager._fsm.state).toBe('regFailure');
+      regManager.reRegister();
+      expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+      expect(regManager._fsm.state).toBe('regInProgress');
+    });
+  });
+
+  describe('makeCall()', () => {
     it('Should call the makeCall function of WebPhone when RTCRegManager makeCall', () => {
       const regManager = new RTCRegistrationManager();
       jest
@@ -54,6 +106,7 @@ describe('RTCRegistrationManager', () => {
       );
     });
   });
+
   describe('receive incoming call', () => {
     it('Should call onReceiveInvite when user agent trigger receive incoming signal', () => {
       const regManager = new RTCRegistrationManager();

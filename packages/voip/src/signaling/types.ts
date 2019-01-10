@@ -10,4 +10,14 @@ enum UA_EVENT {
   RECEIVE_INVITE = 'uaReceiveInvite',
 }
 
-export { UA_EVENT };
+type ProvisionDataOptions = {
+  appKey?: string;
+  appName?: string;
+  appVersion?: string;
+  uuid?: string;
+  logLevel?: string;
+  audioHelper?: string;
+  onSession?: string;
+};
+
+export { UA_EVENT, ProvisionDataOptions };

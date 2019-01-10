@@ -25,6 +25,11 @@ class RTCRegistrationManager extends EventEmitter2
   private _userAgent: IRTCUserAgent;
 
   public onRegistrationAction(): void {}
+
+  public onReRegisterAction(): void {
+    this._userAgent.reRegister();
+  }
+
   public onProvisionReadyAction(provisionData: any, options: any): void {
     this._userAgent = new RTCSipUserAgent(provisionData, options);
     this._initUserAgentListener();
@@ -37,6 +42,10 @@ class RTCRegistrationManager extends EventEmitter2
       switch (task.name) {
         case REGISTRATION_EVENT.PROVISION_READY: {
           this._fsm.provisionReady(task.data, task.options);
+          break;
+        }
+        case REGISTRATION_EVENT.RE_REGISTER: {
+          this._fsm.reRegister();
           break;
         }
         case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
@@ -127,6 +136,10 @@ class RTCRegistrationManager extends EventEmitter2
       },
       () => {},
     );
+  }
+
+  public reRegister() {
+    this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {});
   }
 
   public createOutgoingCallSession(phoneNumber: string, options: any): any {

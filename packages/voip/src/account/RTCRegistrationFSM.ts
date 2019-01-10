@@ -16,6 +16,7 @@ enum REGISTRATION_FSM_EVENT {
   REG_TIMEOUT = 'regTimeout',
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
+  RE_REGISTER = 'reRegister',
 }
 
 class RTCRegistrationFSM extends StateMachine {
@@ -28,6 +29,18 @@ class RTCRegistrationFSM extends StateMachine {
           from: REGISTRATION_FSM_STATE.IDLE,
           to: (provisionData: any, options: any) => {
             dependency.onProvisionReadyAction(provisionData, options);
+            return REGISTRATION_FSM_STATE.IN_PROGRESS;
+          },
+        },
+        {
+          name: REGISTRATION_FSM_EVENT.RE_REGISTER,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.FAILURE,
+            REGISTRATION_FSM_STATE.READY,
+          ],
+          to: () => {
+            dependency.onReRegisterAction();
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },
         },

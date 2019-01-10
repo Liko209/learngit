@@ -27,6 +27,7 @@ import {
 } from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../utils';
 import { UserConfig } from '../account/UserConfig';
 
 class PersonService extends BaseService<Person> {
@@ -153,11 +154,14 @@ class PersonService extends BaseService<Person> {
     terms: string[];
     sortableModels: SortableModel<Person>[];
   } | null> {
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_PERSON,
+    );
     let currentUserId: number | null = null;
     if (excludeSelf) {
       currentUserId = UserConfig.getCurrentUserId();
     }
-    return this.searchEntitiesFromCache(
+    const result = await this.searchEntitiesFromCache(
       (person: Person, terms: string[]) => {
         do {
           if (
@@ -232,6 +236,10 @@ class PersonService extends BaseService<Person> {
         return 0;
       },
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.SEARCH_PERSON,
+    );
+    return result;
   }
 
   getName(person: Person) {
