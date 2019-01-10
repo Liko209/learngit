@@ -19,7 +19,7 @@ fixture('AtMention/AtMention')
 test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-311']), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[7];
   const otherUser = users[5];
   await h(t).resetGlipAccount(loginUser);
   await h(t).platform(loginUser).init();
@@ -88,7 +88,6 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     const otherUser = users[5];
-    await h(t).resetGlipAccount(loginUser);
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
     await h(t).platform(otherUser).init();
@@ -125,6 +124,8 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
         `Hi, ![:Person](${loginUser.rcId})`,
         teamId,
       );
+      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
+
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -135,7 +136,10 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
       await mentionsEntry.enter();
       await mentionPage.waitUntilPostsBeLoaded();
-      await t.expect(mentionPage.posts.count).eql(3);
+      await t.expect(mentionPage.posts.count).gte(3);
+      await t.expect(mentionPage.postItemById(chatPostId).exists).ok();
+      await t.expect(mentionPage.postItemById(groupPostId).exists).ok();
+      await t.expect(mentionPage.postItemById(teamPostId).exists).ok();
     }, true);
 
     await h(t).withLog('Then I click the conversation name in the chat\'s conversation card', async () => {
@@ -189,7 +193,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
+    const loginUser = users[7];
     const otherUser = users[5];
     await h(t).resetGlipAccount(loginUser);
     await h(t).platform(loginUser).init();
@@ -262,7 +266,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
+  const loginUser = users[7];
   const otherUser = users[5];
   await h(t).resetGlipAccount(loginUser);
 
