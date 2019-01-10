@@ -6,12 +6,13 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { Item } from 'sdk/module/item/entity';
-import FileItemModel from '@/store/models/FileItem';
+import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
+import { getFileType } from '@/common/getFileType';
 import { FilesProps } from './types';
 class FileItemViewModel extends AbstractViewModel<FilesProps> {
   @computed
@@ -35,8 +36,27 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
   }
 
   @computed
-  get fileType() {
-    return this.file.type ? this.file.type.split('/').pop() : '';
+  get fileTypeOrUrl() {
+    const { type } = this.file;
+    const { isImage, previewUrl } = this.isImage(this.file);
+    const thumb = {
+      icon: '',
+      url: '',
+    };
+    if (isImage) {
+      thumb.url = previewUrl;
+      return thumb;
+    }
+    thumb.icon = (type && type.split('/').pop()) || '';
+    return thumb;
+  }
+
+  isImage(fileItem: FileItemModel) {
+    const { type, previewUrl } = getFileType(fileItem);
+    return {
+      previewUrl,
+      isImage: type === FileType.image,
+    };
   }
 }
 

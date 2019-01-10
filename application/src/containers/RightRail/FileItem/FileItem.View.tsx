@@ -28,9 +28,10 @@ class FileItemView extends Component<FileItemProps> {
     this.setState({ isHover: false });
   }
   render() {
-    const { disabled, file, fileType, subTitle } = this.props;
+    const { disabled, file, fileTypeOrUrl, subTitle } = this.props;
     const { name, downloadUrl } = file;
     const { isHover } = this.state;
+
     return (
       <JuiListItem
         disabled={disabled}
@@ -38,7 +39,7 @@ class FileItemView extends Component<FileItemProps> {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <JuiThumbnail iconType={fileType} />
+          <JuiThumbnail iconType={fileTypeOrUrl.icon} url={fileTypeOrUrl.url} />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
