@@ -5,12 +5,12 @@
  */
 
 enum LOG_LEVEL {
-  FATAL = 'FATAL',
-  ERROR = 'ERROR',
-  WARN = 'WARN',
-  INFO = 'INFO',
-  DEBUG = 'DEBUG',
-  TRACE = 'TRACE',
+  FATAL = 50000,
+  ERROR = 40000,
+  WARN = 30000,
+  INFO = 20000,
+  DEBUG = 10000,
+  TRACE = 5000,
 }
 
 interface IRTCLogger {
