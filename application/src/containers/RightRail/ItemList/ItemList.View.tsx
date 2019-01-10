@@ -21,6 +21,9 @@ const subheaderType = {
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
+  componentDidMount() {
+    this.props.fetchNextPageItems();
+  }
   render() {
     const { ids, type, totalCount } = this.props;
     const Component: any = itemType[type];
