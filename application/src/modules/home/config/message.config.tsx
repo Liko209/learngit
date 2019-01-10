@@ -5,21 +5,21 @@
  */
 import React from 'react';
 import { t } from 'i18next';
-import { Umi } from '@/containers/Umi';
 import { Message } from '@/modules/message';
+import { MessageUmi } from '../container/MessageUmi';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
   route: {
-    path: '/messages/:id?',
+    path: '/messages',
     component: Message,
   },
-  nav: (currentConversationId: number, groupIds: number[]) => {
+  nav: () => {
     return {
-      url: `/messages/${currentConversationId}`,
+      url: '/messages',
       icon: 'messages',
       title: t('Messages'),
-      umi: <Umi ids={groupIds} global="UMI.app" />,
+      umi: <MessageUmi />,
       placement: 'top',
     };
   },

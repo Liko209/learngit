@@ -37,21 +37,14 @@ class LeftNavViewModel extends StoreViewModel {
 
   @computed
   get icons() {
-    const groupIds = this.groupIds;
-    const currentConversationId =
-      getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID) || '';
-
-    const navConfigs = this._homeStore.getNavConfigs(
-      currentConversationId,
-      groupIds,
-    );
+    const navConfigs = this._homeStore.navConfigs;
 
     const topIcons = navConfigs
-      .filter(navItem => navItem.placement === 'top')
+      .filter((navItem: NavConfig) => navItem.placement === 'top')
       .map(removePlacement);
 
     const bottomIcons = navConfigs
-      .filter(navItem => navItem.placement === 'bottom')
+      .filter((navItem: NavConfig) => navItem.placement === 'bottom')
       .map(removePlacement);
 
     return [topIcons, bottomIcons];

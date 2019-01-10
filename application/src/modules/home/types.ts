@@ -15,7 +15,7 @@ type NavConfig = {
 
 type SubModuleConfig = {
   route?: RouteProps;
-  nav?: ((currentConversationId: number, groupIds: number[]) => NavConfig);
+  nav?: () => NavConfig;
   isDefault?: boolean;
 };
 

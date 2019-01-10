@@ -28,16 +28,15 @@ class HomeStore {
       .map(subModule => subModule.route) as RouteProps[];
   }
 
-  getNavConfigs(currentConversationId: number, currentGroupIds: number[]) {
-    const hasNav = (config: SubModuleConfig) => {
+  @computed
+  get navConfigs() {
+    const hasNav = (
+      config: SubModuleConfig,
+    ): config is { nav: () => NavConfig } => {
       return !!config.nav;
     };
 
-    return this._subModuleConfigs
-      .filter(hasNav)
-      .map((config: { nav: (arg0: number, arg1: number[]) => NavConfig }) => {
-        return config.nav(currentConversationId, currentGroupIds);
-      });
+    return this._subModuleConfigs.filter(hasNav).map(config => config.nav());
   }
 
   @action

@@ -53,7 +53,7 @@ class RightRailComponent extends React.Component<Props, States> {
       <JuiRightShelf data-test-automation-id="rightRail">
         <JuiRightShelfHeader>
           <JuiRightShelfHeaderText>
-            {t('conversationDetails')}
+            {t('conversationDetails')} {id}
           </JuiRightShelfHeaderText>
           <JuiRightShelfHeaderIcon>
             <JuiIconButton

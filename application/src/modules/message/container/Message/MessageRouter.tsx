@@ -3,24 +3,26 @@
  * @Date: 2018-10-08 18:38:42
  * Copyright © RingCentral. All rights reserved.
  */
-
-import React, { Component } from 'react';
-import { t } from 'i18next';
 import { observer } from 'mobx-react';
-import { Route, Switch, withRouter } from 'react-router-dom';
-import { JuiResponsiveLayout } from 'jui/foundation/Layout/Response';
+import React, { Component } from 'react';
+import {
+  Route,
+  Switch,
+  withRouter,
+  RouteComponentProps,
+} from 'react-router-dom';
+import { t } from 'i18next';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
   goToConversation,
   GoToConversationParams,
 } from '@/common/goToConversation';
-import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
-import { RightRail } from '@/containers/RightRail';
+import { ConversationPage } from '@/containers/ConversationPage';
 import { PostListPage } from '@/containers/PostListPage';
 import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
-
-import { MessagesViewProps } from './types';
+import { RightRail } from '@/containers/RightRail';
+import { MessageLayout } from '../MessageLayout/MessageLayout';
 import { MessageRouterChangeHelper } from './helper';
 
 type State = {
@@ -28,37 +30,32 @@ type State = {
   retryParams: GoToConversationParams | null;
 };
 
+type MessagesWrapperPops = RouteComponentProps<{ subPath: string }>;
+
 @observer
-class MessageViewComponent extends Component<MessagesViewProps, State> {
+class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   state = {
     messageError: false,
     retryParams: null,
   };
 
-  constructor(props: MessagesViewProps) {
-    super(props);
-  }
-
   componentDidMount() {
-    const { match } = this.props;
-    const { id: conversationIdOfUrl } = match.params;
-
-    conversationIdOfUrl
-      ? MessageRouterChangeHelper.goToConversation(conversationIdOfUrl)
+    const targetConversationId = this.props.match.params.subPath;
+    targetConversationId
+      ? MessageRouterChangeHelper.goToConversation(targetConversationId)
       : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 
-  componentDidUpdate(prevProps: MessagesViewProps) {
-    const currentConversationId = this.props.match.params.id;
-    const prevConversationId = prevProps.match.params.id;
-    if (currentConversationId !== prevConversationId) {
-      MessageRouterChangeHelper.updateCurrentConversationId(
-        currentConversationId,
-      );
+  componentDidUpdate(prevProps: MessagesWrapperPops) {
+    const subPath = this.props.match.params.subPath;
+    const prevSubPath = prevProps.match.params.subPath;
+
+    if (subPath !== prevSubPath) {
+      MessageRouterChangeHelper.updateCurrentConversationId(subPath);
     }
   }
 
-  componentWillReceiveProps(props: MessagesViewProps) {
+  componentWillReceiveProps(props: MessagesWrapperPops) {
     const { location } = props;
     const { state } = location;
 
@@ -77,26 +74,16 @@ class MessageViewComponent extends Component<MessagesViewProps, State> {
   }
 
   render() {
-    const { isLeftNavOpen } = this.props;
+    const { match } = this.props;
     const { messageError } = this.state;
-    const id = this.props.match.params.id;
 
-    const currentConversationId = id ? Number(id) : 0;
-    let leftNavWidth = 72;
-    if (isLeftNavOpen) {
-      leftNavWidth = 200;
-    }
     return (
-      <JuiResponsiveLayout
-        tag="conversation"
-        leftNavWidth={leftNavWidth}
-        mainPanelIndex={1}
-      >
+      <MessageLayout>
         <LeftRail />
         <Switch>
           <Route
             path={'/messages/loading'}
-            render={props => (
+            render={() => (
               <JuiConversationLoading
                 showTip={messageError}
                 tip={t('messageLoadingErrorTip')}
@@ -118,22 +105,23 @@ class MessageViewComponent extends Component<MessagesViewProps, State> {
             )}
           />
           <Route
-            path="/messages/:id"
-            render={props =>
-              currentConversationId ? (
-                <ConversationPage {...props} groupId={currentConversationId} />
-              ) : null
-            }
+            path={'/messages/:id'}
+            render={(props: RouteComponentProps<{ id: string }>) => (
+              <ConversationPage
+                {...props}
+                groupId={Number(props.match.params.id)}
+              />
+            )}
           />
         </Switch>
-        {currentConversationId ? (
-          <RightRail id={currentConversationId} />
+        {MessageRouterChangeHelper.isConversation(match.params.subPath) ? (
+          <RightRail id={Number(match.params.subPath)} />
         ) : null}
-      </JuiResponsiveLayout>
+      </MessageLayout>
     );
   }
 }
 
-const MessageView = withRouter(MessageViewComponent);
+const MessageRouter = withRouter(MessageRouterComponent);
 
-export { MessageView };
+export { MessageRouter };
