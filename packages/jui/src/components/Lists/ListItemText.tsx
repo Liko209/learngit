@@ -21,14 +21,9 @@ const StyledListItemText = styled(MuiListItemText)`
       ${ellipsis};
     }
     .list-item-secondary {
-      display: flex;
-      justify-content: space-between;
       color: ${grey('500')};
       ${typography('caption1')};
       ${ellipsis};
-      span {
-        ${ellipsis};
-      }
     }
   }
 `;

@@ -24,13 +24,12 @@ export default class FileItemModel extends ItemModel {
   @observable name: string;
   @observable isDocument?: boolean;
   @observable isNew: boolean;
-  @observable createId: number;
+  @observable creatorId: number;
   @observable versions: Item['versions'];
   @observable deactivated: Item['deactivated'];
 
   constructor(data: Item) {
     super(data);
-    console.log(data, '----nello data');
     const {
       type,
       name,
@@ -46,7 +45,7 @@ export default class FileItemModel extends ItemModel {
     this.isNew = is_new;
     this.versions = versions;
     this.deactivated = deactivated;
-    this.createId = creator_id;
+    this.creatorId = creator_id;
   }
 
   hasVersions() {

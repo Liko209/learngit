@@ -5,12 +5,11 @@
  */
 
 import { computed, observable, action } from 'mobx';
-// import { ENTITY_NAME } from '@/store';
-// import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ItemService, ITEM_SORT_KEYS, SortUtils } from 'sdk/module/item';
+import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { SortUtils } from 'sdk/framework/utils';
 import { Item } from 'sdk/module/item/entity';
 import {
   FetchSortableDataListHandler,
@@ -44,7 +43,7 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
       this._typeId,
       this._groupId,
       pageSize,
-      anchor ? anchor.id : 0,
+      anchor && anchor.id,
       this._sortKey,
       this._desc,
     );
@@ -55,11 +54,12 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 
 class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
-  totalCount: number;
+  totalCount: number = 0;
   @observable
   private _sortKey: ITEM_SORT_KEYS;
   @observable
   private _desc: boolean = false;
+  @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @computed
   private get _groupId() {
@@ -75,15 +75,22 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return ItemTypeIdMap[this.type];
   }
 
-  constructor() {
-    super();
-    this._buildSortableMemberListHandler(
-      this._groupId,
-      this._typeId,
-      this._sortKey,
-      this._desc,
+  constructor(props: Props) {
+    super(props);
+    this.reaction(
+      () => this.props.groupId,
+      () => {
+        this.props.groupId &&
+          this._buildSortableMemberListHandler(
+            this._groupId,
+            this._typeId,
+            this._sortKey,
+            this._desc,
+          );
+        this.loadTotalCount();
+      },
+      { fireImmediately: true },
     );
-    this.loadTotalCount();
   }
 
   async loadTotalCount() {
@@ -138,7 +145,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
     });
-    this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
+    this._fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
@@ -152,12 +159,12 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @action
-  fetchNextPageItems() {
+  private _fetchNextPageItems() {
     return this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   }
 
   @computed
-  ids() {
+  get ids() {
     return this._sortableDataHandler.sortableListStore.getIds();
   }
 }

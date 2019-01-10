@@ -5,24 +5,34 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
+import { t } from 'i18next';
 import { ITEM_LIST_TYPE } from '../types';
 import { ViewProps, Props } from './types';
-import { FileItem } from 'jui/src/pattern/ConversationCard/Files/style';
+import { FileItem } from '../FileItem';
+import { JuiListSubheader } from 'jui/components/Lists';
 
 const itemType = {
   [ITEM_LIST_TYPE.FILE]: FileItem,
 };
 
+const subheaderType = {
+  [ITEM_LIST_TYPE.FILE]: 'fileListSubheader',
+};
+
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
   render() {
-    const { ids, type } = this.props;
-    const Component = itemType[type];
+    const { ids, type, totalCount } = this.props;
+    const Component: any = itemType[type];
+    const subheaderText = subheaderType[type];
 
     return (
       <>
+        <JuiListSubheader>
+          {t(subheaderText)} ({totalCount})
+        </JuiListSubheader>
         {ids.map((id: number) => {
-          <Component id={id} />;
+          return <Component key={id} id={id} />;
         })}
       </>
     );

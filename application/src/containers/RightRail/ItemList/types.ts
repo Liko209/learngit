@@ -8,9 +8,11 @@ import { ITEM_LIST_TYPE } from '../types';
 type Props = {
   groupId: number;
   type: ITEM_LIST_TYPE;
-  ids: number[];
 };
 
-type ViewProps = {};
+type ViewProps = {
+  ids: number[];
+  totalCount: number;
+};
 
 export { Props, ViewProps };

@@ -37,7 +37,9 @@ class FileItemView extends Component<FileItemProps> {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        <JuiThumbnail url={fileType} />
+        <JuiListItemIcon>
+          <JuiThumbnail iconType={fileType} />
+        </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
           secondary={subTitle}

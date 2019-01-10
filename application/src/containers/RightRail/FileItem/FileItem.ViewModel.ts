@@ -28,15 +28,15 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
   get subTitle() {
     const personName = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
-      this.file.createId,
-    ).displayName;
+      this.file.creatorId,
+    ).userDisplayName;
 
     return personName;
   }
 
   @computed
   get fileType() {
-    return this.file.type.split('/').pop();
+    return this.file.type && this.file.type.split('/').pop();
   }
 }
 
