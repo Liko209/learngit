@@ -78,18 +78,21 @@ class RTCRegistrationManager extends EventEmitter2
       RTC_ACCOUNT_STATE.REGISTERED,
     );
   }
+
   private _onEnterRegInProgress() {
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.IN_PROGRESS,
     );
   }
+
   private _onEnterRegFailure() {
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.FAILED,
     );
   }
+
   private _onEnterUnRegistered() {
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,

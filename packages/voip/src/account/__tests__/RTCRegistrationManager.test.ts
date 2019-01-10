@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
-import { IRTCAccountDelegate } from '../../api/IRTCAccountDelegate';
-import { RTC_ACCOUNT_STATE } from '../../api/types';
 import { UA_EVENT } from '../../signaling/types';
 import { EventEmitter2 } from 'eventemitter2';
 
@@ -44,17 +42,22 @@ describe('RTCRegistrationManager', () => {
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
-      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
+      jest.spyOn(regManager, '_onEnterReady').mockImplementation(() => {});
+      jest.spyOn(regManager, '_onEnterRegFailure').mockImplementation(() => {});
       regManager.provisionReady(provisionData, options);
     }
 
     it('Should call the onReRegisterAction function when FSM state in regInProgress [JPT-756]', done => {
       const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
       initRegManager(regManager);
+      regManager._userAgent = ua;
+      regManager._initUserAgentListener();
       regManager.reRegister();
       setImmediate(() => {
         expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
-        expect(regManager._fsm.state).toBe('InProgress');
+        expect(regManager._fsm.state).toBe('inProgress');
+        expect(ua.reRegister).toHaveBeenCalled();
         done();
       });
     });
@@ -68,6 +71,7 @@ describe('RTCRegistrationManager', () => {
       ua.mockSignal(UA_EVENT.REG_SUCCESS);
       regManager.reRegister();
       setImmediate(() => {
+        expect(regManager._onEnterReady).toHaveBeenCalled();
         expect(regManager._fsm.state).toBe('inProgress');
         expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
         expect(ua.reRegister).toHaveBeenCalled();
@@ -75,18 +79,19 @@ describe('RTCRegistrationManager', () => {
     });
 
     it('Should call the onReRegisterAction function when FSM state in regFailed [JPT-757]', () => {
-      const mockListener = new MockAccountListener();
-      const regManager = new RTCRegistrationManager(mockListener);
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
       initRegManager(regManager);
-      expect(regManager._fsm.state).toBe('regInProgress');
-      regManager._userAgent = new MockUserAgent(
-        regManager._eventEmitter,
-        false,
-      );
-      expect(regManager._fsm.state).toBe('regFailure');
+      regManager._userAgent = ua;
+      regManager._initUserAgentListener();
+      ua.mockSignal(UA_EVENT.REG_FAILED);
       regManager.reRegister();
-      expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
-      expect(regManager._fsm.state).toBe('regInProgress');
+      setImmediate(() => {
+        expect(regManager._onEnterRegFailure).toHaveBeenCalled();
+        expect(regManager._fsm.state).toBe('inProgress');
+        expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+        expect(ua.reRegister).toHaveBeenCalled();
+      });
     });
   });
 
