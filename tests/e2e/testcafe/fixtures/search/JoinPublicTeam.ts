@@ -102,8 +102,8 @@ test.skip(formalName(`Display Join button for public team which login user doesn
     groupCount = await search.groups.count;
   });
 
-  for (let i in _.range(peopleCount)) {
-    const item = search.nthPeople(Number(i));
+  for (let i of _.range(peopleCount)) {
+    const item = search.nthPeople(i);
     await h(t).withLog(`When I hover each one group result ${i}/${peopleCount}`, async () => {
       await t.hover(item.self);
     });
@@ -112,8 +112,8 @@ test.skip(formalName(`Display Join button for public team which login user doesn
       await item.shouldNotHasJoinButton();
     });
   }
-  for (let i in _.range(groupCount)) {
-    const item = search.nthGroup(Number(i));
+  for (let i of _.range(groupCount)) {
+    const item = search.nthGroup(i);
     await h(t).withLog(`When I hover each one people result ${i}/${groupCount}`, async () => {
       await t.hover(item.self);
     });

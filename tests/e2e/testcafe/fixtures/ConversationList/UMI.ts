@@ -800,11 +800,6 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
 // bug https://jira.ringcentral.com/browse/FIJI-2766 so skip the checkpoint
 test(formalName('JPT- 743 Should be unread when closed conversation received new unread', ['JPT-743', 'P2', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
-    if (await H.isEdge()) {
-      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-      return;
-    }
-
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -813,15 +808,16 @@ test(formalName('JPT- 743 Should be unread when closed conversation received new
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-    const post = "post:"+uuid();
+    const post = uuid();
 
-    let pvtChatId;
+    let privateChatId;
     await h(t).withLog('Given closed one conversation', async () => {
-      pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
+      privateChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId]
+        members: [loginUser.rcId, otherUser.rcId]
       });
-      await h(t).glip(loginUser).hideGroups(loginUser.rcId, pvtChatId);
+      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
+      await h(t).glip(loginUser).hideGroups(loginUser.rcId, privateChatId);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -830,15 +826,15 @@ test(formalName('JPT- 743 Should be unread when closed conversation received new
     });
 
     await h(t).withLog('And the conversation received one unread post from other members', async () => {
-      await h(t).platform(otherUser).sendTextPost(post, pvtChatId);
+      await h(t).platform(otherUser).sendTextPost(post, privateChatId);
     });
 
     await h(t).withLog('Then the conversation should not be opened automatically', async () => {
-      await t.expect(h(t).href).notContains(pvtChatId);
+      await t.expect(h(t).href).notContains(privateChatId);
     });
 
     await h(t).withLog('And the conversation should show in the conversation list', async () => {
-      await t.expect(directMessagesSection.conversationEntryById(pvtChatId).exists).ok();
+      await t.expect(directMessagesSection.conversationEntryById(privateChatId).exists).ok();
     });
 
     // bug https://jira.ringcentral.com/browse/FIJI-2766

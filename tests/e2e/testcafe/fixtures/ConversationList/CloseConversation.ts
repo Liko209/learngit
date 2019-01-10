@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { formalName } from '../../libs/filter';
 import { v4 as uuid } from 'uuid';
 import { setupCase, teardownCase } from '../../init';
@@ -549,8 +550,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
 );
 
 
-test(formalName('JPT-138 Can display conversation history when receiving messages from the closed conversation.',
-  ['JPT-138', 'P2', 'ConversationList','Mia.Cai']),
+test(formalName('JPT-138 Can display conversation history when receiving messages from the closed conversation.', ['JPT-138', 'P2', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -564,78 +564,93 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     const teamsSection = app.homePage.messageTab.teamsSection;
     const conversationPage = app.homePage.messageTab.conversationPage;
     const close = app.homePage.messageTab.moreMenu.close;
-    const posts = ["post1:"+uuid(), "post2:"+uuid()];
+    const posts = [`post1:${uuid()}`, `post2:${uuid()}`];
 
-    let dmId, teamId;
-    await h(t).withLog('Given I have an extension with 1 dm and I team',
-      async () => {
-        dmId = await h(t).platform(loginUser).createAndGetGroupId({
-          type: 'PrivateChat',
-          members: [loginUser.rcId, users[5].rcId],
-        });
-        teamId = await h(t).platform(loginUser).createAndGetGroupId({
-          isPublic: true,
-          name: uuid(),
-          type: 'Team',
-          members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-        });
-      },
-    );
-
-    await h(t).withLog('And send one message to 2 conversations', async () => {
-      posts.forEach(async (post) => {
-        await h(t).platform(otherUser).sendTextPost(post, dmId);
-        await h(t).platform(otherUser).sendTextPost(post, teamId);
+    let privateChatId, teamId;
+    await h(t).withLog('Given I have an extension with 1 dm and I team', async () => {
+      privateChatId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'PrivateChat',
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
+        name: uuid(),
+        type: 'Team',
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
     });
 
-    await h(t).withLog('And 2 conversations should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [dmId, teamId]);
+    await h(t).withLog('And send 2 messages to each conversation', async () => {
+      for (let i of _.range(posts.length)) {
+        await h(t).platform(otherUser).sendTextPost(posts[i], privateChatId);
+        await h(t).platform(otherUser).sendTextPost(posts[i], teamId);
+      }
     });
 
-    await h(t).withLog('And Clear all UMI for 2 conversations', async () =>{
-      // await h(t).glip(loginUser).clearAllUmi();
-      await h(t).glip(loginUser).markAsRead(loginUser.rcId, [dmId, teamId]);
-    })
+    await h(t).withLog('And 2 conversations should not be hidden before login', async () => {
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [privateChatId, teamId]);
+    });
 
-    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
-      async () => {
-        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
-      },
-    );
+    await h(t).withLog('And Clear all UMI for 2 conversations', async () => {
+      await h(t).glip(loginUser).clearAllUmi();
+    });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, loginUser);
-        await app.homePage.ensureLoaded();
-    },true);
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+    });
 
-    const dm_conversation = directMessagesSection.conversationEntryById(dmId);
-    const team_conversation = teamsSection.conversationEntryById(teamId);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    }, true);
+
+
+    const privateChat = directMessagesSection.conversationEntryById(privateChatId);
+    const teamChat = teamsSection.conversationEntryById(teamId);
 
     await h(t).withLog('Then I can find the 2 conversations in conversation list', async () => {
-      await t.expect(dm_conversation.exists).ok(dmId, { timeout: 10e3 });
-      await t.expect(team_conversation.exists).ok(teamId, { timeout: 10e3 });
+      await t.expect(privateChat.exists).ok(privateChatId, { timeout: 10e3 });
+      await t.expect(teamChat.exists).ok(teamId, { timeout: 10e3 });
     }, true);
 
     await h(t).withLog('When closed 2 conversations', async () => {
-      await dm_conversation.openMoreMenu();
+      await privateChat.openMoreMenu();
       await close.enter();
-      await team_conversation.openMoreMenu();
+      await teamChat.openMoreMenu();
       await close.enter();
-    },true); 
+    }, true);
 
-    const new_post = "new post:"+uuid();
     await h(t).withLog('And send one message to 2 conversations', async () => {
-      await h(t).platform(otherUser).sendTextPost(new_post, dmId);
+      const new_post = `new post:${uuid()}`;
+      posts.push(new_post);
+      await h(t).platform(otherUser).sendTextPost(new_post, privateChatId);
       await h(t).platform(otherUser).sendTextPost(new_post, teamId);
     });
 
-    await posts.push(new_post);
+    await h(t).withLog(`Then I can find the both conversations in conversation list`, async () => {
+      await t.expect(privateChat.exists).ok();
+      await t.expect(teamChat.exists).ok();
+    });
+
+    await h(t).withLog(`When I open the direct messages conversation`, async () => {
+      await privateChat.enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    });
 
     await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
-      for(let i= 0; i< posts.length; i++){
-        await t.expect(conversationPage.nthPostItem(-1-i).body.withText(posts[i]).exists).ok();
+      for (let i of _.range(posts.length)) {
+        await t.expect(conversationPage.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
       }
-    },true); 
+    }, true);
+
+    await h(t).withLog(`When I open the team conversation`, async () => {
+      await teamChat.enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    });
+
+    await h(t).withLog('Then history posts can be displayed in order in conversations stream', async () => {
+      for (let i of _.range(posts.length)) {
+        await t.expect(conversationPage.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
+      }
+    }, true);
+
   });
