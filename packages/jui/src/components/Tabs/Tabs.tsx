@@ -31,6 +31,7 @@ type States = {
 };
 
 type Props = {
+  width?: number; // resize
   tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
@@ -93,10 +94,21 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   componentDidMount() {
+    this._measureMoreWidth();
+    this._measureContainerWidth();
+    this._measureTabWidths();
+    this._calculateIndexTabsAndIndexMenus();
+  }
+
+  private _measureMoreWidth = () => {
     const domMore = this._moreRef.current;
     if (domMore) {
       this._moreWidth = domMore.getBoundingClientRect().width;
     }
+    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+  }
+
+  private _measureContainerWidth = () => {
     const domContainer = this._containerRef.current;
     if (domContainer) {
       const cs = window.getComputedStyle(domContainer);
@@ -106,11 +118,7 @@ class JuiTabs extends PureComponent<Props, States> {
         parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
     // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
-    this._measureTabWidths();
-    this._calculateIndexTabsAndIndexMenus();
-    // todo resize listener
   }
 
   private _measureTabWidths = () => {
@@ -307,6 +315,11 @@ class JuiTabs extends PureComponent<Props, States> {
       indexMenus.length > 0 &&
       !this.state.indexTabs.includes(this.state.indexSelected)
     ) {
+      this._calculateIndexTabsAndIndexMenus();
+    }
+
+    if (prevProps.width !== this.props.width) {
+      this._measureContainerWidth();
       this._calculateIndexTabsAndIndexMenus();
     }
   }

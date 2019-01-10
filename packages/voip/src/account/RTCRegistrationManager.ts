@@ -17,6 +17,7 @@ import { ErrorCode, RegistrationManagerEvent } from './types';
 
 const RegistrationEvent = {
   PROVISION_READY: 'provisionReady',
+  RE_REGISTER: 'reRegister',
 };
 
 const ObserveEvent = {
@@ -34,6 +35,11 @@ class RTCRegistrationManager implements IConditionalHandler {
   private _isReady: boolean;
 
   public onReadyWhenRegSucceedAction(): void {}
+
+  public onReRegisterAction(): void {
+    this._userAgent.reRegister();
+  }
+
   public onProvisionReadyAction(provisionData: any, options: any): void {
     this._userAgent = new RTCSipUserAgent(
       provisionData,
@@ -102,6 +108,9 @@ class RTCRegistrationManager implements IConditionalHandler {
         this._onProvisionReady(provisionData, options);
       },
     );
+    this._eventEmitter.on(RegistrationEvent.RE_REGISTER, () => {
+      this._onReRegister();
+    });
   }
 
   public provisionReady(provisionData: any, options: any) {
@@ -110,6 +119,10 @@ class RTCRegistrationManager implements IConditionalHandler {
       provisionData,
       options,
     );
+  }
+
+  public reRegister() {
+    this._eventEmitter.emit(RegistrationEvent.RE_REGISTER);
   }
 
   private _onProvisionReady(provisionData: any, options: any) {
@@ -130,6 +143,10 @@ class RTCRegistrationManager implements IConditionalHandler {
 
   private _onUADeRegister() {
     this._fsm.unRegister();
+  }
+
+  private _onReRegister() {
+    this._fsm.reRegister();
   }
 
   private _onUARegFailed(response: any, cause: any) {

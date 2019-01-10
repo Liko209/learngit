@@ -73,8 +73,8 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then M1 action bar 'unlike' icon change to 'like', and M1 card footer appear "like" icon with number 1`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -85,7 +85,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then M1 should appear "like" icon with number 1`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -99,8 +99,8 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   await h(t).withLog(`Then there is hollow "unlike" icon on M1 action bar and no like or unlike on M1 footer `, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(0);
   });
 
@@ -122,8 +122,8 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then M1 action bar 'unlike' icon change to 'like', and M1 card footer appear "like" icon with number 1`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -134,7 +134,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then M1 should appear "like" icon with number 1`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -148,8 +148,8 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   await h(t).withLog(`Then there is hollow "unlike" icon on M1 action bar and no like or unlike on M1 footer `, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(0);
   });
 
@@ -160,7 +160,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then should check no one like the M1`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(0);
   });
 });
@@ -203,7 +203,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" icon with number 1 at M1 footer`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -212,7 +212,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" icon with number 1 at M1 footer`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -223,7 +223,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" icon on Action Bar`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -233,8 +233,8 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then the both hollow "unlike" icon change to solid "like" icon and the post Like number should be 2 `, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
     await t.expect(await postCard.getLikeCount()).eql(2);
   });
 
@@ -245,7 +245,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" with number 2 on M1 footer`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(2);
   });
 
@@ -257,8 +257,8 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   });
 
   await h(t).withLog(`Then the both solid "unlike" icon change to hollow icon and the post Like number should be 1 `, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -269,7 +269,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" with number 1 on M1 footer`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -282,8 +282,8 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then the both hollow "unlike" icon change to solid "like" icon and the post Like number should be 2 `, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
     await t.expect(await postCard.getLikeCount()).eql(2);
   });
 
@@ -294,7 +294,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" with number 2 on M1 footer`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(2);
   });
 
@@ -306,8 +306,8 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   });
 
   await h(t).withLog(`Then the both solid "unlike" icon change to hollow icon and the post Like number should be 1 `, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).notEql('thumb_up');
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 
@@ -318,7 +318,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   })
 
   await h(t).withLog(`Then there is a hollow "unlike" with number 1 on M1 footer`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).notEql('thumb_up');
+    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
     await t.expect(await postCard.getLikeCount()).eql(1);
   });
 });

@@ -192,12 +192,14 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const adminUser = users[5];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  adminUser.sdk = await h(t).getSdk(adminUser);
   const app = new AppRoot(t);
   const teamName = uuid();
   const privateTeamName = uuid();
-  const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).platform(adminUser).init();
+
+  const otherUserName = await h(t).glip(loginUser).getPerson(users[5].rcId)
     .then(res => {
       return res.data.display_name;
     });
@@ -206,20 +208,20 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
 
   let teamId, privateTeamId;
   await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
-    teamId = (await adminUser.sdk.platform.createGroup({
+    teamId = await h(t).platform(adminUser).createAndGetGroupId({
       privacy: 'protected',
       isPublic: true,
       name: teamName,
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
-    })).data.id;
-    privateTeamId = (await adminUser.sdk.platform.createGroup({
+    });
+    privateTeamId = await h(t).platform(adminUser).createAndGetGroupId({
       privacy: 'private',
       isPublic: false,
       name: privateTeamName,
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
-    })).data.id;
+    });
   });
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {

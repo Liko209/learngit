@@ -9,16 +9,18 @@ interface ISubItemService {
   getSortedIds(
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
-  ): number[];
+  ): Promise<number[]>;
 
   updateItem(item: Item): void;
 
   deleteItem(itemId: number): void;
 
   createItem(item: Item): void;
+
+  getSubItemsCount(groupId: number): Promise<number>;
 }
 
 export { ISubItemService };

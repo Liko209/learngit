@@ -11,7 +11,7 @@ module.exports = {
     `!${process.env.APP}/src/**/*.View.tsx`
   ],
   coverageThreshold: require("./config/coverage-threshold.json"),
-  coverageReporters: ["lcov", "text-summary", "json-summary"],
+  coverageReporters: ["lcov", "text-summary", "json-summary", "clover"],
   setupFiles: [
     "<rootDir>/config/polyfills.js",
     "<rootDir>/config/enzymeTestAdapterSetup.js"

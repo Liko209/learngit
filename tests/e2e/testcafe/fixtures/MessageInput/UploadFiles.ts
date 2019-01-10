@@ -124,6 +124,7 @@ test(formalName(`JPT-592 Shouldn't show the prompt when re-select an existing fi
   });
 
   await h(t).withLog('Then shouldn\'t show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).notOk();
   });
 });
@@ -250,6 +251,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -419,6 +421,7 @@ test(formalName('JPT-500 Can create files in the duplicate prompt when the same 
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -495,6 +498,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -512,6 +516,7 @@ test(formalName('JPT-533 Can create files when re-select the file and local exis
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
@@ -582,6 +587,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
   });
 
   await h(t).withLog('Then will show a duplicate prompt ', async () => {
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
 
