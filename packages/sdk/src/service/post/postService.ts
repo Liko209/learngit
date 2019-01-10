@@ -344,6 +344,7 @@ class PostService extends BaseService<Post> {
       }
 
       const clonePost = _.cloneDeep(post);
+      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       if (shouldUpdatePost) {
         await this.handlePartialUpdate(
           {
@@ -373,7 +374,6 @@ class PostService extends BaseService<Post> {
         await this.deletePost(clonePost.id);
       }
 
-      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       // remove listener if item files are not in progress
       if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
         // has failed
@@ -481,7 +481,7 @@ class PostService extends BaseService<Post> {
 
   async removeItemFromPost(postId: number, itemId: number) {
     const itemService: ItemService = ItemService.getInstance();
-    await itemService.deleteItem(itemId);
+    await itemService.deleteItemData(itemId);
 
     const post = await this.getByIdFromDao(postId);
     if (post) {
@@ -529,9 +529,6 @@ class PostService extends BaseService<Post> {
     const post = (await postDao.get(id)) as Post;
 
     if (id < 0) {
-      const progressService: ProgressService = ProgressService.getInstance();
-      progressService.deleteProgress(id);
-
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
@@ -547,6 +544,10 @@ class PostService extends BaseService<Post> {
           send_failure_post_ids: failIds,
         });
       }
+
+      const progressService: ProgressService = ProgressService.getInstance();
+      progressService.deleteProgress(id);
+
       return true;
     }
 
