@@ -224,14 +224,14 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal('accepted');
       call.startRecord();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.START_RECORD,
-      );
       setImmediate(() => {
         const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
-        expect(session.startRecord).toHaveBeenCalled();
+        expect(call._isRecording).toBeTruthy;
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_RECORD,
+        );
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
         );
@@ -247,7 +247,6 @@ describe('RTC call', () => {
       session.startRecord.mockResolvedValue(null);
       call.onAccountReady();
       session.mockSignal('accepted');
-      call.startRecord();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
         RTC_CALL_ACTION.START_RECORD,
@@ -256,7 +255,12 @@ describe('RTC call', () => {
       setImmediate(() => {
         const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
-        expect(session.startRecord).toHaveBeenCalledTimes(1);
+        expect(call._isRecording).toBeTruthy;
+        expect(session.startRecord).not.toHaveBeenCalled();
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.START_RECORD,
+        );
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
         );
@@ -387,17 +391,13 @@ describe('RTC call', () => {
       session.stopRecord.mockResolvedValue(null);
       call.onAccountReady();
       session.mockSignal('accepted');
-      call.startRecord();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.START_RECORD,
-      );
+      call._isRecording = true;
       call.stopRecord();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.STOP_RECORD,
-      );
       setImmediate(() => {
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.STOP_RECORD,
+        );
         const fsmState = call._fsm.state();
         expect(fsmState).toBe('connected');
         expect(session.stopRecord).toHaveBeenCalled();
