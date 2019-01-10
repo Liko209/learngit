@@ -563,7 +563,6 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
     const conversationPage = app.homePage.messageTab.conversationPage;
-    const close = app.homePage.messageTab.moreMenu.close;
     const posts = [`post1:${uuid()}`, `post2:${uuid()}`];
 
     let privateChatId, teamId;
@@ -614,9 +613,9 @@ test(formalName('JPT-138 Can display conversation history when receiving message
 
     await h(t).withLog('When closed 2 conversations', async () => {
       await privateChat.openMoreMenu();
-      await close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
       await teamChat.openMoreMenu();
-      await close.enter();
+      await app.homePage.messageTab.moreMenu.close.enter();
     }, true);
 
     await h(t).withLog('And send one message to 2 conversations', async () => {
@@ -637,9 +636,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     });
 
     await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
-      for (let i of _.range(posts.length)) {
-        await t.expect(conversationPage.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
-      }
+      await conversationPage.historyPostsDisplayedInOrder(posts);
     }, true);
 
     await h(t).withLog(`When I open the team conversation`, async () => {
@@ -648,9 +645,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     });
 
     await h(t).withLog('Then history posts can be displayed in order in conversations stream', async () => {
-      for (let i of _.range(posts.length)) {
-        await t.expect(conversationPage.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
-      }
+      await conversationPage.historyPostsDisplayedInOrder(posts);
     }, true);
 
   });
