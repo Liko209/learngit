@@ -8,14 +8,14 @@ import ProfileDao from '../../dao/profile';
 import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
-import AccountService from '../account';
+import { UserConfig } from '../account/UserConfig';
 import { Profile } from '../../module/profile/entity';
 import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
-import { BaseError, ErrorTypes } from '../../utils';
 import { transform } from '../utils';
 import PersonService from '../person';
+import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
 import handleData, { hiddenGroupsChange } from './handleData';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
@@ -42,8 +42,8 @@ class ProfileService extends BaseService<Profile> {
       // Current user profile not found is a unexpected error,
       // the error should be throw to tell developer that there
       // must be some bug happened.
-      throw new BaseError(
-        ErrorTypes.SERVICE,
+      throw new JSdkError(
+        ERROR_CODES_SDK.GENERAL,
         `ServiceError: Can not find current profile. profileId: ${profileId}`,
       );
     }
@@ -149,8 +149,7 @@ class ProfileService extends BaseService<Profile> {
       return serviceOk(profile);
     }
 
-    const accountService = AccountService.getInstance<AccountService>();
-    const currentId = accountService.getCurrentUserId();
+    const currentId = UserConfig.getCurrentUserId();
     const profileId = this.getCurrentProfileId();
 
     const personService = PersonService.getInstance<PersonService>();
@@ -182,7 +181,7 @@ class ProfileService extends BaseService<Profile> {
     }
 
     return serviceErr(
-      ErrorTypes.SERVICE,
+      ERROR_CODES_SDK.GENERAL,
       `personService.getById(${currentId}) failed`,
     );
   }
@@ -224,14 +223,13 @@ class ProfileService extends BaseService<Profile> {
       );
     }
     return serviceErr(
-      ErrorTypes.SERVICE,
+      ERROR_CODES_SDK.GENERAL,
       `profileService.putFavoritePost(${postId}) failed`,
     );
   }
 
   getCurrentProfileId(): number {
-    const accountService: AccountService = AccountService.getInstance();
-    return accountService.getCurrentUserProfileId();
+    return UserConfig.getCurrentUserProfileId();
   }
 
   async handleGroupIncomesNewPost(groupIds: number[]) {
@@ -345,7 +343,7 @@ class ProfileService extends BaseService<Profile> {
 
   private async _requestUpdateProfile(
     newProfile: Profile,
-  ): Promise<Profile | BaseError> {
+  ): Promise<Profile | JError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
 
@@ -359,7 +357,7 @@ class ProfileService extends BaseService<Profile> {
         const latestProfileModel: Profile = transform(rawProfile);
         return latestProfileModel;
       },
-      Err: (error: BaseError) => error,
+      Err: (error: JError) => error,
     });
   }
 

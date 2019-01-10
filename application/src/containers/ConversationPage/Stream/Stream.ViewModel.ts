@@ -10,11 +10,11 @@ import { PostService, StateService, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
-import { ErrorTypes } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
+import { JNetworkError } from 'sdk/error';
 
 import {
   FetchSortableDataListHandler,
@@ -298,7 +298,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
           return { hasMore, data: posts };
         } catch (err) {
-          if (err.code === ErrorTypes.API_NETWORK) {
+          if (err instanceof JNetworkError) {
             // TODO error handle
           }
           return { data: [], hasMore: true };

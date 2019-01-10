@@ -60,7 +60,7 @@ storiesOf('Components/Buttons/IconButtons', module)
           invisible={knobs.invisible()}
           tooltipTitle="add"
         >
-          add_circle
+          new_actions
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"

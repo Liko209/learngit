@@ -50,7 +50,7 @@ class LeftNav extends Component<LeftNavProps> {
         },
         {
           url: `/messages/${currentConversationId}`,
-          icon: 'message',
+          icon: 'messages',
           title: t('Messages'),
           umi: <Umi ids={groupIds} global="UMI.app" />,
         },
@@ -61,7 +61,7 @@ class LeftNav extends Component<LeftNavProps> {
         },
         {
           url: '/meetings',
-          icon: 'videocam',
+          icon: 'meetings',
           title: t('Meetings'),
         },
       ],
@@ -73,22 +73,22 @@ class LeftNav extends Component<LeftNavProps> {
         },
         {
           url: '/calendar',
-          icon: 'date_range',
+          icon: 'calendar',
           title: t('Calendar'),
         },
         {
           url: '/tasks',
-          icon: 'assignment_turned_in',
+          icon: 'tasks',
           title: t('Tasks'),
         },
         {
           url: '/notes',
-          icon: 'library_books',
+          icon: 'notes',
           title: t('Notes'),
         },
         {
           url: '/files',
-          icon: 'file_copy',
+          icon: 'files',
           title: t('Files'),
         },
         {

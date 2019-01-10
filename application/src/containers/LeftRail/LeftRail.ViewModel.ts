@@ -46,7 +46,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
     return [
       {
         title: 'mention_plural',
-        icon: 'alternate_email',
+        icon: 'mention',
         type: POST_LIST_TYPE.mentions,
         testId: 'entry-mentions',
       },

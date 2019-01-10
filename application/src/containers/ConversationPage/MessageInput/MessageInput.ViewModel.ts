@@ -13,18 +13,18 @@ import {
 import {
   PostService,
   GroupConfigService,
-  ItemService,
   notificationCenter,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import PersonModel from '@/store/models/Person';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { isAtMentions } from './handler';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
+import { mainLogger } from 'sdk';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -168,7 +168,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return function () {
       // @ts-ignore
       const quill = (this as any).quill;
-      const content = markdownFromDelta(quill.getContents());
+      const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -180,23 +180,21 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       vm.error = '';
       const items = vm.items;
       if (content.trim() || items.length > 0) {
-        vm._sendPost(content);
+        vm._sendPost(content, mentionIds);
       }
     };
   }
 
-  private async _sendPost(content: string) {
+  private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
     this.forceSaveDraft();
-    const atMentions = isAtMentions(content);
     const items = this.items;
     try {
       await this._postService.sendPost({
-        atMentions,
         text: content,
         groupId: this.id,
-        users: atMentions ? this._users : undefined,
         itemIds: items.map(item => item.id),
+        mentionsIds: ids,
       });
       // clear context (attachments) after post
       //
@@ -204,12 +202,13 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       onPostHandler && onPostHandler();
       this._onPostCallbacks.forEach(callback => callback());
     } catch (e) {
+      mainLogger.error(`send post error ${e}`);
       // You do not need to handle the error because the message will display a resend
     }
   }
 
   forceSendPost = () => {
-    this._sendPost('');
+    this._sendPost('', []);
   }
 
   addOnPostCallback = (callback: OnPostCallback) => {

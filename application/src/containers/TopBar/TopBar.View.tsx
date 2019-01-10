@@ -39,7 +39,7 @@ class TopBar extends React.Component<TopBarProps> {
         data-test-automation-id="toggleBtn"
         {...mainMenuProps}
       >
-        format_list_bulleted
+        bulleted_menu
       </JuiIconButton>
     );
   }

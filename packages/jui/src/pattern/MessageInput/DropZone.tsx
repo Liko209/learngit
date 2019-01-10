@@ -24,6 +24,24 @@ type JuiDropZoneProps = {
 class TargetBox extends Component<
   ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
 > {
+  private _checkFolder = (event: React.DragEvent) => {
+    const { items } = event.dataTransfer;
+    const { length } = items;
+    let hasFolder = false;
+    for (let i = 0; i < length; i++) {
+      if (items[i].webkitGetAsEntry) {
+        const entry = items[i].webkitGetAsEntry();
+        if (entry && entry.isDirectory) {
+          hasFolder = true;
+          break;
+        }
+      }
+    }
+    if (hasFolder) {
+      const { detectedFolderDrop } = this.props;
+      detectedFolderDrop && detectedFolderDrop();
+    }
+  }
   render() {
     const {
       isOver,
@@ -31,23 +49,41 @@ class TargetBox extends Component<
       dropzoneClass,
       children,
       theme,
+      hasDroppedFolder,
     } = this.props;
+    const showHoverStyle = hasDroppedFolder
+      ? !hasDroppedFolder() && isOver
+      : isOver;
     const style: CSSProperties = {
-      border: isOver
+      border: showHoverStyle
         ? `2px dotted ${palette('secondary', '600')({ theme })}`
         : 'none',
-      background: isOver ? grey('200')({ theme }) : 'transparent',
-      opacity: isOver ? theme.palette.action.hoverOpacity * 2 : 1,
+      background: showHoverStyle ? grey('200')({ theme }) : 'transparent',
+      opacity: showHoverStyle ? theme.palette.action.hoverOpacity * 2 : 1,
       // minHeight: 100 /* firefox compatibility */,
       ...dropzoneClass,
     };
-    return connectDropTarget(<div style={style}>{children}</div>);
+    return connectDropTarget(
+      <div
+        style={style}
+        onDrop={this._checkFolder}
+        onDragOver={this.props.clearFolderDetection}
+      >
+        {children}
+      </div>,
+    );
   }
 }
 
 const ThemedBox = withTheme(TargetBox);
 
 const boxTarget = {
+  canDrop(props: ITargetBoxProps) {
+    if (props.hasDroppedFolder && props.hasDroppedFolder()) {
+      return false;
+    }
+    return true;
+  },
   drop(props: ITargetBoxProps, monitor: DropTargetMonitor) {
     if (props.onDrop) {
       props.onDrop(props, monitor);
@@ -58,6 +94,9 @@ const boxTarget = {
 export interface ITargetBoxProps {
   accepts: string[];
   onDrop: (props: ITargetBoxProps, monitor: DropTargetMonitor) => void;
+  detectedFolderDrop?: () => void;
+  hasDroppedFolder?: () => boolean;
+  clearFolderDetection?: () => void;
 }
 
 interface ITargetBoxCollectedProps {

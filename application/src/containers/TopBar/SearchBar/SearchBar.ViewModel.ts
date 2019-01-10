@@ -7,6 +7,7 @@ import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import PersonService from 'sdk/service/person';
 import GroupService from 'sdk/service/group';
+import { GroupService as NGroupService } from 'sdk/module/group';
 import { SectionType, ViewProps, Person, Group, Props } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
@@ -18,12 +19,14 @@ const MORE_SECTION_LENGTH = 3;
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   personService: PersonService;
   groupService: GroupService;
+  nGroupService: NGroupService;
   @observable value: string = '';
 
   constructor() {
     super();
     this.personService = PersonService.getInstance();
     this.groupService = GroupService.getInstance();
+    this.nGroupService = new NGroupService();
   }
 
   @computed
@@ -61,6 +64,11 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   getSectionItemSize(sectionCount: number) {
     return sectionCount <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
+  }
+
+  joinTeam = async (teamId: number) => {
+    const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    await this.nGroupService.joinTeam(useId, teamId);
   }
 
   hasMore<T>(section: SectionType<T>, sectionCount: number) {

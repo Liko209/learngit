@@ -1,9 +1,9 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
-import { BaseResponse, ok, err } from 'foundation';
+import { BaseResponse, ok, err, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import PersonService from '../../person';
 import ProfileService from '../../profile';
-import AccountService from '../../account';
+import { UserConfig } from '../../account/UserConfig';
 import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
 import GroupService from '../index';
@@ -21,20 +21,20 @@ import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
-import { GroupErrorTypes } from '../groupService';
-import { BaseError, TypeDictionary } from '../../../utils';
+import { TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 import CompanyService from '../../company';
 import PostService from '../../post';
 import { Api } from '../../../api';
 import notificationCenter from '../../notificationCenter';
 import { serviceOk, serviceErr } from '../../ServiceResult';
+import { JServerError, ERROR_CODES_SERVER, ERROR_CODES_SDK, JSdkError } from '../../../error';
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
-jest.mock('../../../service/account');
+jest.mock('../../account/UserConfig');
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/company');
 jest.mock('../../../service/post');
@@ -42,14 +42,12 @@ jest.mock('../../../api/glip/group');
 
 const profileService = new ProfileService();
 const personService = new PersonService();
-const accountService = new AccountService();
 
 beforeEach(() => {
   jest.clearAllMocks();
 
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 });
 
 describe('GroupService', () => {
@@ -57,10 +55,10 @@ describe('GroupService', () => {
 
   jest
     .spyOn(groupService, 'updatePartialModel2Db')
-    .mockImplementation(() => {});
+    .mockImplementation(() => { });
   jest
     .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
-    .mockImplementation(() => {});
+    .mockImplementation(() => { });
 
   const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
@@ -170,7 +168,7 @@ describe('GroupService', () => {
       const memberIDs = [1, 2];
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(err(new BaseError(500, '')));
+        .mockResolvedValueOnce(err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')));
       groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
       const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
       expect(result.isErr()).toBe(true);
@@ -198,7 +196,7 @@ describe('GroupService', () => {
     const result2 = await groupService.requestRemoteGroupByMemberList([1, 2]);
     expect(result2).toHaveProperty('data', null);
 
-    const mockError = new ApiResultErr(new BaseError(403, ''), {
+    const mockError = new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, ''), {
       status: 403,
       headers: {},
     } as BaseResponse);
@@ -209,7 +207,7 @@ describe('GroupService', () => {
 
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
-    accountService.getCurrentUserId.mockReturnValueOnce(1);
+    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
     daoManager.getKVDao.mockReturnValueOnce(accountDao);
     daoManager.getDao.mockReturnValueOnce(groupDao);
     accountDao.get.mockReturnValue(1); // userId
@@ -380,7 +378,7 @@ describe('GroupService', () => {
       groupService.canPinPost.mockReturnValueOnce(true);
 
       GroupAPI.pinPost.mockResolvedValueOnce(
-        new ApiResultErr(new BaseError(1, 'error'), {
+        new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'), {
           status: 403,
           headers: {},
         } as BaseResponse),
@@ -414,7 +412,7 @@ describe('GroupService', () => {
 
     it('should return null if request failed', async () => {
       jest.spyOn<GroupService, any>(groupService, 'handleRawGroup');
-      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      groupService.handleRawGroup.mockImplementationOnce(() => { });
 
       GroupAPI.addTeamMembers.mockResolvedValueOnce(
         new ApiResultOk(null, {
@@ -451,7 +449,7 @@ describe('GroupService', () => {
 
     it('privacy should be protected if it is public', async () => {
       jest.spyOn(groupService, 'handleRawGroup');
-      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      groupService.handleRawGroup.mockImplementationOnce(() => { });
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
         new ApiResultOk(group, {
@@ -498,7 +496,7 @@ describe('GroupService', () => {
 
     it('data should have correct permission level if passed in options', async () => {
       jest.spyOn(groupService, 'handleRawGroup');
-      groupService.handleRawGroup.mockImplementationOnce(() => {});
+      groupService.handleRawGroup.mockImplementationOnce(() => { });
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.createTeam.mockResolvedValue(
         new ApiResultOk(group, {
@@ -564,8 +562,8 @@ describe('GroupService', () => {
     });
 
     it('should return error object if duplicate name', async () => {
-      const error = new BaseError(
-        GroupErrorTypes.ALREADY_TAKEN,
+      const error = new JServerError(
+        ERROR_CODES_SERVER.ALREADY_TAKEN,
         'Already taken',
       );
       GroupAPI.createTeam.mockResolvedValue(
@@ -611,7 +609,7 @@ describe('GroupService', () => {
     });
     it('hideConversation, network not available', async () => {
       profileService.hideConversation.mockResolvedValueOnce(
-        serviceErr(5000, ''),
+        serviceErr(ERROR_CODES_SDK.GENERAL, ''),
       );
       const result = await groupService.hideConversation(1, false, true);
       expect(result.isErr()).toBeTruthy();
@@ -621,7 +619,7 @@ describe('GroupService', () => {
   describe('doFuzzySearch', () => {
     function prepareGroupsForSearch() {
       personService.enableCache();
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
 
       const person1: Person = {
         id: 11001,
@@ -729,6 +727,27 @@ describe('GroupService', () => {
         };
         groupService.getCacheManager().set(group);
       }
+
+      for (let i = 13001; i <= 13010; i += 1) {
+        const group: Group = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_team: true,
+          is_new: false,
+          is_archived: false,
+          privacy: i % 2 === 0 ? 'protected' : 'private',
+          deactivated: i % 2 !== 0,
+          version: i,
+          members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
+          company_id: i,
+          set_abbreviation: `Team name of ${i.toString()}`,
+          email_friendly_abbreviation: '',
+          most_recent_content_modified_at: i,
+        };
+        groupService.getCacheManager().set(group);
+      }
     }
 
     prepareGroupsForSearch();
@@ -775,32 +794,43 @@ describe('GroupService', () => {
 
     it('do fuzzy search of teams, empty search key, support fetch all if search key is empty', async () => {
       const result = await groupService.doFuzzySearchTeams('', true);
-      expect(result.sortableModels.length).toBe(500);
+      expect(result.sortableModels.length).toBe(505);
       expect(result.terms.length).toBe(0);
     });
 
     it('do fuzzy search of teams, undefined search key, support fetch all if search key is empty', async () => {
       const result = await groupService.doFuzzySearchTeams(undefined, true);
-      expect(result.sortableModels.length).toBe(500);
+      expect(result.sortableModels.length).toBe(505);
       expect(result.terms.length).toBe(0);
     });
 
     it('do fuzzy search of teams, search key is not empty, not support fetch all if search key is empty ', async () => {
-      const result = await groupService.doFuzzySearchTeams('a team name');
+      const result = await groupService.doFuzzySearchTeams('this team name');
       expect(result.sortableModels.length).toBe(500);
       expect(result.terms.length).toBe(3);
-      expect(result.terms[0]).toBe('a');
+      expect(result.terms[0]).toBe('this');
       expect(result.terms[1]).toBe('team');
       expect(result.terms[2]).toBe('name');
     });
 
     it('do fuzzy search of teams, search key is not empty, support fetch all if search key is empty ', async () => {
-      const result = await groupService.doFuzzySearchTeams('a team name', true);
+      const result = await groupService.doFuzzySearchTeams(
+        'this team name',
+        true,
+      );
       expect(result.sortableModels.length).toBe(500);
       expect(result.terms.length).toBe(3);
-      expect(result.terms[0]).toBe('a');
+      expect(result.terms[0]).toBe('this');
       expect(result.terms[1]).toBe('team');
       expect(result.terms[2]).toBe('name');
+    });
+
+    it('should display right order of teams', async () => {
+      const result = await groupService.doFuzzySearchTeams('Team', true);
+      expect(result.sortableModels.length).toBe(505);
+      expect(result.sortableModels[0].id).toBe(13002);
+      expect(result.sortableModels[4].id).toBe(13010);
+      expect(result.sortableModels[5].id).toBe(12002);
     });
   });
 
@@ -809,7 +839,7 @@ describe('GroupService', () => {
     const groupService: GroupService = new GroupService();
 
     beforeEach(() => {
-      accountService.getCurrentUserId.mockReturnValueOnce(3);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(3);
     });
 
     const mockNormal = { id: 1 };
@@ -823,7 +853,7 @@ describe('GroupService', () => {
       const result1 = await groupService.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(accountService.getCurrentUserId).toBeCalled();
+      expect(UserConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(result1).toHaveProperty('data', mockNormal);
     });
@@ -838,14 +868,14 @@ describe('GroupService', () => {
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(accountService.getCurrentUserId).toBeCalled();
+      expect(UserConfig.getCurrentUserId).toBeCalled();
       expect(result2).toHaveProperty('data', mockNormal);
     });
 
     it('throw error ', async () => {
       jest
         .spyOn(groupService, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(err(new BaseError(500, '')));
+        .mockResolvedValueOnce(err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')));
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(null);
       const result = await groupService.getOrCreateGroupByMemberList(memberIDs);
@@ -862,7 +892,7 @@ describe('GroupService', () => {
       const curUserId = 3;
       daoManager.getKVDao.mockReturnValue(accountDao);
       accountDao.get.mockReturnValue(3);
-      accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
@@ -886,7 +916,7 @@ describe('GroupService', () => {
 
     it('should throw an error when exception happened ', async () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultErr(new BaseError(500, 'error'), {
+        new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'error'), {
           status: 500,
           headers: {},
         } as BaseResponse),
@@ -907,7 +937,7 @@ describe('GroupService', () => {
         favorite_group_ids: groupIds,
       });
 
-      accountService.getCurrentUserId.mockReturnValueOnce(curUserId);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');
@@ -956,7 +986,7 @@ describe('GroupService', () => {
   describe('buildGroupFeatureMap', () => {
     const userId = 3;
     beforeEach(() => {
-      accountService.getCurrentUserId.mockReturnValueOnce(userId);
+      UserConfig.getCurrentUserId.mockReturnValueOnce(userId);
     });
 
     it('should have message permission when the user is not in group', async () => {
@@ -1033,7 +1063,7 @@ describe('GroupService', () => {
       const res = await groupService.getGroupEmail(group.id);
       expect(res).toBe(
         `${
-          group.email_friendly_abbreviation
+        group.email_friendly_abbreviation
         }@${companyReplyDomain}.${envDomain}`,
       );
     });
@@ -1058,7 +1088,7 @@ describe('GroupService', () => {
       });
       const spyDoDefaultPartialNotify = jest
         .spyOn<GroupService, any>(groupService, '_doDefaultPartialNotify')
-        .mockImplementation(() => {});
+        .mockImplementation(() => { });
       await groupService.updateGroupLastAccessedTime({
         id: 1,
         timestamp: 12345,
@@ -1147,7 +1177,7 @@ describe('GroupService', () => {
 
     it('should return error type correctly', async () => {
       profileService.markGroupAsFavorite.mockResolvedValueOnce(
-        serviceErr(5300, 'mock error'),
+        serviceErr(ERROR_CODES_SDK.GENERAL, 'mock error'),
       );
       const result = await groupService.markGroupAsFavorite(1, true);
       expect(result.isErr()).toBeTruthy();

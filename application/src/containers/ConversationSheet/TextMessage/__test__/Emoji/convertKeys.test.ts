@@ -5,32 +5,61 @@
  */
 
 import { Markdown } from 'glipdown';
-import { mapAscii, mapUnicode, mapSpecial } from '../../Emoji/map';
-import { convertMapAscii, convertMapUnicode, regExpSpecial, regExpAscii, regExpUnicode } from '../../Emoji/convertKeys';
+import { mapAscii, mapUnicode, mapSpecial, mapEmojiOne } from '../../Emoji/map';
+import {
+  convertMapAscii,
+  convertMapUnicode,
+  regExpSpecial,
+  regExpAscii,
+  regExpUnicode,
+  convertMapEmojiOne,
+  regExpEmojiOne,
+  MapData,
+  EmojiOne,
+} from '../../Emoji/convertKeys';
 
-function getUnicode(originKey: string, regExp: RegExp, convertMapData: { [index: string]: string }) {
+function getUnicode(
+  originKey: string,
+  regExp: RegExp,
+  convertMapData: MapData,
+) {
   const markdownKey = Markdown(originKey);
   const unicode = markdownKey.replace(regExp, (match: string) => {
     // Note: Glipdown does not convert regular expression special characters
-    const key = match.replace(regExpSpecial, (match: string) => mapSpecial[match]);
-    return convertMapData[key];
+    const key = match.replace(
+      regExpSpecial,
+      (match: string) => mapSpecial[match],
+    );
+    if (convertMapData[key] instanceof Object) {
+      return (convertMapData[key] as EmojiOne).fname;
+    }
+    return convertMapData[key].toString();
   });
-  // console.log(`originKey: ${originKey}, markdownKey: ${markdownKey}, unicode: ${unicode}`);
+  console.log(
+    `originKey: ${originKey}, markdownKey: ${markdownKey}, unicode: ${unicode}`,
+  );
   return unicode;
 }
 
 describe('convertKeys', () => {
-  it('Ascii key find value', async () => {
+  it('should be equal when use regexp expression ascii key find value', async () => {
     Object.keys(mapAscii).forEach((originKey: string) => {
       const unicode = getUnicode(originKey, regExpAscii, convertMapAscii);
       expect(unicode).toBe(mapAscii[originKey]);
     });
   });
 
-  it('Unicode key find value', () => {
+  it('should be equal when use regexp expression unicode key find value', () => {
     Object.keys(mapUnicode).forEach((originKey: string) => {
       const unicode = getUnicode(originKey, regExpUnicode, convertMapUnicode);
       expect(unicode).toBe(mapUnicode[originKey]);
+    });
+  });
+
+  it('should be equal when use regexp expression emojiOne key find value', () => {
+    Object.keys(mapEmojiOne).forEach((originKey: string) => {
+      const unicode = getUnicode(originKey, regExpEmojiOne, convertMapEmojiOne);
+      expect(unicode).toBe(mapEmojiOne[originKey].fname);
     });
   });
 });
