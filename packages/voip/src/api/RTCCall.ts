@@ -164,6 +164,7 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
+      this._destroy();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
@@ -198,6 +199,11 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.SEND_TO_VOICEMAIL_ACTION, () => {
       this._onSendToVoicemailAction();
     });
+  }
+
+  private _destroy() {
+    this._callSession.removeAllListeners();
+    this._callSession.destroy();
   }
   // call action listener
   private _onCallActionSuccess(callAction: RTC_CALL_ACTION) {
