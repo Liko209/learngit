@@ -45,7 +45,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onCancelAll() {
-    this._executorQueue.forEach((executor) => {
+    this._executorQueue.forEach((executor: INetworkRequestExecutor) => {
       executor.cancel();
     });
   }
@@ -58,7 +58,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   onTokenRefreshed() {
-    this._executorQueue.forEach((executor) => {
+    this._executorQueue.forEach((executor: INetworkRequestExecutor) => {
       if (executor.isPause()) {
         executor.execute();
       }
@@ -81,14 +81,15 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
       return;
     }
 
-    const executor = new NetworkRequestExecutor(request, this._client);
+    const executor = new NetworkRequestExecutor(
+      request,
+      this._client,
+      this._networkRequestDecorator.decoration,
+    );
     executor.responseListener = this._responseListener;
     executor.listener = this;
-    const decoratedExecutor = this._networkRequestDecorator.setExecutor(
-      executor,
-    );
-    this._addExecutor(decoratedExecutor);
-    decoratedExecutor.execute();
+    this._addExecutor(executor);
+    executor.execute();
   }
 
   private _canHandleRequest() {
