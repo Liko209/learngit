@@ -8,13 +8,13 @@ import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import { PostService } from 'sdk/service';
+import { NewPostService } from 'sdk/module/post';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { Props, ViewProps } from './types';
 
 class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
-  private _postService: PostService = PostService.getInstance();
+  private _postService: NewPostService = NewPostService.getInstance();
 
   @computed
   get id() {

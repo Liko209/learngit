@@ -16,7 +16,7 @@ import { Markdown } from 'glipdown';
 // global_url_regex
 import { Post } from '../entity';
 import { RawPostInfo, SendPostType } from '../types';
-import { Raw } from 'src/framework/model';
+import { Raw } from '../../../framework/model';
 import { transform } from '../../../service/utils';
 
 export type LinksArray = { url: string }[];

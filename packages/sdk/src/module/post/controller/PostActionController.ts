@@ -106,7 +106,7 @@ class PostActionController {
     return this.handlePost(paras);
   }
 
-  isContinuousWithLocalPost() {
+  async isContinuousWithLocalPost() {
     return true;
   }
 
@@ -122,7 +122,7 @@ class PostActionController {
         Object.values(groupedPosts).map(async (posts: Post[]) => {
           let shouldSave = params.shouldSave;
           if (params.shouldCheckDisContinue) {
-            shouldSave = this.isContinuousWithLocalPost();
+            shouldSave = await this.isContinuousWithLocalPost();
             // shouldSave = !!(await isContinuousWithLocalData(posts));
           }
           const resultPosts = await utilsBaseHandleData({
@@ -164,6 +164,7 @@ class PostActionController {
     if (needBuildItemVersionMap) {
       // TODO
     }
+    this.innerSendPost(rawInfo, false);
   }
 
   async innerSendPost(post: Post, isResend: boolean) {
@@ -175,6 +176,7 @@ class PostActionController {
       // send post with items
     } else {
       // send plain post
+      this._sendPostToServer(post);
     }
   }
 
@@ -186,7 +188,7 @@ class PostActionController {
       const data = resp.expect('send post failed');
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
-      // this.handleSendPostFail(preInsertId, buildPost.group_id);
+      this.handleSendPostFail(preInsertId, post.group_id);
       throw ErrorParserHolder.getErrorParser().parse(e);
     }
   }
