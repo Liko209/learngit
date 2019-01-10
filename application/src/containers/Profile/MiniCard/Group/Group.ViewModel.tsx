@@ -13,6 +13,7 @@ import {
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
+import { GroupService } from 'sdk/module/group';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { GlipTypeUtil } from 'sdk/utils';
 import { Notification } from '@/containers/Notification';
@@ -24,6 +25,7 @@ class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
   implements ProfileMiniCardGroupViewProps {
   private _fetchingState: Map<number, boolean> = new Map();
+  private _groupService: GroupService = new GroupService();
 
   @computed
   get id() {
@@ -52,8 +54,8 @@ class ProfileMiniCardGroupViewModel
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!this._fetchingState.get(this.id) && !entity.members) {
       this._fetchingState.set(this.id, true);
-      groupStore
-        .getByService(this.id)
+      this._groupService
+        .getById(this.id)
         .then((group: Group | null) => {
           if (group) {
             this._fetchingState.set(this.id, false);
