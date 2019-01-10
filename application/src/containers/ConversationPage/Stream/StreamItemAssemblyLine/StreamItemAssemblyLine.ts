@@ -18,6 +18,7 @@ export class StreamItemAssemblyLine {
   ) => {
     const { added, deleted } = delta;
     let _streamItemList = streamItemList;
+
     if (added.length) {
       const newItems: StreamItem[] = [];
       _streamItemList = this._assemblers.reduce(
@@ -31,6 +32,7 @@ export class StreamItemAssemblyLine {
         },
       ).streamItemList;
     }
+
     if (deleted.length) {
       const deletedIds: number[] = [];
       _streamItemList = this._assemblers.reduce(

@@ -21,7 +21,6 @@ import {
 } from './types';
 
 class NewMessageSeparatorHandler extends Assembler {
-  priority = 2;
   private _readThrough?: number;
   private _disabled?: boolean;
   private _userId?: number;
