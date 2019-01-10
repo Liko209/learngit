@@ -205,5 +205,21 @@
   "notes": "Notes",
   "events": "Events",
   "integrations": "Integrations",
-  "fileListSubheader": "Files"
+  "fileListSubheader": "Files",
+  "youHaveNothingPinnedYet": "You have nothing pinned yet",
+  "noPinSubText": "Anything you pin shows up here so you can reference it later.",
+  "noFilesSharedYet": "No files shared yet",
+  "noFileSubText": "Files that get shared in your conversation automatically show up here.",
+  "noImagesSharedYet": "No images shared yet",
+  "noImageSubText": "Images that get shared in your conversation automatically show up here",
+  "noTasksYet": "No tasks yet",
+  "noTaskSubText": "Track tasks that you assign to yourself or that get assigned to you here.",
+  "noLinksSharedYet": "No links shared yet",
+  "noLinkSubText": "Links that get shared in your conversation automatically show up here.",
+  "noNotesCreatedYet": "No notes created yet",
+  "noNoteSubText": "Notes that get created in your conversation automatically show up here.",
+  "noEventsCreatedYet": "No events created yet",
+  "noEventSubText": "Events on your calendar will automatically show up here.",
+  "noIntegrationInstallationYet": "No integration installation yet",
+  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here."
 }

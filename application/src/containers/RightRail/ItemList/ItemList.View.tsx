@@ -14,10 +14,9 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
-import { JuiRightShelfEmptyScreen } from 'jui/pattern/EmptyScreen';
 import { JuiConversationRightRailLoading } from 'jui/pattern/RightShelf';
-import FilesEmptyImage from '../images/Files.svg';
 import { observable } from 'mobx';
+import { emptyView } from './Empty';
 
 const itemType = {
   [ITEM_LIST_TYPE.FILE]: FileItem,
@@ -50,18 +49,9 @@ class ItemListView extends React.Component<ViewProps & Props>
     return 52;
   }
 
-  renderEmptyContent() {
-    const t = 'No files shared yet';
-    const content =
-      'Files that get shared in your conversation automatically show up here.';
-    return (
-      <JuiRightShelfEmptyScreen
-        text={t}
-        content={content}
-        actions={[]}
-        image={FilesEmptyImage}
-      />
-    );
+  renderEmptyContent = () => {
+    const { type } = this.props;
+    return emptyView(type);
   }
 
   isRowLoaded = (index: number) => {

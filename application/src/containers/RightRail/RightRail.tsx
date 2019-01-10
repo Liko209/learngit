@@ -74,25 +74,25 @@ class RightRailComponent extends React.Component<Props, States> {
         {(width: number) => (
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
             <JuiTab key={0} title={t('pinned')}>
-              <div>Pinned List</div>
+              <ItemList type={ITEM_LIST_TYPE.PIN} groupId={id} />
             </JuiTab>
             <JuiTab key={1} title={t('files')}>
               <ItemList type={ITEM_LIST_TYPE.FILE} groupId={id} />
             </JuiTab>
             <JuiTab key={2} title={t('images')}>
-              <div>Images List</div>
+              <ItemList type={ITEM_LIST_TYPE.IMAGE} groupId={id} />
             </JuiTab>
             <JuiTab key={4} title={t('tasks')}>
-              <div>Tasks List</div>
+              <ItemList type={ITEM_LIST_TYPE.TASK} groupId={id} />
             </JuiTab>
             <JuiTab key={3} title={t('links')}>
-              <div>Links List</div>
+              <ItemList type={ITEM_LIST_TYPE.LINK} groupId={id} />
             </JuiTab>
             <JuiTab key={5} title={t('notes')}>
-              <div>Notes List</div>
+              <ItemList type={ITEM_LIST_TYPE.NOTE} groupId={id} />
             </JuiTab>
             <JuiTab key={6} title={t('events')}>
-              <div>Events List</div>
+              <ItemList type={ITEM_LIST_TYPE.EVENT} groupId={id} />
             </JuiTab>
             <JuiTab key={7} title={t('integrations')}>
               <div>Integrations List</div>

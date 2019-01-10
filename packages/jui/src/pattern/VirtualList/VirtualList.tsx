@@ -161,28 +161,30 @@ class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
     }
 
     return (
-      <AutoSizer ref={this._sizerRef}>
-        {({ width, height }: Size) => (
-          <InfiniteLoader
-            isRowLoaded={this._isRowLoaded}
-            loadMoreRows={this._loadMoreRows}
-            rowCount={cellCount}
-            ref={this._loaderRef}
-          >
-            {({ onRowsRendered, registerChild }) => {
-              return (
-                <List
-                  ref={ref => this._registerRef(ref, registerChild)}
-                  onRowsRendered={onRowsRendered}
-                  height={height}
-                  width={width}
-                  {...props}
-                />
-              );
-            }}
-          </InfiniteLoader>
-        )}
-      </AutoSizer>
+      <InfiniteLoader
+        isRowLoaded={this._isRowLoaded}
+        loadMoreRows={this._loadMoreRows}
+        rowCount={cellCount}
+        ref={this._loaderRef}
+      >
+        {({ onRowsRendered, registerChild }) => {
+          return (
+            <AutoSizer ref={this._sizerRef}>
+              {({ width, height }: Size) => {
+                return (
+                  <List
+                    ref={ref => this._registerRef(ref, registerChild)}
+                    onRowsRendered={onRowsRendered}
+                    height={height}
+                    width={width}
+                    {...props}
+                  />
+                );
+              }}
+            </AutoSizer>
+          );
+        }}
+      </InfiniteLoader>
     );
   }
 }

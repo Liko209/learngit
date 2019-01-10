@@ -4,7 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 enum ITEM_LIST_TYPE {
+  PIN,
   FILE,
+  LINK,
+  IMAGE,
+  NOTE,
+  TASK,
+  EVENT,
+  INTEGRATION,
 }
 
 export { ITEM_LIST_TYPE };
