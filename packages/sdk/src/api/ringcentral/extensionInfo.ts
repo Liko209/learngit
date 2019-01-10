@@ -9,7 +9,7 @@ import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 
-interface IServiceFeatures {
+export interface IServiceFeatures {
   featureName: PERMISSION;
   enabled: boolean;
 }

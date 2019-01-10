@@ -35,6 +35,7 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/service/person';
 import { JuiIconButton } from 'jui/components/Buttons';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -79,7 +80,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
             value: aria || value,
           })}
         >
-          file_copy
+          copy
         </JuiIconButton>
       </FormCopy>
     );
@@ -98,7 +99,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     copyValue,
   }: FormGroupType) => {
     return (
-      <FormGroup>
+      <FormGroup key={value}>
         <FormLeft>{icon && this.renderIcon(icon)}</FormLeft>
         <FormRight>
           <FormLabel>{label}</FormLabel>
@@ -119,6 +120,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
+  messageAfterClick = () => portalManager.dismiss();
+
   render() {
     const {
       t,
@@ -127,7 +130,6 @@ class ProfileDialogPersonContentViewComponent extends Component<
       company,
       extensionNumbers,
       directNumbers,
-      dismiss,
       isMe,
     } = this.props;
     return (
@@ -155,7 +157,11 @@ class ProfileDialogPersonContentViewComponent extends Component<
               {person.jobTitle}
             </Title>
             <Buttons>
-              <Message id={id} dismiss={dismiss} render={this.renderMessage} />
+              <Message
+                id={id}
+                afterClick={this.messageAfterClick}
+                render={this.renderMessage}
+              />
             </Buttons>
           </Right>
         </Summary>
@@ -171,7 +177,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 })}
               {person.location &&
                 this.renderFormGroup({
-                  icon: 'places',
+                  icon: 'location',
                   label: t('location'),
                   value: person.location,
                 })}

@@ -3,7 +3,7 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
+import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 
 
 class Entry extends BaseWebComponent {
@@ -39,7 +39,7 @@ class UnReadToggler extends BaseWebComponent {
 
   async isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return await this.self.child().withText('arrow_up').exists;
   }
 
   private async turn(on: boolean) {
@@ -101,6 +101,31 @@ class MenuItem extends Entry {
   async shouldBeEnabled() {
     await this.t.expect(this.disabled).eql('false');
   }
+}
+
+class ActionBarMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="document"]');
+  }
+
+  private getEntry(name: string) {
+    this.warnFlakySelector();
+    return this.getComponent(Entry, this.self.find('li').withText(name));
+  }
+
+  get quoteItem() {
+    return this.getEntry('feedback');
+  }
+
+  get deletePost() {
+    return this.self.find('span').withText('delete').parent();
+  }
+
+  get eidtPost() {
+    return this.self.find('span').withText('edit').parent();
+  }
+
+
 }
 
 class ConversationEntry extends BaseWebComponent {
@@ -171,7 +196,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   get hasDraftMessage() {
-    return this.getSelectorByIcon('border_color').exists;
+    return this.getSelectorByIcon('draft').exists;
   }
 
   async enter() {
@@ -235,13 +260,13 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
-  async isExpand() {
+  get isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return this.self.child().withText('arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
-    const isExpand = await this.isExpand();
+    const isExpand = await this.isExpand;
     if (isExpand != expand) {
       await this.t.click(this.toggleButton);
     }
@@ -256,6 +281,29 @@ class ConversationListSection extends BaseWebComponent {
   }
 }
 
+class ActionBarDeletePostModal extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get deleteButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').withText('Delete');
+  }
+  get cancelButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').withText('Cancel');
+  }
+
+  async delete() {
+    await this.t.click(this.deleteButton);
+  }
+
+  async cancel() {
+    await this.t.click(this.cancelButton);
+  }
+}
 
 class CloseConversationModal extends BaseWebComponent {
   get self() {
@@ -282,38 +330,7 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-class ProfileModal extends BaseWebComponent {
-  get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
-  }
 
-  get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').find('span').withText('close');
-  }
-
-  get messageButton() {
-    this.warnFlakySelector();
-    return this.self.find('span').find('span').withText('chat_bubble');
-  }
-  get privateButton() {
-    this.warnFlakySelector();
-    return this.self.find('.privacy');
-  }
-
-  async clickPrivacy() {
-    await this.t.click(this.privateButton);
-  }
-
-  async close() {
-    await this.t.click(this.closeButton);
-  }
-
-  async message() {
-    await this.t.click(this.messageButton);
-  }
-}
 
 export class MessageTab extends BaseWebComponent {
   get self() {
@@ -343,15 +360,21 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
+
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
+
   get conversationPage() {
     return this.getComponent(ConversationPage);
   }
 
   get mentionPage() {
     return this.getComponent(MentionPage);
+  }
+
+  get duplicatePromptPage() {
+    return this.getComponent(DuplicatePromptPage);
   }
 
   get postListPage() {
@@ -374,9 +397,13 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(CloseConversationModal);
   }
 
-  get profileModal() {
-    return this.getComponent(ProfileModal);
+  get deletePostModal() {
+    return this.getComponent(ActionBarDeletePostModal);
   }
+
+  // get profileModal() {
+  //   return this.getComponent(ProfileModal);
+  // }
 
   get conversationListSections() {
     return this.getSelector('.conversation-list-section');

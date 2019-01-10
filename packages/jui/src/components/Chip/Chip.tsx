@@ -76,7 +76,7 @@ export const JuiChip: React.SFC<JuiChipProps> = (props: JuiChipProps) => {
           tooltipTitle="Remove"
           color={isError ? 'semantic.negative' : 'grey.500'}
         >
-          cancel
+          remove
         </JuiIconButton>
       }
     />

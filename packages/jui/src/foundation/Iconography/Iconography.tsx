@@ -5,12 +5,29 @@
  */
 import * as React from 'react';
 import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
+import name2icon from './name2icon';
+import styled from '../../foundation/styled-components';
+import './icons/style.css';
 
 type JuiIconographyProps = MuiIconProps;
 
-export const JuiIconography: React.SFC<JuiIconographyProps> & {
+const JuiIcon = styled(MuiIcon)`
+  display: block;
+`;
+
+const JuiIconography: React.SFC<JuiIconographyProps> & {
   dependencies?: any[];
-} = props => <MuiIcon {...props} />;
+} = (props: JuiIconographyProps) => {
+  const iconName = props.children as string;
+  const className = `${props.className} ${name2icon[iconName]} icon`;
+  return (
+    <JuiIcon {...props} className={className}>
+      {iconName}
+    </JuiIcon>
+  );
+};
 
 JuiIconography.displayName = 'JuiIconography';
 JuiIconography.dependencies = [MuiIcon];
+
+export { JuiIconographyProps, JuiIconography };

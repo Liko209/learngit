@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import { transaction } from 'mobx';
-import { BaseModel } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import {
   NotificationEntityPayload,
@@ -46,7 +46,7 @@ export interface IFetchSortableDataProvider<T> {
 }
 
 export class FetchSortableDataListHandler<
-  T extends BaseModel
+  T extends IdModel
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;

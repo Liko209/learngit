@@ -3,15 +3,16 @@
  * @Date: 2018-12-11 12:03:33
  */
 import { Scene } from './Scene';
-import { SceneConfig } from './config/SceneConfig';
+import { sceneConfigFactory } from './config/SceneConfigFactory';
 import { LoginGatherer } from '../gatherers/LoginGatherer';
 import { HomePageGatherer } from '../gatherers/HomePageGatherer';
 import { OfflineGatherer } from '../gatherers/OfflineGatherer';
+import { mockHelper } from '../mock';
 
 class OfflineScene extends Scene {
 
     async preHandle() {
-        this.config = new SceneConfig();
+        this.config = sceneConfigFactory.getOfflineConfig();
 
         this.config.passes[0].gatherers.unshift({
             instance: new LoginGatherer()
@@ -24,6 +25,8 @@ class OfflineScene extends Scene {
         this.config.passes[0].gatherers.push({
             instance: new OfflineGatherer()
         });
+
+        mockHelper.open();
     }
 }
 

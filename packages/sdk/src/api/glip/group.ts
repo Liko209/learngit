@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Api from '../api';
-import { Group, GroupApiType, Raw } from '../../models';
+import { GroupApiType } from '../../models';
+import { Group } from '../../module/group/entity';
+import { Raw } from '../../framework/model';
 
 class GroupAPI extends Api {
   /**

@@ -8,7 +8,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import config from './config';
 import { ActivityViewProps, ActivityProps } from './types';
 
@@ -41,21 +41,18 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
 
   @computed
   get activity() {
-    const { source, parentId } = this._post;
+    const { parentId } = this._post;
     const types = Object.keys(this._activityData);
     let activity: any = {};
     switch (true) {
-      case !!source:
-        activity = config.source(source!);
-        break;
-      case !!parentId:
-        activity = config.children();
-        break;
       case types.length > 1:
         activity = config.items();
         break;
       case !!types.length:
         activity = this._activityData[types[0]];
+        break;
+      case !!parentId:
+        activity = config.children();
         break;
     }
     return activity;

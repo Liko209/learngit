@@ -8,8 +8,9 @@ import { ENTITY, SERVICE } from '../../service/eventKey';
 import { daoManager } from '../../dao';
 import ProfileDao from '../../dao/profile';
 import { transform } from '../../service/utils';
-import AccountService from '../account';
-import { Profile, Raw } from '../../models';
+import { UserConfig } from '../account/UserConfig';
+import { Profile } from '../../module/profile/entity';
+import { Raw } from '../../framework/model';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 
@@ -65,10 +66,7 @@ const handlePartialProfileUpdate = async (
       if (transformedData) {
         let localProfile: Profile | null = null;
         const profileDao = daoManager.getDao(ProfileDao);
-        const accountService: AccountService = AccountService.getInstance();
-        const profileId:
-          | number
-          | null = accountService.getCurrentUserProfileId();
+        const profileId: number | null = UserConfig.getCurrentUserProfileId();
         if (profileId) {
           localProfile = await profileDao.get(profileId);
           if (localProfile && key) {
@@ -100,4 +98,8 @@ const handlePartialProfileUpdate = async (
 };
 
 export default profileHandleData;
-export { extractHiddenGroupIds, handlePartialProfileUpdate };
+export {
+  extractHiddenGroupIds,
+  handlePartialProfileUpdate,
+  hiddenGroupsChange,
+};

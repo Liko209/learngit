@@ -20,6 +20,7 @@ import {
   NETWORK_FAIL_TYPE,
   HTTP_STATUS_CODE,
   SURVIVAL_MODE,
+  IRequestDecoration,
 } from './network';
 
 export class NetworkRequestExecutor
@@ -35,12 +36,19 @@ export class NetworkRequestExecutor
   responseListener: IResponseListener;
   listener?: INetworkRequestConsumerListener;
 
-  constructor(request: IRequest, client: BaseClient) {
+  private _requestDecoration?: IRequestDecoration;
+
+  constructor(
+    request: IRequest,
+    client: BaseClient,
+    decoration: IRequestDecoration,
+  ) {
     this.request = request;
     this.via = request.via;
     this.handlerType = request.handlerType;
     this.retryCount = request.retryCount;
     this.client = client;
+    this._requestDecoration = decoration;
   }
 
   onSuccess(response: IResponse): void {
@@ -100,6 +108,9 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
+    if (this._requestDecoration) {
+      this._requestDecoration.decorate(this.getRequest());
+    }
     this.client.request(this.request, this);
   }
 

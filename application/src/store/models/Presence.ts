@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import { Presence } from 'sdk/models';
+import { Presence } from 'sdk/module/presence/entity';
 import Base from './Base';
 import { PRESENCE } from 'sdk/service';
 

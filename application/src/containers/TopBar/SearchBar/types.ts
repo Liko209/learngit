@@ -3,7 +3,9 @@
  * @Date: 2018-11-23 16:31:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { Person, Group, SortableModel } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
+import { Group } from 'sdk/module/group/entity';
+import { SortableModel } from 'sdk/models';
 
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
@@ -25,6 +27,7 @@ type ViewProps = {
   setValue: (value: string) => void;
   currentUserId: number;
   isTeamOrGroup: (id: number) => boolean;
+  joinTeam: (id: number) => {};
 };
 
 type SectionType<T> = {

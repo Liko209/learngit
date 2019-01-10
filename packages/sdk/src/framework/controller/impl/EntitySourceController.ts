@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../../models';
+import { IdModel, Raw } from '../../model';
 import { DeactivatedDao, BaseDao } from '../../../dao';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 
-class EntitySourceController<T extends BaseModel = BaseModel>
+class EntitySourceController<T extends IdModel = IdModel>
   implements IEntitySourceController<T> {
   constructor(
     public dao: BaseDao<T>,

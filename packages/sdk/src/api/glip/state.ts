@@ -4,7 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Api from '../api';
-import { MyState, Raw, State } from '../../models';
+
+import { Raw } from '../../framework/model';
+import { State } from '../../module/state/entity';
+import { MyState } from '../../models';
 
 class StateAPI extends Api {
   /**

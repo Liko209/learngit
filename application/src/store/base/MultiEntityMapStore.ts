@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { createAtom, IAtom, action } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
-import { BaseModel, Raw } from 'sdk/models';
+import { IdModel, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
 import visibilityChangeEvent from './visibilityChangeEvent';
@@ -14,7 +14,7 @@ const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
 
 export default class MultiEntityMapStore<
-  T extends BaseModel,
+  T extends IdModel,
   K extends Entity
 > extends BaseStore {
   private _data: { [id: number]: K } = {};
@@ -160,8 +160,10 @@ export default class MultiEntityMapStore<
           }
         });
       } else {
-        this._partialUpdate(res as T, id);
-        model = this._data[id] as K;
+        if (res) {
+          this._partialUpdate(res as T, id);
+          model = this._data[id] as K;
+        }
       }
     }
 

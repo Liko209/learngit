@@ -1,44 +1,181 @@
-/// <reference path="../../__tests__/types.d.ts" />
+/*
+ * @Author: Jayson zhang  (jayson.zhang@ringcentral.com)
+ * @Date: 2018-12-27 11:14:52
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
+import { IRTCAccountDelegate } from '../../api/IRTCAccountDelegate';
+import { RTC_ACCOUNT_STATE } from '../../api/types';
+import { UA_EVENT } from '../../signaling/types';
+import { EventEmitter2 } from 'eventemitter2';
 
-describe('Registration manager', async () => {
-  it('state transition: network change in ready', () => {
-    const am = new RTCRegistrationManager(null);
-    jest.spyOn(am, 'onReadyWhenNetworkChanged');
-    am.doRegister();
-    am.regSucceed();
-    am.networkChanged();
-    expect(am.onReadyWhenNetworkChanged).toHaveBeenCalled();
+class MockAccountListener implements IRTCAccountDelegate {
+  onAccountStateChanged = jest.fn();
+  onReceiveIncomingCall = jest.fn();
+}
+
+class MockUserAgent {
+  private _eventEmitter: EventEmitter2;
+  constructor(eventEmitter: EventEmitter2, flag: boolean) {
+    this._eventEmitter = eventEmitter;
+    if (flag) {
+      this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
+    } else {
+      this._eventEmitter.emit(UA_EVENT.REG_FAILED);
+    }
+  }
+
+  public deRegister() {
+    this._eventEmitter.emit(UA_EVENT.REG_UNREGISTER);
+  }
+
+  public mockIncomingCall() {
+    const session = {
+      displayName: 'test',
+      uri: { aor: 'test@ringcentral.com' },
+    };
+    this._eventEmitter.emit(UA_EVENT.RECEIVE_INVITE, session);
+  }
+
+  makeCall = jest.fn();
+}
+
+const provisionData = 'provisionData';
+const options = 'options';
+const phoneNumber = 'phoneNumber';
+
+describe('RTCRegistrationManager', () => {
+  describe('provisionReady', () => {
+    it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+      regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        RTC_ACCOUNT_STATE.REGISTERED,
+      );
+    });
+
+    it('Should  Report regInProgress state to upper layer when account state transient to regInProgress [JPT-524]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        RTC_ACCOUNT_STATE.IN_PROGRESS,
+      );
+    });
+    it('Should  Report failed state to upper layer when account state transient to failed [JPT-525]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+      regManager._userAgent = new MockUserAgent(
+        regManager._eventEmitter,
+        false,
+      );
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        RTC_ACCOUNT_STATE.FAILED,
+      );
+    });
+    it('Should  Report unRegistered state to upper layer when account state transient to unRegistered [JPT-562]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+      regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
+      regManager._userAgent.deRegister();
+      expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
+        RTC_ACCOUNT_STATE.UNREGISTERED,
+      );
+    });
   });
 
-  it('state transition: from idle to none', async () => {
-    const am = new RTCRegistrationManager(null);
-    jest.spyOn(am, 'onRegInProgress');
-    jest.spyOn(am, 'onLeaveRegInProgress');
-    jest.spyOn(am, 'onReady');
-    jest.spyOn(am, 'onLeaveReady');
-    jest.spyOn(am, 'onUnRegInProgress');
-    jest.spyOn(am, 'onLeaveUnRegInProgress');
-    jest.spyOn(am, 'onNone');
-    am.doRegister();
-    am.regSucceed();
-    am.deRegister();
-    am.deRegSucceed();
-    expect(am.onNone).toHaveBeenCalled();
-    expect(am.onLeaveUnRegInProgress).toHaveBeenCalled();
-    expect(am.onUnRegInProgress).toHaveBeenCalled();
-    expect(am.onLeaveReady).toHaveBeenCalled();
-    expect(am.onReady).toHaveBeenCalled();
-    expect(am.onLeaveRegInProgress).toHaveBeenCalled();
-    expect(am.onRegInProgress).toHaveBeenCalled();
+  describe('reRegister()', () => {
+    function initRegManager(regManager: RTCRegistrationManager) {
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      jest.spyOn(regManager, 'onReRegisterAction').mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+    }
+
+    it('Should call the onReRegisterAction function when FSM state in regInProgress [JPT-756]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      initRegManager(regManager);
+      expect(regManager._fsm.state).toBe('regInProgress');
+      regManager.reRegister();
+      expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+      expect(regManager._fsm.state).toBe('regInProgress');
+    });
+
+    it('Should call the onReRegisterAction function when FSM state in ready [JPT-758]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      initRegManager(regManager);
+      regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
+      expect(regManager._fsm.state).toBe('ready');
+      regManager.reRegister();
+      expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+      expect(regManager._fsm.state).toBe('regInProgress');
+    });
+
+    it('Should call the onReRegisterAction function when FSM state in regFailed [JPT-757]', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      initRegManager(regManager);
+      expect(regManager._fsm.state).toBe('regInProgress');
+      regManager._userAgent = new MockUserAgent(
+        regManager._eventEmitter,
+        false,
+      );
+      expect(regManager._fsm.state).toBe('regFailure');
+      regManager.reRegister();
+      expect(regManager.onProvisionReadyAction).toHaveBeenCalled();
+      expect(regManager._fsm.state).toBe('regInProgress');
+    });
   });
 
-  it('SIP refresh while state is in ready', async () => {
-    const am = new RTCRegistrationManager(null);
-    jest.spyOn(am, 'onReadyWhenRegSucceed');
-    am.doRegister();
-    am.regSucceed();
-    am.regSucceed();
-    expect(am.onReadyWhenRegSucceed).toHaveBeenCalled();
+  describe('makeCall()', () => {
+    it('Should call the makeCall function of WebPhone when RTCRegManager makeCall', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady('provisionData', 'options');
+      regManager._userAgent = new MockUserAgent(regManager._eventEmitter, true);
+      regManager.createOutgoingCallSession(phoneNumber, options);
+      expect(regManager._userAgent.makeCall).toHaveBeenCalledWith(
+        phoneNumber,
+        options,
+      );
+    });
+  });
+
+  describe('receive incoming call', () => {
+    it('Should call onReceiveInvite when user agent trigger receive incoming signal', () => {
+      const mockListener = new MockAccountListener();
+      const regManager = new RTCRegistrationManager(mockListener);
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      regManager.provisionReady('provisionData', 'options');
+      jest.spyOn(regManager, '_onReceiveInvite');
+      const ua = new MockUserAgent(regManager._eventEmitter, true);
+      regManager._userAgent = ua;
+      ua.mockIncomingCall();
+      expect(regManager._onReceiveInvite).toHaveBeenCalled();
+    });
   });
 });

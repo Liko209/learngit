@@ -13,7 +13,9 @@ import {
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
-import { Group, Profile, GroupState } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Profile } from 'sdk/module/profile/entity';
+import { GroupState } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -25,6 +27,7 @@ import storeManager from '@/store';
 import history from '@/history';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 
 const { GroupService, StateService, ProfileService } = service;
 
@@ -75,7 +78,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   @observable
   private _lastGroupId: number = 0;
   private _dataLoader: Promise<any>;
-  private _lastClosedGroupId: number;
   constructor() {
     super();
     this._dataLoader = this._initHandlerMap();
@@ -291,13 +293,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (type === EVENT_TYPES.DELETE) {
       if (ids.includes(currentGroupId)) {
         history.replace('/messages');
-        this._lastClosedGroupId = currentGroupId;
-      }
-    }
-    if (type === EVENT_TYPES.UPDATE) {
-      if (this._lastClosedGroupId && !currentGroupId) {
-        history.replace(`/messages/${this._lastClosedGroupId}`);
-        delete this._lastClosedGroupId;
       }
     }
   }
@@ -387,9 +382,25 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
+      const performanceKey = this._getPerformanceKey(sectionType);
+      PerformanceTracerHolder.getPerformanceTracer().start(performanceKey);
       await this._handlersMap[sectionType].fetchData(direction);
       const ids = this._handlersMap[sectionType].sortableListStore.getIds();
       this._updateIdSet(EVENT_TYPES.UPDATE, ids);
+      PerformanceTracerHolder.getPerformanceTracer().end(performanceKey);
+    }
+  }
+
+  private _getPerformanceKey(sectionType: SECTION_TYPE): string {
+    switch (sectionType) {
+      case SECTION_TYPE.FAVORITE:
+        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_FAVORITES;
+
+      case SECTION_TYPE.DIRECT_MESSAGE:
+        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_DIRECT_MESSAGES;
+
+      case SECTION_TYPE.TEAM:
+        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_TEAMS;
     }
   }
 

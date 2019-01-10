@@ -14,16 +14,17 @@ import {
 } from './types';
 
 import {
-  ItemService,
   PostService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+
+import { ItemService } from 'sdk/module/item';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
-import { ItemFile } from 'sdk/models';
+import { ItemFile } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
 
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>

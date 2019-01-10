@@ -9,7 +9,10 @@ import PostModel from '@/store/models/Post';
 import GroupModel from '@/store/models/Group';
 import CompanyModel from '@/store/models/Company';
 import { getEntity, getGlobalValue } from '@/store/utils';
-import { Post, Person, Group, Company } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { Person } from 'sdk/module/person/entity';
+import { Group } from 'sdk/module/group/entity';
+import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import PersonModel from '@/store/models/Person';
@@ -23,22 +26,27 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
-  private _getGroup(id: number) {
+  getGroup(id: number) {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
   }
 
-  private _getPerson(id: number) {
+  getPerson(id: number) {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
   }
 
   private _getDisplayName(id: number) {
     const type = GlipTypeUtil.extractTypeId(id);
-    const mapping = {
-      // [TypeDictionary.TYPE_ID_GROUP]: this._getGroup(id).displayName, // Cannot @ group at present
-      [TypeDictionary.TYPE_ID_TEAM]: this._getGroup(id).displayName,
-      [TypeDictionary.TYPE_ID_PERSON]: this._getPerson(id).userDisplayName,
-    };
-    return mapping[type];
+
+    switch (type) {
+      case TypeDictionary.TYPE_ID_TEAM:
+        return this.getGroup(id).displayName;
+
+      case TypeDictionary.TYPE_ID_PERSON:
+        return this.getPerson(id).userDisplayName;
+
+      default:
+        return undefined;
+    }
   }
 
   @computed

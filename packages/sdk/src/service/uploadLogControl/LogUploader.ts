@@ -1,7 +1,7 @@
-
 import { ILogApi, LogEntity, mainLogger } from 'foundation';
 import AccountService from '../account';
 import axios from 'axios';
+import { UserConfig } from '../../service/account';
 const DEFAULT_EMAIL = 'service@glip.com';
 
 export class LogUploader implements ILogApi {
@@ -17,7 +17,7 @@ export class LogUploader implements ILogApi {
     const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
     let id;
     try {
-      id = accountService.getCurrentUserId();
+      id = UserConfig.getCurrentUserId();
     } catch (error) {
       mainLogger.error(error);
     }
@@ -43,8 +43,10 @@ export class LogUploader implements ILogApi {
       url: 'https://fijilog.lab.nordigy.ru/log/',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-        'Access-Control-Allow-Headers': 'Origin,X-Requested-With,Content-Type,Accept,Authorization,User-Agent,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods':
+          'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+        'Access-Control-Allow-Headers':
+          'Origin,X-Requested-With,Content-Type,Accept,Authorization,User-Agent,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers',
       },
       data: { userInfo, logInfo },
     });

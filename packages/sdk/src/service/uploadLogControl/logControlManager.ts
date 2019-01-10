@@ -53,7 +53,9 @@ class LogControlManager implements IAccessor {
   }
 
   public setNetworkState(isOnline: boolean) {
-    this._isOnline !== isOnline && this._onUploadAccessorChange && this._onUploadAccessorChange(isOnline);
+    this._isOnline !== isOnline &&
+      this._onUploadAccessorChange &&
+      this._onUploadAccessorChange(isOnline);
     this._isOnline = isOnline;
   }
 

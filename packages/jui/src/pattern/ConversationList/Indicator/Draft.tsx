@@ -18,9 +18,7 @@ const StyledIconographyDraft = styled(JuiIconography)`
 `;
 
 const JuiIndicatorDraft = () => {
-  return (
-    <StyledIconographyDraft>border_color</StyledIconographyDraft>
-  );
+  return <StyledIconographyDraft>draft</StyledIconographyDraft>;
 };
 
 export { StyledIconographyDraft, JuiIndicatorDraft };

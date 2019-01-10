@@ -1,5 +1,10 @@
-import { POST_STATUS } from 'sdk/service';
-import { Post } from 'sdk/models';
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2018-12-26 19:06:36
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { Post } from 'sdk/module/post/entity';
 import { GlipTypeUtil } from 'sdk/utils';
 import Base from './Base';
 import { observable, computed } from 'mobx';
@@ -9,8 +14,6 @@ export default class PostModel extends Base<Post> {
   text: string;
   @observable
   creatorId: number;
-  @observable
-  status?: POST_STATUS;
   @observable
   atMentionNonItemIds?: number[];
   @observable
@@ -38,7 +41,6 @@ export default class PostModel extends Base<Post> {
       created_at,
       creator_id,
       text,
-      __status,
       at_mention_non_item_ids,
       item_ids,
       likes,
@@ -55,7 +57,6 @@ export default class PostModel extends Base<Post> {
     this.activityData = activity_data;
     this.activity = activity;
     this.text = text;
-    this.status = __status;
     this.atMentionNonItemIds = at_mention_non_item_ids;
     this.itemId = item_id;
     this.itemIds = item_ids;

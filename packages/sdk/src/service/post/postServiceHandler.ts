@@ -10,69 +10,41 @@ import {
 } from '../../dao/account/constants';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
-import { Post, ItemFile, PostItemData } from '../../models';
 import { RawPostInfo } from './types';
-import { POST_STATUS } from '../constants';
-import ItemService from '../item';
+import { GlipTypeUtil, TypeDictionary } from '../../utils';
+import { Post, PostItemData } from '../../module/post/entity';
+import { ItemFile } from '../../module/item/entity';
+import { ItemService } from '../../module/item';
 
 // global_url_regex
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
-  // <a class='at_mention_compose' rel='{"id":21952077827}'>@Jeffrey Huang</a>
-  static buildAtMentionsPeopleInfo(
-    params: RawPostInfo,
-  ): {
-    text: string;
-    at_mention_non_item_ids: number[];
-  } {
-    const { atMentions, users = [], text } = params;
-
-    if (atMentions) {
-      let renderedText = text;
-      const ids = [];
-
-      for (let i = 0; i < users.length; i += 1) {
-        const userDisplay: string = users[i].display.replace(
-          /([.?*+^$[\]\\(){}|-])/g,
-          '\\$1',
-        );
-        const key = new RegExp(`@\\[${userDisplay}\\]:${users[i].id}:`, 'g');
-
-        // tslint:disable-next-line:max-line-length
-        const replacedText = `<a class='at_mention_compose' rel='{"id":${
-          users[i].id
-        }}'>@${users[i].display}</a>`;
-        const text = renderedText.replace(key, replacedText);
-        if (text !== renderedText) {
-          renderedText = text;
-          ids.push(users[i].id);
-        }
-      }
-
-      return {
-        text: renderedText,
-        at_mention_non_item_ids: ids,
-      };
-    }
-
-    return {
-      at_mention_non_item_ids: [],
-      text: params.text,
-    };
-  }
-
   static buildLinksInfo(params: RawPostInfo): LinksArray {
     const { text } = params;
-    let res: any;
+    let res: string[] = [];
+    let matchedUrl: string[] = [];
+    const urlArray: string[] = [];
     const links: LinksArray = [];
-
-    res = text.match(Markdown.global_url_regex);
-    res &&
-      res.forEach((item: string) => {
-        links.push({
-          url: item,
-        });
+    res = res.concat(text);
+    res && res.forEach((item: string, index: number) => {
+      matchedUrl = res[index].match(/[^\(\)]+(?=\))/g) || [];
+      if (!matchedUrl.length) {
+        urlArray.push(item);
+      }
+    });
+    if (matchedUrl.length) {
+      for (const k of matchedUrl) {
+        if (k) {
+          urlArray.push(k);
+        }
+      }
+    }
+    const matchedNoneMdUrl = urlArray.toString().match(Markdown.global_url_regex);
+    matchedNoneMdUrl && matchedNoneMdUrl.forEach((item: string) => {
+      links.push({
+        url: item,
       });
+    });
     return links;
   }
 
@@ -114,14 +86,11 @@ class PostServiceHandler {
       .getKVDao(AccountDao)
       .get(ACCOUNT_COMPANY_ID);
     const vers = versionHash();
-    const atMentionsPeopleInfo = PostServiceHandler.buildAtMentionsPeopleInfo(
-      params,
-    );
     const links = PostServiceHandler.buildLinksInfo(params);
     const now = Date.now();
     const buildPost: Post = {
       links,
-      id: vers,
+      id: GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_POST),
       created_at: now,
       modified_at: now,
       creator_id: userId,
@@ -129,18 +98,16 @@ class PostServiceHandler {
       new_version: vers,
       is_new: true,
       model_size: 0,
-      text: atMentionsPeopleInfo.text,
+      text: params.text,
       group_id: Number(params.groupId),
       from_group_id: Number(params.groupId),
       item_id: params.itemId,
       item_ids: params.itemIds || [],
       post_ids: [],
       at_mention_item_ids: [],
-      at_mention_non_item_ids: atMentionsPeopleInfo.at_mention_non_item_ids,
+      at_mention_non_item_ids: params.mentionsIds || [],
       company_id: companyId,
       deactivated: false,
-      __status: POST_STATUS.INPROGRESS,
-      activity_data: {},
     };
 
     if (params.groupId && params.itemIds && params.itemIds.length > 0) {
@@ -155,11 +122,6 @@ class PostServiceHandler {
     }
 
     return buildPost;
-  }
-
-  static buildResendPostInfo(post: Post) {
-    post.__status = POST_STATUS.INPROGRESS;
-    return post;
   }
 
   static async buildModifiedPostInfo(
@@ -179,12 +141,9 @@ class PostServiceHandler {
     }
     oldPost.new_version = versionHash();
     oldPost.is_new = false;
-    const atMentionsInfo: any = PostServiceHandler.buildAtMentionsPeopleInfo(
-      params,
-    );
-    oldPost.text = atMentionsInfo.text;
-    if (atMentionsInfo.at_mention_non_item_ids.length) {
-      oldPost.at_mention_non_item_ids = atMentionsInfo.at_mention_non_item_ids;
+    oldPost.text = params.text;
+    if (params.mentionsIds !== undefined && params.mentionsIds.length) {
+      oldPost.at_mention_non_item_ids = params.mentionsIds;
     }
     delete oldPost.likes; // do we need this ?
     oldPost._id = oldPost.id;

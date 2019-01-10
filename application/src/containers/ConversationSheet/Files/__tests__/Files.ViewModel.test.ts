@@ -3,16 +3,32 @@
  * @Date: 2018-10-25 15:06:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '../../../../store/utils';
+import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
 import { service } from 'sdk';
-jest.mock('../../../../store/utils');
-// import ItemModel from '@/store/models/Item';
-// import { FileType } from '../types';
-import { FileType } from '../types';
 
-const { ItemService } = service;
+import { FileType, FilesViewProps } from '../types';
+import { Notification } from '@/containers/Notification';
+import { PROGRESS_STATUS } from 'sdk/module/progress';
+import { ItemService } from 'sdk/module/item';
+
+jest.mock('sdk/service/post');
+jest.mock('../../../../store/utils');
+jest.mock('@/containers/Notification');
+
+const itemService = {
+  cancelUpload: jest.fn(),
+};
+ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+
+const { PostService } = service;
+const postService = {
+  removeItemFromPost: jest.fn(),
+};
+PostService.getInstance = jest.fn().mockReturnValue(postService);
+
 ItemService.getInstance = jest.fn().mockReturnValue({});
+Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 const filesItemVM = new FilesViewModel();
 filesItemVM.props.ids = [1, 2, 3];
@@ -61,5 +77,57 @@ describe('filesItemVM', () => {
       { ...mockItemValue },
       { ...mockItemValue },
     ]);
+  });
+
+  describe('removeFile()', () => {
+    it('should call post service', async () => {
+      await filesItemVM.removeFile(123);
+      expect(postService.removeItemFromPost).toBeCalledTimes(1);
+    });
+
+    it('should show service error', async () => {
+      (postService.removeItemFromPost as jest.Mock).mockImplementationOnce(
+        () => {
+          throw new Error('error');
+        },
+      );
+      await filesItemVM.removeFile(123);
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          expect(Notification.flashToast).toHaveBeenCalled();
+          resolve();
+        },         0);
+      });
+      await p;
+    });
+
+    it('should show network error', async () => {
+      (getGlobalValue as jest.Mock).mockImplementationOnce(() => 'offline');
+      await filesItemVM.removeFile(123);
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          expect(Notification.flashToast).toHaveBeenCalled();
+          resolve();
+        },         0);
+      });
+      await p;
+    });
+
+    it('should cancel upload file', async () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        ...mockItemValue,
+        progressStatus: PROGRESS_STATUS.INPROGRESS,
+      });
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      const vm = new FilesViewModel({ ids: [123, 2, 3] } as FilesViewProps);
+      await vm.removeFile(123);
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          expect(itemService.cancelUpload).toBeCalledTimes(1);
+          resolve();
+        },         0);
+      });
+      await p;
+    });
   });
 });

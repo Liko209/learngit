@@ -23,7 +23,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
-    const format = 'hh:mm A';
+    const format = 'h:mm A';
 
     let groupId, postData, targetPost;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
@@ -51,7 +51,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await h(t).platform(loginUser).createPost({ text: postContent }, groupId)).data;
+      postData = await h(t).platform(loginUser).sendTextPost(postContent, groupId).then(res => res.data);
       targetPost = app.homePage.messageTab.conversationPage.postItemById(postData.id);
       await t.expect(targetPost.exists).ok(postData)
     });
@@ -67,7 +67,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
 test(formalName('When update user name, can sync dynamically in message metadata.',
   ['JPT-91', 'P2', 'ConversationStream']),
   async (t: TestController) => {
-    const postContent = `some random text post ${Date.now()}`;
+    const postContent = uuid();
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -88,7 +88,7 @@ test(formalName('When update user name, can sync dynamically in message metadata
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await h(t).glip(loginUser).sendPost(groupId, postContent)).data;
+      postData = await h(t).platform(loginUser).sendTextPost(postContent, groupId).then(res => res.data);
       targetPost = app.homePage.messageTab.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok();
     });

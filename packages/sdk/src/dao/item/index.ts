@@ -4,7 +4,7 @@
  */
 
 import { BaseDao } from '../base';
-import { Item } from '../../models';
+import { Item } from '../../module/item/entity';
 import { IDatabase } from 'foundation';
 
 class ItemDao extends BaseDao<Item> {

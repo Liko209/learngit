@@ -10,8 +10,8 @@ import GroupService, {
   FEATURE_STATUS,
 } from '../../../service/group';
 import { daoManager, PersonDao, AuthDao } from '../../../dao';
-import { Person } from '../../../models';
-import { AccountService } from '../../account/accountService';
+import { Person } from '../../../module/person/entity';
+import { UserConfig } from '../../account/UserConfig';
 import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
 import { personFactory } from '../../../__tests__/factories';
 import { KVStorage } from 'foundation/src';
@@ -20,6 +20,7 @@ import PersonAPI from '../../../api/glip/person';
 
 jest.mock('../../../dao');
 jest.mock('../../../service/group');
+jest.mock('../../account/UserConfig');
 
 describe('PersonService', () => {
   beforeEach(() => {
@@ -250,17 +251,13 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, exclude self', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons('dora', true);
       expect(result.sortableModels.length).toBe(9999);
     });
 
     it('search parts of data, searchKey is empty, return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         '',
         undefined,
@@ -271,9 +268,7 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, can not return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         '',
         undefined,
@@ -285,9 +280,7 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey not empty, can not return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         'dora',
         undefined,
@@ -299,9 +292,7 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         '',
         true,
@@ -312,9 +303,7 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         undefined,
         true,
@@ -330,9 +319,7 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey not empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         'dora',
         true,
@@ -346,9 +333,7 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, can not return all if search key is empty', async () => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest.fn().mockReturnValue(accountService);
-      accountService.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personService.doFuzzySearchPersons(
         '',
         true,
@@ -360,12 +345,19 @@ describe('PersonService', () => {
     });
 
     it('search persons, with email matched, name matched, check the priority', async () => {
-      const result = await personService.doFuzzySearchPersons('monkey');
+      let result = await personService.doFuzzySearchPersons('monkey');
       expect(result.sortableModels.length).toBe(20);
       expect(result.sortableModels[0].id).toBe(20011);
       expect(result.sortableModels[9].id).toBe(20020);
       expect(result.sortableModels[10].id).toBe(20001);
       expect(result.sortableModels[19].id).toBe(20010);
+
+      result = await personService.doFuzzySearchPersons('k w');
+      expect(result.sortableModels.length).toBe(20);
+      expect(result.sortableModels[0].id).toBe(20001);
+      expect(result.sortableModels[9].id).toBe(20010);
+      expect(result.sortableModels[10].id).toBe(20011);
+      expect(result.sortableModels[19].id).toBe(20020);
     });
   });
 
@@ -472,11 +464,7 @@ describe('PersonService', () => {
     };
 
     beforeEach(() => {
-      const accountService = new AccountService();
-      AccountService.getInstance = jest
-        .fn()
-        .mockReturnValueOnce(accountService);
-      accountService.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
+      UserConfig.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
     });
 
     it('should not return extension id for guest user', () => {

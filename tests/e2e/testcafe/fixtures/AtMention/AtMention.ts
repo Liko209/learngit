@@ -52,6 +52,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
   await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
     await mentionsEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
     await t.expect(mentionPage.posts.count).eql(2);
   }, true);
 
@@ -65,6 +66,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
   await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
     await mentionsEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
     await t.expect(mentionPage.posts.count).eql(3);
   }, true);
 
@@ -74,6 +76,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
   await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
     await mentionsEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
     await t.expect(mentionPage.posts.count).eql(2);
   }, true);
 },
@@ -131,6 +134,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
     await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
       await mentionsEntry.enter();
+      await mentionPage.waitUntilPostsBeLoaded();
       await t.expect(mentionPage.posts.count).eql(3);
     }, true);
 
@@ -149,7 +153,9 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
     await h(t).withLog('Then I click the conversation name in the group\'s conversation card', async () => {
       await mentionsEntry.enter();
+      await mentionPage.waitUntilPostsBeLoaded();
       await mentionPage.postItemById(groupPostId).jumpToConversationByClickName();
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('Should jump to the group page and scroll to bottom', async () => {
@@ -163,10 +169,12 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
     await h(t).withLog('Then I click the conversation name in the team\'s conversation card', async () => {
       await mentionsEntry.enter();
+      await mentionPage.waitUntilPostsBeLoaded();
       await mentionPage.postItemById(teamPostId).jumpToConversationByClickName();
     });
 
     await h(t).withLog('Should jump to the team page and scroll to bottom', async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.groupIdShouldBe(teamId);
       await conversationPage.expectStreamScrollToBottom();
     });
@@ -177,8 +185,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
   },
 );
 
-//skip due to feature bug FIJI-1900
-test.skip(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
+test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -233,8 +240,9 @@ test.skip(formalName('Remove UMI when jump to conversation which have unread mes
       await directMessagesSection.expectHeaderUmi(0);
     }, true);
 
-    await h(t).withLog('Then I nagivate away from conversation and refresh browser', async () => {
+    await h(t).withLog('Then I navigate away from conversation and refresh browser', async () => {
       await mentionsEntry.enter();
+      await mentionPage.waitUntilPostsBeLoaded();
       await h(t).refresh();
       await app.homePage.ensureLoaded();
     });
@@ -336,8 +344,8 @@ test(formalName('Jump to post position when click button or clickable area of po
     const postMentionPage = app.homePage.messageTab.mentionPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
 
-    let verifyTextTeam = 'First AtMention in Team';
-    let verifyTextChat = 'First AtMention in pvChat';
+    let verifyTextTeam = uuid();
+    let verifyTextChat = uuid();
 
     let teamId, pvChatId, atMentionTeamPostId, atMentionChatPostId;
     await h(t).withLog('Given I have 1 AtMention post in team ,one in group', async () => {
@@ -356,11 +364,11 @@ test(formalName('Jump to post position when click button or clickable area of po
       await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       atMentionTeamPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextTeam + `, ![:Person](${loginUser.rcId})`,
+        `${verifyTextTeam}, ![:Person](${loginUser.rcId})`,
         teamId,
       );
       atMentionChatPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextChat + `, ![:Person](${loginUser.rcId})`,
+        `${verifyTextChat}, ![:Person](${loginUser.rcId})`,
         pvChatId,
       );
 
@@ -373,6 +381,7 @@ test(formalName('Jump to post position when click button or clickable area of po
 
     await h(t).withLog('And I enter AtMentions page', async () => {
       await mentionsEntry.enter();
+      await postMentionPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I click the post item', async () => {
@@ -388,6 +397,7 @@ test(formalName('Jump to post position when click button or clickable area of po
 
     await h(t).withLog('When I back to AtMention page', async () => {
       await mentionsEntry.enter();
+      await postMentionPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I click AtMention post item from pvChat', async () => {
@@ -401,3 +411,42 @@ test(formalName('Jump to post position when click button or clickable area of po
         .ok({ timeout: 5e3 });
     });
   });
+
+test(formalName('JPT-733 Can\'t show all received posts when open mentions page', ['P2', 'JPT-733', 'Mia.Cai','AtMention']), async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[4];
+    const otherUser = users[5];
+    await h(t).platform(user).init();
+    await h(t).platform(otherUser).init();
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const mentionPage = app.homePage.messageTab.mentionPage;
+
+    let teamId;
+    await h(t).withLog(`Given I create one new teams`, async () => {
+      teamId = await h(t).platform(user).createAndGetGroupId({
+        type: 'Team',
+        name: uuid(),
+        members: [user.rcId, otherUser.rcId],
+      });
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('And I open mentions page', async () => {
+      await mentionsEntry.enter();
+    });
+
+    let message = uuid(), newPostId;
+    await h(t).withLog('And I received new message', async () => {
+      newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(message, teamId);
+    });
+
+    await h(t).withLog('Then I can\'t find the posts in the mentions page', async () => {
+      await t.expect(mentionPage.postItemById(newPostId).exists).notOk({timeout: 10e3});
+    }, true);
+
+  },);

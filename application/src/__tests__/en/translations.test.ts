@@ -86,7 +86,7 @@ describe('i18next-en', () => {
     expect(i18next.t('@mentions_title')).toEqual('@Mentions');
     expect(i18next.t('bookmarks_title')).toEqual('Bookmarks');
     expect(i18next.t('at')).toEqual('at');
-    expect(i18next.t('tomorrow')).toEqual('tomorrow');
+    expect(i18next.t('tomorrow')).toEqual('Tomorrow');
     expect(i18next.t('avatarnamesWithOthers', { count: 10 })).toEqual(
       ' and other 10 people',
     );
@@ -165,9 +165,9 @@ describe('i18next-en', () => {
     expect(i18next.t('updated')).toEqual('updated');
     expect(i18next.t('created')).toEqual('created');
     expect(i18next.t('delete')).toEqual('Delete');
-    expect(i18next.t('deletePostTitle')).toEqual('Delete message');
+    expect(i18next.t('deletePostTitle')).toEqual('Delete post');
     expect(i18next.t('deletePostContent')).toEqual(
-      'Are you sure to delete this message? It is evitable.',
+      'Are you sure you want to delete this post?',
     );
     expect(i18next.t('via')).toEqual('via');
     expect(i18next.t('marked')).toEqual('marked');
@@ -305,7 +305,7 @@ describe('i18next-en', () => {
   it('should check duplicate alert text JPT-455', () => {
     expect(i18next.t('updateFiles')).toEqual('Update File(s)?');
     expect(i18next.t('theFollowingFilesAlreadyExist')).toEqual(
-      'The following file(s) already exist',
+      'The following file(s) already exist.',
     );
     expect(
       i18next.t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne'),
@@ -317,6 +317,15 @@ describe('i18next-en', () => {
   it('should check file no longer exist JPT-617', () => {
     expect(i18next.t('fileNoLongerExists')).toEqual(
       'The file no longer exists.',
+    );
+  });
+
+  it('should check translation for error handle in cancel file upload', () => {
+    expect(i18next.t('notAbleToCancelUpload')).toEqual(
+      "Sorry, we weren't able to cancel the upload.",
+    );
+    expect(i18next.t('notAbleToCancelUploadTryAgain')).toEqual(
+      "Sorry, we weren't able to cancel the upload. Try again.",
     );
   });
 });

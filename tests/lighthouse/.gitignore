@@ -6,3 +6,6 @@ reports
 
 # Mac
 .DS_Store
+
+# vs code
+.vscode

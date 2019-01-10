@@ -15,17 +15,16 @@ import ProfileService from '../../service/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
 import { transform } from '../utils';
-import {
-  Group,
-  Post,
-  Raw,
-  Profile,
-  PartialWithKey,
-  GroupState,
-} from '../../models';
+import { PartialWithKey, GroupState } from '../../models';
+
+import { Raw } from '../../framework/model';
+import { Group } from '../../module/group/entity';
+import { Post } from '../../module/post/entity';
+import { Profile } from '../../module/profile/entity';
+
 import StateService from '../state';
 import { EVENT_TYPES } from '../constants';
-import AccountService from '../account';
+import { UserConfig } from '../account';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -140,8 +139,7 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
   const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
-  const accountService: AccountService = AccountService.getInstance();
-  const currentUserId = accountService.getCurrentUserId();
+  const currentUserId = UserConfig.getCurrentUserId();
   const normalData = groups.filter(
     (group: Group) =>
       hiddenGroupIds.indexOf(group.id) === -1 &&
@@ -417,8 +415,7 @@ async function getUnreadGroupIds(groups: Group[]) {
  */
 async function filterGroups(groups: Group[], limit: number) {
   let sortedGroups = groups;
-  const accountService: AccountService = AccountService.getInstance();
-  const currentUserId = accountService.getCurrentUserId();
+  const currentUserId = UserConfig.getCurrentUserId();
   sortedGroups = groups.filter((model: Group) => {
     if (model.is_team) {
       return true;

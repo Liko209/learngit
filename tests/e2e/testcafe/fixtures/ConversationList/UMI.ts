@@ -10,6 +10,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { ClientFunction } from 'testcafe';
+import * as assert from 'assert';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -75,8 +76,8 @@ test(formalName('UMI should be added received messages count in conversations', 
     groupConversation = directMessagesSection.conversationEntryById(groupId);
     await teamsSection.expand();
     teamConversation = teamsSection.conversationEntryById(teamId);
-    await t.expect(await groupConversation.getUmi()).eql(1);
-    await t.expect(await teamConversation.getUmi()).eql(1);
+    await groupConversation.expectUmi(1);
+    await teamConversation.expectUmi(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
@@ -170,19 +171,25 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  const item = teamsSection.conversationEntryById(teamId);
+  const team = teamsSection.conversationEntryById(teamId);
   await h(t).withLog('Then I click private chat to make sure the group is not selected', async () => {
     await directMessagesSection.conversationEntryById(pvtChatId).enter()
   });
 
   await h(t).withLog('And I can find the UMI on the team', async () => {
-    const umi = item.self.find('.umi');
-    const text = item.self.find('p');
-    await item.expectUmi(1);
-    const umiBgColor = (await umi.style)['background-color'];
-    await t.expect(umiBgColor).eql('rgb(255, 136, 0)');
-    const textFontWeight = (await text.style)['font-weight'];
-    await t.expect(textFontWeight).match(/700|bold/);
+    const umi = team.self.find('.umi');
+    const text = team.self.find('p');
+    await team.expectUmi(1);
+    await H.retryUntilPass(async () => {
+      const umiStyle = await umi.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
+    });
+    await H.retryUntilPass(async () => {
+      const textStyle = await text.style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
+    });
   });
 
   await h(t).withLog('Then I click the team to open the team conversation', async () => {
@@ -191,14 +198,16 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
-    const text = item.self.find('p');
-
-    await item.expectUmi(0);
-    const textFontWeight = (await text.style)['font-weight'];
-    await t.expect(textFontWeight).match(/400|normal/);
+    const text = team.self.find('p');
+    await team.expectUmi(0);
+    await H.retryUntilPass(async () => {
+      const textStyle = await text.style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
+    });
   });
-},
-);
+
+});
 
 test(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']), async (t: TestController) => {
   if (await H.isEdge()) {
@@ -635,6 +644,8 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
+      const focus = ClientFunction(() => window.focus());
+      await focus();
       await conversationPage.scrollToBottom();
     });
 
