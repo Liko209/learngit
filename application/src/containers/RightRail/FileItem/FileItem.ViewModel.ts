@@ -22,33 +22,43 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
 
   @computed
   get file() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+    const id = this._id;
+    if (typeof id !== 'undefined') {
+      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+    }
+    return null;
   }
 
   @computed
   get subTitle() {
-    const { createdAt, creatorId } = this.file;
-    const personName = getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      creatorId,
-    ).userDisplayName;
-    return `${personName} · ${dateFormatter.date(createdAt)}`;
+    if (this.file) {
+      const { createdAt, creatorId } = this.file;
+      const personName = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        creatorId,
+      ).userDisplayName;
+      return `${personName} · ${dateFormatter.date(createdAt)}`;
+    }
+    return '';
   }
 
   @computed
   get fileTypeOrUrl() {
-    const { type } = this.file;
-    const { isImage, previewUrl } = this.isImage(this.file);
-    const thumb = {
-      icon: '',
-      url: '',
-    };
-    if (isImage) {
-      thumb.url = previewUrl;
+    if (this.file) {
+      const { type } = this.file;
+      const { isImage, previewUrl } = this.isImage(this.file);
+      const thumb = {
+        icon: '',
+        url: '',
+      };
+      if (isImage) {
+        thumb.url = previewUrl;
+        return thumb;
+      }
+      thumb.icon = (type && type.split('/').pop()) || '';
       return thumb;
     }
-    thumb.icon = (type && type.split('/').pop()) || '';
-    return thumb;
+    return '';
   }
 
   isImage(fileItem: FileItemModel) {

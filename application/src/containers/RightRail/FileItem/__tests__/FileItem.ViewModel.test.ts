@@ -11,7 +11,7 @@ import { FileItemViewModel } from '../FileItem.ViewModel';
 jest.mock('../../../../store/utils');
 jest.mock('../../../../common/getFileType');
 
-const fileItemViewModel = new FileItemViewModel();
+const fileItemViewModel = new FileItemViewModel({ id: 123 });
 
 describe('dateFormatter', () => {
   beforeEach(() => {
