@@ -10,7 +10,7 @@ const defaultConfig: LogConfig = {
     enabled: true,
   },
   consumer: {
-    enabled: true,
+    enabled: false,
     memoryCountThreshold: 100,
     memorySizeThreshold: 1024 * 1024,
     combineSizeThreshold: 50 * 1024,
@@ -40,18 +40,20 @@ class ConfigManager {
   }
 
   mergeConfig(partialConfig: Partial<LogConfig>) {
-    const newConfig = mergeWith({}, this._config, partialConfig, (objValue, srcValue) => {
-      if (Array.isArray(objValue)) {
-        return srcValue;
-      }
-    });
+    const newConfig = mergeWith(
+      {},
+      this._config,
+      partialConfig,
+      (objValue, srcValue) => {
+        if (Array.isArray(objValue)) {
+          return srcValue;
+        }
+      },
+    );
     return this.setConfig(newConfig);
   }
-
 }
 
 const configManager = new ConfigManager();
 
-export {
-  configManager,
-};
+export { configManager };
