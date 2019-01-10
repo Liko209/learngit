@@ -178,12 +178,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
             );
           })}
         </ResponsiveContext.Provider>
-        <ReactResizeDetector
-          handleWidth={true}
-          onResize={this.onResize}
-          refreshMode="debounce"
-          refreshRate={150}
-        />
+        <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
       </StyledWrapper>
     );
   }

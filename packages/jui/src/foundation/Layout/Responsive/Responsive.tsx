@@ -226,12 +226,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             }}
           >
             {children}
-            <ReactResizeDetector
-              handleWidth={true}
-              onResize={this.onResize}
-              refreshMode="debounce"
-              refreshRate={50}
-            />
+            <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
           </Resizable>
         ) : (
           <StyledPanel position={enable.left ? 'right' : 'left'}>
