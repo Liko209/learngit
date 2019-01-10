@@ -19,6 +19,11 @@ type RTCCallInfo = {
   uuid: string;
 };
 
+type RTCCallOptions = {
+  fromNumber?: string;
+  homeCountryId?: string;
+};
+
 enum RTC_CALL_STATE {
   IDLE = 'Idle',
   CONNECTING = 'Connecting',
@@ -33,4 +38,10 @@ enum RTC_CALL_ACTION {
   TRANSFER = 'transfer',
 }
 
-export { RTC_ACCOUNT_STATE, RTCCallInfo, RTC_CALL_STATE, RTC_CALL_ACTION };
+export {
+  RTC_ACCOUNT_STATE,
+  RTCCallInfo,
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallOptions,
+};

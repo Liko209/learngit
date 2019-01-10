@@ -6,7 +6,8 @@
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
-import { Progress } from 'sdk/module/progress';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
+import ProgressModel from '@/store/models/Progress';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -117,6 +118,14 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
   }
 
+  private _getPostStatus() {
+    const progress = getEntity<Progress, ProgressModel>(
+      ENTITY_NAME.PROGRESS,
+      this._postId,
+    );
+    return progress.progressStatus;
+  }
+
   removeFile = async (id: number) => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
@@ -129,7 +138,13 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       });
     } else {
       try {
-        await this._postService.cancelUpload(this._postId, id);
+        const postLoading =
+          this._getPostStatus() === PROGRESS_STATUS.INPROGRESS;
+        if (postLoading) {
+          await this._itemService.cancelUpload(id);
+        } else {
+          await this._postService.removeItemFromPost(this._postId, id);
+        }
       } catch (e) {
         Notification.flashToast({
           message: t('notAbleToCancelUploadTryAgain'),

@@ -6,6 +6,7 @@
 interface IConditionalHandler {
   onReadyWhenRegSucceedAction(): void;
   onProvisionReadyAction(provisionData: any, options: any): void;
+  onReRegisterAction(): void;
 }
 
 export { IConditionalHandler };
