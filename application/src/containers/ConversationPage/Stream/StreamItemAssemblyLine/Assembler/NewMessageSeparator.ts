@@ -21,7 +21,7 @@ import {
 } from './types';
 
 class NewMessageSeparatorHandler extends Assembler {
-  private _readThrough?: number;
+  private _readThrough: number = 0;
   private _disabled?: boolean;
   private _userId?: number;
   private separatorId?: number;
@@ -44,11 +44,11 @@ class NewMessageSeparatorHandler extends Assembler {
   }
 
   onAdd: AssemblerAddFunc = (args: AssemblerAddFuncArgs) => {
-    const { postList, hasMore, newItems } = args;
-
+    const { postList, hasMore, newItems, readThrough } = args;
+    this.updateReadThrough(readThrough);
+    args.readThrough = this._readThrough;
     if (this._disabled) return args;
     this._oldestPost = _.first(postList);
-
     /*
      * (1)
      * If the `New Messages` separator already existed,
@@ -58,12 +58,10 @@ class NewMessageSeparatorHandler extends Assembler {
 
     /*
      * (2)
-     * Check if there is a `New Messages` separator
+     * Check if there should be a `New Messages` separator
      */
-
     const lastPost = _.last(postList);
-    const readThrough = this._readThrough || 0;
-    const hasSeparator = !!lastPost && lastPost.id > readThrough;
+    const hasSeparator = !!lastPost && lastPost.id > this._readThrough;
     this._hasNewMessagesSeparator = hasSeparator;
 
     // No separator
@@ -74,10 +72,10 @@ class NewMessageSeparatorHandler extends Assembler {
      * Check if separator in other page
      */
     const firstPost = this._oldestPost;
-    const allPostsAreUnread = readThrough === 0;
+    const allPostsAreUnread = this._readThrough === 0;
     const hasSeparatorInOtherPage =
       (allPostsAreUnread && hasMore) ||
-      (!allPostsAreUnread && firstPost && firstPost.id > readThrough);
+      (!allPostsAreUnread && firstPost && firstPost.id > this._readThrough);
 
     // Separator in other page, we'll handle it next
     // time when onAdded() was called
@@ -87,7 +85,10 @@ class NewMessageSeparatorHandler extends Assembler {
      * (4)
      * Separator in current page, let's find it now.
      */
-    const firstUnreadPost = this._findNextOthersPost(postList, readThrough);
+    const firstUnreadPost = this._findNextOthersPost(
+      postList,
+      this._readThrough,
+    );
     if (firstUnreadPost) {
       const separatorId = firstUnreadPost.data!.created_at - 1;
       this._setSeparator(firstUnreadPost.id, separatorId);
@@ -114,7 +115,7 @@ class NewMessageSeparatorHandler extends Assembler {
     return { ...args, deletedIds };
   }
 
-  setReadThroughIfNoSeparator(readThrough?: number) {
+  updateReadThrough(readThrough: number) {
     if (this._hasNewMessagesSeparator) return;
     this._readThrough = readThrough;
   }

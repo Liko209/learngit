@@ -9,16 +9,13 @@ import {
   AssemblerDelFuncArgs,
 } from './types';
 import _ from 'lodash';
-import moment from 'moment';
 import { Post } from 'sdk/module/post/entity';
 import { Assembler } from './Assembler';
 import { StreamItemType } from '../../types';
+import { getDateTimeStamp } from './helper';
 export class DateSeparator extends Assembler {
   onAdd: AssemblerAddFunc = ({ added, postList, newItems, ...rest }) => {
-    const criteria = (post: Post) =>
-      moment(post.created_at)
-        .startOf('day')
-        .valueOf();
+    const criteria = (post: Post) => getDateTimeStamp(post.created_at);
     const postByDay = _(added)
       .groupBy(raw_post => criteria(raw_post.data))
       .value();

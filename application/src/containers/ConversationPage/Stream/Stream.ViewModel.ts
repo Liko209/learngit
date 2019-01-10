@@ -39,6 +39,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 import { OrdinaryPostWrapper } from './StreamItemAssemblyLine';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
+import { PostCombiner } from './StreamItemAssemblyLine/Assembler/PostCombiner';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -133,7 +134,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   private get _readThrough() {
-    return this._groupState.readThrough;
+    return this._groupState.readThrough || 0;
   }
 
   @computed
@@ -166,6 +167,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.assemblyLine = new StreamItemAssemblyLine([
       new DateSeparator(),
       this._newMessageSeparatorHandler,
+      new PostCombiner(),
       new OrdinaryPostWrapper(),
       new SingletonTagChecker(),
     ]);
@@ -322,11 +324,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
 
     this._historyHandler = new HistoryHandler();
-    this.autorun(() =>
-      this._newMessageSeparatorHandler.setReadThroughIfNoSeparator(
-        this._readThrough,
-      ),
-    );
     this._initialized = false;
   }
 
@@ -339,7 +336,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.orderListHandler.listStore.items,
       this.hasMoreUp,
       this.items,
+      this._readThrough,
     );
+    console.log('sorting over', newItems);
     if (newItems) {
       this.streamListHandler.onDataChanged({
         type: EVENT_TYPES.REPLACE,

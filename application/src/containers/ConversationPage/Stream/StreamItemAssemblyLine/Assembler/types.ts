@@ -12,12 +12,14 @@ export type AssemblerAddFuncArgs = {
   newItems: StreamItem[];
   hasMore: boolean;
   streamItemList: StreamItem[];
+  readThrough: number;
 };
 export type AssemblerDelFuncArgs = {
   deleted: number[];
   postList: ISortableModel<Post>[];
   deletedIds: number[];
   streamItemList: StreamItem[];
+  readThrough: number;
 };
 export type AssemblerAddFunc = (
   args: AssemblerAddFuncArgs,
