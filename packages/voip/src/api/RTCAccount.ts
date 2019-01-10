@@ -10,7 +10,7 @@ import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { REGISTRATION_EVENT } from '../account/types';
-import { RTCEngine } from './RTCEngine';
+import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
 import { RTC_ACCOUNT_STATE } from './types';
 
@@ -101,8 +101,8 @@ class RTCAccount implements IRTCAccount {
       audioHelper: options.audioHelper,
       logLevel: options.logLevel,
       media: {
-        remote: RTCEngine.getInstance().getRemoteAudio(),
-        local: RTCEngine.getInstance().getLocalAudio(),
+        remote: rtcMediaManager.getRemoteAudio(),
+        local: rtcMediaManager.getLocalAudio(),
       },
     };
     this._regManager.provisionReady(provisionData.data, info);
