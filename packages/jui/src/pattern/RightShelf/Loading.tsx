@@ -29,12 +29,28 @@ const RightRailLoading = (props: ThemeProps) => {
         height={67 * height}
       >
         <rect
-          x={`${4 * width}`}
+          x={`${0 * width}`}
+          y={`${2.5 * height}`}
+          rx={width}
+          ry={height}
+          width={`${8 * width}`}
+          height={`${8 * height}`}
+        />
+        <rect
+          x={`${10 * width}`}
           y={`${2.5 * height}`}
           rx={width}
           ry={height}
           width={`${42 * width}`}
-          height={`${7 * height}`}
+          height={`${4 * height}`}
+        />
+        <rect
+          x={`${10 * width}`}
+          y={`${8.5 * height}`}
+          rx={width}
+          ry={height}
+          width={`${30 * width}`}
+          height={`${2 * height}`}
         />
       </ReactContentLoader>
     </Wrapper>
