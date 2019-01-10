@@ -48,14 +48,13 @@ class ProfileMiniCardGroupViewModel
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!groupStore.hasValid(this.id)) {
-      const groupService = new GroupService() as GroupService;
+      const GroupService_ = GroupService;
+      const groupService = new GroupService_();
       groupService
         .getById(this.id)
         .then((group: Group | null) => {
           if (group) {
             groupStore.set(group);
-          } else {
-            // onError();
           }
         })
         .catch(onError);

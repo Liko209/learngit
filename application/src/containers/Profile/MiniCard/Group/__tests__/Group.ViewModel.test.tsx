@@ -10,9 +10,15 @@ import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import storeManager from '@/store';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
+import { GroupService } from 'sdk/module/group';
 
+jest.mock('sdk/module/group', () => ({
+  GroupService: jest.fn(),
+}));
 jest.mock('../../../../../store/utils');
 jest.mock('@/utils/error');
+jest.mock('sdk/api');
+jest.mock('sdk/dao');
 
 const mockData = {
   displayName: 'Group name',
@@ -41,29 +47,40 @@ describe('ProfileMiniCardGroupViewModel', () => {
   });
 
   describe('group', () => {
+    let groupService;
+    beforeEach(() => {
+      groupService = {
+        getById: jest.fn(),
+      };
+      (GroupService as jest.Mock).mockImplementation(() => {
+        return groupService;
+      });
+    });
     it('should be get group entity when invoke class instance property group [JPT-405]', () => {
+      groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
       expect(vm.group).toEqual(mockData);
     });
 
     it('should be get changed group entity when change group entity data [JPT-405]', () => {
       mockData.displayName = 'Group name 2';
       mockData.isTeam = false;
+      groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
       expect(vm.group).toEqual(mockData);
     });
 
-    it('should set to store after get from service successfully', (done: Function) => {
+    it('should set to store after get from service successfully', (done: jest.DoneCallback) => {
       (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
         hasValid: jest.fn(() => false),
-        getByService: jest.fn(() => Promise.resolve(mockData)),
         set: jest.fn(),
       };
+      groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
       storeManager.getEntityMapStore = jest
         .fn()
         .mockReturnValueOnce(groupStore);
       vm.group;
       setTimeout(() => {
-        expect(groupStore.getByService).toHaveBeenCalled();
+        expect(groupService.getById).toHaveBeenCalled();
         expect(groupStore.set).toHaveBeenCalled();
         done();
       },         500);
@@ -73,9 +90,9 @@ describe('ProfileMiniCardGroupViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
         hasValid: jest.fn(() => false),
-        getByService: jest.fn(() => Promise.reject(new Error())),
         set: jest.fn(),
       };
+      groupService.getById = jest.fn().mockRejectedValueOnce(new Error());
       Notification.flashToast = jest.fn();
       jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
       storeManager.getEntityMapStore = jest
@@ -83,34 +100,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
         .mockReturnValueOnce(groupStore);
       vm.group;
       setTimeout(() => {
-        expect(groupStore.getByService).toHaveBeenCalled();
-        expect(groupStore.set).not.toHaveBeenCalled();
-        expect(Notification.flashToast).toHaveBeenCalledWith({
-          dismissible: false,
-          fullWidth: false,
-          message: 'SorryWeWereNotAbleToOpenThisProfile',
-          messageAlign: 'left',
-          type: 'error',
-        });
-        done();
-      },         500);
-    });
-
-    it('should show error toast when server response null [JPT-694]', (done: Function) => {
-      (getEntity as jest.Mock).mockReturnValue({ id: 123 });
-      const groupStore = {
-        hasValid: jest.fn(() => false),
-        getByService: jest.fn(() => Promise.resolve(null)),
-        set: jest.fn(),
-      };
-      Notification.flashToast = jest.fn();
-      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
-      storeManager.getEntityMapStore = jest
-        .fn()
-        .mockReturnValueOnce(groupStore);
-      vm.group;
-      setTimeout(() => {
-        expect(groupStore.getByService).toHaveBeenCalled();
+        expect(groupService.getById).toHaveBeenCalled();
         expect(groupStore.set).not.toHaveBeenCalled();
         expect(Notification.flashToast).toHaveBeenCalledWith({
           dismissible: false,
@@ -127,9 +117,9 @@ describe('ProfileMiniCardGroupViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
         hasValid: jest.fn(() => false),
-        getByService: jest.fn(() => Promise.reject(new Error())),
         set: jest.fn(),
       };
+      groupService.getById = jest.fn().mockRejectedValueOnce(new Error());
       jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(false);
       jest.spyOn(errorUtil, 'generalErrorHandler');
       storeManager.getEntityMapStore = jest
@@ -137,10 +127,10 @@ describe('ProfileMiniCardGroupViewModel', () => {
         .mockReturnValueOnce(groupStore);
       vm.group;
       setTimeout(() => {
-        expect(groupStore.getByService).toHaveBeenCalled();
+        done();
+        expect(groupService.getById).toHaveBeenCalled();
         expect(groupStore.set).not.toHaveBeenCalled();
         expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
-        done();
       },         500);
     });
   });

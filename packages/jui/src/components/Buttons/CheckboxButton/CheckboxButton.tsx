@@ -6,7 +6,7 @@
 import React from 'react';
 import styled, { keyframes } from '../../../foundation/styled-components';
 import MuiCheckbox, { CheckboxProps } from '@material-ui/core/Checkbox';
-import { Icon as MuiIcon } from '@material-ui/core';
+import { JuiIconography } from '../../../foundation/Iconography';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../../../foundation/theme/theme';
@@ -43,7 +43,7 @@ const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 
-const StyledIcon = styled(MuiIcon)``;
+const StyledIcon = styled(JuiIconography)``;
 const WrappedMuiCheckboxButton = ({
   invisible,
   awake,
@@ -140,7 +140,7 @@ class JuiCheckboxButton extends React.Component<
     checkedIconName: 'check_box',
   };
 
-  static dependencies = [MuiCheckbox, MuiIcon, JuiArrowTip];
+  static dependencies = [MuiCheckbox, JuiIconography, JuiArrowTip];
 
   constructor(props: JuiCheckboxButtonProps) {
     super(props);

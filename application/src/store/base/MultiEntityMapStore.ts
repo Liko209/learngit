@@ -194,7 +194,7 @@ export default class MultiEntityMapStore<
     return this._data;
   }
 
-  getByService(id: number): Promise<T | null> {
+  getByService(id: number): Promise<T | null> | T {
     if (!this._service) {
       if (Array.isArray(this._getService)) {
         this._service = this._getService[0]();

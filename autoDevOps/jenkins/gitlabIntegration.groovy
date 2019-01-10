@@ -399,7 +399,7 @@ node(buildNode) {
                             // and create link to branch name based folder
                             updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
                             // for stage build, also create link to stage folder
-                            if (env.gitlabSourceBranch.startsWith('stage'))
+                            if (!isMerge && env.gitlabSourceBranch.startsWith('stage'))
                                 updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
                         }
                     }

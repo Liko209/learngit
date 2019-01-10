@@ -34,8 +34,8 @@ class ProgressService extends EntityBaseService<Progress> {
     this.progressCacheController.deleteProgress(id);
   }
 
-  getById(id: number) {
-    return Promise.resolve(this.progressCacheController.getProgress(id));
+  getByIdSync(id: number) {
+    return this.progressCacheController.getProgress(id);
   }
 }
 
