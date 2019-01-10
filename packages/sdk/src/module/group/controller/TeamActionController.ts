@@ -15,13 +15,12 @@ class TeamActionController {
     public partialModifyController: IPartialModifyController<Group>,
     public requestController: IRequestController<Group>,
     public controllerBuilder: IControllerBuilder<Group>,
-  ) { }
+  ) {}
 
   isInTeam(userId: number, team: Group) {
-    return team
-      && team.is_team
-      && team.members
-      && team.members.includes(userId);
+    return (
+      team && team.is_team && team.members && team.members.includes(userId)
+    );
   }
 
   canJoinTeam(team: Group) {
@@ -38,17 +37,50 @@ class TeamActionController {
         };
       },
       async (newEntity: Group) => {
-        return await this.addTeamMembers(teamId, [userId]);
+        return await this.requestAddTeamMembers(teamId, [userId]);
       },
     );
   }
 
-  async addTeamMembers(teamId: number, members: number[]) {
+  async requestAddTeamMembers(teamId: number, members: number[]) {
     return this.controllerBuilder
       .buildRequestController({
         basePath: '/add_team_members',
         networkClient: Api.glipNetworkClient,
-      }).put({
+      })
+      .put({
+        members,
+        id: teamId,
+      });
+  }
+
+  async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
+    return this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        const members: number[] = originalEntity.members;
+        const index = members.indexOf(userId);
+        if (index > -1) {
+          members.splice(index, 1);
+        }
+        return {
+          ...partialEntity,
+          members,
+        };
+      },
+      async (updatedEntity: Group) => {
+        return await this.requestRemoveTeamMembers(teamId, [userId]);
+      },
+    );
+  }
+
+  async requestRemoveTeamMembers(teamId: number, members: number[]) {
+    return this.controllerBuilder
+      .buildRequestController({
+        basePath: '/remove_team_members',
+        networkClient: Api.glipNetworkClient,
+      })
+      .put({
         members,
         id: teamId,
       });

@@ -39,6 +39,11 @@ class GroupService extends EntityBaseService<Group> {
       .joinTeam(userId, teamId);
   }
 
+  async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
+    return await this.getTeamController()
+      .getTeamActionController()
+      .leaveTeam(userId, teamId);
+  }
 }
 
 export { GroupService };

@@ -35,8 +35,12 @@ describe('TeamController', () => {
     testControllerBuilder = new ControllerBuilder<Group>();
     testPartialModifyController = new TestPartialModifyController();
     testRequestController = new TestRequestController();
-    testControllerBuilder.buildRequestController = jest.fn().mockReturnValue(testRequestController);
-    testControllerBuilder.buildPartialModifyController = jest.fn().mockReturnValue(testPartialModifyController);
+    testControllerBuilder.buildRequestController = jest
+      .fn()
+      .mockReturnValue(testRequestController);
+    testControllerBuilder.buildPartialModifyController = jest
+      .fn()
+      .mockReturnValue(testPartialModifyController);
     teamActionController = new TeamActionController(
       testPartialModifyController,
       testRequestController,
@@ -94,10 +98,10 @@ describe('TeamController', () => {
       expect(testPartialModifyController.updatePartially).toBeCalled();
     });
   });
-  describe('addTeamMember()', () => {
+  describe('requestAddTeamMember()', () => {
     it('should call api with correct params. [JPT-719]', async () => {
       Api.init({}, new NetworkManager(new OAuthTokenManager()));
-      await teamActionController.addTeamMembers(2, [123]);
+      await teamActionController.requestAddTeamMembers(2, [123]);
 
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
