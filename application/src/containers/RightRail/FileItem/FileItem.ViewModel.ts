@@ -36,7 +36,7 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
 
   @computed
   get fileType() {
-    return this.file.type && this.file.type.split('/').pop();
+    return this.file.type ? this.file.type.split('/').pop() : '';
   }
 }
 
