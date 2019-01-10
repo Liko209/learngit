@@ -13,7 +13,8 @@ import TaskItemModel from '@/store/models/TaskItem';
 import FileItemModel from '@/store/models/FileItem';
 import { recentlyTwoDayAndOther } from '@/utils/date';
 import { Item } from 'sdk/module/item/entity';
-import { getFileType, getDateAndTime } from '../helper';
+import { getFileType } from '@/common/getFileType';
+import { getDateAndTime } from '../helper';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed

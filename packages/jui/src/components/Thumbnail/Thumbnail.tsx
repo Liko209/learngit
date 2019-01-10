@@ -21,8 +21,14 @@ const ICON_MAP = {
 
 type JuiThumbnailProps = {
   size?: 'small' | 'large';
-  // url?: string;
+  url?: string;
   iconType?: string;
+};
+
+const getBgImage = (url?: string, iconType?: string) => {
+  return (
+    url || (iconType && ICON_MAP[iconType] ? ICON_MAP[iconType] : defaultIcon)
+  );
 };
 
 const StyledThumbnail = styled<JuiThumbnailProps, 'div'>('div')`
@@ -30,8 +36,7 @@ const StyledThumbnail = styled<JuiThumbnailProps, 'div'>('div')`
   height: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   border-radius: ${({ size }) =>
     size === 'small' ? shape('borderRadius', 0.5) : shape('borderRadius')};
-  background-image: url(${({ iconType }) =>
-    iconType && ICON_MAP[iconType] ? ICON_MAP[iconType] : defaultIcon});
+  background-image: url(${({ url, iconType }) => getBgImage(url, iconType)});
   background-size: cover;
 `;
 

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // import { ItemListViewModel } from '../ItemList.ViewModel';
+// import { ITEM_LIST_TYPE } from '../../types';
 
 // let ViewModel: ItemListViewModel;
 
@@ -13,19 +14,20 @@ describe('ItemListViewModel', () => {
   });
 
   describe('consturctor()', () => {
-    it('should call sortableDataHandler fetchData', () => {
+    it('should be call sortableDataHandler fetchData', () => {
       // const _sortableDataHandler = {
       //   fetchData: jest.fn(),
       // };
-      // ViewModel = new ItemListViewModel();
+      // ViewModel = new ItemListViewModel({
+      //   groupId: 1,
+      //   type: ITEM_LIST_TYPE.FILE,
+      // });
       // Object.assign(ViewModel, {
       //   _sortableDataHandler,
       //   _sortKey: 'time',
       //   _desc: false,
-      //   _groupId: 1,
-      //   _typeId: 10,
       // });
-      // expect(true).toEqual(false);
+      // expect(_sortableDataHandler.fetchData).toHaveBeenCalled();
     });
   });
 });

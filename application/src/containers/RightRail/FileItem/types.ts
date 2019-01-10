@@ -12,7 +12,10 @@ type FilesProps = {
 type FileItemProps = {
   file: FileItemModel;
   subTitle: string;
-  fileType?: string;
+  fileTypeOrUrl: {
+    icon: string;
+    url: string;
+  };
   disabled?: boolean;
   action?: () => void;
 };

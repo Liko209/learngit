@@ -6,13 +6,14 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { Item } from 'sdk/module/item/entity';
-import FileItemModel from '@/store/models/FileItem';
+import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
+import { dateFormatter } from '@/utils/date';
+import { getFileType } from '@/common/getFileType';
 import { FilesProps } from './types';
-
 class FileItemViewModel extends AbstractViewModel<FilesProps> {
   @computed
   get _id() {
@@ -30,25 +31,42 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
 
   @computed
   get subTitle() {
-    const file = this.file;
-    if (file) {
+    if (this.file) {
+      const { createdAt, creatorId } = this.file;
       const personName = getEntity<Person, PersonModel>(
         ENTITY_NAME.PERSON,
-        file.creatorId,
+        creatorId,
       ).userDisplayName;
-
-      return personName;
+      return `${personName} · ${dateFormatter.date(createdAt)}`;
     }
     return '';
   }
 
   @computed
-  get fileType() {
-    const file = this.file;
-    if (file) {
-      return file.type && file.type.split('/').pop();
+  get fileTypeOrUrl() {
+    if (this.file) {
+      const { type } = this.file;
+      const { isImage, previewUrl } = this.isImage(this.file);
+      const thumb = {
+        icon: '',
+        url: '',
+      };
+      if (isImage) {
+        thumb.url = previewUrl;
+        return thumb;
+      }
+      thumb.icon = (type && type.split('/').pop()) || '';
+      return thumb;
     }
     return '';
+  }
+
+  isImage(fileItem: FileItemModel) {
+    const { type, previewUrl } = getFileType(fileItem);
+    return {
+      previewUrl,
+      isImage: type === FileType.image,
+    };
   }
 }
 
