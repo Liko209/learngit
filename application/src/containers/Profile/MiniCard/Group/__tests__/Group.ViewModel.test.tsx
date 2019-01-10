@@ -47,12 +47,12 @@ describe('ProfileMiniCardGroupViewModel', () => {
   });
 
   describe('group', () => {
-    let groupService;
+    let groupService: any;
     beforeEach(() => {
       groupService = {
         getById: jest.fn(),
       };
-      (GroupService as jest.Mock).mockImplementation(() => {
+      (GroupService as any).mockImplementation(() => {
         return groupService;
       });
     });
