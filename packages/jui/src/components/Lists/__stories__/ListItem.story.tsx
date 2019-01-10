@@ -44,7 +44,7 @@ class TwoLineItem extends React.Component {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <JuiThumbnail url="pdf" />
+          <JuiThumbnail iconType="pdf" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={primary}
