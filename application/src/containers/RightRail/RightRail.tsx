@@ -95,7 +95,7 @@ class RightRailComponent extends React.Component<Props, States> {
               <ItemList type={ITEM_LIST_TYPE.EVENT} groupId={id} />
             </JuiTab>
             <JuiTab key={7} title={t('integrations')}>
-              <div>Integrations List</div>
+              <ItemList type={ITEM_LIST_TYPE.INTEGRATION} groupId={id} />
             </JuiTab>
           </JuiTabs>
         )}

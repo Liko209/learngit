@@ -5,7 +5,10 @@
  */
 import React from 'react';
 import { t } from 'i18next';
-import { JuiRightShelfEmptyScreen } from 'jui/pattern/EmptyScreen';
+import {
+  JuiRightShelfEmptyScreen,
+  JuiFlexWrapper,
+} from 'jui/pattern/EmptyScreen';
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
 import ImagesEmptyImage from '../images/Images.svg';
@@ -64,12 +67,14 @@ const emptyView = (type: ITEM_LIST_TYPE) => {
   if (config) {
     const { text, content, image } = config;
     return (
-      <JuiRightShelfEmptyScreen
-        actions={[]}
-        text={t(text)}
-        content={t(content)}
-        image={image}
-      />
+      <JuiFlexWrapper>
+        <JuiRightShelfEmptyScreen
+          actions={[]}
+          text={t(text)}
+          content={t(content)}
+          image={image}
+        />
+      </JuiFlexWrapper>
     );
   }
   return <></>;

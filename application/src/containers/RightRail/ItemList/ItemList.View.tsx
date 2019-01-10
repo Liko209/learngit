@@ -10,6 +10,7 @@ import { ITEM_LIST_TYPE } from '../types';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';
+import { debounce } from 'lodash';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
@@ -29,6 +30,11 @@ const subheaderType = {
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
+  private _fetchMore: any;
+  constructor(props: ViewProps & Props) {
+    super(props);
+    this._fetchMore = debounce(this.props.fetchNextPageItems, 200);
+  }
   countOfCell() {
     const { totalCount } = this.props;
     return totalCount;
@@ -61,7 +67,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    return await this.props.fetchNextPageItems();
+    return await this._fetchMore();
   }
 
   render() {
