@@ -12,6 +12,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventUpdateViewProps, EventUpdateProps } from './types';
 import EventItemModel from '@/store/models/EventItem';
+import { getDurationTimeText } from '../helper';
 
 class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   implements EventUpdateViewProps {
@@ -38,6 +39,37 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   @computed
   get activityData() {
     return this.post.activityData || {};
+  }
+
+  getTimeText(value: any, event: EventItemModel) {
+    const {
+      repeat,
+      repeatEndingAfter,
+      repeatEnding,
+      repeatEndingOn,
+    } = this.event;
+    return (
+      (repeatEndingAfter &&
+        getDurationTimeText(
+          value.repeat || repeat,
+          value.repeat_ending_after || repeatEndingAfter,
+          value.repeat_ending_on || repeatEndingOn,
+          value.repeat_ending || repeatEnding,
+        )) ||
+      ''
+    );
+  }
+
+  @computed
+  get oldTimeText() {
+    const { old_values } = this.activityData;
+    return this.getTimeText(old_values, this.event);
+  }
+
+  @computed
+  get newTimeText() {
+    const { new_values } = this.activityData;
+    return this.getTimeText(new_values, this.event);
   }
 }
 

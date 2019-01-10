@@ -32,7 +32,7 @@
     "watch": "node scripts/watch.js",
     "commits": "git-cz",
     "commits:all": "git add . && git-cz",
-    "bt": "lerna bootstrap --hoist --no-ci",
+    "bt": "lerna bootstrap --hoist --no-ci -- --cache-min 9999999",
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
     "tsc": "tsc -v && tsc -p application && tsc -p packages/jui && tsc -p packages/sdk && tsc -p packages/voip && tsc -p packages/foundation",

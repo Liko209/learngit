@@ -25,14 +25,25 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   prevWidth: number = 1;
   visualWidth: number = 0;
   contentWidth: number = 0;
-  hasInit: boolean = false;
 
   state = {
     width: {},
     visual: {},
   };
 
+  componentDidUpdate(props: Props) {
+    if (props.children !== this.props.children) {
+      this.initWidthAndResponsiveInfo();
+      this.init(this.prevWidth);
+    }
+  }
+
   componentDidMount() {
+    this.initWidthAndResponsiveInfo();
+  }
+
+  initWidthAndResponsiveInfo() {
+    this.contentWidth = 0;
     this.hasSortedResponsiveInfo = [...Object.values(this.responsiveInfo)].sort(
       (a, b) => Number(b.priority) - Number(a.priority),
     );
@@ -47,7 +58,6 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   }
 
   init = (width: number) => {
-    this.hasInit = true;
     const visual = {};
     this.hasSortedResponsiveInfo.reduce((totalWidth, info) => {
       const { visualMode, minWidth, tag } = info;
@@ -103,7 +113,6 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
         const infoDiffWidth = Number(info.width) - checkWidth;
         if (infoDiffWidth > 0) {
           const panelWidth = Number(info.width) - diffWidth;
-          debugger;
           this.setState({
             width: {
               ...this.state.width,

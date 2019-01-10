@@ -16,18 +16,23 @@ import React, {
 import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { StyledTabs } from './StyledTabs';
 import { StyledTab, StyledTabProps } from './StyledTab';
+import { StyledContainer } from './StyledContainer';
+import { StyledWrapper } from './StyledWrapper';
 import { JuiTabProps } from './Tab';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
 
 type States = {
   openMenu: boolean;
-  indexSelected: number;
-  indexTabs: number[];
-  indexMenus: number[]; // length > 0, has more tab
+  indexSelected: number; // selected tab index
+  indexTabs: number[]; // show tab index
+  indexMenus: number[]; // menu tab index, when length > 0, then it has more tab
+  indexLazyLoadComponents: number[]; // lazy load container component index
 };
 
 type Props = {
+  width?: number; // resize
+  tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
 };
@@ -73,8 +78,15 @@ class JuiTabs extends PureComponent<Props, States> {
     );
     this._moreRef = createRef();
     this._containerRef = createRef();
+
+    let indexSelected =
+      this._getLocalSelectedIndex() || props.defaultActiveIndex || 0;
+    if (indexSelected > Children.count(props.children) - 1) {
+      indexSelected = 0;
+    }
     this.state = {
-      indexSelected: props.defaultActiveIndex || 0,
+      indexSelected,
+      indexLazyLoadComponents: [indexSelected],
       openMenu: false,
       indexTabs: [],
       indexMenus: [],
@@ -82,10 +94,21 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   componentDidMount() {
+    this._measureMoreWidth();
+    this._measureContainerWidth();
+    this._measureTabWidths();
+    this._calculateIndexTabsAndIndexMenus();
+  }
+
+  private _measureMoreWidth = () => {
     const domMore = this._moreRef.current;
     if (domMore) {
       this._moreWidth = domMore.getBoundingClientRect().width;
     }
+    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+  }
+
+  private _measureContainerWidth = () => {
     const domContainer = this._containerRef.current;
     if (domContainer) {
       const cs = window.getComputedStyle(domContainer);
@@ -95,11 +118,7 @@ class JuiTabs extends PureComponent<Props, States> {
         parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
     // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
-    this._measureTabWidths();
-    this._calculateIndexTabsAndIndexMenus();
-    // todo resize listener
   }
 
   private _measureTabWidths = () => {
@@ -158,7 +177,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (indexSelected === MORE) {
       return;
     }
-    this.setState({ indexSelected });
+    this._setSelectedTabIndex(indexSelected);
   }
 
   private _showMenuList = () => {
@@ -174,7 +193,33 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   private _handleMenuItemClick = (index: number, event: MouseEvent) => {
-    this.setState({ indexSelected: index });
+    this._setSelectedTabIndex(index);
+  }
+
+  private _setSelectedTabIndex = (indexSelected: number) => {
+    let { indexLazyLoadComponents } = this.state;
+    const { tag } = this.props;
+    if (!indexLazyLoadComponents.includes(indexSelected)) {
+      indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
+    }
+    this.setState({ indexSelected, indexLazyLoadComponents });
+    if (tag) {
+      this._setLocalSelectedIndex(indexSelected);
+    }
+  }
+
+  private _getLocalKey = () => {
+    const { tag } = this.props;
+    return `tabs-${tag}`;
+  }
+
+  private _getLocalSelectedIndex = () => {
+    const value = localStorage.getItem(this._getLocalKey());
+    return Number(value) || 0;
+  }
+
+  private _setLocalSelectedIndex = (index: number) => {
+    return localStorage.setItem(this._getLocalKey(), String(index));
   }
 
   private _renderMoreAndMenu = () => {
@@ -272,33 +317,66 @@ class JuiTabs extends PureComponent<Props, States> {
     ) {
       this._calculateIndexTabsAndIndexMenus();
     }
+
+    if (prevProps.width !== this.props.width) {
+      this._measureContainerWidth();
+      this._calculateIndexTabsAndIndexMenus();
+    }
   }
 
-  render() {
+  renderContainer = () => {
+    const { children } = this.props;
+    const { indexSelected, indexLazyLoadComponents } = this.state;
+    return Children.map(
+      children,
+      (child: ReactElement<JuiTabProps>, index: number) => {
+        let className = '';
+        if (index === indexSelected) {
+          className = 'show';
+        }
+        return (
+          <StyledContainer key={index} className={className}>
+            {indexLazyLoadComponents.includes(index) && child.props.children}
+          </StyledContainer>
+        );
+      },
+    );
+  }
+
+  renderTabs = () => {
     const { indexSelected, indexTabs, indexMenus } = this.state;
-    // first execute render indexTabs & indexMenus length equal 0
+    // Notice:
+    // 1. first execute render indexTabs & indexMenus length equal 0
+    // 2. select menu list tab
     if (
       indexTabs.length > 0 &&
       indexMenus.length > 0 &&
       !indexTabs.includes(indexSelected)
     ) {
-      return null; // select menu list tab
+      return null;
     }
     return (
-      <div>
-        <StyledTabs
-          value={indexSelected}
-          onChange={this._handleChangeTab}
-          indicatorColor="primary"
-          textColor="primary"
-          classes={CLASSES.tabs}
-          ref={this._containerRef}
-        >
-          {indexTabs.length === 0 && indexMenus.length === 0
-            ? this._renderAllTab()
-            : this._renderFinalTab()}
-        </StyledTabs>
-      </div>
+      <StyledTabs
+        value={indexSelected}
+        onChange={this._handleChangeTab}
+        indicatorColor="primary"
+        textColor="primary"
+        classes={CLASSES.tabs}
+        ref={this._containerRef}
+      >
+        {indexTabs.length === 0 && indexMenus.length === 0
+          ? this._renderAllTab()
+          : this._renderFinalTab()}
+      </StyledTabs>
+    );
+  }
+
+  render() {
+    return (
+      <StyledWrapper>
+        {this.renderTabs()}
+        {this.renderContainer()}
+      </StyledWrapper>
     );
   }
 }
