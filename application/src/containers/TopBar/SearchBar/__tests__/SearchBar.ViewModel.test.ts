@@ -5,6 +5,8 @@
  */
 import { service } from 'sdk';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
+jest.mock('sdk/api');
+jest.mock('sdk/dao');
 
 const searchBarViewModel = new SearchBarViewModel();
 const { PersonService, GroupService } = service;
