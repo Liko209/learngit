@@ -10,6 +10,7 @@ import { PostService, StateService, ENTITY } from 'sdk/service';
 import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { errorHelper } from 'sdk/error';
 
@@ -154,7 +155,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this.groupId === props.groupId) {
       return;
     }
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SWITCH_CONVERSATION,
+    );
     this.initialize(props.groupId);
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.SWITCH_CONVERSATION,
+    );
   }
 
   @loading

@@ -103,13 +103,21 @@ class Config {
 
   loadEnvConfig() {
     const configService: service.ConfigService = ConfigService.getInstance();
-    const value = configService.getEnv() || 'XMN-UP';
+    const value = configService.getEnv() || this.defaultEnv();
     this._env = value;
     this._config = loadFileConfigs(value);
   }
 
+  public isProductionBuild() {
+    return process.env.JUPITER_ENV === 'production';
+  }
+
+  public defaultEnv() {
+    return this.isProductionBuild() ? 'production' : 'GLP-DEV-XMN';
+  }
+
   getEnv() {
-    return this._env || 'XMN-UP';
+    return this._env || this.defaultEnv();
   }
 
   getAllEnv() {
@@ -118,7 +126,7 @@ class Config {
       .map(arr => arr[1])
       .filter((env: string) => !env.startsWith('default'))
       .filter((env: string) => {
-        return process.env.JUPITER_ENV === 'production' || env !== 'production';
+        return this.isProductionBuild() || env !== 'production';
       })
       .value();
   }
