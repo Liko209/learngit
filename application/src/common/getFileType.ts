@@ -23,9 +23,9 @@ function getFileType(item: FileItemModel): ExtendFileItem {
     return fileType;
   }
 
-  if (document(item).isDocument) {
+  if (documentType(item).isDocument) {
     fileType.type = FileType.document;
-    fileType.previewUrl = document(item).previewUrl;
+    fileType.previewUrl = documentType(item).previewUrl;
     return fileType;
   }
 
@@ -64,7 +64,7 @@ function image(item: FileItemModel) {
   return image;
 }
 
-function document(item: FileItemModel) {
+function documentType(item: FileItemModel) {
   const { pages } = item;
   const doc = {
     isDocument: false,

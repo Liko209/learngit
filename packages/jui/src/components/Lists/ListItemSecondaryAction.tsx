@@ -3,9 +3,6 @@
  * @Date: 2018-09-27 13:53:47
  * Copyright © RingCentral. All rights reserved.
  */
-// import MuiListItemSecondaryAction, {
-// ListItemSecondaryActionProps as MuiListItemSecondaryActionProps,
-// } from '@material-ui/core/ListItemSecondaryAction';
 import styled from '../../foundation/styled-components';
 
 type JuiListItemSecondaryActionProps = {};
