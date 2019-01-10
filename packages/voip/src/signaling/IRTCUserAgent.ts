@@ -8,7 +8,7 @@ import { ProvisionDataOptions } from './types';
 interface IRTCUserAgent {
   reRegister(): void;
   register(options?: ProvisionDataOptions): void;
-  makeCall(phoneNumber: string, options: RTCCallOptions): void;
+  makeCall(phoneNumber: string, options: RTCCallOptions): any;
 }
 
 export { IRTCUserAgent };

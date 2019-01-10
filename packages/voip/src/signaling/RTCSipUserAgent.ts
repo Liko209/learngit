@@ -38,8 +38,8 @@ class RTCSipUserAgent implements IRTCUserAgent {
     this._webphone.userAgent.register(options);
   }
 
-  public makeCall(phoneNumber: string, options: RTCCallOptions): void {
-    this._webphone.userAgent.invite(phoneNumber, options);
+  public makeCall(phoneNumber: string, options: RTCCallOptions): any {
+    return this._webphone.userAgent.invite(phoneNumber, options);
   }
 
   public reRegister() {
