@@ -79,6 +79,12 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getComponent(PostItem, this.posts.nth(nth));
   }
 
+  async historyPostsDisplayedInOrder(posts: string[]){
+    for (const i of _.range(posts.length)) {
+      await this.t.expect(this.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
+    }
+  }
+
   postItemById(postId: string) {
     return this.getComponent(PostItem, this.posts.filter(`[data-id="${postId}"]`));
   }
