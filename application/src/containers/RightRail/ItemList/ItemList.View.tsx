@@ -38,7 +38,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     const Component: any = itemType[type];
     const id = ids[index];
     return (
-      <div key={id || index} style={style}>
+      <div key={index} style={style}>
         <Component id={id} />
       </div>
     );
@@ -69,7 +69,8 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    return await this.props.fetchMore;
+    console.log(766666, startIndex, stopIndex);
+    return await this.props.fetchNextPageItems();
   }
 
   render() {

@@ -151,7 +151,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
     });
-    this._fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
@@ -165,13 +164,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @action
-  private _fetchNextPageItems() {
+  fetchNextPageItems = () => {
     return this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-  }
-
-  @computed
-  get fetchMore() {
-    return this._fetchNextPageItems();
   }
 
   @computed
