@@ -32,6 +32,9 @@ const StyledName = styled('div')`
     margin-right: ${spacing(2)};
     color: ${grey('900')};
   }
+  .conversation-name {
+    ${ellipsis()}
+  }
 `;
 
 const JuiConversationCardFrom = ({
