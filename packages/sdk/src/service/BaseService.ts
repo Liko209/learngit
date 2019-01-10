@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, BaseError } from 'foundation';
+import { mainLogger, JError } from 'foundation';
 import { transform, isFunction } from '../service/utils';
-import { ErrorTypes } from '../utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { BaseModel, Raw, SortableModel } from '../models'; // eslint-disable-line
+import { IdModel, Raw } from '../framework/model';
+import { SortableModel } from '../models'; // eslint-disable-line
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
@@ -20,17 +20,17 @@ import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
+import { ERROR_CODES_SDK, JSdkError } from '../error';
 
 const throwError = (text: string): never => {
-  throw new Error(
+  throw new JSdkError(
+    ERROR_CODES_SDK.GENERAL,
     // tslint:disable-next-line:max-line-length
     `${text} is undefined! ${text} must be passed to Service constructor like this super(DaoClass, ApiClass, handleData)`,
   );
 };
 
-class BaseService<
-  SubModel extends BaseModel = BaseModel
-> extends AbstractService {
+class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   static serviceName = 'BaseService';
   private _cachedManager: EntityCacheManager<SubModel>;
 
@@ -125,7 +125,7 @@ class BaseService<
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
     SubModel[]
-  > {
+    > {
     this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
 
@@ -251,11 +251,22 @@ class BaseService<
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
     return srcText.length > 0
       ? terms.reduce(
-          (prev: boolean, key: string) =>
-            prev && new RegExp(`${key}`, 'i').test(srcText),
-          true,
-        )
+        (prev: boolean, key: string) =>
+          prev && new RegExp(`${key}`, 'i').test(srcText),
+        true,
+      )
       : false;
+  }
+
+  protected isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   protected getTermsFromSearchKey(searchKey: string) {
@@ -347,7 +358,7 @@ class BaseService<
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | JError>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -357,8 +368,8 @@ class BaseService<
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
-      ? partialModel._id
-      : 0;
+        ? partialModel._id
+        : 0;
     let result: ServiceResult<SubModel>;
 
     do {
@@ -367,7 +378,7 @@ class BaseService<
       if (!originalModel) {
         mainLogger.warn('handlePartialUpdate: OriginalModel not found');
         result = serviceErr(
-          ErrorTypes.SERVICE,
+          ERROR_CODES_SDK.GENERAL,
           `OriginalModel not found: modelId: ${id}`,
         );
         break;
@@ -466,7 +477,7 @@ class BaseService<
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | BaseError>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | JError>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
@@ -505,7 +516,7 @@ class BaseService<
 
       const updateResult = await doUpdateModel(mergedModel);
 
-      if (updateResult instanceof BaseError) {
+      if (updateResult instanceof JError) {
         const error = updateResult;
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
@@ -518,7 +529,9 @@ class BaseService<
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ErrorTypes.SERVICE, 'doUpdateModel failed', { apiError: error });
+        result = serviceErr(ERROR_CODES_SDK.GENERAL, 'doUpdateModel failed', {
+          apiError: error,
+        });
         break;
       }
 

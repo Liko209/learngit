@@ -6,8 +6,9 @@
 import _ from 'lodash';
 import { DexieDB, LokiDB, IDatabaseCollection, IDatabase } from 'foundation';
 import Query from './Query';
-import { ErrorTypes, Throw } from '../../utils';
+import { Throw } from '../../utils';
 import { errorHandler } from '../errors/handler';
+import { ERROR_CODES_DB } from '../../error';
 
 class BaseDao<T extends {}> {
   static COLLECTION_NAME: string = '';
@@ -172,19 +173,19 @@ class BaseDao<T extends {}> {
   private _validateItem(item: Partial<T>, withPrimaryKey: boolean): void {
     if (!_.isObjectLike(item)) {
       Throw(
-        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        ERROR_CODES_DB.INVALID_USAGE_ERROR,
         `Item should be an object. Received ${item}`,
       );
     }
     if (_.isEmpty(item)) {
       Throw(
-        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        ERROR_CODES_DB.INVALID_USAGE_ERROR,
         'Item should not be an empty object.',
       );
     }
     if (withPrimaryKey && !item[this.collection.primaryKeyName()]) {
       Throw(
-        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        ERROR_CODES_DB.INVALID_USAGE_ERROR,
         `Lack of primary key ${this.collection.primaryKeyName()} in object ${JSON.stringify(
           item,
         )}`,
@@ -195,7 +196,7 @@ class BaseDao<T extends {}> {
   private _validateKey(key: number) {
     if (!_.isInteger(key)) {
       Throw(
-        ErrorTypes.DB_INVALID_USAGE_ERROR,
+        ERROR_CODES_DB.INVALID_USAGE_ERROR,
         `Key for db get method should be an integer. ${key}`,
       );
     }

@@ -75,7 +75,6 @@ fixture('ConversationList/MarkPrivateOrProtected')
 //   await h(t).withLog(`Given I login Jupiter with ${users[6].company.number}#${users[6].extension}`, async () => {
 //     await h(t).directLoginWithUser(SITE_URL, users[6]);
 //     await app.homePage.ensureLoaded();
-//     await h(t).refresh();
 //   });
 
 //   const search = app.homePage.header.search;
@@ -160,7 +159,6 @@ fixture('ConversationList/MarkPrivateOrProtected')
 //   await h(t).withLog(`Given I login Jupiter with ${users[6].company.number}#${users[6].extension}`, async () => {
 //     await h(t).directLoginWithUser(SITE_URL, users[6]);
 //     await app.homePage.ensureLoaded();
-//     await h(t).refresh();
 //   });
 
 //   const search = app.homePage.header.search;
@@ -194,62 +192,36 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const adminUser = users[5];
-  loginUser.sdk = await h(t).getSdk(loginUser);
-  adminUser.sdk = await h(t).getSdk(adminUser);
   const app = new AppRoot(t);
   const teamName = uuid();
   const privateTeamName = uuid();
-  const otherUserName = await loginUser.sdk.glip.getPerson(users[5].rcId)
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).platform(adminUser).init();
+
+  const otherUserName = await h(t).glip(loginUser).getPerson(users[5].rcId)
     .then(res => {
       return res.data.display_name;
     });
 
   const conversationSection = app.homePage.messageTab.conversationPage;
-  const steps = async (i: number, count: number, searchItem, type: string) => {
-    const id = await searchItem.getId();
-    const icon = ['lock_open', 'lock']
-    await h(t).withLog(`When I click the avatar of ${i + 1}/${count}  ${type} result`, async () => {
-      await searchItem.clickAvatar();
-    });
-    await h(t).withLog(`And the mini profile id should be ${id}`, async () => {
-      const miniProfileId = await miniProfile.getId();
-      await t.expect(miniProfileId).eql(id);
-    });
-    await h(t).withLog(`when i click private button icon in mini profile`, async () => {
-      await miniProfile.clickPrivate();
-    });
-
-    await h(t).withLog(`Then should icon not update`, async () => {
-      await t.expect(miniProfile.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
-      await miniProfile.goToMessages();
-    });
-
-    await h(t).withLog(`when i click private button icon in conversation header`, async () => {
-      await conversationSection.clickPrivate();
-    }, true);
-
-    await h(t).withLog(`then should icon not update`, async () => {
-      await t.expect(conversationSection.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
-    }, true);
-
-  }
 
   let teamId, privateTeamId;
   await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
-    teamId = (await adminUser.sdk.platform.createGroup({
+    teamId = await h(t).platform(adminUser).createAndGetGroupId({
       privacy: 'protected',
       isPublic: true,
       name: teamName,
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
-    })).data.id;
-    privateTeamId = (await adminUser.sdk.platform.createGroup({
+    });
+    privateTeamId = await h(t).platform(adminUser).createAndGetGroupId({
       privacy: 'private',
-      isPublic: true,
+      isPublic: false,
       name: privateTeamName,
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
-    })).data.id;
+    });
   });
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -259,22 +231,18 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
 
   const nameGroup = [teamName, privateTeamName];
   const idGroup = [teamId, privateTeamId];
-  const miniProfile = app.homePage.miniProfile;
+  const teamsSection = app.homePage.messageTab.teamsSection;
   for (let i = 0; i < idGroup.length; i++) {
-    const search = app.homePage.header.search;
-    await h(t).withLog(`When I type people keyword ${teamName} in search input area`, async () => {
-      await search.typeText(nameGroup[i], {replace: true});
-    });
-
-    let teamCount
-    await h(t).withLog('Then I should find at least team result', async () => {
-      await t.expect(search.teams.count).gte(1);
-      teamCount = await search.teams.count;
+    const icon = ['lock_open', 'lock']
+    await h(t).withLog(`When I open a ${nameGroup[i]} conversation and click private button icon in conversation header`, async () => {
+      await teamsSection.conversationEntryById(idGroup[i]).enter();
+      await conversationSection.clickPrivate();
     }, true);
 
-    for (let i = 0; i < teamCount; i++) {
-      await steps(i, teamCount, search.nthTeam(i), "Team")
-    }
+    await h(t).withLog(`then should icon not update`, async () => {
+      await t.expect(conversationSection.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
+    }, true);
+
   }
 
 });

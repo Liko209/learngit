@@ -59,15 +59,14 @@ class Search extends BaseWebComponent {
   }
 
   get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('.material-icons').withText('close');
+    return this.getSelectorByIcon('close');
   }
 
   async close() {
     await this.t.click(this.closeButton);
   }
 
-  get allresultItems() {
+  get allResultItems() {
     return this.getSelector('.search-items');
   }
 
@@ -94,10 +93,15 @@ class Search extends BaseWebComponent {
   nthTeam(n: number) {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
+
+  itemEntryByCid(cid: string) {
+    const root = this.getSelectorByAutomationId("search-item-avatar", this.allResultItems)
+      .find('div').withAttribute('cid').filter(`[cid="${cid}"]`).parent('.search-items');
+    return this.getComponent(SearchItem, root);
+  }
 }
 
 class SearchItem extends BaseWebComponent {
-
   get avatar() {
     return this.getSelectorByAutomationId('search-item-avatar', this.self);
   }
@@ -113,20 +117,63 @@ class SearchItem extends BaseWebComponent {
 
   // group or team
   get cid() {
-    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');;
+    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');
   }
 
   async getId() {
     if (await this.avatar.find('div').withAttribute('uid').exists) {
-      console.log("uid:", await this.uid)
       return await this.uid;
     }
-    console.log("cid:", await this.cid)
     return await this.cid;
   }
 
   async enter() {
     await this.t.click(this.self);
+  }
+
+  get joinButton() {
+    return this.getSelectorByAutomationId('joinButton', this.self);
+  }
+
+
+  async shouldHasJoinButton() {
+    await this.t.expect(this.joinButton.visible).ok();
+  }
+
+  async shouldNotHasJoinButton() {
+    await this.t.expect(this.joinButton.visible).notOk();
+  }
+
+  async join() {
+    await this.t.hover(this.self);
+    const joinButton = this.joinButton;
+    await this.t.expect(joinButton.exists).ok();
+    const displayJoinButton = ClientFunction(() => {
+      joinButton().style["bottom"] = "0px";
+      joinButton().style["left"] = "0px";
+      joinButton().style["right"] = "0px";
+      joinButton().style["top"] = "0px";
+      joinButton().style["width"] = "104px";
+      joinButton().style["perspective-origin"] = "52px 14px";
+      joinButton().style["transform-origin"] = "52px 14px";
+    },
+      { dependencies: { joinButton } }
+    );
+    const joinButtonDiv = this.joinButton.parent('div');
+    const displayJoinButtonDiv = ClientFunction(() => {
+      joinButtonDiv().style["display"] = "block";
+      joinButtonDiv().style["height"] = "28px";
+      joinButtonDiv().style["min-height "] = "auto";
+      joinButtonDiv().style["min-width"] = "auto";
+      joinButtonDiv().style["width"] = "104px";
+      joinButtonDiv().style["perspective-origin"] = "52px 14px";
+      joinButtonDiv().style["transform-origin"] = "52px 14px";
+    },
+      { dependencies: { joinButtonDiv } }
+    );
+    await displayJoinButtonDiv();
+    await displayJoinButton();
+    await this.t.click(this.joinButton);
   }
 
   async clickAvatar() {
@@ -136,5 +183,41 @@ class SearchItem extends BaseWebComponent {
   async clickName() {
     await this.t.click(this.name);
   }
+}
 
+
+export class joinTeamDialog extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get title() {
+    return this.getSelector('h2', this.self).withText('Join team?')
+  }
+
+  get content() {
+    return this.self.find('p').withText("You are not currently a member of the");
+  }
+
+  async shouldBeTeam(teamName: string) {
+    const reg = new RegExp(`You are not currently a member of the ${teamName} team. Would you like to join the team?`)
+    await this.t.expect(this.content.textContent).match(reg, { timeout: 10e3 });
+  }
+
+  get joinButton() {
+    return this.self.find('button').withText('Done');
+  }
+
+  get cancelButton() {
+    return this.self.find('button').withText('Cancel');
+  }
+
+  async join() {
+    await this.t.click(this.joinButton);
+  }
+
+  async cancel() {
+    await this.t.click(this.cancelButton);
+  }
 }

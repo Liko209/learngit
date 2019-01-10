@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { StoredFile } from '../../models';
+import { StoredFile } from '../../module/item/entity';
 
 export type AmazonFilePolicyRequestModel = {
   size: number;

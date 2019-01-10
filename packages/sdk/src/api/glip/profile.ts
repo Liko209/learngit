@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Api from '../api';
-import { Profile } from '../../models';
+import { Profile } from '../../module/profile/entity';
 
 class ProfileAPI extends Api {
   static basePath = '/profile';

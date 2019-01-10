@@ -5,4 +5,3 @@
  */
 export * from './ConversationInitialPost';
 export * from './ConversationInitialPostHeader';
-export * from './ConversationInitialPostBody';

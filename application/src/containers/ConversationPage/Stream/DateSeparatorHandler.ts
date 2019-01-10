@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { observable, computed } from 'mobx';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { ISortableModel } from '@/store/base';
 import { DateSeparator, SeparatorType } from './types';
 import { ISeparatorHandler } from './ISeparatorHandler';

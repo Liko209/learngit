@@ -27,7 +27,7 @@ const downloadBtn = (downloadUrl: string) => (
     variant="plain"
     tooltipTitle={t('download')}
   >
-    get_app
+    download
   </JuiIconButton>
 );
 
@@ -55,7 +55,6 @@ class FilesView extends React.Component<FilesViewProps> {
     }
     return (
       <AttachmentItem
-        hideRemoveButton={true}
         status={realStatus}
         key={id}
         name={name}

@@ -28,45 +28,6 @@ describe('AccountService', () => {
     accountDao.get.mockClear();
   });
 
-  describe('getCurrentUserId()', () => {
-    it('should return current user id', () => {
-      accountDao.get.mockReturnValue(111);
-      const userId = accountService.getCurrentUserId();
-      expect(userId).toBe(111);
-    });
-
-    it('should throw when current user id not found', () => {
-      accountDao.get.mockReturnValue('');
-      expect(() => accountService.getCurrentUserId()).toThrow();
-    });
-  });
-
-  describe('getCurrentUserProfileId()', () => {
-    it('should return current user profile id', () => {
-      accountDao.get.mockReturnValue(111);
-      const profileId = accountService.getCurrentUserProfileId();
-      expect(profileId).toBe(111);
-    });
-
-    it('should throw when current user id not found', () => {
-      accountDao.get.mockReturnValue('');
-      expect(() => accountService.getCurrentUserProfileId()).toThrow();
-    });
-  });
-
-  describe('getCurrentCompanyId()', () => {
-    it('should return current user profile id', () => {
-      accountDao.get.mockReturnValue(111);
-      const profileId = accountService.getCurrentCompanyId();
-      expect(profileId).toBe(111);
-    });
-
-    it('should throw when current user id not found', () => {
-      accountDao.get.mockReturnValue('');
-      expect(() => accountService.getCurrentCompanyId()).toThrow();
-    });
-  });
-
   describe('getCurrentUserInfo()', () => {
     it('should return current user info', () => {
       expect.assertions(1);

@@ -16,6 +16,8 @@ type PopperMenuProps = {
   transformOrigin?: string;
   placement?: PopperPlacementType;
   setMoreItemState?: (value: boolean) => void;
+  open: boolean;
+  value?: number;
 };
 
 const StyledAnchorWrapper = styled.div`
@@ -48,15 +50,16 @@ class JuiPopperMenu extends React.Component<
 
   render() {
     const { anchorEl } = this.state;
-    const open = Boolean(anchorEl);
-    const id = open ? 'popper-menu' : '';
+    // const open = Boolean(anchorEl);
     const {
       Anchor,
       children,
       automationId,
       transformOrigin,
       placement,
+      open,
     } = this.props;
+    const id = open ? 'popper-menu' : '';
     return (
       <>
         <StyledAnchorWrapper onClick={this.handleToggle}>
@@ -64,7 +67,7 @@ class JuiPopperMenu extends React.Component<
         </StyledAnchorWrapper>
         <JuiPopper
           id={id}
-          open={open}
+          open={open && Boolean(anchorEl)}
           anchorEl={anchorEl}
           placement={placement}
           data-test-automation-id={automationId}

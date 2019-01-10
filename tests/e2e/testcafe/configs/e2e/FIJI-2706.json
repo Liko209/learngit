@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/ProfileToggle.ts",
+      "./fixtures/Profile/ViewYourProfile.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

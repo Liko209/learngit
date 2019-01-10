@@ -5,17 +5,22 @@
  */
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item, Progress, Post } from 'sdk/models';
-import { getEntity } from '@/store/utils';
+import { Item } from 'sdk/module/item/entity';
+import { Progress } from 'sdk/module/progress';
+import { Post } from 'sdk/module/post/entity';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { t } from 'i18next';
+import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
   PostService,
-  ItemService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
@@ -87,9 +92,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (id < 0) {
         const progress =
           this._progressMap.get(id) || this._itemService.getUploadProgress(id);
-        if (progress) {
-          const { loaded = 0, total } = progress;
+        if (progress && progress.rate) {
+          const { loaded = 0, total } = progress.rate;
           const value = (loaded / Math.max(total, 1)) * 100;
+          if (value > 100) {
+            throw Error('Fatal: the file sending progress > 100');
+          }
           result.set(id, value);
         }
       } else {
@@ -110,7 +118,28 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   removeFile = async (id: number) => {
-    await this._postService.cancelUpload(this._postId, id);
+    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
+    if (status === 'offline') {
+      Notification.flashToast({
+        message: t('notAbleToCancelUpload'),
+        type: 'error',
+        messageAlign: 'left',
+        fullWidth: false,
+        dismissible: false,
+      });
+    } else {
+      try {
+        await this._postService.cancelUpload(this._postId, id);
+      } catch (e) {
+        Notification.flashToast({
+          message: t('notAbleToCancelUploadTryAgain'),
+          type: 'error',
+          messageAlign: 'left',
+          fullWidth: false,
+          dismissible: false,
+        });
+      }
+    }
   }
 }
 

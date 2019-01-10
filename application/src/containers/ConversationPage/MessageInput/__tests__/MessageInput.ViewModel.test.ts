@@ -13,6 +13,13 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
+import { GroupConfigService } from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
+
+const groupConfigService = new GroupConfigService();
+(GroupConfigService as any).getInstance = () => groupConfigService;
+jest.mock('sdk/service/groupConfig');
+jest.mock('sdk/module/item');
 
 const mockGroupEntityData = {
   draft: 'draft',
@@ -29,9 +36,13 @@ const postService = {
 const groupService = {
   updateGroupDraft: jest.fn(),
 };
+const itemService = {
+  getUploadItems: jest.fn(),
+};
 
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 const messageInputViewModel = new MessageInputViewModel({ id: 123 });
 
@@ -62,10 +73,13 @@ describe.skip('ActionsViewModel', () => {
 
 describe('MessageInputViewModel', () => {
   describe('_sendPost()', () => {
-    const mockThis = (content: string) => {
+    const mockThis = (markdownFromDeltaRes: {
+      content: string;
+      mentionsIds: number[];
+    }) => {
       const that = {
         quill: {
-          getText: jest.fn().mockReturnValue(content),
+          getText: jest.fn().mockReturnValue(markdownFromDeltaRes.content),
           getContents: jest.fn(),
         },
       };
@@ -76,10 +90,13 @@ describe('MessageInputViewModel', () => {
       messageInputViewModel.keyboardEventHandler.enter.handler;
 
     it.skip('should be success when has draft content', () => {
-      const content = 'text';
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(messageInputViewModel.draft).toBe('');
@@ -87,30 +104,40 @@ describe('MessageInputViewModel', () => {
     });
 
     it('should not send when empty draft content', () => {
-      const content = '';
-      const that = mockThis(content);
+      itemService.getUploadItems = jest.fn().mockReturnValue([]);
+      const markdownFromDeltaRes = {
+        content: '',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(postService.sendPost).toBeCalledTimes(0);
     });
 
     it('should not send when draft contains illegal content', () => {
-      const content = CONTENT_ILLEGAL;
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: CONTENT_ILLEGAL,
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
     });
 
     it('should generate length error when draft.length > CONTENT_LENGTH', () => {
-      const content = _.pad('test', CONTENT_LENGTH + 1);
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: _.pad('test', CONTENT_LENGTH + 1),
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(content);
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
       expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
@@ -120,11 +147,35 @@ describe('MessageInputViewModel', () => {
       postService.sendPost = jest
         .fn()
         .mockRejectedValueOnce(new Error('error'));
-      const content = 'text';
-      const that = mockThis(content);
+      const markdownFromDeltaRes = {
+        content: 'text',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       const result = handler();
       expect(result).toBeUndefined();
+    });
+  });
+  describe('cellWillChange', () => {
+    it('should call groupConfigService.updateDraft when cellWillChange called', () => {
+      messageInputViewModel.cellWillChange(1, 2);
+      expect(groupConfigService.updateDraft).toHaveBeenCalled();
+    });
+  });
+  describe('get draft', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    it('should call groupConfigService.getDraft if group draft has not been get from local', () => {
+      messageInputViewModel.draft;
+      expect(groupConfigService.getDraft).toHaveBeenCalled();
+    });
+    it('should not call groupConfigService.getDraft if group draft has been loaded into memory', () => {
+      messageInputViewModel._id = 9999;
+      messageInputViewModel._memoryDraftMap = new Map();
+      messageInputViewModel._memoryDraftMap.set(9999, '9999');
+      expect(groupConfigService.getDraft).toHaveBeenCalledTimes(0);
     });
   });
 });

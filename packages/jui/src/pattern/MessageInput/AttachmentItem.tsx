@@ -3,9 +3,9 @@
  * @Date: 2018-12-10 18:40:06
  * Copyright © RingCentral. All rights reserved.
  */
+import React, { PureComponent, MouseEvent } from 'react';
+import styled from '../../foundation/styled-components';
 
-import React, { MouseEvent } from 'react';
-import styled, { css } from '../../foundation/styled-components';
 import { t } from 'i18next';
 import {
   height,
@@ -112,37 +112,37 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
   </ActionWrapper>
 );
 
-const AttachmentItem: React.SFC<AttachmentItemProps> = (
-  props: AttachmentItemProps,
-) => {
-  const {
-    name,
-    status,
-    hideRemoveButton,
-    onClickDeleteButton,
-    progress,
-  } = props;
-  const loading = status === ITEM_STATUS.LOADING;
-  const action = (
-    <AttachmentItemAction
-      status={status}
-      onClick={onClickDeleteButton}
-      loading={loading}
-      value={progress}
-      hideRemoveButton={hideRemoveButton}
-      icon="close"
-    />
-  );
-  return (
-    <Wrapper>
-      <JuiFileWithExpand
-        fileNameColor={StatusMap[status]}
-        fileNameOpacity={loading ? 0.26 : 1}
-        fileName={name}
-        Actions={action}
+class AttachmentItem extends PureComponent<AttachmentItemProps> {
+  render() {
+    const {
+      name,
+      status,
+      hideRemoveButton,
+      onClickDeleteButton,
+      progress,
+    } = this.props;
+    const loading = status === ITEM_STATUS.LOADING;
+    const action = (
+      <AttachmentItemAction
+        status={status}
+        onClick={onClickDeleteButton}
+        loading={loading}
+        value={progress}
+        hideRemoveButton={hideRemoveButton}
+        icon="close"
       />
-    </Wrapper>
-  );
-};
+    );
+    return (
+      <Wrapper>
+        <JuiFileWithExpand
+          fileNameColor={StatusMap[status]}
+          fileNameOpacity={loading ? 0.26 : 1}
+          fileName={name}
+          Actions={action}
+        />
+      </Wrapper>
+    );
+  }
+}
 
 export { AttachmentItem, ITEM_STATUS, AttachmentItemAction };

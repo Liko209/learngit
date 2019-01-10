@@ -4,14 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../model';
 import { BaseDao } from '../../../dao/base';
 import NetworkClient from '../../../api/NetworkClient';
 import { IEntitySourceController } from './IEntitySourceController';
 import { IRequestController } from './IRequestController';
 import { IPartialModifyController } from './IPartialModifyController';
+import { IEntityCacheController } from './IEntityCacheController';
+import { IEntityCacheSearchController } from './IEntityCacheSearchController';
 
-interface IControllerBuilder<T extends BaseModel = BaseModel> {
+interface IControllerBuilder<T extends IdModel = IdModel> {
   buildEntitySourceController(
     dao: BaseDao<T>,
     requestController: IRequestController<T>,
@@ -25,6 +27,12 @@ interface IControllerBuilder<T extends BaseModel = BaseModel> {
   buildPartialModifyController(
     entitySourceController: IEntitySourceController<T>,
   ): IPartialModifyController<T>;
+
+  buildEntityCacheController(): IEntityCacheController<T>;
+
+  buildEntityCacheSearchController(
+    entityCacheController: IEntityCacheController,
+  ): IEntityCacheSearchController;
 }
 
 export { IControllerBuilder };

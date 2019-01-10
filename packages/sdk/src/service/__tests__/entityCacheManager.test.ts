@@ -1,7 +1,7 @@
 import EntityCacheManager from '../entityCacheManager';
-import { BaseModel, Raw } from '../../models';
+import { IdModel, Raw } from '../../framework/model';
 
-type EntityCacheTestModel = BaseModel & {
+type EntityCacheTestModel = IdModel & {
   name: string;
   age: number;
 };

@@ -1,9 +1,15 @@
 import jenkins.model.*
 import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
-import hudson.AbortException
 
-// cancel old build
+// glip emoji const
+final String SUCCESS_EMOJI = ':white_check_mark:'
+final String FAILURE_EMOJI = ':negative_squared_cross_mark:'
+final String ABORTED_EMOJI = ':no_entry:'
+final String UPWARD_EMOJI = ':chart_with_upwards_trend:'
+final String DOWNWARD_EMOJI = ':chart_with_downwards_trend:'
+
+// cancel old build to safe slave resources
 @NonCPS
 def cancelOldBuildOfSameCause() {
     GitLabWebHookCause currentBuildCause = currentBuild.rawBuild.getCause(GitLabWebHookCause.class)
@@ -45,8 +51,8 @@ def condStage(Map args, Closure block) {
 // ssh helper
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
-    GString sshCmd = "ssh -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
-    sh "${sshCmd} ${cmd}"
+    GString sshCmd = "ssh -q -o StrictHostKeyChecking=no -p ${uri.getPort()} ${uri.getUserInfo()}@${uri.getHost()}"
+    return sh(returnStdout: true, script: "${sshCmd} \"${cmd}\"").trim()
 }
 
 // deploy helper
@@ -54,11 +60,27 @@ def rsyncFolderToRemote(String sourceDir, String remoteUri, String remoteDir) {
     URI uri = new URI(remoteUri)
     sshCmd(remoteUri, "mkdir -p ${remoteDir}".toString())
     String rsyncRemoteUri = "${uri.getUserInfo()}@${uri.getHost()}:${remoteDir}".toString()
-    echo rsyncRemoteUri
     sh "rsync -azPq --delete --progress -e 'ssh -o StrictHostKeyChecking=no -p ${uri.getPort()}' ${sourceDir} ${rsyncRemoteUri}"
-    sshCmd(remoteUri, "chown -R root:root ${remoteDir}".toString())
+    sshCmd(remoteUri, "chmod -R 755 ${remoteDir}".toString())
 }
 
+def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
+    // the reason to use stdout instead of return code is,
+    // by return code we can not tell the error of ssh itself or dir not exists
+    return 'true' == sshCmd(remoteUri, "[ -d ${remoteDir} ] && echo 'true' || echo 'false'")
+}
+
+def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
+    assert '/' != linkTarget, 'What the hell are you doing?'
+    // remove link if exists
+    println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
+    // remote directory if exists
+    println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
+    // create link to new target
+    println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
+}
+
+// business logic
 static String getSubDomain(String sourceBranch, String targetBranch) {
     if ("master" == sourceBranch)
         return 'release'
@@ -90,16 +112,24 @@ def safeMail(addresses, subject, body) {
     }
 }
 
+def isStableBranch(String branchName) {
+    if (null == branchName)
+        return false
+    return branchName ==~ /^(develop)|(master)|(release.*)|(stage.*)$/
+}
+
 def buildReport(result, buildUrl, report) {
     List lines = []
     lines.push("**Build Result**: ${result}")
     lines.push("**Detail**: ${buildUrl}")
     if (null != report.saReport)
         lines.push("**Static Analysis**: ${report.saReport}")
-    if (null != report.applicationUrl)
-        lines.push("**Application URL**: ${report.applicationUrl}")
+    if (null != report.appUrl)
+        lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.coverage)
         lines.push("**Coverage Report**: ${report.coverage}")
+    if (null != report.coverageDiff)
+        lines.push("**Coverage Changes**: ${report.coverageDiff}")
     if (null != report.juiUrl)
         lines.push("**Storybook URL**: ${report.juiUrl}")
     if (null != report.e2eUrl)
@@ -107,13 +137,10 @@ def buildReport(result, buildUrl, report) {
     return lines.join(' \n')
 }
 
-
-// params
+/* job params */
 String jobName = env.JOB_BASE_NAME
 String buildNode = env.BUILD_NODE
 String scmCredentialId = env.SCM_CREDENTIAL
-String gitlabApi = env.GITLAB_API
-String gitlabCredentialId = env.GITLAB_CREDENTIAL
 String npmRegistry = env.NPM_REGISTRY
 String nodejsTool = env.NODEJS_TOOL
 String deployUri = env.DEPLOY_URI
@@ -121,12 +148,37 @@ String deployCredentialId = env.DEPLOY_CREDENTIAL
 String deployBaseDir = env.DEPLOY_BASE_DIR
 String rcCredentialId = env.E2E_RC_CREDENTIAL
 
-// derivative value
-Boolean skipEndToEnd = 'PUSH' == env.gitlabActionType
-Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && 'develop' != env.gitlabSourceBranch
+String releaseBranch = 'master'
+String integrationBranch = 'develop'
 
+/* build strategy */
+Boolean isMerge = (null != env.gitlabTargetBranch) && (env.gitlabSourceBranch != env.gitlabTargetBranch)
+Boolean skipEndToEnd = !isStableBranch(env.gitlabSourceBranch) && !isStableBranch(env.gitlabTargetBranch)
+Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && integrationBranch != env.gitlabSourceBranch
+Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || releaseBranch == env.gitlabSourceBranch
+
+/* deploy params */
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
-String applicationUrl = "https://${subDomain}.fiji.gliprc.com".toString()
+String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
+String appStageLinkDir = "${deployBaseDir}/stage".toString()
+String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
+
+String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
+String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
+
+// following params should be updated after checkout stage success
+String appHeadSha = null
+String juiHeadSha = null
+
+// update with +=
+String appHeadShaDir = "${deployBaseDir}/app-".toString()
+String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
+
+// by default we should not skip building app and jui
+Boolean skipBuildApp = false
+Boolean skipBuildJui = false
+Boolean skipSaAndUt = false
+Boolean skipInstallDependencies = false
 
 // glip channel
 def reportChannels = [
@@ -136,15 +188,14 @@ def reportChannels = [
 
 // report
 Map report = [:]
+report.buildUrl = env.BUILD_URL
 
-// start
-if (!skipUpdateGitlabStatus)
-    updateGitlabCommitStatus name: 'jenkins', state: 'pending'
+// start to build
+skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
 cancelOldBuildOfSameCause()
 
 node(buildNode) {
-    if (!skipUpdateGitlabStatus)
-        updateGitlabCommitStatus name: 'jenkins', state: 'running'
+    skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
     // install nodejs tool
     env.NODEJS_HOME = tool nodejsTool
@@ -155,12 +206,14 @@ node(buildNode) {
         // start to build
         stage ('Collect Facts') {
             sh 'env'
-            sh 'ifconfig'
             sh 'df -h'
             sh 'uptime'
             sh 'git --version'
             sh 'node -v'
             sh 'rsync --version'
+            sh 'grep --version'
+            sh 'which tr'
+            sh 'which xargs'
         }
 
         stage ('Checkout') {
@@ -192,18 +245,50 @@ node(buildNode) {
                             ]
                     ]
             ])
+            // change in tests and autoDevOps directory should not trigger application build
+            // for git 1.9, there is an easy way to exclude files
+            // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
+            appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
+            echo "appHeadSha=${appHeadSha}"
+            assert appHeadSha, 'appHeadSha is invalid'
+            appHeadShaDir += appHeadSha
+            echo "appHeadShaDir=${appHeadShaDir}"
+            // build jui only when packages/jui has change
+            juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
+            echo "juiHeadSha=${juiHeadSha}"
+            assert juiHeadSha, 'juiHeadSha is invalid'
+            juiHeadShaDir += juiHeadSha
+            echo "juiHeadShaDir=${juiHeadShaDir}"
+
+            // check if app or jui has been built
+            sshagent(credentials: [deployCredentialId]) {
+                // we should always build release version
+                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir) && !buildRelease
+                skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
+            }
+            // since SA and UT must be passed before we build and deploy app and jui
+            // that means if app and jui have already been built,
+            // SA and UT must have already passed, we can just skip them to save more resources
+            skipSaAndUt = skipBuildApp && skipBuildJui
+
+            // we can even skip install dependencies
+            skipInstallDependencies = [skipSaAndUt, skipEndToEnd].every()
         }
 
-        stage ('Install Dependencies') {
+        condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
+            sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install typescript ts-node --unsafe-perm'
-                sh 'npm install --unsafe-perm'
+                sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
+                sh 'npm install --ignore-scripts --unsafe-perm'
+                sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
             }
         }
+
         parallel (
                 'Static Analysis': {
-                    stage(name: 'Static Analysis') {
+                    report.saReport = 'skip'
+                    condStage(name: 'Static Analysis', enable: !skipSaAndUt) {
                         sh 'mkdir -p lint'
                         try {
                             [
@@ -215,16 +300,18 @@ node(buildNode) {
                             ].each {
                                 sh "npx tslint --project ${it[0]} --out ${it[1]}"
                             }
-                            report.saReport = 'no tslint error'
+                            report.saReport = "${SUCCESS_EMOJI} no tslint error"
                         } catch (e) {
-                            report.saReport = 'tslint error is detect'
-                        } finally {
-                            archiveArtifacts artifacts: 'lint/*.txt'
+                            String saErrorMessage = sh(returnStdout: true, script: 'cat lint/*.txt').trim()
+                            report.saReport = "${FAILURE_EMOJI} ${saErrorMessage}"
+                            throw e
                         }
                     }
                 },
+
                 'Unit Test': {
-                    stage('Unit Test') {
+                    report.coverage = 'skip'
+                    condStage(name: 'Unit Test', enable: !skipSaAndUt) {
                         sh 'npm run test:cover'
                         publishHTML([
                                 allowMissing: false,
@@ -236,66 +323,103 @@ node(buildNode) {
                                 reportTitles: 'Coverage'
                         ])
                         report.coverage = "${env.BUILD_URL}Coverage"
+                        if (!isMerge && integrationBranch == env.gitlabSourceBranch) {
+                            // attach coverage report as git note when new commits are pushed to integration branch
+                            // push git notes to remote
+                            sshagent (credentials: [scmCredentialId]) {
+                                sh "git fetch -f ${env.gitlabSourceNamespace} refs/notes/*:refs/notes/*"
+                                sh 'git notes add -f -F coverage/coverage-summary.json'
+                                sh "git push -f ${env.gitlabSourceNamespace} refs/notes/*"
+                            }
+                        }
+                        if (isMerge && integrationBranch == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
+                            // compare coverage report with integration branch's
+                            // step 1: fetch git notes
+                            sshagent (credentials: [scmCredentialId]) {
+                                sh "git fetch -f ${env.gitlabTargetNamespace} ${env.gitlabTargetBranch}"
+                                sh "git fetch -f ${env.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
+                            }
+                            // step 2: get latest commit on integration branch with notes
+                            sh "git rev-list ${env.gitlabTargetNamespace}/${env.gitlabTargetBranch} > commit-sha.txt"
+                            sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
+                            String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
+                            // step 3: compare with baseline
+                            if (latestCommitWithNote) {
+                                sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
+                                int exitCode = sh(
+                                    returnStatus: true,
+                                    script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
+                                )
+                                report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
+                                report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
+                                // TODO: throw exception when coverage drop
+                            }
+                        }
                     }
-                },
+                }
+        )
+
+        parallel (
                 'Build JUI' : {
-                    condStage(name: 'Build JUI') {
+                    condStage(name: 'Build JUI', enable: !skipBuildJui) {
                         sh 'npm run build:ui'
                     }
 
                     condStage(name: 'Deploy JUI') {
                         String sourceDir = "packages/jui/storybook-static/"  // !!! don't forget trailing '/'
-                        String deployDir = "${deployBaseDir}/${subDomain}-jui".toString()
                         sshagent(credentials: [deployCredentialId]) {
-                            rsyncFolderToRemote(sourceDir, deployUri, deployDir)
+                            // copy to dir name with head sha when dir is not exists
+                            skipBuildJui || rsyncFolderToRemote(sourceDir, deployUri, juiHeadShaDir)
+                            // and create link to branch name based folder
+                            updateRemoteLink(deployUri, juiHeadShaDir, juiLinkDir)
                         }
                     }
-
-                    report.juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
-                    safeMail(
-                            reportChannels,
-                            "Storybook Deployment Successful",
-                            "**Storybook deployment successful**: ${report.juiUrl}"
-
-                    )
+                    report.juiUrl = juiUrl
                 },
+
                 'Build Application': {
-                    condStage(name: 'Build Application') {
+                    condStage(name: 'Build Application', enable: !skipBuildApp) {
                         // FIXME: move this part to build script
                         sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
-                        sh 'mv commitInfo.ts application/src/containers/VersionInfo/GitRepo.ts'
-                        dir('application') {
-                            sh 'npm run build'
+                        sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
+                        if (buildRelease) {
+                            sh 'npm run build:release'
+                        } else {
+                            dir('application') {
+                                sh 'npm run build'
+                            }
                         }
                     }
+
                     condStage(name: 'Deploy Application') {
                         String sourceDir = "application/build/"  // !!! don't forget trailing '/'
-                        String deployDir = "${deployBaseDir}/${subDomain}".toString()
                         sshagent(credentials: [deployCredentialId]) {
-                            rsyncFolderToRemote(sourceDir, deployUri, deployDir)
+                            // copy to dir name with head sha when dir is not exists
+                            skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
+                            // and create link to branch name based folder
+                            updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
+                            // for stage build, also create link to stage folder
+                            if (env.gitlabSourceBranch.startsWith('stage'))
+                                updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
                         }
                     }
-                    report.applicationUrl = applicationUrl
-                    safeMail(
-                            reportChannels,
-                            "Jupiter Deployment Successful",
-                            "**Jupiter deployment successful**: ${report.applicationUrl}"
-
-                    )
+                    report.appUrl = appUrl
                 }
         )
 
-        condStage (name: 'E2E Automation', timeout: 1800, enable: !skipEndToEnd) {
+        condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
             withEnv([
                     "HOST_NAME=${hostname}",
-                    "SITE_URL=${applicationUrl}",
+                    "SITE_URL=${appUrl}",
+                    "SITE_ENV=${env.E2E_SITE_ENV}",
                     "SCREENSHOTS_PATH=${env.E2E_SCREENSHOTS_PATH}",
                     "SELENIUM_SERVER=${env.E2E_SELENIUM_SERVER}",
                     "ENABLE_REMOTE_DASHBOARD=${env.E2E_ENABLE_REMOTE_DASHBOARD}",
                     "BROWSERS=${env.E2E_BROWSERS}",
                     "CONCURRENCY=${env.E2E_CONCURRENCY}",
+                    "BRANCH=${env.gitlabSourceBranch}",
                     "ACTION=ON_MERGE",
                     "DEBUG_MODE=false",
                     "QUARANTINE_MODE=true",
@@ -320,24 +444,26 @@ node(buildNode) {
                 }
             }}
         }
-        if (!skipUpdateGitlabStatus)
-            updateGitlabCommitStatus name: 'jenkins', state: 'success'
+        skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'success')
+        def description = currentBuild.getDescription() + '\n' + buildReport("${SUCCESS_EMOJI} Success", env.BUILD_URL, report)
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
-                buildReport(':white_check_mark: Success', env.BUILD_URL, report)
+                description,
         )
+        currentBuild.setDescription(description)
     } catch (e) {
-        if (!skipUpdateGitlabStatus)
-            updateGitlabCommitStatus name: 'jenkins', state: 'failed'
-        String statusTitle = ':negative_squared_cross_mark: Failure'
-        if (e in AbortException  || e in InterruptedException)
-            statusTitle = ':no_entry: Aborted'
+        skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
+        String statusTitle = "${FAILURE_EMOJI} Failure"
+        if (e in InterruptedException)
+            statusTitle = "${ABORTED_EMOJI} Aborted"
+        def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, env.BUILD_URL, report)
         safeMail(
                 reportChannels,
                 "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
-                buildReport(statusTitle, env.BUILD_URL, report),
+                description,
         )
+        currentBuild.setDescription(description)
         throw e
     }
 }

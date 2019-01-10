@@ -5,7 +5,9 @@
  */
 import notificationCenter from '../../service/notificationCenter';
 import { transformAll } from '../../service/utils';
-import { Post, Item, Raw } from '../../models';
+import { Raw } from '../../framework/model';
+import { Post } from '../../module/post/entity';
+import { Item } from '../../module/item/entity';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import { SearchResult } from './types.d';
 import { SERVICE } from '../../service/eventKey';

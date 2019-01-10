@@ -3,13 +3,13 @@
  * @Date: 2018-09-03 15:18:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { Group } from '../../models';
+import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
 import { baseHandleData } from '../post/handleData';
-import itemHandleData from '../item/handleData';
 import { mainLogger } from 'foundation';
 import StateService from '../state';
+import { ItemService } from '../../module/item';
 
 const DEFAULT_DIRECTION: string = 'order';
 const MAX_UNREAD_COUNT: number = 100;
@@ -40,7 +40,10 @@ class PreloadPostsProcessor implements IProcessor {
       const requestResult = await postService.getPostsFromRemote(params);
       requestResult.posts.length &&
         (await baseHandleData(requestResult.posts, true));
-      requestResult.items.length && (await itemHandleData(requestResult.items));
+      requestResult.items.length &&
+        (await (ItemService.getInstance() as ItemService).handleIncomingData(
+          requestResult.items,
+        ));
     }
     return true;
   }
@@ -58,10 +61,10 @@ class PreloadPostsProcessor implements IProcessor {
   }> {
     let shouldPreload = false;
     let unread_count = 0;
-    if (this._group.most_recent_post_id) {
+    if (this._group && this._group.most_recent_post_id) {
       const stateService: StateService = StateService.getInstance();
       const state = await stateService.getById(this._group.id);
-      if (state.unread_count) {
+      if (state && state.unread_count) {
         if (state.unread_count > 0 && state.unread_count <= MAX_UNREAD_COUNT) {
           const postService: PostService = PostService.getInstance();
           const post = await postService.getByIdFromDao(

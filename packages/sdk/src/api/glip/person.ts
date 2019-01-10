@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Api from '../api';
-import { Person } from '../../models';
+import { Person } from '../../module/person/entity';
 
 class PersonAPI extends Api {
   /**

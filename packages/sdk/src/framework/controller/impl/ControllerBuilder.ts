@@ -8,13 +8,16 @@ import { EntitySourceController } from './EntitySourceController';
 import { daoManager, BaseDao, DeactivatedDao } from '../../../dao';
 import { RequestController } from './RequestController';
 import { PartialModifyController } from './PartialModifyController';
-import { BaseModel } from '../../../models';
+import { IdModel } from '../../model';
 import NetworkClient from '../../../api/NetworkClient';
 import { IControllerBuilder } from '../interface/IControllerBuilder';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import { IRequestController } from '../interface/IRequestController';
+import { EntityCacheController } from './EntityCacheController';
+import { IEntityCacheController } from '../interface/IEntityCacheController';
+import { EntityCacheSearchController } from './EntityCacheSearchController';
 
-class ControllerBuilder<T extends BaseModel = BaseModel>
+class ControllerBuilder<T extends IdModel = IdModel>
   implements IControllerBuilder<T> {
   constructor() {}
   buildEntitySourceController(
@@ -40,6 +43,19 @@ class ControllerBuilder<T extends BaseModel = BaseModel>
   ) {
     return new PartialModifyController<T>(entitySourceController);
   }
-}
 
+  buildEntityCacheController() {
+    return new EntityCacheController<T>();
+  }
+
+  buildEntityCacheSearchController(
+    entityCacheController: IEntityCacheController,
+  ) {
+    return new EntityCacheSearchController(entityCacheController);
+  }
+
+  static getControllerBuilder<T extends IdModel = IdModel>() {
+    return new ControllerBuilder<T>();
+  }
+}
 export { ControllerBuilder };

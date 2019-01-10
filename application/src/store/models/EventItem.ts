@@ -3,7 +3,7 @@
  * @Date: 2018-12-17 14:08:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { EventItem } from 'sdk/models';
+import { EventItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
@@ -14,6 +14,7 @@ export default class EventItemModel extends ItemModel {
   @observable end: number;
   @observable location: string;
   @observable repeat: string;
+  @observable allDay: boolean;
   @observable repeatEnding: string;
   @observable repeatEndingAfter: string;
   @observable repeatEndingOn: string;

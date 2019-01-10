@@ -6,7 +6,7 @@
 import { computed, observable, action } from 'mobx';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY } from 'sdk/service';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
@@ -54,7 +54,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
     title: 'directMessage_plural',
-    iconName: 'person_outline',
+    iconName: 'direct_message',
     eventName: ENTITY.PEOPLE_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.GROUP,
@@ -66,7 +66,7 @@ const SECTION_CONFIGS: SectionConfigs = {
   },
   [SECTION_TYPE.TEAM]: {
     title: 'team_plural',
-    iconName: 'people_outline',
+    iconName: 'team',
     eventName: ENTITY.TEAM_GROUPS,
     entityName: ENTITY_NAME.GROUP,
     queryType: GROUP_QUERY_TYPE.TEAM,

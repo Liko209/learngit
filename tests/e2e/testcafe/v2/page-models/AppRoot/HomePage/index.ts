@@ -6,10 +6,10 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
-import { Header } from './header';
+import { Header, joinTeamDialog } from './header';
 import { LeftRail } from './LeftRail';
 import { RightRail } from './RightRail';
-import { ViewProfile, MiniProfile, ProfileDialog } from './ViewProfile';
+import { MiniProfile, ProfileDialog } from './ViewProfile';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded() {
@@ -42,7 +42,7 @@ export class HomePage extends BaseWebComponent {
 
   get addActionButton() {
     this.warnFlakySelector();
-    return this.self.find('button').child().withText('add_circle').parent().parent();
+    return this.self.find('button').child().withText('new_actions').parent().parent();
   }
 
   get addActionMenu() {
@@ -57,11 +57,6 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(SendNewMessageModal);
   }
 
-  // todo: delete after e2e/FIJI-2395 merge;
-  get viewProfile() {
-    return this.getComponent(ViewProfile);
-  }
-
   get miniProfile() {
     return this.getComponent(MiniProfile);
   }
@@ -69,6 +64,7 @@ export class HomePage extends BaseWebComponent {
   get profileDialog() {
     return this.getComponent(ProfileDialog);
   }
+
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
   }
@@ -84,5 +80,8 @@ export class HomePage extends BaseWebComponent {
   async openSettingMenu() {
     await this.t.click(this.topBarAvatar);
   }
-
+  
+  get joinTeamDialog() {
+    return this.getComponent(joinTeamDialog);
+  }
 }

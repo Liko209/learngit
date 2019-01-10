@@ -1,24 +1,6 @@
-
+import * as assert from 'assert';
 import { BaseWebComponent } from '../../BaseWebComponent';
 
-
-// todo: delete after e2e/FIJI-2395 merge;
-export class ViewProfile extends BaseWebComponent {
-  get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
-  }
-
-  get messageLink() {
-    this.warnFlakySelector();
-    return this.self.find('[aria-label="Go to the workstation of yourself"]');
-
-  }
-  async shouldExistviewProfile(profileText: string) {
-    await this.t.expect(this.self.child().nextSibling('div').child().withText(profileText).exists).ok();
-  }
-
-}
 
 export class MiniProfile extends BaseWebComponent {
   async shouldBePopUp() {
@@ -83,9 +65,15 @@ export class MiniProfile extends BaseWebComponent {
     return await this.avatar.getAttribute('uid');
   }
 
-  async shouldBeName(name: string | Promise<string>) {
+  async shouldBeName(name: string) {
     const currentName = await this.getName();
     await this.t.expect(currentName).eql(name);
+    assert.strictEqual(name, currentName, `Profile owner name, expect: ${name}, but actual: ${currentName}`);
+  }
+
+  async shouldBeId(id: string) {
+    const currentId = await this.getId();
+    assert.strictEqual(id, currentId, `Profile owner Id, expect: ${id}, but actual: ${currentId}`);
   }
 
   get profileButton() {
@@ -122,17 +110,28 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelector('*[role="dialog"]');
   }
 
+  get exists() {
+    return this.profileTitle.exists;
+  }
+
   get profileTitle() {
     return this.getSelectorByAutomationId('profileDialogTitle');
   }
 
-  get publicIcon() {
-    return this.getSelectorByIcon("lock_open", this.profileTitle);
+  get privateButton() {
+    return this.profileTitle.find('.privacy');
   }
 
-  // todo
+  get publicIcon() {
+    return this.getSelectorByIcon("lock_open", this.privateButton);
+  }
+
   get privateIcon() {
-    return
+    return this.getSelectorByIcon('lock', this.privateButton);
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
   }
 
   get unFavoriteStatusIcon() {
@@ -157,6 +156,11 @@ export class ProfileDialog extends BaseWebComponent {
 
   async shouldBePopUp() {
     await this.t.expect(this.profileTitle.exists).ok();
+  }
+
+  async shouldBeId(id: string) {
+    const currentId = await this.getId();
+    assert.strictEqual(id, currentId, `Profile owner Id, expect: ${id}, but actual: ${currentId}`);
   }
 
   get closeButton() {
@@ -189,7 +193,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get messageButton() {
-    return this.getSelectorByIcon('chat_bubble', this.summary).parent('button');
+    return this.getSelectorByIcon('chat_bubble', this.summary);
   }
 
   async goToMessages() {

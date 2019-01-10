@@ -1,11 +1,13 @@
 import { service } from 'sdk';
+import { ItemService } from 'sdk/module/item';
+import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 
 const {
   PersonService,
-  ItemService,
   CompanyService,
   GroupService,
+  GroupConfigService,
   PostService,
   PresenceService,
   StateService,
@@ -97,15 +99,22 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
+  [ENTITY_NAME.PROGRESS]: {
+    event: [ENTITY.PROGRESS],
+    service: () => ProgressService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
   [ENTITY_NAME.PROFILE]: {
     event: [ENTITY.PROFILE],
     service: () => ProfileService.getInstance(),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: 1000,
   },
-  [ENTITY_NAME.POST_SENT_STATUS]: {
-    event: [ENTITY.POST_SENT_STATUS],
-    service: [() => PostService.getInstance(), 'getPostSendStatus'],
+
+  [ENTITY_NAME.GROUP_CONFIG]: {
+    event: [ENTITY.GROUP_CONFIG],
+    service: () => GroupConfigService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
@@ -117,8 +126,6 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.CURRENT_COMPANY_ID]: 0,
   [GLOBAL_KEYS.STATIC_HTTP_SERVER]: '',
   [GLOBAL_KEYS.IS_LEFT_NAV_OPEN]: false,
-  [GLOBAL_KEYS.IS_SHOW_CREATE_TEAM_DIALOG]: false,
-  [GLOBAL_KEYS.IS_SHOW_NEW_MESSAGE_DIALOG]: false,
   [GLOBAL_KEYS.NETWORK]: 'online',
   [GLOBAL_KEYS.WINDOW_FOCUS]: true,
   [GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING]: false,

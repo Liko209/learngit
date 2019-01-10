@@ -15,6 +15,13 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 
+const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
+  if (vm.members.length && vm.open) {
+    return false;
+  }
+  return true;
+};
+
 const DELAY = 300;
 class MentionViewModel extends StoreViewModel<MentionProps>
   implements MentionViewProps {
@@ -132,6 +139,9 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     );
     if (res) {
       runInAction(() => {
+        if (res.sortableModels.length > 20) {
+          res.sortableModels.length = 20;
+        }
         this.currentIndex = 0;
         this.members = res.sortableModels;
       });
@@ -164,7 +174,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       const { pid } = this.props;
       const query = pid
         ? `[data-id='${pid}'] .ql-container`
-        : '.conversation-page>div>.quill>.ql-container';
+        : '.conversation-page>div>div>.quill>.ql-container';
       this._selectHandler(this).apply({
         quill: (document.querySelector(query) as any).__quill,
       });
@@ -176,9 +186,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     return function () {
       if (vm.open) {
         vm.open = false;
-        return false;
       }
-      return true;
+      return canTriggerDefaultEventHandler(vm);
     };
   }
 
@@ -187,6 +196,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     return function () {
       vm.currentIndex =
         (vm.currentIndex + vm.members.length - 1) % vm.members.length;
+      return canTriggerDefaultEventHandler(vm);
     };
   }
 
@@ -194,6 +204,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   private _downHandler(vm: MentionViewModel) {
     return function () {
       vm.currentIndex = (vm.currentIndex + 1) % vm.members.length;
+      return canTriggerDefaultEventHandler(vm);
     };
   }
 

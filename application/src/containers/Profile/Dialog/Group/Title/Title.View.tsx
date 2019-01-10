@@ -16,13 +16,16 @@ import { Favorite } from '@/containers/common/Favorite';
 import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupTitleViewProps
 > {
+  dismiss = () => portalManager.dismiss();
+
   render() {
-    const { id, t, dismiss, group } = this.props;
+    const { id, t, group } = this.props;
     return (
       <>
         <JuiDialogTitleWithActionLeft>
@@ -33,7 +36,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
           <Favorite id={id} size="medium" />
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton
-            onClick={dismiss}
+            onClick={this.dismiss}
             tooltipTitle={t('close')}
             ariaLabel={t('close')}
           >

@@ -7,12 +7,12 @@ import React from 'react';
 import {
   JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
-  JuiConversationInitialPostBody,
   StyledTitle,
   StyledSpan,
   StyledTeamName,
   StyledDescription,
 } from 'jui/pattern/ConversationInitialPost';
+import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
 import { Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
@@ -29,13 +29,14 @@ class ConversationInitialPost extends React.Component<
 
   private get _name() {
     const { creator, creatorGroupId } = this.props;
+
     return (
       <JuiLink
         Component={props => (
           <Link to={`/messages/${creatorGroupId}`} {...props} />
         )}
       >
-        {creator.displayName}
+        {creator.userDisplayName}
       </JuiLink>
     );
   }
@@ -56,7 +57,7 @@ class ConversationInitialPost extends React.Component<
             {t('directMessageDescription', { displayName })}
           </StyledSpan>
         )}
-        {isTeam ? (
+        {isTeam && groupDescription ? (
           <StyledDescription>{groupDescription}</StyledDescription>
         ) : null}
       </JuiConversationInitialPostHeader>
@@ -94,7 +95,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
 
     return (
-      <JuiConversationInitialPostBody
+      <JuiConversationPageInit
         text={t('postInitialTitle')}
         content={t('postInitialContent')}
         actions={[
