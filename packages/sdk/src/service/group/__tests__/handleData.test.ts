@@ -4,8 +4,15 @@ import { daoManager, GroupDao } from '../../../dao';
 import GroupAPI from '../../../api/glip/group';
 import PersonService from '../../../service/person';
 import ProfileService from '../../../service/profile';
-import AccountService from '../../../service/account';
-import { Group, Post, Raw, Profile } from '../../../models';
+import { UserConfig } from '../../../service/account';
+import { Group } from '../../../module/group/entity';
+import { Post } from '../../../module/post/entity';
+import { Profile } from '../../../module/profile/entity';
+import { Raw } from '../../../framework/model';
+import { toArrayOf } from '../../../__tests__/utils';
+import StateService from '../../state';
+import { EVENT_TYPES } from '../..';
+import { ApiResultOk } from '../../../api/ApiResult';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
@@ -16,10 +23,6 @@ import handleData, {
   handleHiddenGroupsChanged,
   saveDataAndDoNotification,
 } from '../handleData';
-import { toArrayOf } from '../../../__tests__/utils';
-import StateService from '../../state';
-import { EVENT_TYPES } from '../..';
-import { ApiResultOk } from '../../../api/ApiResult';
 
 jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
@@ -113,7 +116,6 @@ function generateFakeGroups(
 }
 
 const stateService: StateService = new StateService();
-const accountService = new AccountService();
 const personService = new PersonService();
 const profileService = new ProfileService();
 
@@ -121,7 +123,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
   StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  AccountService.getInstance = jest.fn().mockReturnValue(accountService);
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
 });
@@ -345,7 +346,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     const filteredGroups = await filterGroups(groups, LIMIT);
     expect(filteredGroups.length).toBe(LIMIT);
   });
@@ -358,7 +359,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
@@ -371,7 +372,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     const filteredGroups = await filterGroups(teams, LIMIT);
     expect(filteredGroups.length).toBe(TOTAL_GROUPS);
   });
@@ -384,7 +385,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
 
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1, is_team: true },
@@ -399,7 +400,7 @@ describe('filterGroups()', () => {
     const TOTAL_GROUPS = 5;
 
     const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1, is_team: true },
     ]);
@@ -416,7 +417,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_count: 1 },
     ]);
@@ -433,7 +434,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
       { id: 2, unread_mentions_count: 1 },
       { id: 3, unread_mentions_count: 1 },
@@ -451,7 +452,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValue([
       { id: 4, unread_count: 1 },
       { id: 3, unread_count: 1 },
@@ -470,7 +471,7 @@ describe('filterGroups()', () => {
       creator_id: 99,
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
@@ -485,7 +486,7 @@ describe('filterGroups()', () => {
       members: [99, 10],
       is_team: true,
     });
-    accountService.getCurrentUserId.mockReturnValue(99);
+    UserConfig.getCurrentUserId.mockReturnValue(99);
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
     const filteredGroups = await filterGroups(teams, LIMIT);
@@ -528,7 +529,7 @@ describe('filterGroups()', () => {
       },
     ] as Group[];
     stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-    accountService.getCurrentUserId.mockReturnValue(2);
+    UserConfig.getCurrentUserId.mockReturnValue(2);
     const filteredGroups = await filterGroups(group, 2);
     const ids = filteredGroups.map(item => item.id);
     expect(ids.indexOf(3) !== -1).toBe(true);
@@ -587,7 +588,7 @@ describe('saveDataAndDoNotification()', () => {
   describe('doNotification()', () => {
     it('should not call notificationCenter.emit when normal group is empty', async () => {
       const groups = generateFakeGroups(1, { members: [3, 4] });
-      accountService.getCurrentUserId.mockReturnValue(4);
+      UserConfig.getCurrentUserId.mockReturnValue(4);
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });

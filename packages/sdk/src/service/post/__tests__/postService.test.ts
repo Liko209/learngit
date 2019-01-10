@@ -8,9 +8,7 @@ import {
   AccountDao,
 } from '../../../dao';
 import PostAPI from '../../../api/glip/post';
-import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
-import ItemService from '../../item';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
@@ -24,13 +22,12 @@ import { Listener } from 'eventemitter2';
 import { err, ok, BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { JServerError, ERROR_CODES_SERVER } from '../../../error';
 import GroupConfigService from '../../groupConfig';
-import ProgressService, { PROGRESS_STATUS } from '../../../module/progress';
+import { ItemService } from '../../../module/item';
+import { ProgressService, PROGRESS_STATUS } from '../../../module/progress';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
-jest.mock('../../item/handleData');
-jest.mock('../../item');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
@@ -38,6 +35,7 @@ jest.mock('../../group');
 jest.mock('../../notificationCenter');
 jest.mock('../../groupConfig');
 jest.mock('../../../module/progress');
+jest.mock('../../../module/item');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -64,7 +62,6 @@ describe('PostService', () => {
     group_id: 4,
     from_group_id: 4,
   });
-
   function clearMocks() {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -79,6 +76,7 @@ describe('PostService', () => {
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
     daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+    itemService.handleIncomingData = jest.fn();
   }
 
   beforeEach(() => {
@@ -248,7 +246,7 @@ describe('PostService', () => {
   describe('getPostsByGroupId()', () => {
     beforeEach(() => {
       clearMocks();
-
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
       jest.spyOn(postService, 'getPostsFromLocal');
       jest.spyOn(postService, 'getPostsFromRemote');
       jest.spyOn(postService, 'includeNewest').mockResolvedValue(true);
@@ -300,6 +298,7 @@ describe('PostService', () => {
       expect(baseHandleData.mock.calls[0][1]).toBe(true);
       expect(postService.isNewestSaved).toHaveBeenCalled();
     });
+
     it('should not save if newest is not saved and incoming do not include newest', async () => {
       postService.includeNewest.mockResolvedValue(false);
       postService.isNewestSaved.mockResolvedValue(false);
@@ -323,7 +322,7 @@ describe('PostService', () => {
       expect(baseHandleData.mock.calls[0][1]).toBe(false);
     });
 
-    it('should return local data', async () => {
+    it('should return local data', async (done: any) => {
       /**
        * We have 2 posts total at local, 0 at remote.
        */
@@ -343,18 +342,22 @@ describe('PostService', () => {
         groupId: 1,
       });
 
-      expect(postService.getPostsFromLocal).toHaveBeenCalledWith({
-        groupId: 1,
-        limit: 20,
-        direction: 'older',
-        postId: 0,
+      setTimeout(() => {
+        expect(postService.getPostsFromLocal).toHaveBeenCalledWith({
+          groupId: 1,
+          limit: 20,
+          direction: 'older',
+          postId: 0,
+        });
+        expect(resultEmpty).toEqual({
+          items: [],
+          posts: [{ id: 1 }, { id: 2 }],
+          hasMore: false,
+          limit: 20,
+        });
+        done();
       });
-      expect(resultEmpty).toEqual({
-        items: [],
-        posts: [{ id: 1 }, { id: 2 }],
-        hasMore: false,
-        limit: 20,
-      });
+      
     });
 
     it('should return remote data', async () => {
@@ -373,7 +376,7 @@ describe('PostService', () => {
       });
 
       baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
-      itemHandleData.mockResolvedValue([]);
+      itemService.handleIncomingData.mockResolvedValue([]);
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
@@ -403,19 +406,22 @@ describe('PostService', () => {
         hasMore: false,
       });
       baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
-      itemHandleData.mockResolvedValue([]);
+      itemService.handleIncomingData.mockResolvedValue([]);
       groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
-
+      groupConfigDao.update = jest.fn();
       const result = await postService.getPostsByGroupId({
         groupId: 1,
         limit: 20,
       });
+
       expect(result).toEqual({
         posts: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
         items: [],
         hasMore: false,
         limit: 20,
       });
+
+      
     });
 
     it('should return local+remote data when localData + remoteData > pageSize', async () => {
@@ -434,7 +440,7 @@ describe('PostService', () => {
         hasMore: false,
       });
       baseHandleData.mockResolvedValue([{ id: 3 }]);
-      itemHandleData.mockResolvedValue([]);
+      itemService.handleIncomingData.mockResolvedValue([]);
 
       const result = await postService.getPostsByGroupId({
         groupId: 1,
@@ -547,8 +553,10 @@ describe('PostService', () => {
           headers: {},
         } as BaseResponse),
       );
-      baseHandleData.mockImplementationOnce((data: any) => data);
-      itemHandleData.mockImplementationOnce((data: any) => data);
+
+      itemService.handleIncomingData.mockImplementationOnce(
+        (data: any) => data,
+      );
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
       expect(result.items).toEqual([
         { id: 100 },

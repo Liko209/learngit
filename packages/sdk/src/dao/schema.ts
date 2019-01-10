@@ -28,7 +28,7 @@ const gen = (
 
 const schema: ISchema = {
   name: 'Glip',
-  version: 4, // Should update this number if all the old data in client db need to be deleted.
+  version: 5, // Should update this number if all the old data in client db need to be deleted.
   schema: {
     1: {
       person: gen(),
@@ -60,6 +60,13 @@ const schema: ISchema = {
     },
     8: { groupConfig: gen() },
     9: { item: gen('id', ['*group_ids', 'name']) },
+    10: {
+      fileItem: gen('id', ['*group_ids']),
+      taskItem: gen('id', ['*group_ids']),
+      noteItem: gen('id', ['*group_ids']),
+      eventItem: gen('id', ['*group_ids']),
+      linkItem: gen('id', ['*group_ids']),
+    },
   },
 };
 

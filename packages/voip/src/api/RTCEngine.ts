@@ -9,7 +9,7 @@ import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { rtcRestApiManager } from '../utils/RTCRestApiManager';
-import { ITelephonyNetworkDelegate } from 'foundation/src/telephony/ITelephonyNetworkDelegate';
+import { ITelephonyNetworkDelegate } from 'foundation';
 
 class RTCEngine {
   private static instance: RTCEngine;

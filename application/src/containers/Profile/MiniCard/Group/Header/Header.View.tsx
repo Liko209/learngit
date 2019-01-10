@@ -13,7 +13,7 @@ import {
   JuiProfileMiniCardHeaderMiddle,
   JuiProfileMiniCardHeaderRight,
   JuiProfileMiniCardGroupName,
-} from 'jui/pattern/ProfileMiniCard';
+} from 'jui/pattern/Profile/MiniCard';
 import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { Favorite, Privacy } from '@/containers/common';
 
