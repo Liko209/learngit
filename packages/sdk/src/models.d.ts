@@ -208,6 +208,11 @@ export type Post = ExtendedBaseModel & {
   parent_id?: number;
 };
 
+export type PostView = BaseModel & {
+  group_id: number;
+  created_at: number;
+};
+
 export type ItemVersionPage = {
   file_id: number;
   url: string;
