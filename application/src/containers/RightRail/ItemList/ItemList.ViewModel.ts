@@ -56,9 +56,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   totalCount: number = 0;
   @observable
-  private _sortKey: ITEM_SORT_KEYS;
+  private _sortKey: ITEM_SORT_KEYS = ITEM_SORT_KEYS.CREATE_TIME;
   @observable
-  private _desc: boolean = false;
+  private _desc: boolean = true;
   @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @computed
