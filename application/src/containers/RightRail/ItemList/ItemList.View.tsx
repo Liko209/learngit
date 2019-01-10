@@ -15,6 +15,8 @@ import {
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
 import { JuiRightShelfEmptyScreen } from 'jui/pattern/EmptyScreen';
+import { JuiConversationRightRailLoading } from 'jui/pattern/RightShelf';
+import FilesEmptyImage from '../images/Files.svg';
 import { observable } from 'mobx';
 
 const itemType = {
@@ -39,7 +41,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     const id = ids[index];
     return (
       <div key={index} style={style}>
-        <Component id={id} />
+        {id ? <Component id={id} /> : <JuiConversationRightRailLoading />}
       </div>
     );
   }
@@ -57,7 +59,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         text={t}
         content={content}
         actions={[]}
-        image=""
+        image={FilesEmptyImage}
       />
     );
   }
