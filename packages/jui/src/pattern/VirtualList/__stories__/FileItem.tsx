@@ -34,7 +34,9 @@ class FileItem extends Component<FileItemProps> {
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
       >
-        <JuiListItemIcon>{icon || <JuiThumbnail url="pdf" />}</JuiListItemIcon>
+        <JuiListItemIcon>
+          {icon || <JuiThumbnail iconType="pdf" />}
+        </JuiListItemIcon>
         <JuiListItemText primary={name} secondary={subtitle} />
         {isHover ? (
           <JuiListItemSecondaryAction>
