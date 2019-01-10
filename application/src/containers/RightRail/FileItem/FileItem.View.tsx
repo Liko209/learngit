@@ -29,7 +29,8 @@ class FileItemView extends Component<FileItemProps> {
   }
   render() {
     const { disabled, file, fileType, subTitle } = this.props;
-    const { name, downloadUrl } = file;
+    const fileInfo = file || {};
+    const { name, downloadUrl } = fileInfo;
     const { isHover } = this.state;
     return (
       <JuiListItem

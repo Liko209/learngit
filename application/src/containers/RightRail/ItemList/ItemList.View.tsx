@@ -3,13 +3,19 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ITEM_LIST_TYPE } from '../types';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';
+import {
+  JuiVirtualList,
+  IVirtualListDataSource,
+} from 'jui/pattern/VirtualList';
+import { JuiRightShelfEmptyScreen } from 'jui/pattern/EmptyScreen';
+import { observable } from 'mobx';
 
 const itemType = {
   [ITEM_LIST_TYPE.FILE]: FileItem,
@@ -20,20 +26,64 @@ const subheaderType = {
 };
 
 @observer
-class ItemListView extends React.Component<ViewProps & Props> {
-  render() {
-    const { ids, type, totalCount } = this.props;
-    const Component: any = itemType[type];
-    const subheaderText = subheaderType[type];
+class ItemListView extends React.Component<ViewProps & Props>
+  implements IVirtualListDataSource {
+  countOfCell() {
+    const { totalCount } = this.props;
+    return totalCount;
+  }
 
+  cellAtIndex = (index: number, style: React.CSSProperties) => {
+    const { ids, type } = this.props;
+    const Component: any = itemType[type];
+    const id = ids[index];
+    return (
+      <div key={id || index} style={style}>
+        <Component id={id} />
+      </div>
+    );
+  }
+
+  fixedCellHeight() {
+    return 52;
+  }
+
+  renderEmptyContent() {
+    const t = 'No files shared yet';
+    const content =
+      'Files that get shared in your conversation automatically show up here.';
+    return (
+      <JuiRightShelfEmptyScreen
+        text={t}
+        content={content}
+        actions={[]}
+        image=""
+      />
+    );
+  }
+
+  isRowLoaded = (index: number) => {
+    const { ids } = this.props;
+    const result = typeof ids[index] !== 'undefined';
+    return result;
+  }
+
+  loadMore = async (startIndex: number, stopIndex: number) => {
+    return await this.props.fetchMore;
+  }
+
+  render() {
+    const { type, totalCount } = this.props;
+    const subheaderText = subheaderType[type];
+    const source = observable({ source: this.props });
     return (
       <>
-        <JuiListSubheader>
-          {t(subheaderText)} ({totalCount})
-        </JuiListSubheader>
-        {ids.map((id: number) => {
-          return <Component key={id} id={id} />;
-        })}
+        {totalCount > 0 && (
+          <JuiListSubheader>
+            {t(subheaderText)} ({totalCount})
+          </JuiListSubheader>
+        )}
+        <JuiVirtualList dataSource={this} source={source} />
       </>
     );
   }

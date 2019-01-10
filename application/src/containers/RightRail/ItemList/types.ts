@@ -13,6 +13,7 @@ type Props = {
 type ViewProps = {
   ids: number[];
   totalCount: number;
+  fetchMore: any;
 };
 
 export { Props, ViewProps };

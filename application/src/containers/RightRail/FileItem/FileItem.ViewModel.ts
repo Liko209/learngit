@@ -21,22 +21,34 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
 
   @computed
   get file() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+    const id = this._id;
+    if (typeof id !== 'undefined') {
+      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+    }
+    return null;
   }
 
   @computed
   get subTitle() {
-    const personName = getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      this.file.creatorId,
-    ).userDisplayName;
+    const file = this.file;
+    if (file) {
+      const personName = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        file.creatorId,
+      ).userDisplayName;
 
-    return personName;
+      return personName;
+    }
+    return '';
   }
 
   @computed
   get fileType() {
-    return this.file.type && this.file.type.split('/').pop();
+    const file = this.file;
+    if (file) {
+      return file.type && file.type.split('/').pop();
+    }
+    return '';
   }
 }
 

@@ -164,6 +164,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get fetchMore() {
+    return this._fetchNextPageItems();
+  }
+
+  @computed
   get ids() {
     return this._sortableDataHandler.sortableListStore.getIds();
   }

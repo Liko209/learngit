@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { CSSProperties, ReactElement } from 'react';
-import { IndexRange, Index } from 'react-virtualized';
 import { JuiVirtualCellProps, JuiVirtualCellOnLoadFunc } from './VirtualCell';
 
 interface IVirtualListDataSource {
@@ -23,9 +22,9 @@ interface IVirtualListDataSource {
   overscanCount?: () => number;
 
   // for infinite lad
-  loadMore?: (params: IndexRange) => Promise<any>;
+  loadMore?: (startIndex: number, endIndex: number) => Promise<any>;
 
-  isRowLoaded?: (params: Index) => boolean;
+  isRowLoaded?: (params: number) => boolean;
 
   // empty content
   renderEmptyContent?: () => JSX.Element;

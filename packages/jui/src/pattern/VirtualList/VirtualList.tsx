@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, RefObject, createRef } from 'react';
+import React, { PureComponent, RefObject, createRef } from 'react';
+import { observer } from 'mobx-react';
 import {
   AutoSizer,
   List,
@@ -19,22 +20,31 @@ import {
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
+import { observable } from 'mobx';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
+  source: any;
 };
 
-class JuiVirtualList extends Component<JuiVirtualListProps> {
+@observer
+class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
   static MIN_CELL_HEIGHT: number = 44;
   static OVERSCAN_ROW_COUNT: number = 4;
   private _dataSource: IVirtualListDataSource;
   private _cache: CellMeasurerCache;
-  private _listRef: RefObject<List> = createRef();
+  private _sizerRef: RefObject<AutoSizer> = createRef();
+  private _listRef: List;
+  private _loaderRef: RefObject<InfiniteLoader> = createRef();
+  @observable
+  // @ts-ignore
+  private _source: any;
 
   constructor(props: JuiVirtualListProps) {
     super(props);
-    const { dataSource } = props;
+    const { dataSource, source } = props;
     this._dataSource = dataSource;
+    this._source = source;
   }
 
   get dataSource() {
@@ -80,15 +90,15 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   private _isRowLoaded = (params: Index) => {
     const { isRowLoaded } = this._dataSource;
     if (isRowLoaded) {
-      return isRowLoaded(params);
+      return isRowLoaded(params.index);
     }
     return false;
   }
 
-  private _loadMoreRows = async (params: IndexRange) => {
+  private _loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
     const { loadMore } = this._dataSource;
     if (loadMore) {
-      return await loadMore(params);
+      return await loadMore(startIndex, stopIndex);
     }
   }
 
@@ -101,14 +111,14 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   scrollToCell = (index: number) => {
-    const { current } = this._listRef;
+    const current = this._listRef;
     if (current) {
       requestAnimationFrame(() => current.scrollToRow(index));
     }
   }
 
   scrollToPosition = (scrollTop: number) => {
-    const { current } = this._listRef;
+    const current = this._listRef;
     if (current) {
       current.scrollToPosition(scrollTop);
     }
@@ -119,8 +129,17 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     callback(ref);
   }
 
+  componentWillReact() {
+    console.log('I will re-render, since the todo has changed!');
+    this._sizerRef.current && this._sizerRef.current.forceUpdate();
+    this._loaderRef.current && this._loaderRef.current.forceUpdate();
+    this._listRef.forceUpdate();
+    this._listRef.forceUpdateGrid();
+  }
+
   render() {
     const cellCount = this._dataSource.countOfCell();
+    console.log(147, cellCount);
     const fixedHeight = this._dataSource.fixedCellHeight
       ? this._dataSource.fixedCellHeight()
       : undefined;
@@ -144,12 +163,13 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     }
 
     return (
-      <AutoSizer>
+      <AutoSizer ref={this._sizerRef}>
         {({ width, height }: Size) => (
           <InfiniteLoader
             isRowLoaded={this._isRowLoaded}
             loadMoreRows={this._loadMoreRows}
             rowCount={cellCount}
+            ref={this._loaderRef}
           >
             {({ onRowsRendered, registerChild }) => {
               return (
