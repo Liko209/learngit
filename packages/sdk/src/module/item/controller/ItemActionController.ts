@@ -19,6 +19,13 @@ import { ProgressService } from '../../progress';
 import { ENTITY } from '../../../service/eventKey';
 import { IItemService } from '../service/IItemService';
 
+const itemPathMap: Map<number, string> = new Map([
+  [TypeDictionary.TYPE_ID_FILE, 'file'],
+  [TypeDictionary.TYPE_ID_TASK, 'task'],
+  [TypeDictionary.TYPE_ID_PAGE, 'page'],
+  [TypeDictionary.TYPE_ID_EVENT, 'event'],
+  [TypeDictionary.TYPE_ID_LINK, 'link'],
+]);
 class ItemActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
@@ -57,7 +64,7 @@ class ItemActionController {
   async deleteItem(itemId: number, itemService: IItemService) {
     if (itemId > 0) {
       const requestController = this._buildItemRequestController(
-        this._getItemApiPaths(GlipTypeUtil.extractTypeId(itemId)) as string,
+        itemPathMap.get(GlipTypeUtil.extractTypeId(itemId)) as string,
       );
       const partialData = {
         id: itemId,
@@ -70,16 +77,6 @@ class ItemActionController {
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);
     }
-  }
-
-  private _getItemApiPaths(typeId: number) {
-    return new Map([
-      [TypeDictionary.TYPE_ID_FILE, 'file'],
-      [TypeDictionary.TYPE_ID_TASK, 'task'],
-      [TypeDictionary.TYPE_ID_PAGE, 'page'],
-      [TypeDictionary.TYPE_ID_EVENT, 'event'],
-      [TypeDictionary.TYPE_ID_LINK, 'link'],
-    ]).get(typeId);
   }
 }
 
