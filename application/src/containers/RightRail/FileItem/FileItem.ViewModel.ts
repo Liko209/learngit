@@ -11,8 +11,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
+import { dateFormatter } from '@/utils/date';
 import { FilesProps } from './types';
-
 class FileItemViewModel extends AbstractViewModel<FilesProps> {
   @computed
   get _id() {
@@ -26,12 +26,12 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
 
   @computed
   get subTitle() {
+    const { createdAt, creatorId } = this.file;
     const personName = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
-      this.file.creatorId,
+      creatorId,
     ).userDisplayName;
-
-    return personName;
+    return `${personName} · ${dateFormatter.date(createdAt)}`;
   }
 
   @computed

@@ -27,6 +27,7 @@ export default class FileItemModel extends ItemModel {
   @observable creatorId: number;
   @observable versions: Item['versions'];
   @observable deactivated: Item['deactivated'];
+  @observable createdAt: number;
 
   constructor(data: Item) {
     super(data);
@@ -38,6 +39,7 @@ export default class FileItemModel extends ItemModel {
       is_new,
       deactivated,
       creator_id,
+      created_at,
     } = data;
     this.type = type;
     this.name = name;
@@ -46,6 +48,7 @@ export default class FileItemModel extends ItemModel {
     this.versions = versions;
     this.deactivated = deactivated;
     this.creatorId = creator_id;
+    this.createdAt = created_at;
   }
 
   hasVersions() {
