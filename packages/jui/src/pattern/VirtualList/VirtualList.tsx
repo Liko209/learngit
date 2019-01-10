@@ -130,7 +130,6 @@ class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
   }
 
   componentWillReact() {
-    console.log('I will re-render, since the todo has changed!');
     this._sizerRef.current && this._sizerRef.current.forceUpdate();
     this._loaderRef.current && this._loaderRef.current.forceUpdate();
     this._listRef.forceUpdate();
@@ -139,7 +138,6 @@ class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
 
   render() {
     const cellCount = this._dataSource.countOfCell();
-    console.log(147, cellCount);
     const fixedHeight = this._dataSource.fixedCellHeight
       ? this._dataSource.fixedCellHeight()
       : undefined;

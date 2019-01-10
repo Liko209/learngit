@@ -71,7 +71,6 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    console.log(766666, startIndex, stopIndex);
     return await this.props.fetchNextPageItems();
   }
 
