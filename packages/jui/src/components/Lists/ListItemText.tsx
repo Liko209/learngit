@@ -18,12 +18,12 @@ const StyledListItemText = styled(MuiListItemText)`
     .list-item-primary {
       color: ${grey('900')};
       ${typography('body1')};
-      ${ellipsis};
+      ${ellipsis()};
     }
     .list-item-secondary {
       color: ${grey('500')};
       ${typography('caption1')};
-      ${ellipsis};
+      ${ellipsis()};
     }
   }
 `;
