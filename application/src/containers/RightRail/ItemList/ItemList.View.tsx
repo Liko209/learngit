@@ -15,7 +15,7 @@ import {
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
 import { JuiConversationRightRailLoading } from 'jui/pattern/RightShelf';
-import { observable } from 'mobx';
+// import { observable } from 'mobx';
 import { emptyView } from './Empty';
 
 const itemType = {
@@ -67,7 +67,6 @@ class ItemListView extends React.Component<ViewProps & Props>
   render() {
     const { type, totalCount } = this.props;
     const subheaderText = subheaderType[type];
-    const source = observable({ source: this.props });
     return (
       <>
         {totalCount > 0 && (
@@ -75,7 +74,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             {t(subheaderText)} ({totalCount})
           </JuiListSubheader>
         )}
-        <JuiVirtualList dataSource={this} source={source} />
+        <JuiVirtualList dataSource={this} />
       </>
     );
   }

@@ -20,11 +20,9 @@ import {
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
-import { observable } from 'mobx';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
-  source: any;
 };
 
 @observer
@@ -36,15 +34,11 @@ class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
   private _sizerRef: RefObject<AutoSizer> = createRef();
   private _listRef: List;
   private _loaderRef: RefObject<InfiniteLoader> = createRef();
-  @observable
-  // @ts-ignore
-  private _source: any;
 
   constructor(props: JuiVirtualListProps) {
     super(props);
-    const { dataSource, source } = props;
+    const { dataSource } = props;
     this._dataSource = dataSource;
-    this._source = source;
   }
 
   get dataSource() {
