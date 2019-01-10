@@ -35,7 +35,7 @@ class ProgressService extends EntityBaseService<Progress> {
   }
 
   getById(id: number) {
-    return this.progressCacheController.getProgress(id);
+    return Promise.resolve(this.progressCacheController.getProgress(id));
   }
 }
 

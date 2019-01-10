@@ -13,18 +13,17 @@ import {
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
+import { GroupService } from 'sdk/module/group';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { GlipTypeUtil } from 'sdk/utils';
 import { Notification } from '@/containers/Notification';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
-import { ERROR_CODES_NETWORK, JServerError, errorHelper } from 'sdk/error';
+import { errorHelper } from 'sdk/error';
 import { generalErrorHandler } from '@/utils/error';
 
 class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
   implements ProfileMiniCardGroupViewProps {
-  private _fetchingState: Map<number, boolean> = new Map();
-
   @computed
   get id() {
     return this.props.id; // conversation id
@@ -33,7 +32,6 @@ class ProfileMiniCardGroupViewModel
   @computed
   get group() {
     const onError = (error: Error) => {
-      this._fetchingState.set(this.id, false);
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
           message: 'SorryWeWereNotAbleToOpenThisProfile',
@@ -46,25 +44,23 @@ class ProfileMiniCardGroupViewModel
         generalErrorHandler(error);
       }
     };
-    const entity = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
     const groupStore = storeManager.getEntityMapStore(
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
-    if (!this._fetchingState.get(this.id) && !entity.members) {
-      this._fetchingState.set(this.id, true);
-      groupStore
-        .getByService(this.id)
+    if (!groupStore.hasValid(this.id)) {
+      const groupService = new GroupService() as GroupService;
+      groupService
+        .getById(this.id)
         .then((group: Group | null) => {
           if (group) {
-            this._fetchingState.set(this.id, false);
             groupStore.set(group);
           } else {
-            onError(new JServerError(ERROR_CODES_NETWORK.GENERAL, ''));
+            // onError();
           }
         })
         .catch(onError);
     }
-    return entity;
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
 
   @computed

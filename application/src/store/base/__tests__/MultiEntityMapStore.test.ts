@@ -100,3 +100,30 @@ describe('subtractedBy()', () => {
     expect(result).toEqual([[10, 11], []]);
   });
 });
+
+describe('hasValid()', () => {
+  it('should return false when model not found', () => {
+    expect(instance.hasValid(9999)).toBe(false);
+  });
+
+  it('should return false when model is mocked', () => {
+    instance.set({
+      id: 9999,
+      isMocked: true,
+    });
+    expect(instance.hasValid(9999)).toBe(false);
+  });
+
+  it('should return true when model is mocked and did partial update', () => {
+    instance.set({
+      id: 9999,
+      isMocked: true,
+    });
+    const map = new Map();
+    map.set(9999, {
+      created_at: 123,
+    });
+    instance.batchUpdate(map);
+    expect(instance.hasValid(9999)).toBe(true);
+  });
+});

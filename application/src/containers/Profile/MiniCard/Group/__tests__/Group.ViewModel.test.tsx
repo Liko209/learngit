@@ -52,8 +52,9 @@ describe('ProfileMiniCardGroupViewModel', () => {
     });
 
     it('should set to store after get from service successfully', (done: Function) => {
-      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+      (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
+        hasValid: jest.fn(() => false),
         getByService: jest.fn(() => Promise.resolve(mockData)),
         set: jest.fn(),
       };
@@ -68,9 +69,10 @@ describe('ProfileMiniCardGroupViewModel', () => {
       },         500);
     });
 
-    it('should show error toast when server response with error', (done: Function) => {
-      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+    it('should show error toast when server response with error [JPT-694]', (done: Function) => {
+      (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
+        hasValid: jest.fn(() => false),
         getByService: jest.fn(() => Promise.reject(new Error())),
         set: jest.fn(),
       };
@@ -94,9 +96,10 @@ describe('ProfileMiniCardGroupViewModel', () => {
       },         500);
     });
 
-    it('should show error toast when server response null', (done: Function) => {
-      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+    it('should show error toast when server response null [JPT-694]', (done: Function) => {
+      (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
+        hasValid: jest.fn(() => false),
         getByService: jest.fn(() => Promise.resolve(null)),
         set: jest.fn(),
       };
@@ -121,8 +124,9 @@ describe('ProfileMiniCardGroupViewModel', () => {
     });
 
     it('should use generalErrorHandler if error is not from backend', (done: Function) => {
-      (getEntity as jest.Mock).mockReturnValue({ id: 123, members: undefined });
+      (getEntity as jest.Mock).mockReturnValue({ id: 123 });
       const groupStore = {
+        hasValid: jest.fn(() => false),
         getByService: jest.fn(() => Promise.reject(new Error())),
         set: jest.fn(),
       };
