@@ -468,7 +468,7 @@ export class GlipSdk {
     await this.updateProfile(rcId, data);
   }
 
-  async hideGroups(rcId: string, groupIds: string[] | number[]) {
+  async hideGroups(rcId: string, groupIds: string[] | number[] | string | number) {
     let data;
     if (Object.prototype.toString.call(groupIds) === '[object Array]') {
       data = _.assign(

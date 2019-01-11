@@ -1,0 +1,28 @@
+import { TruncationDecorator } from '../TruncationDecorator';
+import { logEntityFactory } from '../../__tests__/factory';
+describe('TruncationDecorator', () => {
+
+  describe('decorate', () => {
+    it('should cut by limiting length', async () => {
+      const mockLog = logEntityFactory.build();
+      const loader = new TruncationDecorator();
+      loader.options = {
+        limit: 2,
+      };
+      mockLog.params = ['1', '22', '333', '4444'];
+      expect(loader.decorate(mockLog)['params']).toEqual(['1', '22', '33', '44']);
+    });
+    it('should ignore object', async () => {
+      const mockLog = logEntityFactory.build();
+      const loader = new TruncationDecorator();
+      const object = {
+        x: 'sss',
+      };
+      loader.options = {
+        limit: 2,
+      };
+      mockLog.params = ['22', object, '333'];
+      expect(loader.decorate(mockLog)['params']).toEqual(['22', object, '33']);
+    });
+  });
+});
