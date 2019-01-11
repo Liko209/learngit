@@ -5,11 +5,11 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { TaskViewModel } from '../Task.ViewModel';
-jest.mock('i18next', () => ({
-  t: (title: string) => title,
-}));
-
+import * as date from '../../../../utils/date';
+import { getDateAndTime } from '../../helper';
 jest.mock('../../../../store/utils');
+jest.mock('../../helper');
+jest.mock('../../../../utils/date');
 
 const mockData = {
   attachmentIds: [123],
@@ -68,6 +68,7 @@ describe('taskUpdateViewModel', () => {
     (getEntity as jest.Mock).mockReturnValue({
       start: 1547003419176,
     });
+    jest.spyOn(date, 'recentlyTwoDayAndOther').mockReturnValue('Mon 8:58 AM');
     expect(taskViewModel.startTime).not.toBe('');
   });
 

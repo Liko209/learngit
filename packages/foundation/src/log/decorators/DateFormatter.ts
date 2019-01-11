@@ -1,4 +1,4 @@
-import { DATE_FORMATTER } from './constants';
+import { DATE_FORMATTER } from '../constants';
 
 class DateFormatter {
   formatDate(vDate: Date, vFormat: DATE_FORMATTER) {
