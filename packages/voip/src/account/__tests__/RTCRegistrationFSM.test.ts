@@ -10,6 +10,7 @@ import { RegistrationState } from '../types';
 class MockHandler implements IConditionalHandler {
   onReadyWhenRegSucceedAction = jest.fn();
   onProvisionReadyAction = jest.fn();
+  onReRegisterAction = jest.fn();
 }
 
 const provisionData = 'provisionData';

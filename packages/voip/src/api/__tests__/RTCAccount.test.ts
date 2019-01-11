@@ -34,7 +34,7 @@ describe('RTCAccount', () => {
       jest
         .spyOn(account._regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
-      account.handleProvisioning();
+      account._onNewProv({});
       account._regManager._userAgent = new MockUserAgent(
         account._regManager._eventEmitter,
         true,
@@ -50,7 +50,7 @@ describe('RTCAccount', () => {
       jest
         .spyOn(account._regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
-      account.handleProvisioning();
+      account._onNewProv({});
       account._regManager._userAgent = new MockUserAgent(
         account._regManager._eventEmitter,
         false,

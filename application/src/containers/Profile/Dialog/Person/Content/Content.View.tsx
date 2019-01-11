@@ -178,7 +178,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 })}
               {person.location &&
                 this.renderFormGroup({
-                  icon: 'places',
+                  icon: 'location',
                   label: t('location'),
                   value: person.location,
                 })}
