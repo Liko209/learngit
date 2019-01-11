@@ -150,7 +150,6 @@ class BaseDao<T extends {}> {
       });
       await this.doInTransaction(async () => {
         const exists = await this.primaryKeys(ids);
-        console.debug('performance, bulkUpdate, exists=', exists, ' ids=', ids);
         if (!exists || exists.length === 0) {
           await this.bulkPut(array as T[]);
         } else if (exists && exists.length === array.length) {
