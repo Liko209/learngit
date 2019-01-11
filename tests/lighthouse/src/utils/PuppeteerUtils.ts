@@ -17,6 +17,29 @@ class PuppeteerUtils {
   /**
    * @description: wait for element appear by selector
    */
+  async disappearForSelector(
+    page: Page,
+    selector: string,
+    options = {}
+  ): Promise<boolean> {
+    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+
+    let cnt = MAX_TRY_COUNT;
+    opt["timeout"] = opt["timeout"] / cnt;
+
+    while (cnt-- > 0) {
+      try {
+        await page.waitForSelector(selector, opt);
+      } catch (error) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @description: wait for element appear by selector
+   */
   async waitForSelector(
     page: Page,
     selector: string,

@@ -6,10 +6,16 @@ require("dotenv").config();
 import { initModel } from "./models";
 import { metriceService } from "./services/MetricService";
 import { fileService } from "./services/FileService";
-import { Scene, LoginScene, RefreshScene, OfflineScene } from "./scenes";
 import { logUtils } from "./utils/LogUtils";
 import { dbUtils } from "./utils/DbUtils";
 import { puppeteerUtils } from "./utils/PuppeteerUtils";
+import {
+  Scene,
+  LoginScene,
+  RefreshScene,
+  OfflineScene,
+  SwitchConversationScene
+} from "./scenes";
 
 const logger = logUtils.getLogger(__filename);
 
@@ -29,9 +35,10 @@ const logger = logUtils.getLogger(__filename);
     // run scenes
     let host = process.env.JUPITER_HOST;
     let scenes: Array<Scene> = [
-      new LoginScene(`${host}`, taskDto),
-      new RefreshScene(`${host}`, taskDto),
-      new OfflineScene(`${host}`, taskDto)
+      // new LoginScene(`${host}`, taskDto),
+      // new RefreshScene(`${host}`, taskDto),
+      // new OfflineScene(`${host}`, taskDto),
+      new SwitchConversationScene(`${host}`, taskDto, ["506503174", "506445830"])
     ];
 
     let result = true;
