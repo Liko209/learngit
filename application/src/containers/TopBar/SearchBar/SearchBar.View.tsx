@@ -137,13 +137,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     );
   }
 
-  private _goToConversation = async (
-    id: number,
-    joinTeamFun?: (id: number) => {},
-  ) => {
+  private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
-    await goToConversation({ id, joinTeamFun });
+    await goToConversation({ id });
   }
 
   searchItemClickHandler = (id: number) => async () => {
@@ -153,14 +150,20 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   addPublicTeam = (item: SortableModel<Group>) => (
     e: React.MouseEvent<HTMLElement>,
   ) => {
-    e.stopPropagation();
     const { joinTeam } = this.props;
+    e.stopPropagation();
     Dialog.confirm({
       title: t('joinTeamTitle'),
       content: t('joinTeamContent', { teamName: item.displayName }),
       okText: t('Done'),
       cancelText: t('Cancel'),
-      onOK: () => this._goToConversation(item.id, joinTeam),
+      onOK: () =>
+        goToConversation({
+          id: item.id,
+          async beforeJump(conversationId: number) {
+            await joinTeam(conversationId);
+          },
+        }),
     });
   }
 
