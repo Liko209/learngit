@@ -1,89 +1,120 @@
-import Logger from './Logger';
-import BrowserConsoleAppender from './appender/BrowserConsoleAppender';
-import PersistentLogAppender from './appender/PersistentLogAppender';
-import { LOG_LEVEL, LOG_APPENDER } from './constants';
-import DateFormatter from './DateFormatter';
+import { Logger } from './Logger';
+import { LOG_LEVEL, LOG_TAGS } from './constants';
+import { ILogger, ILogEntityDecorator, LogConfig } from './types';
+import { configManager } from './config';
+import mergeWith from 'lodash/mergeWith';
+import { MessageDecorator, SessionDecorator, TruncationDecorator, TimestampDecorator } from './decorators';
+import { LogConsumer, LogPersistence } from './consumer';
 
+type LoaderMap = {
+  [name: string]: ILogEntityDecorator,
+};
+
+type LoaderItem = {
+  loader: string | ILogEntityDecorator,
+  options?: object,
+};
 class LogManager {
   private static _instance: LogManager;
-  private _loggers: Map<string, Logger>;
-  private _dateFormatter: DateFormatter = new DateFormatter();
-  private _overThresholdCallback: Function | null = null;
+  private _loggers: Map<string, ILogger>;
+  private _logger: Logger;
+  private _logConsumer: LogConsumer;
+  private _defaultLoaderMap: LoaderMap;
 
-  public constructor(public appenders: LOG_APPENDER = LOG_APPENDER.CONSOLE) {
+  public constructor() {
     this._loggers = new Map();
-    this.initMainLogger();
-    if (typeof window === 'undefined') {
-      return;
-    }
-    window.onerror = this.windowError.bind(this);
-    window.addEventListener('beforeunload', (event: any) => {
-      this.doAppend();
+    this._defaultLoaderMap = {
+      SessionDecorator: new SessionDecorator(),
+      TruncationDecorator: new TruncationDecorator(),
+      TimestampDecorator: new TimestampDecorator(),
+      MessageDecorator: new MessageDecorator(),
+    };
+    configManager.mergeConfig({
+      persistence: new LogPersistence(),
     });
+    this.configDecorators([
+      {
+        loader: 'SessionDecorator',
+      },
+      {
+        loader: 'TruncationDecorator',
+        options: {
+          limit: 2000,
+        },
+      },
+      {
+        loader: 'TimestampDecorator',
+      },
+      {
+        loader: 'MessageDecorator',
+      },
+    ]);
+    this._logger = new Logger();
+    this._logConsumer = new LogConsumer();
+    this._logConsumer.setLogPersistence(new LogPersistence());
+    this._logger.setConsumer(this._logConsumer);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('error', this.windowError.bind(this));
+      window.addEventListener('beforeunload', (event: any) => {
+        this.flush();
+      });
+    }
   }
 
   static get Instance() {
-    const appenders =
-      process.env.NODE_ENV === 'test'
-        ? LOG_APPENDER.NONE
-        : LOG_APPENDER.CONSOLE;
-
-    this._instance || (this._instance = new this(appenders));
+    this._instance || (this._instance = new this());
     return this._instance;
   }
 
-  async doAppend(overThreshold: boolean = false) {
-    const doAppends: Promise<void>[] = [];
-    this._loggers.forEach((logger: Logger) => {
-      doAppends.push(logger.doAppend());
-    });
-
-    await Promise.all(doAppends);
-
-    if (overThreshold && this._overThresholdCallback) {
-      // notifiy over threshold to do upload
-      this._overThresholdCallback();
-    }
+  flush() {
+    this._logConsumer.flush();
   }
 
-  getLogger(categoryName: string) {
+  configAll(config: LogConfig) {
+    configManager.setConfig(config);
+  }
+
+  config(config: Partial<LogConfig>) {
+    configManager.mergeConfig(config);
+    return this;
+  }
+
+  configDecorators(loaderItems: LoaderItem[], customLoaderMap?: LoaderMap) {
+    const loaderMap = customLoaderMap ? mergeWith({}, this._defaultLoaderMap, customLoaderMap) : this._defaultLoaderMap;
+    const decorators: ILogEntityDecorator[] = (loaderItems || []).map((loaderItem) => {
+      if (Object.prototype.toString.call(loaderItem.loader) === '[object String]') {
+        const loader: ILogEntityDecorator = loaderMap[loaderItem.loader as string];
+        loader.options = loaderItem.options || {};
+        return loader;
+      }
+      return loaderItem.loader as ILogEntityDecorator;
+    });
+    configManager.mergeConfig({
+      decorators,
+    });
+    return this;
+  }
+
+  getLogger(categoryName: string): ILogger {
     let logger = this._loggers.get(categoryName);
     if (!logger) {
-      // Create the logger for this name if it doesn't already exist
-      logger = new Logger(categoryName);
-      logger.setDateFormatter(this._dateFormatter);
-      if (this.appenders & LOG_APPENDER.CONSOLE) {
-        logger.addAppender('browserConsole', new BrowserConsoleAppender());
-      }
-      if (this.appenders & LOG_APPENDER.LOCAL_STORAGE) {
-        logger.addAppender('persistentLog', new PersistentLogAppender());
-      }
+      logger = this._logger.tags(categoryName);
       this._loggers.set(categoryName, logger);
     }
-
     return logger;
   }
 
-  getMainLogger() {
-    return this.getLogger('MAIN');
+  getMainLogger(): ILogger {
+    return this.getLogger(LOG_TAGS.MAIN);
   }
 
-  getNetworkLogger() {
-    return this.getLogger('NETWORK');
-  }
-
-  initMainLogger() {
-    const defaultLogger = this.getMainLogger();
-    defaultLogger.setLevel(LOG_LEVEL.ALL);
-  }
-
-  setOverThresholdCallback(cb: Function) {
-    this._overThresholdCallback = cb;
+  getNetworkLogger(): ILogger {
+    return this.getLogger(LOG_TAGS.NETWORK);
   }
 
   setAllLoggerLevel(level: LOG_LEVEL) {
-    this._loggers.forEach((logger: Logger) => {
-      logger.setLevel(level);
+    configManager.mergeConfig({
+      level,
     });
   }
 
@@ -91,53 +122,9 @@ class LogManager {
     const message = `Error in ('${url ||
       window.location}) on line ${line} with message (${msg})`;
     this.getMainLogger().fatal(message);
+    this.flush();
   }
 
-  async getLogs(categorys?: string[]) {
-    const iterable: Promise<{}>[] = [];
-
-    const handleCategorys = categorys || Array.from(this._loggers.keys());
-
-    handleCategorys
-      .map(name => this._loggers.get(name))
-      .forEach((logger: Logger) => {
-        if (logger) {
-          logger.getAppenders().forEach((apppender: any) => {
-            if (apppender instanceof PersistentLogAppender) {
-              iterable.push(apppender.getLogs());
-            }
-          });
-        }
-      });
-
-    return Promise.all(iterable).then((res: any) => {
-      const logs = {};
-      res.forEach((value: any, index: number) => {
-        logs[handleCategorys[index]] = [].concat.apply([], value);
-      });
-      return logs;
-    });
-  }
-
-  async clearLogs(categorys?: string[]) {
-    const iterable: Promise<void>[] = [];
-
-    const handleCategorys = categorys || Array.from(this._loggers.keys());
-
-    handleCategorys
-      .map(name => this._loggers.get(name))
-      .forEach((logger: Logger) => {
-        if (logger) {
-          logger.getAppenders().forEach((apppender: any) => {
-            if (apppender instanceof PersistentLogAppender) {
-              iterable.push(apppender.doClear());
-            }
-          });
-        }
-      });
-
-    return Promise.all(iterable);
-  }
 }
 
 export default LogManager;
