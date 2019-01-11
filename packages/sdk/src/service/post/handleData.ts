@@ -171,7 +171,9 @@ export async function handlePreInsertPosts(posts: Post[] = []) {
 
   if (ids.length) {
     const postDao = daoManager.getDao(PostDao);
+    const postViewDao = daoManager.getDao(PostViewDao);
     await postDao.bulkDelete(ids);
+    await postViewDao.bulkDelete(ids);
   }
   return ids;
 }

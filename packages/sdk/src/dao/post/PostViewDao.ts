@@ -70,14 +70,14 @@ class PostViewDao extends BaseDao<PostView> {
     postViewIds = postViewIds.slice(startIndex, endIndex);
 
     const end = performance.now();
-    mainLogger.error(`queryPostsByGroupId from lookup ${end - start}`);
+    mainLogger.debug(`queryPostsByGroupId from lookup ${end - start}`);
 
     // 4. Get posts via ids from post table
     const postDao = daoManager.getDao(PostDao);
     let posts = await postDao.batchGet(postViewIds);
     posts = _.orderBy(posts, 'created_at', 'desc');
     const end1 = performance.now();
-    mainLogger.error(`queryPostsByGroupId via ids from post ${end1 - end}`);
+    mainLogger.debug(`queryPostsByGroupId via ids from post ${end1 - end}`);
     return posts;
   }
 }
