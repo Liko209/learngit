@@ -37,7 +37,7 @@ describe('RTCAccount', async () => {
       .mockImplementation(() => {});
     account._regManager._userAgent = ua;
     account._regManager._initUserAgentListener();
-    account.handleProvisioning();
+    account._onNewProv({});
   }
 
   it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {

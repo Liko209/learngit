@@ -6,16 +6,16 @@
 import { ProvisionDataOptions } from '../signaling/types';
 
 type RTCSipProvisionInfo = {
-  sipFlags: object;
-  device: {
+  device: object;
+  sipInfo: {
     transport: string;
     password: string;
     domain: string;
     username: string;
-    authorizationID: string;
+    authorizationId: string;
     outboundProxy: string;
   }[];
-  sipInfo: object;
+  sipFlags: object;
 };
 
 type RTCRegisterAsyncTask = {
