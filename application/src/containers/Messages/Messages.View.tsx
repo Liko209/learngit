@@ -13,7 +13,10 @@ import { ConversationPage } from '@/containers/ConversationPage';
 import { LeftRail } from '@/containers/LeftRail';
 import { RightRail } from '@/containers/RightRail';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import { goToConversation, GoToConversationParams } from '@/common/goToConversation';
+import {
+  goToConversation,
+  GoToConversationParams,
+} from '@/common/goToConversation';
 
 import { MessagesViewProps } from './types';
 import { PostListPage } from '../PostListPage';
