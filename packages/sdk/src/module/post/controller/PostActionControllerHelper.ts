@@ -81,18 +81,6 @@ class PostActionControllerHelper {
       company_id: params.companyId,
       deactivated: false,
     };
-
-    // if (params.groupId && params.itemIds && params.itemIds.length > 0) {
-    //   const itemData = await PostServiceHandler.buildVersionMap(
-    //     params.groupId,
-    //     params.itemIds,
-    //   );
-
-    //   if (itemData) {
-    //     buildPost.item_data = itemData;
-    //   }
-    // }
-
     return buildPost;
   }
 

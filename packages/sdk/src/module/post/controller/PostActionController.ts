@@ -19,12 +19,16 @@ import {
   transform,
   baseHandleData as utilsBaseHandleData,
 } from '../../../service/utils';
-import { ENTITY } from '../../../service/eventKey';
+import { ENTITY, SERVICE } from '../../../service/eventKey';
 import { ProgressService, PROGRESS_STATUS } from '../../progress';
 import { notificationCenter, GroupConfigService } from '../../../service';
 import PostAPI from '../../../api/glip/post';
 import { mainLogger } from 'foundation';
 import { ErrorParserHolder } from '../../../error';
+import { ItemService } from '../../item/service';
+import { PostItemData } from '../entity/PostItemData';
+import { ItemFile } from '../../../module/item/entity';
+import { uniqueArray } from '../../../utils';
 
 type HandlePostType = {
   data: Raw<Post> | Raw<Post>[] | Post | Post[];
@@ -158,26 +162,48 @@ class PostActionController {
       companyId,
       ...params,
     };
-    const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
-    const needBuildItemVersionMap =
-      params.groupId && params.itemIds && params.itemIds.length;
-    if (needBuildItemVersionMap) {
-      // TODO
-    }
+    let rawInfo = this._helper.buildRawPostInfo(paramsInfo);
+    rawInfo = await this._buildItemVersionMap4Post(rawInfo);
     this.innerSendPost(rawInfo, false);
   }
 
+  /**
+   * 1. clean uploading files
+   * 2. pre insert post
+   */
   async innerSendPost(post: Post, isResend: boolean) {
     const hasItems = post.item_ids.length > 0;
     if (!isResend && hasItems) {
       // clean uploading files
+      this._cleanUploadingFiles(post.group_id, post.item_ids);
     }
+
+    await this._handlePreInsertProcess(post);
+
     if (hasItems) {
       // send post with items
+      this._sendPostWithItems(post, isResend);
     } else {
       // send plain post
       this._sendPostToServer(post);
     }
+  }
+
+  private async _sendPostWithItems(post: Post, isResend: boolean) {
+    const pseudoItems = this._getPseudoItemIdsFromPost(post);
+    if (pseudoItems.length > 0) {
+      if (isResend) {
+        this._resendFailedItems(pseudoItems);
+      } else {
+        if (
+          !this._hasItemInTargetStatus(post, PROGRESS_STATUS.INPROGRESS) // no item in progress
+        ) {
+          return await this.handleSendPostFail(post.id, post.group_id);
+        }
+      }
+      return await this._sendPostWithPreInsertItems(post);
+    }
+    return this._sendPostToServer(post);
   }
 
   private async _sendPostToServer(post: Post): Promise<PostData[]> {
@@ -292,6 +318,329 @@ class PostActionController {
   /**
    * deletePost end
    */
+
+  async reSendPost(id: number) {
+    if (id < 0) {
+      const dao = daoManager.getDao(PostDao);
+      const post = await dao.get(id);
+      if (post) {
+        return this.innerSendPost(post, true);
+      }
+    }
+    mainLogger.warn(
+      `PostActionController: invalid, should not resend, id ${id}`,
+    );
+    return null;
+  }
+
+  /**
+   * private
+   */
+
+  private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.cleanUploadingFiles(groupId, itemIds);
+  }
+
+  private async _handlePreInsertProcess(buildPost: Post): Promise<void> {
+    const progressService: ProgressService = ProgressService.getInstance();
+    progressService.addProgress(buildPost.id, {
+      id: buildPost.id,
+      status: PROGRESS_STATUS.INPROGRESS,
+    });
+    const dao = daoManager.getDao(PostDao);
+    await dao.put(buildPost);
+    notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
+  }
+
+  private async _buildItemVersionMap4Post(rawInfo: Post) {
+    const needBuildItemVersionMap = rawInfo.item_ids && rawInfo.item_ids.length;
+    if (needBuildItemVersionMap) {
+      const result = await this._buildItemVersionMap(
+        rawInfo.group_id,
+        rawInfo.item_ids,
+      );
+      if (result) {
+        rawInfo.item_data = result;
+      }
+    }
+    return rawInfo;
+  }
+
+  private async _buildItemVersionMap(
+    groupId: number,
+    itemIds: number[],
+  ): Promise<PostItemData | undefined> {
+    if (itemIds && itemIds.length > 0) {
+      const itemService: ItemService = ItemService.getInstance();
+      const uploadFiles = itemService.getUploadItems(groupId);
+      const needCheckItemFiles = _.intersectionWith(
+        uploadFiles,
+        itemIds,
+        (itemFile: ItemFile, id: number) => {
+          return id === itemFile.id && !itemFile.is_new;
+        },
+      );
+      if (needCheckItemFiles.length > 0) {
+        const itemData: PostItemData = { version_map: {} };
+        const promises = needCheckItemFiles.map(itemFile =>
+          itemService.getItemVersion(itemFile),
+        );
+        const versions = await Promise.all(promises);
+        for (let i = 0; i < needCheckItemFiles.length; i++) {
+          if (versions[i]) {
+            itemData.version_map[needCheckItemFiles[i].id] = versions[i];
+          }
+        }
+        return itemData;
+      }
+    }
+    return undefined;
+  }
+
+  private _getPseudoItemIdsFromPost(post: Post) {
+    return post.item_ids.filter(x => x < 0);
+  }
+
+  private async _resendFailedItems(pseudoItemIds: number[]) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.resendFailedItems(pseudoItemIds);
+  }
+
+  private _hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
+    return this._getPseudoItemStatusInPost(post).indexOf(status) > -1;
+  }
+
+  private _getPseudoItemStatusInPost(post: Post) {
+    const itemService: ItemService = ItemService.getInstance();
+    return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
+  }
+
+  /**
+   * _sendPostWithPreInsertItems begin
+   */
+
+  // private _updatePreInsertItem(
+  //   post: Post,
+  //   params: {
+  //     status: PROGRESS_STATUS;
+  //     preInsertId: number;
+  //     updatedId: number;
+  //   },
+  // ) {
+  //   let shouldUpdatePost: boolean = true;
+  //   const { status, preInsertId, updatedId } = params;
+  //   if (status === PROGRESS_STATUS.CANCELED) {
+  //     _.remove(post.item_ids, (id: number) => {
+  //       return id === preInsertId;
+  //     });
+  //   } else if (status === PROGRESS_STATUS.SUCCESS) {
+  //     // update post to db
+  //     if (updatedId !== preInsertId) {
+  //       post.item_ids = post.item_ids.map((id: number) => {
+  //         return id === preInsertId ? updatedId : id;
+  //       });
+
+  //       if (post.item_data && post.item_data.version_map) {
+  //         const versionMap = post.item_data.version_map;
+  //         Object.keys(versionMap).forEach((strKey: string) => {
+  //           if (strKey === preInsertId.toString()) {
+  //             versionMap[updatedId] = versionMap[preInsertId];
+  //             delete versionMap[preInsertId];
+  //           }
+  //         });
+  //       }
+  //     }
+  //   } else {
+  //     shouldUpdatePost = false;
+  //   }
+  //   return {
+  //     post,
+  //     shouldUpdatePost,
+  //   };
+  // }
+
+  // private async _updatePreInsertedItemStatusInPost(clonePost: Post) {
+  //   const preHandle = (
+  //     partialPost: Partial<Raw<Post>>,
+  //     originalPost: Post,
+  //   ): Partial<Raw<Post>> => {
+  //     const item_ids = clonePost.item_ids || [];
+  //     return {
+  //       ...partialPost,
+  //       item_ids,
+  //     };
+  //   };
+  //   await this.partialModifyController.updatePartially(
+  //     clonePost.id,
+  //     preHandle,
+  //     async (updatedPost: Post) => {
+  //       return updatedPost;
+  //     },
+  //   );
+  // }
+
+  private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
+    // let isPostSent: boolean = false;
+    // const listener = async (params: {
+    //   status: PROGRESS_STATUS;
+    //   preInsertId: number;
+    //   updatedId: number;
+    // }) => {
+    //   const { preInsertId } = params;
+    //   if (!post.item_ids.includes(preInsertId)) {
+    //     return;
+    //   }
+    //   const result = this._updatePreInsertItem.bind(this)(post, params);
+    //   const clonePost = _.cloneDeep(result.post);
+    //   const itemStatuses = this._getPseudoItemStatusInPost.bind(this)(
+    //     clonePost,
+    //   );
+    //   console.log(
+    //     '-----itemStatuses--------',
+    //     _.cloneDeep(result),
+    //     '================',
+    //     _.cloneDeep(clonePost),
+    //     '====invalid===',
+    //     itemStatuses,
+    //   );
+    //   if (result.post) {
+    //     await this._updatePreInsertedItemStatusInPost.bind(this)(clonePost);
+    //     const itemService: ItemService = ItemService.getInstance();
+    //     itemService.deleteFileItemCache(preInsertId);
+    //   }
+    //   if (this._isValidPost(clonePost)) {
+    //     if (
+    //       !isPostSent &&
+    //       this._getPseudoItemIdsFromPost(clonePost).length === 0
+    //     ) {
+    //       isPostSent = true;
+    //       console.log('--------clonePost------------>>>>', clonePost);
+    //       await this._sendPostToServer.bind(this)(clonePost);
+    //     }
+    //   } else {
+    //     await this.deletePost(clonePost.id);
+    //   }
+    //   // remove listener if item files are not in progress
+    //   if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
+    //     // has failed
+    //     if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
+    //       debugger;
+    //       this.handleSendPostFail.bind(this)(clonePost.id, post.group_id);
+    //     }
+    //     notificationCenter.removeListener(
+    //       SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+    //       listener,
+    //     );
+    //   }
+    // };
+    // notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+    // const itemService: ItemService = ItemService.getInstance();
+    // itemService.sendItemData(post.group_id, post.item_ids);
+    // return [];
+    let isPostSent: boolean = false;
+    const listener = async (params: {
+      status: PROGRESS_STATUS;
+      preInsertId: number;
+      updatedId: number;
+    }) => {
+      const { status, preInsertId, updatedId } = params;
+      if (!post.item_ids.includes(preInsertId)) {
+        return;
+      }
+
+      let shouldUpdatePost: boolean = true;
+      if (status === PROGRESS_STATUS.CANCELED) {
+        _.remove(post.item_ids, (id: number) => {
+          return id === preInsertId;
+        });
+      } else if (status === PROGRESS_STATUS.SUCCESS) {
+        // update post to db
+        if (updatedId !== preInsertId) {
+          post.item_ids = post.item_ids.map((id: number) => {
+            return id === preInsertId ? updatedId : id;
+          });
+
+          if (post.item_data && post.item_data.version_map) {
+            const versionMap = post.item_data.version_map;
+            Object.keys(versionMap).forEach((strKey: string) => {
+              if (strKey === preInsertId.toString()) {
+                versionMap[updatedId] = versionMap[preInsertId];
+                delete versionMap[preInsertId];
+              }
+            });
+          }
+        }
+      } else {
+        shouldUpdatePost = false;
+      }
+
+      const clonePost = _.cloneDeep(post);
+      if (shouldUpdatePost) {
+        const preHandle = (
+          partialPost: Partial<Raw<Post>>,
+          originalPost: Post,
+        ): Partial<Raw<Post>> => {
+          const item_ids = clonePost.item_ids || [];
+          return {
+            ...partialPost,
+            item_ids,
+          };
+        };
+        await this.partialModifyController.updatePartially(
+          clonePost.id,
+          preHandle,
+          async (updatedPost: Post) => {
+            return updatedPost;
+          },
+        );
+
+        const itemService: ItemService = ItemService.getInstance();
+        itemService.deleteFileItemCache(preInsertId);
+      }
+
+      if (this._isValidPost(clonePost)) {
+        if (
+          !isPostSent &&
+          this._getPseudoItemIdsFromPost(clonePost).length === 0
+        ) {
+          isPostSent = true;
+          await this._sendPostToServer.bind(this)(clonePost);
+        }
+      } else {
+        await this.deletePost(clonePost.id);
+      }
+
+      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
+      // remove listener if item files are not in progress
+      if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
+        // has failed
+        if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
+          this.handleSendPostFail(clonePost.id, post.group_id);
+        }
+
+        notificationCenter.removeListener(
+          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+          listener,
+        );
+      }
+    };
+
+    notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
+
+    const itemService: ItemService = ItemService.getInstance();
+    itemService.sendItemData(post.group_id, post.item_ids);
+
+    return [];
+  }
+
+  /**
+   * _sendPostWithPreInsertItems end
+   */
+
+  private _isValidPost(post: Post) {
+    return post && (post.text.length > 0 || post.item_ids.length > 0);
+  }
 }
 
 export { PostActionController };

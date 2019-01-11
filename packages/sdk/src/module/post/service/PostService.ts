@@ -49,6 +49,12 @@ class NewPostService extends EntityBaseService<Post> {
       .getPostActionController()
       .editPost(params);
   }
+
+  async reSendPost(postId: number) {
+    return this.getPostController()
+      .getPostActionController()
+      .reSendPost(postId);
+  }
 }
 
 export { NewPostService };
