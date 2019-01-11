@@ -26,6 +26,41 @@ type Props = {
   id: number;
 } & WithNamespaces;
 
+const TAB_CONFIG = [
+  {
+    title: 'pinned',
+    type: ITEM_LIST_TYPE.PIN,
+  },
+  {
+    title: 'files',
+    type: ITEM_LIST_TYPE.FILE,
+  },
+  {
+    title: 'images',
+    type: ITEM_LIST_TYPE.IMAGE,
+  },
+  {
+    title: 'tasks',
+    type: ITEM_LIST_TYPE.TASK,
+  },
+  {
+    title: 'links',
+    type: ITEM_LIST_TYPE.LINK,
+  },
+  {
+    title: 'notes',
+    type: ITEM_LIST_TYPE.NOTE,
+  },
+  {
+    title: 'events',
+    type: ITEM_LIST_TYPE.EVENT,
+  },
+  {
+    title: 'integrations',
+    type: ITEM_LIST_TYPE.INTEGRATION,
+  },
+];
+
 class RightRailComponent extends React.Component<Props, States> {
   state = {
     isOpen: true,
@@ -73,30 +108,16 @@ class RightRailComponent extends React.Component<Props, States> {
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
-            <JuiTab key={0} title={t('pinned')}>
-              <ItemList type={ITEM_LIST_TYPE.PIN} groupId={id} />
-            </JuiTab>
-            <JuiTab key={1} title={t('files')}>
-              <ItemList type={ITEM_LIST_TYPE.FILE} groupId={id} />
-            </JuiTab>
-            <JuiTab key={2} title={t('images')}>
-              <ItemList type={ITEM_LIST_TYPE.IMAGE} groupId={id} />
-            </JuiTab>
-            <JuiTab key={4} title={t('tasks')}>
-              <ItemList type={ITEM_LIST_TYPE.TASK} groupId={id} />
-            </JuiTab>
-            <JuiTab key={3} title={t('links')}>
-              <ItemList type={ITEM_LIST_TYPE.LINK} groupId={id} />
-            </JuiTab>
-            <JuiTab key={5} title={t('notes')}>
-              <ItemList type={ITEM_LIST_TYPE.NOTE} groupId={id} />
-            </JuiTab>
-            <JuiTab key={6} title={t('events')}>
-              <ItemList type={ITEM_LIST_TYPE.EVENT} groupId={id} />
-            </JuiTab>
-            <JuiTab key={7} title={t('integrations')}>
-              <ItemList type={ITEM_LIST_TYPE.INTEGRATION} groupId={id} />
-            </JuiTab>
+            {TAB_CONFIG.map(
+              (
+                { title, type }: { title: string; type: ITEM_LIST_TYPE },
+                index: number,
+              ) => (
+                <JuiTab key={index} title={t(title)}>
+                  <ItemList type={type} groupId={id} />
+                </JuiTab>
+              ),
+            )}
           </JuiTabs>
         )}
       </ReactResizeDetector>
