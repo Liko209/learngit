@@ -145,12 +145,14 @@ class PostService extends BaseService<Post> {
     direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     try {
+      const start = Date.now();
       const result = await this.getPostsFromLocal({
         groupId,
         postId,
         direction,
         limit,
       });
+      console.debug(`getPostsFromLocal ${Date.now() - start}`);
       if (result.posts.length < limit) {
         const groupConfigDao = daoManager.getDao(GroupConfigDao);
         const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
@@ -199,7 +201,7 @@ class PostService extends BaseService<Post> {
       }
 
       result.limit = limit;
-
+      console.debug(`getPostsByGroupId ${Date.now() - start}`);
       return result;
     } catch (e) {
       mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
