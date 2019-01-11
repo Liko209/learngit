@@ -400,12 +400,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     currentGroupId: number,
   ) {
     const removedIds = [];
-    const stateIds = states.map((state: GroupState) => state.id);
+    const stateIdsSet = new Set<number>();
+    states.forEach((state: GroupState) => {
+      stateIdsSet.add(state.id);
+    });
+
     for (let i = limit; i < groupIds.length; i++) {
-      if (
-        stateIds.indexOf(groupIds[i]) === -1 &&
-        currentGroupId !== groupIds[i]
-      ) {
+      if (currentGroupId !== groupIds[i] && !stateIdsSet.has(groupIds[i])) {
         removedIds.push(groupIds[i]);
       }
     }

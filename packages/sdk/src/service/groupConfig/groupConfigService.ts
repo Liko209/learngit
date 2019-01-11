@@ -16,9 +16,9 @@ class GroupConfigService extends BaseService<GroupConfig> {
     super(GroupConfigDao, null, null, {});
   }
 
-  async getById(id: number): Promise<GroupConfig> {
-    const result = await this.getByIdFromDao(id); // groupId
-    return result;
+  async getById(id: number): Promise<GroupConfig | null> {
+    const dao = daoManager.getDao(GroupConfigDao);
+    return await dao.get(id);
   }
 
   // update partial groupConfig data
