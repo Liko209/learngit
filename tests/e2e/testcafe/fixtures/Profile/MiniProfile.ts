@@ -90,7 +90,7 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
   }
 });
 
-test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 'Profile']), async (t) => {
+test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 'P2', 'Potar.He', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
@@ -100,7 +100,8 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
 
   const app = new AppRoot(t);
   const miniProfile = app.homePage.miniProfile;
-  const conversationPage = app.homePage.messageTab.conversationPage
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const profileDialog = app.homePage.profileDialog;
 
   let teamId, meMentionPost, contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I have one team with some mention posts ', async () => {
@@ -156,125 +157,140 @@ test(formalName('Open mini profile via @mention', ['JPT-436', 'P2', 'Potar.He', 
       });
     }, true);
 
-    await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
-      await t.click(conversationPage.messageInputArea);
+    await h(t).withLog('When I click "Profile" button on MiniProfile', async () => {
+      await miniProfile.openProfile();
+    });
+
+    await h(t).withLog('Then the profile dialog should be popup', async () => {
+      await profileDialog.shouldBePopUp();
+    });
+    const miniProfileId = await miniProfile.getId();
+    await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${miniProfileId}`, async () => {
+      const profileDialogId = await profileDialog.getId();
+      await t.expect(profileDialogId).eql(miniProfileId)
+      await profileDialog.close();
     });
   }
 });
 
-// skip due to the requirement is not implement.
-test.skip(formalName('Open mini profile via global search then open profile', ['JPT-385', 'P1', 'Potar.He', 'Profile']), async (t) => {
+
+test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-568', 'P2', 'Skye.wang', 'Profile']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-
+  const otherUser = users[5];
+  await h(t).platform(otherUser).init();
   const app = new AppRoot(t);
-  const teamName = uuid();
-  const otherUserName = await h(t).glip(loginUser).getPerson(users[5].rcId)
-    .then(res => res.data.display_name);
+  const miniProfile = app.homePage.miniProfile;
+  const conversationPage = app.homePage.messageTab.conversationPage
 
-  const steps = async (i: number, count: number, searchItem, type: string) => {
-    const top = await searchItem.avatar.getBoundingClientRectProperty('top');
-    const left = await searchItem.avatar.getBoundingClientRectProperty('left');
-    const id = await searchItem.getId();
-    await h(t).withLog(`When I click the avatar of ${i + 1}/${count}  ${type} result`, async () => {
-      await searchItem.clickAvatar();
-    });
-    await h(t).withLog('And the left-top of the avatar on profile dialog should be the same position as the avatar of the clicked result', async () => {
-      await H.retryUntilPass(async () => {
-        const miniTop = await miniProfile.avatar.getBoundingClientRectProperty('top');
-        const miniLeft = await miniProfile.avatar.getBoundingClientRectProperty('left');
-        await t.expect(top).eql(miniTop);
-        await t.expect(left).eql(miniLeft);
-      });
-    });
-    await h(t).withLog(`And the mini profile id should be ${id}`, async () => {
-      const miniProfileId = await miniProfile.getId();
-      await t.expect(miniProfileId).eql(id);
-    });
-
-    await h(t).withLog('When I click "Profile" button on MiniProfile', async () => {
-      await miniProfile.openProfile();
-    });
-    await h(t).withLog('Then the profile dialog should be popup', async () => {
-      await profileDialog.shouldBePopUp();
-    });
-    await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${id}`, async () => {
-      const profileDialogId = await profileDialog.getId();
-      await t.expect(profileDialogId).eql(id)
-      await profileDialog.close();
-    });
-  }
-
-  await h(t).withLog(`Given I have a team, a group, a privateChat that all include user: ${otherUserName}`, async () => {
-    await h(t).platform(loginUser).createGroup({
-      isPublic: true,
-      name: teamName,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    await h(t).platform(loginUser).createGroup({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-    await h(t).platform(loginUser).createGroup({
+  let pvtChatId,teamId, meMentionPost, contactMentionPost, teamMentionPost;
+  await h(t).withLog('Given I an extension with 1 private chat and one team with some mention posts ', async () => {
+    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId],
+      members: [loginUser.rcId, otherUser.rcId],
     });
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
+      isPublic: true,
+      name: uuid(),
+      type: 'Team',
+      members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
+    });
+
+    const contactMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
+      `Hi AtMention, ![:Person](${otherUser.rcId})`,
+      teamId,
+    );
+    contactMentionPost = conversationPage.postItemById(contactMentionPostId);
+
+    const teamMentionPostId = await h(t).platform(loginUser).sentAndGetTextPostId(
+      `Hi AtMention, ![:Team](${teamId})`,
+      teamId
+    );
+    teamMentionPost = conversationPage.postItemById(teamMentionPostId);
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  const postList = {
+    contactMention: contactMentionPost,
+    teamMention: teamMentionPost,
+  }
+
+  const dmSection = app.homePage.messageTab.directMessagesSection;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+
+  const groupIdList = {
+    pvtChatId,
+    teamId,
+    }
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}, and enter the created team`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
   });
 
-  const search = app.homePage.header.search;
-  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
-    await search.typeText(otherUserName, { replace: true, paste: true });
-    await t.wait(3e3);
+  await h(t).withLog('All conversations should not be hidden and Unfavorite before login', async () => {
+    await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, teamId]);
+    await h(t).glip(loginUser).clearFavoriteGroups();
   });
+   
+  for (let key in postList) {
+    const post = postList[key];
+    await h(t).withLog(`When I click the ${key}`, async () => {
+      await t.click(post.mentions);
+    });
 
-  let peopleCount: number;
-  await h(t).withLog('Then I should find at least one people result', async () => {
-    await t.expect(search.peoples.count).gte(1);
-    peopleCount = await search.peoples.count;
-  }, true);
+    await h(t).withLog('Then the mini profile dialog should be showed', async () => {
+      await miniProfile.shouldBePopUp();
+    });
+    await h(t).withLog('`When I click "unfavorite" icon', async () => {
+      await t.click(miniProfile.unFavoriteStatusIcon);
+    });
+    await h(t).withLog(`The "unfavorite" icon change to "favorite" icon`, async () => {
+      await t.expect(miniProfile.unFavoriteStatusIcon.exists).notOk();
+      await t.expect(miniProfile.favoriteStatusIcon.exists).ok();
+    });
+    await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
+      await t.click(conversationPage.messageInputArea);
+    });
+  }
+  
 
-  const miniProfile = app.homePage.miniProfile;
-  const profileDialog = app.homePage.profileDialog;
-
-  for (let i = 0; i < peopleCount; i++) {
-    await steps(i, peopleCount, search.nthPeople(i), "People");
+  for(let key in groupIdList){
+    const chatId = groupIdList[key];
+    await h(t).withLog(`And The ${key} conversation move to favorites section`, async () => {
+      await t.expect(favoritesSection.conversationEntryById(chatId).exists).ok();
+    });
   }
 
-  await h(t).withLog(`When I type people keyword ${otherUserName} in search input area`, async () => {
-    await search.typeText(otherUserName, { replace: true, paste: true });
-    await t.wait(3e3);
-  });
+  for (let key in postList) {
+    const post = postList[key];
+    await h(t).withLog(`When I click the ${key}`, async () => {
+      await t.click(post.mentions);
+    });
 
-  let GroupCount: number;
-  await h(t).withLog('Then I should find at least one group result', async () => {
-    await t.expect(search.groups.count).gte(1);
-    GroupCount = await search.groups.count;
-  }, true);
+    await h(t).withLog('Then the mini profile dialog should be showed', async () => {
+      await miniProfile.shouldBePopUp();
+    });
+    await h(t).withLog('`When I click "favorite" icon', async () => {
+      await t.click(miniProfile.favoriteStatusIcon);
+    });
+    
+    await h(t).withLog(`The "favorite" icon change to "unfavorite" icon`, async () => {
+      await t.expect(miniProfile.favoriteStatusIcon.exists).notOk();
+      await t.expect(miniProfile.unFavoriteStatusIcon.exists).ok();
+    });
+    await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
+      await t.click(conversationPage.messageInputArea);
+    });
+  }
 
-  for (let i = 0; i < GroupCount; i++) {
-    await steps(i, peopleCount, search.nthGroup(i), "Group");
-  };
-
-  await h(t).withLog(`When I type teamName: ${teamName} in search input area`, async () => {
-    await search.typeText(teamName, { replace: true, paste: true });
-    await t.wait(3e3);
-  });
-
-  let teamCount
-  await h(t).withLog('Then I should find at least team result', async () => {
-    await t.expect(search.teams.count).gte(1);
-    teamCount = await search.teams.count;
-  }, true);
-
-  for (let i = 0; i < teamCount; i++) {
-    await steps(i, teamCount, search.nthTeam(i), "Team")
+  for(let key in groupIdList){
+    const chat = groupIdList[key];
+    await h(t).withLog(`And The ${key} conversation move to original section`, async () => {
+      await t.expect(favoritesSection.conversationEntryById(chat).exists).notOk();
+    });
   }
 });
