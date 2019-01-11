@@ -269,13 +269,16 @@ describe('fileUploadController', () => {
         .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
 
-      const progressCaches = new Map();
+      const cancel = {
+        has: jest.fn().mockReturnValue(true),
+      };
+
       Object.assign(fileUploadController, {
-        _progressCaches: progressCaches,
+        _canceledUploadFileIds: cancel,
       });
+
       const file = { name: '1.ts', type: 'ts' } as File;
       await fileUploadController.sendItemFile(groupId, file, true);
-      progressCaches.clear();
 
       setTimeout(() => {
         expect(ItemAPI.uploadFileItem).toBeCalled();

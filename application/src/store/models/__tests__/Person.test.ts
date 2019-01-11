@@ -63,7 +63,7 @@ describe('PersonModel', () => {
     it('should return email if user has only firstName', () => {
       checkDisplayName(
         getUserInfo('', '', 'john.doe@ringcentral.com'),
-        'john.doe@ringcentral.com',
+        'John Doe',
       );
     });
   });

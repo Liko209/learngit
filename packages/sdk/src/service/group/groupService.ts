@@ -28,7 +28,11 @@ import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
 import GroupAPI from '../../api/glip/group';
 
-import { uniqueArray } from '../../utils';
+import {
+  uniqueArray,
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+} from '../../utils';
 import { transform } from '../utils';
 import handleData, {
   handlePartialData,
@@ -601,11 +605,14 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_GROUP,
+    );
     const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
-    return this.searchEntitiesFromCache(
+    const result = await this.searchEntitiesFromCache(
       (group: Group, terms: string[]) => {
         if (this._isValidGroup(group) && group.members.length > 2) {
           const groupName = this.getGroupNameByMultiMembers(
@@ -639,6 +646,10 @@ class GroupService extends BaseService<Group> {
         return 0;
       },
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.SEARCH_GROUP,
+    );
+    return result;
   }
 
   async doFuzzySearchTeams(
@@ -648,12 +659,15 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_TEAM,
+    );
     const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
 
-    return this.searchEntitiesFromCache(
+    const result = await this.searchEntitiesFromCache(
       (team: Group, terms: string[]) => {
         let isMatched: boolean = false;
         let sortValue: number = 0;
@@ -715,6 +729,10 @@ class GroupService extends BaseService<Group> {
         return 0;
       },
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.SEARCH_TEAM,
+    );
+    return result;
   }
 
   private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
@@ -793,7 +811,7 @@ class GroupService extends BaseService<Group> {
         if (group.email_friendly_abbreviation) {
           email = `${
             group.email_friendly_abbreviation
-            }@${companyReplyDomain}.${envDomain}`;
+          }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {

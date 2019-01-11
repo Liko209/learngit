@@ -67,6 +67,13 @@ describe('GroupConfigService', () => {
       expect(result).toEqual(mock.send_failure_post_ids);
     });
 
+    it('should return empty array when object not found', async () => {
+      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+      groupConfigDao.get.mockResolvedValueOnce(null);
+      const result = await groupConfigService.getGroupSendFailurePostIds(1);
+      expect(result).toEqual([]);
+    });
+
     it('should return error when groupConfigDao error', async () => {
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
       groupConfigDao.get.mockRejectedValueOnce(new Error());

@@ -139,6 +139,7 @@ describe('PostServiceHandler', () => {
         text: 'new text',
         new_version: 'versionHash',
         is_new: false,
+        at_mention_non_item_ids: [],
       });
     });
 
@@ -156,6 +157,7 @@ describe('PostServiceHandler', () => {
         new_version: 'versionHash',
         is_new: false,
         text: 'text',
+        at_mention_non_item_ids: [],
       });
     });
     it('not oldPost', async () => {

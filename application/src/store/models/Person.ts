@@ -99,6 +99,24 @@ export default class PersonModel extends Base<Person> {
     return new PersonModel(data);
   }
 
+  private _getEmailAsName(email: string) {
+    if (email) {
+      const name = email.split('@')[0];
+      const firstUpperCase = (parseString: string) => {
+        if (!parseString[0]) {
+          return '';
+        }
+        return parseString[0].toUpperCase().concat(parseString.slice(1));
+      };
+
+      return name
+        .split('.')
+        .map((v: string) => firstUpperCase(v))
+        .join(' ');
+    }
+    return '';
+  }
+
   @computed
   get userDisplayName(): string {
     if (this.isPseudoUser) {
@@ -130,7 +148,7 @@ export default class PersonModel extends Base<Person> {
     }
 
     if (dName.length === 0) {
-      dName = this.email;
+      dName = this._getEmailAsName(this.email);
     }
 
     return dName;

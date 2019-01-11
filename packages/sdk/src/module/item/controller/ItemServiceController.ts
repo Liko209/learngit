@@ -53,42 +53,73 @@ class ItemServiceController {
     return this._itemActionController;
   }
 
+  async getGroupItemsCount(groupId: number, typeId: number) {
+    let totalCount = 0;
+    const subItemService = this.getSubItemService(typeId);
+    if (subItemService) {
+      totalCount = await subItemService.getSubItemsCount(groupId);
+    }
+    return totalCount;
+  }
+
   async getItems(
     typeId: number,
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ) {
     let ids: number[] = [];
     const subItemService = this.getSubItemService(typeId);
     if (subItemService) {
-      ids = subItemService.getSortedIds(groupId, limit, offset, sortKey, desc);
+      ids = await subItemService.getSortedIds(
+        groupId,
+        limit,
+        offsetItemId,
+        sortKey,
+        desc,
+      );
     }
-
     const itemDao = daoManager.getDao(ItemDao);
-    return await itemDao.getItemsByIds(ids);
+    const items = await itemDao.getItemsByIds(ids);
+
+    const itemMap: Map<number, Item> = new Map();
+    items.forEach((item: Item) => {
+      itemMap.set(item.id, item);
+    });
+
+    return ids.map((id: number) => {
+      return itemMap.get(id) as Item;
+    });
   }
 
   async createItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
-    const typeId = GlipTypeUtil.extractTypeId(item.id);
-    await this.getSubItemService(typeId).createItem(item);
+
+    item.id > 0 &&
+      (await this._getSubItemServiceByITemId(item.id).createItem(item));
   }
 
   async updateItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
-    const typeId = GlipTypeUtil.extractTypeId(item.id);
-    await this.getSubItemService(typeId).updateItem(item);
+
+    item.id > 0 &&
+      (await this._getSubItemServiceByITemId(item.id).updateItem(item));
   }
 
   async deleteItem(itemId: number) {
     await daoManager.getDao(ItemDao).delete(itemId);
+
+    itemId > 0 &&
+      (await this._getSubItemServiceByITemId(itemId).deleteItem(itemId));
+  }
+
+  private _getSubItemServiceByITemId(itemId: number) {
     const typeId = GlipTypeUtil.extractTypeId(itemId);
-    await this.getSubItemService(typeId).deleteItem(itemId);
+    return this.getSubItemService(typeId);
   }
 
   async handleSanitizedItems(incomingItems: Item[]) {

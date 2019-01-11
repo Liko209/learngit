@@ -155,7 +155,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     Dialog.confirm({
       title: t('joinTeamTitle'),
       content: t('joinTeamContent', { teamName }),
-      okText: t('Done'),
+      okText: t('join'),
       cancelText: t('Cancel'),
       onOK: async () => {
         try {

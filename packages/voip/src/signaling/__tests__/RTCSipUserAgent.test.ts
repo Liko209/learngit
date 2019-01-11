@@ -43,7 +43,7 @@ describe('RTCSipUserAgent', async () => {
   });
 
   describe('register', () => {
-    it('Should emit registered event when register success [JPT-599]', () => {
+    it('Should register function have been called [JPT-599]', () => {
       const eventEmitter = new EventEmitter2();
       const userAgent = new RTCSipUserAgent(
         provisionData,
@@ -53,6 +53,20 @@ describe('RTCSipUserAgent', async () => {
       expect(mockRegister).not.toHaveBeenCalled();
       userAgent.register();
       expect(mockRegister).toHaveBeenCalled();
+    });
+  });
+
+  describe('reRegister()', () => {
+    it('Should reRegister has been called', () => {
+      const eventEmitter = new EventEmitter2();
+      const userAgent = new RTCSipUserAgent(
+        provisionData,
+        options,
+        eventEmitter,
+      );
+      jest.spyOn(userAgent, 'reRegister').mockImplementation(() => {});
+      userAgent.reRegister();
+      expect(userAgent.reRegister).toHaveBeenCalled();
     });
   });
 
