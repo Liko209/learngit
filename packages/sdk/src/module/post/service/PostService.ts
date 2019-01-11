@@ -10,6 +10,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { SendPostType, EditPostType } from '../types';
 
 class NewPostService extends EntityBaseService<Post> {
+  static serviceName = 'NewPostService';
   postController: PostController;
   constructor() {
     super();

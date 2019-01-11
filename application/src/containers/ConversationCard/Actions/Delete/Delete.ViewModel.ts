@@ -14,7 +14,12 @@ import PostModel from '@/store/models/Post';
 import { Props, ViewProps } from './types';
 
 class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: NewPostService;
+
+  constructor(props: Props) {
+    super(props);
+    this._postService = NewPostService.getInstance();
+  }
 
   @computed
   get id() {
