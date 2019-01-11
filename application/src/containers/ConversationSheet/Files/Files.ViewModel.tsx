@@ -26,6 +26,10 @@ import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '../helper';
 import PostModel from '@/store/models/Post';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -131,8 +135,8 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     if (status === 'offline') {
       Notification.flashToast({
         message: t('notAbleToCancelUpload'),
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });
@@ -148,8 +152,8 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       } catch (e) {
         Notification.flashToast({
           message: t('notAbleToCancelUploadTryAgain'),
-          type: 'error',
-          messageAlign: 'left',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
           dismissible: false,
         });

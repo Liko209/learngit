@@ -20,6 +20,10 @@ import { Notification } from '@/containers/Notification';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { errorHelper } from 'sdk/error';
 import { generalErrorHandler } from '@/utils/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
@@ -35,8 +39,8 @@ class ProfileMiniCardGroupViewModel
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
           message: 'SorryWeWereNotAbleToOpenThisProfile',
-          type: 'error',
-          messageAlign: 'left',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
           dismissible: false,
         });

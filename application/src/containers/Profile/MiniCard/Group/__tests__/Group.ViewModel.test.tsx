@@ -11,6 +11,8 @@ import storeManager from '@/store';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
 import { GroupService } from 'sdk/module/group';
+import { ToastType } from '@/containers/ToastWrapper/Toast/types';
+import { ToastMessageAlign } from '../../../../ToastWrapper/Toast/types';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
@@ -106,8 +108,8 @@ describe('ProfileMiniCardGroupViewModel', () => {
           dismissible: false,
           fullWidth: false,
           message: 'SorryWeWereNotAbleToOpenThisProfile',
-          messageAlign: 'left',
-          type: 'error',
+          messageAlign: ToastMessageAlign.LEFT,
+          type: ToastType.ERROR,
         });
         done();
       },         500);

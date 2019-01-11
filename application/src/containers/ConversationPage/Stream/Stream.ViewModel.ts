@@ -40,6 +40,10 @@ import { onScrollToBottom } from '@/plugins';
 import { Notification } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { mainLogger } from 'sdk';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -293,8 +297,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
               message: `SorryWeWereNotAbleToLoad${
                 direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
               }Messages`,
-              type: 'error',
-              messageAlign: 'left',
+              type: ToastType.ERROR,
+              messageAlign: ToastMessageAlign.LEFT,
               fullWidth: false,
               dismissible: false,
             });

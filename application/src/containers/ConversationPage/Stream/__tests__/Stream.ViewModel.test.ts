@@ -12,6 +12,10 @@ import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { errorHelper } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('sdk/service/post');
 jest.mock('@/store');
@@ -502,8 +506,8 @@ describe.only('fetchData()', () => {
       dismissible: false,
       fullWidth: false,
       message: 'SorryWeWereNotAbleToLoadOlderMessages',
-      messageAlign: 'left',
-      type: 'error',
+      messageAlign: ToastMessageAlign.LEFT,
+      type: ToastType.ERROR,
     });
   });
 
@@ -521,8 +525,8 @@ describe.only('fetchData()', () => {
       dismissible: false,
       fullWidth: false,
       message: 'SorryWeWereNotAbleToLoadNewerMessages',
-      messageAlign: 'left',
-      type: 'error',
+      messageAlign: ToastMessageAlign.LEFT,
+      type: ToastType.ERROR,
     });
   });
 
