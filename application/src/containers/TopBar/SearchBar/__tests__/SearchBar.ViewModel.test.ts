@@ -48,7 +48,7 @@ describe('SearchBarViewModel', () => {
   });
 
   describe('joinTeam()', () => {
-    it('should display flash toast notification has message {JoinTeamAuthorizedError} when join a public team then permission changed.[JPT-722]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification has message {JoinTeamAuthorizedError} when join a public team then permission changed.[JPT-722]', async (done: jest.DoneCallback) => {
       (NGroupService as jest.Mock).mockImplementation(() => {
         return {
           joinTeam: async () => {
@@ -59,7 +59,9 @@ describe('SearchBarViewModel', () => {
       Notification.flashToast = jest.fn();
       (getGlobalValue as jest.Mock).mockImplementation(() => {});
       const vm = new SearchBarViewModel();
-      vm.joinTeam(1);
+      try {
+        await vm.joinTeam(1);
+      } catch (error) {}
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({

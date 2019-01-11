@@ -82,9 +82,8 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
           fullWidth: false,
           dismissible: false,
         });
-      } else {
-        throw error;
       }
+      throw error;
     }
   }
 
