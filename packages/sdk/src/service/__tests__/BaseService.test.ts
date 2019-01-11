@@ -17,7 +17,7 @@ import { BaseResponse, ResultType } from 'foundation/src';
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
 
-class MyDao extends BaseDao<{}> { }
+class MyDao extends BaseDao<{}> {}
 const fakeApi = {
   getDataById: jest.fn(),
 };
@@ -112,6 +112,36 @@ describe('BaseService', () => {
       const result = await service.getById(2);
 
       expect(result).toHaveProperty('data', { id: 2 });
+    });
+  });
+
+  describe('getByIdFromLocal()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    it('should return data from cache', async () => {
+      const service = new AService();
+      jest.spyOn(service, 'isCacheInitialized').mockReturnValueOnce(true);
+      jest.spyOn(service, 'getEntityFromCache').mockResolvedValue({ id: 1 });
+      const result = await service.getByIdFromLocal(1);
+      expect(result).toEqual({ id: 1 });
+    });
+
+    it.only('should return data from dao when cache not return value', async () => {
+      const service = new AService();
+      jest.spyOn(service, 'isCacheInitialized').mockReturnValueOnce(true);
+      jest.spyOn(service, 'getEntityFromCache').mockReturnValueOnce(undefined);
+      jest.spyOn(service, 'getByIdFromDao').mockResolvedValue({ id: 2 });
+      const result = await service.getByIdFromLocal(2);
+      expect(result).toEqual({ id: 2 });
+    });
+
+    it('should return data from dao when cache is not initialized', async () => {
+      const service = new AService();
+      jest.spyOn(service, 'isCacheInitialized').mockReturnValueOnce(false);
+      jest.spyOn(service, 'getByIdFromDao').mockResolvedValue({ id: 2 });
+      const result = await service.getByIdFromLocal(2);
+      expect(result).toEqual({ id: 2 });
     });
   });
 
@@ -288,7 +318,11 @@ describe('BaseService', () => {
         name: 'someone',
       };
 
-      jest.spyOn(service, 'doUpdateModel').mockResolvedValue(new BaseError(ErrorTypes.API_NETWORK, 'fake network error'));
+      jest
+        .spyOn(service, 'doUpdateModel')
+        .mockResolvedValue(
+          new BaseError(ErrorTypes.API_NETWORK, 'fake network error'),
+        );
 
       jest
         .spyOn(service, 'getById')

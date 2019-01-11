@@ -104,7 +104,6 @@ describe('StateService', () => {
       await stateService.updateState({ id: 12 }, 3, () => ({}));
       stateService.getMyStateId.mockResolvedValueOnce(1);
       expect(stateService.getMyStateId).toHaveBeenCalledTimes(1);
-      expect(groupStateDao.get).toHaveBeenCalledTimes(1);
       expect(StateAPI.saveStatePartial).toHaveBeenCalledTimes(0);
     });
 
