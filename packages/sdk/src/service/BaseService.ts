@@ -58,7 +58,8 @@ class BaseService<
     let result: SubModel | null = null;
     if (this.isCacheInitialized()) {
       result = this._cachedManager.getEntity(id);
-    } else {
+    }
+    if (!result) {
       result = await this.getByIdFromDao(id);
     }
     if (!result) {

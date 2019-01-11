@@ -10,6 +10,8 @@ import {
   GroupStateDao,
   AccountDao,
   ACCOUNT_USER_ID,
+  ConfigDao,
+  MY_STATE_ID,
 } from '../../dao';
 import { GroupState, MyState, Post } from '../../models';
 import StateAPI from '../../api/glip/state';
@@ -26,6 +28,7 @@ import notificationCenter from '../notificationCenter';
 
 class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
+  private _myStateId: number;
 
   constructor() {
     const subscriptions = {
@@ -92,10 +95,10 @@ class StateService extends BaseService<GroupState> {
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
-    const currentState = await this.getMyState();
-    if (currentState) {
+    const currentStateId = await this.getMyStateId();
+    if (currentStateId > 0) {
       await StateAPI.saveStatePartial(
-        currentState.id,
+        currentStateId,
         StateService.buildUpdateStateParam(groupId),
       );
     }
@@ -121,7 +124,7 @@ class StateService extends BaseService<GroupState> {
     lastPostId: number | undefined,
     paramBuilder: Function,
   ): Promise<void> {
-    const currentState = await this.getMyState();
+    const currentStateId = await this.getMyStateId();
     const groupStateDao = daoManager.getDao(GroupStateDao);
     const groupId = partialState.id ? partialState.id : 0;
     const state = await groupStateDao.get(groupId);
@@ -135,12 +138,12 @@ class StateService extends BaseService<GroupState> {
 
       if (
         lastPostId &&
-        currentState &&
+        currentStateId > 0 &&
         state.unread_count &&
         state.unread_count > 0
       ) {
         await StateAPI.saveStatePartial(
-          currentState.id,
+          currentStateId,
           paramBuilder(state.id, lastPostId),
         );
       }
@@ -154,6 +157,14 @@ class StateService extends BaseService<GroupState> {
       return null;
     }
     return lastPost;
+  }
+
+  async getMyStateId(): Promise<number> {
+    if (this._myStateId > 0) {
+      return this._myStateId;
+    }
+    const configDao = daoManager.getKVDao(ConfigDao);
+    return await configDao.get(MY_STATE_ID);
   }
 
   async getMyState(): Promise<MyState | null> {

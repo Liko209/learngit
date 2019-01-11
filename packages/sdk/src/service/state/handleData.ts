@@ -3,7 +3,7 @@
  * @Date: 2018-04-16 09:35:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { daoManager } from '../../dao';
+import { daoManager, ConfigDao, MY_STATE_ID } from '../../dao';
 import StateDao from '../../dao/state';
 import GroupStateDao from '../../dao/groupState';
 import notificationCenter from '../../service/notificationCenter';
@@ -27,6 +27,9 @@ export function transform(
   Object.keys(clone).forEach((key: string) => {
     if (key === '_id') {
       clone.id = clone._id;
+      delete clone[key];
+    }
+    if (key.includes('unread_count')) {
       delete clone[key];
     }
     const keys = [
@@ -130,8 +133,10 @@ async function operateDaoAndDoNotification(
 ) {
   const stateDao = daoManager.getDao(StateDao);
   const groupStateDao = daoManager.getDao(GroupStateDao);
+  const configDao = daoManager.getKVDao(ConfigDao);
   if (myState) {
     await stateDao.bulkUpdate(myState);
+    await configDao.put(MY_STATE_ID, myState[0].id);
     notificationCenter.emitEntityUpdate(ENTITY.MY_STATE, myState, myState);
   }
   if (groupStates) {
