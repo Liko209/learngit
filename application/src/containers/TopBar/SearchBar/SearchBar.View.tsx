@@ -154,7 +154,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     e.stopPropagation();
     Dialog.confirm({
       title: t('joinTeamTitle'),
-      content: t('joinTeamContent', { teamName }),
+      content: t('joinTeamContent', { teamName: item.displayName }),
       okText: t('join'),
       cancelText: t('Cancel'),
       onOK: () =>
