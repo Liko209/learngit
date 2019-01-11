@@ -14,6 +14,7 @@ const RegistrationEvent = {
   REG_TIMEOUT: 'regTimeOut',
   REG_ERROR: 'regError',
   UN_REGISTER: 'unRegister',
+  RE_REGISTE: 'reRegister',
 };
 
 class RTCRegistrationFSM extends StateMachine {
@@ -26,6 +27,18 @@ class RTCRegistrationFSM extends StateMachine {
           from: RegistrationState.IDLE,
           to: (provisionData: any, options: any) => {
             handler.onProvisionReadyAction(provisionData, options);
+            return RegistrationState.REG_IN_PROGRESS;
+          },
+        },
+        {
+          name: RegistrationEvent.RE_REGISTE,
+          from: [
+            RegistrationState.REG_IN_PROGRESS,
+            RegistrationState.REG_FAILURE,
+            RegistrationState.READY,
+          ],
+          to: () => {
+            handler.onReRegisterAction();
             return RegistrationState.REG_IN_PROGRESS;
           },
         },

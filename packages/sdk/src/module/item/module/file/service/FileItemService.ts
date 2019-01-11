@@ -22,14 +22,21 @@ class FileItemService extends EntityBaseService<ItemFile>
     super();
   }
 
-  getSortedIds(
+  async getSortedIds(
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
-  ): number[] {
-    return [];
+  ): Promise<number[]> {
+    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
+    return await sanitizedDao.getSortedIds(
+      groupId,
+      limit,
+      offsetItemId,
+      sortKey,
+      desc,
+    );
   }
 
   protected get fileItemController() {
@@ -137,6 +144,11 @@ class FileItemService extends EntityBaseService<ItemFile>
       name: file.name,
       type: file.type,
     } as SanitizedFileItem;
+  }
+
+  async getSubItemsCount(groupId: number) {
+    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
+    return await sanitizedDao.getGroupItemCount(groupId);
   }
 }
 

@@ -1,137 +1,150 @@
-import BaseAppender from './AppenderAbstract';
-import LoggingEvent from './LoggingEvent';
-import DateFormatter from './DateFormatter';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2018-12-26 15:22:39
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { LOG_LEVEL } from './constants';
+import { ILogger, LogEntity, ILoggerCore, ILogEntityProcessor, ILogConsumer, IConsoleLogPrettier } from './types';
+import { configManager } from './config';
+import { LogEntityProcessor } from './LogEntityProcessor';
+import { ConsoleLogPrettier } from './ConsoleLogPrettier';
 
-import { LOG_LEVEL, DATE_FORMATTER } from './constants';
-import PersistentLogAppender from './appender/PersistentLogAppender';
+const buildLogEntity = (level: LOG_LEVEL, tags: string[], params: any[]): LogEntity => {
+  const logEntity = new LogEntity();
+  logEntity.level = level;
+  logEntity.tags = tags;
+  logEntity.params = params;
+  return logEntity;
+};
 
-class Logger {
-  private _appenders: Map<string, BaseAppender> = new Map();
-  private _category: string;
-  private _level: LOG_LEVEL = LOG_LEVEL.FATAL;
-  private _dateFormat: DATE_FORMATTER = DATE_FORMATTER.DEFAULT_DATE_FORMAT;
-  private _dateFormatter: DateFormatter;
-
-  constructor(name: string) {
-    this._category = name;
+export class Logger implements ILogger, ILoggerCore {
+  private _logEntityProcessor: ILogEntityProcessor;
+  private _logConsumer: ILogConsumer;
+  private _consoleLoggerCore: ILoggerCore;
+  constructor() {
+    this._logEntityProcessor = new LogEntityProcessor();
+    this._consoleLoggerCore = new ConsoleLogCore(new ConsoleLogPrettier());
   }
 
-  addAppender<T extends BaseAppender>(name: string, appender: T) {
-    appender.setLogger(this);
-    this._appenders.set(name, appender);
+  setConsumer(consumer: ILogConsumer) {
+    this._logConsumer = consumer;
   }
 
-  removeAppender(name: string) {
-    this._appenders.delete(name);
+  log(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.LOG, [], params));
   }
 
-  setAppenders(appenders: Map<string, BaseAppender>) {
-    this.clear();
-
-    this._appenders = appenders;
-
-    this._appenders.forEach((appender) => {
-      appender.setLogger(this);
-    });
+  trace(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.TRACE, [], params));
   }
 
-  getAppenders() {
-    return this._appenders;
+  debug(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.DEBUG, [], params));
   }
 
-  setLevel(level: LOG_LEVEL) {
-    this._level = level;
+  info(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.INFO, [], params));
   }
 
-  clear() {
-    this._appenders.forEach((appender) => {
-      appender.clear();
-    });
+  warn(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.WARN, [], params));
   }
 
-  trace(message: string) {
-    this.log(LOG_LEVEL.TRACE, message);
+  error(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.ERROR, [], params));
   }
 
-  debug(message: string) {
-    this.log(LOG_LEVEL.DEBUG, message);
+  fatal(...params: any) {
+    return this.doLog(buildLogEntity(LOG_LEVEL.FATAL, [], params));
   }
 
-  info(message: string) {
-    this.log(LOG_LEVEL.INFO, message);
+  tags(...tags: string[]): ILogger {
+    return new LoggerTagDecorator(this, tags);
   }
 
-  warn(message: string) {
-    this.log(LOG_LEVEL.WARN, message);
+  doLog(logEntity: LogEntity = new LogEntity()) {
+    if (!this._isLogEnabled(logEntity)) return;
+    const finalLogEntity = this._logEntityProcessor.process(logEntity);
+    configManager.getConfig().consumer.enabled && this._logConsumer.onLog(finalLogEntity);
+    configManager.getConfig().browser.enabled && this._consoleLoggerCore.doLog(finalLogEntity);
   }
 
-  error(message: string) {
-    this.log(LOG_LEVEL.ERROR, message);
+  private _isLogEnabled(logEntity: LogEntity) {
+    const {
+      level,
+      filter,
+    } = configManager.getConfig();
+    if (logEntity.level < level) return false;
+    if (filter && !filter(logEntity)) return false;
+    return true;
   }
 
-  fatal(message: string) {
-    this.log(LOG_LEVEL.FATAL, message);
+}
+
+class ConsoleLogCore implements ILoggerCore {
+
+  constructor(private _consoleLogPrettier: IConsoleLogPrettier) {
   }
 
-  /**
-   * Set the date format of logger. Following switches are supported:
-   * <ul>
-   * <li>yyyy - The year</li>
-   * <li>MM - the month</li>
-   * <li>dd - the day of month<li>
-   * <li>hh - the hour<li>
-   * <li>mm - minutes</li>
-   * <li>O - timezone offset</li>
-   * </ul>
-   * @param {String} format format String for the date
-   * @see {@getTimestamp}
-   */
-  setDateFormat(format: DATE_FORMATTER) {
-    this._dateFormat = format;
+  doLog(logEntity: LogEntity): void {
+    if (typeof window === 'undefined') return;
+    this._browserLog(logEntity.level)(...this._consoleLogPrettier.prettier(logEntity));
   }
 
-  setDateFormatter(dateformatter: DateFormatter) {
-    this._dateFormatter = dateformatter;
-  }
-
-  getFormattedTimestamp(date: Date) {
-    return this._dateFormatter.formatDate(date, this._dateFormat);
-  }
-
-  getCategory() {
-    return this._category;
-  }
-
-  canDoLog(logLevel: LOG_LEVEL) {
-    if (this._level <= logLevel) {
-      return true;
+  private _browserLog(level: LOG_LEVEL): Function {
+    switch (level) {
+      case LOG_LEVEL.FATAL:
+        return window.console.error.bind(window.console);
+      case LOG_LEVEL.ERROR:
+        return window.console.error.bind(window.console);
+      case LOG_LEVEL.WARN:
+        return window.console.warn.bind(window.console);
+      case LOG_LEVEL.INFO:
+        return window.console.info.bind(window.console);
+      case LOG_LEVEL.DEBUG:
+        return window.console.debug.bind(window.console);
+      case LOG_LEVEL.TRACE:
+        return window.console.trace.bind(window.console);
+      default:
+        return window.console.log.bind(window.console);
     }
-    return false;
-  }
-
-  log(logLevel: LOG_LEVEL, message: string) {
-    if (this.canDoLog(logLevel)) {
-      this._dolog(logLevel, message);
-    }
-  }
-
-  async doAppend() {
-    const doAppends: Promise<void>[] = [];
-    this._appenders.forEach((appender) => {
-      if (appender instanceof PersistentLogAppender) {
-        doAppends.push(appender.doAppend());
-      }
-    });
-
-    await Promise.all(doAppends);
-  }
-
-  private _dolog(logLevel: LOG_LEVEL, message: string) {
-    const loggingEvent = new LoggingEvent(logLevel, message, this);
-    this._appenders.forEach((appender) => {
-      appender.log(loggingEvent);
-    });
   }
 }
 
-export default Logger;
+class LoggerTagDecorator implements ILogger {
+  constructor(private _loggerCore: ILoggerCore, private _tags: string[]) {
+  }
+
+  log(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.LOG, this._tags, params));
+  }
+
+  trace(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.TRACE, this._tags, params));
+  }
+
+  debug(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.DEBUG, this._tags, params));
+  }
+
+  info(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.INFO, this._tags, params));
+  }
+
+  warn(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.WARN, this._tags, params));
+  }
+
+  error(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.ERROR, this._tags, params));
+  }
+
+  fatal(...params: any) {
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.FATAL, this._tags, params));
+  }
+
+  tags(...tags: string[]): ILogger {
+    return new LoggerTagDecorator(this._loggerCore, this._tags.concat(tags));
+  }
+
+}

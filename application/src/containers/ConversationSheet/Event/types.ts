@@ -24,6 +24,8 @@ type EventViewProps = {
 type EventUpdateViewProps = {
   activityData: ActivityData;
   event: EventItemModel;
+  oldTimeText: string;
+  newTimeText: string;
 };
 
 export { EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps };

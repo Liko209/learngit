@@ -13,7 +13,7 @@ interface IItemService {
     typeId: number,
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
   ): Promise<Item[]>;
@@ -65,5 +65,7 @@ interface IItemService {
   getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]>;
 
   doNotRenderItem(id: number, type: string): Promise<void>;
+
+  getGroupItemsCount(groupId: number, typeId: number): Promise<number>;
 }
 export { IItemService };
