@@ -39,7 +39,7 @@ import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 import { OrdinaryPostWrapper } from './StreamItemAssemblyLine';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
-import { PostCombiner } from './StreamItemAssemblyLine/Assembler/PostCombiner';
+// import { PostCombiner } from './StreamItemAssemblyLine/Assembler/PostCombiner';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -167,7 +167,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.assemblyLine = new StreamItemAssemblyLine([
       new DateSeparator(),
       this._newMessageSeparatorHandler,
-      new PostCombiner(),
+      // new PostCombiner(),
       new OrdinaryPostWrapper(),
       new SingletonTagChecker(),
     ]);
