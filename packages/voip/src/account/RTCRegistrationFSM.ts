@@ -8,7 +8,6 @@ import StateMachine from 'ts-javascript-state-machine';
 import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { REGISTRATION_FSM_STATE } from './types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { format as StringFormat } from 'util';
 
 enum REGISTRATION_FSM_EVENT {
   PROVISION_READY = 'provisionReady',
@@ -85,35 +84,22 @@ class RTCRegistrationFSM extends StateMachine {
         onTransition(lifecycle) {
           rtcLogger.debug(
             'RTC_ACCOUNT_FSM',
-            StringFormat(
-              'Transition: %s from: %s to: %s',
-              String(lifecycle.transition),
-              String(lifecycle.from),
-              String(lifecycle.to),
-            ),
+            `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
+              lifecycle.to
+            }`,
           );
           return true;
         },
         onInvalidTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_ACCOUNT_FSM',
-            StringFormat(
-              'Invalid transition: %s from: %s to: %s',
-              String(transition),
-              String(from),
-              String(to),
-            ),
+            `Invalid transition: ${transition} from: ${from} to: ${to}`,
           );
         },
         onPendingTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_ACCOUNT_FSM',
-            StringFormat(
-              'Pending transition: %s from: %s to: %s',
-              String(transition),
-              String(from),
-              String(to),
-            ),
+            `Pending transition: ${transition} from: ${from} to: ${to}`,
           );
         },
       },
