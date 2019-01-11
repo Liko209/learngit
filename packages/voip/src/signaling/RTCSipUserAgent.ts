@@ -5,7 +5,8 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
-import { UA_EVENT } from './types';
+import { UA_EVENT, ProvisionDataOptions } from './types';
+import { RTCCallOptions } from '../api/types';
 
 const WebPhone = require('ringcentral-web-phone');
 
@@ -19,22 +20,35 @@ class RTCSipUserAgent implements IRTCUserAgent {
   private _webphone: any;
   private _eventEmitter: EventEmitter2;
 
-  constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
+  constructor(
+    provisionData: any,
+    options: ProvisionDataOptions,
+    eventEmitter: EventEmitter2,
+  ) {
     this._eventEmitter = eventEmitter;
     this._createWebPhone(provisionData, options);
   }
 
-  private _createWebPhone(provisionData: any, options: any) {
+  private _createWebPhone(provisionData: any, options: ProvisionDataOptions) {
     this._webphone = new WebPhone(provisionData, options);
     this._initListener();
   }
 
-  public register(options?: any): any {
-    return this._webphone.userAgent.register(options);
+  public register(options?: ProvisionDataOptions): void {
+    this._webphone.userAgent.register(options);
   }
 
-  public makeCall(phoneNumber: string, options: any): any {
+  public makeCall(phoneNumber: string, options: RTCCallOptions): any {
     return this._webphone.userAgent.invite(phoneNumber, options);
+  }
+
+  public reRegister() {
+    this._webphone.userAgent.transport.stopSendingKeepAlives();
+    this._webphone.userAgent.transport.connectionTimeout = null;
+    this._webphone.userAgent.transport.connectionPromise = null;
+    this._webphone.userAgent.transport.connectDeferredResolve = null;
+    this._webphone.userAgent.transport.status = 3;
+    this._webphone.userAgent.transport.reconnect();
   }
 
   private _initListener(): void {

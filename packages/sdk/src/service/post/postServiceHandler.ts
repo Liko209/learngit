@@ -146,9 +146,7 @@ class PostServiceHandler {
     oldPost.new_version = versionHash();
     oldPost.is_new = false;
     oldPost.text = params.text;
-    if (params.mentionsIds !== undefined && params.mentionsIds.length) {
-      oldPost.at_mention_non_item_ids = params.mentionsIds;
-    }
+    oldPost.at_mention_non_item_ids = params.mentionsIds || [];
     delete oldPost.likes; // do we need this ?
     oldPost._id = oldPost.id;
     delete oldPost.id;

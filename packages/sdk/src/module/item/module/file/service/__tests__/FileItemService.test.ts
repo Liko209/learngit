@@ -11,7 +11,6 @@ import { IItemService } from '../../../../service/IItemService';
 import { FileItemDao } from '../../dao/FileItemDao';
 import { FileItemService } from '../FileItemService';
 import { FileItem } from '../../entity';
-import { async } from 'q';
 
 jest.mock('../../controller/FileUploadController');
 jest.mock('../../controller/FileItemController');
@@ -93,9 +92,11 @@ describe('FileItemService', () => {
       setup();
     });
 
-    it('should return []', async () => {
+    it('should call fileItemDao and get result', async () => {
+      fileItemDao.getSortedIds = jest.fn().mockResolvedValue([1]);
       const res = await fileItemService.getSortedIds(1, 10, 0, 'name', true);
-      expect(res).toEqual([]);
+      expect(fileItemDao.getSortedIds).toBeCalledWith(1, 10, 0, 'name', true);
+      expect(res).toEqual([1]);
     });
   });
 
@@ -349,6 +350,19 @@ describe('FileItemService', () => {
         name: fileItem.name,
         type: fileItem.type,
       });
+    });
+  });
+
+  describe('getSubItemsCount()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call file item dao to get file count', async () => {
+      fileItemDao.getGroupItemCount = jest.fn();
+      await fileItemService.getSubItemsCount(111);
+      expect(fileItemDao.getGroupItemCount).toBeCalledWith(111);
     });
   });
 

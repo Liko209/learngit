@@ -11,10 +11,14 @@ import {
 
 class NetworkRequestDecorator implements INetworkRequestExecutor {
   private executor: INetworkRequestExecutor;
-  private decoration: IRequestDecoration;
+  private _decoration: IRequestDecoration;
 
   constructor(decoration: IRequestDecoration) {
-    this.decoration = decoration;
+    this._decoration = decoration;
+  }
+
+  get decoration() {
+    return this._decoration;
   }
 
   setExecutor(executor: INetworkRequestExecutor): INetworkRequestExecutor {

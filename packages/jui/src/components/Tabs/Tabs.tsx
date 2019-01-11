@@ -28,9 +28,11 @@ type States = {
   indexTabs: number[]; // show tab index
   indexMenus: number[]; // menu tab index, when length > 0, then it has more tab
   indexLazyLoadComponents: number[]; // lazy load container component index
+  remeasure: boolean;
 };
 
 type Props = {
+  width?: number; // resize
   tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
@@ -89,14 +91,26 @@ class JuiTabs extends PureComponent<Props, States> {
       openMenu: false,
       indexTabs: [],
       indexMenus: [],
+      remeasure: false,
     };
   }
 
   componentDidMount() {
+    this._measureMoreWidth();
+    this._measureTabWidths();
+    this._measureContainerWidth();
+    this._calculateIndexTabsAndIndexMenus();
+  }
+
+  private _measureMoreWidth = () => {
     const domMore = this._moreRef.current;
     if (domMore) {
       this._moreWidth = domMore.getBoundingClientRect().width;
     }
+    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+  }
+
+  private _measureContainerWidth = () => {
     const domContainer = this._containerRef.current;
     if (domContainer) {
       const cs = window.getComputedStyle(domContainer);
@@ -106,11 +120,7 @@ class JuiTabs extends PureComponent<Props, States> {
         parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
     // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
-    this._measureTabWidths();
-    this._calculateIndexTabsAndIndexMenus();
-    // todo resize listener
   }
 
   private _measureTabWidths = () => {
@@ -251,7 +261,7 @@ class JuiTabs extends PureComponent<Props, States> {
     });
   }
 
-  private _renderFinalTab = () => {
+  private _renderForShow = () => {
     const { indexTabs } = this.state;
     const tabs = indexTabs.map((item: number) =>
       this._renderStyledTab({ value: item, label: this._tabTitles[item] }),
@@ -285,7 +295,7 @@ class JuiTabs extends PureComponent<Props, States> {
     );
   }
 
-  private _renderAllTab = () => {
+  private _renderForMeasure = () => {
     const { children } = this.props;
     const tabs = Children.map(
       children,
@@ -301,17 +311,38 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   componentDidUpdate(prevProps: Props, prevState: States) {
-    const { indexTabs, indexMenus } = prevState;
-    if (
-      indexTabs.length > 0 &&
-      indexMenus.length > 0 &&
-      !this.state.indexTabs.includes(this.state.indexSelected)
-    ) {
+    const { indexTabs, indexSelected, remeasure } = this.state;
+    const { width } = this.props;
+
+    // selected menu list tab index
+    if (indexTabs.length > 0 && !indexTabs.includes(indexSelected)) {
       this._calculateIndexTabsAndIndexMenus();
+    }
+
+    // resize width
+    if (prevProps.width !== width) {
+      if (this._moreWidth === 0) {
+        this.setState({ remeasure: true });
+      } else {
+        // this._measureMoreWidth();
+        // this._measureTabWidths(); // Notes: menu list tab no ref
+        // Notes: only measure container width
+        this._measureContainerWidth();
+        this._calculateIndexTabsAndIndexMenus();
+      }
+    }
+
+    // remeasure width
+    if (remeasure && this._moreWidth === 0) {
+      this._measureMoreWidth();
+      this._measureTabWidths();
+      this._measureContainerWidth();
+      this._calculateIndexTabsAndIndexMenus();
+      this.setState({ remeasure: false });
     }
   }
 
-  renderContainer = () => {
+  renderContainers = () => {
     const { children } = this.props;
     const { indexSelected, indexLazyLoadComponents } = this.state;
     return Children.map(
@@ -331,29 +362,29 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   renderTabs = () => {
-    const { indexSelected, indexTabs, indexMenus } = this.state;
+    const { indexSelected, indexTabs } = this.state;
     // Notice:
-    // 1. first execute render indexTabs & indexMenus length equal 0
-    // 2. select menu list tab
-    if (
-      indexTabs.length > 0 &&
-      indexMenus.length > 0 &&
-      !indexTabs.includes(indexSelected)
-    ) {
-      return null;
+    // 1. when first execute render, then indexTabs length equal 0
+    // 2. when right rail hide, then indexTabs length equal 0
+    // 3. when select menu list tab, then selected tab index not mounted yet
+    let index: number | boolean = indexSelected;
+    if (indexTabs.length === 0 || !indexTabs.includes(index)) {
+      index = false; // It don't want any selected tab index
+    }
+    let measure = false;
+    if (this._moreWidth === 0) {
+      measure = true; // The width needs to be remeasured
     }
     return (
       <StyledTabs
-        value={indexSelected}
+        value={index}
         onChange={this._handleChangeTab}
         indicatorColor="primary"
         textColor="primary"
         classes={CLASSES.tabs}
         ref={this._containerRef}
       >
-        {indexTabs.length === 0 && indexMenus.length === 0
-          ? this._renderAllTab()
-          : this._renderFinalTab()}
+        {measure ? this._renderForMeasure() : this._renderForShow()}
       </StyledTabs>
     );
   }
@@ -362,7 +393,7 @@ class JuiTabs extends PureComponent<Props, States> {
     return (
       <StyledWrapper>
         {this.renderTabs()}
-        {this.renderContainer()}
+        {this.renderContainers()}
       </StyledWrapper>
     );
   }

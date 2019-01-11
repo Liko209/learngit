@@ -182,8 +182,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.forceSaveDraft();
     const items = this.items;
     try {
+      let realContent: string = content;
+      if (content.trim().length === 0) {
+        realContent = '';
+      }
       await this._postService.sendPost({
-        text: content,
+        text: realContent,
         groupId: this.id,
         itemIds: items.map(item => item.id),
         mentionIds: ids,
