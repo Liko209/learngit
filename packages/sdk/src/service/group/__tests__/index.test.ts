@@ -587,7 +587,7 @@ describe('GroupService', () => {
     });
   });
 
-  describe('get left rail conversations', () => {
+  describe.skip('get left rail conversations', () => {
     it('get left rail conversations', async () => {
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupsByIds.mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
