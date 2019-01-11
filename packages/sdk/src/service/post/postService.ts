@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { daoManager, PostDao, GroupConfigDao } from '../../dao';
+import { daoManager, PostDao, GroupConfigDao, PostViewDao } from '../../dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -76,8 +76,10 @@ class PostService extends BaseService<Post> {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
-    const postDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(
+    // const postDao = daoManager.getDao(PostDao);
+    // const posts: Post[] = await postDao.queryPostsByGroupId(
+    const postViewDap = daoManager.getDao(PostViewDao);
+    const posts: Post[] = await postViewDap.queryPostsByGroupId(
       groupId,
       postId,
       direction,
