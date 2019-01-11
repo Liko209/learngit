@@ -10,18 +10,19 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
 import { RTC_ACCOUNT_STATE } from '../api/types';
-import { UA_EVENT } from '../signaling/types';
+import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
 import {
   REGISTRATION_ERROR_CODE,
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
+  RTCRegisterAsyncTask,
 } from './types';
-import async from 'async';
+import async, { AsyncQueue } from 'async';
 
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
-  private _eventQueue: any;
+  private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
 
   public onRegistrationAction(): void {}
@@ -30,7 +31,10 @@ class RTCRegistrationManager extends EventEmitter2
     this._userAgent.reRegister();
   }
 
-  public onProvisionReadyAction(provisionData: any, options: any): void {
+  public onProvisionReadyAction(
+    provisionData: any,
+    options: ProvisionDataOptions,
+  ): void {
     this._userAgent = new RTCSipUserAgent(provisionData, options);
     this._initUserAgentListener();
   }
@@ -38,37 +42,39 @@ class RTCRegistrationManager extends EventEmitter2
   constructor() {
     super();
     this._fsm = new RTCRegistrationFSM(this);
-    this._eventQueue = async.queue((task: any, callback: any) => {
-      switch (task.name) {
-        case REGISTRATION_EVENT.PROVISION_READY: {
-          this._fsm.provisionReady(task.data, task.options);
-          break;
+    this._eventQueue = async.queue(
+      (task: RTCRegisterAsyncTask, callback: any) => {
+        switch (task.name) {
+          case REGISTRATION_EVENT.PROVISION_READY: {
+            this._fsm.provisionReady(task.provData, task.provOptions);
+            break;
+          }
+          case REGISTRATION_EVENT.RE_REGISTER: {
+            this._fsm.reRegister();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
+            this._fsm.regSuccess();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_REGISTER_FAILED: {
+            this._fsm.regFailed();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_REGISTER_TIMEOUT: {
+            this._fsm.regTimeout();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_UNREGISTERED: {
+            this._fsm.unregister();
+            break;
+          }
+          default:
+            break;
         }
-        case REGISTRATION_EVENT.RE_REGISTER: {
-          this._fsm.reRegister();
-          break;
-        }
-        case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
-          this._fsm.regSuccess();
-          break;
-        }
-        case REGISTRATION_EVENT.UA_REGISTER_FAILED: {
-          this._fsm.regFailed();
-          break;
-        }
-        case REGISTRATION_EVENT.UA_REGISTER_TIMEOUT: {
-          this._fsm.regTimeout();
-          break;
-        }
-        case REGISTRATION_EVENT.UA_UNREGISTERED: {
-          this._fsm.unregister();
-          break;
-        }
-        default:
-          break;
-      }
-      callback();
-    });
+        callback();
+      },
+    );
     this._initFsmObserve();
   }
 
@@ -134,8 +140,8 @@ class RTCRegistrationManager extends EventEmitter2
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.PROVISION_READY,
-        data: provisionData,
-        options: provisionOptions,
+        provData: provisionData,
+        provOptions: provisionOptions,
       },
       () => {},
     );

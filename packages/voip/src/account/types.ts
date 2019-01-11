@@ -3,6 +3,8 @@
  * @Date: 2018-12-27 17:42:00
  * Copyright © RingCentral. All rights reserved.
  */
+import { ProvisionDataOptions } from '../signaling/types';
+
 type RTCSipProvisionInfo = {
   sipFlags: object;
   device: {
@@ -14,6 +16,12 @@ type RTCSipProvisionInfo = {
     outboundProxy: string;
   }[];
   sipInfo: object;
+};
+
+type RTCRegisterAsyncTask = {
+  name: string;
+  provData?: any;
+  provOptions?: ProvisionDataOptions;
 };
 
 enum RTC_PROV_EVENT {
@@ -57,4 +65,5 @@ export {
   REGISTRATION_EVENT,
   RTC_PROV_EVENT,
   RTCSipProvisionInfo,
+  RTCRegisterAsyncTask,
 };
