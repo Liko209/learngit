@@ -1,14 +1,12 @@
 import LogManager from './LogManager';
-import emitter from './emitter';
-import Logger from './Logger';
-
+import { ILogger } from './types';
 const logManager = LogManager.Instance;
-const mainLogger: Logger = logManager.getMainLogger();
-const networkLogger: Logger = logManager.getNetworkLogger();
+const mainLogger: ILogger = logManager.getMainLogger();
+const networkLogger: ILogger = logManager.getNetworkLogger();
 
-emitter.on('doAppend', (overThreshold) => {
-  logManager.doAppend(overThreshold);
-});
+(<any>window).logger = mainLogger;
 
 export { LOG_LEVEL } from './constants';
 export { logManager, mainLogger, networkLogger };
+export * from './types';
+export * from './consumer';

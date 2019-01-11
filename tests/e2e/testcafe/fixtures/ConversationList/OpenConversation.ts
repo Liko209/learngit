@@ -27,7 +27,7 @@ test.skip(formalName('Should remains where it is when click a conversation in th
     const teamName2 = `Team 2 ${uuid()}`
     const teamsSection = app.homePage.messageTab.teamsSection;
 
-    let teamId, nth;
+    let teamId;
     await h(t).withLog('Given I have an extension with two conversation', async () => {
       await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Team',
@@ -49,14 +49,13 @@ test.skip(formalName('Should remains where it is when click a conversation in th
 
     await h(t).withLog('When I open the second conversation 2', async () => {
       await teamsSection.expand();
-      nth = (await teamsSection.conversations.count) - 1;
-      await teamsSection.nthConversationEntry(nth).enter();
+      await teamsSection.nthConversationEntry(-1).enter();
       teamId = await app.homePage.messageTab.conversationPage.currentGroupId;
       await t.wait(3e3); // wait api save in DB
     });
 
     await h(t).withLog('Then the conversation 2 still remain in the second', async () => {
-      await teamsSection.nthConversationEntry(nth).groupIdShouldBe(teamId);
+      await teamsSection.nthConversationEntry(-1).groupIdShouldBe(teamId);
     });
 
     await h(t).withLog('When I refresh page', async () => {

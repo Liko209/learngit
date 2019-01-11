@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 15:06:52
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiLock from '@material-ui/icons/Lock';
 import { JuiSearchItemValue } from '../';
@@ -73,7 +73,7 @@ type JuiSearchItemProps = {
   Avatar: JSX.Element;
   value: string;
   terms: string[];
-  Actions?: JSX.Element;
+  Actions?: ReactNode;
   isJoined?: boolean;
   isPrivate?: boolean;
   onClick: (event: React.MouseEvent<HTMLElement>) => void;

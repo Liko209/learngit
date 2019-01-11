@@ -266,7 +266,7 @@ describe('MoreVM', () => {
       ).toBe(false);
     });
 
-    it('should show more action when post only have files', () => {
+    it('should not show more action when post only have files', () => {
       (getEntity as jest.Mock).mockImplementation((type: string) => {
         if (type === ENTITY_NAME.POST) {
           return { itemIds: [1] };
@@ -275,7 +275,7 @@ describe('MoreVM', () => {
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
-      expect(ViewModel.showMoreAction).toBe(true);
+      expect(ViewModel.showMoreAction).toBe(false);
     });
   });
 

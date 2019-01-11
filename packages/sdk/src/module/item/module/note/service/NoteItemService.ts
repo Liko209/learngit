@@ -33,11 +33,15 @@ class NoteItemService extends EntityBaseService implements ISubItemService {
   getSortedIds(
     groupId: number,
     limit: number,
-    offset: number,
+    offsetItemId: number | undefined,
     sortKey: string,
     desc: boolean,
-  ): number[] {
-    return [];
+  ): Promise<number[]> {
+    return Promise.resolve([]);
+  }
+
+  async getSubItemsCount(groupId: number) {
+    return 0;
   }
 }
 

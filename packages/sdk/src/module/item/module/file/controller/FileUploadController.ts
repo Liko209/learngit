@@ -39,7 +39,7 @@ type ItemFileUploadStatus = {
 class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
-
+  private _canceledUploadFileIds: Set<number> = new Set();
   constructor(
     private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<ItemFile>,
@@ -242,6 +242,7 @@ class FileUploadController {
   }
 
   async cancelUpload(itemId: number) {
+    this._canceledUploadFileIds.add(itemId);
     const status = this._progressCaches.get(itemId);
     if (status) {
       if (status.requestHolder) {
@@ -469,7 +470,7 @@ class FileUploadController {
         preInsertItem,
       );
     } else {
-      this._handleItemFileSendFailed(preInsertItem.id);
+      this._handleItemFileSendFailed(itemId);
       mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
     }
   }
@@ -588,7 +589,7 @@ class FileUploadController {
   }
 
   private _handleItemFileSendFailed(preInsertId: number) {
-    if (!this._progressCaches.get(preInsertId)) {
+    if (this._canceledUploadFileIds.has(preInsertId)) {
       return;
     }
     this._updateFileProgress(preInsertId, PROGRESS_STATUS.FAIL);
