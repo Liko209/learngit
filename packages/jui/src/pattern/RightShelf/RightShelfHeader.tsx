@@ -28,7 +28,7 @@ const JuiRightShelfHeader = styled('div')`
 
 const JuiRightShelfHeaderText = styled('div')`
   flex: 1;
-  ${ellipsis}
+  ${ellipsis()}
 `;
 const JuiRightShelfHeaderIcon = styled('div')`
   display: inline-flex;
