@@ -7,6 +7,7 @@
 import { TeamController } from '../controller/TeamController';
 import { Group } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { TeamSetting } from '../types';
 
 class GroupService extends EntityBaseService<Group> {
   teamController: TeamController;
@@ -39,6 +40,20 @@ class GroupService extends EntityBaseService<Group> {
       .joinTeam(userId, teamId);
   }
 
+  async updateTeamSetting(
+    teamId: number,
+    teamSetting: TeamSetting,
+  ): Promise<TeamSetting> {
+    return await this.getTeamController()
+      .getTeamActionController()
+      .updateTeamSetting(teamId, teamSetting);
+  }
+
+  async getTeamSetting(teamId: number): Promise<TeamSetting> {
+    return await this.getTeamController()
+      .getTeamActionController()
+      .getTeamSetting(teamId);
+  }
 }
 
 export { GroupService };

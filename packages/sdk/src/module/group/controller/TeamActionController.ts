@@ -9,19 +9,19 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 import { Api } from '../../../api';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
-
+import { TeamSetting } from '../types';
+import { PERMISSION_ENUM } from '../../../service/constants';
 class TeamActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Group>,
     public requestController: IRequestController<Group>,
     public controllerBuilder: IControllerBuilder<Group>,
-  ) { }
+  ) {}
 
   isInTeam(userId: number, team: Group) {
-    return team
-      && team.is_team
-      && team.members
-      && team.members.includes(userId);
+    return (
+      team && team.is_team && team.members && team.members.includes(userId)
+    );
   }
 
   canJoinTeam(team: Group) {
@@ -48,10 +48,29 @@ class TeamActionController {
       .buildRequestController({
         basePath: '/add_team_members',
         networkClient: Api.glipNetworkClient,
-      }).put({
+      })
+      .put({
         members,
         id: teamId,
       });
+  }
+
+  async updateTeamSetting(
+    teamId: number,
+    teamSetting: TeamSetting,
+  ): Promise<TeamSetting> {
+    return teamSetting;
+  }
+
+  async getTeamSetting(teamId: number): Promise<TeamSetting> {
+    return {
+      name: 'test name',
+      description: 'this is a desc',
+      isPublic: true,
+      permissionMap: {
+        [PERMISSION_ENUM.TEAM_ADD_MEMBER]: true,
+      },
+    };
   }
 }
 
