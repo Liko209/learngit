@@ -35,6 +35,7 @@ class TelephonyEngineController {
 
   initEngine() {
     this.rtcEngine = RTCEngine.getInstance();
+    this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
   }
 }
 

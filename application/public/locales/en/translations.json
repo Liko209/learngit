@@ -153,6 +153,7 @@
   "guest": "Guest",
   "admin": "Admin",
   "message": "Message",
+  "JoinTeamNotAuthorizedError": "Sorry, we weren't able to let you join the team. This team is changed to a private team, please contact the team administrator.",
   "more": "More",
   "close": "Close",
   "company": "Company",

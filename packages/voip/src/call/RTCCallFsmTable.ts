@@ -6,7 +6,6 @@
 import StateMachine from 'ts-javascript-state-machine';
 import { RTC_CALL_ACTION } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { format as StringFormat } from 'util';
 
 const CallFsmState = {
   IDLE: 'idle',
@@ -220,35 +219,22 @@ class RTCCallFsmTable extends StateMachine {
         onTransition(lifecycle) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            StringFormat(
-              'Transition: %s from: %s to: %s',
-              String(lifecycle.transition),
-              String(lifecycle.from),
-              String(lifecycle.to),
-            ),
+            `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
+              lifecycle.to
+            }`,
           );
           return true;
         },
         onInvalidTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            StringFormat(
-              'Invalid transition: %s from: %s to: %s',
-              String(transition),
-              String(from),
-              String(to),
-            ),
+            `Invalid transition: ${transition} from: ${from} to: ${to}`,
           );
         },
         onPendingTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            StringFormat(
-              'Call FSM: Pending transition: %s from: %s to: %s',
-              String(transition),
-              String(from),
-              String(to),
-            ),
+            `Pending transition: ${transition} from: ${from} to: ${to}`,
           );
         },
       },
