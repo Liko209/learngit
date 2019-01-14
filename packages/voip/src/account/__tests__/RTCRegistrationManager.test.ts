@@ -159,7 +159,7 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it('Should do nothing when networkChangeToOnline() is called and FSM.state is "unregistered" [JPT-801]', () => {
+    it('Should do nothing when networkChangeToOnline() is called and FSM.state is "unregistered" [JPT-802]', () => {
       const regManager = new RTCRegistrationManager();
       const ua = new MockUserAgent();
       initRegManager(regManager, ua);
