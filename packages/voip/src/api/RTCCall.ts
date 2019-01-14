@@ -220,7 +220,10 @@ class RTCCall {
         break;
       }
     }
-    this._delegate.onCallActionSuccess(callAction, params);
+
+    params
+      ? this._delegate.onCallActionSuccess(callAction, params)
+      : this._delegate.onCallActionSuccess(callAction);
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {

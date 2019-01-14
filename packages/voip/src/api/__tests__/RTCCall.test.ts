@@ -45,6 +45,7 @@ describe('RTC call', () => {
     startRecord = jest.fn();
     stopRecord = jest.fn();
     transfer = jest.fn();
+    park = jest.fn();
 
     mockSignal(signal: string): void {
       this.emit(signal);
