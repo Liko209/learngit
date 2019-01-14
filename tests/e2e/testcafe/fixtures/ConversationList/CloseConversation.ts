@@ -15,7 +15,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
+    const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfile();
@@ -25,7 +25,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     const teamsSection = app.homePage.messageTab.teamsSection;
 
     let pvtChatId, favChatId, teamId, currentGroupId;
-    await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat (favorite) and I team chat', async () => {
+    await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat (in favorite) and I team chat', async () => {
       pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId],
@@ -114,7 +114,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
+    const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfile();
@@ -197,7 +197,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
+    const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfile();
@@ -300,7 +300,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
+    const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfile();
@@ -399,7 +399,6 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
   const loginUser = users[4];
   const otherUser = users[5];
 
-  await h(t).resetGlipAccount(loginUser);
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
   await h(t).platform(otherUser).init();

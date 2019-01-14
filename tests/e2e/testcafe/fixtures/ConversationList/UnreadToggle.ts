@@ -25,6 +25,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
@@ -68,8 +69,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
       });
     });
 
-    await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await h(t).glip(loginUser).resetProfile();
+    await h(t).withLog('And favorite 2 conversation before login', async () => {
       await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favPrivateChatId, +favTeamId]);
     });
 

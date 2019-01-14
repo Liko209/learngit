@@ -22,6 +22,7 @@ test(formalName('Team section display the conversation which the login user as o
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
 
     let teamId;
@@ -31,10 +32,6 @@ test(formalName('Team section display the conversation which the login user as o
         name: `Team ${uuid()}`,
         members: [loginUser.rcId, users[5].rcId],
       });
-    });
-
-    await h(t).withLog('And the team should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -64,6 +61,7 @@ test(formalName('Each conversation should be represented by the team name.',
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const teamName = `Team ${uuid()}`;
 
@@ -74,10 +72,6 @@ test(formalName('Each conversation should be represented by the team name.',
         name: teamName,
         members: [loginUser.rcId, users[5].rcId],
       });
-    });
-
-    await h(t).withLog('And the team should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -116,6 +110,7 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
 
 
   let teamOneId, teamTwoId;
@@ -131,10 +126,6 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
       name: `Team 2 ${uuid()}`,
       members: [loginUser.rcId, users[5].rcId],
     });
-  });
-
-  await h(t).withLog('And the team should not be hidden before login', async () => {
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamOneId, teamTwoId]);
   });
 
   await h(t).withLog('Send a new post to team1', async () => {
