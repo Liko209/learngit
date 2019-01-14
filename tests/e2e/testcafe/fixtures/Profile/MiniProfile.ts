@@ -183,7 +183,8 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
   await h(t).platform(otherUser).init();
   const app = new AppRoot(t);
   const miniProfile = app.homePage.miniProfile;
-  const conversationPage = app.homePage.messageTab.conversationPage
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
 
   let pvtChatId,teamId, meMentionPost, contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I an extension with 1 private chat and one team with some mention posts ', async () => {
@@ -215,14 +216,9 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     contactMention: contactMentionPost,
     teamMention: teamMentionPost,
   }
-
-  const dmSection = app.homePage.messageTab.directMessagesSection;
-  const teamsSection = app.homePage.messageTab.teamsSection;
-  const favoritesSection = app.homePage.messageTab.favoritesSection;
-
   const groupIdList = {
-    pvtChatId,
-    teamId,
+    contactMention: pvtChatId,
+    teamMention: teamId,
     }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}, and enter the created team`, async () => {
@@ -236,7 +232,7 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     await h(t).glip(loginUser).clearFavoriteGroups();
   });
    
-  for (let key in postList) {
+  for (const key in postList) {
     const post = postList[key];
     await h(t).withLog(`When I click the ${key}`, async () => {
       await t.click(post.mentions);
@@ -255,18 +251,11 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
       await t.click(conversationPage.messageInputArea);
     });
-  }
-  
-
-  for(let key in groupIdList){
     const chatId = groupIdList[key];
     await h(t).withLog(`And The ${key} conversation move to favorites section`, async () => {
       await t.expect(favoritesSection.conversationEntryById(chatId).exists).ok();
     });
-  }
 
-  for (let key in postList) {
-    const post = postList[key];
     await h(t).withLog(`When I click the ${key}`, async () => {
       await t.click(post.mentions);
     });
@@ -285,12 +274,8 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
       await t.click(conversationPage.messageInputArea);
     });
-  }
-
-  for(let key in groupIdList){
-    const chat = groupIdList[key];
     await h(t).withLog(`And The ${key} conversation move to original section`, async () => {
-      await t.expect(favoritesSection.conversationEntryById(chat).exists).notOk();
+      await t.expect(favoritesSection.conversationEntryById(chatId).exists).notOk();
     });
   }
 });
