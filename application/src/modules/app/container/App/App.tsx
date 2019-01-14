@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
+import { observer } from 'mobx-react';
 import { hot } from 'react-hot-loader';
 import { container } from 'framework';
 import ThemeProvider from '@/containers/ThemeProvider';
@@ -19,9 +20,11 @@ import { TopBanner } from '@/containers/TopBanner';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
 
+@observer
 class App extends React.Component {
   // TODO use @lazyInject(Upgrade)
   private readonly _upgradeHandler: Upgrade = container.get(Upgrade);
+  private _globalStore = storeManager.getGlobalStore();
   private appName = process.env.APP_NAME || '';
   private _unListenHistory: VoidFunction;
 
@@ -39,17 +42,20 @@ class App extends React.Component {
     analytics.bootstrap();
   }
 
+  @computed
   get dialogInfo() {
-    const globalStore = storeManager.getGlobalStore();
-    const isShowDialog = globalStore.get(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
-    const appVersion = globalStore.get(GLOBAL_KEYS.APP_VERSION);
-    const electronVersion = globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
+    const isShowDialog = this._globalStore.get(
+      GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG,
+    );
+    const appVersion = this._globalStore.get(GLOBAL_KEYS.APP_VERSION);
+    const electronVersion = this._globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
     return {
       isShowDialog,
       appVersion,
       electronVersion,
     };
   }
+
   public render() {
     const { isShowDialog, appVersion, electronVersion } = this.dialogInfo;
     return (
