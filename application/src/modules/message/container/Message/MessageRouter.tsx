@@ -12,6 +12,13 @@ import {
   RouteComponentProps,
 } from 'react-router-dom';
 import { t } from 'i18next';
+import { observer } from 'mobx-react';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import {
+  JuiResponsiveLayout,
+  withResponsive,
+  VISUAL_MODE,
+} from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
   goToConversation,
@@ -22,8 +29,46 @@ import { ConversationPage } from '@/containers/ConversationPage';
 import { PostListPage } from '@/containers/PostListPage';
 import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
 import { RightRail } from '@/containers/RightRail';
-import { MessageLayout } from '../MessageLayout/MessageLayout';
+import { LeftRail } from '@/containers/LeftRail';
+import { RightRail, TriggerButton } from '@/containers/RightRail';
+import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
+import {
+  goToConversation,
+  GoToConversationParams,
+} from '@/common/goToConversation';
+
+import { MessagesViewProps } from './types';
+import { PostListPage } from '../PostListPage';
+import { POST_LIST_TYPE } from '../PostListPage/types';
 import { MessageRouterChangeHelper } from './helper';
+
+const LeftRailResponsive = withResponsive(LeftRail, {
+  maxWidth: 360,
+  minWidth: 180,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.AUTOMATIC,
+  enable: {
+    right: true,
+  },
+  priority: 1,
+});
+
+const SwitchResponsive = withResponsive(Switch, {
+  minWidth: 400,
+  priority: 2,
+});
+
+const RightRailResponsive = withResponsive(RightRail, {
+  TriggerButton,
+  maxWidth: 360,
+  minWidth: 180,
+  defaultWidth: 268,
+  visualMode: VISUAL_MODE.BOTH,
+  enable: {
+    left: true,
+  },
+  priority: 3,
+});
 
 type State = {
   messageError: boolean;
@@ -74,13 +119,13 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   }
 
   render() {
-    const { match } = this.props;
+    const { isLeftNavOpen } = this.props;
     const { messageError } = this.state;
 
     return (
-      <MessageLayout>
-        <LeftRail />
-        <Switch>
+      <JuiResponsiveLayout>
+        <LeftRailResponsive />
+        <SwitchResponsive>
           <Route
             path={'/messages/loading'}
             render={() => (
@@ -113,9 +158,9 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
               />
             )}
           />
-        </Switch>
+        </SwitchResponsive>
         {MessageRouterChangeHelper.isConversation(match.params.subPath) ? (
-          <RightRail id={Number(match.params.subPath)} />
+          <RightRailResponsive id={Number(match.params.subPath)} />
         ) : null}
       </MessageLayout>
     );

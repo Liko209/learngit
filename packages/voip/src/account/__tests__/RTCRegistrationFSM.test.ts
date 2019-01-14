@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTCRegistrationFSM } from '../RTCRegistrationFSM';
-import { IConditionalHandler } from '../IConditionalHandler';
-import { RegistrationState } from '../types';
+import { IRTCRegistrationFsmDependency } from '../IRTCRegistrationFsmDependency';
+import { REGISTRATION_FSM_STATE } from '../types';
 
-class MockHandler implements IConditionalHandler {
-  onReadyWhenRegSucceedAction = jest.fn();
+class MockHandler implements IRTCRegistrationFsmDependency {
+  onRegistrationAction = jest.fn();
   onProvisionReadyAction = jest.fn();
   onReRegisterAction = jest.fn();
 }
@@ -21,7 +21,7 @@ describe('RTCRegistrationFSM', () => {
     it('Should be idle state when create', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
-      expect(fsm.state).toBe(RegistrationState.IDLE);
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IDLE);
     });
   });
 
@@ -30,7 +30,7 @@ describe('RTCRegistrationFSM', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      expect(fsm.state).toBe(RegistrationState.REG_IN_PROGRESS);
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IN_PROGRESS);
       expect(mockHandler.onProvisionReadyAction).toHaveBeenCalledWith(
         provisionData,
         options,
@@ -43,28 +43,28 @@ describe('RTCRegistrationFSM', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      fsm.regSucceed();
-      expect(fsm.state).toBe(RegistrationState.READY);
+      fsm.regSuccess();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
     });
 
     it('Should transition from ready state to ready state when regSucceed fired in ready state [JPT-530]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      fsm.regSucceed();
-      fsm.regSucceed();
-      expect(fsm.state).toBe(RegistrationState.READY);
-      expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
+      fsm.regSuccess();
+      fsm.regSuccess();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      expect(mockHandler.onRegistrationAction).toHaveBeenCalled();
     });
 
     it('Should transition from failed state to ready state when regSucceed fired in ready state [JPT-529]', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      fsm.regError();
-      fsm.regSucceed();
-      expect(fsm.state).toBe(RegistrationState.READY);
-      expect(mockHandler.onReadyWhenRegSucceedAction).toHaveBeenCalled();
+      fsm.regFailed();
+      fsm.regSuccess();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      expect(mockHandler.onRegistrationAction).toHaveBeenCalled();
     });
   });
 
@@ -73,8 +73,17 @@ describe('RTCRegistrationFSM', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      fsm.regTimeOut();
-      expect(fsm.state).toBe(RegistrationState.REG_FAILURE);
+      fsm.regTimeout();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
+    });
+
+    it('Should transition from ready state to regFailure state when time out [JPT-785]', () => {
+      const mockHandler = new MockHandler();
+      const fsm = new RTCRegistrationFSM(mockHandler);
+      fsm.provisionReady(provisionData, options);
+      fsm.regSuccess();
+      fsm.regTimeout();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
     });
   });
 
@@ -83,8 +92,17 @@ describe('RTCRegistrationFSM', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      fsm.regError();
-      expect(fsm.state).toBe(RegistrationState.REG_FAILURE);
+      fsm.regFailed();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
+    });
+
+    it('Should transition from ready state to regFailure state when error [JPT-761]', () => {
+      const mockHandler = new MockHandler();
+      const fsm = new RTCRegistrationFSM(mockHandler);
+      fsm.provisionReady(provisionData, options);
+      fsm.regSuccess();
+      fsm.regFailed();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
     });
   });
 
@@ -93,9 +111,9 @@ describe('RTCRegistrationFSM', () => {
       const mockHandler = new MockHandler();
       const fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
-      fsm.regSucceed();
-      fsm.unRegister();
-      expect(fsm.state).toBe(RegistrationState.UN_REGISTERED);
+      fsm.regSuccess();
+      fsm.unregister();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.UNREGISTERED);
     });
   });
 });

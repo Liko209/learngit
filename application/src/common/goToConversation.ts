@@ -10,6 +10,8 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 type GoToConversationParams = {
   id: number | number[];
   message?: string;
+  beforeJump?: (id: number) => {};
+  hasBeforeJumpFun?: boolean;
 };
 
 const getConversationId = async (id: number | number[]) => {
@@ -35,22 +37,31 @@ const getConversationId = async (id: number | number[]) => {
   return null;
 };
 
+const goToConversationCallBackName = Symbol('goToConversationCallBackName');
 async function goToConversation(params: GoToConversationParams) {
-  const { id, message } = params;
-  const { PostService } = service;
+  const { id, beforeJump, hasBeforeJumpFun } = params;
   history.push('/messages/loading');
+  let beforeJumpFun;
+  if (beforeJump) {
+    beforeJumpFun = beforeJump;
+  } else {
+    beforeJumpFun = window[goToConversationCallBackName];
+    window[goToConversationCallBackName] = null;
+  }
   try {
     const conversationId = await getConversationId(id);
     if (!conversationId) {
       throw new Error('Conversation not found.');
     }
-    if (message && conversationId) {
-      const postService: service.PostService = PostService.getInstance();
-      await postService.sendPost({ groupId: conversationId, text: message });
-    }
+    (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
     history.replace(`/messages/${conversationId}`);
     return true;
   } catch (err) {
+    if (beforeJump) {
+      window[goToConversationCallBackName] = beforeJump;
+      delete params.beforeJump;
+      params.hasBeforeJumpFun = true;
+    }
     history.replace('/messages/loading', {
       params,
       error: true,
