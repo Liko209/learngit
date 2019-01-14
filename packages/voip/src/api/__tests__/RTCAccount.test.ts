@@ -30,10 +30,12 @@ describe('RTCAccount', async () => {
     it('should _onNetworkChangeToOnline() is called when rtcNetworkNotificationCenter call _onOnline()', done => {
       const mockListener = new MockAccountListener();
       const account = new RTCAccount(mockListener);
-      jest.spyOn(account, '_onNetworkChangeToOnline').mockClear();
+      jest.spyOn(account, '_onNetworkChange').mockClear();
       rtcNetworkNotificationCenter._onOnline();
       setImmediate(() => {
-        expect(account._onNetworkChangeToOnline).toHaveBeenCalled();
+        expect(account._onNetworkChange).toHaveBeenCalledWith({
+          state: 'online',
+        });
         done();
       });
     });

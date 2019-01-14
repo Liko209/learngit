@@ -6,7 +6,6 @@
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
 import { UA_EVENT } from '../../signaling/types';
 import { EventEmitter2 } from 'eventemitter2';
-import { setupMaster } from 'cluster';
 
 class MockUserAgent extends EventEmitter2 {
   constructor() {

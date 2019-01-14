@@ -79,7 +79,13 @@ class RTCAccount implements IRTCAccount {
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
-    this._onNetworkChange();
+
+    rtcNetworkNotificationCenter.on(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      (params: any) => {
+        this._onNetworkChange(params);
+      },
+    );
   }
 
   private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -116,19 +122,10 @@ class RTCAccount implements IRTCAccount {
     this._regManager.provisionReady(sipProv, info);
   }
 
-  private _onNetworkChange() {
-    rtcNetworkNotificationCenter.on(
-      RTC_NETWORK_EVENT.NETWORK_CHANGE,
-      (params: any) => {
-        if (RTC_NETWORK_STATE.ONLINE === params.state) {
-          this._onNetworkChangeToOnline();
-        }
-      },
-    );
-  }
-
-  private _onNetworkChangeToOnline() {
-    this._regManager.networkChangeToOnline();
+  private _onNetworkChange(params: any) {
+    if (RTC_NETWORK_STATE.ONLINE === params.state) {
+      this._regManager.networkChangeToOnline();
+    }
   }
 }
 
