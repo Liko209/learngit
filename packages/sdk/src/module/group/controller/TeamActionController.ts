@@ -85,6 +85,40 @@ class TeamActionController {
         id: teamId,
       });
   }
+
+  async addTeamMembers(members: number[], teamId: number) {
+    return this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, OriginalEntity) => {
+        return {
+          ...partialEntity,
+          members: OriginalEntity.members.concat(members),
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this.requestAddTeamMembers(teamId, members);
+      },
+    );
+  }
+
+  async removeTeamMembers(members: number[], teamId: number) {
+    return this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, OriginalEntity) => {
+        const memberSet: Set<number> = new Set(OriginalEntity.members);
+        members.forEach((member: number) => {
+          memberSet.delete(member);
+        });
+        return {
+          ...partialEntity,
+          members: Array.from(memberSet),
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this.requestRemoveTeamMembers(teamId, members);
+      },
+    );
+  }
 }
 
 export { TeamActionController };

@@ -5,8 +5,9 @@
  */
 
 import { TeamController } from '../controller/TeamController';
-import { Group } from '../entity';
+import { Group, TeamPermission } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { PERMISSION_ENUM } from '../constants';
 
 class GroupService extends EntityBaseService<Group> {
   teamController: TeamController;
@@ -43,6 +44,36 @@ class GroupService extends EntityBaseService<Group> {
     return await this.getTeamController()
       .getTeamActionController()
       .leaveTeam(userId, teamId);
+  }
+
+  async addTeamMembers(
+    members: number[],
+    teamId: number,
+  ): Promise<Group | null> {
+    return await this.getTeamController()
+      .getTeamActionController()
+      .addTeamMembers(members, teamId);
+  }
+
+  async removeTeamMembers(
+    members: number[],
+    teamId: number,
+  ): Promise<Group | null> {
+    return await this.getTeamController()
+      .getTeamActionController()
+      .removeTeamMembers(members, teamId);
+  }
+
+  isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .isCurrentUserHasPermission(group, type);
+  }
+
+  isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .isTeamAdmin(personId, permission);
   }
 }
 

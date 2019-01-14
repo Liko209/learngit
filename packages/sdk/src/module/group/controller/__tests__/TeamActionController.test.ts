@@ -13,9 +13,26 @@ import { ControllerBuilder } from '../../../../framework/controller/impl/Control
 import { IControllerBuilder } from '../../../../framework/controller/interface/IControllerBuilder';
 import { Api } from '../../../../api';
 import { NetworkManager, OAuthTokenManager } from 'foundation/src';
+import { Raw } from '../../../../framework/model';
 
 class TestPartialModifyController implements IPartialModifyController<Group> {
-  updatePartially = jest.fn();
+  updatePartially = jest.fn(
+    (
+      entityId: number,
+      preHandlePartialEntity: (
+        partialEntity: Partial<Raw<Group>>,
+        originalEntity: Group,
+      ) => Partial<Raw<Group>>,
+      doUpdateEntity: (updatedEntity: Group) => Promise<Group>,
+    ) => {
+      const originalEntity: Group = groupFactory.build({
+        is_team: true,
+        members: [5683, 55668833, 540524],
+      });
+      const partialEntity: any = {};
+      return preHandlePartialEntity(partialEntity, originalEntity);
+    },
+  );
   getMergedEntity = jest.fn();
   getRollbackPartialEntity = jest.fn();
 }
@@ -96,12 +113,58 @@ describe('TeamController', () => {
     it('should call partial modify controller. [JPT-719]', async () => {
       await teamActionController.joinTeam(123, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toReturnWith({
+        members: [5683, 55668833, 540524, 123],
+      });
     });
   });
-  describe('requestAddTeamMember()', () => {
+
+  describe('leaveTeam()', () => {
+    it('should call partial modify controller.', async () => {
+      await teamActionController.leaveTeam(5683, 2);
+      expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toReturnWith({
+        members: [55668833, 540524],
+      });
+    });
+  });
+
+  describe('addTeamMembers()', () => {
+    it('should call partial modify controller.', async () => {
+      await teamActionController.addTeamMembers([123, 456], 2);
+      expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toReturnWith({
+        members: [5683, 55668833, 540524, 123, 456],
+      });
+    });
+  });
+
+  describe('removeTeamMembers()', () => {
+    it('should call partial modify controller.', async () => {
+      await teamActionController.removeTeamMembers([540524, 5683], 2);
+      expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toReturnWith({
+        members: [55668833],
+      });
+    });
+  });
+
+  describe('requestAddTeamMembers()', () => {
     it('should call api with correct params. [JPT-719]', async () => {
       Api.init({}, new NetworkManager(new OAuthTokenManager()));
       await teamActionController.requestAddTeamMembers(2, [123]);
+
+      expect(testRequestController.put).toBeCalledWith({
+        id: 2,
+        members: [123],
+      });
+    });
+  });
+
+  describe('requestRemoveTeamMembers()', () => {
+    it('should call api with correct params.', async () => {
+      Api.init({}, new NetworkManager(new OAuthTokenManager()));
+      await teamActionController.requestRemoveTeamMembers(2, [123]);
 
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
