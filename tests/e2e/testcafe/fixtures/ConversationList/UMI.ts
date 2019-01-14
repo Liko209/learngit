@@ -25,8 +25,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   await h(t).glip(loginUser).init();
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
-
-
+  await h(t).glip(loginUser).resetProfile();
 
   let pvtChatId, groupId, teamId, groupConversation, teamConversation;
   await h(t).withLog('Given I have an extension with certain conversations', async () => {
@@ -43,11 +42,6 @@ test(formalName('UMI should be added received messages count in conversations', 
       name: `My Team ${uuid()}`,
       members: [loginUser.rcId, users[5].rcId],
     });
-  });
-
-  await h(t).withLog('And the conversations should not be hidden before login', async () => {
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, groupId, teamId]);
-    await h(t).glip(loginUser).clearFavoriteGroups();
   });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
@@ -129,6 +123,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -148,11 +143,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
       });
     },
   );
-
-  await h(t).withLog('And the conversations should not be hidden before login', async () => {
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, pvtChatId);
-    await h(t).glip(loginUser).clearFavoriteGroups();
-  });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
     await h(t).glip(loginUser).clearAllUmi();
@@ -206,35 +196,26 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
-
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
 
   let pvtChatId, teamId, pvtChat, team;
-  await h(t).withLog('Given I have an extension with a team and a private chat',
-    async () => {
-      pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId],
-      });
-      teamId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `My Team ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId],
-      });
-    },
-  );
-
-  await h(t).withLog('And the conversations should not be hidden and not favorite before login',
-    async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, pvtChatId);
-      await h(t).glip(loginUser).clearFavoriteGroups();
-    },
-  );
+  await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
+    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'PrivateChat',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'Team',
+      name: `My Team ${uuid()}`,
+      members: [loginUser.rcId, users[5].rcId],
+    });
+   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
     async () => {
@@ -279,6 +260,7 @@ test(formalName('Should not display UMI when section is expended & Should displa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -320,20 +302,9 @@ test(formalName('Should not display UMI when section is expended & Should displa
         name: `My Team ${uuid()}`,
         members: [loginUser.rcId, users[5].rcId],
       });
-    },
-    );
+    });
 
-    await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      const groups = [
-        favPrivateChatId,
-        favTeamId,
-        groupId1,
-        groupId2,
-        groupId3,
-        teamId1,
-        teamId2
-      ]
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, groups);
+    await h(t).withLog('And favorite 2 conversation before login', async () => {
       await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favPrivateChatId, +favTeamId]);
     });
 
@@ -341,18 +312,14 @@ test(formalName('Should not display UMI when section is expended & Should displa
       await h(t).glip(loginUser).clearAllUmi();
     });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, loginUser);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
 
-    await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected',
-      async () => {
-        await directMessagesSection.conversationEntryById(groupId3).enter();
-      },
-    );
+    await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected', async () => {
+      await directMessagesSection.conversationEntryById(groupId3).enter();
+    });
 
 
     await h(t).withLog('When other user send normal posts to all other conversations', async () => {
@@ -443,6 +410,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -472,18 +440,6 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
       name: `My Team ${uuid()}`,
       members: [loginUser.rcId, users[5].rcId],
     });
-  });
-
-  await h(t).withLog('And the conversations should not be hidden before login', async () => {
-    const groups = [
-      groupId1,
-      groupId2,
-      groupId3,
-      teamId1,
-      teamId2,
-    ]
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, groups);
-    await h(t).glip(loginUser).clearFavoriteGroups();
   });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
@@ -588,6 +544,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -603,8 +560,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       for (var i = 0; i < 15; i++) {
         await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
       }
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, pvtChatId);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
@@ -653,6 +608,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -667,8 +623,6 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
         members: [loginUser.rcId, users[5].rcId]
       });
       await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, pvtChatId);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
@@ -715,7 +669,7 @@ test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246
         members: [loginUser.rcId, users[5].rcId]
       });
       await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, pvtChatId);
+      await h(t).glip(loginUser).resetProfile();
     });
 
     await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
