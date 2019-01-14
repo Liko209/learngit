@@ -6,7 +6,7 @@
 
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
-import { PostService, StateService, ENTITY, EVENT_TYPES } from 'sdk/service';
+import { PostService, StateService, ENTITY } from 'sdk/service';
 import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
@@ -28,7 +28,7 @@ import {
   loadingTop,
   loadingBottom,
 } from '@/plugins/InfiniteListPlugin';
-import { getEntity, getGlobalValue, transform2Map } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps, StreamItem, TDeltaWithData } from './types';
 
@@ -43,12 +43,6 @@ import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/N
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
-
-const transformFunc = <T extends { id: number }>(dataModel: T) => ({
-  id: dataModel.id,
-  sortValue: dataModel.id,
-  data: dataModel,
-});
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
@@ -66,14 +60,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get items() {
-    return _(this.streamListHandler.sortableListStore.items)
-      .map('data')
-      .compact()
-      .value();
+    return this.streamListHandler;
   }
 
   private orderListHandler: FetchSortableDataListHandler<Post>;
-  private streamListHandler: FetchSortableDataListHandler<StreamItem>;
+  @observable
+  private streamListHandler: StreamItem[] = [];
 
   @computed
   get hasHistoryUnread() {
@@ -156,13 +148,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
-    this.streamListHandler = new FetchSortableDataListHandler<StreamItem>(
-      undefined,
-      {
-        transformFunc,
-        isMatchFunc: () => true,
-      },
-    );
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this.assemblyLine = new StreamItemAssemblyLine([
       new DateSeparator(),
@@ -235,9 +220,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     super.dispose();
     if (this.orderListHandler) {
       this.orderListHandler.dispose();
-    }
-    if (this.streamListHandler) {
-      this.streamListHandler.dispose();
     }
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     const globalStore = storeManager.getGlobalStore();
@@ -333,23 +315,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
     const { newItems } = this.assemblyLine.process(
       delta,
-      this.orderListHandler.listStore.items,
+      this.orderListHandler.listStore.items.slice(),
       this.hasMoreUp,
-      this.items,
+      this.items.slice(),
       this._readThrough,
     );
-    console.log('sorting over', newItems);
     if (newItems) {
-      this.streamListHandler.onDataChanged({
-        type: EVENT_TYPES.REPLACE,
-        body: {
-          isReplaceAll: true,
-          ids: _(newItems)
-            .map('id')
-            .value(),
-          entities: transform2Map(newItems),
-        },
-      });
+      this.streamListHandler = newItems;
     }
     console.log('sorting used', performance.now() - t);
   }

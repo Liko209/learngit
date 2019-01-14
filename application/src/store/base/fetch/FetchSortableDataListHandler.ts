@@ -28,7 +28,7 @@ import {
   IFetchDataListHandlerOptions,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
-import { mainLogger } from 'sdk/src';
+import { mainLogger } from 'sdk';
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {

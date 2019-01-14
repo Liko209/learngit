@@ -5,7 +5,7 @@
  */
 import { TDeltaWithData, StreamItem } from '../types';
 import { Assembler } from './Assembler/Assembler';
-import { Post } from 'sdk/src/module/post/entity';
+import { Post } from 'sdk/module/post/entity';
 import { ISortableModel } from '@/store/base';
 
 export class StreamItemAssemblyLine {
