@@ -20,7 +20,6 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
 
@@ -55,7 +54,7 @@ test(formalName('Open mini profile via post avatar then open conversation', ['JP
     await app.homePage.ensureLoaded();
   });
 
-  for (let key in postList) {
+  for (const key in postList) {
     const post = postList[key];
     let top, left, postUserName;
     await h(t).withLog(`When I enter the create team and then click ${key} avatar`, async () => {
@@ -94,7 +93,6 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
 
@@ -142,7 +140,7 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
   });
 
-  for (let key in postList) {
+  for (const key in postList) {
     const post = postList[key];
     await h(t).withLog(`When I click the ${key}`, async () => {
       await t.click(post.mentions);
@@ -157,6 +155,7 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
       });
     }, true);
 
+    const miniProfileId = await miniProfile.getId();
     await h(t).withLog('When I click "Profile" button on MiniProfile', async () => {
       await miniProfile.openProfile();
     });
@@ -164,10 +163,10 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
     await h(t).withLog('Then the profile dialog should be popup', async () => {
       await profileDialog.shouldBePopUp();
     });
-    const miniProfileId = await miniProfile.getId();
+
     await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${miniProfileId}`, async () => {
       const profileDialogId = await profileDialog.getId();
-      await t.expect(profileDialogId).eql(miniProfileId)
+      await t.expect(profileDialogId).eql(miniProfileId);
       await profileDialog.close();
     });
   }
@@ -179,14 +178,17 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
+  
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
+
   const app = new AppRoot(t);
   const miniProfile = app.homePage.miniProfile;
   const conversationPage = app.homePage.messageTab.conversationPage;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
 
-  let pvtChatId,teamId, meMentionPost, contactMentionPost, teamMentionPost;
+  let pvtChatId, teamId, contactMentionPost, teamMentionPost;
   await h(t).withLog('Given I an extension with 1 private chat and one team with some mention posts ', async () => {
     pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
@@ -219,7 +221,7 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
   const groupIdList = {
     contactMention: pvtChatId,
     teamMention: teamId,
-    }
+  }
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}, and enter the created team`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -227,11 +229,6 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
   });
 
-  await h(t).withLog('All conversations should not be hidden and Unfavorite before login', async () => {
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, teamId]);
-    await h(t).glip(loginUser).clearFavoriteGroups();
-  });
-   
   for (const key in postList) {
     const post = postList[key];
     await h(t).withLog(`When I click the ${key}`, async () => {
@@ -241,16 +238,20 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     await h(t).withLog('Then the mini profile dialog should be showed', async () => {
       await miniProfile.shouldBePopUp();
     });
+
     await h(t).withLog('`When I click "unfavorite" icon', async () => {
       await t.click(miniProfile.unFavoriteStatusIcon);
     });
+
     await h(t).withLog(`The "unfavorite" icon change to "favorite" icon`, async () => {
       await t.expect(miniProfile.unFavoriteStatusIcon.exists).notOk();
       await t.expect(miniProfile.favoriteStatusIcon.exists).ok();
     });
+
     await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
       await t.click(conversationPage.messageInputArea);
     });
+
     const chatId = groupIdList[key];
     await h(t).withLog(`And The ${key} conversation move to favorites section`, async () => {
       await t.expect(favoritesSection.conversationEntryById(chatId).exists).ok();
@@ -263,17 +264,20 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
     await h(t).withLog('Then the mini profile dialog should be showed', async () => {
       await miniProfile.shouldBePopUp();
     });
+
     await h(t).withLog('`When I click "favorite" icon', async () => {
       await t.click(miniProfile.favoriteStatusIcon);
     });
-    
+
     await h(t).withLog(`The "favorite" icon change to "unfavorite" icon`, async () => {
       await t.expect(miniProfile.favoriteStatusIcon.exists).notOk();
       await t.expect(miniProfile.unFavoriteStatusIcon.exists).ok();
     });
+
     await h(t).withLog('And I can cancel Mini Profile via click other area', async () => {
       await t.click(conversationPage.messageInputArea);
     });
+
     await h(t).withLog(`And The ${key} conversation move to original section`, async () => {
       await t.expect(favoritesSection.conversationEntryById(chatId).exists).notOk();
     });
