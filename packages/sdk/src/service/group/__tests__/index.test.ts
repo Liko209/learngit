@@ -587,14 +587,16 @@ describe('GroupService', () => {
     });
   });
 
-  describe.skip('get left rail conversations', () => {
+  describe('get left rail conversations', () => {
     it('get left rail conversations', async () => {
+      jest.spyOn(groupService, 'isCacheInitialized').mockReturnValue(false);
+      const mock = [{ id: 1 }, { id: 2 }];
       daoManager.getDao.mockReturnValue(groupDao);
-      groupDao.queryGroupsByIds.mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
-      groupDao.queryGroups.mockResolvedValueOnce([{ id: 3 }]);
-      groupDao.queryGroups.mockResolvedValueOnce([{ id: 4 }]);
+      groupDao.queryGroupsByIds.mockResolvedValue(mock);
+      groupDao.queryGroups.mockResolvedValue([{ id: 3 }]);
+      filterGroups.mockResolvedValue(mock);
       const groups = await groupService.getLeftRailGroups();
-      expect(groups.length).toBe(2);
+      expect(groups.length).toBe(4);
     });
   });
 

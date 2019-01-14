@@ -127,7 +127,7 @@ describe('BaseService', () => {
       expect(result).toEqual({ id: 1 });
     });
 
-    it.only('should return data from dao when cache not return value', async () => {
+    it('should return data from dao when cache not return value', async () => {
       const service = new AService();
       jest.spyOn(service, 'isCacheInitialized').mockReturnValueOnce(true);
       jest.spyOn(service, 'getEntityFromCache').mockReturnValueOnce(undefined);
