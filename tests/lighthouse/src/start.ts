@@ -15,7 +15,8 @@ import {
   RefreshScene,
   OfflineScene,
   SwitchConversationScene,
-  SearchScene
+  SearchScene,
+  FetchGroupScene
 } from "./scenes";
 
 const logger = logUtils.getLogger(__filename);
@@ -43,7 +44,8 @@ const logger = logUtils.getLogger(__filename);
         "506503174",
         "506445830"
       ]),
-      new SearchScene(`${host}`, taskDto, ["John", "Doe", "Team", "kamino"])
+      new SearchScene(`${host}`, taskDto, ["John", "Doe", "Team", "kamino"]),
+      new FetchGroupScene(`${host}`, taskDto)
     ];
 
     let result = true;

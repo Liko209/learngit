@@ -8,6 +8,7 @@ import { OfflineScene } from "./OfflineScene";
 import { RefreshScene } from "./RefreshScene";
 import { SwitchConversationScene } from "./SwitchConversationScene";
 import { SearchScene } from "./SearchScene";
+import { FetchGroupScene } from "./FetchGroupScene";
 
 export {
   Scene,
@@ -15,5 +16,6 @@ export {
   OfflineScene,
   RefreshScene,
   SwitchConversationScene,
-  SearchScene
+  SearchScene,
+  FetchGroupScene
 };
