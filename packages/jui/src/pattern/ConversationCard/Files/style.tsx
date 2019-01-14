@@ -5,13 +5,13 @@
  */
 import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
+import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
 import {
   JuiTypography,
   JuiTypographyProps,
 } from '../../../foundation/Typography';
-import { JuiListItemText } from '../../../components/Lists';
 import { JuiCardMedia, JuiCard } from '../../../components/Cards';
 import styled from '../../../foundation/styled-components';
 import {
@@ -61,7 +61,7 @@ const FileIcon = styled<FileIconProps, 'div'>('div')`
   margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
 `;
 
-const FileInfo = styled(JuiListItemText)`
+const FileInfo = styled(MuiListItemText)`
   && {
     display: flex;
     flex-direction: column;

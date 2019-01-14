@@ -20,10 +20,11 @@ class SortUtils {
     if (lhsType === rhsType) {
       switch (rhsType) {
         case 'string':
-        case 'number':
           return desc
             ? natureCompare(rhsValue, lhsValue)
             : natureCompare(lhsValue, rhsValue);
+        case 'number':
+          return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
         default:
           return 0;
       }

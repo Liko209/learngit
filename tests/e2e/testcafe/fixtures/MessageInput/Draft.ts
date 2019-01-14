@@ -23,7 +23,7 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-
+    await h(t).glip(loginUser).resetProfile();
 
     let teamId1, teamId2, conversation1, conversation2;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
@@ -37,10 +37,6 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
         name: `2 ${uuid()}`,
         members: [loginUser.rcId, users[5].rcId, users[6].rcId]
       });
-    });
-
-    await h(t).withLog('Both conversation should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId1, teamId2]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -105,10 +101,6 @@ test(formalName('Show massage draft if only has files when switching conversatio
         name: `2 ${uuid()}`,
         members: [loginUser.rcId, users[5].rcId, users[6].rcId]
       });
-    });
-
-    await h(t).withLog('Both conversation should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId1, teamId2]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,

@@ -408,14 +408,14 @@ export class PostItem extends BaseWebComponent {
   }
 
   async getLikeCount() {
-    if (!await this.likeCount.exists) {
-      return 0;
-    }
-    const text = await this.likeCount.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    return Number(text);
+    return await this.getNumber(this.likeCount);
+  }
+
+  async likeShouleBe(n: number, maxRetry = 5, interval = 5e3) {
+    await H.retryUntilPass(async () => {
+      const likes = await this.getLikeCount();
+      assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);
+    }, maxRetry, interval);
   }
 
   async clickBookmarkToggle() {

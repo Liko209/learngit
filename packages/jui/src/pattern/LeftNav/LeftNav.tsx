@@ -5,26 +5,24 @@
  */
 import React, { PureComponent } from 'react';
 import MuiList from '@material-ui/core/List/index';
+import MuiListItem from '@material-ui/core/ListItem';
+import MuiListItemText from '@material-ui/core/ListItemText';
+import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
 import { height, grey, palette, spacing } from '../../foundation/utils/styles';
 
-import {
-  JuiListItem,
-  JuiListItemIcon,
-  JuiListItemText,
-} from '../../components/Lists';
 const MaxWidth = 200;
 const MinWidth = 72;
-
 type LeftNavProps = {
   expand: boolean;
 } & DrawerProps;
 const CustomLeftNav: React.SFC<LeftNavProps> = ({ expand, ...props }) => {
   return <MuiDrawer {...props} />;
 };
+
 const Left = styled<LeftNavProps>(CustomLeftNav)`
   && {
     height: 100%; // safari compatibility
@@ -54,11 +52,23 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
   }
 `;
 
-const StyledListItem = styled(JuiListItem)`
+const StyledListItem = styled(MuiListItem)`
   && {
     padding: 0;
     height: ${height(11)};
     outline: none;
+    white-space: nowrap;
+    background: white;
+    color: ${grey('900')};
+    /**
+   * Workaround to resolve transition conflicts with react-sortable-hoc
+   * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
+   */
+    transition: transform 0s ease,
+      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  }
+  &&:focus {
+    background: ${grey('300')};
   }
   &&.selected {
     background: transparent;
@@ -86,7 +96,7 @@ const StyledListItem = styled(JuiListItem)`
     }
   }
 `;
-const StyledListItemText = styled(JuiListItemText)`
+const StyledListItemText = styled(MuiListItemText)`
   && {
     color: ${grey('500')}; // 500
     padding: 0;
@@ -128,11 +138,14 @@ const ListLink = styled.a`
   }
 `;
 
-const UmiWrapper = styled<{ expand: boolean }, 'div'>('div')`
+const UmiWrapper = styled.div<{ expand: boolean }>`
   display: flex;
   position: ${props => (!props.expand ? 'absolute' : 'static')};
   top: ${props => (!props.expand ? spacing(1) : '')};
   left: ${props => (!props.expand ? spacing(8) : '')};
+  .umi {
+    color: #fff !important;
+  }
 `;
 
 type JuiLeftNavProps = {
@@ -188,9 +201,9 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
                   className={`left-link ${selected ? 'active' : ''}`}
                   onClick={this.onRouteChange(navUrl)}
                 >
-                  <JuiListItemIcon className={'nav-icon'}>
+                  <MuiListItemIcon className={'nav-icon'}>
                     <JuiIconography>{item.icon}</JuiIconography>
-                  </JuiListItemIcon>
+                  </MuiListItemIcon>
                   <StyledListItemText
                     primary={item.title}
                     className={'nav-text'}

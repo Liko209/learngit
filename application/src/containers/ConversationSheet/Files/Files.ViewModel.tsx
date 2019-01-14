@@ -24,7 +24,7 @@ import {
 import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
-import { getFileType } from '../helper';
+import { getFileType } from '@/common/getFileType';
 import PostModel from '@/store/models/Post';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
