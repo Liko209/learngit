@@ -25,16 +25,23 @@ class MockUserAgent extends EventEmitter2 {
 }
 
 describe('RTCAccount', async () => {
-  it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {
-    const mockListener = new MockAccountListener();
-    const account = new RTCAccount(mockListener);
-    const ua = new MockUserAgent();
+  let mockListener: MockAccountListener;
+  let account: RTCAccount;
+  let ua: MockUserAgent;
+  function tearupAccount() {
+    mockListener = new MockAccountListener();
+    account = new RTCAccount(mockListener);
+    ua = new MockUserAgent();
     jest
       .spyOn(account._regManager, 'onProvisionReadyAction')
       .mockImplementation(() => {});
     account._regManager._userAgent = ua;
     account._regManager._initUserAgentListener();
-    account.handleProvisioning();
+    account._onNewProv({});
+  }
+
+  it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {
+    tearupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
@@ -47,15 +54,7 @@ describe('RTCAccount', async () => {
   });
 
   it('Should  Report InProgress state to upper layer when account state transient to InProgress [JPT-524]', done => {
-    const mockListener = new MockAccountListener();
-    const account = new RTCAccount(mockListener);
-    const ua = new MockUserAgent();
-    jest
-      .spyOn(account._regManager, 'onProvisionReadyAction')
-      .mockImplementation(() => {});
-    account._regManager._userAgent = ua;
-    account._regManager._initUserAgentListener();
-    account.handleProvisioning();
+    tearupAccount();
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.IN_PROGRESS,
@@ -69,15 +68,7 @@ describe('RTCAccount', async () => {
   });
 
   it('Should  Report failed state to upper layer when account state transient to failed [JPT-525]', done => {
-    const mockListener = new MockAccountListener();
-    const account = new RTCAccount(mockListener);
-    const ua = new MockUserAgent();
-    jest
-      .spyOn(account._regManager, 'onProvisionReadyAction')
-      .mockImplementation(() => {});
-    account._regManager._userAgent = ua;
-    account._regManager._initUserAgentListener();
-    account.handleProvisioning();
+    tearupAccount();
     ua.mockSignal(UA_EVENT.REG_FAILED);
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(
@@ -92,15 +83,7 @@ describe('RTCAccount', async () => {
   });
 
   it('Should  Report unregistered state to upper layer when account state transient to unregistered [JPT-562]', done => {
-    const mockListener = new MockAccountListener();
-    const account = new RTCAccount(mockListener);
-    const ua = new MockUserAgent();
-    jest
-      .spyOn(account._regManager, 'onProvisionReadyAction')
-      .mockImplementation(() => {});
-    account._regManager._userAgent = ua;
-    account._regManager._initUserAgentListener();
-    account.handleProvisioning();
+    tearupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     ua.mockSignal(UA_EVENT.REG_UNREGISTER);
     setImmediate(() => {

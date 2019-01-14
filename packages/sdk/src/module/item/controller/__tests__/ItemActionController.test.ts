@@ -1,0 +1,90 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-09 15:00:47
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { ProgressService } from '../../../progress';
+import notificationCenter from '../../../../service/notificationCenter';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../../utils/glip-type-dictionary';
+import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import { ItemActionController } from '../ItemActionController';
+import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
+import { Item } from '../../entity';
+import { RequestController } from '../../../../framework/controller/impl/RequestController';
+import { Api } from '../../../../api';
+
+jest.mock('../../../../api');
+jest.mock('../../../../framework/controller/impl/ControllerBuilder');
+jest.mock('../../../progress');
+jest.mock('../../../../service/notificationCenter');
+jest.mock('../../service/IItemService');
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
+describe('', () => {
+  const itemService = {
+    deleteItem: jest.fn(),
+  };
+  const controllerBuilder = new ControllerBuilder<Item>();
+  const requestController = new RequestController<Item>(null);
+  const partialUpdateController = new PartialModifyController<Item>(null);
+  const itemActionController = new ItemActionController(
+    partialUpdateController,
+  );
+  const progressService = new ProgressService();
+
+  function setUp() {
+    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+    ControllerBuilder.getControllerBuilder = jest
+      .fn()
+      .mockReturnValue(controllerBuilder);
+    controllerBuilder.buildRequestController = jest
+      .fn()
+      .mockReturnValue(requestController);
+  }
+  beforeEach(() => {
+    clearMocks();
+  });
+
+  describe('deleteItem()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+
+      requestController.put = jest.fn();
+      progressService.deleteProgress = jest.fn();
+      notificationCenter.emitEntityDelete = jest.fn();
+    });
+
+    it('should call ItemAPI when item id > 0', async () => {
+      const normalId = Math.abs(
+        GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
+      );
+
+      await itemActionController.deleteItem(normalId, itemService);
+      expect(requestController.put).toBeCalledWith({
+        id: normalId,
+        deactivated: true,
+      });
+      expect(progressService.deleteProgress).not.toBeCalled();
+      expect(notificationCenter.emitEntityDelete).not.toBeCalled();
+    });
+
+    it('should just delete item when item id < 0', async () => {
+      const negativeId = GlipTypeUtil.generatePseudoIdByType(
+        TypeDictionary.TYPE_ID_FILE,
+      );
+      await itemActionController.deleteItem(negativeId, itemService);
+      expect(requestController.put).not.toBeCalled();
+      expect(notificationCenter.emitEntityDelete).toBeCalled();
+      expect(progressService.deleteProgress).toBeCalled();
+    });
+  });
+});

@@ -6,6 +6,7 @@
 interface IRTCRegistrationFsmDependency {
   onRegistrationAction(): void;
   onProvisionReadyAction(provisionData: any, options: any): void;
+  onReRegisterAction(): void;
 }
 
 export { IRTCRegistrationFsmDependency };
