@@ -16,4 +16,10 @@ const JuiRightShelf = styled('div')`
   flex-direction: column;
 `;
 
-export { JuiRightShelf };
+const JuiRightShelfContent = styled.div`
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+`;
+
+export { JuiRightShelf, JuiRightShelfContent };
