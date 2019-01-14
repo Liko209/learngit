@@ -8,12 +8,8 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import {
-  ItemService,
-  ItemFilterUtils,
-  ITEM_SORT_KEYS,
-  RIGHT_RAIL_ITEM_TYPE,
-} from 'sdk/module/item';
+import { ItemService, ItemFilterUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
 import { SortUtils } from 'sdk/framework/utils';
 import { Item } from 'sdk/module/item/entity';
 import {
@@ -23,16 +19,10 @@ import {
 } from '@/store/base/fetch';
 import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
-import { ITEM_LIST_TYPE } from '../types';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
-const RightRailItemTypeMap = {
-  [ITEM_LIST_TYPE.FILE]: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
-  [ITEM_LIST_TYPE.IMAGE]: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
-};
-
 const ItemTypeIdMap = {
-  [ITEM_LIST_TYPE.FILE]: TypeDictionary.TYPE_ID_FILE,
+  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: TypeDictionary.TYPE_ID_FILE,
 };
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
@@ -84,7 +74,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   private get _rightRailItemType() {
-    return RightRailItemTypeMap[this.type];
+    return this.type;
   }
 
   @computed
@@ -131,7 +121,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
-      this._rightRailItemType,
+      this.type,
     );
   }
 

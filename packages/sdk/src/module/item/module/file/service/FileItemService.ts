@@ -14,7 +14,7 @@ import { IItemService } from '../../../service/IItemService';
 import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
 import { ItemQueryOptions } from '../../../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
 class FileItemService extends EntityBaseService<ItemFile>
   implements ISubItemService {
   private _fileItemController: FileItemController;

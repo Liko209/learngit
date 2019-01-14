@@ -8,7 +8,7 @@ import { Post } from '../../post/entity';
 import { Item, ItemFile } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
 import { ItemQueryOptions } from '../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../constants';
 
 interface IItemService {
   getItems(options: ItemQueryOptions): Promise<Item[]>;

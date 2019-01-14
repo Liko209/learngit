@@ -21,7 +21,7 @@ import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions } from '../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../constants';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';

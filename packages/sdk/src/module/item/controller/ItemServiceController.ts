@@ -14,7 +14,7 @@ import { daoManager, ItemDao } from '../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions } from '../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../constants';
 
 const ITemTypeIdMap: Map<RIGHT_RAIL_ITEM_TYPE, number> = new Map([
   [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],

@@ -15,7 +15,7 @@ import {
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList } from './ItemList';
-import { ITEM_LIST_TYPE } from './types';
+import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
 import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -75,7 +75,7 @@ class RightRailComponent extends React.Component<Props> {
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
             {TAB_CONFIG.map(
               (
-                { title, type }: { title: string; type: ITEM_LIST_TYPE },
+                { title, type }: { title: string; type: RIGHT_RAIL_ITEM_TYPE },
                 index: number,
               ) => (
                 <JuiTab key={index} title={t(title)}>

@@ -12,7 +12,7 @@ import LinksEmptyImage from '../images/Links.svg';
 import NotesEmptyImage from '../images/Notes.svg';
 import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
-import { ITEM_LIST_TYPE } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
 
 type EmptyConfig = {
   text: string;
@@ -22,14 +22,14 @@ type EmptyConfig = {
 
 type TabConfig = {
   title: string;
-  type: ITEM_LIST_TYPE;
+  type: RIGHT_RAIL_ITEM_TYPE;
   empty: EmptyConfig;
 };
 
 const TAB_CONFIG: TabConfig[] = [
   {
     title: 'pinned',
-    type: ITEM_LIST_TYPE.PIN,
+    type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
     empty: {
       text: 'youHaveNothingPinnedYet',
       content: 'noPinSubText',
@@ -38,7 +38,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'files',
-    type: ITEM_LIST_TYPE.FILE,
+    type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
     empty: {
       text: 'noFilesSharedYet',
       content: 'noFileSubText',
@@ -47,7 +47,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'images',
-    type: ITEM_LIST_TYPE.IMAGE,
+    type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
     empty: {
       text: 'noImagesSharedYet',
       content: 'noImageSubText',
@@ -56,7 +56,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'tasks',
-    type: ITEM_LIST_TYPE.TASK,
+    type: RIGHT_RAIL_ITEM_TYPE.TASKS,
     empty: {
       text: 'noTasksYet',
       content: 'noTaskSubText',
@@ -65,7 +65,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'links',
-    type: ITEM_LIST_TYPE.LINK,
+    type: RIGHT_RAIL_ITEM_TYPE.LINKS,
     empty: {
       text: 'noLinksSharedYet',
       content: 'noLinkSubText',
@@ -74,7 +74,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'notes',
-    type: ITEM_LIST_TYPE.NOTE,
+    type: RIGHT_RAIL_ITEM_TYPE.NOTES,
     empty: {
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',
@@ -83,7 +83,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'events',
-    type: ITEM_LIST_TYPE.EVENT,
+    type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',
@@ -92,7 +92,7 @@ const TAB_CONFIG: TabConfig[] = [
   },
   {
     title: 'integrations',
-    type: ITEM_LIST_TYPE.INTEGRATION,
+    type: RIGHT_RAIL_ITEM_TYPE.INTEGRATIONS,
     empty: {
       text: 'noIntegrationInstallationYet',
       content: 'noIntegrationSubText',

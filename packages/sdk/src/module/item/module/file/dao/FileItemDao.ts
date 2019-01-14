@@ -7,7 +7,7 @@
 import { SanitizedFileItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
 import { IDatabase } from 'foundation';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
 import { ItemFilterUtils } from '../../../utils';
 
 class FileItemDao extends SubItemDao<SanitizedFileItem> {

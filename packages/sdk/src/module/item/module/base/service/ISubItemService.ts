@@ -6,7 +6,7 @@
 
 import { Item } from '../entity';
 import { ItemQueryOptions } from '../../../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
 
 interface ISubItemService {
   getSortedIds(options: ItemQueryOptions): Promise<number[]>;
