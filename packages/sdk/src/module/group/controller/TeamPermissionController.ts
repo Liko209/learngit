@@ -23,9 +23,9 @@ class TeamPermissionController {
     const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
     const companyId = accountDao.get(ACCOUNT_COMPANY_ID);
     const guestUserCompanyIds = group.guest_user_company_ids;
-    return (
-      (guestUserCompanyIds && guestUserCompanyIds.includes(companyId)) || false
-    );
+    return guestUserCompanyIds
+      ? guestUserCompanyIds.includes(companyId)
+      : false;
   }
 
   getCurrentUserPermissionLevel(group: Group): number {

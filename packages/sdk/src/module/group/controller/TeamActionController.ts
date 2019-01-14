@@ -58,11 +58,9 @@ class TeamActionController {
     return this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
-        const members: number[] = originalEntity.members;
-        const index = members.indexOf(userId);
-        if (index > -1) {
-          members.splice(index, 1);
-        }
+        const members: number[] = originalEntity.members.filter(
+          member => member !== userId,
+        );
         return {
           ...partialEntity,
           members,
@@ -89,10 +87,10 @@ class TeamActionController {
   async addTeamMembers(members: number[], teamId: number) {
     return this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, OriginalEntity) => {
+      (partialEntity, originalEntity) => {
         return {
           ...partialEntity,
-          members: OriginalEntity.members.concat(members),
+          members: originalEntity.members.concat(members),
         };
       },
       async (updateEntity: Group) => {
@@ -104,8 +102,8 @@ class TeamActionController {
   async removeTeamMembers(members: number[], teamId: number) {
     return this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, OriginalEntity) => {
-        const memberSet: Set<number> = new Set(OriginalEntity.members);
+      (partialEntity, originalEntity) => {
+        const memberSet: Set<number> = new Set(originalEntity.members);
         members.forEach((member: number) => {
           memberSet.delete(member);
         });
