@@ -76,7 +76,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     return (
       <>
         {totalCount > 0 && (
-          <JuiListSubheader>
+          <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
             {t(subheaderText)} ({totalCount})
           </JuiListSubheader>
         )}

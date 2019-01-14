@@ -35,6 +35,7 @@ class FileItemView extends Component<FileItemProps> {
 
     return (
       <JuiListItem
+        data-test-automation-id="rightRail-file-item"
         disabled={disabled}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
