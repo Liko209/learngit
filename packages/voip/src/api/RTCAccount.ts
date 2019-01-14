@@ -18,6 +18,8 @@ import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
 import { RTC_ACCOUNT_STATE } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
+import { rtcNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 
 const options = {
   appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
@@ -77,6 +79,7 @@ class RTCAccount implements IRTCAccount {
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
+    this._onNetworkChange();
   }
 
   private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -111,6 +114,21 @@ class RTCAccount implements IRTCAccount {
       },
     };
     this._regManager.provisionReady(sipProv, info);
+  }
+
+  private _onNetworkChange() {
+    rtcNetworkNotificationCenter.on(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      (params: any) => {
+        if (RTC_NETWORK_STATE.ONLINE === params.state) {
+          this._onNetworkChangeToOnline();
+        }
+      },
+    );
+  }
+
+  private _onNetworkChangeToOnline() {
+    this._regManager.networkChangeToOnline();
   }
 }
 

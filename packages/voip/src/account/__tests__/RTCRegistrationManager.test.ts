@@ -6,6 +6,7 @@
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
 import { UA_EVENT } from '../../signaling/types';
 import { EventEmitter2 } from 'eventemitter2';
+import { setupMaster } from 'cluster';
 
 class MockUserAgent extends EventEmitter2 {
   constructor() {
@@ -95,13 +96,91 @@ describe('RTCRegistrationManager', () => {
     });
   });
 
+  describe('networkChangeToOnline()', () => {
+    function initRegManager(
+      regManager: RTCRegistrationManager,
+      ua: MockUserAgent,
+    ) {
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      jest.spyOn(regManager, 'reRegister').mockImplementation(() => {});
+      regManager.provisionReady(provisionData, options);
+      regManager._userAgent = ua;
+      regManager._initUserAgentListener();
+    }
+
+    it('Should call reRegister() and FSM.state is "inProgress" when networkChangeToOnline() is called and FSM.state is "inProgress" [JPT-798]', () => {
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
+      initRegManager(regManager, ua);
+      regManager.networkChangeToOnline();
+      setImmediate(() => {
+        expect(regManager._fsm.state).toBe('inProgress');
+        expect(regManager.reRegister).toHaveBeenCalledWith();
+      });
+    });
+
+    it('Should call reRegister() and FSM.state is "ready" when networkChangeToOnline() is called and FSM.state is "ready" [JPT-800]', () => {
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
+      initRegManager(regManager, ua);
+      ua.mockSignal(UA_EVENT.REG_SUCCESS);
+      regManager.networkChangeToOnline();
+      setImmediate(() => {
+        expect(regManager._fsm.state).toBe('inProgress');
+        expect(regManager.reRegister).toHaveBeenCalledWith();
+      });
+    });
+
+    it('Should call reRegister() and FSM.state is "failed" when networkChangeToOnline() is called and FSM.state is "failed" [JPT-799]', () => {
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
+      initRegManager(regManager, ua);
+      ua.mockSignal(UA_EVENT.REG_FAILED);
+      regManager.networkChangeToOnline();
+      setImmediate(() => {
+        expect(regManager._fsm.state).toBe('inProgress');
+        expect(regManager.reRegister).toHaveBeenCalledWith();
+      });
+    });
+
+    it('Should do nothing when networkChangeToOnline() is called and FSM.state is "idle" [JPT-801]', () => {
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      jest.spyOn(regManager, 'reRegister').mockImplementation(() => {});
+      regManager._userAgent = ua;
+      regManager.networkChangeToOnline();
+      setImmediate(() => {
+        expect(regManager._fsm.state).toBe('idle');
+        expect(regManager.reRegister).not.toHaveBeenCalledWith();
+      });
+    });
+
+    it('Should do nothing when networkChangeToOnline() is called and FSM.state is "unregistered" [JPT-801]', () => {
+      const regManager = new RTCRegistrationManager();
+      const ua = new MockUserAgent();
+      initRegManager(regManager, ua);
+      ua.mockSignal(UA_EVENT.REG_SUCCESS);
+      ua.mockSignal(UA_EVENT.REG_UNREGISTER);
+      regManager.networkChangeToOnline();
+      setImmediate(() => {
+        expect(regManager._fsm.state).toBe('unregistered');
+        expect(regManager.reRegister).not.toHaveBeenCalledWith();
+      });
+    });
+  });
+
   describe('makeCall()', () => {
     it('Should call the makeCall function of WebPhone when RTCRegManager makeCall', () => {
       const regManager = new RTCRegistrationManager();
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
-      regManager.provisionReady('provisionData', 'options');
+      regManager.provisionReady(provisionData, options);
       regManager._userAgent = new MockUserAgent();
       regManager._initUserAgentListener();
       regManager.createOutgoingCallSession(phoneNumber, options);
@@ -118,7 +197,7 @@ describe('RTCRegistrationManager', () => {
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
         .mockImplementation(() => {});
-      regManager.provisionReady('provisionData', 'options');
+      regManager.provisionReady(provisionData, options);
       jest.spyOn(regManager, '_onUAReceiveInvite');
       const ua = new MockUserAgent();
       regManager._userAgent = ua;
