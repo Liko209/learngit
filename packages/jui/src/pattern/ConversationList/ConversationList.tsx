@@ -33,7 +33,7 @@ class JuiConversationList extends PureComponent<JuiConversationListProps> {
   render() {
     const { children, onChange, ...rest } = this.props;
     return (
-      <StyledList component="div" onClick={this._handleChange} {...rest}>
+      <StyledList onClick={this._handleChange} {...rest}>
         {children}
       </StyledList>
     );
