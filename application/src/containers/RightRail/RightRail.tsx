@@ -14,6 +14,9 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { ItemList } from './ItemList';
+import { ITEM_LIST_TYPE } from './types';
+import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 
 type Props = {
@@ -65,35 +68,21 @@ class RightRailComponent extends React.Component<Props> {
   }
 
   private _renderTabs = () => {
-    const { t } = this.props;
+    const { t, id } = this.props;
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
-            <JuiTab key={0} title={t('pinned')}>
-              <div>Pinned List</div>
-            </JuiTab>
-            <JuiTab key={1} title={t('files')}>
-              <div>Files List</div>
-            </JuiTab>
-            <JuiTab key={2} title={t('images')}>
-              <div>Images List</div>
-            </JuiTab>
-            <JuiTab key={4} title={t('tasks')}>
-              <div>Tasks List</div>
-            </JuiTab>
-            <JuiTab key={3} title={t('links')}>
-              <div>Links List</div>
-            </JuiTab>
-            <JuiTab key={5} title={t('notes')}>
-              <div>Notes List</div>
-            </JuiTab>
-            <JuiTab key={6} title={t('events')}>
-              <div>Events List</div>
-            </JuiTab>
-            <JuiTab key={7} title={t('integrations')}>
-              <div>Integrations List</div>
-            </JuiTab>
+            {TAB_CONFIG.map(
+              (
+                { title, type }: { title: string; type: ITEM_LIST_TYPE },
+                index: number,
+              ) => (
+                <JuiTab key={index} title={t(title)}>
+                  <ItemList type={type} groupId={id} />
+                </JuiTab>
+              ),
+            )}
           </JuiTabs>
         )}
       </ReactResizeDetector>
