@@ -7,3 +7,4 @@
 export * from './VirtualList';
 export * from './VirtualListDataSource';
 export * from './VirtualCell';
+export * from './VirtualListWrapper';

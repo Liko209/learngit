@@ -181,14 +181,14 @@ export class GlipSdk {
   }
 
   async getTeamsIds() {
-    const teams = (await this.getTeams()).data.teams;
+    const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
     const ids = teams.filter(team => team['_id']).map(team => team['_id']);
     return ids;
   }
 
   async getCompanyTeamId() {
-    const teams = (await this.getTeams()).data.teams;
+    const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
     const ids = teams.filter(team => team["is_company_team"] == true).map(team => team['_id']);
     return ids;
@@ -323,8 +323,12 @@ export class GlipSdk {
   }
 
   async resetProfile(rcId?: string) {
-    const groupList = await this.getTeamsIds();
-    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+    const currentProfile = await this.getProfile().then(res => res.data);
+    const groups = Object.keys(currentProfile)
+      .filter((key: string) => {
+        return (/hide_group_/.test(key)) && (currentProfile[key] == true);
+      });
+    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
 
     const initData = {
       model_size: 0,
@@ -346,15 +350,11 @@ export class GlipSdk {
       favorite_group_ids: [+meChatId],
       me_tab: true,
       skip_close_conversation_confirmation: false,
-      max_leftrail_group_tabs2: 20
+      max_leftrail_group_tabs2: 20,
+      favorite_post_ids: []
     }
-    const data = _.assign(
-      initData,
-      ...groupList.map(id => (
-        { [`hide_group_${id}`]: false })
-      )
-    );
-    await this.updateProfile(rcId, data);
+    const data = _.assign(initData, ...groups.map(key => ({ [key]: false })));
+    return await this.updateProfile(rcId, data);
   }
 
   /* state */
@@ -468,7 +468,7 @@ export class GlipSdk {
     await this.updateProfile(rcId, data);
   }
 
-  async hideGroups(rcId: string, groupIds: string[] | number[]) {
+  async hideGroups(rcId: string, groupIds: string[] | number[] | string | number) {
     let data;
     if (Object.prototype.toString.call(groupIds) === '[object Array]') {
       data = _.assign(
@@ -498,7 +498,7 @@ export class GlipSdk {
   }
 
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
-    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
     await this.favoriteGroups(rcId, [+meChatId]);
   }
 

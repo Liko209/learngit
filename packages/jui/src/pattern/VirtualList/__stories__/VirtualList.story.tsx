@@ -14,6 +14,8 @@ import {
   JuiVirtualCellProps,
 } from '..';
 import { IndexRange, Index } from 'react-virtualized';
+import { FileItem } from './FileItem';
+import { FileItemProps } from './types';
 
 storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
   let count = number('cell count', 1000);
@@ -294,4 +296,90 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
       <JuiVirtualList dataSource={source} />
     </div>
   );
+});
+
+storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
+  const count = number('cell count', 10000);
+  class DataSource implements IVirtualListDataSource {
+    private _list: FileItemProps[] = [];
+    constructor() {
+      for (let i = 0; i < 100; ++i) {
+        const item: FileItemProps = {
+          name: uuid.v4(),
+          subtitle: Math.random().toString(16),
+        };
+        this._list.push(item);
+      }
+    }
+    countOfCell() {
+      return count;
+    }
+
+    fixedCellHeight() {
+      return 52;
+    }
+
+    cellAtIndex(index: number, style: CSSProperties) {
+      const item = this._list[index];
+      const placeHolderStyle = {
+        display: 'flex',
+        height: '1em',
+        backgroundColor: '#DDD',
+        marginLeft: '10px',
+        marginRight: '10px',
+      };
+      if (!item || Object.keys(item).length === 0) {
+        return (
+          <div key={index} style={style}>
+            <div style={placeHolderStyle} />
+          </div>
+        );
+      }
+      return (
+        <div key={index} style={style}>
+          <FileItem {...item} />
+        </div>
+      );
+    }
+
+    overscanCount() {
+      return 20;
+    }
+
+    loadMore = (params: IndexRange) => {
+      const { startIndex, stopIndex } = params;
+      for (let i = startIndex; i < stopIndex; ++i) {
+        this._list.push({} as FileItemProps);
+      }
+      return new Promise((resolve: any) => {
+        setTimeout(() => {
+          for (let i = startIndex; i < stopIndex; ++i) {
+            const item: FileItemProps = {
+              name: uuid.v4(),
+              subtitle: Math.random().toString(16),
+            };
+            this._list[i] = item;
+          }
+          resolve();
+        },         10);
+      });
+    }
+
+    isRowLoaded = (params: Index) => {
+      return this._list.length > params.index;
+    }
+  }
+
+  const source = new DataSource();
+  const style = {
+    width: 400,
+    height: 400,
+    border: '1px solid',
+  };
+  const Comp = () => (
+    <div style={style}>
+      <JuiVirtualList dataSource={source} />
+    </div>
+  );
+  return <Comp />;
 });
