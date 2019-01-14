@@ -24,11 +24,9 @@ import { EditMessageInput } from './EditMessageInput';
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
-  // private timer: number;
   state = {
     isHover: false,
     isFocusMoreAction: false,
-    // isFocusCard: false,
   };
 
   handleMouseEnter = () => {
@@ -42,28 +40,6 @@ export class ConversationCard extends React.Component<
       isHover: false,
     });
   }
-
-  // handleCardFocus = () => {
-  //   this.setState({
-  //     isFocusCard: true,
-  //   });
-  // }
-
-  // handleCardBlur = () => {
-  //   this.setState({
-  //     isFocusCard: false,
-  //   });
-  // }
-  // handleMoreActionFocus = () => {
-  //   this.setState({
-  //     isFocusMoreAction: true,
-  //   });
-  // }
-  // handleMoreActionBlur = () => {
-  //   this.setState({
-  //     isFocusMoreAction: false,
-  //   });
-  // }
 
   onClickAvatar = (event: React.MouseEvent) => {
     const { creator } = this.props;
@@ -121,8 +97,6 @@ export class ConversationCard extends React.Component<
           Avatar={avatar}
           onMouseEnter={this.handleMouseEnter}
           onMouseLeave={this.handleMouseLeave}
-          // onBlur={this.handleCardBlur}
-          // onFocus={this.handleCardFocus}
           mode={mode}
           highlight={highlight}
           onClick={onClickHandler}
@@ -138,13 +112,7 @@ export class ConversationCard extends React.Component<
             notification={activity}
           >
             {showProgressActions ? <ProgressActions id={id} /> : null}
-            {!showProgressActions && isHover ? (
-              <Actions
-                // onMoreActionFocus={this.handleMoreActionFocus}
-                // onMoreActionBlur={this.handleMoreActionBlur}
-                id={id}
-              />
-            ) : null}
+            {!showProgressActions && isHover ? <Actions id={id} /> : null}
           </JuiConversationCardHeader>
           <JuiConversationCardBody data-name="body">
             {hideText || isEditMode ? null : <TextMessage id={id} />}

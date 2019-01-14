@@ -7,7 +7,7 @@ import React, { ReactNode } from 'react';
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-import { JuiListItemIcon } from '../Lists';
+import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import {
@@ -23,10 +23,10 @@ type JuiMenuItemProps = {
   icon?: string | ReactNode;
 } & MuiMenuItemProps;
 
-const StyledJuiListItemIcon = styled(JuiListItemIcon)`
+const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   && {
     margin-right: ${spacing(2)};
-    font-size: ${({ theme }) => theme.typography.subheading1.fontSize};
+    font-size: ${typography('subheading1')};
     color: ${grey('700')};
   }
 `;
@@ -49,7 +49,7 @@ const StyledMenuItem = styled(MuiMenuItem)`
     &:active {
       background-color: ${palette('primary', 'main')};
       color: ${palette('common', 'white')};
-      ${StyledJuiListItemIcon} {
+      ${StyledMuiListItemIcon} {
         color: ${palette('common', 'white')};
       }
     }
@@ -67,7 +67,7 @@ class JuiMenuItem extends React.Component<JuiMenuItemProps> {
     }
     return (
       <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>
-        {icon && <StyledJuiListItemIcon>{iconElement}</StyledJuiListItemIcon>}
+        {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
         {children}
       </StyledMenuItem>
     );

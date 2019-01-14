@@ -206,8 +206,7 @@ export class joinTeamDialog extends BaseWebComponent {
   }
 
   get joinButton() {
-    return this.self.find('button').withText('Done');
-  }
+    return this.self.find('button').withText('Join'); }
 
   get cancelButton() {
     return this.self.find('button').withText('Cancel');

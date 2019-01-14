@@ -5,10 +5,13 @@
  */
 import MuiList, { ListProps as MuiListProps } from '@material-ui/core/List';
 import styled from '../../foundation/styled-components';
+import { width } from '../../foundation/utils';
 
 type JuiListProps = MuiListProps;
 
-const JuiList = styled(MuiList)``;
+const JuiList = styled(MuiList)`
+  width: ${width(67)};
+`;
 
 JuiList.displayName = 'JuiList';
 
