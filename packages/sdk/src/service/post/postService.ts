@@ -299,7 +299,10 @@ class PostService extends BaseService<Post> {
   }
 
   private _isValidPost(post: Post) {
-    return post && (post.text.length > 0 || post.item_ids.length > 0);
+    return (
+      post &&
+      ((post.text && post.text.trim().length > 0) || post.item_ids.length > 0)
+    );
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
@@ -341,6 +344,7 @@ class PostService extends BaseService<Post> {
       }
 
       const clonePost = _.cloneDeep(post);
+      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       if (shouldUpdatePost) {
         await this.handlePartialUpdate(
           {
@@ -370,7 +374,6 @@ class PostService extends BaseService<Post> {
         await this.deletePost(clonePost.id);
       }
 
-      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       // remove listener if item files are not in progress
       if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
         // has failed
@@ -476,31 +479,29 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  async cancelUpload(postId: number, itemId: number) {
-    const preHandlePartialPost = (
-      partialModel: Partial<Raw<Post>>,
-      originalModel: Post,
-    ): Partial<Raw<Post>> => {
-      const itemIds = originalModel.item_ids.filter((value: number) => {
+  async removeItemFromPost(postId: number, itemId: number) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.deleteItemData(itemId);
+
+    const post = await this.getByIdFromDao(postId);
+    if (post) {
+      const itemIds = post.item_ids.filter((value: number) => {
         return value !== itemId;
       });
-      const partialPost = {
-        ...partialModel,
-        item_ids: itemIds,
-      };
-      return partialPost;
-    };
-
-    const partialModel = { id: postId };
-    await this.handlePartialUpdate(
-      partialModel,
-      preHandlePartialPost,
-      async (updatedModel: Post) => {
-        const itemService: ItemService = ItemService.getInstance();
-        await itemService.cancelUpload(itemId);
-        return updatedModel;
-      },
-    );
+      post.item_ids = itemIds;
+      if (!this._isValidPost(post)) {
+        await this.deletePost(postId);
+      } else {
+        const partialModel = { id: postId, _id: postId, item_ids: itemIds };
+        await this.handlePartialUpdate(
+          partialModel,
+          undefined,
+          async (updatedModel: Post) => {
+            return updatedModel;
+          },
+        );
+      }
+    }
   }
 
   /**
@@ -528,9 +529,6 @@ class PostService extends BaseService<Post> {
     const post = (await postDao.get(id)) as Post;
 
     if (id < 0) {
-      const progressService: ProgressService = ProgressService.getInstance();
-      progressService.deleteProgress(id);
-
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
 
@@ -546,6 +544,10 @@ class PostService extends BaseService<Post> {
           send_failure_post_ids: failIds,
         });
       }
+
+      const progressService: ProgressService = ProgressService.getInstance();
+      progressService.deleteProgress(id);
+
       return true;
     }
 

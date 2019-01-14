@@ -5,146 +5,186 @@
  */
 
 import { RTCRegistrationFSM } from './RTCRegistrationFSM';
-import { IConditionalHandler } from './IConditionalHandler';
+import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { IRTCAccountDelegate } from '../api/IRTCAccountDelegate';
 import { RTC_ACCOUNT_STATE } from '../api/types';
-import { UA_EVENT } from '../signaling/types';
+import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
+import {
+  REGISTRATION_ERROR_CODE,
+  REGISTRATION_EVENT,
+  REGISTRATION_FSM_NOTIFY,
+  RTCRegisterAsyncTask,
+} from './types';
+import async, { AsyncQueue } from 'async';
 
-import { ErrorCode, RegistrationManagerEvent } from './types';
-
-const RegistrationEvent = {
-  PROVISION_READY: 'provisionReady',
-};
-
-const ObserveEvent = {
-  REG_IN_PROGRESS: 'onRegInProgress',
-  READY: 'onReady',
-  REG_FAILURE: 'onRegFailure',
-  UN_REGISTERED: 'onUnRegistered',
-};
-
-class RTCRegistrationManager implements IConditionalHandler {
+class RTCRegistrationManager extends EventEmitter2
+  implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
-  public _eventEmitter: EventEmitter2;
+  private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
-  private _delegate: IRTCAccountDelegate;
-  private _isReady: boolean;
 
-  public onReadyWhenRegSucceedAction(): void {}
-  public onProvisionReadyAction(provisionData: any, options: any): void {
-    this._userAgent = new RTCSipUserAgent(
-      provisionData,
-      options,
-      this._eventEmitter,
-    );
+  public onRegistrationAction(): void {}
+
+  public onReRegisterAction(): void {
+    this._userAgent.reRegister();
   }
 
-  constructor(delegate: IRTCAccountDelegate) {
-    this._delegate = delegate;
+  public onProvisionReadyAction(
+    provisionData: any,
+    options: ProvisionDataOptions,
+  ): void {
+    this._userAgent = new RTCSipUserAgent(provisionData, options);
+    this._initUserAgentListener();
+  }
+
+  constructor() {
+    super();
     this._fsm = new RTCRegistrationFSM(this);
-    this._eventEmitter = new EventEmitter2();
+    this._eventQueue = async.queue(
+      (task: RTCRegisterAsyncTask, callback: any) => {
+        switch (task.name) {
+          case REGISTRATION_EVENT.PROVISION_READY: {
+            this._fsm.provisionReady(task.provData, task.provOptions);
+            break;
+          }
+          case REGISTRATION_EVENT.RE_REGISTER: {
+            this._fsm.reRegister();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
+            this._fsm.regSuccess();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_REGISTER_FAILED: {
+            this._fsm.regFailed();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_REGISTER_TIMEOUT: {
+            this._fsm.regTimeout();
+            break;
+          }
+          case REGISTRATION_EVENT.UA_UNREGISTERED: {
+            this._fsm.unregister();
+            break;
+          }
+          default:
+            break;
+        }
+        callback();
+      },
+    );
     this._initFsmObserve();
-    this._initListener();
-    this._isReady = false;
   }
 
   private _onEnterReady() {
-    this._isReady = true;
-    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
+    this.emit(
+      REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
+      RTC_ACCOUNT_STATE.REGISTERED,
+    );
   }
+
   private _onEnterRegInProgress() {
-    this._isReady = false;
-    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.IN_PROGRESS);
+    this.emit(
+      REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
+      RTC_ACCOUNT_STATE.IN_PROGRESS,
+    );
   }
+
   private _onEnterRegFailure() {
-    this._isReady = false;
-    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.FAILED);
+    this.emit(
+      REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
+      RTC_ACCOUNT_STATE.FAILED,
+    );
   }
+
   private _onEnterUnRegistered() {
-    this._isReady = false;
-    this._delegate.onAccountStateChanged(RTC_ACCOUNT_STATE.UNREGISTERED);
+    this.emit(
+      REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
+      RTC_ACCOUNT_STATE.UNREGISTERED,
+    );
   }
 
   private _initFsmObserve() {
-    this._fsm.observe(ObserveEvent.REG_IN_PROGRESS, () => {
+    this._fsm.observe(REGISTRATION_FSM_NOTIFY.REG_IN_PROGRESS, () => {
       this._onEnterRegInProgress();
     });
-    this._fsm.observe(ObserveEvent.READY, () => {
+    this._fsm.observe(REGISTRATION_FSM_NOTIFY.READY, () => {
       this._onEnterReady();
     });
-    this._fsm.observe(ObserveEvent.REG_FAILURE, () => {
+    this._fsm.observe(REGISTRATION_FSM_NOTIFY.REG_FAILURE, () => {
       this._onEnterRegFailure();
     });
-    this._fsm.observe(ObserveEvent.UN_REGISTERED, () => {
+    this._fsm.observe(REGISTRATION_FSM_NOTIFY.UN_REGISTERED, () => {
       this._onEnterUnRegistered();
     });
   }
 
-  private _initListener() {
-    this._eventEmitter.on(UA_EVENT.REG_SUCCESS, () => {
+  private _initUserAgentListener() {
+    this._userAgent.on(UA_EVENT.REG_SUCCESS, () => {
       this._onUARegSuccess();
     });
-    this._eventEmitter.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
+    this._userAgent.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
       this._onUARegFailed(response, cause);
     });
-    this._eventEmitter.on(UA_EVENT.RECEIVE_INVITE, (session: any) => {
-      this._onReceiveInvite(session);
+    this._userAgent.on(UA_EVENT.RECEIVE_INVITE, (session: any) => {
+      this._onUAReceiveInvite(session);
     });
-    this._eventEmitter.on(UA_EVENT.REG_UNREGISTER, () => {
+    this._userAgent.on(UA_EVENT.REG_UNREGISTER, () => {
       this._onUADeRegister();
     });
-    this._eventEmitter.on(
-      RegistrationEvent.PROVISION_READY,
-      (provisionData: any, options: any) => {
-        this._onProvisionReady(provisionData, options);
+  }
+
+  public provisionReady(provisionData: any, provisionOptions: any) {
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.PROVISION_READY,
+        provData: provisionData,
+        provOptions: provisionOptions,
       },
+      () => {},
     );
   }
 
-  public provisionReady(provisionData: any, options: any) {
-    this._eventEmitter.emit(
-      RegistrationEvent.PROVISION_READY,
-      provisionData,
-      options,
-    );
-  }
-
-  private _onProvisionReady(provisionData: any, options: any) {
-    this._fsm.provisionReady(provisionData, options);
+  public reRegister() {
+    this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {});
   }
 
   public createOutgoingCallSession(phoneNumber: string, options: any): any {
     return this._userAgent.makeCall(phoneNumber, options);
   }
 
-  public isReady(): boolean {
-    return this._isReady;
-  }
-
   private _onUARegSuccess() {
-    this._fsm.regSucceed();
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_REGISTER_SUCCESS },
+      () => {},
+    );
   }
 
   private _onUADeRegister() {
-    this._fsm.unRegister();
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_UNREGISTERED },
+      () => {},
+    );
   }
 
   private _onUARegFailed(response: any, cause: any) {
-    if (ErrorCode.TIME_OUT === cause) {
-      this._fsm.regTimeOut();
+    if (REGISTRATION_ERROR_CODE.TIME_OUT === cause) {
+      this._eventQueue.push(
+        { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
+        () => {},
+      );
     } else {
-      this._fsm.regError();
+      this._eventQueue.push(
+        { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
+        () => {},
+      );
     }
   }
 
-  private _onReceiveInvite(session: any) {
-    this._eventEmitter.emit(
-      RegistrationManagerEvent.RECEIVER_INCOMING_SESSION,
-      session,
-    );
+  private _onUAReceiveInvite(session: any) {
+    this.emit(REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION, session);
   }
 }
 

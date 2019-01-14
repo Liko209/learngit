@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { formalName } from '../../libs/filter';
 import { v4 as uuid } from 'uuid';
 import { setupCase, teardownCase } from '../../init';
@@ -78,20 +79,23 @@ test(formalName('Close current conversation directly, and navigate to blank page
 
     for (const key in groupList) {
       const item = groupList[key];
-      await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`, async () => {
-        await item.enter();
-        await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
-        currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
-        await item.expectUmi(0);
-        await item.openMoreMenu();
-        await app.homePage.messageTab.moreMenu.close.enter();
-      });
+      await h(t).withLog(`When I open a ${key} conversation and then click close conversation button`,
+        async () => {
+          await item.enter();
+          currentGroupId = await app.homePage.messageTab.conversationPage.currentGroupId;
+          await item.umi.shouldBeNumber(0);
+          await item.openMoreMenu();
+          await app.homePage.messageTab.moreMenu.close.enter();
+        },
+      );
 
-      await h(t).withLog(`Then the ${key} conversation should be remove from conversation list.`, async () => {
-        await t
-          .expect(directMessagesSection.conversationEntryById(currentGroupId).exists)
-          .notOk();
-      });
+      await h(t).withLog(`Then the ${key} conversation should be remove from conversation list.`,
+        async () => {
+          await t
+            .expect(directMessagesSection.conversationEntryById(currentGroupId).exists)
+            .notOk();
+        },
+      );
 
       await h(t).withLog('And Content panel should navigate to Blank page', async () => {
         await t.expect(h(t).href).match(/messages$/);
@@ -244,7 +248,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
       await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-      await pvtChat.expectUmi(0);
+      await pvtChat.umi.shouldBeNumber(0);
     });
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
@@ -349,7 +353,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog('Then conversation A should not have UMI', async () => {
       await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-      await pvtChat.expectUmi(0);
+      await pvtChat.umi.shouldBeNumber(0);
     });
 
     await h(t).withLog("When I click conversation A's close buttom", async () => {
@@ -438,46 +442,152 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('And other user send post to each conversation', async () => {
-    await teamsSection.expand();
-    await teamsSection.conversationEntryById(teamId2).enter();
+  
+    await h(t).withLog('And other user send post to each conversation', async () => {
+      await teamsSection.expand();
+      await teamsSection.conversationEntryById(teamId2).enter();
 
-    const umiGroupIds = [favGroupId, pvtChatId, teamId1];
-    for (const id of umiGroupIds) {
-      await h(t).platform(otherUser).sendTextPost(`${uuid()} ![:Person](${loginUser.rcId})`, id);
-    }
-  });
-
-
-  const favoriteItem = favoritesSection.conversationEntryById(favGroupId);
-  const directMessageItem = directMessagesSection.conversationEntryById(pvtChatId);
-  const teamItem = teamsSection.conversationEntryById(teamId1);
-  await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section', async () => {
-    await favoritesSection.expand();
-    await favoriteItem.expectUmi(1);
-    await directMessagesSection.expand();
-    await directMessageItem.expectUmi(1);
-    await teamsSection.expand();
-    await teamItem.expectUmi(1);
-  });
-
-  const groupList = {
-    favorite: favoriteItem,
-    directMessage: directMessageItem,
-    team: teamItem,
-  };
-  const closeButton = app.homePage.messageTab.moreMenu.close;
-  for (const key in groupList) {
-    const item = groupList[key];
-    await h(t).withLog(`When I click more Icon of a ${key} conversation with UMI`,
-      async () => {
-        await item.openMoreMenu();
-      },
-    );
-
-    await h(t).withLog('Then the close button should not be show', async () => {
-      await closeButton.shouldBeDisabled();
-      await t.pressKey('esc');
+      const umiGroupIds = [favGroupId, pvtChatId, teamId1];
+      for (const id of umiGroupIds) {
+        await h(t).platform(otherUser).createPost(
+          { text: `${uuid()} ![:Person](${loginUser.rcId})` },
+          id,
+        );
+      }
     });
-  }
-});
+
+
+    const favoriteItem = favoritesSection.conversationEntryById(favGroupId);
+    const directMessageItem = directMessagesSection.conversationEntryById(pvtChatId);
+    const teamItem = teamsSection.conversationEntryById(teamId1);
+    await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section', async () => {
+      await favoritesSection.expand();
+      await favoriteItem.umi.shouldBeNumber(1);
+      await directMessagesSection.expand();
+      await directMessageItem.umi.shouldBeNumber(1);
+      await teamsSection.expand();
+      await teamItem.umi.shouldBeNumber(1);
+    });
+
+    const groupList = {
+      favorite: favoriteItem,
+      directMessage: directMessageItem,
+      team: teamItem,
+    };
+    const closeButton = app.homePage.messageTab.moreMenu.close;
+    for (const key in groupList) {
+      const item = groupList[key];
+      await h(t).withLog(`When I click more Icon of a ${key} conversation with UMI`,
+        async () => {
+          await item.openMoreMenu();
+        },
+      );
+
+      await h(t).withLog('Then the close button should not be show', async () => {
+        await closeButton.shouldBeDisabled();
+        await t.pressKey('esc');
+      });
+    }
+  },
+);
+
+
+test(formalName('JPT-138 Can display conversation history when receiving messages from the closed conversation.', ['JPT-138', 'P2', 'ConversationList', 'Mia.Cai']),
+  async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[7];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    const otherUser = users[5];
+    await h(t).platform(otherUser).init();
+
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const conversationPage = app.homePage.messageTab.conversationPage;
+    const posts = [`post1:${uuid()}`, `post2:${uuid()}`];
+
+    let privateChatId, teamId;
+    await h(t).withLog('Given I have an extension with 1 dm and I team', async () => {
+      privateChatId = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'PrivateChat',
+        members: [loginUser.rcId, users[5].rcId],
+      });
+      teamId = await h(t).platform(loginUser).createAndGetGroupId({
+        name: uuid(),
+        type: 'Team',
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      });
+    });
+
+    await h(t).withLog('And send 2 messages to each conversation', async () => {
+      for (let i of _.range(posts.length)) {
+        await h(t).platform(otherUser).sendTextPost(posts[i], privateChatId);
+        await h(t).platform(otherUser).sendTextPost(posts[i], teamId);
+      }
+    });
+
+    await h(t).withLog('And 2 conversations should not be hidden before login', async () => {
+      await h(t).glip(loginUser).showGroups(loginUser.rcId, [privateChatId, teamId]);
+    });
+
+    await h(t).withLog('And Clear all UMI for 2 conversations', async () => {
+      await h(t).glip(loginUser).clearAllUmi();
+    });
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    }, true);
+
+
+    const privateChat = directMessagesSection.conversationEntryById(privateChatId);
+    const teamChat = teamsSection.conversationEntryById(teamId);
+
+    await h(t).withLog('Then I can find the 2 conversations in conversation list', async () => {
+      await t.expect(privateChat.exists).ok(privateChatId, { timeout: 10e3 });
+      await t.expect(teamChat.exists).ok(teamId, { timeout: 10e3 });
+    }, true);
+
+    await h(t).withLog('When closed 2 conversations', async () => {
+      await privateChat.openMoreMenu();
+      await app.homePage.messageTab.moreMenu.close.enter();
+      await teamChat.openMoreMenu();
+      await app.homePage.messageTab.moreMenu.close.enter();
+    }, true);
+
+    await h(t).withLog('And send one message to 2 conversations', async () => {
+      const new_post = `new post:${uuid()}`;
+      posts.push(new_post);
+      await h(t).platform(otherUser).sendTextPost(new_post, privateChatId);
+      await h(t).platform(otherUser).sendTextPost(new_post, teamId);
+    });
+
+    await h(t).withLog(`Then I can find the both conversations in conversation list`, async () => {
+      await t.expect(privateChat.exists).ok();
+      await t.expect(teamChat.exists).ok();
+    });
+
+    await h(t).withLog(`When I open the direct messages conversation`, async () => {
+      await privateChat.enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    });
+
+    await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
+      await conversationPage.historyPostsDisplayedInOrder(posts);
+    }, true);
+
+    await h(t).withLog(`When I open the team conversation`, async () => {
+      await teamChat.enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    });
+
+    await h(t).withLog('Then history posts can be displayed in order in conversations stream', async () => {
+      await conversationPage.historyPostsDisplayedInOrder(posts);
+    }, true);
+
+  });
