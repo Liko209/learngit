@@ -77,4 +77,4 @@ function documentType(item: FileItemModel) {
   return doc;
 }
 
-export { getFileType };
+export { getFileType, image, documentType };
