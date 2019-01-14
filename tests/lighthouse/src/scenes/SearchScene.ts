@@ -6,16 +6,16 @@ import { Scene } from "./Scene";
 import { TaskDto, SceneDto } from "../models";
 import { sceneConfigFactory } from "./config/SceneConfigFactory";
 import { LoginGatherer } from "../gatherers/LoginGatherer";
-import { SwitchConversationGatherer } from "../gatherers/SwitchConversationGatherer";
+import { SearchGatherer } from "../gatherers/SearchGatherer";
 import { mockHelper } from "../mock";
 import { metriceService } from "../services/MetricService";
 
-class SwitchConversationScene extends Scene {
-  private convrsationIds: Array<string>;
+class SearchScene extends Scene {
+  private keywords: Array<string>;
 
-  constructor(url: string, taskDto: TaskDto, convrsationIds: Array<string>) {
+  constructor(url: string, taskDto: TaskDto, keywords: Array<string>) {
     super(url, taskDto);
-    this.convrsationIds = convrsationIds;
+    this.keywords = keywords;
   }
 
   async preHandle() {
@@ -25,7 +25,7 @@ class SwitchConversationScene extends Scene {
       instance: new LoginGatherer()
     });
     this.config.passes[0].gatherers.unshift({
-      instance: new SwitchConversationGatherer(this.convrsationIds)
+      instance: new SearchGatherer(this.keywords)
     });
 
     mockHelper.open();
@@ -33,13 +33,9 @@ class SwitchConversationScene extends Scene {
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
     let sceneDto = await super.saveMetircsIntoDb();
-    await metriceService.createLoadingTime(
-      sceneDto,
-      this,
-      SwitchConversationGatherer.name
-    );
+    await metriceService.createLoadingTime(sceneDto, this, SearchGatherer.name);
     return sceneDto;
   }
 }
 
-export { SwitchConversationScene };
+export { SearchScene };

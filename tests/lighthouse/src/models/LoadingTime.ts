@@ -31,70 +31,70 @@ class LoadingTimeSummaryDto extends Model<LoadingTimeSummaryDto> {
 
   @Column({
     allowNull: false,
-    field: "max_time",
+    field: "ui_max_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   uiMaxTime: number;
 
   @Column({
     allowNull: false,
-    field: "avg_time",
+    field: "ui_avg_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   uiAvgTime: number;
 
   @Column({
     allowNull: false,
-    field: "min_time",
+    field: "ui_min_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   uiMinTime: number;
 
   @Column({
     allowNull: false,
-    field: "top_90_time",
+    field: "ui_top_90_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   uiTop90Time: number;
 
   @Column({
     allowNull: false,
-    field: "top_95_time",
+    field: "ui_top_95_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   uiTop95Time: number;
 
   @Column({
     allowNull: false,
-    field: "max_time",
+    field: "api_max_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   apiMaxTime: number;
 
   @Column({
     allowNull: false,
-    field: "avg_time",
+    field: "api_avg_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   apiAvgTime: number;
 
   @Column({
     allowNull: false,
-    field: "min_time",
+    field: "api_min_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   apiMinTime: number;
 
   @Column({
     allowNull: false,
-    field: "top_90_time",
+    field: "api_top_90_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   apiTop90Time: number;
 
   @Column({
     allowNull: false,
-    field: "top_95_time",
+    field: "api_top_95_time",
     type: Sequelize.DECIMAL(10, 2)
   })
   apiTop95Time: number;
@@ -131,7 +131,7 @@ class LoadingTimeItemDto extends Model<LoadingTimeItemDto> {
     field: "start_time",
     type: Sequelize.DECIMAL(10, 2)
   })
-  statTime: number;
+  startTime: number;
 
   @Column({
     allowNull: false,

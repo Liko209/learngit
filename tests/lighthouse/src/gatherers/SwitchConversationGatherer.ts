@@ -5,7 +5,6 @@
 const Gatherer = require("lighthouse/lighthouse-core/gather/gatherers/gatherer");
 import { ConversationPage } from "../pages/ConversationPage";
 import { logUtils } from "../utils/LogUtils";
-import * as bluebird from "bluebird";
 
 class SwitchConversationGatherer extends Gatherer {
   private conversationIds: Array<string>;
@@ -32,7 +31,7 @@ class SwitchConversationGatherer extends Gatherer {
     });
 
     // switch conversation
-    await this.switchConversion(conversationPage, 20);
+    await this.switchConversion(conversationPage, 40);
   }
 
   async afterPass(passContext) {
@@ -44,7 +43,9 @@ class SwitchConversationGatherer extends Gatherer {
       return performance["jupiter"];
     });
 
-    return { api: metrics["switch_conversation"], ui: [] };
+    return {
+      switch_conversation: { api: metrics["switch_conversation"], ui: [] }
+    };
   }
 
   async switchConversion(page: ConversationPage, switchCount: number = -1) {

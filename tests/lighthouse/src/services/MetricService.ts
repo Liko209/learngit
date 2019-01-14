@@ -8,7 +8,9 @@ import {
   TaskDto,
   SceneDto,
   PerformanceDto,
-  PerformanceItemDto
+  PerformanceItemDto,
+  LoadingTimeSummaryDto,
+  LoadingTimeItemDto
 } from "../models";
 class MetriceService {
   async createTask(): Promise<TaskDto> {
@@ -168,14 +170,67 @@ class MetriceService {
     let artifacts = scene.getArtifacts();
     let gatherer = artifacts[name];
     let apiTimes = [],
-      uiTimes = [];
+      dtoArr = [];
 
-    if (gatherer) {
-      if (gatherer.api) {
-        apiTimes = apiTimes.concat(gatherer.api);
+    if (!gatherer) {
+      return;
+    }
+
+    for (let key of Object.keys(gatherer)) {
+      let item = gatherer[key];
+      let summaryDto = {
+        sceneId,
+        name: key,
+        uiMaxTime: 0,
+        uiAvgTime: 0,
+        uiMinTime: 0,
+        uiTop90Time: 0,
+        uiTop95Time: 0,
+        apiMaxTime: 0,
+        apiAvgTime: 0,
+        apiMinTime: 0,
+        apiTop90Time: 0,
+        apiTop95Time: 0
+      };
+
+      if (item.api) {
+        apiTimes = apiTimes.concat(item.api);
       }
-      if (gatherer.ui) {
-        uiTimes = uiTimes.concat(gatherer.ui);
+
+      let sum, arr, costTime, min, max;
+      if (apiTimes.length > 0) {
+        sum = 0;
+        max = 0;
+        min = 60000000;
+        arr = [];
+        for (let t of apiTimes) {
+          costTime = t.endTime - t.startTime;
+          sum += costTime;
+          min = costTime > min ? min : costTime;
+          max = costTime > max ? costTime : max;
+          arr.push(costTime);
+          dtoArr.push({
+            type: "API",
+            startTime: t.startTime,
+            endTime: t.endTime,
+            costTime: costTime
+          });
+        }
+        arr.sort();
+        summaryDto.apiMaxTime = max;
+        summaryDto.apiAvgTime = sum / arr.length;
+        summaryDto.apiMinTime = min;
+        summaryDto.apiTop90Time = arr[parseInt((0.9 * arr.length).toString())];
+        summaryDto.apiTop95Time = arr[parseInt((0.95 * arr.length).toString())];
+      }
+
+      let summary = await LoadingTimeSummaryDto.create(summaryDto);
+
+      if (dtoArr.length > 0) {
+        for (let dto of dtoArr) {
+          dto["summaryId"] = summary.id;
+        }
+        await LoadingTimeItemDto.bulkCreate(dtoArr);
       }
     }
   }

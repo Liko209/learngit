@@ -22,6 +22,6 @@ import * as qs from "qs";
   // response = await jupiterUtils.getGlipToken(response.data);
   // console.log(response.data);
   // console.log(response.headers);
-  console.log(await jupiterUtils.getAuthUrl(url))
+  // console.log(await jupiterUtils.getAuthUrl(url));
   // console.log(mockData);
 })();
