@@ -765,9 +765,6 @@ class FileUploadController {
   }
 
   private _getFileType(file: File) {
-    if (file.type && file.type.length > 0) {
-      return file.type;
-    }
     return this._extractFileType(file.name);
   }
 

@@ -9,6 +9,7 @@ import { LinkItemController } from '../controller/LinkItemController';
 import { EntityBaseService } from '../../../../../framework/service';
 import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
+import { ItemQueryOptions } from '../../../types';
 
 class LinkItemService extends EntityBaseService implements ISubItemService {
   private _linkItemController: LinkItemController;
@@ -24,13 +25,7 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
     return this._linkItemController;
   }
 
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
+  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return Promise.resolve([]);
   }
 

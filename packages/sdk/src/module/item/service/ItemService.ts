@@ -20,6 +20,8 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
+import { ItemQueryOptions } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';
@@ -75,26 +77,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this._itemServiceController;
   }
 
-  async getGroupItemsCount(groupId: number, typeId: number) {
-    return this.itemServiceController.getGroupItemsCount(groupId, typeId);
+  async getGroupItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
+    return this.itemServiceController.getGroupItemsCount(groupId, type);
   }
 
-  async getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ) {
-    return this.itemServiceController.getItems(
-      typeId,
-      groupId,
-      limit,
-      offsetItemId,
-      sortKey,
-      desc,
-    );
+  async getItems(options: ItemQueryOptions) {
+    return this.itemServiceController.getItems(options);
   }
 
   async createItem(item: Item) {

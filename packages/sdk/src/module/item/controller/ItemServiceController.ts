@@ -13,6 +13,17 @@ import { Api } from '../../../api';
 import { daoManager, ItemDao } from '../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { IItemService } from '../service/IItemService';
+import { ItemQueryOptions } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
+
+const ITemTypeIdMap: Map<RIGHT_RAIL_ITEM_TYPE, number> = new Map([
+  [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],
+  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],
+  [RIGHT_RAIL_ITEM_TYPE.TASKS, TypeDictionary.TYPE_ID_TASK],
+  [RIGHT_RAIL_ITEM_TYPE.NOTES, TypeDictionary.TYPE_ID_PAGE],
+  [RIGHT_RAIL_ITEM_TYPE.EVENTS, TypeDictionary.TYPE_ID_EVENT],
+  [RIGHT_RAIL_ITEM_TYPE.LINKS, TypeDictionary.TYPE_ID_LINK],
+]);
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
@@ -53,33 +64,22 @@ class ItemServiceController {
     return this._itemActionController;
   }
 
-  async getGroupItemsCount(groupId: number, typeId: number) {
+  async getGroupItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
     let totalCount = 0;
-    const subItemService = this.getSubItemService(typeId);
+    const subItemService = this.getSubItemService(ITemTypeIdMap.get(
+      type,
+    ) as number);
     if (subItemService) {
-      totalCount = await subItemService.getSubItemsCount(groupId);
+      totalCount = await subItemService.getSubItemsCount(groupId, type);
     }
     return totalCount;
   }
 
-  async getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ) {
+  async getItems(options: ItemQueryOptions) {
     let ids: number[] = [];
-    const subItemService = this.getSubItemService(typeId);
+    const subItemService = this.getSubItemService(options.typeId);
     if (subItemService) {
-      ids = await subItemService.getSortedIds(
-        groupId,
-        limit,
-        offsetItemId,
-        sortKey,
-        desc,
-      );
+      ids = await subItemService.getSortedIds(options);
     }
     const itemDao = daoManager.getDao(ItemDao);
     const items = await itemDao.getItemsByIds(ids);
@@ -98,7 +98,7 @@ class ItemServiceController {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
 
-    item.id > 0 &&
+    this._shouldSaveSanitizedItem(item) &&
       (await this._getSubItemServiceByITemId(item.id).createItem(item));
   }
 
@@ -106,7 +106,7 @@ class ItemServiceController {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
 
-    item.id > 0 &&
+    this._shouldSaveSanitizedItem(item) &&
       (await this._getSubItemServiceByITemId(item.id).updateItem(item));
   }
 
@@ -157,6 +157,10 @@ class ItemServiceController {
     normalData.forEach((item: Item) => {
       subItemService.createItem(item);
     });
+  }
+
+  private _shouldSaveSanitizedItem(item: Item) {
+    return item.id > 0 && item.post_ids.length > 0;
   }
 }
 

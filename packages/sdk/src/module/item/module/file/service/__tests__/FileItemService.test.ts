@@ -93,9 +93,17 @@ describe('FileItemService', () => {
     });
 
     it('should call fileItemDao and get result', async () => {
+      const options = {
+        groupId: 1,
+        typeId: 10,
+        limit: 10,
+        offsetItemId: 0,
+        sortKey: 'name',
+        desc: true,
+      };
       fileItemDao.getSortedIds = jest.fn().mockResolvedValue([1]);
-      const res = await fileItemService.getSortedIds(1, 10, 0, 'name', true);
-      expect(fileItemDao.getSortedIds).toBeCalledWith(1, 10, 0, 'name', true);
+      const res = await fileItemService.getSortedIds(options);
+      expect(fileItemDao.getSortedIds).toBeCalledWith(options);
       expect(res).toEqual([1]);
     });
   });
@@ -315,6 +323,7 @@ describe('FileItemService', () => {
         created_at: fileItem.created_at,
         name: fileItem.name,
         type: fileItem.type,
+        post_ids: fileItem.post_ids,
       });
     });
   });
@@ -349,6 +358,7 @@ describe('FileItemService', () => {
         created_at: fileItem.created_at,
         name: fileItem.name,
         type: fileItem.type,
+        post_ids: fileItem.post_ids,
       });
     });
   });

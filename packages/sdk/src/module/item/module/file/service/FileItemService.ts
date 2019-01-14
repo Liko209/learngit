@@ -13,7 +13,8 @@ import { EntityBaseService } from '../../../../../framework/service/EntityBaseSe
 import { IItemService } from '../../../service/IItemService';
 import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
-
+import { ItemQueryOptions } from '../../../types';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../../constants';
 class FileItemService extends EntityBaseService<ItemFile>
   implements ISubItemService {
   private _fileItemController: FileItemController;
@@ -22,21 +23,9 @@ class FileItemService extends EntityBaseService<ItemFile>
     super();
   }
 
-  async getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
+  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    return await sanitizedDao.getSortedIds(
-      groupId,
-      limit,
-      offsetItemId,
-      sortKey,
-      desc,
-    );
+    return await sanitizedDao.getSortedIds(options);
   }
 
   protected get fileItemController() {
@@ -143,12 +132,13 @@ class FileItemService extends EntityBaseService<ItemFile>
       created_at: file.created_at,
       name: file.name,
       type: file.type,
+      post_ids: file.post_ids,
     } as SanitizedFileItem;
   }
 
-  async getSubItemsCount(groupId: number) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    return await sanitizedDao.getGroupItemCount(groupId);
+  async getSubItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
+    const sanitizedFileDao = daoManager.getDao<FileItemDao>(FileItemDao);
+    return await sanitizedFileDao.getFileItemCount(groupId, type);
   }
 }
 

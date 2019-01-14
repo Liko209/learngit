@@ -127,13 +127,14 @@ describe('Event Item Dao', () => {
     `(
       '$comment',
       async ({ groupId, sortKey, limit, offsetItemId, desc, expects }) => {
-        const result = await dao.getSortedIds(
+        const result = await dao.getSortedIds({
           groupId,
           limit,
           offsetItemId,
           sortKey,
           desc,
-        );
+          typeId: 10,
+        });
         expect(result).toEqual(expects);
       },
     );

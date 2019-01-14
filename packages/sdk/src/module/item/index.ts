@@ -4,6 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ItemFilterUtils } from './utils';
 import { ItemService } from './service';
-import { ITEM_SORT_KEYS } from './constants';
-export { ItemService, ITEM_SORT_KEYS };
+import { ITEM_SORT_KEYS, RIGHT_RAIL_ITEM_TYPE } from './constants';
+import { ItemQueryOptions } from './types';
+export {
+  ItemService,
+  ITEM_SORT_KEYS,
+  RIGHT_RAIL_ITEM_TYPE,
+  ItemQueryOptions,
+  ItemFilterUtils,
+};

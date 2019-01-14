@@ -7,16 +7,11 @@
 import { Post } from '../../post/entity';
 import { Item, ItemFile } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
+import { ItemQueryOptions } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 
 interface IItemService {
-  getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<Item[]>;
+  getItems(options: ItemQueryOptions): Promise<Item[]>;
 
   handleSanitizedItems(items: Item[]): void;
 
@@ -66,6 +61,9 @@ interface IItemService {
 
   doNotRenderItem(id: number, type: string): Promise<void>;
 
-  getGroupItemsCount(groupId: number, typeId: number): Promise<number>;
+  getGroupItemsCount(
+    groupId: number,
+    typeId: RIGHT_RAIL_ITEM_TYPE,
+  ): Promise<number>;
 }
 export { IItemService };

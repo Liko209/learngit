@@ -8,7 +8,12 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
+import {
+  ItemService,
+  ItemFilterUtils,
+  ITEM_SORT_KEYS,
+  RIGHT_RAIL_ITEM_TYPE,
+} from 'sdk/module/item';
 import { SortUtils } from 'sdk/framework/utils';
 import { Item } from 'sdk/module/item/entity';
 import {
@@ -18,8 +23,13 @@ import {
 } from '@/store/base/fetch';
 import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { ITEM_LIST_TYPE } from '../types';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+
+const RightRailItemTypeMap = {
+  [ITEM_LIST_TYPE.FILE]: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+  [ITEM_LIST_TYPE.IMAGE]: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
+};
 
 const ItemTypeIdMap = {
   [ITEM_LIST_TYPE.FILE]: TypeDictionary.TYPE_ID_FILE,
@@ -31,6 +41,7 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
     private _typeId: number,
     private _sortKey: ITEM_SORT_KEYS,
     private _desc: boolean,
+    private _filterFunc: ((value: any, index?: number) => boolean) | undefined,
   ) {}
 
   async fetchData(
@@ -39,14 +50,15 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
     anchor?: ISortableModel<Item>,
   ): Promise<{ data: Item[]; hasMore: boolean }> {
     const itemService: ItemService = ItemService.getInstance();
-    const result = await itemService.getItems(
-      this._typeId,
-      this._groupId,
-      pageSize,
-      anchor && anchor.id,
-      this._sortKey,
-      this._desc,
-    );
+    const result = await itemService.getItems({
+      typeId: this._typeId,
+      groupId: this._groupId,
+      sortKey: this._sortKey,
+      desc: this._desc,
+      limit: pageSize,
+      offsetItemId: anchor && anchor.id,
+      filterFunc: this._filterFunc,
+    });
 
     return { data: result, hasMore: result.length === pageSize };
   }
@@ -71,8 +83,24 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  private get _rightRailItemType() {
+    return RightRailItemTypeMap[this.type];
+  }
+
+  @computed
   private get _typeId() {
     return ItemTypeIdMap[this.type];
+  }
+
+  private _getFilterFunc() {
+    switch (this._rightRailItemType) {
+      case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
+        return ItemFilterUtils.fileFilter(this._groupId, true);
+      case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+        return ItemFilterUtils.fileFilter(this._groupId, false);
+      default:
+    }
+    return undefined;
   }
 
   constructor(props: Props) {
@@ -103,7 +131,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
-      this._typeId,
+      this._rightRailItemType,
     );
   }
 
@@ -142,6 +170,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       typeId,
       sortKey,
       desc,
+      this._getFilterFunc(),
     );
 
     this._sortableDataHandler = new FetchSortableDataListHandler(dataProvider, {
