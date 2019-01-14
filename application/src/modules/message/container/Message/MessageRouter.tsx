@@ -7,39 +7,26 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import {
   Route,
+  RouteComponentProps,
   Switch,
   withRouter,
-  RouteComponentProps,
 } from 'react-router-dom';
 import { t } from 'i18next';
-import { observer } from 'mobx-react';
-import { Route, Switch, withRouter } from 'react-router-dom';
 import {
   JuiResponsiveLayout,
-  withResponsive,
   VISUAL_MODE,
+  withResponsive,
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
   goToConversation,
   GoToConversationParams,
 } from '@/common/goToConversation';
-import { LeftRail } from '@/containers/LeftRail';
 import { ConversationPage } from '@/containers/ConversationPage';
+import { LeftRail } from '@/containers/LeftRail';
 import { PostListPage } from '@/containers/PostListPage';
 import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
-import { RightRail } from '@/containers/RightRail';
-import { LeftRail } from '@/containers/LeftRail';
 import { RightRail, TriggerButton } from '@/containers/RightRail';
-import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
-import {
-  goToConversation,
-  GoToConversationParams,
-} from '@/common/goToConversation';
-
-import { MessagesViewProps } from './types';
-import { PostListPage } from '../PostListPage';
-import { POST_LIST_TYPE } from '../PostListPage/types';
 import { MessageRouterChangeHelper } from './helper';
 
 const LeftRailResponsive = withResponsive(LeftRail, {
@@ -119,7 +106,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   }
 
   render() {
-    const { isLeftNavOpen } = this.props;
+    const { match } = this.props;
     const { messageError } = this.state;
 
     return (
@@ -162,7 +149,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
         {MessageRouterChangeHelper.isConversation(match.params.subPath) ? (
           <RightRailResponsive id={Number(match.params.subPath)} />
         ) : null}
-      </MessageLayout>
+      </JuiResponsiveLayout>
     );
   }
 }
