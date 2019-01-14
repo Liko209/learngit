@@ -24,7 +24,6 @@ import { Upgrade } from '@/modules/service-worker';
 class App extends React.Component {
   // TODO use @lazyInject(Upgrade)
   private readonly _upgradeHandler: Upgrade = container.get(Upgrade);
-  private _globalStore = storeManager.getGlobalStore();
   private appName = process.env.APP_NAME || '';
   private _unListenHistory: VoidFunction;
 
@@ -42,22 +41,7 @@ class App extends React.Component {
     analytics.bootstrap();
   }
 
-  @computed
-  get dialogInfo() {
-    const isShowDialog = this._globalStore.get(
-      GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG,
-    );
-    const appVersion = this._globalStore.get(GLOBAL_KEYS.APP_VERSION);
-    const electronVersion = this._globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
-    return {
-      isShowDialog,
-      appVersion,
-      electronVersion,
-    };
-  }
-
   public render() {
-    const { isShowDialog, appVersion, electronVersion } = this.dialogInfo;
     return (
       <ThemeProvider>
         {this.isLoading ? (
@@ -66,11 +50,7 @@ class App extends React.Component {
           <>
             <TopBanner />
             <Router />
-            <AboutView
-              isShowDialog={isShowDialog}
-              appVersion={appVersion}
-              electronVersion={electronVersion}
-            />
+            <AboutView />
           </>
         )}
       </ThemeProvider>
