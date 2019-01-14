@@ -18,6 +18,8 @@ import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
 import { RTC_ACCOUNT_STATE } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
+import { RTCCallManager } from '../account/RTCCallManager';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 const options = {
   appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
@@ -31,16 +33,19 @@ const options = {
 };
 
 class RTCAccount implements IRTCAccount {
+  private _kTag: string = 'RTCAccount';
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
   private _provManager: RTCProvManager;
+  private _callManager: RTCCallManager;
 
   constructor(listener: IRTCAccountDelegate) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
     this._regManager = new RTCRegistrationManager();
     this._provManager = new RTCProvManager();
+    this._callManager = new RTCCallManager();
     this._initListener();
   }
 
@@ -49,7 +54,16 @@ class RTCAccount implements IRTCAccount {
   }
 
   public makeCall(toNumber: string, delegate: IRTCCallDelegate): RTCCall {
+    if (toNumber.length === 0) {
+      rtcLogger.error(this._kTag, 'Failed to make call. To number is empty');
+      return null as any;
+    }
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(this._kTag, 'Failed to make call. Max call count reached');
+      return null as any;
+    }
     const call = new RTCCall(false, toNumber, null, this, delegate);
+    this._callManager.addCall(call);
     return call;
   }
 
@@ -57,8 +71,24 @@ class RTCAccount implements IRTCAccount {
     return this._state === RTC_ACCOUNT_STATE.REGISTERED;
   }
 
-  createOutCallSession(toNum: string): any {
+  callList(): RTCCall[] {
+    return this._callManager.callList();
+  }
+
+  callCount(): number {
+    return this._callManager.callCount();
+  }
+
+  getCallByUuid(uuid: string): RTCCall {
+    return this._callManager.getCallByUuid(uuid);
+  }
+
+  createOutgoingCallSession(toNum: string): any {
     return this._regManager.createOutgoingCallSession(toNum, {});
+  }
+
+  removeCallFromCallManager(uuid: string): void {
+    this._callManager.removeCall(uuid);
   }
 
   private _initListener() {
@@ -90,7 +120,22 @@ class RTCAccount implements IRTCAccount {
   }
 
   private _onReceiveInvite(session: any) {
+    if (session === null) {
+      rtcLogger.error(
+        this._kTag,
+        'Failed to receive incoming call. Session is null',
+      );
+      return;
+    }
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(
+        this._kTag,
+        'Failed to receive incoming call. Max call count is reached',
+      );
+      return;
+    }
     const call = new RTCCall(true, '', session, this, null);
+    this._callManager.addCall(call);
     this._delegate.onReceiveIncomingCall(call);
   }
 

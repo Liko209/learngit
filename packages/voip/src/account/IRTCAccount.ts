@@ -6,7 +6,8 @@
 
 interface IRTCAccount {
   isReady(): boolean;
-  createOutCallSession(toNum: String): any;
+  createOutgoingCallSession(toNum: String): any;
+  removeCallFromCallManager(uuid: string): void;
 }
 
 export { IRTCAccount };
