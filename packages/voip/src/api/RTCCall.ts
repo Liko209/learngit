@@ -98,6 +98,10 @@ class RTCCall {
     this._fsm.stopRecord();
   }
 
+  park(): void {
+    this._fsm.park();
+  }
+
   transfer(target: string): void {
     if (target.length === 0) {
       this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER);
@@ -135,8 +139,8 @@ class RTCCall {
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      (callAction: RTC_CALL_ACTION) => {
-        this._onCallActionSuccess(callAction);
+      (callAction: RTC_CALL_ACTION, params?: any) => {
+        this._onCallActionSuccess(callAction, params);
       },
     );
     this._callSession.on(
@@ -174,6 +178,9 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
     });
+    this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
+      this._onParkAction();
+    });
     this._fsm.on(CALL_FSM_NOTIFY.START_RECORD_ACTION, () => {
       this._onStartRecordAction();
     });
@@ -202,7 +209,7 @@ class RTCCall {
     this._callSession.destroy();
   }
   // call action listener
-  private _onCallActionSuccess(callAction: RTC_CALL_ACTION) {
+  private _onCallActionSuccess(callAction: RTC_CALL_ACTION, params?: any) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
         this._isRecording = true;
@@ -213,7 +220,7 @@ class RTCCall {
         break;
       }
     }
-    this._delegate.onCallActionSuccess(callAction);
+    this._delegate.onCallActionSuccess(callAction, params);
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
@@ -255,6 +262,10 @@ class RTCCall {
 
   private _onTransferAction(target: string) {
     this._callSession.transfer(target);
+  }
+
+  private _onParkAction() {
+    this._callSession.park();
   }
 
   private _onStartRecordAction() {
