@@ -24,6 +24,8 @@ const CallFsmEvent = {
   SEND_TO_VOICEMAIL: 'sendToVoicemail',
   HANGUP: 'hangup',
   FLIP: 'flip',
+  MUTE: 'mute',
+  UNMUTE: 'Unmute',
   TRANSFER: 'transfer',
   START_RECORD: 'startRecord',
   STOP_RECORD: 'stopRecord',
@@ -42,6 +44,8 @@ interface IRTCCallFsmTableDependency {
   onTransferAction(target: string): void;
   onStartRecordAction(): void;
   onStopRecordAction(): void;
+  onMuteAction(): void;
+  onUnmuteAction(): void;
   onReportCallActionFailed(name: string): void;
 }
 
@@ -106,6 +110,22 @@ class RTCCallFsmTable extends StateMachine {
           from: CallFsmState.CONNECTED,
           to: (target: number) => {
             dependency.onFlipAction(target);
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.MUTE,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onMuteAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.UNMUTE,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onUnmuteAction();
             return CallFsmState.CONNECTED;
           },
         },

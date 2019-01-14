@@ -27,6 +27,7 @@ class RTCCall {
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
+  private _isMute: boolean = false;
 
   constructor(
     isIncoming: boolean,
@@ -96,6 +97,20 @@ class RTCCall {
 
   stopRecord(): void {
     this._fsm.stopRecord();
+  }
+
+  mute(): void {
+    if (!this._isMute) {
+      this._fsm.mute();
+    }
+    this._isMute = true;
+  }
+
+  unmute(): void {
+    if (this._isMute) {
+      this._fsm.unmute();
+    }
+    this._isMute = false;
   }
 
   transfer(target: string): void {
@@ -179,6 +194,12 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.STOP_RECORD_ACTION, () => {
       this._onStopRecordAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.MUTE_ACTION, () => {
+      this._onMuteAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.UNMUTE_ACTION, () => {
+      this._onUnmuteAction();
     });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
@@ -269,6 +290,14 @@ class RTCCall {
       : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
   }
 
+  private _onMuteAction() {
+    this._callSession.mute();
+  }
+
+  private _onUnmuteAction() {
+    this._callSession.unmute();
+  }
+
   private _onCreateOutCallSession() {
     const session = this._account.createOutCallSession(this._callInfo.toNum);
     this.setCallSession(session);
@@ -278,6 +307,9 @@ class RTCCall {
     if (this._callState !== state) {
       this._callState = state;
       this._delegate.onCallStateChange(state);
+    }
+    if (RTC_CALL_STATE.CONNECTED === state) {
+      this._isMute ? this._callSession.mute() : this._callSession.unmute();
     }
   }
 }

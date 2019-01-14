@@ -16,6 +16,8 @@ interface IRTCCallSession extends EventEmitter2 {
   stopRecord(): void;
   answer(): void;
   reject(): void;
+  mute(): void;
+  unmute(): void;
   sendToVoicemail(): void;
 }
 
