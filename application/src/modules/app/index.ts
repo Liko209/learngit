@@ -1,6 +1,7 @@
 /*
  * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2019-01-08 22:19:29
+ * @Date: 2019-01-07 12:43:38
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './VersionInfo';
+export * from './AppModule';
+export * from './module.config';
