@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent, RefObject, createRef } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import {
   AutoSizer,
@@ -26,7 +26,7 @@ type JuiVirtualListProps = {
 };
 
 @observer
-class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
+class JuiVirtualList extends Component<JuiVirtualListProps> {
   static MIN_CELL_HEIGHT: number = 44;
   static OVERSCAN_ROW_COUNT: number = 4;
   private _dataSource: IVirtualListDataSource;

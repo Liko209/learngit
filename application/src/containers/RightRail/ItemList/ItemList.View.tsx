@@ -16,15 +16,17 @@ import {
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
 import { JuiConversationRightRailLoading } from 'jui/pattern/RightShelf';
-// import { observable } from 'mobx';
+import { NoteItem } from '../NoteItem';
 import { emptyView } from './Empty';
 
 const itemType = {
   [ITEM_LIST_TYPE.FILE]: FileItem,
+  [ITEM_LIST_TYPE.NOTE]: NoteItem,
 };
 
 const subheaderType = {
   [ITEM_LIST_TYPE.FILE]: 'fileListSubheader',
+  [ITEM_LIST_TYPE.NOTE]: 'noteListSubheader',
 };
 
 @observer
