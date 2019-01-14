@@ -11,12 +11,12 @@ import {
 } from 'jui/pattern/EmptyScreen';
 
 import { ITEM_LIST_TYPE } from '../types';
-import { EMPTY_CONFIGS } from './config';
+import { TAB_CONFIG, TabConfig } from './config';
 
 const emptyView = (type: ITEM_LIST_TYPE) => {
-  const config = EMPTY_CONFIGS[type];
+  const config = TAB_CONFIG.find((looper: TabConfig) => looper.type === type);
   if (config) {
-    const { text, content, image } = config;
+    const { text, content, image } = config.empty;
     return (
       <JuiFlexWrapper>
         <JuiRightShelfEmptyScreen

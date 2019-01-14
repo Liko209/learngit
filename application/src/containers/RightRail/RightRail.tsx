@@ -16,46 +16,12 @@ import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList } from './ItemList';
 import { ITEM_LIST_TYPE } from './types';
+import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 
 type Props = {
   id: number;
 } & WithNamespaces;
-
-const TAB_CONFIG = [
-  {
-    title: 'pinned',
-    type: ITEM_LIST_TYPE.PIN,
-  },
-  {
-    title: 'files',
-    type: ITEM_LIST_TYPE.FILE,
-  },
-  {
-    title: 'images',
-    type: ITEM_LIST_TYPE.IMAGE,
-  },
-  {
-    title: 'tasks',
-    type: ITEM_LIST_TYPE.TASK,
-  },
-  {
-    title: 'links',
-    type: ITEM_LIST_TYPE.LINK,
-  },
-  {
-    title: 'notes',
-    type: ITEM_LIST_TYPE.NOTE,
-  },
-  {
-    title: 'events',
-    type: ITEM_LIST_TYPE.EVENT,
-  },
-  {
-    title: 'integrations',
-    type: ITEM_LIST_TYPE.INTEGRATION,
-  },
-];
 
 type TriggerButtonProps = {
   isOpen: boolean;
