@@ -27,6 +27,15 @@ import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { AccountService } from '../account/accountService';
 
+const personFlags = {
+  deactivated: 2,
+  has_registered: 4,
+  is_removed_guest: 1024,
+  am_removed_guest: 2048,
+};
+
+const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
+
 class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
 
@@ -270,8 +279,61 @@ class PersonService extends BaseService<Person> {
     return !person.is_pseudo_user;
   }
 
+  private _isVisible(person: Person): boolean {
+    if (person.email === undefined || person.email.length < 1) {
+      return false;
+    }
+    if (person.email === SERVICE_ACCOUNT_EMAIL) {
+      return false;
+    }
+    return true;
+  }
+
+  private _testFlags(person: Person, mask: number) {
+    if (person.flags === undefined) {
+      return false;
+    }
+    if ((person.flags & mask) === mask) {
+      return true;
+    }
+    return false;
+  }
+
+  private _isRemovedGuest(person: Person): boolean {
+    return this._testFlags(person, personFlags.is_removed_guest);
+  }
+
+  private _amRemovedGuest(person: Person): boolean {
+    return this._testFlags(person, personFlags.am_removed_guest);
+  }
+
+  private _isRegistered(person: Person): boolean {
+    if (person.has_registered) {
+      return true;
+    }
+    return this._testFlags(person, personFlags.has_registered);
+  }
+
+  private _isDeactivatedByFlags(person: Person): boolean {
+    return this._testFlags(person, personFlags.deactivated);
+  }
+
+  private _isDeactivated(person: Person): boolean {
+    if (person.deactivated) {
+      return true;
+    }
+    return this._isDeactivatedByFlags(person);
+  }
+
   private _isValid(person: Person) {
-    return !person.deactivated && !person.is_pseudo_user;
+    return (
+      this._isRegistered(person) &&
+      !this._isDeactivated(person) &&
+      this._isVisible(person) &&
+      !this._isRemovedGuest(person) &&
+      !this._amRemovedGuest(person) &&
+      !person.is_pseudo_user
+    );
   }
 
   getAvailablePhoneNumbers(
