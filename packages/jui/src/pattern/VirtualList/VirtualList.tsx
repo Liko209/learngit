@@ -5,6 +5,7 @@
  */
 
 import React, { Component, RefObject, createRef } from 'react';
+import { observer } from 'mobx-react';
 import {
   AutoSizer,
   List,
@@ -19,17 +20,21 @@ import {
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
+import { JuiVirtualListWrapper } from './VirtualListWrapper';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
 };
 
+@observer
 class JuiVirtualList extends Component<JuiVirtualListProps> {
   static MIN_CELL_HEIGHT: number = 44;
   static OVERSCAN_ROW_COUNT: number = 4;
   private _dataSource: IVirtualListDataSource;
   private _cache: CellMeasurerCache;
-  private _listRef: RefObject<List> = createRef();
+  private _sizerRef: RefObject<AutoSizer> = createRef();
+  private _listRef: List;
+  private _loaderRef: RefObject<InfiniteLoader> = createRef();
 
   constructor(props: JuiVirtualListProps) {
     super(props);
@@ -80,15 +85,15 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   private _isRowLoaded = (params: Index) => {
     const { isRowLoaded } = this._dataSource;
     if (isRowLoaded) {
-      return isRowLoaded(params);
+      return isRowLoaded(params.index);
     }
     return false;
   }
 
-  private _loadMoreRows = async (params: IndexRange) => {
+  private _loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
     const { loadMore } = this._dataSource;
     if (loadMore) {
-      return await loadMore(params);
+      return await loadMore(startIndex, stopIndex);
     }
   }
 
@@ -101,14 +106,14 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   scrollToCell = (index: number) => {
-    const { current } = this._listRef;
+    const current = this._listRef;
     if (current) {
       requestAnimationFrame(() => current.scrollToRow(index));
     }
   }
 
   scrollToPosition = (scrollTop: number) => {
-    const { current } = this._listRef;
+    const current = this._listRef;
     if (current) {
       current.scrollToPosition(scrollTop);
     }
@@ -117,6 +122,13 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   private _registerRef = (ref: any, callback: (args: any) => void) => {
     this._listRef = ref;
     callback(ref);
+  }
+
+  componentWillReact() {
+    this._sizerRef.current && this._sizerRef.current.forceUpdate();
+    this._loaderRef.current && this._loaderRef.current.forceUpdate();
+    this._listRef.forceUpdate();
+    this._listRef.forceUpdateGrid();
   }
 
   render() {
@@ -144,27 +156,32 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     }
 
     return (
-      <AutoSizer>
-        {({ width, height }: Size) => (
-          <InfiniteLoader
-            isRowLoaded={this._isRowLoaded}
-            loadMoreRows={this._loadMoreRows}
-            rowCount={cellCount}
-          >
-            {({ onRowsRendered, registerChild }) => {
-              return (
-                <List
-                  ref={ref => this._registerRef(ref, registerChild)}
-                  onRowsRendered={onRowsRendered}
-                  height={height}
-                  width={width}
-                  {...props}
-                />
-              );
-            }}
-          </InfiniteLoader>
-        )}
-      </AutoSizer>
+      <JuiVirtualListWrapper>
+        <InfiniteLoader
+          isRowLoaded={this._isRowLoaded}
+          loadMoreRows={this._loadMoreRows}
+          rowCount={cellCount}
+          ref={this._loaderRef}
+        >
+          {({ onRowsRendered, registerChild }) => {
+            return (
+              <AutoSizer ref={this._sizerRef}>
+                {({ width, height }: Size) => {
+                  return (
+                    <List
+                      ref={ref => this._registerRef(ref, registerChild)}
+                      onRowsRendered={onRowsRendered}
+                      height={height}
+                      width={width}
+                      {...props}
+                    />
+                  );
+                }}
+              </AutoSizer>
+            );
+          }}
+        </InfiniteLoader>
+      </JuiVirtualListWrapper>
     );
   }
 }

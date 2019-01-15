@@ -20,6 +20,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).glip(otherUser).init();
@@ -32,10 +33,6 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId],
       });
-    });
-
-    await h(t).withLog('And the conversations should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, chatId);
     });
 
     await h(t).withLog('Given user5 have custom status "In a meeting"', async () => {
