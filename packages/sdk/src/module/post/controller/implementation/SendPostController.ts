@@ -23,13 +23,14 @@ import { ErrorParserHolder } from '../../../../error';
 import { PostActionController } from './PostActionController';
 import { PostItemController } from './PostItemController';
 import { IPostItemController } from '../interface/IPostItemController';
+import { ISendPostController } from '../interface/ISendPostController';
 
 type PostData = {
   id: number;
   data: Post;
 };
 
-class SendPostController {
+class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
   private _postItemController: IPostItemController;
   constructor(public postActionController: PostActionController) {
@@ -51,6 +52,20 @@ class SendPostController {
     };
     const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
     this.innerSendPost(rawInfo, false);
+  }
+
+  async reSendPost(id: number) {
+    if (id < 0) {
+      const dao = daoManager.getDao(PostDao);
+      const post = await dao.get(id);
+      if (post) {
+        return this.innerSendPost(post, true);
+      }
+    }
+    mainLogger.warn(
+      `PostActionController: invalid, should not resend, id ${id}`,
+    );
+    return null;
   }
 
   /**
@@ -176,20 +191,6 @@ class SendPostController {
 
   isValidPost(post: Post) {
     return post && (post.text.length > 0 || post.item_ids.length > 0);
-  }
-
-  async reSendPost(id: number) {
-    if (id < 0) {
-      const dao = daoManager.getDao(PostDao);
-      const post = await dao.get(id);
-      if (post) {
-        return this.innerSendPost(post, true);
-      }
-    }
-    mainLogger.warn(
-      `PostActionController: invalid, should not resend, id ${id}`,
-    );
-    return null;
   }
 }
 

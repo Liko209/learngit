@@ -11,10 +11,10 @@ interface IPostActionController {
     personId: number,
     toLike: boolean,
   ): Promise<Post | null>;
-  editPost(params: EditPostType): Promise<Post>;
+  editPost(params: EditPostType): Promise<Post | null>;
 
   deletePost(id: number): Promise<boolean>;
 
-  updateLocalPost(post: Partial<Post>): Promise<Post>;
+  updateLocalPost(post: Partial<Post>): Promise<Post | null>;
 }
 export { IPostActionController };

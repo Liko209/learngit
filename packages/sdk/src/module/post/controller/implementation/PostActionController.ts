@@ -13,7 +13,8 @@ import { EditPostType } from '../../types';
 import { ENTITY } from '../../../../service/eventKey';
 import { ProgressService } from '../../../progress';
 import { notificationCenter, GroupConfigService } from '../../../../service';
-class PostActionController {
+import { IPostActionController } from '../interface/IPostActionController';
+class PostActionController implements IPostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
     public requestController: IRequestController<Post>,
@@ -142,17 +143,16 @@ class PostActionController {
         ...backup,
       };
     };
-
-    return (
-      backup.id &&
-      this.partialModifyController.updatePartially(
+    if (backup.id) {
+      return this.partialModifyController.updatePartially(
         backup.id,
         preHandlePartial,
         async (newPost: Post) => {
           return newPost;
         },
-      )
-    );
+      );
+    }
+    throw new Error('updateLocalPost error invalid id');
   }
 }
 
