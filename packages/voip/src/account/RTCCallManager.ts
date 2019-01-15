@@ -24,10 +24,8 @@ class RTCCallManager {
   }
 
   removeCall(callUuid: string) {
-    this._calls.forEach((item, index) => {
-      if (item.getCallInfo().uuid === callUuid) {
-        this._calls.splice(index, 1);
-      }
+    this._calls = this._calls.filter((item: RTCCall) => {
+      item.getCallInfo().uuid !== callUuid;
     });
     rtcLogger.debug(
       this._kTag,
@@ -36,10 +34,7 @@ class RTCCallManager {
   }
 
   allowCall(): boolean {
-    if (this._calls.length >= kRTCMaxCallCount) {
-      return false;
-    }
-    return true;
+    return this._calls.length < kRTCMaxCallCount;
   }
 
   callList(): RTCCall[] {
@@ -50,13 +45,13 @@ class RTCCallManager {
     return this._calls.length;
   }
 
-  getCallByUuid(callUuid: string): RTCCall {
+  getCallByUuid(callUuid: string): RTCCall | null {
     this._calls.forEach((item: any) => {
       if (item.getCallInfo().uuid === callUuid) {
         return item;
       }
     });
-    return null as any;
+    return null;
   }
 }
 

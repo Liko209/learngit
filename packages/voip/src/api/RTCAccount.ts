@@ -53,14 +53,17 @@ class RTCAccount implements IRTCAccount {
     this._provManager.acquireSipProv();
   }
 
-  public makeCall(toNumber: string, delegate: IRTCCallDelegate): RTCCall {
+  public makeCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+  ): RTCCall | null {
     if (toNumber.length === 0) {
       rtcLogger.error(this._kTag, 'Failed to make call. To number is empty');
-      return null as any;
+      return null;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(this._kTag, 'Failed to make call. Max call count reached');
-      return null as any;
+      return null;
     }
     const call = new RTCCall(false, toNumber, null, this, delegate);
     this._callManager.addCall(call);
@@ -79,7 +82,7 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.callCount();
   }
 
-  getCallByUuid(uuid: string): RTCCall {
+  getCallByUuid(uuid: string): RTCCall | null {
     return this._callManager.getCallByUuid(uuid);
   }
 
