@@ -137,6 +137,9 @@ class FileItemService extends EntityBaseService<ItemFile>
   }
 
   async getSubItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
+    if (type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES) {
+      return 0; // TO-DO in https://jira.ringcentral.com/browse/FIJI-2341
+    }
     const sanitizedFileDao = daoManager.getDao<FileItemDao>(FileItemDao);
     return await sanitizedFileDao.getFileItemCount(groupId, type);
   }
