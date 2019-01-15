@@ -11,16 +11,11 @@ import { IConsoleLog } from './v2/models';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
-let beatsClient: BeatsClient;
-let runId = getRunIdFromFile();
-
-if (ENABLE_REMOTE_DASHBOARD) {
-  beatsClient = new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL);
-}
+const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL) : null;
+// _runId is a share state
+let _runId = getRunIdFromFile();
 
 function getRunIdFromFile(runIdFile: string = './runId') {
-  if (!ENABLE_REMOTE_DASHBOARD)
-    return null;
   if (fs.existsSync(runIdFile)) {
     const content = fs.readFileSync(runIdFile, 'utf8');
     return Number(content);
@@ -28,10 +23,8 @@ function getRunIdFromFile(runIdFile: string = './runId') {
   return null;
 }
 
-export async function getOrCreateRunId() {
-  if (!ENABLE_REMOTE_DASHBOARD)
-    return null;
-  if (!runId) {
+export async function getOrCreateRunId(runIdFile: string = './runId') {
+  if (!_runId) {
     const runName = RUN_NAME || uuid();
     const metadata = {};
     for (const key in ENV_OPTS) {
@@ -58,10 +51,11 @@ export async function getOrCreateRunId() {
       name: runName,
       metadata,
     } as Run);
-    runId = run ? run.id : null;
-    console.log(`a new Run Id is created: ${runId}`);
+    // update share state
+    _runId = run ? run.id : null;
+    console.log(`a new Run Id is created: ${_runId}`);
   }
-  return runId;
+  return _runId;
 }
 
 export function setupCase(accountType: string) {
@@ -89,41 +83,41 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    // release account
+    await h(t).dataHelper.teardown();
+
+    // convert screenshot to webp format
     const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
     if (failScreenShotPath) {
       t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
     };
+
+    // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
-    const consoleLogPath = MiscUtils.createTmpFilePath("console_log.zip");
-    let zip = new JSZip();
-    zip.file('consoleLog.txt', JSON.stringify(consoleLog, null, 2));
-    await zip.generateAsync({ type: "nodebuffer" }).then(
-      function (content) {
-        fs.writeFileSync(consoleLogPath, content);
-      }
-    )
+    const zip = new JSZip();
+    zip.file('console-log.json', JSON.stringify(consoleLog, null, 2));
+    const consoleLogPath = MiscUtils.createTmpFile(await zip.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
     const warnConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['warn'], null, 2));
     const errorConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['error'], null, 2));
     const warnConsoleLogNumber = consoleLog['warn'].length;
     const errorConsoleLogNumber = consoleLog['error'].length;
-
-    let consoleLogObj: IConsoleLog = {
+    const consoleLogObj: IConsoleLog = {
       consoleLogPath,
       warnConsoleLogPath,
       errorConsoleLogPath,
       warnConsoleLogNumber,
       errorConsoleLogNumber
-    }
+    };
 
+    // create allure report
     h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
-    if (ENABLE_REMOTE_DASHBOARD) {
-      let runId = await getOrCreateRunId();
+
+    // create beats report when ENABLE_REMOTE_DASHBOARD=true
+    if (beatsClient) {
+      const runId = await getOrCreateRunId();
       if (runId) {
         await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
-      } else {
-        console.error("Couldn't create Run for the test, please check the dashboard connection!")
       }
     }
-    await h(t).dataHelper.teardown();
   }
 }
