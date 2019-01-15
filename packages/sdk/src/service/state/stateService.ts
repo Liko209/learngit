@@ -123,7 +123,7 @@ class StateService extends BaseService<GroupState> {
   ): Promise<void> {
     const currentStateId = await this.getMyStateId();
     const groupId = partialState.id ? partialState.id : 0;
-    const state = await this.getById(groupId);
+    const state = _.cloneDeep(await this.getById(groupId));
     if (state) {
       const updatedState = this.getMergedModel(partialState, state);
       notificationCenter.emitEntityUpdate(
