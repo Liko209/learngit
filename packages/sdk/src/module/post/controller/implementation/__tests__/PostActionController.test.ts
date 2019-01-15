@@ -13,10 +13,10 @@ import { ProgressService } from '../../../../progress';
 import { notificationCenter, GroupConfigService } from '../../../../../service';
 import _ from 'lodash';
 
-jest.mock('../../../../dao');
-jest.mock('../../../progress');
-jest.mock('../../../../service');
-jest.mock('../../../item/service');
+jest.mock('../../../../../dao');
+jest.mock('../../../../progress');
+jest.mock('../../../../../service');
+jest.mock('../../../../item/service');
 
 class TestPartialModifyController implements IPartialModifyController<Post> {
   updatePartially = jest.fn();
