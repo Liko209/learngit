@@ -100,8 +100,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return this._instance;
   }
 
-  onReady(handler: () => any) {
-    this._dataLoader = this._dataLoader.then(handler);
+  onReady(handler: (list: Set<number>) => any) {
+    this._dataLoader = this._dataLoader.then(() => handler(this._idSet));
   }
 
   private _updateHiddenGroupIds() {

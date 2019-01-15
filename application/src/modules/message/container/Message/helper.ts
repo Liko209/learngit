@@ -107,24 +107,24 @@ export class MessageRouterChangeHelper {
   }
 
   static handleSourceOfRouter(id: number) {
-    const { state } = window.history.state || { state: {} };
-    if (!state || !state.source || state.source !== 'leftRail') {
-      const handler = SectionGroupHandler.getInstance();
-      const triggerReady = () => {
-        handler.onReady(() => {
-          GroupHandler.ensureGroupOpened(id);
-          GroupHandler.accessGroup(id);
-        });
-      };
-      if (this.isIndexDone) {
+    const handler = SectionGroupHandler.getInstance();
+    const triggerReady = () => {
+      handler.onReady((conversationList: Set<number>) => {
+        GroupHandler.ensureGroupOpened(id);
+        if (conversationList.has(id)) {
+          return;
+        }
+        GroupHandler.accessGroup(id);
+      });
+    };
+    if (this.isIndexDone) {
+      triggerReady();
+    } else {
+      const { notificationCenter, SERVICE } = service;
+      notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+        this.isIndexDone = true;
         triggerReady();
-      } else {
-        const { notificationCenter, SERVICE } = service;
-        notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
-          this.isIndexDone = true;
-          triggerReady();
-        });
-      }
+      });
     }
   }
 }
