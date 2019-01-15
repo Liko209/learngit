@@ -7,25 +7,11 @@
 import { SanitizedFileItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
 import { IDatabase } from 'foundation';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
-import { ItemUtils } from '../../../utils';
 
 class FileItemDao extends SubItemDao<SanitizedFileItem> {
   static COLLECTION_NAME = 'fileItem';
   constructor(db: IDatabase) {
     super(FileItemDao.COLLECTION_NAME, db);
-  }
-
-  getFileItemCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
-    const query = this.createQuery();
-    return query
-      .contain('group_ids', groupId)
-      .filter((item: SanitizedFileItem) =>
-        type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES
-          ? ItemUtils.isImageItem(item)
-          : !ItemUtils.isImageItem(item),
-      )
-      .count();
   }
 }
 

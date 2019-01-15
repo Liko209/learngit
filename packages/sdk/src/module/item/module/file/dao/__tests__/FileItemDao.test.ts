@@ -6,7 +6,6 @@
 
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { FileItemDao } from '../FileItemDao';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../../../constants';
 
 describe('Event Item Dao', () => {
   let dao: FileItemDao;
@@ -45,25 +44,6 @@ describe('Event Item Dao', () => {
   beforeAll(() => {
     const { database } = setup();
     dao = new FileItemDao(database);
-  });
-
-  describe('getFileItemCount', () => {
-    beforeAll(async () => {
-      await dao.clear();
-      await dao.bulkPut(items);
-    });
-
-    it('should return  count of image files only', async () => {
-      expect(
-        await dao.getFileItemCount(1, RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES),
-      ).toBe(2);
-    });
-
-    it('should return count non image files only', async () => {
-      expect(
-        await dao.getFileItemCount(1, RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES),
-      ).toBe(1);
-    });
   });
 
   describe('queryItemsByGroupId', () => {

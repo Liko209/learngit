@@ -10,7 +10,7 @@ import {
   JuiFlexWrapper,
 } from 'jui/pattern/EmptyScreen';
 
-import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
+import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { TAB_CONFIG, TabConfig } from './config';
 
 const emptyView = (type: RIGHT_RAIL_ITEM_TYPE) => {

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ItemListViewModel } from '../ItemList.ViewModel';
-import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
+import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 
 let ViewModel: ItemListViewModel;
 

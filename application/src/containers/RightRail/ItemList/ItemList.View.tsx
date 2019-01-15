@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
-import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
+import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';

@@ -7,8 +7,7 @@
 import { Post } from '../../post/entity';
 import { Item, ItemFile } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
-import { ItemQueryOptions } from '../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../constants';
+import { ItemQueryOptions, ItemFilterFunction } from '../types';
 
 interface IItemService {
   getItems(options: ItemQueryOptions): Promise<Item[]>;
@@ -63,7 +62,8 @@ interface IItemService {
 
   getGroupItemsCount(
     groupId: number,
-    typeId: RIGHT_RAIL_ITEM_TYPE,
+    typeId: number,
+    filterFunc?: ItemFilterFunction,
   ): Promise<number>;
 }
 export { IItemService };

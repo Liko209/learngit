@@ -12,7 +12,7 @@ import LinksEmptyImage from '../images/Links.svg';
 import NotesEmptyImage from '../images/Notes.svg';
 import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
-import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
+import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 
 type EmptyConfig = {
   text: string;

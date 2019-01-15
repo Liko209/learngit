@@ -9,10 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
-import {
-  RIGHT_RAIL_ITEM_TYPE,
-  RightRailItemTypeIdMap,
-} from 'sdk/module/constants';
+import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
 import { Item } from 'sdk/module/item/entity';
 import {
@@ -115,7 +112,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
-      this.type,
+      this._typeId,
+      this._getFilterFunc(),
     );
   }
 

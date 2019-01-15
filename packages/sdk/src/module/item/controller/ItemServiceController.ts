@@ -13,8 +13,7 @@ import { Api } from '../../../api';
 import { daoManager, ItemDao } from '../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { IItemService } from '../service/IItemService';
-import { ItemQueryOptions } from '../types';
-import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from '../../constants';
+import { ItemQueryOptions, ItemFilterFunction } from '../types';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
@@ -55,11 +54,15 @@ class ItemServiceController {
     return this._itemActionController;
   }
 
-  async getGroupItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
+  async getGroupItemsCount(
+    groupId: number,
+    typeId: number,
+    filterFunc?: ItemFilterFunction,
+  ) {
     let totalCount = 0;
-    const subItemService = this.getSubItemService(RightRailItemTypeIdMap[type]);
+    const subItemService = this.getSubItemService(typeId);
     if (subItemService) {
-      totalCount = await subItemService.getSubItemsCount(groupId, type);
+      totalCount = await subItemService.getSubItemsCount(groupId, filterFunc);
     }
     return totalCount;
   }

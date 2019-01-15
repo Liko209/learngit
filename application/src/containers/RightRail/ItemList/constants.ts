@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import TypeDictionary from '../utils/glip-type-dictionary/types';
+import { TypeDictionary } from 'sdk/utils';
 
 enum RIGHT_RAIL_ITEM_TYPE {
   PIN_POSTS,

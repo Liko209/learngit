@@ -371,8 +371,8 @@ describe('FileItemService', () => {
 
     it('should call file item dao to get file count', async () => {
       fileItemDao.getGroupItemCount = jest.fn();
-      await fileItemService.getSubItemsCount(111, 11);
-      expect(fileItemDao.getFileItemCount).toBeCalledWith(111, 11);
+      await fileItemService.getSubItemsCount(111, undefined);
+      expect(fileItemDao.getGroupItemCount).toBeCalledWith(111, undefined);
     });
   });
 

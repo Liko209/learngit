@@ -474,6 +474,7 @@ describe('ItemService', () => {
       expect(itemServiceController.getGroupItemsCount).toBeCalledWith(
         gId,
         TypeDictionary.TYPE_ID_PAGE,
+        undefined,
       );
     });
   });

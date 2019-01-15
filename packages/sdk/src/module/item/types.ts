@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type ItemFilterFunction = (value: any, index?: number) => boolean;
+
 type ItemQueryOptions = {
   typeId: number;
   groupId: number;
@@ -11,7 +13,7 @@ type ItemQueryOptions = {
   desc: boolean;
   limit: number;
   offsetItemId: number | undefined;
-  filterFunc?: (value: any, index?: number) => boolean;
+  filterFunc?: ItemFilterFunction;
 };
 
-export { ItemQueryOptions };
+export { ItemQueryOptions, ItemFilterFunction };

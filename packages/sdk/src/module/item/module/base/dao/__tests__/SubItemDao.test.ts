@@ -6,7 +6,7 @@
 
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { SubItemDao } from '../SubItemDao';
-import { SanitizedItem } from '../../entity';
+import { SanitizedItem, Item } from '../../entity';
 
 describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
@@ -93,6 +93,13 @@ describe('Event Item Dao', () => {
 
     it('should return count of items of the group', async () => {
       expect(await dao.getGroupItemCount(groupId)).toBe(3);
+    });
+
+    it('should return count of items of the group after filtered', async () => {
+      const filterFunc = (item: Item) => {
+        return item.id > 2;
+      };
+      expect(await dao.getGroupItemCount(groupId, filterFunc)).toBe(1);
     });
   });
 

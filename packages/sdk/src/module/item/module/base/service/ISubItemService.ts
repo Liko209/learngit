@@ -5,8 +5,7 @@
  */
 
 import { Item } from '../entity';
-import { ItemQueryOptions } from '../../../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 
 interface ISubItemService {
   getSortedIds(options: ItemQueryOptions): Promise<number[]>;
@@ -19,7 +18,7 @@ interface ISubItemService {
 
   getSubItemsCount(
     groupId: number,
-    type: RIGHT_RAIL_ITEM_TYPE,
+    filterFunc?: ItemFilterFunction,
   ): Promise<number>;
 }
 

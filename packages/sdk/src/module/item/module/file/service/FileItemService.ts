@@ -13,8 +13,8 @@ import { EntityBaseService } from '../../../../../framework/service/EntityBaseSe
 import { IItemService } from '../../../service/IItemService';
 import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
-import { ItemQueryOptions } from '../../../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+
 class FileItemService extends EntityBaseService<ItemFile>
   implements ISubItemService {
   private _fileItemController: FileItemController;
@@ -136,12 +136,9 @@ class FileItemService extends EntityBaseService<ItemFile>
     } as SanitizedFileItem;
   }
 
-  async getSubItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
-    if (type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES) {
-      return 0; // TO-DO in https://jira.ringcentral.com/browse/FIJI-2341
-    }
+  async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
     const sanitizedFileDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    return await sanitizedFileDao.getFileItemCount(groupId, type);
+    return await sanitizedFileDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 

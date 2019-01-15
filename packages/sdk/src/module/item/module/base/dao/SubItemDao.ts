@@ -8,7 +8,8 @@ import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
 import { BaseDao } from '../../../../../dao/base';
 import { SanitizedItem } from '../entity';
-import { ItemQueryOptions } from '../../../types';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+
 class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);
@@ -51,8 +52,11 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return itemIds;
   }
 
-  async getGroupItemCount(groupId: number) {
+  async getGroupItemCount(groupId: number, filterFunc?: ItemFilterFunction) {
     const query = this.createQuery().contain('group_ids', groupId);
+    if (filterFunc) {
+      query.filter((item: SanitizedItem) => filterFunc(item));
+    }
     return query.count();
   }
 }

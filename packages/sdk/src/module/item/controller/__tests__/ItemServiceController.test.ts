@@ -11,7 +11,7 @@ import { Item } from '../../entity';
 import { ISubItemService } from '../../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../../config';
 import { daoManager, ItemDao } from '../../../../dao';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../../constants';
+import { ItemUtils } from '../../utils';
 
 jest.mock('../../../../dao');
 jest.mock('../../config');
@@ -86,16 +86,14 @@ describe('ItemServiceController', () => {
     it('should return 0 when can not find the sub service', async () => {
       const res = await itemServiceController.getGroupItemsCount(
         groupId,
-        RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
+        111,
+        undefined,
       );
       expect(res).toBe(0);
     });
 
     it('should return right count when can find the sub service', async () => {
-      const res = await itemServiceController.getGroupItemsCount(
-        groupId,
-        RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
-      );
+      const res = await itemServiceController.getGroupItemsCount(groupId, 10);
       expect(res).toBe(cnt);
     });
   });
