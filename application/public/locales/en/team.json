@@ -8,7 +8,7 @@
   "Create": "Create",
   "Cancel": "Cancel",
   "Members": "Members",
-  "already taken": "The name is already taken, please choose another one.",
+  "alreadyTaken": "The name is already taken, please choose another one.",
   "Invalid Email": "Invalid Email",
   "Search Contact Placeholder": "Members (enter names or email addresses)",
   "New Message": "New Message",
@@ -18,6 +18,5 @@
   "Type new message": "Type new message",
   "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
   "newMessageTipLink": "create a Team instead.",
-  "alreadyTaken": "already taken",
   "InvalidEmail": "Invalid Email"
 }
