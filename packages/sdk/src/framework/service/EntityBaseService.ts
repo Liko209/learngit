@@ -37,7 +37,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     }
   }
 
-  getById(id: number): Promise<T | null> | T | null {
+  getById(id: number): Promise<T | null> {
     if (this.entitySourceController) {
       return Promise.resolve(this.entitySourceController.getEntity(id));
     }

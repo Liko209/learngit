@@ -25,6 +25,10 @@ import { ContactSearch } from '@/containers/ContactSearch';
 import portalManager from '@/common/PortalManager';
 
 import { ViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 interface IState {
   items: JuiListToggleItemProps[];
@@ -109,8 +113,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const message = 'WeWerentAbleToCreateTheTeamTryAgain';
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
