@@ -17,6 +17,7 @@ type Props = {
 const StyledTaskAvatarNames = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   ${typography('body1')};
   color: ${grey('900')};
 `;
