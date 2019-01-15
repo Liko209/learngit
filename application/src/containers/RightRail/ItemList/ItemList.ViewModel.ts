@@ -23,6 +23,7 @@ import { ITEM_LIST_TYPE } from '../types';
 
 const ItemTypeIdMap = {
   [ITEM_LIST_TYPE.FILE]: TypeDictionary.TYPE_ID_FILE,
+  [ITEM_LIST_TYPE.IMAGE]: TypeDictionary.TYPE_ID_FILE,
 };
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
