@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent, RefObject, createRef } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import {
   AutoSizer,
@@ -20,13 +20,14 @@ import {
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
+import { JuiVirtualListWrapper } from './VirtualListWrapper';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
 };
 
 @observer
-class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
+class JuiVirtualList extends Component<JuiVirtualListProps> {
   static MIN_CELL_HEIGHT: number = 44;
   static OVERSCAN_ROW_COUNT: number = 4;
   private _dataSource: IVirtualListDataSource;
@@ -155,30 +156,32 @@ class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
     }
 
     return (
-      <InfiniteLoader
-        isRowLoaded={this._isRowLoaded}
-        loadMoreRows={this._loadMoreRows}
-        rowCount={cellCount}
-        ref={this._loaderRef}
-      >
-        {({ onRowsRendered, registerChild }) => {
-          return (
-            <AutoSizer ref={this._sizerRef}>
-              {({ width, height }: Size) => {
-                return (
-                  <List
-                    ref={ref => this._registerRef(ref, registerChild)}
-                    onRowsRendered={onRowsRendered}
-                    height={height}
-                    width={width}
-                    {...props}
-                  />
-                );
-              }}
-            </AutoSizer>
-          );
-        }}
-      </InfiniteLoader>
+      <JuiVirtualListWrapper>
+        <InfiniteLoader
+          isRowLoaded={this._isRowLoaded}
+          loadMoreRows={this._loadMoreRows}
+          rowCount={cellCount}
+          ref={this._loaderRef}
+        >
+          {({ onRowsRendered, registerChild }) => {
+            return (
+              <AutoSizer ref={this._sizerRef}>
+                {({ width, height }: Size) => {
+                  return (
+                    <List
+                      ref={ref => this._registerRef(ref, registerChild)}
+                      onRowsRendered={onRowsRendered}
+                      height={height}
+                      width={width}
+                      {...props}
+                    />
+                  );
+                }}
+              </AutoSizer>
+            );
+          }}
+        </InfiniteLoader>
+      </JuiVirtualListWrapper>
     );
   }
 }
