@@ -6,7 +6,7 @@
 
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey } from '../../../foundation/utils/styles';
+import { typography, grey, height } from '../../../foundation/utils/styles';
 
 type Props = {
   children: React.ReactNode;
@@ -16,7 +16,6 @@ type Props = {
 
 const StyledTaskAvatarNames = styled.div`
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   ${typography('body1')};
   color: ${grey('900')};
@@ -24,7 +23,8 @@ const StyledTaskAvatarNames = styled.div`
 
 const StyledTaskOther = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  height: ${height(6)};
 `;
 
 const JuiTaskAvatarNames = ({ children, otherText, count }: Props) => (
