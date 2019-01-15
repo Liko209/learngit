@@ -28,13 +28,17 @@ class TeamPermissionController {
       : false;
   }
 
+  isSelfGroup(group: Group): boolean {
+    return (
+      group.members &&
+      group.members.length === 1 &&
+      group.creator_id === group.members[0]
+    );
+  }
+
   getCurrentUserPermissionLevel(group: Group): number {
     if (!group.is_team) {
-      if (
-        group.members &&
-        group.members.length === 1 &&
-        group.creator_id === group.members[0]
-      ) {
+      if (this.isSelfGroup(group)) {
         return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADD_MEMBER;
       }
       return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;

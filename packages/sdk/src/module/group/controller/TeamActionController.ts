@@ -37,21 +37,13 @@ class TeamActionController {
         };
       },
       async (newEntity: Group) => {
-        return await this._requestAddTeamMembers(teamId, [userId]);
+        return await this._requestUpdateTeamMembers(
+          teamId,
+          [userId],
+          '/add_team_members',
+        );
       },
     );
-  }
-
-  private async _requestAddTeamMembers(teamId: number, members: number[]) {
-    return this.controllerBuilder
-      .buildRequestController({
-        basePath: '/add_team_members',
-        networkClient: Api.glipNetworkClient,
-      })
-      .put({
-        members,
-        id: teamId,
-      });
   }
 
   async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
@@ -67,15 +59,23 @@ class TeamActionController {
         };
       },
       async (updatedEntity: Group) => {
-        return await this._requestRemoveTeamMembers(teamId, [userId]);
+        return await this._requestUpdateTeamMembers(
+          teamId,
+          [userId],
+          '/remove_team_members',
+        );
       },
     );
   }
 
-  private async _requestRemoveTeamMembers(teamId: number, members: number[]) {
+  private async _requestUpdateTeamMembers(
+    teamId: number,
+    members: number[],
+    basePath: string,
+  ) {
     return this.controllerBuilder
       .buildRequestController({
-        basePath: '/remove_team_members',
+        basePath,
         networkClient: Api.glipNetworkClient,
       })
       .put({
@@ -94,7 +94,11 @@ class TeamActionController {
         };
       },
       async (updateEntity: Group) => {
-        return await this._requestAddTeamMembers(teamId, members);
+        return await this._requestUpdateTeamMembers(
+          teamId,
+          members,
+          '/add_team_members',
+        );
       },
     );
   }
@@ -113,7 +117,11 @@ class TeamActionController {
         };
       },
       async (updateEntity: Group) => {
-        return await this._requestRemoveTeamMembers(teamId, members);
+        return await this._requestUpdateTeamMembers(
+          teamId,
+          members,
+          '/remove_team_members',
+        );
       },
     );
   }
