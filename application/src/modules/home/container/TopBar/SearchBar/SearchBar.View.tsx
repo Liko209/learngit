@@ -200,33 +200,35 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             data-test-automation-id={`search-${title}`}
           />
         )}
-        {type.sortableModel.map((item: any) => {
-          const { id, displayName, entity } = item;
-          const { is_team, privacy, members } = entity;
-          const hasAction =
-            is_team &&
-            privacy === 'protected' &&
-            !members.includes(currentUserId);
+        {type.sortableModel.length > 0 &&
+          type.sortableModel.map((item: any) => {
+            const { id, displayName, entity } = item;
+            const { is_team, privacy, members } = entity;
+            const hasAction =
+              is_team &&
+              privacy === 'protected' &&
+              !members.includes(currentUserId);
 
-          const Actions = hasAction ? this._Actions(item) : null;
+            const Actions = hasAction ? this._Actions(item) : null;
 
-          return (
-            <JuiSearchItem
-              key={id}
-              onClick={this.searchItemClickHandler(id)}
-              Avatar={this._Avatar(id)}
-              value={displayName}
-              terms={terms}
-              data-test-automation-id={`search-${title}-item`}
-              Actions={Actions}
-              isPrivate={entity.is_team && entity.privacy === 'private'}
-              isJoined={
-                entity.is_team &&
-                (!entity.is_public || entity.members.includes(currentUserId))
-              }
-            />
-          );
-        })}
+            return (
+              <JuiSearchItem
+                key={id}
+                onClick={this.searchItemClickHandler(id)}
+                Avatar={this._Avatar(id)}
+                value={displayName}
+                terms={terms}
+                data-test-automation-id={`search-${title}-item`}
+                Actions={Actions}
+                isPrivate={entity.is_team && entity.privacy === 'private'}
+                isJoined={
+                  is_team &&
+                  privacy === 'protected' &&
+                  members.includes(currentUserId)
+                }
+              />
+            );
+          })}
       </>
     );
   }

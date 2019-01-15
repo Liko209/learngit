@@ -4,6 +4,8 @@ import { groupFactory } from '../../controller/__tests__/factory';
 import { TeamPermission } from '../../entity';
 
 jest.mock('../../controller/TeamActionController');
+jest.mock('sdk/api');
+jest.mock('sdk/dao');
 
 describe('GroupService', () => {
   let groupService: GroupService;

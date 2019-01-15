@@ -17,9 +17,12 @@ class TeamActionController {
     public controllerBuilder: IControllerBuilder<Group>,
   ) {}
 
-  isInTeam(userId: number, team: Group) {
-    return (
-      team && team.is_team && team.members && team.members.includes(userId)
+  isInTeam(userId: number, team: Group): boolean {
+    return !!(
+      team &&
+      team.is_team &&
+      team.members &&
+      team.members.includes(userId)
     );
   }
 
