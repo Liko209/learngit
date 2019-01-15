@@ -219,7 +219,7 @@ class RTCCall {
   // call action listener
   private _onCallActionSuccess(
     callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions,
+    options: RTCCallActionSuccessOptions = {},
   ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
