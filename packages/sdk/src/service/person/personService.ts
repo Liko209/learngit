@@ -280,30 +280,20 @@ class PersonService extends BaseService<Person> {
   }
 
   private _isVisible(person: Person): boolean {
-    if (person.email === undefined || person.email.length < 1) {
-      return false;
-    }
-    if (person.email === SERVICE_ACCOUNT_EMAIL) {
-      return false;
-    }
-    return true;
+    return person.email !== SERVICE_ACCOUNT_EMAIL;
   }
 
   private _hasTrueValue(person: Person, key: number) {
     if (person.flags === undefined) {
       return false;
     }
-    if ((person.flags & key) === key) {
-      return true;
-    }
-    return false;
+    return (person.flags & key) === key;
   }
 
   private _isDeactivated(person: Person): boolean {
-    if (person.deactivated) {
-      return true;
-    }
-    return this._hasTrueValue(person, PersonFlags.deactivated);
+    return (
+      person.deactivated || this._hasTrueValue(person, PersonFlags.deactivated)
+    );
   }
 
   private _isValid(person: Person) {
