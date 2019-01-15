@@ -20,42 +20,61 @@ import {
   JuiProfileDialogContentSummaryButton,
   JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
-import { Message } from '@/containers/common/Message';
+import { goToConversation } from '@/common/goToConversation';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { MemberHeader, MemberList } from './Members';
 import { TypeDictionary } from 'sdk/utils';
+import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupContentViewProps
 > {
-  getAriaLabelKey = () => {
+  getAriaLabelKey = ([ariaTeam, ariaGroup]: string[]) => {
     const { typeId } = this.props;
     const mapping = {
-      [TypeDictionary.TYPE_ID_TEAM]: 'ariaGoToTeam',
-      [TypeDictionary.TYPE_ID_GROUP]: 'ariaGoToGroup',
+      [TypeDictionary.TYPE_ID_TEAM]: ariaTeam,
+      [TypeDictionary.TYPE_ID_GROUP]: ariaGroup,
     };
     return mapping[typeId];
   }
 
-  renderMessage = () => {
+  joinTeamAfterClick = () => {
+    const handerJoinTeam = joinTeam(this.props.group);
+    portalManager.dismiss();
+    handerJoinTeam();
+  }
+
+  renderButton = (
+    iconName: string,
+    buttonMessage: string,
+    ariaLabelKey: string[],
+    handerClick: (e: React.MouseEvent<HTMLElement>) => any,
+  ) => {
     const { t, group } = this.props;
     return (
       <JuiProfileDialogContentSummaryButton
+        aria-label={t(this.getAriaLabelKey(ariaLabelKey), {
+          name: group.displayName,
+        })}
         tabIndex={0}
-        aria-label={t(this.getAriaLabelKey(), { name: group.displayName })}
+        onClick={handerClick}
       >
-        <JuiIconography fontSize="small">chat_bubble</JuiIconography>
-        {t('message')}
+        <JuiIconography fontSize="small">{iconName}</JuiIconography>
+        {t(buttonMessage)}
       </JuiProfileDialogContentSummaryButton>
     );
   }
 
-  messageAfterClick = () => portalManager.dismiss();
+  messageAfterClick = async () => {
+    const { id } = this.props;
+    await goToConversation({ id });
+    portalManager.dismiss();
+  }
 
   render() {
-    const { id, group, showMessage } = this.props;
+    const { id, group, showMessage, showJoinTeam } = this.props;
     return (
       <>
         <Summary data-test-automation-id="profileDialogSummary">
@@ -77,13 +96,20 @@ class ProfileDialogGroupContentViewComponent extends Component<
               {group.description}
             </Description>
             <Buttons>
-              {showMessage && (
-                <Message
-                  id={id}
-                  afterClick={this.messageAfterClick}
-                  render={this.renderMessage}
-                />
-              )}
+              {showMessage &&
+                this.renderButton(
+                  'chat_bubble',
+                  'message',
+                  ['ariaGoToTeam', 'ariaGoToGroup'],
+                  this.messageAfterClick,
+                )}
+              {showJoinTeam &&
+                this.renderButton(
+                  'chat_bubble',
+                  'joinTeam',
+                  ['ariaJoinTeam', 'ariaJoinTeam'],
+                  this.joinTeamAfterClick,
+                )}
             </Buttons>
           </Right>
         </Summary>
