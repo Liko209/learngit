@@ -20,6 +20,8 @@ import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
+const SQUARE_SIZE = 180;
+
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
     component="a"
@@ -75,7 +77,7 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
-          let size = { width: 180, height: 180 };
+          let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
@@ -85,6 +87,7 @@ class FilesView extends React.Component<FilesViewProps> {
               width={size.width}
               height={size.height}
               forceSize={!singleImage}
+              squareSize={SQUARE_SIZE}
               fileName={name}
               url={previewUrl}
               Actions={downloadBtn(downloadUrl)}

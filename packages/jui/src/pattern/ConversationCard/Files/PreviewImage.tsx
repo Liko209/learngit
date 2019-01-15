@@ -3,10 +3,14 @@
  * @Date: 2018-10-26 10:35:16
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, RefObject, createRef } from 'react';
+import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import * as Jui from './style';
 import { FileName } from './FileName';
-import { getThumbnailSize } from '../../../foundation/utils/calculateImageSize';
+import {
+  getThumbnailSize,
+  ThumbnailInfo,
+  getThumbnailForSquareSize,
+} from '../../../foundation/utils/calculateImageSize';
 
 type SizeType = {
   width: number;
@@ -17,19 +21,33 @@ type JuiPreviewImageProps = {
   Actions?: JSX.Element;
   fileName: string;
   forceSize?: boolean;
+  squareSize?: number;
   url: string;
 } & SizeType;
 
 class JuiPreviewImage extends Component<JuiPreviewImageProps> {
-  private _imageSize: SizeType = {
+  private _imageInfo: ThumbnailInfo = {
     width: 0,
     height: 0,
+    left: 0,
+    top: 0,
+    justifyHeight: false,
+    justifyWidth: false,
   };
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _handleImageLoad = () => {
+    const { forceSize, squareSize } = this.props;
     const { current } = this._imageRef;
     if (current) {
-      this._imageSize = getThumbnailSize(current.width, current.height);
+      if (forceSize) {
+        this._imageInfo = getThumbnailForSquareSize(
+          current.width,
+          current.height,
+          squareSize || 180,
+        );
+      } else {
+        this._imageInfo = getThumbnailSize(current.width, current.height);
+      }
       this.forceUpdate();
     }
   }
@@ -37,17 +55,25 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     const { Actions, fileName, url, forceSize } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
-    if (this._imageSize.width !== 0 && this._imageSize.height !== 0) {
+    const imageStyle: CSSProperties = { position: 'absolute' };
+    if (this._imageInfo.width !== 0 && this._imageInfo.height !== 0) {
       if (!forceSize) {
-        width = this._imageSize.width;
-        height = this._imageSize.height;
+        height = this._imageInfo.height;
+        width = this._imageInfo.width;
       }
-      imageProps.width = width;
-      imageProps.height = height;
+      const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
+      imageStyle.top = top;
+      imageStyle.left = left;
+      if (justifyHeight) {
+        imageProps.height = this._imageInfo.height;
+      } else if (justifyWidth) {
+        imageProps.width = this._imageInfo.width;
+      }
     }
     return (
       <Jui.ImageCard width={width} height={height}>
         <img
+          style={imageStyle}
           ref={this._imageRef}
           src={url}
           onLoad={this._handleImageLoad}
