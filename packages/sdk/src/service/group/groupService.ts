@@ -175,7 +175,7 @@ class GroupService extends BaseService<Group> {
       }
       result = await filterGroups(result, limit);
     }
-    return result;
+    return result.slice(0, result.length > 50 ? 50 : result.length);
   }
   // this function should refactor with getGroupsByType
   // we should support to get group by paging

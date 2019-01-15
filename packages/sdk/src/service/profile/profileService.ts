@@ -32,6 +32,8 @@ class ProfileService extends BaseService<Profile> {
       [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: handleGroupIncomesNewPost,
     };
     super(ProfileDao, ProfileAPI, handleData, subscriptions);
+
+    this.enableCache();
   }
 
   async getProfile(): Promise<Profile> {

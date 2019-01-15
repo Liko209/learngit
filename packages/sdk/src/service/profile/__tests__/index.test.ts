@@ -43,6 +43,8 @@ jest.mock('../../../service/person', () => {
 ProfileAPI.getDataById = jest.fn();
 ProfileAPI.putDataById = jest.fn();
 
+jest.mock('./../../notificationCenter');
+
 describe('ProfileService', () => {
   let profileService: ProfileService;
 

@@ -10,6 +10,8 @@ import {
   GroupStateDao,
   AccountDao,
   ACCOUNT_USER_ID,
+  ConfigDao,
+  MY_STATE_ID,
 } from '../../dao';
 import { GroupState, MyState, Post } from '../../models';
 import StateAPI from '../../api/glip/state';
@@ -26,6 +28,7 @@ import notificationCenter from '../notificationCenter';
 
 class StateService extends BaseService<GroupState> {
   static serviceName = 'StateService';
+  private _myStateId: number;
 
   constructor() {
     const subscriptions = {
@@ -34,6 +37,7 @@ class StateService extends BaseService<GroupState> {
       [SERVICE.GROUP_CURSOR]: handleGroupChange,
     };
     super(GroupStateDao, StateAPI, handleData, subscriptions);
+    this.enableCache();
   }
 
   static buildMarkAsReadParam(groupId: number, lastPostId: number) {
@@ -57,14 +61,7 @@ class StateService extends BaseService<GroupState> {
   //   return groupStateDao.get(groupId);
   // }
   async getById(id: number): Promise<GroupState> {
-    const result = await this.getByIdFromDao(id); // groupId
-    // if (!result) {
-    //   const myState = await this.getMyState();
-    //   if (myState) {
-    //     result = await this.getByIdFromAPI(myState.id); // state id
-    //   }
-    // }
-    return result;
+    return await this.getByIdFromLocal(id); // groupId
   }
 
   async markAsRead(groupId: number): Promise<void> {
@@ -92,10 +89,10 @@ class StateService extends BaseService<GroupState> {
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
-    const currentState = await this.getMyState();
-    if (currentState) {
+    const currentStateId = await this.getMyStateId();
+    if (currentStateId > 0) {
       await StateAPI.saveStatePartial(
-        currentState.id,
+        currentStateId,
         StateService.buildUpdateStateParam(groupId),
       );
     }
@@ -112,6 +109,9 @@ class StateService extends BaseService<GroupState> {
   }
 
   getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]> {
+    if (this.isCacheInitialized()) {
+      return this.getMultiEntitiesFromCache(ids);
+    }
     const groupStateDao = daoManager.getDao(GroupStateDao);
     return groupStateDao.getByIds(ids);
   }
@@ -121,10 +121,9 @@ class StateService extends BaseService<GroupState> {
     lastPostId: number | undefined,
     paramBuilder: Function,
   ): Promise<void> {
-    const currentState = await this.getMyState();
-    const groupStateDao = daoManager.getDao(GroupStateDao);
+    const currentStateId = await this.getMyStateId();
     const groupId = partialState.id ? partialState.id : 0;
-    const state = await groupStateDao.get(groupId);
+    const state = _.cloneDeep(await this.getById(groupId));
     if (state) {
       const updatedState = this.getMergedModel(partialState, state);
       notificationCenter.emitEntityUpdate(
@@ -135,12 +134,12 @@ class StateService extends BaseService<GroupState> {
 
       if (
         lastPostId &&
-        currentState &&
+        currentStateId > 0 &&
         state.unread_count &&
         state.unread_count > 0
       ) {
         await StateAPI.saveStatePartial(
-          currentState.id,
+          currentStateId,
           paramBuilder(state.id, lastPostId),
         );
       }
@@ -154,6 +153,14 @@ class StateService extends BaseService<GroupState> {
       return null;
     }
     return lastPost;
+  }
+
+  async getMyStateId(): Promise<number> {
+    if (this._myStateId > 0) {
+      return this._myStateId;
+    }
+    const configDao = daoManager.getKVDao(ConfigDao);
+    return await configDao.get(MY_STATE_ID);
   }
 
   async getMyState(): Promise<MyState | null> {

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { daoManager } from '../../dao';
-import PostDao from '../../dao/post';
+import PostDao, { PostViewDao } from '../../dao/post';
 import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../service/group';
 import IncomingPostHandler from '../../service/post/incomingPostHandler';
@@ -78,6 +78,18 @@ export async function handleDeactivatedAndNormalPosts(
           eventKey: ENTITY.POST,
           noSavingToDB: !shouldSave,
         });
+        if (shouldSave) {
+          const postViewDao = daoManager.getDao(PostViewDao);
+          await postViewDao.bulkPut(
+            normalPosts.map((post: Post) => {
+              return {
+                id: post.id,
+                group_id: post.group_id,
+                created_at: post.created_at,
+              };
+            }),
+          );
+        }
         return normalPosts;
       }),
     ),
@@ -159,7 +171,9 @@ export async function handlePreInsertPosts(posts: Post[] = []) {
 
   if (ids.length) {
     const postDao = daoManager.getDao(PostDao);
+    const postViewDao = daoManager.getDao(PostViewDao);
     await postDao.bulkDelete(ids);
+    await postViewDao.bulkDelete(ids);
   }
   return ids;
 }
