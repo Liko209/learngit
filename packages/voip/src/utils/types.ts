@@ -13,4 +13,13 @@ enum RTC_NETWORK_STATE {
   OFFLINE = 'offline',
 }
 
-export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE };
+enum RTC_REST_API {
+  API_OAUTH_TOKEN = '/oauth/token',
+  API_REFRESH_TOKEN = '/oauth/token',
+  API_GENERATE_CODE = '/v1.0/interop/generate-code',
+  API_EXTENSION_INFO = '/v1.0/account/~/extension/~',
+  API_PROFILE = '/glip/profile',
+  API_SIP_PROVISION = '/v1.0/client-info/sip-provision',
+}
+
+export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE, RTC_REST_API };

@@ -14,37 +14,48 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { ItemList } from './ItemList';
+import { ITEM_LIST_TYPE } from './types';
+import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
-
-type States = {
-  isOpen: boolean;
-};
 
 type Props = {
   id: number;
 } & WithNamespaces;
 
-class RightRailComponent extends React.Component<Props, States> {
-  state = {
-    isOpen: true,
-  };
+type TriggerButtonProps = {
+  isOpen: boolean;
+  onClick: () => {};
+} & WithNamespaces;
 
-  handleExpandAndCollapse = () => {
-    this.setState((prevState: States) => ({
-      isOpen: !prevState.isOpen,
-    }));
-  }
-
+class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
-    const { isOpen } = this.state;
+    const { isOpen } = this.props;
     return isOpen ? 'conversationDetailsHide' : 'conversationDetailsShow';
   }
 
   private _getIconKey = () => {
-    const { isOpen } = this.state;
+    const { isOpen } = this.props;
     return isOpen ? 'chevron_right' : 'chevron_left';
   }
 
+  render() {
+    const { t, onClick } = this.props;
+    return (
+      <JuiRightShelfHeaderIcon>
+        <JuiIconButton
+          tooltipTitle={t(this._getTooltipKey())}
+          ariaLabel={t(this._getTooltipKey())}
+          onClick={onClick}
+        >
+          {this._getIconKey()}
+        </JuiIconButton>
+      </JuiRightShelfHeaderIcon>
+    );
+  }
+}
+
+class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;
     return (
@@ -52,49 +63,26 @@ class RightRailComponent extends React.Component<Props, States> {
         <JuiRightShelfHeaderText>
           {t('conversationDetails')}
         </JuiRightShelfHeaderText>
-        <JuiRightShelfHeaderIcon>
-          <JuiIconButton
-            tooltipTitle={t(this._getTooltipKey())}
-            ariaLabel={t(this._getTooltipKey())}
-            onClick={this.handleExpandAndCollapse}
-          >
-            {this._getIconKey()}
-          </JuiIconButton>
-        </JuiRightShelfHeaderIcon>
       </JuiRightShelfHeader>
     );
   }
 
   private _renderTabs = () => {
-    const { t } = this.props;
+    const { t, id } = this.props;
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
-            <JuiTab key={0} title={t('pinned')}>
-              <div>Pinned List</div>
-            </JuiTab>
-            <JuiTab key={1} title={t('files')}>
-              <div>Files List</div>
-            </JuiTab>
-            <JuiTab key={2} title={t('images')}>
-              <div>Images List</div>
-            </JuiTab>
-            <JuiTab key={4} title={t('tasks')}>
-              <div>Tasks List</div>
-            </JuiTab>
-            <JuiTab key={3} title={t('links')}>
-              <div>Links List</div>
-            </JuiTab>
-            <JuiTab key={5} title={t('notes')}>
-              <div>Notes List</div>
-            </JuiTab>
-            <JuiTab key={6} title={t('events')}>
-              <div>Events List</div>
-            </JuiTab>
-            <JuiTab key={7} title={t('integrations')}>
-              <div>Integrations List</div>
-            </JuiTab>
+            {TAB_CONFIG.map(
+              (
+                { title, type }: { title: string; type: ITEM_LIST_TYPE },
+                index: number,
+              ) => (
+                <JuiTab key={index} title={t(title)}>
+                  <ItemList type={type} groupId={id} />
+                </JuiTab>
+              ),
+            )}
           </JuiTabs>
         )}
       </ReactResizeDetector>
@@ -116,5 +104,6 @@ class RightRailComponent extends React.Component<Props, States> {
 }
 
 const RightRail = translate('translations')(RightRailComponent);
+const TriggerButton = translate('translations')(TriggerButtonComponent);
 
-export { RightRail };
+export { RightRail, TriggerButton };

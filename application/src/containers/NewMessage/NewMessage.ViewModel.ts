@@ -7,6 +7,7 @@ import { action, computed, observable } from 'mobx';
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue } from '@/store/utils';
+import { service } from 'sdk';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { goToConversation } from '@/common/goToConversation';
 
@@ -47,9 +48,18 @@ class NewMessageViewModel extends StoreViewModel {
 
   @action
   newMessage = async (message: string) => {
+    const { PostService } = service;
     goToConversation({
-      message,
       id: Array.from(this.members) as number[],
+      async beforeJump(conversationId: number) {
+        if (message && conversationId) {
+          const postService: service.PostService = PostService.getInstance();
+          await postService.sendPost({
+            groupId: conversationId,
+            text: message,
+          });
+        }
+      },
     });
   }
 }

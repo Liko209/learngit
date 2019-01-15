@@ -67,6 +67,9 @@ const dateFormatter = {
   dateAndTime: (m: Moment) => {
     return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
   },
+  date: (timestamp: number) => {
+    return moment(timestamp).format('l');
+  },
 };
 
 const condition = {

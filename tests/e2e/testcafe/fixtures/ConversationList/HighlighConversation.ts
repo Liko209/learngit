@@ -21,6 +21,7 @@ test(formalName('Open last conversation when login and group show in the top of 
     const directMessageSection = app.homePage.messageTab.directMessagesSection;
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     let groupId;
     await h(t).withLog('Given I have an extension with a group chat', async () => {
@@ -28,14 +29,9 @@ test(formalName('Open last conversation when login and group show in the top of 
         type: 'Group',
         members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
-    });
+     });
 
-    await h(t).withLog('And the conversation should not be hidden and not favorite', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
-      await h(t).glip(loginUser).clearFavoriteGroups();
-    });
-
-    await h(t).withLog(`Given the group chat ${groupId} is last group selected`, async () => {
+    await h(t).withLog(`And the group chat ${groupId} is last group selected`, async () => {
       await h(t).glip(loginUser).setLastGroupId(loginUser.rcId, groupId)
     });
 

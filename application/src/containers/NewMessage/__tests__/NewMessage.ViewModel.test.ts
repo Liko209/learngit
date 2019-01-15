@@ -15,7 +15,7 @@ jest.mock('@/common/goToConversation');
 const { PostService } = service;
 
 const postService = {
-  sendPost() { },
+  sendPost() {},
 };
 
 const newMessageVM = new NewMessageViewModel();
@@ -37,9 +37,6 @@ describe('NewMessageVM', () => {
     const message = 'test';
     newMessageVM.members = [1, 2];
     await newMessageVM.newMessage(message);
-    expect(goToConversation.goToConversation).toHaveBeenCalledWith({
-      message,
-      id: [1, 2],
-    });
+    expect(goToConversation.goToConversation).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,8 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
-import { UA_EVENT } from './types';
+import { UA_EVENT, ProvisionDataOptions } from './types';
+import { RTCCallOptions } from '../api/types';
 
 const WebPhone = require('ringcentral-web-phone');
 
@@ -15,26 +16,34 @@ enum WEBPHONE_REGISTER_EVENT {
   INVITE = 'invite',
 }
 
-class RTCSipUserAgent implements IRTCUserAgent {
+class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
-  private _eventEmitter: EventEmitter2;
 
-  constructor(provisionData: any, options: any, eventEmitter: EventEmitter2) {
-    this._eventEmitter = eventEmitter;
+  constructor(provisionData: any, options: ProvisionDataOptions) {
+    super();
     this._createWebPhone(provisionData, options);
   }
 
-  private _createWebPhone(provisionData: any, options: any) {
+  private _createWebPhone(provisionData: any, options: ProvisionDataOptions) {
     this._webphone = new WebPhone(provisionData, options);
     this._initListener();
   }
 
-  public register(options?: any): any {
-    return this._webphone.userAgent.register(options);
+  public register(options?: ProvisionDataOptions): void {
+    this._webphone.userAgent.register(options);
   }
 
-  public makeCall(phoneNumber: string, options: any): any {
+  public makeCall(phoneNumber: string, options: RTCCallOptions): any {
     return this._webphone.userAgent.invite(phoneNumber, options);
+  }
+
+  public reRegister() {
+    this._webphone.userAgent.transport.stopSendingKeepAlives();
+    this._webphone.userAgent.transport.connectionTimeout = null;
+    this._webphone.userAgent.transport.connectionPromise = null;
+    this._webphone.userAgent.transport.connectDeferredResolve = null;
+    this._webphone.userAgent.transport.status = 3;
+    this._webphone.userAgent.transport.reconnect();
   }
 
   private _initListener(): void {
@@ -42,18 +51,18 @@ class RTCSipUserAgent implements IRTCUserAgent {
       return;
     }
     this._webphone.userAgent.on(WEBPHONE_REGISTER_EVENT.REG_SUCCESS, () => {
-      this._eventEmitter.emit(UA_EVENT.REG_SUCCESS);
+      this.emit(UA_EVENT.REG_SUCCESS);
     });
     this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
-        this._eventEmitter.emit(UA_EVENT.REG_FAILED, response, cause);
+        this.emit(UA_EVENT.REG_FAILED, response, cause);
       },
     );
     this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.INVITE,
       (session: any) => {
-        this._eventEmitter.emit(UA_EVENT.RECEIVE_INVITE, session);
+        this.emit(UA_EVENT.RECEIVE_INVITE, session);
       },
     );
   }
