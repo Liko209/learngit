@@ -25,7 +25,7 @@ describe('ItemUtils', () => {
       const item1 = {
         id: 10,
         group_ids: [11, 222, 33],
-        type: 'jpg',
+        type: 'JPG',
       } as FileItem;
       expect(ItemUtils.isImageItem(item1)).toBeTruthy();
     });
@@ -34,7 +34,7 @@ describe('ItemUtils', () => {
       const item1 = {
         id: 10,
         group_ids: [11, 222, 33],
-        type: 'image/jpeg',
+        type: 'IMAGE/jpeg',
       } as FileItem;
       expect(ItemUtils.isImageItem(item1)).toBeTruthy();
     });
@@ -67,7 +67,7 @@ describe('ItemUtils', () => {
     const item1 = {
       id: 10,
       group_ids: [11, 222, 33],
-      type: 'jpg',
+      type: 'JPG',
     } as FileItem;
 
     const item2 = {
