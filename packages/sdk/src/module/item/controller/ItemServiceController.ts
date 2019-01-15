@@ -14,16 +14,7 @@ import { daoManager, ItemDao } from '../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions } from '../types';
-import { RIGHT_RAIL_ITEM_TYPE } from '../../constants';
-
-const ItemTypeIdMap: Map<RIGHT_RAIL_ITEM_TYPE, number> = new Map([
-  [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],
-  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],
-  [RIGHT_RAIL_ITEM_TYPE.TASKS, TypeDictionary.TYPE_ID_TASK],
-  [RIGHT_RAIL_ITEM_TYPE.NOTES, TypeDictionary.TYPE_ID_PAGE],
-  [RIGHT_RAIL_ITEM_TYPE.EVENTS, TypeDictionary.TYPE_ID_EVENT],
-  [RIGHT_RAIL_ITEM_TYPE.LINKS, TypeDictionary.TYPE_ID_LINK],
-]);
+import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from '../../constants';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
@@ -66,9 +57,7 @@ class ItemServiceController {
 
   async getGroupItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
     let totalCount = 0;
-    const subItemService = this.getSubItemService(ItemTypeIdMap.get(
-      type,
-    ) as number);
+    const subItemService = this.getSubItemService(RightRailItemTypeIdMap[type]);
     if (subItemService) {
       totalCount = await subItemService.getSubItemsCount(groupId, type);
     }
