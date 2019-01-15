@@ -66,10 +66,9 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   constructor(props: Props) {
     super(props);
     this._checkIfLogin();
-    window.jupiterElectron = {
-      ...window.jupiterElectron,
-      handleAboutPage: this._handleAboutPage,
-    };
+    if (window.jupiterElectron) {
+      window.jupiterElectron.handleAboutPage = this._handleAboutPage;
+    }
   }
   state = {
     isShowDialog: false,

@@ -3,28 +3,28 @@
  * @Date: 2018-08-03 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { hot } from 'react-hot-loader';
 import { container } from 'framework';
-import ThemeProvider from '@/containers/ThemeProvider';
-import { autorun, computed } from 'mobx';
-import history from '@/history';
-import _ from 'lodash';
-import storeManager from '@/store';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
-import { GLOBAL_KEYS } from '@/store/constants';
+import ThemeProvider from '@/containers/ThemeProvider';
+import history from '@/history';
 import { analytics } from '@/Analytics';
 import { AboutView } from '@/containers/About';
 import { TopBanner } from '@/containers/TopBanner';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
+import { AppStore } from '../../store';
+import { Title } from './Title';
+import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
 
 @observer
 class App extends React.Component {
   // TODO use @lazyInject(Upgrade)
-  private readonly _upgradeHandler: Upgrade = container.get(Upgrade);
-  private appName = process.env.APP_NAME || '';
+  private _upgradeHandler: Upgrade = container.get(Upgrade);
+  private _appStore: AppStore = container.get(AppStore);
   private _unListenHistory: VoidFunction;
 
   componentWillUnmount() {
@@ -42,45 +42,22 @@ class App extends React.Component {
   }
 
   public render() {
+    const { globalLoading } = this._appStore;
     return (
       <ThemeProvider>
-        {this.isLoading ? (
+        {globalLoading ? (
           <JuiContentLoader />
         ) : (
           <>
+            <Title />
             <TopBanner />
             <Router />
             <AboutView />
+            {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
           </>
         )}
       </ThemeProvider>
     );
-  }
-
-  constructor(props: any) {
-    super(props);
-    autorun(() => {
-      this.updateAppUmi();
-    });
-  }
-
-  @computed
-  get isLoading() {
-    return storeManager
-      .getGlobalStore()
-      .get(GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING);
-  }
-
-  updateAppUmi() {
-    const appUmi = storeManager.getGlobalStore().get(GLOBAL_KEYS.APP_UMI);
-    if (appUmi) {
-      document.title = `(${appUmi}) ${this.appName}`;
-    } else {
-      document.title = this.appName;
-    }
-    if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
-      window.jupiterElectron.setBadgeCount(appUmi || 0);
-    }
   }
 }
 const HotApp = hot(module)(App);

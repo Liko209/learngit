@@ -10,12 +10,18 @@ import * as router from '@/modules/router/module.config';
 import * as home from '@/modules/home/module.config';
 import * as app from '@/modules/app/module.config';
 
-const jupiter = new Jupiter();
+(async function () {
+  const jupiter = new Jupiter();
 
-// TODO auto load modules
-jupiter.registerModule(sw.config);
-jupiter.registerModule(router.config);
-jupiter.registerModule(home.config);
-jupiter.registerModule(app.config);
+  // TODO auto load modules
+  jupiter.registerModule(sw.config);
+  jupiter.registerModule(router.config);
+  jupiter.registerModule(home.config);
+  jupiter.registerModule(app.config);
 
-jupiter.bootstrap();
+  if (window.jupiterElectron) {
+    jupiter.registerModuleAsync('electron');
+  }
+
+  await jupiter.bootstrap();
+})();

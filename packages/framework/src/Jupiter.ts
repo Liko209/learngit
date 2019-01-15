@@ -14,6 +14,7 @@ class Jupiter {
   private _running = false;
   private _moduleEntries: interfaces.Newable<AbstractModule>[] = [];
   private _container: Container = container;
+  private _asyncModulePromises: Promise<void>[] = [];
 
   registerModule({ provides, entry }: ModuleConfig): void {
     provides && this.bindProvides(provides);
@@ -24,6 +25,13 @@ class Jupiter {
         this.bootstrapModule(entry);
       }
     }
+  }
+
+  registerModuleAsync(moduleName: string) {
+    const promise = import(`@/modules/${moduleName}/module.config`).then(
+      electron => this.registerModule(electron.config),
+    );
+    this._asyncModulePromises.push(promise);
   }
 
   addEntry(m: interfaces.Newable<AbstractModule>) {
@@ -52,6 +60,11 @@ class Jupiter {
     if (this._running) {
       throw new Error('Jupiter already running.');
     }
+
+    if (this._asyncModulePromises.length > 0) {
+      await Promise.all(this._asyncModulePromises);
+    }
+
     await Promise.all(
       this._moduleEntries.map(
         (moduleEntry: interfaces.ServiceIdentifier<AbstractModule>) => {
