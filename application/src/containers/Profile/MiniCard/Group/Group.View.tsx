@@ -20,8 +20,8 @@ class ProfileMiniCardGroupView extends Component<
   ProfileMiniCardGroupViewProps
 > {
   render() {
-    const { id } = this.props;
-    return (
+    const { id, group } = this.props;
+    return group.displayName ? (
       <JuiMiniCard data-test-automation-id="profileMiniCard">
         <JuiMiniCardHeader data-test-automation-id="profileMiniCardHeader">
           <ProfileMiniCardGroupHeader id={id} />
@@ -30,7 +30,7 @@ class ProfileMiniCardGroupView extends Component<
           <ProfileMiniCardGroupFooter id={id} />
         </JuiMiniCardFooter>
       </JuiMiniCard>
-    );
+    ) : null;
   }
 }
 

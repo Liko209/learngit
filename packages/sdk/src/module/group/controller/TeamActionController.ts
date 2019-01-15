@@ -15,13 +15,15 @@ class TeamActionController {
     public partialModifyController: IPartialModifyController<Group>,
     public requestController: IRequestController<Group>,
     public controllerBuilder: IControllerBuilder<Group>,
-  ) { }
+  ) {}
 
-  isInTeam(userId: number, team: Group) {
-    return team
-      && team.is_team
-      && team.members
-      && team.members.includes(userId);
+  isInTeam(userId: number, team: Group): boolean {
+    return !!(
+      team &&
+      team.is_team &&
+      team.members &&
+      team.members.includes(userId)
+    );
   }
 
   canJoinTeam(team: Group) {
@@ -48,7 +50,8 @@ class TeamActionController {
       .buildRequestController({
         basePath: '/add_team_members',
         networkClient: Api.glipNetworkClient,
-      }).put({
+      })
+      .put({
         members,
         id: teamId,
       });
