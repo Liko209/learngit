@@ -66,6 +66,7 @@ class FilesView extends React.Component<FilesViewProps> {
   }
   render() {
     const { files, progresses } = this.props;
+    const singleImage = files[FileType.image].length === 1;
     return (
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
@@ -74,12 +75,16 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
-          const size = getThumbnailSize(origWidth, origHeight);
+          let size = { width: 180, height: 180 };
+          if (singleImage) {
+            size = getThumbnailSize(origWidth, origHeight);
+          }
           return (
             <JuiPreviewImage
               key={id}
               width={size.width}
               height={size.height}
+              forceSize={!singleImage}
               fileName={name}
               url={previewUrl}
               Actions={downloadBtn(downloadUrl)}

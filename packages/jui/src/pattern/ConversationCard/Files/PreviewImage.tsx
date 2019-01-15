@@ -16,7 +16,7 @@ type SizeType = {
 type JuiPreviewImageProps = {
   Actions?: JSX.Element;
   fileName: string;
-
+  forceSize?: boolean;
   url: string;
 } & SizeType;
 
@@ -34,12 +34,14 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     }
   }
   render() {
-    const { Actions, fileName, url } = this.props;
+    const { Actions, fileName, url, forceSize } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     if (this._imageSize.width !== 0 && this._imageSize.height !== 0) {
-      width = this._imageSize.width;
-      height = this._imageSize.height;
+      if (!forceSize) {
+        width = this._imageSize.width;
+        height = this._imageSize.height;
+      }
       imageProps.width = width;
       imageProps.height = height;
     }
