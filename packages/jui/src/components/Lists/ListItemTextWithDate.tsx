@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { ellipsis, spacing } from '../../foundation/utils/styles';
+import { ellipsis } from '../../foundation/utils/styles';
 import { getListItemTextWithDate } from '../../foundation/utils/getFileName';
 
 type JuiListItemTextWithDateProps = {
@@ -16,12 +16,7 @@ const ListItemTextWithDateWrapper = styled('div')`
   display: flex;
   min-width: 0;
   align-items: center;
-  font-weight: 400;
   ${ellipsis};
-  font-size: 0;
-  & > span {
-    font-size: ${spacing(3.5)};
-  }
 `;
 
 const LeftName = styled.span`
