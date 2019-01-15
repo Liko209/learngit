@@ -81,7 +81,7 @@ export async function handleDeactivatedAndNormalPosts(
         if (shouldSave) {
           const postViewDao = daoManager.getDao(PostViewDao);
           await postViewDao.bulkPut(
-            posts.map((post: Post) => {
+            normalPosts.map((post: Post) => {
               return {
                 id: post.id,
                 group_id: post.group_id,
