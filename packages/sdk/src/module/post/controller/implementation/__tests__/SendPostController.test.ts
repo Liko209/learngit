@@ -4,4 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-describe('', () => {});
+describe('', () => {
+  describe('', () => {
+    it('', () => {});
+  });
+});
