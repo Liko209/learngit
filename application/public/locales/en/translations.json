@@ -222,5 +222,7 @@
   "noEventsCreatedYet": "No events created yet",
   "noEventSubText": "Events on your calendar will automatically show up here.",
   "noIntegrationInstallationYet": "No integration installation yet",
-  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here."
+  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here.",
+  "setting": "setting",
+  "setting_plural": "settings"
 }

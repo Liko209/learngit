@@ -17,12 +17,35 @@ import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 import portalManager from '@/common/PortalManager';
+import { toTitleCase } from '@/utils/string';
+import { TeamSettings } from '@/containers/TeamSettings';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupTitleViewProps
 > {
   dismiss = () => portalManager.dismiss();
+  onClickSettingButton = () => {
+    const { id } = this.props;
+    portalManager.dismiss();
+    TeamSettings.show(undefined, { id });
+  }
+
+  renderSettingButton() {
+    const { t } = this.props;
+    return (
+      <JuiIconButton
+        size="medium"
+        color="grey.500"
+        data-test-automation-id="settingButton"
+        alwaysEnableTooltip={true}
+        onClick={this.onClickSettingButton}
+        tooltipTitle={toTitleCase(t('setting_plural'))}
+      >
+        settings
+      </JuiIconButton>
+    );
+  }
 
   render() {
     const { id, t, group } = this.props;
@@ -34,6 +57,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
         <JuiDialogTitleWithActionRight>
           {group.isTeam && <Privacy id={id} size="medium" />}
           <Favorite id={id} size="medium" />
+          {group.isTeam && this.renderSettingButton()}
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton
             onClick={this.dismiss}
