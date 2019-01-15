@@ -64,7 +64,7 @@ describe('ImageItemViewModel', () => {
       );
     });
 
-    it('should be a new string when invoke person id', () => {
+    it('should be a new string when change person name', () => {
       mockPerson.userDisplayName = 'new name';
       expect(vm.subTitle).toEqual(
         `${mockPerson.userDisplayName} · ${dateFormatter.date(
@@ -72,20 +72,30 @@ describe('ImageItemViewModel', () => {
         )}`,
       );
     });
+
+    it('should be a null string when not exist file item id', () => {
+      vm = new ImageItemViewModel();
+      expect(vm.subTitle).toBe('');
+    });
   });
 
   describe('url', () => {
     const previewUrl = 'http://www.google.com';
 
-    beforeAll(() => {
+    it('should be a string when item is image type', () => {
       (getFileType as jest.Mock).mockReturnValue({
         previewUrl,
         type: FileType.image,
       });
+      expect(vm.url).toEqual(previewUrl);
     });
 
-    it('should be a string when item is image', () => {
-      expect(vm.url).toEqual(previewUrl);
+    it('should be a null string when item is not image type', () => {
+      (getFileType as jest.Mock).mockReturnValue({
+        previewUrl,
+        type: FileType.document,
+      });
+      expect(vm.url).toEqual('');
     });
   });
 });
