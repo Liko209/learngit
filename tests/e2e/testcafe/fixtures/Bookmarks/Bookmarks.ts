@@ -44,7 +44,7 @@ test(formalName('Jump to post position when click button or clickable area of po
       });
 
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvChatId, teamId]);
+      await h(t).glip(loginUser).showGroups([pvChatId, teamId]);
       await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       await h(t).platform(otherUser).init();
@@ -140,7 +140,7 @@ test(formalName('Jump to post position when click button or clickable area of po
       });
 
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
+      await h(t).glip(loginUser).showGroups([teamId]);
       await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       await h(t).platform(otherUser).init();
@@ -219,7 +219,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
+      await h(t).glip(loginUser).showGroups(groupId);
     });
 
     let bookmarkPostId;
@@ -309,7 +309,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
+    await h(t).glip(loginUser).showGroups(groupId);
     bookmarkPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `I'm Bookmarks, ![:Person](${loginUser.rcId})`,
       groupId,
@@ -391,7 +391,7 @@ test(formalName('Bookmark/Remove Bookmark a message in a conversation',['P2','JP
     group = await h(t).platform(user).createGroup({
       type: 'Group', members: [user.rcId, users[5].rcId],
     });
-    await h(t).glip(user).showGroups(user.rcId, group.data.id);
+    await h(t).glip(user).showGroups(group.data.id);
   });
 
   let bookmarkPost;

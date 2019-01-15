@@ -46,8 +46,8 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
     });
 
     await h(t).withLog(`And 1.favorite the created team(JPT-344) 2.Set limit conversation count=${MAX_NUMBER}(JPT-58)`, async () => {
-      await h(t).glip(loginUser).setMaxTeamDisplay(loginUser.rcId, MAX_NUMBER);
-      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+teamId]);
+      await h(t).glip(loginUser).setMaxTeamDisplay(MAX_NUMBER);
+      await h(t).glip(loginUser).favoriteGroups([+teamId]);
     });
 
     const newTeamIds = [];
@@ -144,7 +144,7 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
 
     await h(t).withLog('The older fav team will disappear', async () => {
       await t.expect(favConversation.exists).notOk();
-      await h(t).glip(loginUser).setMaxTeamDisplay(loginUser.rcId, DEFAULT_MAX_NUMBER);
+      await h(t).glip(loginUser).setMaxTeamDisplay(DEFAULT_MAX_NUMBER);
     });
   }
 );
@@ -170,11 +170,11 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     });
 
     await h(t).withLog(`And set limit conversation count=${MAX_NUMBER}(JPT-353)`, async () => {
-      await h(t).glip(loginUser).setMaxTeamDisplay(loginUser.rcId, MAX_NUMBER)
+      await h(t).glip(loginUser).setMaxTeamDisplay(MAX_NUMBER)
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
-      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -252,7 +252,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     realNum = realNum + 1;
     await h(t).withLog(`And max conversation count = ${realNum}`, async () => {
       await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3 });
-      await h(t).glip(loginUser).setMaxTeamDisplay(loginUser.rcId, DEFAULT_MAX_NUMBER);
+      await h(t).glip(loginUser).setMaxTeamDisplay(DEFAULT_MAX_NUMBER);
     });
   }
 );
