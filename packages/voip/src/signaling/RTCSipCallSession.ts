@@ -92,7 +92,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
           RTC_CALL_ACTION.PARK,
-          params,
+          params['park extension'],
         );
       },
       () => {

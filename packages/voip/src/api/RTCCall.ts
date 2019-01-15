@@ -139,7 +139,7 @@ class RTCCall {
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      (callAction: RTC_CALL_ACTION, params?: any) => {
+      (callAction: RTC_CALL_ACTION, params?: string) => {
         this._onCallActionSuccess(callAction, params);
       },
     );
@@ -209,7 +209,7 @@ class RTCCall {
     this._callSession.destroy();
   }
   // call action listener
-  private _onCallActionSuccess(callAction: RTC_CALL_ACTION, params?: any) {
+  private _onCallActionSuccess(callAction: RTC_CALL_ACTION, params?: string) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
         this._isRecording = true;
