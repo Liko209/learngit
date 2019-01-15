@@ -10,18 +10,18 @@
  */
 
 import _ from 'lodash';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
-import { versionHash } from '../../../utils/mathUtils';
+import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
+import { versionHash } from '../../../../utils/mathUtils';
 import { Markdown } from 'glipdown';
 // global_url_regex
-import { Post } from '../entity';
-import { RawPostInfo, SendPostType } from '../types';
-import { Raw } from '../../../framework/model';
-import { transform } from '../../../service/utils';
+import { Post } from '../../entity';
+import { RawPostInfo } from '../../types';
+import { Raw } from '../../../../framework/model';
+import { transform } from '../../../../service/utils';
 
 export type LinksArray = { url: string }[];
 
-class PostActionControllerHelper {
+class SendPostControllerHelper {
   constructor() {}
 
   buildLinksInfo(text: string): LinksArray {
@@ -84,18 +84,6 @@ class PostActionControllerHelper {
     return buildPost;
   }
 
-  buildModifiedPostInfo(info: SendPostType, oldPost: Post): Post {
-    oldPost.new_version = versionHash();
-    oldPost.is_new = false;
-    const params = _.cloneDeep(info);
-    params['companyId'] = oldPost.company_id;
-    params['userId'] = oldPost.creator_id;
-    oldPost.text = info.text;
-    oldPost.at_mention_non_item_ids = info.mentionIds || [];
-    delete oldPost.likes;
-    return oldPost;
-  }
-
   transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
     return ([] as Raw<Post>[])
       .concat(data)
@@ -109,4 +97,4 @@ class PostActionControllerHelper {
   }
 }
 
-export default PostActionControllerHelper;
+export default SendPostControllerHelper;

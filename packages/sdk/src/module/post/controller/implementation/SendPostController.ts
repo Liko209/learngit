@@ -5,23 +5,24 @@
  */
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, PostDao, AccountDao } from '../../../dao';
-import { Post } from '../entity';
-import { SendPostType } from '../types';
+import { daoManager, PostDao, AccountDao } from '../../../../dao';
+import { Post } from '../../entity';
+import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
-} from '../../../dao/account/constants';
-import PostActionControllerHelper from './PostActionControllerHelper';
-import { ItemService } from '../../item/service';
+} from '../../../../dao/account/constants';
+import SendPostControllerHelper from './SendPostControllerHelper';
+import { ItemService } from '../../../item/service';
 
-import { ProgressService, PROGRESS_STATUS } from '../../progress';
-import { notificationCenter, GroupConfigService } from '../../../service';
-import { ENTITY } from '../../../service/eventKey';
-import { uniqueArray } from '../../../utils';
-import { ErrorParserHolder } from '../../../error';
+import { ProgressService, PROGRESS_STATUS } from '../../../progress';
+import { notificationCenter, GroupConfigService } from '../../../../service';
+import { ENTITY } from '../../../../service/eventKey';
+import { uniqueArray } from '../../../../utils';
+import { ErrorParserHolder } from '../../../../error';
 import { PostActionController } from './PostActionController';
 import { PostItemController } from './PostItemController';
+import { IPostItemController } from '../interface/IPostItemController';
 
 type PostData = {
   id: number;
@@ -29,10 +30,10 @@ type PostData = {
 };
 
 class SendPostController {
-  private _helper: PostActionControllerHelper;
-  private _postItemController: PostItemController;
+  private _helper: SendPostControllerHelper;
+  private _postItemController: IPostItemController;
   constructor(public postActionController: PostActionController) {
-    this._helper = new PostActionControllerHelper();
+    this._helper = new SendPostControllerHelper();
     this._postItemController = new PostItemController(
       this.postActionController,
     );
@@ -69,10 +70,7 @@ class SendPostController {
 
     await this.handlePreInsertProcess(post); // waiting for PreinsertController
 
-    const sendPostAfterItemsReady = (result: {
-      success: boolean;
-      obj: Object;
-    }) => {
+    const sendPostAfterItemsReady = (result: PostItemsReadyCallbackType) => {
       Object.keys(result.obj).forEach((key: string) => {
         post[key] = _.cloneDeep(result.obj[key]);
       });

@@ -4,10 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import PostActionControllerHelper from '../PostActionControllerHelper';
-import { localPostJson4UnitTest } from './PostData';
-import { PostActionController } from '../PostActionController';
-const helper = new PostActionControllerHelper();
+import SendPostControllerHelper from '../SendPostControllerHelper';
+const helper = new SendPostControllerHelper();
 describe('PostActionControllerHelper', () => {
   describe('buildLinksInfo', () => {
     it('should return empty when text does not match url', () => {
@@ -40,16 +38,6 @@ describe('PostActionControllerHelper', () => {
       });
       expect(ret.text).toEqual('FIJI-2740');
       expect(ret['activity_data']).toBe(undefined);
-    });
-  });
-  describe('buildModifiedPostInfo', () => {
-    it('should return a correct modified post info', () => {
-      const result = helper.buildModifiedPostInfo(
-        { text: 'This is modified Post', groupId: 7848853506 },
-        localPostJson4UnitTest,
-      );
-      expect(result.text).toEqual('This is modified Post');
-      expect(result.is_new).toBeFalsy();
     });
   });
 });

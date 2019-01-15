@@ -3,16 +3,16 @@
  * @Date: 2018-12-20 13:54:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { Post } from '../entity';
-import { Raw } from '../../../framework/model';
+import { Post } from '../../entity';
+import { Raw } from '../../../../framework/model';
 import _ from 'lodash';
-import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../dao';
-import { EditPostType } from '../types';
-import { ENTITY } from '../../../service/eventKey';
-import { ProgressService } from '../../progress';
-import { notificationCenter, GroupConfigService } from '../../../service';
+import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
+import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
+import { daoManager, PostDao } from '../../../../dao';
+import { EditPostType } from '../../types';
+import { ENTITY } from '../../../../service/eventKey';
+import { ProgressService } from '../../../progress';
+import { notificationCenter, GroupConfigService } from '../../../../service';
 class PostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
@@ -98,8 +98,6 @@ class PostActionController {
     // 2
     postDao.delete(id);
 
-    // 3 TODO
-
     // 4
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     groupConfigService.deletePostId(post.group_id, id); // does not need to wait
@@ -131,6 +129,30 @@ class PostActionController {
       return this._deletePreInsertedPost(id);
     }
     return !!this._deletePostFromRemote(id);
+  }
+
+  async updateLocalPost(post: Partial<Post>) {
+    const backup = _.cloneDeep(post);
+    const preHandlePartial = (
+      partialPost: Partial<Raw<Post>>,
+      originalPost: Post,
+    ): Partial<Raw<Post>> => {
+      return {
+        ...partialPost,
+        ...backup,
+      };
+    };
+
+    return (
+      backup.id &&
+      this.partialModifyController.updatePartially(
+        backup.id,
+        preHandlePartial,
+        async (newPost: Post) => {
+          return newPost;
+        },
+      )
+    );
   }
 }
 

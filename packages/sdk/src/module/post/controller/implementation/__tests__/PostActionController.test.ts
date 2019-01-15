@@ -5,12 +5,12 @@
  */
 
 import { PostActionController } from '../PostActionController';
-import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { Post } from '../../entity';
-import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../../dao';
-import { ProgressService } from '../../../progress';
-import { notificationCenter, GroupConfigService } from '../../../../service';
+import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { Post } from '../../../entity';
+import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
+import { daoManager, PostDao } from '../../../../../dao';
+import { ProgressService } from '../../../../progress';
+import { notificationCenter, GroupConfigService } from '../../../../../service';
 import _ from 'lodash';
 
 jest.mock('../../../../dao');

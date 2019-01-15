@@ -6,10 +6,10 @@
 import { Post } from '../entity';
 import _ from 'lodash';
 import { Api } from '../../../api';
-import { PostActionController } from './PostActionController';
+import { PostActionController } from './implementation/PostActionController';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { daoManager, PostDao } from '../../../dao';
-import { SendPostController } from './SendPostController';
+import { SendPostController } from './implementation/SendPostController';
 
 class PostController {
   private _actionController: PostActionController;

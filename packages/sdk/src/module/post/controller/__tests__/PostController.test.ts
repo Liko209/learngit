@@ -6,11 +6,12 @@
 
 import { PostController } from '../PostController';
 import { Post } from '../../../../models';
-import { PostActionController } from '../PostActionController';
+import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 import { BaseDao, daoManager } from '../../../../dao';
 import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import { SendPostController } from '../implementation/SendPostController';
 
 jest.mock('../../../../api');
 
@@ -55,6 +56,17 @@ describe('PostController', () => {
       expect(controllerBuilder.buildEntitySourceController).toBeCalledTimes(1);
       expect(controllerBuilder.buildPartialModifyController).toBeCalledTimes(1);
       expect(controllerBuilder.buildRequestController).toBeCalledTimes(1);
+    });
+  });
+  describe('getSendPostController', () => {
+    it('getSendPostController should not be null/undefined', () => {
+      const controllerBuilder = new ControllerBuilder<Post>();
+      const postController = new PostController(controllerBuilder);
+      jest
+        .spyOn(postController, 'getPostActionController')
+        .mockReturnValueOnce(null);
+      const result = postController.getSendPostController();
+      expect(result instanceof SendPostController).toBe(true);
     });
   });
 });

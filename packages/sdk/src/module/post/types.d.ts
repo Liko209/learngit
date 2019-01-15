@@ -16,4 +16,12 @@ export type RawPostInfo = {
   companyId: number;
 } & SendPostType;
 
+export type PostItemsReadyCallbackType = {
+  success: boolean;
+  obj: {
+    item_ids?: [];
+  };
+};
+export type PostItemsReadyCallback = (data: PostItemsReadyCallbackType) => void;
+
 export type EditPostType = { postId: number } & SendPostType;
