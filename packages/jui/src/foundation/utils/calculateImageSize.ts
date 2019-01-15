@@ -40,13 +40,13 @@ function getThumbnailSize(
     ) {
       // case 4
       if (width < height) {
-        const scale = MAX_WIDTHHEIGHT / width;
-        result.width = MAX_WIDTHHEIGHT;
-        result.height *= scale;
-      } else {
         const scale = MAX_WIDTHHEIGHT / height;
         result.width *= scale;
         result.height = MAX_WIDTHHEIGHT;
+      } else {
+        const scale = MAX_WIDTHHEIGHT / width;
+        result.width = MAX_WIDTHHEIGHT;
+        result.height *= scale;
       }
     } else if (ratio < 1 / 5) {
       // case 5
@@ -58,6 +58,8 @@ function getThumbnailSize(
       result.width = MIN_WIDTH;
     }
   }
+  result.width = Math.round(result.width);
+  result.height = Math.round(result.height);
   return result;
 }
 

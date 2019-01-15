@@ -11,6 +11,7 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { getThumbnailSize } from 'jui/foundation/utils/calculateImageSize';
 import {
   AttachmentItem,
   ITEM_STATUS,
@@ -73,10 +74,12 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
+          const size = getThumbnailSize(origWidth, origHeight);
           return (
             <JuiPreviewImage
               key={id}
-              ratio={origHeight / origWidth}
+              width={size.width}
+              height={size.height}
               fileName={name}
               url={previewUrl}
               Actions={downloadBtn(downloadUrl)}
