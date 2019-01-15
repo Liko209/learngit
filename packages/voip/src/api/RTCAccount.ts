@@ -136,6 +136,9 @@ class RTCAccount implements IRTCAccount {
       return;
     }
     this._state = state;
+    if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
+      this._callManager.notifyAccountReady();
+    }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
     }

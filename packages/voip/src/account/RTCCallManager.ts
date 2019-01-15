@@ -53,6 +53,12 @@ class RTCCallManager {
     });
     return null;
   }
+
+  notifyAccountReady() {
+    this._calls.forEach((item: RTCCall) => {
+      item.onAccountReady();
+    });
+  }
 }
 
 export { RTCCallManager };
