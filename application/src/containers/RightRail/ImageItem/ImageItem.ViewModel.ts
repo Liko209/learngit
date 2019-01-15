@@ -47,7 +47,7 @@ class ImageItemViewModel extends AbstractViewModel<FilesProps> {
   @computed
   get url() {
     if (this.file) {
-      const { isImage, previewUrl } = this.isImage(this.file);
+      const { isImage, previewUrl } = this._isImage(this.file);
       if (isImage) {
         return previewUrl;
       }
@@ -55,7 +55,7 @@ class ImageItemViewModel extends AbstractViewModel<FilesProps> {
     return '';
   }
 
-  isImage(ImageItem: FileItemModel) {
+  private _isImage(ImageItem: FileItemModel) {
     const { type, previewUrl } = getFileType(ImageItem);
     return {
       previewUrl,
