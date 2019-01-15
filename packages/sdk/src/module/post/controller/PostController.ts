@@ -9,9 +9,11 @@ import { Api } from '../../../api';
 import { PostActionController } from './PostActionController';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { daoManager, PostDao } from '../../../dao';
+import { SendPostController } from './SendPostController';
 
 class PostController {
   private _actionController: PostActionController;
+  private _sendController: SendPostController;
 
   constructor(public controllerBuilder: IControllerBuilder<Post>) {}
 
@@ -37,6 +39,14 @@ class PostController {
       );
     }
     return this._actionController;
+  }
+  getSendPostController(): SendPostController {
+    if (!this._sendController) {
+      this._sendController = new SendPostController(
+        this.getPostActionController(),
+      );
+    }
+    return this._sendController;
   }
 }
 

@@ -39,21 +39,21 @@ class NewPostService extends EntityBaseService<Post> {
       .deletePost(id);
   }
 
-  async sendPost(params: SendPostType) {
-    return this.getPostController()
-      .getPostActionController()
-      .sendPost(params);
-  }
-
   async editPost(params: EditPostType) {
     return this.getPostController()
       .getPostActionController()
       .editPost(params);
   }
 
+  async sendPost(params: SendPostType) {
+    return this.getPostController()
+      .getSendPostController()
+      .sendPost(params);
+  }
+
   async reSendPost(postId: number) {
     return this.getPostController()
-      .getPostActionController()
+      .getSendPostController()
       .reSendPost(postId);
   }
 }
