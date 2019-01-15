@@ -34,7 +34,9 @@ export class OrdinaryPostWrapper extends Assembler {
     let item = streamItemList;
     deleted.forEach((id: number) => {
       item = item.filter(
-        item => item.type !== StreamItemType.POST || !item.value.includes(id),
+        item =>
+          item.type !== StreamItemType.POST ||
+          !(item.value as number[]).includes(id),
       );
     });
     return { streamItemList: item, deleted: [], ...rest };

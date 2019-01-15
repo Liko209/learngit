@@ -205,6 +205,7 @@ export class FetchSortableDataListHandler<
         );
       }
     }
+
     if (deletedSortableModelIds.length || addedSortableModels.length) {
       this._dataChangeCallBack &&
         this._dataChangeCallBack({

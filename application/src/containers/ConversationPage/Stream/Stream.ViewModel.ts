@@ -220,7 +220,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    false && this._stateService.markAsRead(this.groupId);
+    this._stateService.markAsRead(this.groupId);
   }
 
   enableNewMessageSeparatorHandler = () => {
@@ -329,7 +329,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @action
   handlePostsChanged = (delta: TDeltaWithData) => {
-    const t = performance.now();
     const { streamItems } = this.assemblyLine.process(
       delta,
       this.orderListHandler.listStore.items.slice(),
@@ -338,10 +337,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._readThrough,
     );
     if (streamItems) {
-      console.log('sorting items', streamItems);
       this.streamListHandler.replaceAll(streamItems);
     }
-    console.log('sorting used', performance.now() - t);
   }
 }
 

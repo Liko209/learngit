@@ -79,8 +79,8 @@ describe('StreamView', () => {
         ...baseProps,
         postIds: [1, 2],
         items: [
-          { type: StreamItemType.POST, id: 1, timeStart: 1 },
-          { type: StreamItemType.POST, id: 2, timeStart: 1 },
+          { type: StreamItemType.POST, id: 1, timeStart: 1, value: [1] },
+          { type: StreamItemType.POST, id: 2, timeStart: 1, value: [2] },
         ],
       };
 
@@ -100,9 +100,14 @@ describe('StreamView', () => {
         ...baseProps,
         postIds: [1, 2],
         items: [
-          { type: StreamItemType.POST, id: 1, timeStart: 1 },
-          { type: StreamItemType.NEW_MSG_SEPARATOR, id: 333, timeStart: 1 },
-          { type: StreamItemType.POST, id: 2, timeStart: 1 },
+          { type: StreamItemType.POST, id: 1, timeStart: 1, value: [1] },
+          {
+            type: StreamItemType.NEW_MSG_SEPARATOR,
+            id: 333,
+            timeStart: 1,
+            value: [333],
+          },
+          { type: StreamItemType.POST, id: 2, timeStart: 1, value: [2] },
         ],
       };
       const wrapper = shallow(<StreamView {...props} />);

@@ -39,7 +39,7 @@ type StreamItem = {
   type: StreamItemType;
   timeStart: number;
   timeEnd?: number;
-  value?: any;
+  value?: number | number[];
   meta?: any;
 };
 

@@ -6,16 +6,16 @@
 import { PostService, StateService } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
-import { StreamItemType } from '../types';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-
+import _ from 'lodash';
+import { id } from 'inversify';
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
-  const vm = new StreamViewModel();
+  const vm = new StreamViewModel({ groupId: 1 });
   Object.assign(vm, obj);
   return vm;
 }
@@ -32,9 +32,8 @@ describe('StreamViewModel', () => {
 
   describe('loadInitialPosts()', () => {
     function setup(obj: any) {
-      const vm = new StreamViewModel();
+      const vm = new StreamViewModel(obj.props);
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
-      obj.props && vm.onReceiveProps(obj.props);
       return vm;
     }
 
@@ -44,18 +43,19 @@ describe('StreamViewModel', () => {
       });
       (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
         posts: [
-          { id: 1, item_ids: [], created_at: Date.now() + 1 },
-          { id: 2, item_ids: [], created_at: Date.now() + 2 },
-          { id: 3, item_ids: [], create_at: Date.now() + 3 },
+          { id: 1, item_ids: [], created_at: 10000 },
+          { id: 2, item_ids: [], created_at: 10001 },
+          { id: 3, item_ids: [], created_at: 20010 },
         ],
         items: [{ id: 1 }],
       });
       await vm.loadInitialPosts();
-      expect(vm.items).toEqual([
-        { type: StreamItemType.POST, value: 1 },
-        { type: StreamItemType.POST, value: 2 },
-        { type: StreamItemType.POST, value: 3 },
-      ]);
+      expect(
+        _(vm.items)
+          .flatMap('value')
+          .compact()
+          .value(),
+      ).toEqual([1, 2, 3]);
       expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
         ENTITY_NAME.ITEM,
         [{ id: 1 }],
@@ -108,51 +108,37 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe('onReceiveProps()', () => {
-    it('should do nothing when groupId not change', () => {
-      const vm = setup({
-        groupId: 1,
-      });
-      jest.spyOn(vm, 'dispose');
-      vm.onReceiveProps({ groupId: 1 } as any);
-      expect(vm.dispose).not.toHaveBeenCalled();
-    });
-  });
-
   describe('dispose()', () => {
-    it('should dispose transformHandler', () => {
-      const _transformHandler = {
-        dispose: jest.fn().mockName('vm._transformHandler.dispose'),
-      };
-      const vm = setup({ _transformHandler });
-
+    it('should dispose streamListHandler', () => {
+      const streamListHandler = { dispose: jest.fn() };
+      const vm = setup({ streamListHandler });
       vm.dispose();
 
-      expect(_transformHandler.dispose).toHaveBeenCalled();
+      expect(streamListHandler.dispose).toHaveBeenCalled();
     });
   });
 
   describe('notEmpty', () => {
-    function setup(props: { hasMoreUp: boolean; items: any[] }) {
-      const vm = new StreamViewModel();
-      Object.assign(vm, {
-        _transformHandler: { hasMore: () => props.hasMoreUp },
-        items: props.items,
-      });
+    function setup(props: { hasMoreUp: boolean; id?: number }) {
+      const vm = new StreamViewModel({ groupId: 1 });
+      vm.orderListHandler.setHasMore(props.hasMoreUp, QUERY_DIRECTION.OLDER);
+      if (props.id) {
+        vm.streamListHandler.replaceAll([{ id: props.id, value: [props.id] }]);
+      }
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false, items: [1] });
+      const vm = setup({ hasMoreUp: false, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be true when user has more unloaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: true, items: [] });
+      const vm = setup({ hasMoreUp: true, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be false when user has no more messages and no loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false, items: [] });
+      const vm = setup({ hasMoreUp: false });
       expect(vm.notEmpty).toBe(false);
     });
   });
@@ -173,10 +159,15 @@ describe('StreamViewModel', () => {
       const groupState = Math.random();
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
-        postIds,
         _historyHandler: { update: mockUpdate },
       });
-      Object.defineProperty(vm, '_groupState', { value: groupState });
+
+      vm.orderListHandler.sortableListStore.replaceAll(
+        postIds.map(i => ({ id: i })),
+      );
+      Object.defineProperty(vm, '_groupState', {
+        value: groupState,
+      });
       vm.updateHistoryHandler();
 
       expect(mockUpdate).toBeCalledTimes(1);
@@ -268,24 +259,11 @@ describe('StreamViewModel', () => {
       expect(vm.jumpToPostId).toBe(oldValue.jumpToPostId);
       expect(vm.groupId).toBe(oldValue.groupId);
       expect(vm._initialized).toBe(true);
-
       vm.initialize(groupId);
-
       expect(vm.groupId).toBe(groupId);
       expect(vm.jumpToPostId).not.toBe(oldValue.jumpToPostId);
       expect(vm._historyHandler).not.toBe(oldValue._historyHandler);
-      expect(vm._newMessageSeparatorHandler).not.toBe(
-        oldValue._newMessageSeparatorHandler,
-      );
-      expect(vm._transformHandler).not.toBe(oldValue._transformHandler);
       expect(vm._initialized).toBe(false);
-    });
-
-    it('should call autorun', () => {
-      const { vm, autorun } = localSetup();
-      vm.initialize(11);
-
-      expect(autorun).toBeCalledTimes(3);
     });
   });
 
@@ -294,7 +272,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        _transformHandler: {
+        orderListHandler: {
           hasMore,
           fetchData,
         },
@@ -311,7 +289,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        _transformHandler: {
+        orderListHandler: {
           hasMore,
           fetchData,
         },
@@ -328,7 +306,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        _transformHandler: {
+        orderListHandler: {
           hasMore,
           fetchData,
         },
@@ -346,7 +324,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        _transformHandler: {
+        orderListHandler: {
           hasMore,
           fetchData,
         },
@@ -362,6 +340,7 @@ describe('StreamViewModel', () => {
     let _newMessageSeparatorHandler: any;
     const globalStore = {
       set: jest.fn(),
+      get: jest.fn().mockReturnValue(1),
     };
     const atBottomEvent = {
       target: {
@@ -391,11 +370,13 @@ describe('StreamViewModel', () => {
         disable: jest.fn(),
         enable: jest.fn(),
       };
-      return setup({
+      const vm = setup({
         _newMessageSeparatorHandler,
         _initialized: initialized,
         ...args,
       });
+      vm.dispose();
+      return vm;
     }
 
     afterAll(() => {
@@ -424,7 +405,6 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(true);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(atBottomEvent);
-
         hideUMIAndDisableMessageHandler();
       });
 
@@ -433,7 +413,6 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(false);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(atBottomEvent);
-
         showUMIAndEnableMessageHandler();
       });
 
@@ -442,7 +421,6 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(true);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(notAtBottomEvent);
-
         showUMIAndEnableMessageHandler();
       });
 
