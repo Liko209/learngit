@@ -4,7 +4,7 @@ import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog } from "../models";
 import { BeatsClient, Step, Test, Attachment } from 'bendapi';
 import { MiscUtils } from '../utils';
-import { getTmtId, parseFormalName } from '../../libs/filter';
+import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
 
 const logger = getLogger(__filename);
@@ -52,17 +52,17 @@ export class DashboardHelper {
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
     const tags = parseFormalName(testRun.test.name).tags;
-    const tmtId = getTmtId(tags);
-    // FIXME: remove user-agent from case name when dashboard is ready
+
+    // TODO: browser, browserVer, os, osVer
     const beatsTest = await this.beatsClient.createTest({
-      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`,
+      name: `${testRun.test.name}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`,
       status: StatusMap[status],
       metadata: {
         user_agent: testRun.browserConnection.browserInfo.userAgent,
       },
-      tmtId: tmtId.toString(),
+      manual_ids: getTmtIds(tags, 'JPT'),
       startTime: testRun.startTime,
-      endTime: new Date(Date.now()).toISOString()
+      endTime: new Date().toISOString()
     } as any, runId);
     for (const step of this.t.ctx.logs) {
       await this.createStepInDashboard(step, beatsTest.id);
@@ -71,7 +71,7 @@ export class DashboardHelper {
     logger.info(`add detail as an extra step to case ${beatsTest.id}`);
     const detailStep = <IStep>{
       status,
-      message: `Test Detail, Warning Log Number: ${consoleLog.warnConsoleLogNumber}, Error Log Number: ${consoleLog.errorConsoleLogNumber}`,
+      message: `Test Detail: warning(${consoleLog.warnConsoleLogNumber}), error(${consoleLog.errorConsoleLogNumber})`,
       attachments: [],
     };
     detailStep.startTime = Date.now();
