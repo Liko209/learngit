@@ -27,6 +27,7 @@ import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { ItemFile } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
 
+const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
@@ -51,9 +52,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this.reaction(
       () => this.files,
       () => {
-        const quill = (document.querySelector(
-          '.conversation-page>div>div>.quill>.ql-container',
-        ) as any).__quill;
+        const quill = (document.querySelector(QUILL_QUERY) as any).__quill;
         requestAnimationFrame(() => {
           quill.focus();
         });
