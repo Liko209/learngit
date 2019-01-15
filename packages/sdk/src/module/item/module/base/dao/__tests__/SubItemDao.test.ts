@@ -114,6 +114,22 @@ describe('Event Item Dao', () => {
         });
     });
 
+    it('filter function should work', async () => {
+      const filterFunc = (value: any) => {
+        return value.id !== 1;
+      };
+      const result = await dao.getSortedIds({
+        groupId,
+        filterFunc,
+        limit: 3,
+        desc: true,
+        typeId: 10,
+        sortKey: name,
+        offsetItemId: undefined,
+      });
+      expect(result).toEqual([item2.id, item3.id]);
+    });
+
     it.each`
       groupId     | sortKey         | limit | offsetItemId | expects                           | desc     | comment
       ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by name desc'}

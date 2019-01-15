@@ -6,39 +6,67 @@
 
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { FileItemDao } from '../FileItemDao';
+import { RIGHT_RAIL_ITEM_TYPE } from '../../../../../constants';
 
 describe('Event Item Dao', () => {
   let dao: FileItemDao;
+
+  const items = [
+    {
+      id: 1,
+      group_ids: [1],
+      created_at: 1,
+      name: 'item1',
+      type: 'jpg',
+    },
+    {
+      id: 2,
+      group_ids: [1],
+      created_at: 2,
+      name: 'item2',
+      type: 'png',
+    },
+    {
+      id: 3,
+      group_ids: [2],
+      created_at: 3,
+      name: 'item3',
+      type: 'exe',
+    },
+    {
+      id: 4,
+      group_ids: [1],
+      created_at: 3,
+      name: 'item4',
+      type: 'txt',
+    },
+  ];
 
   beforeAll(() => {
     const { database } = setup();
     dao = new FileItemDao(database);
   });
 
+  describe('getFileItemCount', () => {
+    beforeAll(async () => {
+      await dao.clear();
+      await dao.bulkPut(items);
+    });
+
+    it('should return  count of image files only', async () => {
+      expect(
+        await dao.getFileItemCount(1, RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES),
+      ).toBe(2);
+    });
+
+    it('should return count non image files only', async () => {
+      expect(
+        await dao.getFileItemCount(1, RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES),
+      ).toBe(1);
+    });
+  });
+
   describe('queryItemsByGroupId', () => {
-    const items = [
-      {
-        id: 1,
-        group_ids: [1],
-        created_at: 1,
-        name: 'item1',
-        type: 'jpg',
-      },
-      {
-        id: 2,
-        group_ids: [1],
-        created_at: 2,
-        name: 'item2',
-        type: 'png',
-      },
-      {
-        id: 3,
-        group_ids: [2],
-        created_at: 3,
-        name: 'item3',
-        type: 'exe',
-      },
-    ];
     beforeAll(async () => {
       await dao.clear();
       await dao.bulkPut(items);
@@ -50,7 +78,7 @@ describe('Event Item Dao', () => {
 
     it('should return items by group id', async () => {
       const result = await dao.queryItemsByGroupId(1);
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(3);
       expect(result).toEqual([
         {
           id: 1,
@@ -65,6 +93,13 @@ describe('Event Item Dao', () => {
           created_at: 2,
           name: 'item2',
           type: 'png',
+        },
+        {
+          id: 4,
+          group_ids: [1],
+          created_at: 3,
+          name: 'item4',
+          type: 'txt',
         },
       ]);
     });

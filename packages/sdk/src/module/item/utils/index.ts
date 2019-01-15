@@ -4,5 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ItemFilterUtils } from './ItemFilterUtils';
-export { ItemFilterUtils };
+import { ItemUtils } from './ItemUtils';
+export { ItemUtils };

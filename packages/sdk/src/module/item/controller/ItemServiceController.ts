@@ -16,7 +16,7 @@ import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions } from '../types';
 import { RIGHT_RAIL_ITEM_TYPE } from '../../constants';
 
-const ITemTypeIdMap: Map<RIGHT_RAIL_ITEM_TYPE, number> = new Map([
+const ItemTypeIdMap: Map<RIGHT_RAIL_ITEM_TYPE, number> = new Map([
   [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],
   [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES, TypeDictionary.TYPE_ID_FILE],
   [RIGHT_RAIL_ITEM_TYPE.TASKS, TypeDictionary.TYPE_ID_TASK],
@@ -66,7 +66,7 @@ class ItemServiceController {
 
   async getGroupItemsCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
     let totalCount = 0;
-    const subItemService = this.getSubItemService(ITemTypeIdMap.get(
+    const subItemService = this.getSubItemService(ItemTypeIdMap.get(
       type,
     ) as number);
     if (subItemService) {
@@ -160,7 +160,7 @@ class ItemServiceController {
   }
 
   private _shouldSaveSanitizedItem(item: Item) {
-    return item.id > 0 && item.post_ids.length > 0;
+    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
   }
 }
 

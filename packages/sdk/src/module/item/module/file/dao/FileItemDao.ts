@@ -8,7 +8,7 @@ import { SanitizedFileItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
 import { IDatabase } from 'foundation';
 import { RIGHT_RAIL_ITEM_TYPE } from '../../../../constants';
-import { ItemFilterUtils } from '../../../utils';
+import { ItemUtils } from '../../../utils';
 
 class FileItemDao extends SubItemDao<SanitizedFileItem> {
   static COLLECTION_NAME = 'fileItem';
@@ -22,8 +22,8 @@ class FileItemDao extends SubItemDao<SanitizedFileItem> {
       .contain('group_ids', groupId)
       .filter((item: SanitizedFileItem) =>
         type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES
-          ? ItemFilterUtils.isImageItem(item)
-          : !ItemFilterUtils.isImageItem(item),
+          ? ItemUtils.isImageItem(item)
+          : !ItemUtils.isImageItem(item),
       )
       .count();
   }

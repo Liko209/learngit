@@ -7,7 +7,7 @@
 import { ImageFileExtensions } from './ImageFileExtensions';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
-class ItemFilterUtils {
+class ItemUtils {
   static isValidItem<T extends { id: number; group_ids: number[] }>(
     groupId: number,
     item: T,
@@ -25,7 +25,7 @@ class ItemFilterUtils {
     return (file: T): boolean => {
       let result = false;
       do {
-        if (!ItemFilterUtils.isValidItem(groupId, file)) {
+        if (!ItemUtils.isValidItem(groupId, file)) {
           break;
         }
 
@@ -35,7 +35,7 @@ class ItemFilterUtils {
           break;
         }
 
-        if (showImage && !ItemFilterUtils.isImageItem(file)) {
+        if (showImage && !ItemUtils.isImageItem(file)) {
           break;
         }
         result = true;
@@ -46,4 +46,4 @@ class ItemFilterUtils {
   }
 }
 
-export { ItemFilterUtils };
+export { ItemUtils };

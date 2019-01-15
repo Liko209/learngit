@@ -8,7 +8,7 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ItemService, ItemFilterUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE } from 'sdk/module/constants';
 import { SortUtils } from 'sdk/framework/utils';
 import { Item } from 'sdk/module/item/entity';
@@ -85,9 +85,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   private _getFilterFunc() {
     switch (this._rightRailItemType) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
-        return ItemFilterUtils.fileFilter(this._groupId, true);
+        return ItemUtils.fileFilter(this._groupId, true);
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
-        return ItemFilterUtils.fileFilter(this._groupId, false);
+        return ItemUtils.fileFilter(this._groupId, false);
       default:
     }
     return undefined;
