@@ -37,7 +37,7 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
     sortKey: string,
     desc: boolean,
   ): Promise<number[]> {
-    return Promise.resolve([]);
+    return Promise.resolve([16393, 32777, 57353, 65545]);
   }
 
   async getSubItemsCount(groupId: number) {
