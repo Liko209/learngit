@@ -34,6 +34,8 @@ export default class PostModel extends Base<Post> {
   source?: string;
   @observable
   parentId?: number;
+  @observable
+  deactivated?: boolean;
 
   constructor(data: Post) {
     super(data);
@@ -51,6 +53,7 @@ export default class PostModel extends Base<Post> {
       item_data,
       source,
       parent_id,
+      deactivated,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -65,6 +68,7 @@ export default class PostModel extends Base<Post> {
     this.itemData = item_data;
     this.source = source;
     this.parentId = parent_id;
+    this.deactivated = deactivated;
   }
 
   @computed
@@ -74,6 +78,9 @@ export default class PostModel extends Base<Post> {
 
   @computed
   get itemTypeIds() {
+    if (!this.existItemIds) {
+      return undefined;
+    }
     const itemTypeIds = {};
     this.existItemIds.forEach((id: number) => {
       const typeId = GlipTypeUtil.extractTypeId(id);

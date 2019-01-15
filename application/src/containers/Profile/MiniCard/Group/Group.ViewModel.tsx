@@ -13,8 +13,17 @@ import {
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
-import { ENTITY_NAME } from '@/store';
+import { GroupService } from 'sdk/module/group';
+import storeManager, { ENTITY_NAME } from '@/store';
 import { GlipTypeUtil } from 'sdk/utils';
+import { Notification } from '@/containers/Notification';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { errorHelper } from 'sdk/error';
+import { generalErrorHandler } from '@/utils/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
@@ -26,6 +35,33 @@ class ProfileMiniCardGroupViewModel
 
   @computed
   get group() {
+    const onError = (error: Error) => {
+      if (errorHelper.isBackEndError(error)) {
+        Notification.flashToast({
+          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        });
+      } else {
+        generalErrorHandler(error);
+      }
+    };
+    const groupStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.GROUP,
+    ) as MultiEntityMapStore<Group, GroupModel>;
+    if (!groupStore.hasValid(this.id)) {
+      const groupService = new GroupService();
+      groupService
+        .getById(this.id)
+        .then((group: Group | null) => {
+          if (group) {
+            groupStore.set(group);
+          }
+        })
+        .catch(onError);
+    }
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
   }
 

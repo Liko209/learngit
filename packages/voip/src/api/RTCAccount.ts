@@ -20,6 +20,9 @@ import { RTC_ACCOUNT_STATE } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
+import { Listener } from 'eventemitter2';
 
 const options = {
   appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
@@ -39,6 +42,7 @@ class RTCAccount implements IRTCAccount {
   private _state: RTC_ACCOUNT_STATE;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
+  private _networkListener: Listener;
 
   constructor(listener: IRTCAccountDelegate) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
@@ -46,21 +50,34 @@ class RTCAccount implements IRTCAccount {
     this._regManager = new RTCRegistrationManager();
     this._provManager = new RTCProvManager();
     this._callManager = new RTCCallManager();
+    this._networkListener = (params: any) => {
+      this._onNetworkChange(params);
+    };
     this._initListener();
+  }
+
+  destroy() {
+    rtcNetworkNotificationCenter.removeListener(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      this._networkListener,
+    );
   }
 
   public handleProvisioning() {
     this._provManager.acquireSipProv();
   }
 
-  public makeCall(toNumber: string, delegate: IRTCCallDelegate): RTCCall {
+  public makeCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+  ): RTCCall | null {
     if (toNumber.length === 0) {
       rtcLogger.error(this._kTag, 'Failed to make call. To number is empty');
-      return null as any;
+      return null;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(this._kTag, 'Failed to make call. Max call count reached');
-      return null as any;
+      return null;
     }
     const call = new RTCCall(false, toNumber, null, this, delegate);
     this._callManager.addCall(call);
@@ -79,7 +96,7 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.callCount();
   }
 
-  getCallByUuid(uuid: string): RTCCall {
+  getCallByUuid(uuid: string): RTCCall | null {
     return this._callManager.getCallByUuid(uuid);
   }
 
@@ -107,6 +124,11 @@ class RTCAccount implements IRTCAccount {
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
+
+    rtcNetworkNotificationCenter.on(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      this._networkListener,
+    );
   }
 
   private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -114,6 +136,9 @@ class RTCAccount implements IRTCAccount {
       return;
     }
     this._state = state;
+    if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
+      this._callManager.notifyAccountReady();
+    }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
     }
@@ -156,6 +181,12 @@ class RTCAccount implements IRTCAccount {
       },
     };
     this._regManager.provisionReady(sipProv, info);
+  }
+
+  private _onNetworkChange(params: any) {
+    if (RTC_NETWORK_STATE.ONLINE === params.state) {
+      this._regManager.networkChangeToOnline();
+    }
   }
 }
 

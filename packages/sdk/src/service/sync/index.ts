@@ -121,7 +121,12 @@ export default class SyncService extends BaseService {
 
   private async _handleSyncIndexError(result: any) {
     const error = ErrorParserHolder.getErrorParser().parse(result);
-    if (error.isMatch({ type: ERROR_TYPES.NETWORK, codes: [ERROR_CODES_NETWORK.GATEWAY_TIMEOUT] })) {
+    if (
+      error.isMatch({
+        type: ERROR_TYPES.NETWORK,
+        codes: [ERROR_CODES_NETWORK.GATEWAY_TIMEOUT],
+      })
+    ) {
       notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.START_CLEAR_DATA);
       await this._handle504GateWayError();
       notificationCenter.emitKVChange(SERVICE.SYNC_SERVICE.END_CLEAR_DATA);
