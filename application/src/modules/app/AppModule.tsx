@@ -21,6 +21,7 @@ import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';
 
 import './index.css';
+import { generalErrorHandler } from '@/utils/error';
 
 /**
  * The root module, we call it AppModule,
@@ -31,9 +32,13 @@ class AppModule extends AbstractModule {
   private _routerService: RouterService;
 
   async bootstrap() {
-    this._routerService.registerRoutes(appConfig.routes);
-    await this._init();
-    ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
+    try {
+      this._routerService.registerRoutes(appConfig.routes);
+      await this._init();
+      ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
+    } catch (error) {
+      generalErrorHandler(error);
+    }
   }
 
   private async _init() {
@@ -54,6 +59,10 @@ class AppModule extends AbstractModule {
         }
       }
     }
+
+    window.addEventListener('error', (event: ErrorEvent) => {
+      generalErrorHandler(event.error);
+    });
 
     const {
       notificationCenter,

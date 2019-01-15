@@ -16,6 +16,10 @@ import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
 import { Notification } from '@/containers/Notification';
 import ProgressModel from '@/store/models/Progress';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
@@ -72,8 +76,8 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     } else {
       Notification.flashToast({
         message: 'fileNoLongerExists',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

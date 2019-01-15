@@ -9,9 +9,11 @@ import { IdModel } from 'sdk/framework/model';
 export default class Base<T extends IdModel> implements Entity {
   id: number;
   data?: any;
+  isMocked: boolean;
   constructor(data: T) {
-    const { id }: { id: number } = data;
+    const { id, isMocked }: { id: number; isMocked?: boolean } = data;
     this.id = id;
+    this.isMocked = isMocked || false;
   }
 
   toJS() {
