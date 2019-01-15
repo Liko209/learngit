@@ -1,4 +1,4 @@
-import { PERMISSION_ENUM } from '../../service/constants';
+import { PERMISSION_ENUM } from './constants';
 type TeamSetting = {
   name?: string;
   description?: string;
