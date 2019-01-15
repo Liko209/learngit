@@ -104,7 +104,8 @@ test(formalName('Each conversation should be represented by the team name.',
   },
 );
 
-test(formalName('Conversation that received post should be moved to top', ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']), async (t: TestController) => {
+// case JPT-47 expire
+test.skip(formalName('Conversation that received post should be moved to top', ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
@@ -148,7 +149,6 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
   });
 
   await h(t).withLog('Then I can find team2 on the top of Team section', async () => {
-    await teamsSection.expand();
     await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamTwoId);
   }, true);
 });
