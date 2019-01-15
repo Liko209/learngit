@@ -27,7 +27,7 @@ import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { AccountService } from '../account/accountService';
 
-const personFlags = {
+const PersonFlags = {
   deactivated: 2,
   has_registered: 4,
   is_removed_guest: 1024,
@@ -289,49 +289,29 @@ class PersonService extends BaseService<Person> {
     return true;
   }
 
-  private _testFlags(person: Person, mask: number) {
+  private _hasTrueValue(person: Person, key: number) {
     if (person.flags === undefined) {
       return false;
     }
-    if ((person.flags & mask) === mask) {
+    if ((person.flags & key) === key) {
       return true;
     }
     return false;
-  }
-
-  private _isRemovedGuest(person: Person): boolean {
-    return this._testFlags(person, personFlags.is_removed_guest);
-  }
-
-  private _amRemovedGuest(person: Person): boolean {
-    return this._testFlags(person, personFlags.am_removed_guest);
-  }
-
-  private _isRegistered(person: Person): boolean {
-    if (person.has_registered) {
-      return true;
-    }
-    return this._testFlags(person, personFlags.has_registered);
-  }
-
-  private _isDeactivatedByFlags(person: Person): boolean {
-    return this._testFlags(person, personFlags.deactivated);
   }
 
   private _isDeactivated(person: Person): boolean {
     if (person.deactivated) {
       return true;
     }
-    return this._isDeactivatedByFlags(person);
+    return this._hasTrueValue(person, PersonFlags.deactivated);
   }
 
   private _isValid(person: Person) {
     return (
-      this._isRegistered(person) &&
       !this._isDeactivated(person) &&
       this._isVisible(person) &&
-      !this._isRemovedGuest(person) &&
-      !this._amRemovedGuest(person) &&
+      !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
+      !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
       !person.is_pseudo_user
     );
   }
