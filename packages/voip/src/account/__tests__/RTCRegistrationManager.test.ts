@@ -108,17 +108,44 @@ describe('RTCRegistrationManager', () => {
       regManager.provisionReady(provisionData, options);
     }
 
-    describe('Should reset retry timer interval to 2s when account state enter ready. [JPT-811]', done => {
+    it('Should reset retry timer interval to 2s when account state enter ready. [JPT-811]', done => {
       setup();
-      ua.mockSignal('registered');
+      ua.mockSignal(UA_EVENT.REG_FAILED);
+      regManager.reRegister();
+      ua.mockSignal(UA_EVENT.REG_SUCCESS);
+      setImmediate(() => {
+        expect(regManager._retryInterval).toBe(2);
+        done();
+      });
     });
 
-    describe('Should send reRegister when retry timer reached. [JPT-812]', () => {
+    it.only('Should send reRegister when retry timer reached. [JPT-812]', done => {
+      jest.useFakeTimers();
       setup();
+      jest.spyOn(regManager, 'reRegister');
+      ua.mockSignal(UA_EVENT.REG_FAILED);
+      setImmediate(() => {
+        jest.advanceTimersByTime(2000);
+        expect(regManager.reRegister).toBeCalled();
+        done();
+      });
     });
 
-    describe('Should schedule nex retry interval as max(60, current_interval * 2). [JPT-813]', () => {
+    it('Should schedule nex retry interval as max(60, current_interval * 2). [JPT-813]', () => {
       setup();
+      expect(regManager._retryInterval).toBe(2);
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBe(4);
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBe(8);
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBe(16);
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBe(32);
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBe(60);
+      regManager._calculateNextRetryInterval();
+      expect(regManager._retryInterval).toBe(60);
     });
   });
 

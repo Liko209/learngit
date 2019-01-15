@@ -223,10 +223,7 @@ class RTCRegistrationManager extends EventEmitter2
     this._retryTimer = setTimeout(() => {
       this.reRegister();
     },                            this._retryInterval * 1000);
-    this._retryInterval = this._retryInterval * 2;
-    if (this._retryInterval > kRTCRegisterRetryTimerMax) {
-      this._retryInterval = kRTCRegisterRetryTimerMax;
-    }
+    this._calculateNextRetryInterval();
   }
 
   private _clearRegisterRetryTimer() {
@@ -236,6 +233,13 @@ class RTCRegistrationManager extends EventEmitter2
     }
     this._retryTimer = null;
     this._retryInterval = kRTCRegisterRetryTimerMin;
+  }
+
+  private _calculateNextRetryInterval() {
+    this._retryInterval = this._retryInterval * 2;
+    if (this._retryInterval > kRTCRegisterRetryTimerMax) {
+      this._retryInterval = kRTCRegisterRetryTimerMax;
+    }
   }
 }
 
