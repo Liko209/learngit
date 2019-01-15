@@ -11,6 +11,7 @@ import {
   JuiListItem,
   JuiListItemIcon,
   JuiListItemSecondaryAction,
+  JuiListItemTextWithDate,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -45,7 +46,7 @@ class FileItemView extends Component<FileItemProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
-          secondary={subTitle}
+          secondary={<JuiListItemTextWithDate text={subTitle} />}
         />
         {isHover && (
           <JuiListItemSecondaryAction>

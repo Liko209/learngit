@@ -15,8 +15,10 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
-import { JuiConversationRightRailLoading } from 'jui/pattern/RightShelf';
-// import { observable } from 'mobx';
+import {
+  JuiConversationRightRailLoading,
+  JuiRightShelfContent,
+} from 'jui/pattern/RightShelf';
 import { emptyView } from './Empty';
 
 const itemType = {
@@ -74,14 +76,14 @@ class ItemListView extends React.Component<ViewProps & Props>
     const { type, totalCount } = this.props;
     const subheaderText = subheaderType[type];
     return (
-      <>
+      <JuiRightShelfContent>
         {totalCount > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
             {t(subheaderText)} ({totalCount})
           </JuiListSubheader>
         )}
         <JuiVirtualList dataSource={this} />
-      </>
+      </JuiRightShelfContent>
     );
   }
 }
