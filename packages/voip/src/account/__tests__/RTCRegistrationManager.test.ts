@@ -94,6 +94,33 @@ describe('RTCRegistrationManager', () => {
       });
     });
   });
+  describe('Registration failed retry', async () => {
+    let regManager: RTCRegistrationManager;
+    let ua: MockUserAgent;
+    function setup() {
+      regManager = new RTCRegistrationManager();
+      jest
+        .spyOn(regManager, 'onProvisionReadyAction')
+        .mockImplementation(() => {});
+      ua = new MockUserAgent();
+      regManager._userAgent = ua;
+      regManager._initUserAgentListener();
+      regManager.provisionReady(provisionData, options);
+    }
+
+    describe('Should reset retry timer interval to 2s when account state enter ready. [JPT-811]', done => {
+      setup();
+      ua.mockSignal('registered');
+    });
+
+    describe('Should send reRegister when retry timer reached. [JPT-812]', () => {
+      setup();
+    });
+
+    describe('Should schedule nex retry interval as max(60, current_interval * 2). [JPT-813]', () => {
+      setup();
+    });
+  });
 
   describe('makeCall()', () => {
     it('Should call the makeCall function of WebPhone when RTCRegManager makeCall', () => {

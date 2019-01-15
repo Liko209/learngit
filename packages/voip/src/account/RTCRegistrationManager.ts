@@ -18,12 +18,20 @@ import {
   RTCRegisterAsyncTask,
 } from './types';
 import async, { AsyncQueue } from 'async';
+import {
+  kRTCRegisterRetryTimerMin,
+  kRTCRegisterRetryTimerMax,
+} from './constants';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
+  private _kTag: string = 'RTCRegistrationManager';
   private _fsm: RTCRegistrationFSM;
   private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
+  private _retryTimer: NodeJS.Timeout | null = null;
+  private _retryInterval: number = kRTCRegisterRetryTimerMin;
 
   public onRegistrationAction(): void {}
 
@@ -79,6 +87,7 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onEnterReady() {
+    this._clearRegisterRetryTimer();
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.REGISTERED,
@@ -93,6 +102,7 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onEnterRegFailure() {
+    this._scheduleRegisterRetryTimer();
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.FAILED,
@@ -185,6 +195,32 @@ class RTCRegistrationManager extends EventEmitter2
 
   private _onUAReceiveInvite(session: any) {
     this.emit(REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION, session);
+  }
+
+  private _scheduleRegisterRetryTimer() {
+    rtcLogger.debug(
+      this._kTag,
+      `Schedule retry registration in ${this._retryInterval} seconds`,
+    );
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+    }
+    this._retryTimer = setTimeout(() => {
+      this.reRegister();
+    },                            this._retryInterval * 1000);
+    this._retryInterval = this._retryInterval * 2;
+    if (this._retryInterval > kRTCRegisterRetryTimerMax) {
+      this._retryInterval = kRTCRegisterRetryTimerMax;
+    }
+  }
+
+  private _clearRegisterRetryTimer() {
+    rtcLogger.debug(this._kTag, 'Clear retry registration timer');
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+    }
+    this._retryTimer = null;
+    this._retryInterval = kRTCRegisterRetryTimerMin;
   }
 }
 
