@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { SITE_URL, SITE_ENV, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
 import { BeatsClient, Run } from 'bendapi';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
@@ -40,8 +40,7 @@ export async function getOrCreateRunId() {
     for (const key in RUNNER_OPTS) {
       if ([
         'EXCLUDE_TAGS',
-        'INCLUDE_TAGS',
-        'QUARANTINE_MODE'
+        'INCLUDE_TAGS'
       ].indexOf(key) > 0)
         metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
     }
@@ -51,14 +50,8 @@ export async function getOrCreateRunId() {
         'HOST_NAME',
         'BUILD_URL',
         'SITE_URL',
-        'gitlabActionType',
-        'gitlabBranch',
-        'gitlabMergedByUser',
-        'gitlabMergeRequestLastCommit',
-        'gitlabMergeRequestTitle',
-        'gitlabSourceBranch',
-        'gitlabTargetBranch',
-      ].indexOf(key) > 0)
+        'SITE_ENV',
+      ].indexOf(key) > 0 || key.startsWith('gitlab'))
         metadata[key] = process.env[key];
     }
     const run = await beatsClient.createRun({
