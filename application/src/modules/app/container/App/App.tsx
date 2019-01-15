@@ -13,10 +13,10 @@ import ThemeProvider from '@/containers/ThemeProvider';
 import history from '@/history';
 import { analytics } from '@/Analytics';
 import { AboutView } from '@/containers/About';
-import { TopBanner } from '@/containers/TopBanner';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
 import { AppStore } from '../../store';
+import { TopBanner } from '../TopBanner';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
 

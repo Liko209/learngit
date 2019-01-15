@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { getGlobalValue } from '../../../../store/utils';
+import { getGlobalValue } from '../../../../../../store/utils';
 import { NetworkBannerViewModel } from '../NetworkBanner.ViewModel';
 
-jest.mock('../../../../store/utils');
+jest.mock('../../../../../../store/utils');
 
 describe('NetworkBannerViewModel', () => {
   describe('config()', () => {
