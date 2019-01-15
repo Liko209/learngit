@@ -20,6 +20,34 @@ describe('ItemUtils', () => {
     clearMocks();
   });
 
+  describe('isImageItem()', () => {
+    it('should return true when is image', () => {
+      const item1 = {
+        id: 10,
+        group_ids: [11, 222, 33],
+        type: 'jpg',
+      } as FileItem;
+      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
+    });
+
+    it('should return true when type has image', () => {
+      const item1 = {
+        id: 10,
+        group_ids: [11, 222, 33],
+        type: 'image/jpeg',
+      } as FileItem;
+      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
+    });
+
+    it('should return false when is image', () => {
+      const item1 = {
+        id: 10,
+        group_ids: [11, 222, 33],
+        type: 'ppp',
+      } as FileItem;
+      expect(ItemUtils.isImageItem(item1)).toBeFalsy();
+    });
+  });
   describe('isValidItem', () => {
     const item1 = {
       id: 10,
@@ -54,6 +82,14 @@ describe('ItemUtils', () => {
 
     it('should return false when item is not image', () => {
       expect(ItemUtils.fileFilter(11, true)(item2)).toBeFalsy();
+    });
+
+    it('should return false when item is not image when want non image file', () => {
+      expect(ItemUtils.fileFilter(11, false)(item1)).toBeFalsy();
+    });
+
+    it('should return true when item is not image when want non image file', () => {
+      expect(ItemUtils.fileFilter(11, false)(item2)).toBeTruthy();
     });
 
     it('should return false when item is not file', () => {

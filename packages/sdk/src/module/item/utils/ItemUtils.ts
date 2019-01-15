@@ -16,7 +16,10 @@ class ItemUtils {
   }
 
   static isImageItem<T extends { type: string }>(file: T) {
-    return ImageFileExtensions.includes(file.type);
+    return (
+      ImageFileExtensions.includes(file.type) ||
+      file.type.indexOf('image') !== -1
+    );
   }
 
   static fileFilter<
@@ -34,8 +37,11 @@ class ItemUtils {
         ) {
           break;
         }
-
-        if (showImage && !ItemUtils.isImageItem(file)) {
+        // show images only or non image file only
+        const isExpectedType = showImage
+          ? ItemUtils.isImageItem(file)
+          : !ItemUtils.isImageItem(file);
+        if (!isExpectedType) {
           break;
         }
         result = true;
