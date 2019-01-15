@@ -20,11 +20,18 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   constructor() {
     super();
   }
-  private _prepareSipSession() {
-    if (this._session == null) {
+  destroy() {
+    if (!this._session) {
       return;
     }
+    this._session.removeAllListeners();
+    this._session = null;
+  }
 
+  private _prepareSipSession() {
+    if (!this._session) {
+      return;
+    }
     this._session.on(WEBPHONE_STATE.ACCEPTED, () => {
       this._onSessionConfirmed();
     });

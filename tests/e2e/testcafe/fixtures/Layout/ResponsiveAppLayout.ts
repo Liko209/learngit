@@ -8,7 +8,7 @@ fixture('Layout')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']), async (t: TestController) => {
+test.skip(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']), async (t: TestController) => {
   if (await H.isElectron() || await H.isEdge()) {
     await h(t).log('This case (resize) is not working on Electron or Edge!');
     return;

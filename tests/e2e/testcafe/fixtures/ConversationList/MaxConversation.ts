@@ -170,11 +170,11 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     });
 
     await h(t).withLog(`And set limit conversation count=${MAX_NUMBER}(JPT-353)`, async () => {
-      await h(t).glip(loginUser).updateProfile(loginUser.rcId, { max_leftrail_group_tabs2: MAX_NUMBER })
+      await h(t).glip(loginUser).setMaxTeamDisplay(loginUser.rcId, MAX_NUMBER)
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
-      await h(t).glip(loginUser).updateProfile(loginUser.rcId, { skip_close_conversation_confirmation: true, });
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -252,7 +252,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     realNum = realNum + 1;
     await h(t).withLog(`And max conversation count = ${realNum}`, async () => {
       await t.expect(teamsSection.conversations.count).eql(realNum, { timeout: 5e3 });
-      await h(t).glip(loginUser).updateProfile(loginUser.rcId, { max_leftrail_group_tabs2: DEFAULT_MAX_NUMBER });
+      await h(t).glip(loginUser).setMaxTeamDisplay(loginUser.rcId, DEFAULT_MAX_NUMBER);
     });
   }
 );

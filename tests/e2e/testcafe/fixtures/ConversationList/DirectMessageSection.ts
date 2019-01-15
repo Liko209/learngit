@@ -21,6 +21,7 @@ test(formalName('Show the 1:1 conversation and group conversation in the Direct 
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     let chatId, groupId;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat', async () => {
@@ -30,8 +31,6 @@ test(formalName('Show the 1:1 conversation and group conversation in the Direct 
       groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [chatId, groupId]);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
