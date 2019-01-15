@@ -30,7 +30,12 @@ import {
 } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItem, TDeltaWithData } from './types';
+import {
+  StreamProps,
+  StreamItem,
+  TDeltaWithData,
+  StreamItemType,
+} from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -331,12 +336,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   handlePostsChanged = (delta: TDeltaWithData) => {
     const { streamItems } = this.assemblyLine.process(
       delta,
-      this.orderListHandler.listStore.items.slice(),
+      this.orderListHandler.listStore.items,
       this.hasMoreUp,
-      this.items.slice(),
+      this.items,
       this._readThrough,
     );
     if (streamItems) {
+      const last = _.nth(streamItems, -1);
+      if (last && last.type !== StreamItemType.POST) {
+        streamItems.pop();
+      }
       this.streamListHandler.replaceAll(streamItems);
     }
   }
