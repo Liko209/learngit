@@ -20,7 +20,7 @@ class LinkItemView extends Component<LinkItemViewProps> {
   render() {
     const { link, textSecondary } = this.props;
     const textPrimary = link.title || link.url || '';
-    const faviconUrl = link.faviconUrl || '';
+    const faviconUrl = link.faviconUrl;
     return (
       <JuiListItem>
         <JuiListItemIcon>
