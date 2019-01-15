@@ -17,7 +17,11 @@ class ItemUtils {
 
   static isImageItem<T extends { type: string }>(file: T) {
     const type = file.type.toLocaleLowerCase();
-    return ImageFileExtensions.includes(type) || type.indexOf('image') !== -1;
+    return (
+      ImageFileExtensions.includes(type) ||
+      type.indexOf('image') !== -1 ||
+      type.indexOf('giphy') !== -1
+    );
   }
 
   static fileFilter<
