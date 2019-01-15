@@ -67,9 +67,6 @@ const schema: ISchema = {
       eventItem: gen('id', ['*group_ids']),
       linkItem: gen('id', ['*group_ids']),
     },
-    11: {
-      codeItem: gen('id', ['*group_ids']),
-    },
   },
 };
 
