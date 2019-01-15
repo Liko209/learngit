@@ -8,6 +8,8 @@ import { getEntity, getGlobalValue } from '../../../../../../store/utils';
 import { ProfileMiniCardGroupFooterViewModel } from '../Footer.ViewModel';
 
 jest.mock('../../../../../../store/utils');
+jest.mock('sdk/api');
+jest.mock('sdk/dao');
 
 const mockData = {
   members: [1, 2, 3],

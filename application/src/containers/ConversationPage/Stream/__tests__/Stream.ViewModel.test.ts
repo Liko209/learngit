@@ -10,6 +10,14 @@ import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
 import { id } from 'inversify';
+import { errorHelper } from 'sdk/error';
+import { Notification } from '@/containers/Notification';
+import * as errorUtil from '@/utils/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
@@ -446,5 +454,71 @@ describe('StreamViewModel', () => {
     });
 
     jest.restoreAllMocks();
+  });
+});
+
+describe.only('fetchData()', () => {
+  function setup() {
+    const vm = new StreamViewModel();
+    vm.groupId = 1;
+    vm.onReceiveProps({ groupId: 2 } as any);
+    return vm;
+  }
+  let vm;
+  let postService;
+  beforeEach(() => {
+    postService = new PostService();
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    vm = setup();
+  });
+  it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
+    jest.spyOn(vm._transformHandler, 'hasMore').mockReturnValueOnce(true);
+    jest.spyOn(vm._transformHandler, 'fetchData');
+    postService.getPostsByGroupId = jest
+      .fn()
+      .mockRejectedValueOnce(new Error());
+    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
+    Notification.flashToast = jest.fn();
+    await vm.loadPrevPosts();
+    expect(vm._transformHandler.fetchData).toHaveBeenCalled();
+    expect(Notification.flashToast).toHaveBeenCalledWith({
+      dismissible: false,
+      fullWidth: false,
+      message: 'SorryWeWereNotAbleToLoadOlderMessages',
+      messageAlign: ToastMessageAlign.LEFT,
+      type: ToastType.ERROR,
+    });
+  });
+
+  it('should show error toast when server throw error while scroll down [JPT-695]', async () => {
+    jest.spyOn(vm._transformHandler, 'hasMore').mockReturnValueOnce(true);
+    jest.spyOn(vm._transformHandler, 'fetchData');
+    postService.getPostsByGroupId = jest
+      .fn()
+      .mockRejectedValueOnce(new Error());
+    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
+    Notification.flashToast = jest.fn();
+    await vm.loadNextPosts();
+    expect(vm._transformHandler.fetchData).toHaveBeenCalled();
+    expect(Notification.flashToast).toHaveBeenCalledWith({
+      dismissible: false,
+      fullWidth: false,
+      message: 'SorryWeWereNotAbleToLoadNewerMessages',
+      messageAlign: ToastMessageAlign.LEFT,
+      type: ToastType.ERROR,
+    });
+  });
+
+  it('should use generalErrorHandler if error is not from backend', async () => {
+    jest.spyOn(vm._transformHandler, 'hasMore').mockReturnValueOnce(true);
+    jest.spyOn(vm._transformHandler, 'fetchData');
+    postService.getPostsByGroupId = jest
+      .fn()
+      .mockRejectedValueOnce(new Error());
+    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(false);
+    jest.spyOn(errorUtil, 'generalErrorHandler');
+    await vm.loadPrevPosts();
+    expect(vm._transformHandler.fetchData).toHaveBeenCalled();
+    expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
   });
 });
