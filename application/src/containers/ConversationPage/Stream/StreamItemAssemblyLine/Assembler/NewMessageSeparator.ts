@@ -11,7 +11,7 @@ import { ISortableModel } from '@/store/base';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 
-import { StreamItemType } from '../../types';
+import { StreamItemType, StreamItem } from '../../types';
 import { Assembler } from './Assembler';
 import {
   AssemblerAddFuncArgs,
@@ -44,7 +44,7 @@ class NewMessageSeparatorHandler extends Assembler {
   }
 
   onAdd: AssemblerAddFunc = (args: AssemblerAddFuncArgs) => {
-    const { postList, hasMore, newItems, readThrough } = args;
+    const { postList, hasMore, streamItemList, readThrough } = args;
     this.updateReadThrough(readThrough);
     args.readThrough = this._readThrough;
     if (this._disabled) return args;
@@ -89,15 +89,16 @@ class NewMessageSeparatorHandler extends Assembler {
       postList,
       this._readThrough,
     );
+    let items = streamItemList;
     if (firstUnreadPost) {
       const separatorId = firstUnreadPost.data!.created_at - 1;
       this._setSeparator(firstUnreadPost.id, separatorId);
-      newItems.push({
+      items = items.concat({
         id: separatorId,
         type: StreamItemType.NEW_MSG_SEPARATOR,
         timeStart: firstUnreadPost.data!.created_at - 1,
       });
-      return { ...args, newItems };
+      return { ...args, streamItemList: items };
     }
     return args;
   }
@@ -106,13 +107,13 @@ class NewMessageSeparatorHandler extends Assembler {
     if (!this.separatorId) {
       return args;
     }
-    const { deleted, postList, deletedIds } = args;
+    const { deleted, postList, streamItemList } = args;
     const latestDeletedPostId = _.max(deleted) as number;
     const postNext = _.find(postList, ({ id }) => id >= latestDeletedPostId);
     if (!postNext) {
-      deletedIds.push(this.separatorId);
+      streamItemList.remove((item: StreamItem) => this.separatorId === item.id);
     }
-    return { ...args, deletedIds };
+    return { ...args, streamItemList };
   }
 
   updateReadThrough(readThrough: number) {

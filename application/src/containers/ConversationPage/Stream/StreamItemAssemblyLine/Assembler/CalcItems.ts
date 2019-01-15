@@ -16,26 +16,27 @@ import { StreamItem, StreamItemType } from '../../types';
 
 export class SingletonTagChecker extends Assembler {
   onAdd: AssemblerAddFunc = (args: AssemblerAddFuncArgs) => {
-    const { newItems, streamItemList } = args;
-    const items = _(streamItemList)
-      .unionBy(newItems, 'id')
+    const { streamItemList } = args;
+    const items = streamItemList
       .sortBy('id')
+      .sortedUniqBy('id')
       .reverse()
       .reduce(this.filterDuplicateTags, []);
-    return { ...args, streamItemList: items };
+    return { ...args, streamItemList: _(items) };
   }
 
   onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => {
-    const { streamItemList, deletedIds } = args;
-    const wrappedDeletedIds = deletedIds.map((id: number) => ({
-      id,
-    }));
-    const items = _(streamItemList)
-      .differenceBy(wrappedDeletedIds, 'id')
+    const { streamItemList } = args;
+    const items = streamItemList
       .sortBy('id')
+      .sortedUniqBy('id')
       .reverse()
       .reduce(this.filterDuplicateTags, []);
-    return { ...args, deleted: [], deletedIds: [], streamItemList: items };
+    return {
+      ...args,
+      deleted: [],
+      streamItemList: _(items),
+    };
   }
 
   filterDuplicateTags = (prev: StreamItem[], curr: StreamItem) => {

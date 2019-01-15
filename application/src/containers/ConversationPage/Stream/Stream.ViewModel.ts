@@ -44,6 +44,12 @@ import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/N
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
+const transformFunc = <T extends { id: number }>(dataModel: T) => ({
+  id: dataModel.id,
+  sortValue: dataModel.id,
+  data: dataModel,
+});
+
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
@@ -60,12 +66,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get items() {
-    return this.streamListHandler;
+    return _(this.streamListHandler.sortableListStore.items)
+      .map('data')
+      .compact()
+      .value();
   }
 
   private orderListHandler: FetchSortableDataListHandler<Post>;
-  @observable
-  private streamListHandler: StreamItem[] = [];
+  private streamListHandler: FetchSortableDataListHandler<StreamItem>;
 
   @computed
   get hasHistoryUnread() {
@@ -148,6 +156,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
+    this.streamListHandler = new FetchSortableDataListHandler<StreamItem>(
+      undefined,
+      {
+        transformFunc,
+        isMatchFunc: () => true,
+      },
+    );
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this.assemblyLine = new StreamItemAssemblyLine([
       new DateSeparator(),
@@ -220,6 +235,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     super.dispose();
     if (this.orderListHandler) {
       this.orderListHandler.dispose();
+    }
+    if (this.streamListHandler) {
+      this.streamListHandler.dispose();
     }
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     const globalStore = storeManager.getGlobalStore();
@@ -312,16 +330,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @action
   handlePostsChanged = (delta: TDeltaWithData) => {
     const t = performance.now();
-
-    const { newItems } = this.assemblyLine.process(
+    const { streamItems } = this.assemblyLine.process(
       delta,
       this.orderListHandler.listStore.items.slice(),
       this.hasMoreUp,
       this.items.slice(),
       this._readThrough,
     );
-    if (newItems) {
-      this.streamListHandler = newItems;
+    if (streamItems) {
+      console.log('sorting items', streamItems);
+      this.streamListHandler.replaceAll(streamItems);
     }
     console.log('sorting used', performance.now() - t);
   }

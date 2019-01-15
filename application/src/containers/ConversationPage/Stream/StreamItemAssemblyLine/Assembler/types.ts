@@ -9,16 +9,14 @@ import { StreamItem } from '../../types';
 export type AssemblerAddFuncArgs = {
   added: (ISortableModel<Post> & { data: Post })[];
   postList: ISortableModel<Post>[];
-  newItems: StreamItem[];
   hasMore: boolean;
-  streamItemList: StreamItem[];
+  streamItemList: _.LoDashImplicitWrapper<StreamItem[]>;
   readThrough: number;
 };
 export type AssemblerDelFuncArgs = {
   deleted: number[];
   postList: ISortableModel<Post>[];
-  deletedIds: number[];
-  streamItemList: StreamItem[];
+  streamItemList: _.LoDashImplicitWrapper<StreamItem[]>;
   readThrough: number;
 };
 export type AssemblerAddFunc = (
