@@ -20,6 +20,9 @@ import { RTC_ACCOUNT_STATE } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
+import { Listener } from 'eventemitter2';
 
 const options = {
   appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
@@ -39,6 +42,7 @@ class RTCAccount implements IRTCAccount {
   private _state: RTC_ACCOUNT_STATE;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
+  private _networkListener: Listener;
 
   constructor(listener: IRTCAccountDelegate) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
@@ -46,7 +50,17 @@ class RTCAccount implements IRTCAccount {
     this._regManager = new RTCRegistrationManager();
     this._provManager = new RTCProvManager();
     this._callManager = new RTCCallManager();
+    this._networkListener = (params: any) => {
+      this._onNetworkChange(params);
+    };
     this._initListener();
+  }
+
+  destroy() {
+    rtcNetworkNotificationCenter.removeListener(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      this._networkListener,
+    );
   }
 
   public handleProvisioning() {
@@ -110,6 +124,11 @@ class RTCAccount implements IRTCAccount {
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
+
+    rtcNetworkNotificationCenter.on(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      this._networkListener,
+    );
   }
 
   private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -159,6 +178,12 @@ class RTCAccount implements IRTCAccount {
       },
     };
     this._regManager.provisionReady(sipProv, info);
+  }
+
+  private _onNetworkChange(params: any) {
+    if (RTC_NETWORK_STATE.ONLINE === params.state) {
+      this._regManager.networkChangeToOnline();
+    }
   }
 }
 

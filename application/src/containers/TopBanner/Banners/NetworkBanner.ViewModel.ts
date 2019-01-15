@@ -8,6 +8,7 @@ import { computed } from 'mobx';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { BannerType } from './types';
+import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 
 type BannerMap = {
   [key: string]: BannerType | null;
@@ -17,7 +18,7 @@ const BANNER_MAP: BannerMap = {
   online: null,
   offline: {
     message: 'NoInternetConnection',
-    type: 'error',
+    type: ToastType.ERROR,
   },
 };
 

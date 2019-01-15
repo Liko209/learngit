@@ -10,6 +10,10 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 type Props = LikeViewProps & WithNamespaces;
 
 @observer
@@ -23,8 +27,8 @@ class LikeViewComponent extends Component<Props> {
         : 'SorryWeWereNotAbleToUnlikeTheMessage';
       Notification.flashToast({
         message,
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

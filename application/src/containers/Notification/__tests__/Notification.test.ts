@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Notification, NotificationProps } from './../Notification';
+import { ToastType, ToastMessageAlign } from '../../ToastWrapper/Toast/types';
 describe('Notification', () => {
   describe('_showNotification', () => {
     beforeEach(() => {
@@ -13,8 +14,8 @@ describe('Notification', () => {
     it('should add the toast data to the array when call flashToast', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       };
       Notification.flashToast(toastData);
@@ -24,8 +25,8 @@ describe('Notification', () => {
     it('should add to the head of array when adding new one [JPT-395]', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       };
       Notification.flashToast(toastData);
@@ -38,8 +39,8 @@ describe('Notification', () => {
     it('should replace original toast when message is duplicated [JPT-508]', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       };
       Notification.flashToast(toastData);
@@ -51,8 +52,8 @@ describe('Notification', () => {
     it('should add to buffer when already have 3 in toast array [JPT-509]', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       };
       Notification.flashToast(toastData);
@@ -67,8 +68,8 @@ describe('Notification', () => {
     it('should show buffered one when exists and array decreased [JPT-509]', () => {
       const toastData: NotificationProps = {
         message: 'aaa',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       };
       Notification.flashToast(toastData);
@@ -92,8 +93,8 @@ describe('Notification', () => {
       const spy = jest.spyOn(Notification as any, '_showNotification');
       const toastData: NotificationProps = {
         message: 'aaa',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
       };
       Notification.flashToast(toastData);

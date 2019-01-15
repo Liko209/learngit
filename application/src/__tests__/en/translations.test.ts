@@ -291,6 +291,15 @@ describe('i18next-en', () => {
     expect(i18next.t('SorryWeWereNotAbleToBookmarkThisMessage')).toEqual(
       "Sorry, we weren't able to bookmark this message. Try again.",
     );
+    expect(i18next.t('SorryWeWereNotAbleToLoadOlderMessages')).toEqual(
+      "Sorry, we weren't able to load older messages. Try again.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToLoadNewerMessages')).toEqual(
+      "Sorry, we weren't able to load newer messages. Try again.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToOpenThisProfile')).toEqual(
+      "Sorry, we weren't able to open this profile. Try again.",
+    );
     expect(i18next.t('messageLoadingErrorTip')).toEqual(
       "We weren't able to open this conversation.",
     );

@@ -101,7 +101,12 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PROGRESS]: {
     event: [ENTITY.PROGRESS],
-    service: () => ProgressService.getInstance(),
+    service: (id: number) => {
+      return {
+        getById: (id: number) =>
+          (<ProgressService>ProgressService.getInstance()).getByIdSync(id),
+      };
+    },
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },

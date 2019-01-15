@@ -7,9 +7,15 @@ import { RTCAccount } from '../RTCAccount';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCAccountDelegate } from '../IRTCAccountDelegate';
 import { UA_EVENT } from '../../signaling/types';
-import { RTC_ACCOUNT_STATE, RTC_CALL_STATE, RTC_CALL_ACTION } from '../types';
+import {
+  RTC_ACCOUNT_STATE,
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallOptions,
+} from '../types';
 import { REGISTRATION_FSM_STATE } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
+import { rtcNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 
 class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
@@ -44,11 +50,28 @@ class MockSession extends EventEmitter2 {
   public remoteIdentity: any;
 }
 
+describe('networkChangeToOnline()', () => {
+  it('should _onNetworkChangeToOnline() is called when rtcNetworkNotificationCenter call _onOnline()', () => {
+    const mockListener = new MockAccountListener();
+    const account = new RTCAccount(mockListener);
+    jest.spyOn(account, '_onNetworkChange').mockClear();
+    rtcNetworkNotificationCenter._onOnline();
+    expect(account._onNetworkChange).toHaveBeenCalledWith({
+      state: 'online',
+    });
+    account.destroy();
+  });
+});
+
 describe('RTCAccount', async () => {
   let mockListener: MockAccountListener;
-  let account: RTCAccount;
+  let account: RTCAccount = null;
   let ua: MockUserAgent;
   function setupAccount() {
+    if (account) {
+      account.destroy();
+      account = null;
+    }
     mockListener = new MockAccountListener();
     account = new RTCAccount(mockListener);
     ua = new MockUserAgent();

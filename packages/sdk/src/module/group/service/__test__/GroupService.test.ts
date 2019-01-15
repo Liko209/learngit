@@ -2,6 +2,8 @@ import { GroupService } from '../GroupService';
 import { groupFactory } from '../../controller/__tests__/factory';
 
 jest.mock('../../controller/TeamActionController');
+jest.mock('sdk/api');
+jest.mock('sdk/dao');
 
 describe('GroupService', () => {
   let groupService: GroupService;

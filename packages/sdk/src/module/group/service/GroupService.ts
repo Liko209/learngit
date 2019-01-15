@@ -7,11 +7,14 @@
 import { TeamController } from '../controller/TeamController';
 import { Group } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-
-class GroupService extends EntityBaseService<Group> {
+import { IGroupService } from './IGroupService';
+import { daoManager, GroupDao } from '../../../dao';
+import { Api } from '../../../api';
+class GroupService extends EntityBaseService<Group> implements IGroupService {
   teamController: TeamController;
   constructor() {
     super();
+    this.setEntitySource(this._buildEntitySourceController());
   }
 
   protected getTeamController() {
@@ -39,6 +42,18 @@ class GroupService extends EntityBaseService<Group> {
       .joinTeam(userId, teamId);
   }
 
+  private _buildEntitySourceController() {
+    const requestController = this.getControllerBuilder().buildRequestController(
+      {
+        basePath: '/team',
+        networkClient: Api.glipNetworkClient,
+      },
+    );
+    return this.getControllerBuilder().buildEntitySourceController(
+      daoManager.getDao(GroupDao),
+      requestController,
+    );
+  }
 }
 
 export { GroupService };
