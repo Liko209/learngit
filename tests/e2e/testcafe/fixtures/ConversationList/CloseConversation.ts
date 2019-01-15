@@ -499,6 +499,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
@@ -525,10 +526,6 @@ test(formalName('JPT-138 Can display conversation history when receiving message
         await h(t).platform(otherUser).sendTextPost(posts[i], privateChatId);
         await h(t).platform(otherUser).sendTextPost(posts[i], teamId);
       }
-    });
-
-    await h(t).withLog('And 2 conversations should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups([privateChatId, teamId]);
     });
 
     await h(t).withLog('And Clear all UMI for 2 conversations', async () => {

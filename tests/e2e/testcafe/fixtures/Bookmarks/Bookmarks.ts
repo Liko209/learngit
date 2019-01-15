@@ -42,10 +42,9 @@ test(formalName('Jump to post position when click button or clickable area of po
         type: 'PrivateChat',
         members: [loginUser.rcId, otherUser.rcId],
       });
-
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups([pvChatId, teamId]);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
+      await h(t).glip(loginUser).resetProfile();
+
 
       await h(t).platform(otherUser).init();
       bookmarksPostTeamId = await h(t).platform(otherUser).sentAndGetTextPostId(
@@ -140,8 +139,6 @@ test(formalName('Jump to post position when click button or clickable area of po
       });
 
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups([teamId]);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       await h(t).platform(otherUser).init();
 
@@ -204,9 +201,9 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     const loginUser = users[7];
     const otherUser =users[5];
     await h(t).resetGlipAccount(loginUser);
+    await h(t).glip(loginUser).init();
 
     const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-    // const postListPage = app.homePage.messageTab.postListPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
     const bookmarkPage = app.homePage.messageTab.bookmarkPage;
     const dmSection = app.homePage.messageTab.directMessagesSection;
@@ -218,8 +215,6 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
       groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
-      await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(groupId);
     });
 
     let bookmarkPostId;
@@ -309,7 +304,6 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).showGroups(groupId);
     bookmarkPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `I'm Bookmarks, ![:Person](${loginUser.rcId})`,
       groupId,
@@ -391,7 +385,6 @@ test(formalName('Bookmark/Remove Bookmark a message in a conversation',['P2','JP
     group = await h(t).platform(user).createGroup({
       type: 'Group', members: [user.rcId, users[5].rcId],
     });
-    await h(t).glip(user).showGroups(group.data.id);
   });
 
   let bookmarkPost;
