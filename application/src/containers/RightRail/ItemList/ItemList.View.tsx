@@ -21,6 +21,7 @@ import { emptyView } from './Empty';
 
 const itemType = {
   [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: FileItem,
+  [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES]: FileItem,
 };
 
 const subheaderType = {

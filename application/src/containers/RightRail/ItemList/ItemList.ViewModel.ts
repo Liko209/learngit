@@ -83,8 +83,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
         return ItemUtils.fileFilter(this._groupId, false);
       default:
-        return undefined;
     }
+    return undefined;
   }
 
   constructor(props: Props) {
