@@ -9,7 +9,12 @@ import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
-import { RTCCallInfo, RTC_CALL_STATE, RTC_CALL_ACTION } from './types';
+import {
+  RTCCallInfo,
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
+} from './types';
 import { v4 as uuid } from 'uuid';
 
 class RTCCall {
@@ -139,8 +144,11 @@ class RTCCall {
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      (callAction: RTC_CALL_ACTION, params?: string) => {
-        this._onCallActionSuccess(callAction, params);
+      (
+        callAction: RTC_CALL_ACTION,
+        options: RTCCallActionSuccessOptions = {},
+      ) => {
+        this._onCallActionSuccess(callAction, options);
       },
     );
     this._callSession.on(
@@ -209,7 +217,10 @@ class RTCCall {
     this._callSession.destroy();
   }
   // call action listener
-  private _onCallActionSuccess(callAction: RTC_CALL_ACTION, params?: string) {
+  private _onCallActionSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
         this._isRecording = true;
@@ -221,9 +232,7 @@ class RTCCall {
       }
     }
 
-    params
-      ? this._delegate.onCallActionSuccess(callAction, params)
-      : this._delegate.onCallActionSuccess(callAction);
+    this._delegate.onCallActionSuccess(callAction, options);
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {

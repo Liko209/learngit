@@ -95,6 +95,7 @@ describe('RTC call', () => {
         expect(session.flip).toHaveBeenCalledWith(5);
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.FLIP,
+          {},
         );
         done();
       });
@@ -235,6 +236,7 @@ describe('RTC call', () => {
         );
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
+          {},
         );
         done();
       });
@@ -264,6 +266,7 @@ describe('RTC call', () => {
         );
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
+          {},
         );
         done();
       });
@@ -404,6 +407,7 @@ describe('RTC call', () => {
         expect(session.stopRecord).toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.STOP_RECORD,
+          {},
         );
         done();
       });
@@ -424,6 +428,7 @@ describe('RTC call', () => {
         expect(session.stopRecord).not.toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.STOP_RECORD,
+          {},
         );
         done();
       });
@@ -583,6 +588,7 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(account.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.TRANSFER,
+          {},
         );
         done();
       });
