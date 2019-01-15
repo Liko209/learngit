@@ -37,12 +37,12 @@ class TeamActionController {
         };
       },
       async (newEntity: Group) => {
-        return await this.requestAddTeamMembers(teamId, [userId]);
+        return await this._requestAddTeamMembers(teamId, [userId]);
       },
     );
   }
 
-  async requestAddTeamMembers(teamId: number, members: number[]) {
+  private async _requestAddTeamMembers(teamId: number, members: number[]) {
     return this.controllerBuilder
       .buildRequestController({
         basePath: '/add_team_members',
@@ -67,12 +67,12 @@ class TeamActionController {
         };
       },
       async (updatedEntity: Group) => {
-        return await this.requestRemoveTeamMembers(teamId, [userId]);
+        return await this._requestRemoveTeamMembers(teamId, [userId]);
       },
     );
   }
 
-  async requestRemoveTeamMembers(teamId: number, members: number[]) {
+  private async _requestRemoveTeamMembers(teamId: number, members: number[]) {
     return this.controllerBuilder
       .buildRequestController({
         basePath: '/remove_team_members',
@@ -94,7 +94,7 @@ class TeamActionController {
         };
       },
       async (updateEntity: Group) => {
-        return await this.requestAddTeamMembers(teamId, members);
+        return await this._requestAddTeamMembers(teamId, members);
       },
     );
   }
@@ -113,7 +113,7 @@ class TeamActionController {
         };
       },
       async (updateEntity: Group) => {
-        return await this.requestRemoveTeamMembers(teamId, members);
+        return await this._requestRemoveTeamMembers(teamId, members);
       },
     );
   }

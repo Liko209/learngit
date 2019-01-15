@@ -152,7 +152,7 @@ describe('TeamController', () => {
   describe('requestAddTeamMembers()', () => {
     it('should call api with correct params. [JPT-719]', async () => {
       Api.init({}, new NetworkManager(new OAuthTokenManager()));
-      await teamActionController.requestAddTeamMembers(2, [123]);
+      await teamActionController['_requestAddTeamMembers'](2, [123]);
 
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
@@ -164,7 +164,7 @@ describe('TeamController', () => {
   describe('requestRemoveTeamMembers()', () => {
     it('should call api with correct params.', async () => {
       Api.init({}, new NetworkManager(new OAuthTokenManager()));
-      await teamActionController.requestRemoveTeamMembers(2, [123]);
+      await teamActionController['_requestRemoveTeamMembers'](2, [123]);
 
       expect(testRequestController.put).toBeCalledWith({
         id: 2,

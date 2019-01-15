@@ -189,7 +189,9 @@ describe('TeamPermissionController', () => {
         PERMISSION_ENUM.TEAM_POST +
         PERMISSION_ENUM.TEAM_ADD_MEMBER +
         PERMISSION_ENUM.TEAM_PIN_POST; // 1 + 2 + 8
-      expect(teamPermissionController.permissionLevelToArray(level)).toEqual([
+      expect(
+        teamPermissionController['_permissionLevelToArray'](level),
+      ).toEqual([
         PERMISSION_ENUM.TEAM_POST,
         PERMISSION_ENUM.TEAM_ADD_MEMBER,
         PERMISSION_ENUM.TEAM_PIN_POST,
@@ -204,12 +206,8 @@ describe('TeamPermissionController', () => {
         .spyOn(teamPermissionController, 'isCurrentUserGuest')
         .mockReturnValue(true);
       jest
-        .spyOn(teamPermissionController, 'permissionLevelToArray')
-        .mockReturnValue([
-          PERMISSION_ENUM.TEAM_POST,
-          PERMISSION_ENUM.TEAM_ADD_MEMBER,
-          PERMISSION_ENUM.TEAM_PIN_POST,
-        ]);
+        .spyOn(teamPermissionController, 'getCurrentUserPermissionLevel')
+        .mockReturnValue(11);
       expect(teamPermissionController.getCurrentUserPermissions(group)).toEqual(
         [PERMISSION_ENUM.TEAM_POST],
       );
@@ -220,12 +218,8 @@ describe('TeamPermissionController', () => {
         .spyOn(teamPermissionController, 'isCurrentUserGuest')
         .mockReturnValue(false);
       jest
-        .spyOn(teamPermissionController, 'permissionLevelToArray')
-        .mockReturnValue([
-          PERMISSION_ENUM.TEAM_POST,
-          PERMISSION_ENUM.TEAM_ADD_MEMBER,
-          PERMISSION_ENUM.TEAM_PIN_POST,
-        ]);
+        .spyOn(teamPermissionController, 'getCurrentUserPermissionLevel')
+        .mockReturnValue(11);
       expect(teamPermissionController.getCurrentUserPermissions(group)).toEqual(
         [
           PERMISSION_ENUM.TEAM_POST,

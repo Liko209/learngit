@@ -61,7 +61,7 @@ class TeamPermissionController {
     return permissions.user.level || MAX_PERMISSION_LEVEL;
   }
 
-  permissionLevelToArray(level: number): PERMISSION_ENUM[] {
+  private _permissionLevelToArray(level: number): PERMISSION_ENUM[] {
     const array: PERMISSION_ENUM[] = [];
     let permission;
     for (permission in PERMISSION_ENUM) {
@@ -73,7 +73,7 @@ class TeamPermissionController {
   }
 
   getCurrentUserPermissions(group: Group): PERMISSION_ENUM[] {
-    let permissions = this.permissionLevelToArray(
+    let permissions = this._permissionLevelToArray(
       this.getCurrentUserPermissionLevel(group),
     );
     if (this.isCurrentUserGuest(group)) {
