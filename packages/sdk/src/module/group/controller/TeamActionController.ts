@@ -9,7 +9,8 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 import { Api } from '../../../api';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
-
+import { TeamSetting } from '../types';
+import { PERMISSION_ENUM } from '../../../service/constants';
 class TeamActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Group>,
@@ -85,6 +86,24 @@ class TeamActionController {
         members,
         id: teamId,
       });
+  }
+
+  async updateTeamSetting(
+    teamId: number,
+    teamSetting: TeamSetting,
+  ): Promise<TeamSetting> {
+    return teamSetting;
+  }
+
+  async getTeamSetting(teamId: number): Promise<TeamSetting> {
+    return {
+      name: 'test name',
+      description: 'this is a desc',
+      isPublic: true,
+      permissionMap: {
+        [PERMISSION_ENUM.TEAM_ADD_MEMBER]: true,
+      },
+    };
   }
 
   async addTeamMembers(members: number[], teamId: number) {
