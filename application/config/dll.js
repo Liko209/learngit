@@ -22,7 +22,7 @@ dllPlugin = {
      * we need to exclude dependencies which are not intended for the browser
      * by listing them here.
      */
-    exclude: ["sdk", "jui", "typeface-roboto"],
+    exclude: ["sdk", "jui", "typeface-roboto", "framework"],
 
     /**
      * Specify any additional dependencies here. We include core-js and lodash
