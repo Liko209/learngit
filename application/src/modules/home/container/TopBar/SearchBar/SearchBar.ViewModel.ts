@@ -74,7 +74,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       await this.nGroupService.joinTeam(useId, teamId);
     } catch (error) {
       const e = error;
-      if (errorHelper.isNotAuthorizedError(e)) {
+      if (errorHelper.isAuthenticationError(e)) {
         Notification.flashToast({
           message: 'JoinTeamNotAuthorizedError',
           type: 'error',
