@@ -10,14 +10,14 @@ import ItemModel from './Item';
 export default class NoteItemModel extends ItemModel {
   @observable title: string;
   @observable summary: string;
-  @observable creator_id: number;
+  @observable creatorId: number;
 
   constructor(data: Item) {
     super(data);
     const { title, summary, creator_id } = data;
     this.title = title!;
     this.summary = summary!;
-    this.creator_id = creator_id;
+    this.creatorId = creator_id;
   }
 
   static fromJS(data: Item) {

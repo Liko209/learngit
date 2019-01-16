@@ -42,10 +42,10 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
   get subTitle() {
     const note = this.note;
     if (note) {
-      const { creator_id } = note;
+      const { creatorId } = note;
       const personName = getEntity<Person, PersonModel>(
         ENTITY_NAME.PERSON,
-        creator_id,
+        creatorId,
       ).userDisplayName;
       return personName;
     }

@@ -10,7 +10,7 @@ import {
   JuiListItem,
   JuiListItemIcon,
 } from 'jui/components/Lists';
-import NoteIcon from '@material-ui/icons/EventNote';
+import { JuiIconWrapper, JuiNoteIcon } from 'jui/pattern/RightShelf';
 import { NoteItemProps } from './types';
 
 class NoteItemView extends Component<NoteItemProps> {
@@ -20,7 +20,9 @@ class NoteItemView extends Component<NoteItemProps> {
     return (
       <JuiListItem disabled={disabled}>
         <JuiListItemIcon>
-          <NoteIcon />
+          <JuiIconWrapper>
+            <JuiNoteIcon />
+          </JuiIconWrapper>
         </JuiListItemIcon>
         <JuiListItemText primary={title} secondary={subTitle} />
       </JuiListItem>
