@@ -372,7 +372,10 @@ class ItemFileUploadHandler {
       newFormFile.append(val, storedPostForm[val]);
     });
 
-    newFormFile.append(FILE_FORM_DATA_KEYS.CONTENT_TYPE, file.type);
+    newFormFile.append(
+      FILE_FORM_DATA_KEYS.CONTENT_TYPE,
+      file.type,
+    );
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
   }
@@ -675,7 +678,7 @@ class ItemFileUploadHandler {
       company_id: companyId,
       name: file.name,
       type_id: 10,
-      type: file.type,
+      type: this._getFileType(file),
       versions: [{ download_url: '', size: file.size, url: '' }],
       url: '',
     };
@@ -748,6 +751,20 @@ class ItemFileUploadHandler {
 
   deleteFileCache(id: number) {
     this._progressCaches.delete(id);
+  }
+
+  private _getFileType(file: File) {
+    const fileName = file.name;
+    let type: string = '';
+    if (fileName) {
+      const arr = fileName.split('/');
+      if (arr && arr.length > 0) {
+        const name = arr[arr.length - 1];
+        const seArr = name.split('.');
+        type = seArr && seArr.length > 1 ? seArr[seArr.length - 1] : '';
+      }
+    }
+    return type;
   }
 }
 
