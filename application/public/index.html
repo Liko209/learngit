@@ -13,6 +13,22 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <!--
+      when JUPITER_ENV is 'production', use production font link, note that when there is font update, we should
+      change the params in production link in order to bypass browser cache
+     -->
+    <% if (process.env.JUPITER_ENV==='production') { %>
+    <link
+      rel="stylesheet"
+      href="https://s3.amazonaws.com/icomoon.io/79019/Jupiter/style.css?lhn6j"
+    />
+    <% } %> <% if (process.env.JUPITER_ENV!=='production') { %>
+    <link
+      rel="stylesheet"
+      href="https://i.icomoon.io/public/6483cc0f53/Jupiter/style.css"
+    />
+    <% } %>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
