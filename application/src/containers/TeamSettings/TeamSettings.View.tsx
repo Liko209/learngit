@@ -14,11 +14,11 @@ import {
   JuiTeamSettingEditSectionLeft,
   JuiTeamSettingEditSectionRight,
 } from 'jui/pattern/TeamSetting';
-import { CreateTeam } from '@/containers/CreateTeam';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { GroupAvatar } from '@/containers/Avatar';
+import { toTitleCase } from '@/utils/string';
 
 type State = {
   name: string;
@@ -48,11 +48,6 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
-  openCreateTeam = () => {
-    this.onClose();
-    CreateTeam.show();
-  }
-
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       name: e.target.value,
@@ -76,7 +71,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         <JuiTeamSettingEditSectionRight>
           <JuiTextField
             id="names"
-            label="Team Names"
+            label={toTitleCase(t('teamName_plural'))}
             value={this.state.name}
             fullWidth={true}
             error={nameError}
@@ -87,8 +82,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             onChange={this.handleNameChange}
           />
           <JuiTextarea
-            id="Description"
-            label="Description"
+            id="description"
+            label={toTitleCase(t('description'))}
             value={this.state.description}
             inputProps={{
               maxLength: DESC_MAX_LENGTH,
@@ -102,7 +97,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   render() {
-    const { isAdmin } = this.props;
+    const { isAdmin, t } = this.props;
     const disabledOkBtn =
       !this.state.name || this.state.name.trim().length <= 0;
     return (
@@ -111,11 +106,11 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title="Settings"
+        title={t('Settings')}
         onCancel={this.onClose}
         onOK={this.onOk}
-        okText="Save"
-        cancelText="Cancel"
+        okText={t('save')}
+        cancelText={t('cancel')}
       >
         {isAdmin ? this.renderEditSection() : null}
       </JuiModal>

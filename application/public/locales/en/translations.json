@@ -224,5 +224,9 @@
   "noIntegrationInstallationYet": "No integration installation yet",
   "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here.",
   "setting": "setting",
-  "setting_plural": "settings"
+  "setting_plural": "settings",
+  "save": "save",
+  "teamName": "team name",
+  "teamName_plural": "team names",
+  "description": "description"
 }

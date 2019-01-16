@@ -13,7 +13,7 @@ describe('TeamSettingsView', () => {
   describe('render()', () => {
     it('should pass correct max length attributes to the input fields [JPT-927]', () => {
       const props: any = {
-        t: () => {},
+        t: (s: string) => s,
         initialData: {
           name: '',
           description: '',
