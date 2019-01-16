@@ -117,11 +117,12 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   async loadTotalCount() {
-    // To do in image: https://jira.ringcentral.com/browse/FIJI-2341, remove this if...
+    // To do in image: https://jira.ringcentral.com/browse/FIJI-2341, remove this RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES
     if (this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES) {
       this.totalCount = 0;
       return;
     }
+
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
