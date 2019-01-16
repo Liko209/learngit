@@ -9,6 +9,7 @@ import { t } from 'i18next';
 import { ITEM_LIST_TYPE } from '../types';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
+import { TaskItem } from '../TaskItem';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { debounce } from 'lodash';
 import {
@@ -23,10 +24,12 @@ import { emptyView } from './Empty';
 
 const itemType = {
   [ITEM_LIST_TYPE.FILE]: FileItem,
+  [ITEM_LIST_TYPE.TASK]: TaskItem,
 };
 
 const subheaderType = {
   [ITEM_LIST_TYPE.FILE]: 'fileListSubheader',
+  [ITEM_LIST_TYPE.TASK]: 'taskListSubheader',
 };
 
 @observer

@@ -4,25 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, action } from 'mobx';
-import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps } from './types';
-import { QUERY_DIRECTION } from 'sdk/dao';
-import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
-import { SortUtils } from 'sdk/framework/utils';
-import { Item } from 'sdk/module/item/entity';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
   ISortableModel,
 } from '@/store/base/fetch';
-import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
+import { StoreViewModel } from '@/store/ViewModel';
+import { action, computed, observable } from 'mobx';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import { SortUtils } from 'sdk/framework/utils';
+import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { Item } from 'sdk/module/item/entity';
+import { ENTITY } from 'sdk/service';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { ITEM_LIST_TYPE } from '../types';
+import { Props, ViewProps } from './types';
 
 const ItemTypeIdMap = {
   [ITEM_LIST_TYPE.FILE]: TypeDictionary.TYPE_ID_FILE,
+  [ITEM_LIST_TYPE.TASK]: TypeDictionary.TYPE_ID_TASK,
 };
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
@@ -101,6 +102,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   async loadTotalCount() {
     const itemService: ItemService = ItemService.getInstance();
+    if (this._typeId === 9) {
+      this.totalCount = 4;
+      return;
+    }
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
       this._typeId,
