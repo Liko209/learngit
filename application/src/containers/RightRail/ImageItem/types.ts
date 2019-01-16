@@ -12,9 +12,9 @@ type FilesProps = {
 
 type ImageItemProps = {
   file: FileItemModel;
-  secondary: string;
+  personName: string;
+  createdTime: string;
   url: string;
-  action?: () => void;
 };
 
 export { ImageItemProps, FilesProps };

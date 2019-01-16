@@ -11,7 +11,8 @@ import {
   JuiListItem,
   JuiListItemIcon,
   JuiListItemSecondaryAction,
-  JuiListItemTextWithDate,
+  JuiListItemSecondaryText,
+  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -28,8 +29,20 @@ class ImageItemView extends Component<ImageItemProps> {
   handleMouseLeave = () => {
     this.setState({ isHover: false });
   }
+
+  private _renderSecondaryText = () => {
+    const { personName, createdTime } = this.props;
+    return (
+      <JuiListItemSecondaryText>
+        <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
+        &nbsp;·&nbsp;
+        <JuiListItemSecondarySpan text={createdTime} />
+      </JuiListItemSecondaryText>
+    );
+  }
+
   render() {
-    const { file, url, secondary } = this.props;
+    const { file, url } = this.props;
     const { name, downloadUrl } = file;
     const { isHover } = this.state;
 
@@ -43,7 +56,7 @@ class ImageItemView extends Component<ImageItemProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
-          secondary={<JuiListItemTextWithDate text={secondary} />}
+          secondary={this._renderSecondaryText()}
         />
         {isHover && (
           <JuiListItemSecondaryAction>

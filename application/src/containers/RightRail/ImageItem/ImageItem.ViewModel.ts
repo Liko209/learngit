@@ -37,17 +37,14 @@ class ImageItemViewModel extends AbstractViewModel<FilesProps> {
   }
 
   @computed
-  get secondary() {
+  get personName() {
+    return this._person.userDisplayName || '';
+  }
+
+  @computed
+  get createdTime() {
     const { createdAt } = this.file;
-    const result = [];
-    const name = this._person.userDisplayName;
-    if (name) {
-      result.push(name);
-    }
-    if (createdAt) {
-      result.push(dateFormatter.date(createdAt));
-    }
-    return result.join(' · ');
+    return dateFormatter.date(createdAt);
   }
 
   @computed

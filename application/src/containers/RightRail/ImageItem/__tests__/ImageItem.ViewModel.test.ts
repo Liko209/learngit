@@ -52,34 +52,20 @@ describe('ImageItemViewModel', () => {
     });
   });
 
-  describe('secondary', () => {
-    it('should be a string when invoke person id', () => {
-      expect(vm.secondary).toEqual(
-        `${mockPerson.userDisplayName} · ${dateFormatter.date(
-          mockFile.createdAt,
-        )}`,
-      );
+  describe('personName', () => {
+    it('should be a person name string when invoke person entity', () => {
+      expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
 
     it('should be a new person name string when change person name', () => {
       mockPerson.userDisplayName = 'new name';
-      expect(vm.secondary).toEqual(
-        `${mockPerson.userDisplayName} · ${dateFormatter.date(
-          mockFile.createdAt,
-        )}`,
-      );
+      expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
+  });
 
-    it('should be a date string when display secondary text', () => {
-      mockFile.creatorId = 0;
-      mockFile.createdAt = 1547086968632;
-      expect(vm.secondary).toEqual(dateFormatter.date(mockFile.createdAt));
-    });
-
-    it('should be a person name string when display secondary text', () => {
-      mockFile.creatorId = 123;
-      mockFile.createdAt = 0;
-      expect(vm.secondary).toEqual(mockPerson.userDisplayName);
+  describe('createdTime', () => {
+    it('should be a date string when incoming timestamp', () => {
+      expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
     });
   });
 
