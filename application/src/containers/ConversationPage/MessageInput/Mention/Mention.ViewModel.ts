@@ -130,9 +130,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     searchTerm?: string;
     memberIds: number[];
   }) => {
+    const term = searchTerm ? searchTerm.trim() : '';
     const personService: PersonService = PersonService.getInstance();
     const res = await personService.doFuzzySearchPersons(
-      searchTerm,
+      term,
       true,
       memberIds,
       true,
