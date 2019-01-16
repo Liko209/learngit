@@ -15,15 +15,14 @@ import {
 import SendPostControllerHelper from './SendPostControllerHelper';
 import { ItemService } from '../../../item/service';
 
-import { ProgressService, PROGRESS_STATUS } from '../../../progress';
 import { notificationCenter, GroupConfigService } from '../../../../service';
 import { ENTITY } from '../../../../service/eventKey';
-import { uniqueArray } from '../../../../utils';
 import { ErrorParserHolder } from '../../../../error';
 import { PostActionController } from './PostActionController';
 import { PostItemController } from './PostItemController';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
+import { IPreInsertController } from '../../../../framework/controller/interface/IPreInsertController';
 
 type PostData = {
   id: number;
@@ -33,7 +32,10 @@ type PostData = {
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
   private _postItemController: IPostItemController;
-  constructor(public postActionController: PostActionController) {
+  constructor(
+    public postActionController: PostActionController,
+    public preInsertController: IPreInsertController,
+  ) {
     this._helper = new SendPostControllerHelper();
     this._postItemController = new PostItemController(
       this.postActionController,
@@ -83,7 +85,7 @@ class SendPostController implements ISendPostController {
       this._cleanUploadingFiles(post.group_id, post.item_ids);
     }
 
-    await this.handlePreInsertProcess(post); // waiting for PreinsertController
+    await this.preInsertController.preInsert(post);
 
     const sendPostAfterItemsReady = (result: PostItemsReadyCallbackType) => {
       Object.keys(result.obj).forEach((key: string) => {
@@ -127,16 +129,6 @@ class SendPostController implements ISendPostController {
     post: Post,
     preInsertId: number,
   ): Promise<PostData[]> {
-    /**
-     * 1. remove progress
-     * 2. emit replace notification
-     * 3. update failure Ids
-     * 4. delete pre inserted post
-     * 5. put in real post
-     */
-    const progressService: ProgressService = ProgressService.getInstance();
-    progressService.deleteProgress(preInsertId);
-
     const obj: PostData = {
       id: preInsertId,
       data: post,
@@ -151,18 +143,16 @@ class SendPostController implements ISendPostController {
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     await groupConfigService.deletePostId(post.group_id, preInsertId);
 
-    await dao.delete(preInsertId);
+    // 1. change status
+    // 2. delete from db
+    await this.preInsertController.incomesStatusChange(preInsertId, true);
+
     await dao.put(post);
     return result;
   }
 
   async handleSendPostFail(preInsertId: number, groupId: number) {
-    const progressService: ProgressService = ProgressService.getInstance();
-    progressService.updateProgress(preInsertId, {
-      id: preInsertId,
-      status: PROGRESS_STATUS.FAIL,
-    });
-
+    this.preInsertController.incomesStatusChange(preInsertId, false);
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     await groupConfigService.addPostId(groupId, preInsertId);
     return [];
@@ -171,22 +161,6 @@ class SendPostController implements ISendPostController {
   private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
     const itemService: ItemService = ItemService.getInstance();
     itemService.cleanUploadingFiles(groupId, itemIds);
-  }
-
-  async handlePreInsertProcess(buildPost: Post): Promise<void> {
-    const progressService: ProgressService = ProgressService.getInstance();
-    progressService.addProgress(buildPost.id, {
-      id: buildPost.id,
-      status: PROGRESS_STATUS.INPROGRESS,
-    });
-    const dao = daoManager.getDao(PostDao);
-    await dao.put(buildPost);
-    notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
-  }
-
-  getPseudoItemStatusInPost(post: Post) {
-    const itemService: ItemService = ItemService.getInstance();
-    return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
   }
 
   isValidPost(post: Post) {

@@ -9,11 +9,12 @@ import { Post } from '../../../../models';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager } from '../../../../dao';
+import { BaseDao, daoManager, PostDao } from '../../../../dao';
 import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
 import { SendPostController } from '../implementation/SendPostController';
 
 jest.mock('../../../../api');
+jest.mock('../../../../dao');
 
 describe('PostController', () => {
   describe('getPostActionController()', () => {
@@ -65,6 +66,8 @@ describe('PostController', () => {
       jest
         .spyOn(postController, 'getPostActionController')
         .mockReturnValueOnce(null);
+
+      daoManager.getDao.mockResolvedValue(new PostDao(null));
       const result = postController.getSendPostController();
       expect(result instanceof SendPostController).toBe(true);
     });

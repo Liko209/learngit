@@ -10,6 +10,7 @@ import { PostActionController } from './implementation/PostActionController';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { daoManager, PostDao } from '../../../dao';
 import { SendPostController } from './implementation/SendPostController';
+import { PreInsertController } from '../../../framework/controller/impl/PreInsertController';
 
 class PostController {
   private _actionController: PostActionController;
@@ -42,8 +43,12 @@ class PostController {
   }
   getSendPostController(): SendPostController {
     if (!this._sendController) {
+      const preInsertController = new PreInsertController<Post>(
+        daoManager.getDao(PostDao),
+      );
       this._sendController = new SendPostController(
         this.getPostActionController(),
+        preInsertController,
       );
     }
     return this._sendController;
