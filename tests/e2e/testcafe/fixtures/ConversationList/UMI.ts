@@ -305,7 +305,7 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('And favorite 2 conversation before login', async () => {
-      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favPrivateChatId, +favTeamId]);
+      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
@@ -718,7 +718,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
     });
 
     await h(t).withLog(`And set the conversation (id:${teamId}) is the last open conversation with 1 umi`, async () => {
-      await h(t).glip(loginUser).setLastGroupId(loginUser.rcId, teamId);
+      await h(t).glip(loginUser).setLastGroupId(teamId);
       await h(t).platform(otherUser).sendTextPost(`This is a unRead message ${uuid()}`, teamId);
     });
 
@@ -756,7 +756,7 @@ test(formalName('JPT- 743 Should be unread when closed conversation received new
         members: [loginUser.rcId, otherUser.rcId]
       });
       await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
-      await h(t).glip(loginUser).hideGroups(loginUser.rcId, privateChatId);
+      await h(t).glip(loginUser).hideGroups(privateChatId);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {

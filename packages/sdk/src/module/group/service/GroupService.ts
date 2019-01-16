@@ -39,8 +39,8 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .canJoinTeam(team);
   }
 
-  async joinTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.getTeamController()
+  async joinTeam(userId: number, teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .joinTeam(userId, teamId);
   }
@@ -60,26 +60,20 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getTeamSetting(teamId);
   }
 
-  async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.getTeamController()
+  async leaveTeam(userId: number, teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .leaveTeam(userId, teamId);
   }
 
-  async addTeamMembers(
-    members: number[],
-    teamId: number,
-  ): Promise<Group | null> {
-    return await this.getTeamController()
+  async addTeamMembers(members: number[], teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .addTeamMembers(members, teamId);
   }
 
-  async removeTeamMembers(
-    members: number[],
-    teamId: number,
-  ): Promise<Group | null> {
-    return await this.getTeamController()
+  async removeTeamMembers(members: number[], teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .removeTeamMembers(members, teamId);
   }

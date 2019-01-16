@@ -18,15 +18,6 @@ describe('dateFormatter', () => {
     jest.resetAllMocks();
   });
 
-  it('get subTitle', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      createdAt: 1547086968632,
-      userDisplayName: 'name',
-    });
-
-    expect(fileItemViewModel.subTitle).toBe('name · 1/10/2019');
-  });
-
   it('get fileType ', () => {
     const previewUrl = 'http://www.google.com';
     (getEntity as jest.Mock).mockReturnValue({
