@@ -176,6 +176,9 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  get judgeFocusOnInputArea(){
+    return this.messageInputArea.focused;
+  }
 
   async sendMessage(message: string, options?) {
     await this.t
@@ -184,9 +187,8 @@ export class ConversationPage extends BaseConversationPage {
       .pressKey('enter');
   }
 
-  async sendMessageWithoutText() {
+  async sendMessageViaPressEnterOnly() {
     await this.t
-      .click(this.messageInputArea)
       .pressKey('enter');
   }
 
@@ -408,14 +410,14 @@ export class PostItem extends BaseWebComponent {
   }
 
   async getLikeCount() {
-    return await this.getNumber(this.likeCount);
-  }
-
-  async likeShouleBe(n: number, maxRetry = 5, interval = 5e3) {
-    await H.retryUntilPass(async () => {
-      const likes = await this.getLikeCount();
-      assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);
-    }, maxRetry, interval);
+    if (!await this.likeCount.exists) {
+      return 0;
+    }
+    const text = await this.likeCount.innerText;
+    if (_.isEmpty(text)) {
+      return 0;
+    }
+    return Number(text);
   }
 
   async clickBookmarkToggle() {
