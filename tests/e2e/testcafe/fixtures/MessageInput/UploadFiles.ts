@@ -749,8 +749,8 @@ test(formalName('JPT-515 The selected files shouldn\'t be in the other conversat
 test(formalName('JPT-889 Check focus on input box when remove files',['P2', 'UploadFiles', 'Skye.Wang', 'JPT-889']), async t=>{
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[3];
-  const otherUser = users[2];
+  const loginUser = users[4];
+  const otherUser = users[5];
   await h(t).platform(loginUser).init();
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
