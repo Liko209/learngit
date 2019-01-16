@@ -173,6 +173,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
                       onRowsRendered={onRowsRendered}
                       height={height}
                       width={width}
+                      onScroll={this._dataSource.onScroll}
                       {...props}
                     />
                   );

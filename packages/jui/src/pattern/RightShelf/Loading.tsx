@@ -8,7 +8,14 @@ import { withTheme } from 'styled-components';
 import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
-import { palette } from '../../foundation/utils';
+import { palette, height } from '../../foundation/utils';
+import {
+  LoadingWrapper,
+  Loading,
+  Progress,
+  Tip,
+  TipLink,
+} from '../ConversationLoading';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -59,4 +66,43 @@ const RightRailLoading = (props: ThemeProps) => {
 
 const JuiConversationRightRailLoading = withTheme(RightRailLoading);
 
-export { JuiConversationRightRailLoading };
+type JuiRightRailContentLoadingProps = {
+  showTip: boolean;
+  tip?: string;
+  linkText?: string;
+  onClick?: () => void;
+};
+
+const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => (
+  <LoadingWrapper>
+    <Loading>
+      <Progress />
+      {props.showTip && (
+        <Tip>
+          {props.tip}
+          <TipLink handleOnClick={props.onClick}>{props.linkText}</TipLink>
+        </Tip>
+      )}
+    </Loading>
+  </LoadingWrapper>
+);
+
+const LoadingMoreWrapper = styled.div`
+  display: flex;
+  height: ${height(13)};
+  width: 100%;
+`;
+
+const JuiRightRailLoadingMore = () => (
+  <LoadingMoreWrapper>
+    <Loading>
+      <Progress />
+    </Loading>
+  </LoadingMoreWrapper>
+);
+
+export {
+  JuiConversationRightRailLoading,
+  JuiRightRailContentLoading,
+  JuiRightRailLoadingMore,
+};

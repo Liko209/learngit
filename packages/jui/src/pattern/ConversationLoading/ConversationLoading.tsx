@@ -124,4 +124,11 @@ class JuiConversationLoading extends React.Component<
   }
 }
 
-export { JuiConversationLoading };
+export {
+  JuiConversationLoading,
+  LoadingWrapper,
+  Loading,
+  Progress,
+  Tip,
+  TipLink,
+};

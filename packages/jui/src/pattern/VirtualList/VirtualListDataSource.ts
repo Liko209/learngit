@@ -15,7 +15,7 @@ interface IVirtualListDataSource {
     index: number,
     style: CSSProperties,
     onLoad?: JuiVirtualCellOnLoadFunc,
-  ): ReactElement<P & JuiVirtualCellProps>;
+  ): ReactElement<P & JuiVirtualCellProps> | null;
 
   fixedCellHeight?: () => number;
 
@@ -28,6 +28,8 @@ interface IVirtualListDataSource {
 
   // empty content
   renderEmptyContent?: () => JSX.Element;
+
+  onScroll?: (event: any) => void;
 }
 
 export { IVirtualListDataSource };

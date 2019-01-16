@@ -3,39 +3,35 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
-import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ViewProps, Props } from './types';
-import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { debounce } from 'lodash';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
-import {
-  JuiConversationRightRailLoading,
-  JuiRightShelfContent,
-} from 'jui/pattern/RightShelf';
 import { emptyView } from './Empty';
 
-const itemType = {
-  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: FileItem,
-};
-
-const subheaderType = {
-  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: 'fileListSubheader',
-};
+import {
+  JuiRightShelfContent,
+  JuiRightRailContentLoading,
+  JuiRightRailLoadingMore,
+} from 'jui/pattern/RightShelf';
+import { TAB_CONFIG, TabConfig } from './config';
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
+  state = { loadingMore: false };
   private _fetchMore: any;
+  private _config: TabConfig;
   constructor(props: ViewProps & Props) {
     super(props);
     this._fetchMore = debounce(this.props.fetchNextPageItems, 200);
+    this._config = TAB_CONFIG.find(looper => looper.type === props.type)!;
   }
   countOfCell() {
     const { totalCount } = this.props;
@@ -43,14 +39,17 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   cellAtIndex = (index: number, style: React.CSSProperties) => {
-    const { ids, type } = this.props;
-    const Component: any = itemType[type];
+    const { ids } = this.props;
+    const Component: any = this._config.item;
     const id = ids[index];
-    return (
-      <div key={index} style={style}>
-        {id ? <Component id={id} /> : <JuiConversationRightRailLoading />}
-      </div>
-    );
+    if (id) {
+      return (
+        <div key={index} style={style}>
+          <Component id={id} />
+        </div>
+      );
+    }
+    return <Fragment key={index} />;
   }
 
   fixedCellHeight() {
@@ -69,20 +68,37 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    return await this._fetchMore();
+    this.setState({ loadingMore: true });
+    const result = await this._fetchMore();
+    this.setState({ loadingMore: false });
+    return result;
   }
 
+  onScroll = () => {};
+
+  private _handleRetry = () => {};
+
   render() {
-    const { type, totalCount } = this.props;
-    const subheaderText = subheaderType[type];
+    const { totalCount, loading } = this.props;
+    const { subheader } = this._config;
+    const { loadingMore } = this.state;
     return (
       <JuiRightShelfContent>
+        {loading && (
+          <JuiRightRailContentLoading
+            showTip={false}
+            tip={t(this._config.tryAgainPrompt)}
+            linkText={t('tryAgain')}
+            onClick={this._handleRetry}
+          />
+        )}
         {totalCount > 0 && (
           <JuiListSubheader>
-            {t(subheaderText)} ({totalCount})
+            {t(subheader)} ({this.props.totalCount})
           </JuiListSubheader>
         )}
-        <JuiVirtualList dataSource={this} />
+        {totalCount > 0 && <JuiVirtualList dataSource={this} />}
+        {loadingMore && <JuiRightRailLoadingMore />}
       </JuiRightShelfContent>
     );
   }
