@@ -14,7 +14,7 @@ describe('ItemListViewModel', () => {
   });
 
   describe('fetchNextPageItems()', () => {
-    it('should be call sortableDataHandler fetchData', () => {
+    it('Should be call sortableDataHandler fetchData', () => {
       const _sortableDataHandler = {
         sortableListStore: {
           getIds: jest.fn().mockReturnValue([1, 2]),
@@ -36,7 +36,7 @@ describe('ItemListViewModel', () => {
   });
 
   describe('get ids', () => {
-    it('[JPT-850] should be add id if getIds change', () => {
+    it('Should be add id if getIds change [JPT-850]', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
@@ -65,7 +65,7 @@ describe('ItemListViewModel', () => {
       expect(ViewModel.ids).toEqual([1, 2, 3]);
     });
 
-    it('[JPT-851] should be remove id if getIds change', () => {
+    it('Should be remove id if getIds change [JPT-851]', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
