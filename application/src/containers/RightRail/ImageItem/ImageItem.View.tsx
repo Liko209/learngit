@@ -29,9 +29,8 @@ class ImageItemView extends Component<ImageItemProps> {
     this.setState({ isHover: false });
   }
   render() {
-    const { file, url, subTitle } = this.props;
-    const fileInfo = file || {};
-    const { name, downloadUrl } = fileInfo;
+    const { file, url, secondary } = this.props;
+    const { name, downloadUrl } = file;
     const { isHover } = this.state;
 
     return (
@@ -44,7 +43,7 @@ class ImageItemView extends Component<ImageItemProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
-          secondary={<JuiListItemTextWithDate text={subTitle} />}
+          secondary={<JuiListItemTextWithDate text={secondary} />}
         />
         {isHover && (
           <JuiListItemSecondaryAction>

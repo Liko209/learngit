@@ -7,7 +7,7 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { Item } from 'sdk/module/item/entity';
-import FileItemModel, { FileType } from '@/store/models/FileItem';
+import FileItemModel from '@/store/models/FileItem';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
@@ -24,43 +24,36 @@ class ImageItemViewModel extends AbstractViewModel<FilesProps> {
 
   @computed
   get file() {
-    const id = this._id;
-    if (typeof id !== 'undefined') {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
-    }
-    return null;
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
   }
 
   @computed
-  get subTitle() {
-    if (this.file) {
-      const { createdAt, creatorId } = this.file;
-      const personName = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        creatorId,
-      ).userDisplayName;
-      return `${personName} · ${dateFormatter.date(createdAt)}`;
+  get _person(): any {
+    const { creatorId } = this.file;
+    if (creatorId) {
+      return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId);
     }
-    return '';
+    return {};
+  }
+
+  @computed
+  get secondary() {
+    const { createdAt } = this.file;
+    const result = [];
+    const name = this._person.userDisplayName;
+    if (name) {
+      result.push(name);
+    }
+    if (createdAt) {
+      result.push(dateFormatter.date(createdAt));
+    }
+    return result.join(' · ');
   }
 
   @computed
   get url() {
-    if (this.file) {
-      const { isImage, previewUrl } = this._isImage(this.file);
-      if (isImage) {
-        return previewUrl;
-      }
-    }
-    return '';
-  }
-
-  private _isImage(ImageItem: FileItemModel) {
-    const { type, previewUrl } = getFileType(ImageItem);
-    return {
-      previewUrl,
-      isImage: type === FileType.image,
-    };
+    const { previewUrl } = getFileType(this.file);
+    return previewUrl;
   }
 }
 

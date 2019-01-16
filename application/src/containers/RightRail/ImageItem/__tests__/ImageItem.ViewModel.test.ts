@@ -15,6 +15,7 @@ jest.mock('../../../../common/getFileType');
 
 const mockFile = {
   createdAt: 1547086968632,
+  creatorId: 123,
   name: '',
 };
 
@@ -46,41 +47,44 @@ describe('ImageItemViewModel', () => {
   });
 
   describe('file', () => {
-    it('should be a null when not exist id', () => {
-      vm = new ImageItemViewModel();
-      expect(vm.file).toBeNull();
-    });
-    it('should be a file item entity when exist id', () => {
+    it('should be a file item entity when props incoming id', () => {
       expect(vm.file).toEqual(mockFile);
     });
   });
 
-  describe('subTitle', () => {
+  describe('secondary', () => {
     it('should be a string when invoke person id', () => {
-      expect(vm.subTitle).toEqual(
+      expect(vm.secondary).toEqual(
         `${mockPerson.userDisplayName} · ${dateFormatter.date(
           mockFile.createdAt,
         )}`,
       );
     });
 
-    it('should be a new string when change person name', () => {
+    it('should be a new person name string when change person name', () => {
       mockPerson.userDisplayName = 'new name';
-      expect(vm.subTitle).toEqual(
+      expect(vm.secondary).toEqual(
         `${mockPerson.userDisplayName} · ${dateFormatter.date(
           mockFile.createdAt,
         )}`,
       );
     });
 
-    it('should be a null string when not exist file item id', () => {
-      vm = new ImageItemViewModel();
-      expect(vm.subTitle).toBe('');
+    it('should be a date string when display secondary text', () => {
+      mockFile.creatorId = 0;
+      mockFile.createdAt = 1547086968632;
+      expect(vm.secondary).toEqual(dateFormatter.date(mockFile.createdAt));
+    });
+
+    it('should be a person name string when display secondary text', () => {
+      mockFile.creatorId = 123;
+      mockFile.createdAt = 0;
+      expect(vm.secondary).toEqual(mockPerson.userDisplayName);
     });
   });
 
   describe('url', () => {
-    const previewUrl = 'http://www.google.com';
+    const previewUrl = 'IMAGE_URL';
 
     it('should be a string when item is image type', () => {
       (getFileType as jest.Mock).mockReturnValue({
@@ -88,14 +92,6 @@ describe('ImageItemViewModel', () => {
         type: FileType.image,
       });
       expect(vm.url).toEqual(previewUrl);
-    });
-
-    it('should be a null string when item is not image type', () => {
-      (getFileType as jest.Mock).mockReturnValue({
-        previewUrl,
-        type: FileType.document,
-      });
-      expect(vm.url).toEqual('');
     });
   });
 });

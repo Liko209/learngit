@@ -12,7 +12,7 @@ type FilesProps = {
 
 type ImageItemProps = {
   file: FileItemModel;
-  subTitle: string;
+  secondary: string;
   url: string;
   action?: () => void;
 };
