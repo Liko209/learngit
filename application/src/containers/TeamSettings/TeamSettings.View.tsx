@@ -49,11 +49,14 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   };
 
   handleClose = () => portalManager.dismiss();
-  handleOk = () => {
-    this.props.save({
+  handleOk = async () => {
+    const shouldClose = await this.props.save({
       name: this.state.name,
       description: this.state.description,
     });
+    if (shouldClose) {
+      portalManager.dismiss();
+    }
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

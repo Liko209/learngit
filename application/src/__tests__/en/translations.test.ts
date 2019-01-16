@@ -309,6 +309,12 @@ describe('i18next-en', () => {
     expect(i18next.t('edit')).toEqual('Edit post');
     expect(i18next.t('AboutRingCentral')).toEqual('About RingCentral');
     expect(i18next.t('newActions')).toEqual('New actions');
+    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdate')).toEqual(
+      "Sorry, we weren't able to save the update.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdateTryAgain')).toEqual(
+      "Sorry, we weren't able to save the update. Try again.",
+    );
   });
 
   it('should check duplicate alert text JPT-455', () => {
