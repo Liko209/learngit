@@ -102,6 +102,7 @@ export default class MultiEntityMapStore<
       Object.keys(partialEntity).forEach((key: string) => {
         model[_.camelCase(key)] = partialEntity[key];
       });
+      model.isMocked = false;
     }
   }
 
@@ -150,7 +151,7 @@ export default class MultiEntityMapStore<
     let model = this._data[id];
 
     if (!model) {
-      this.set({ id } as T);
+      this.set({ id, isMocked: true } as T);
       model = this._data[id] as K;
       const res = this.getByService(id);
       if (res instanceof Promise) {
@@ -175,6 +176,11 @@ export default class MultiEntityMapStore<
     return !!this._data[id];
   }
 
+  hasValid(id: number): boolean {
+    const model = this._data[id];
+    return !!(model && !model.isMocked);
+  }
+
   subtractedBy(ids: number[]) {
     const existingKeys = Object.keys(this._data).map(Number);
     return [_.difference(ids, existingKeys), _.intersection(ids, existingKeys)];
@@ -188,7 +194,7 @@ export default class MultiEntityMapStore<
     return this._data;
   }
 
-  getByService(id: number): Promise<T | null> {
+  getByService(id: number): Promise<T | null> | T {
     if (!this._service) {
       if (Array.isArray(this._getService)) {
         this._service = this._getService[0]();

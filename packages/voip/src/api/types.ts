@@ -24,6 +24,10 @@ type RTCCallOptions = {
   homeCountryId?: string;
 };
 
+type RTCCallActionSuccessOptions = {
+  parkExtension?: string;
+};
+
 enum RTC_CALL_STATE {
   IDLE = 'Idle',
   CONNECTING = 'Connecting',
@@ -38,6 +42,7 @@ enum RTC_CALL_ACTION {
   TRANSFER = 'transfer',
   MUTE = 'mute',
   UNMUTE = 'unmute',
+  PARK = 'park',
 }
 
 export {
@@ -46,4 +51,5 @@ export {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
+  RTCCallActionSuccessOptions,
 };

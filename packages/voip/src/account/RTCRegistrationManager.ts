@@ -27,6 +27,10 @@ class RTCRegistrationManager extends EventEmitter2
 
   public onRegistrationAction(): void {}
 
+  onNetworkChangeToOnlineAction(): void {
+    this.reRegister();
+  }
+
   public onReRegisterAction(): void {
     this._userAgent.reRegister();
   }
@@ -51,6 +55,10 @@ class RTCRegistrationManager extends EventEmitter2
           }
           case REGISTRATION_EVENT.RE_REGISTER: {
             this._fsm.reRegister();
+            break;
+          }
+          case REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE: {
+            this._fsm.networkChangeToOnline();
             break;
           }
           case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
@@ -149,6 +157,13 @@ class RTCRegistrationManager extends EventEmitter2
 
   public reRegister() {
     this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {});
+  }
+
+  networkChangeToOnline() {
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE },
+      () => {},
+    );
   }
 
   public createOutgoingCallSession(phoneNumber: string, options: any): any {

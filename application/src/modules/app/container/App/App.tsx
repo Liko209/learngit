@@ -19,6 +19,7 @@ import { AboutView } from '@/containers/About';
 import { TopBanner } from '@/containers/TopBanner';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
+import { generalErrorHandler } from '@/utils/error';
 
 @observer
 class App extends React.Component {
@@ -26,6 +27,10 @@ class App extends React.Component {
   private readonly _upgradeHandler: Upgrade = container.get(Upgrade);
   private appName = process.env.APP_NAME || '';
   private _unListenHistory: VoidFunction;
+
+  componentDidCatch(error: Error) {
+    generalErrorHandler(error);
+  }
 
   componentWillUnmount() {
     this._unListenHistory && this._unListenHistory();

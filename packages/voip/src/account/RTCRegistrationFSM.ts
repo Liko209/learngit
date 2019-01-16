@@ -16,6 +16,7 @@ enum REGISTRATION_FSM_EVENT {
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
   RE_REGISTER = 'reRegister',
+  NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
 }
 
 class RTCRegistrationFSM extends StateMachine {
@@ -40,6 +41,18 @@ class RTCRegistrationFSM extends StateMachine {
           ],
           to: () => {
             dependency.onReRegisterAction();
+            return REGISTRATION_FSM_STATE.IN_PROGRESS;
+          },
+        },
+        {
+          name: REGISTRATION_FSM_EVENT.NETWORK_CHANGE_TO_ONLINE,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.FAILURE,
+            REGISTRATION_FSM_STATE.READY,
+          ],
+          to: () => {
+            dependency.onNetworkChangeToOnlineAction();
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },
         },
