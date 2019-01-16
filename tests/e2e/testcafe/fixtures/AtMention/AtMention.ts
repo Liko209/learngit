@@ -82,7 +82,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 },
 );
 
-test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314', 'JPT-463']),
+test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -183,9 +183,6 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
       await conversationPage.expectStreamScrollToBottom();
     });
 
-    await h(t).withLog('And conversation should display in the top of conversation list', async () => {
-      await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamId);
-    });
   },
 );
 
