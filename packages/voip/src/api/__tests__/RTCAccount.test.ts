@@ -153,7 +153,7 @@ describe('RTCAccount', async () => {
     setupAccount();
     const listener = new MockCallListener();
     const call1 = account.makeCall('123', listener);
-    ua.emit('invite', new MockSession());
+    ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     expect(mockListener.onReceiveIncomingCall).not.toBeCalled();
   });
 
@@ -165,10 +165,15 @@ describe('RTCAccount', async () => {
     expect(call).not.toBe(null);
   });
 
-  it('Should call count set to 1 and return call when receive incoming call and new call is allowed. [JPT-810]', () => {
+  it('Should call count set to 1 and return call when receive incoming call and new call is allowed. [JPT-810]', done => {
     setupAccount();
-    ua.emit('invite', new MockSession());
-    expect(mockListener.onReceiveIncomingCall).not.toBeCalled();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(mockListener.onReceiveIncomingCall).toBeCalled();
+      done();
+    });
   });
 
   it('Should call count set to 0 when active call hangup. [JPT-807]', done => {

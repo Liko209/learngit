@@ -8,15 +8,14 @@ import { RTCCall } from '../api/RTCCall';
 import { kRTCMaxCallCount } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
+const LOG_TAG = 'RTCCallManager';
 class RTCCallManager {
-  private _kTag: string = 'RTCCallManager';
   private _calls: RTCCall[] = [];
-  constructor() {}
 
   addCall(call: RTCCall) {
     this._calls.push(call);
     rtcLogger.debug(
-      this._kTag,
+      LOG_TAG,
       `Call ${call.getCallInfo().uuid} added into call manager. Calls: ${
         this._calls.length
       }`,
@@ -28,7 +27,7 @@ class RTCCallManager {
       item.getCallInfo().uuid !== callUuid;
     });
     rtcLogger.debug(
-      this._kTag,
+      LOG_TAG,
       `Call ${callUuid} removed from call manager. Calls: ${this._calls.length}`,
     );
   }
