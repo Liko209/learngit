@@ -11,6 +11,7 @@ import { IConsoleLog } from './v2/models';
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
 const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
+
 // _runId is a share state
 let _runId = getRunIdFromFile();
 
@@ -49,7 +50,7 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
     const run = new Run();
     run.name = runName;
     run.metadata = metadata;
-    // TODO: hostname, hostip, etc
+    run.hostName = process.env.HOST_NAME;
     const res = await beatsClient.createRun(run).catch(() => null);
     _runId = res ? res.body.id : null;
     console.log(`a new Run Id is created: ${_runId}`);
