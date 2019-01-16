@@ -9,7 +9,6 @@ import {
   JuiListItemText,
   JuiListItem,
   JuiListItemIcon,
-  JuiListItemTextWithDate,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
@@ -18,7 +17,7 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 
 class LinkItemView extends Component<LinkItemViewProps> {
   render() {
-    const { link, textSecondary } = this.props;
+    const { link } = this.props;
     const textPrimary = link.title || link.url || '';
     const faviconUrl = link.faviconUrl;
     return (
@@ -32,7 +31,7 @@ class LinkItemView extends Component<LinkItemViewProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={textPrimary} />}
-          secondary={<JuiListItemTextWithDate text={textSecondary} />}
+          secondary={'<JuiListItemTextWithDate text={textSecondary} />'}
         />
       </JuiListItem>
     );

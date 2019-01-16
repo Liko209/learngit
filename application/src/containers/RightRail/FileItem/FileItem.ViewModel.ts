@@ -30,14 +30,20 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
   }
 
   @computed
-  get subTitle() {
+  get personName() {
     if (this.file) {
-      const { createdAt, creatorId } = this.file;
-      const personName = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        creatorId,
-      ).userDisplayName;
-      return `${personName} · ${dateFormatter.date(createdAt)}`;
+      const { creatorId } = this.file;
+      return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId)
+        .userDisplayName;
+    }
+    return '';
+  }
+
+  @computed
+  get createdTime() {
+    if (this.file) {
+      const { createdAt } = this.file;
+      return dateFormatter.date(createdAt);
     }
     return '';
   }

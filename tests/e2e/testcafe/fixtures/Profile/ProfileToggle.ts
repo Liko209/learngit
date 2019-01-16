@@ -40,13 +40,13 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
     });
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-       await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+ favoriteChatId])
+       await h(t).glip(loginUser).favoriteGroups([+ favoriteChatId])
     });
 
     await h(t).withLog('And I clean all UMI before login',
       async () => {
-        const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages(loginUser.rcId);
-        await h(t).glip(loginUser).markAsRead(loginUser.rcId, unreadGroups);
+        const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages();
+        await h(t).glip(loginUser).markAsRead(unreadGroups);
       },
     );
 
@@ -131,14 +131,14 @@ test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'Profile
         type: 'Group',
         members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
-      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favoriteChatId]);
+      await h(t).glip(loginUser).favoriteGroups([+favoriteChatId]);
     },
   );
 
   await h(t).withLog('And I clean all UMI before login',
     async () => {
-      const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages(loginUser.rcId);
-      await h(t).glip(loginUser).markAsRead(loginUser.rcId, unreadGroups);
+      const unreadGroups = await h(t).glip(loginUser).getIdsOfGroupsWithUnreadMessages();
+      await h(t).glip(loginUser).markAsRead(unreadGroups);
     },
   );
 
