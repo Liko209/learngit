@@ -176,6 +176,9 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  get judgeFocusOnInputArea(){
+    return this.messageInputArea.focused;
+  }
 
   async sendMessage(message: string, options?) {
     await this.t
@@ -184,9 +187,8 @@ export class ConversationPage extends BaseConversationPage {
       .pressKey('enter');
   }
 
-  async sendMessageWithoutText() {
+  async sendMessageViaPressEnterOnly() {
     await this.t
-      .click(this.messageInputArea)
       .pressKey('enter');
   }
 
