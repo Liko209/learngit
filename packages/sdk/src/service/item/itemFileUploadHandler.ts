@@ -761,7 +761,7 @@ class ItemFileUploadHandler {
       if (arr && arr.length > 0) {
         const name = arr[arr.length - 1];
         const seArr = name.split('.');
-        type = seArr[seArr.length - 1];
+        type = seArr && seArr.length > 1 ? seArr[seArr.length - 1] : '';
       }
     }
     return type;
