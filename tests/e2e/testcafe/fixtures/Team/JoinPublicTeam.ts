@@ -13,7 +13,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 
-fixture('search/PublicTeam')
+fixture('Team/PublicTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
@@ -266,4 +266,153 @@ test.skip(formalName(`Joined team successful after clicking join button in confi
     assert.ok(_.includes(members, loginUserGlipId), "loginUser is not in team A");
   });
 
+});
+
+test(formalName(`The user should see go to conversation icon instead of the join team icon when the user was added by someone to the team`, ['P2', 'JPT-858', 'PublicTeam', 'Potar.He']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const adminUser = h(t).rcData.mainCompany.users[5];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
+  await h(t).platform(adminUser).init();
+  await h(t).glip(adminUser).init()
+
+  let publicTeamId, directMessageChatId, teamMentionPostId;
+  await h(t).withLog('Given I have a public_team but loginUser did not join it, and 1:1 conversation ', async () => {
+    publicTeamId = await h(t).platform(adminUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [adminUser.rcId, h(t).rcData.mainCompany.users[6].rcId],
+    });
+    await h(t).glip(adminUser).updateGroup(publicTeamId, {
+      privacy: 'protected',
+      is_public: true
+    });
+    directMessageChatId = await h(t).platform(adminUser).createAndGetGroupId({
+      type: 'PrivateChat',
+      members: [adminUser.rcId, loginUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`And adminUser send @public_team post to loginUser`, async () => {
+    teamMentionPostId = await h(t).platform(adminUser).sentAndGetTextPostId(
+      `Join public team, ![:Team](${publicTeamId})`,
+      directMessageChatId,
+    );
+  });
+
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const post = conversationPage.postItemById(teamMentionPostId);
+  await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await t.click(post.mentions);
+  });
+
+  const miniProfile = app.homePage.miniProfile;
+  await h(t).withLog(`Then miniProfile should be popped up`, async () => {
+    await miniProfile.shouldBePopUp();
+  });
+
+  await h(t).withLog(`When loginUser open Profile dialog`, async () => {
+    await miniProfile.openProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog(`Then profile dialog should be popped up and show 'Join the team' button`, async () => {
+    await profileDialog.shouldBePopUp();
+    await t.expect(profileDialog.joinTeamButton.exists).ok();
+    await profileDialog.close();
+  });
+
+  await h(t).withLog(`When adminUser add loginUser to the Public_team`, async () => {
+    await h(t).glip(adminUser).addGroupMembers(publicTeamId, loginUser.rcId);
+  });
+
+  await h(t).withLog(`And loginUser checks the display of the button on profile dialog`, async () => {
+    await t.click(post.mentions);
+    await miniProfile.openProfile();
+  });
+
+  await h(t).withLog(`Then "go to conversation" icon should be shown`, async () => {
+    await t.debug();
+    await t.expect(profileDialog.messageButton.exists).ok();
+  });
+});
+
+
+test(formalName(`Will show confirmation dialog when joining the public team from a public team profile`, ['P2', 'JPT-867', 'PublicTeam', 'Potar.He']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const adminUser = h(t).rcData.mainCompany.users[5];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
+  await h(t).platform(adminUser).init();
+  await h(t).glip(adminUser).init()
+
+  let publicTeamId, directMessageChatId, teamMentionPostId;
+  await h(t).withLog('Given I have a public_team but loginUser did not join it, and 1:1 conversation ', async () => {
+    publicTeamId = await h(t).platform(adminUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [adminUser.rcId],
+    });
+    await h(t).glip(adminUser).updateGroup(publicTeamId, {
+      privacy: 'protected',
+      is_public: true
+    });
+    directMessageChatId = await h(t).platform(adminUser).createAndGetGroupId({
+      type: 'PrivateChat',
+      members: [adminUser.rcId, loginUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`And adminUser send @public_team post to loginUser`, async () => {
+    teamMentionPostId = await h(t).platform(adminUser).sentAndGetTextPostId(
+      `Join public team, ![:Team](${publicTeamId})`,
+      directMessageChatId,
+    );
+  });
+
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const post = conversationPage.postItemById(teamMentionPostId);
+  await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await t.click(post.mentions);
+  });
+
+  const miniProfile = app.homePage.miniProfile;
+  await h(t).withLog(`Then miniProfile should be popped up`, async () => {
+    await miniProfile.shouldBePopUp();
+  });
+
+  await h(t).withLog(`When loginUser open Profile dialog`, async () => {
+    await miniProfile.openProfile();
+  });
+
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog(`Then profile dialog should be popped up and show 'Join the team' button`, async () => {
+    await profileDialog.shouldBePopUp();
+    await t.expect(profileDialog.joinTeamButton.exists).ok();
+  });
+
+  await h(t).withLog(`When loginUser clicks the "Join the team" button`, async () => {
+    await profileDialog.joinTeam();
+  });
+
+  await h(t).withLog(`The confirmation dialog should be displayed and the profile dialog should be closed.`, async () => {
+    await t.expect(app.homePage.joinTeamDialog.exists).ok();
+    await t.expect(profileDialog.exists).notOk();
+  });
 });
