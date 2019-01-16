@@ -1,13 +1,15 @@
 import 'testcafe';
 import * as _ from 'lodash';
 import * as fs from 'fs';
+import { UAParser } from 'ua-parser-js';
 
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog } from "../models";
-import { BeatsClient, Test, Step } from 'bendapi-ts';
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
+import { H } from '.';
+import { BeatsClient, Test, Step } from 'bendapi-ts';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -29,12 +31,13 @@ export class DashboardHelper {
 
   private async createStepInDashboard(step: IStep, testId: number) {
     const beatStep = new Step();
+    beatStep.test = testId;
     beatStep.name = step.message;
     beatStep.status = StatusMap[step.status];
     beatStep.startTime = new Date(step.startTime);
     beatStep.endTime = new Date(step.endTime);
-    beatStep.test = testId;
     const res = await this.beatsClient.createStep(beatStep);
+
     if (step.screenshotPath) {
       await this.uploadAttachment(step.screenshotPath, res.body.id);
     }
@@ -50,18 +53,23 @@ export class DashboardHelper {
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
     const tags = parseFormalName(testRun.test.name).tags;
+    const userAgent = new UAParser(await H.getUserAgent());
 
-    // TODO: browser, browserVer, os, osVer
     const beatsTest = new Test();
+    beatsTest.run = runId;
     beatsTest.name = `${testRun.test.name}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`;
     beatsTest.status = StatusMap[status];
-    beatsTest.metadata = {
-      user_agent: testRun.browserConnection.browserInfo.userAgent,
-    }
     beatsTest.manualIds = getTmtIds(tags, 'JPT');
     beatsTest.startTime = testRun.startTime;
     beatsTest.endTime = new Date();
-    beatsTest.run = runId;
+
+    beatsTest.metadata = {
+      browser: userAgent.getBrowser().name,
+      browserVer: userAgent.getBrowser().version,
+      os: userAgent.getOS().name,
+      osVer: userAgent.getOS().version,
+      user_agent: testRun.browserConnection.browserInfo.userAgent,
+    }
     const res = await this.beatsClient.createTest(beatsTest);
 
     for (const step of this.t.ctx.logs) {

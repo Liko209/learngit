@@ -19,6 +19,7 @@
     "@types/glob": "^5.0.35",
     "@types/lodash": "^4.14.116",
     "@types/node": "^10.7.0",
+    "@types/ua-parser-js": "^0.7.32",
     "@types/uuid": "^3.4.3",
     "allure-js-commons": "^1.3.2",
     "attest-node": "git+https://git.lab.rcch.ringcentral.com/attest/attest-node.git#accessibility_check",
@@ -42,6 +43,7 @@
     "testcafe-live": "0.1.3",
     "testcafe-react-selectors": "^3.0.0",
     "ts-node": "^7.0.1",
+    "ua-parser-js": "^0.7.19",
     "uuid": "^3.3.2",
     "zip-dir": "^1.0.2"
   },
