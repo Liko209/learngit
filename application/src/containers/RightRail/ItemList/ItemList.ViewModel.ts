@@ -8,6 +8,13 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { getGlobalValue } from '@/store/utils';
+import { t } from 'i18next';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
@@ -18,8 +25,9 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY } from 'sdk/service';
-import { ENTITY_NAME } from '@/store/constants';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
+import { TAB_CONFIG, TabConfig } from './config';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -189,6 +197,20 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   fetchNextPageItems = () => {
+    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
+    if (status === 'offline') {
+      const config: TabConfig = TAB_CONFIG.find(
+        looper => looper.type === this.props.type,
+      )!;
+      Notification.flashToast({
+        message: t(config.offlinePrompt),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+      return;
+    }
     return this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   }
 

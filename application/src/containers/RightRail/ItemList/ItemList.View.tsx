@@ -14,10 +14,7 @@ import {
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
 
-import {
-  JuiConversationRightRailLoading,
-  JuiRightShelfContent,
-} from 'jui/pattern/RightShelf';
+import { JuiRightShelfContent } from 'jui/pattern/RightShelf';
 
 import { emptyView } from './Empty';
 import { TAB_CONFIG, TabConfig } from './config';
@@ -40,11 +37,14 @@ class ItemListView extends React.Component<ViewProps & Props>
     const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
     const Component: any = config.item;
     const id = ids[index];
-    return (
-      <div key={index} style={style}>
-        {id ? <Component id={id} /> : <JuiConversationRightRailLoading />}
-      </div>
-    );
+    if (id) {
+      return (
+        <div key={index} style={style}>
+          <Component id={id} />
+        </div>
+      );
+    }
+    return <></>;
   }
 
   fixedCellHeight() {

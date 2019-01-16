@@ -226,5 +226,13 @@
   "noEventsCreatedYet": "No events created yet",
   "noEventSubText": "Events on your calendar will automatically show up here.",
   "noIntegrationInstallationYet": "No integration installation yet",
-  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here."
+  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here.",
+  "networkErrorPinnedPrompt": "Sorry, we weren't able to load more posts.",
+  "networkErrorFilesPrompt": "Sorry, we weren't able to load more files.",
+  "networkErrorImagesPrompt": "Sorry, we weren't able to load more images.",
+  "networkErrorLinksPrompt": "Sorry, we weren't able to load more links.",
+  "networkErrorTasksPrompt": "Sorry, we weren't able to load more tasks.",
+  "networkErrorEventsPrompt": "Sorry, we weren't able to load more events.",
+  "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
+  "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations."
 }

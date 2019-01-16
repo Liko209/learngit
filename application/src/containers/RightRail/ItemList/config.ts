@@ -29,6 +29,7 @@ type TabConfig = {
   item: ComponentType;
   subheader: string;
   empty: EmptyConfig;
+  offlinePrompt: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -42,6 +43,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noPinSubText',
       image: PinnedEmptyImage,
     },
+    offlinePrompt: 'networkErrorPinnedPrompt',
   },
   {
     title: 'files',
@@ -53,6 +55,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noFileSubText',
       image: FilesEmptyImage,
     },
+    offlinePrompt: 'networkErrorFilesPrompt',
   },
   {
     title: 'images',
@@ -64,6 +67,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noImageSubText',
       image: ImagesEmptyImage,
     },
+    offlinePrompt: 'networkErrorImagesPrompt',
   },
   {
     title: 'tasks',
@@ -75,6 +79,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noTaskSubText',
       image: TasksEmptyImage,
     },
+    offlinePrompt: 'networkErrorTasksPrompt',
   },
   {
     title: 'links',
@@ -86,6 +91,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noLinkSubText',
       image: LinksEmptyImage,
     },
+    offlinePrompt: 'networkErrorLinksPrompt',
   },
   {
     title: 'notes',
@@ -97,6 +103,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noNoteSubText',
       image: NotesEmptyImage,
     },
+    offlinePrompt: 'networkErrorNotesPrompt',
   },
   {
     title: 'events',
@@ -108,6 +115,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noEventSubText',
       image: EventsEmptyImage,
     },
+    offlinePrompt: 'networkErrorEventsPrompt',
   },
   {
     title: 'integrations',
@@ -119,6 +127,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noIntegrationSubText',
       image: IntegrationsEmptyImage,
     },
+    offlinePrompt: 'networkErrorIntegrationsPrompt',
   },
 ];
 
