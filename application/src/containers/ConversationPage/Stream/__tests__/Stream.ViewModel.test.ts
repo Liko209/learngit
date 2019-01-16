@@ -13,6 +13,7 @@ import { id } from 'inversify';
 import { errorHelper } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
+
 import {
   ToastType,
   ToastMessageAlign,
@@ -77,7 +78,7 @@ describe('StreamViewModel', () => {
         _newMessageSeparatorHandler: {
           enable: jest.fn(),
         },
-        _transformHandler: {
+        streamController: {
           hasMore: jest.fn(),
         },
         _historyHandler: {
@@ -232,7 +233,7 @@ describe('StreamViewModel', () => {
         groupId: 123123123,
         _historyHandler: {},
         _newMessageSeparatorHandler: {},
-        _transformHandler: { dispose },
+        streamController: { dispose },
         _initialized: true,
       };
       const vm = setup({
@@ -459,9 +460,7 @@ describe('StreamViewModel', () => {
 
 describe.only('fetchData()', () => {
   function setup() {
-    const vm = new StreamViewModel();
-    vm.groupId = 1;
-    vm.onReceiveProps({ groupId: 2 } as any);
+    const vm = new StreamViewModel({ groupId: 1 });
     return vm;
   }
   let vm;
@@ -472,15 +471,15 @@ describe.only('fetchData()', () => {
     vm = setup();
   });
   it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
-    jest.spyOn(vm._transformHandler, 'hasMore').mockReturnValueOnce(true);
-    jest.spyOn(vm._transformHandler, 'fetchData');
+    jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);
+    jest.spyOn(vm.streamController, 'fetchData');
     postService.getPostsByGroupId = jest
       .fn()
       .mockRejectedValueOnce(new Error());
     jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
     Notification.flashToast = jest.fn();
     await vm.loadPrevPosts();
-    expect(vm._transformHandler.fetchData).toHaveBeenCalled();
+    expect(vm.streamController.fetchData).toHaveBeenCalled();
     expect(Notification.flashToast).toHaveBeenCalledWith({
       dismissible: false,
       fullWidth: false,
@@ -491,15 +490,15 @@ describe.only('fetchData()', () => {
   });
 
   it('should show error toast when server throw error while scroll down [JPT-695]', async () => {
-    jest.spyOn(vm._transformHandler, 'hasMore').mockReturnValueOnce(true);
-    jest.spyOn(vm._transformHandler, 'fetchData');
+    jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);
+    jest.spyOn(vm.streamController, 'fetchData');
     postService.getPostsByGroupId = jest
       .fn()
       .mockRejectedValueOnce(new Error());
     jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
     Notification.flashToast = jest.fn();
     await vm.loadNextPosts();
-    expect(vm._transformHandler.fetchData).toHaveBeenCalled();
+    expect(vm.streamController.fetchData).toHaveBeenCalled();
     expect(Notification.flashToast).toHaveBeenCalledWith({
       dismissible: false,
       fullWidth: false,
@@ -510,15 +509,15 @@ describe.only('fetchData()', () => {
   });
 
   it('should use generalErrorHandler if error is not from backend', async () => {
-    jest.spyOn(vm._transformHandler, 'hasMore').mockReturnValueOnce(true);
-    jest.spyOn(vm._transformHandler, 'fetchData');
+    jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);
+    jest.spyOn(vm.streamController, 'fetchData');
     postService.getPostsByGroupId = jest
       .fn()
       .mockRejectedValueOnce(new Error());
     jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(false);
     jest.spyOn(errorUtil, 'generalErrorHandler');
     await vm.loadPrevPosts();
-    expect(vm._transformHandler.fetchData).toHaveBeenCalled();
+    expect(vm.streamController.fetchData).toHaveBeenCalled();
     expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
   });
 });

@@ -169,9 +169,9 @@ class StreamViewComponent extends Component<Props> {
       (hasHistoryUnread &&
         (firstHistoryUnreadPostId &&
           streamItem.value.some(
-            (i: number) => i < firstHistoryUnreadPostId,
+            (i: number) => i <= firstHistoryUnreadPostId,
           ))) ||
-      streamItem.value.some((i: number) => i < historyReadThrough)
+      streamItem.value.some((i: number) => i <= historyReadThrough)
     ) {
       // Observe all visibility of posts which are older
       // than the first unread post
