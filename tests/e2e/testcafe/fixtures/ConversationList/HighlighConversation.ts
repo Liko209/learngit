@@ -32,7 +32,7 @@ test(formalName('Open last conversation when login and group show in the top of 
      });
 
     await h(t).withLog(`And the group chat ${groupId} is last group selected`, async () => {
-      await h(t).glip(loginUser).setLastGroupId(loginUser.rcId, groupId)
+      await h(t).glip(loginUser).setLastGroupId(groupId)
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
