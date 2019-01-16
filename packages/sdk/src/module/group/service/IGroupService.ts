@@ -1,5 +1,6 @@
 import { Group, TeamPermission } from '../entity';
 import { PERMISSION_ENUM } from '../constants';
+import { TeamSetting } from '../types';
 
 interface IGroupService {
   isInTeam(userId: number, team: Group): boolean;
@@ -17,6 +18,10 @@ interface IGroupService {
   isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean;
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
+
+  updateTeamSetting(teamId: number, teamSetting: TeamSetting): Promise<void>;
+
+  getTeamSetting(teamId: number): Promise<TeamSetting>;
 }
 
 export { IGroupService };

@@ -4,17 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Group } from '../entity';
+import _ from 'lodash';
+import { Api } from '../../../api';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { Api } from '../../../api';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { Group } from '../entity';
 import { TeamSetting } from '../types';
-import { PERMISSION_ENUM } from '../../../service/constants';
+import { TeamPermissionController } from './TeamPermissionController';
+
 class TeamActionController {
   constructor(
+    public entitySourceController: IEntitySourceController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
     public requestController: IRequestController<Group>,
+    public teamPermissionController: TeamPermissionController,
     public controllerBuilder: IControllerBuilder<Group>,
   ) {}
 
@@ -72,59 +77,6 @@ class TeamActionController {
     );
   }
 
-  private async _requestUpdateTeamMembers(
-    teamId: number,
-    members: number[],
-    basePath: string,
-  ) {
-    return this.controllerBuilder
-      .buildRequestController({
-        basePath,
-        networkClient: Api.glipNetworkClient,
-      })
-      .put({
-        members,
-        id: teamId,
-      });
-  }
-
-  async updateTeamSetting(
-    teamId: number,
-    teamSetting: TeamSetting,
-  ): Promise<TeamSetting> {
-    return teamSetting;
-  }
-
-  async getTeamSetting(teamId: number): Promise<TeamSetting> {
-    return {
-      name: 'test name',
-      description: 'this is a desc',
-      isPublic: true,
-      permissionMap: {
-        [PERMISSION_ENUM.TEAM_ADD_MEMBER]: true,
-      },
-    };
-  }
-
-  async addTeamMembers(members: number[], teamId: number) {
-    return this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity) => {
-        return {
-          ...partialEntity,
-          members: originalEntity.members.concat(members),
-        };
-      },
-      async (updateEntity: Group) => {
-        return await this._requestUpdateTeamMembers(
-          teamId,
-          members,
-          '/add_team_members',
-        );
-      },
-    );
-  }
-
   async removeTeamMembers(members: number[], teamId: number) {
     return this.partialModifyController.updatePartially(
       teamId,
@@ -146,6 +98,101 @@ class TeamActionController {
         );
       },
     );
+  }
+
+  async addTeamMembers(members: number[], teamId: number) {
+    return this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          members: originalEntity.members.concat(members),
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._requestUpdateTeamMembers(
+          teamId,
+          members,
+          '/add_team_members',
+        );
+      },
+    );
+  }
+
+  async getTeamSetting(teamId: number): Promise<TeamSetting> {
+    const team = <Group>await this.entitySourceController.getEntity(teamId);
+    const teamSetting = {
+      name: team.set_abbreviation,
+      description: team.description,
+      isPublic: team.privacy === 'protected',
+      permissionFlags: this.teamPermissionController.getTeamUserPermissionFlags(
+        team,
+      ),
+    };
+    return _.pickBy(teamSetting, (value: string) => !_.isUndefined(value));
+  }
+
+  async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
+    this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return this._teamSetting2partialTeam(
+          teamSetting,
+          originalEntity,
+          partialEntity,
+        );
+      },
+      async (updateEntity: Group) => {
+        return await this.requestController.put(updateEntity);
+      },
+    );
+  }
+
+  private async _requestUpdateTeamMembers(
+    teamId: number,
+    members: number[],
+    basePath: string,
+  ) {
+    return this.controllerBuilder
+      .buildRequestController({
+        basePath,
+        networkClient: Api.glipNetworkClient,
+      })
+      .put({
+        members,
+        id: teamId,
+      });
+  }
+
+  private _teamSetting2partialTeam(
+    teamSetting: TeamSetting,
+    originalEntity: Group,
+    partialEntity: Partial<Group>,
+  ) {
+    partialEntity.set_abbreviation = teamSetting.name;
+    partialEntity.description = teamSetting.description;
+    partialEntity.privacy = teamSetting.isPublic ? 'protected' : 'private';
+    const permissions = originalEntity.permissions || { user: {} };
+    const { permissionFlags = {} } = teamSetting;
+    const level = this.teamPermissionController.getTeamUserLevel(
+      originalEntity,
+    );
+    const mergeLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
+      permissionFlags,
+      level,
+    );
+    if (mergeLevel !== level) {
+      _.merge(
+        partialEntity,
+        { permissions },
+        {
+          permissions: {
+            user: { level: mergeLevel },
+          },
+        },
+      );
+    }
+    return _.pickBy(partialEntity, (value: string) => !_.isUndefined(value));
   }
 }
 
