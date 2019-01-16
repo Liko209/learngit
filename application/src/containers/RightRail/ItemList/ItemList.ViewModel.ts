@@ -110,7 +110,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   async loadTotalCount() {
     // To do in image: https://jira.ringcentral.com/browse/FIJI-2341, remove this RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES
-    if (this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES) {
+    // To do in https://jira.ringcentral.com/browse/FIJI-2344, remove this RIGHT_RAIL_ITEM_TYPE.EVENTS
+    if (
+      this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS
+    ) {
       this.totalCount = 0;
       return;
     }
