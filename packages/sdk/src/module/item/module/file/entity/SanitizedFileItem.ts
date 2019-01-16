@@ -7,5 +7,6 @@
 import { SanitizedItem } from '../../base/entity';
 
 export type SanitizedFileItem = SanitizedItem & {
+  name: string;
   type: string;
 };
