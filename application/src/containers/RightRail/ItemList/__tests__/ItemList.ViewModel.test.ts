@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ItemListViewModel } from '../ItemList.ViewModel';
-import { ITEM_LIST_TYPE } from '../../types';
+import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 
 let ViewModel: ItemListViewModel;
 
@@ -16,11 +16,14 @@ describe('ItemListViewModel', () => {
   describe('fetchNextPageItems()', () => {
     it('should be call sortableDataHandler fetchData', () => {
       const _sortableDataHandler = {
+        sortableListStore: {
+          getIds: jest.fn().mockReturnValue([1, 2]),
+        },
         fetchData: jest.fn(),
       };
       ViewModel = new ItemListViewModel({
         groupId: 1,
-        type: ITEM_LIST_TYPE.FILE,
+        type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
       });
       Object.assign(ViewModel, {
         _sortableDataHandler,
@@ -29,6 +32,66 @@ describe('ItemListViewModel', () => {
       });
       ViewModel.fetchNextPageItems();
       expect(_sortableDataHandler.fetchData).toHaveBeenCalled();
+    });
+  });
+
+  describe('get ids', () => {
+    it('[JPT-850] should be add id if getIds change', () => {
+      ViewModel = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+      });
+      let _sortableDataHandler = {
+        sortableListStore: {
+          getIds: jest.fn().mockReturnValue([1, 2]),
+        },
+      };
+
+      Object.assign(ViewModel, {
+        _sortableDataHandler,
+        _sortKey: 'time',
+        _desc: false,
+      });
+
+      _sortableDataHandler = {
+        sortableListStore: {
+          getIds: jest.fn().mockReturnValue([1, 2, 3]),
+        },
+      };
+
+      Object.assign(ViewModel, {
+        _sortableDataHandler,
+      });
+      expect(ViewModel.ids).toEqual([1, 2, 3]);
+    });
+
+    it('[JPT-851] should be remove id if getIds change', () => {
+      ViewModel = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+      });
+      let _sortableDataHandler = {
+        sortableListStore: {
+          getIds: jest.fn().mockReturnValue([1, 2]),
+        },
+      };
+
+      Object.assign(ViewModel, {
+        _sortableDataHandler,
+        _sortKey: 'time',
+        _desc: false,
+      });
+
+      _sortableDataHandler = {
+        sortableListStore: {
+          getIds: jest.fn().mockReturnValue([1]),
+        },
+      };
+
+      Object.assign(ViewModel, {
+        _sortableDataHandler,
+      });
+      expect(ViewModel.ids).toEqual([1]);
     });
   });
 });

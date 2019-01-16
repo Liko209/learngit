@@ -8,6 +8,8 @@ import {
   JuiListItemText,
   JuiListItem,
   JuiListItemIcon,
+  JuiListItemSecondaryText,
+  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiTaskIcon } from 'jui/pattern/RightShelf/TaskItem';
 import { TaskItemProps } from './types';
@@ -18,8 +20,9 @@ class TaskItemView extends React.Component<TaskItemProps, {}> {
   }
 
   render() {
-    const { task, creator } = this.props;
+    const { task, personName, dueTime } = this.props;
     const { complete, text } = task;
+
     return (
       <JuiListItem>
         <JuiListItemIcon>
@@ -27,7 +30,18 @@ class TaskItemView extends React.Component<TaskItemProps, {}> {
             <JuiTaskIcon complete={complete} />
           </div>
         </JuiListItemIcon>
-        <JuiListItemText primary={text} secondary={creator} />
+        <JuiListItemText
+          primary={text}
+          secondary={
+            personName || dueTime ? (
+              <JuiListItemSecondaryText>
+                <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
+                {personName && dueTime && <>&nbsp;·&nbsp;</>}
+                <JuiListItemSecondarySpan text={dueTime} />
+              </JuiListItemSecondaryText>
+            ) : null
+          }
+        />
       </JuiListItem>
     );
   }

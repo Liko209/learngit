@@ -22,27 +22,28 @@ class TaskItemViewModel extends AbstractViewModel<TaskProps> {
 
   @computed
   get task() {
-    const task = getEntity<Item, TaskItemModel>(
-      ENTITY_NAME.TASK_ITEM,
-      this._id,
-    );
-    console.log(task, '---nello');
-    return task;
+    return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
   }
 
   @computed
-  get creator() {
-    const { creatorId } = this.task;
-    const personName = getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      creatorId,
-    ).userDisplayName;
-    return personName;
+  get personName() {
+    const { assignedToIds } = this.task;
+    if (assignedToIds) {
+      const personName = assignedToIds
+        .map((personId: number) => {
+          return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, personId)
+            .userDisplayName;
+        })
+        .join(', ');
+      return personName;
+    }
+
+    return '';
   }
 
   @computed
-  get createdAt() {
-    return this.task ? dateFormatter.date(this.task.createdAt) : '';
+  get dueTime() {
+    return this.task.due ? dateFormatter.date(this.task.due) : '';
   }
 }
 

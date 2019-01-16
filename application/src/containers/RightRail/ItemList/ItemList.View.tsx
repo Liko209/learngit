@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
-import { ITEM_LIST_TYPE } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
 import { TaskItem } from '../TaskItem';
@@ -23,13 +23,13 @@ import {
 import { emptyView } from './Empty';
 
 const itemType = {
-  [ITEM_LIST_TYPE.FILE]: FileItem,
-  [ITEM_LIST_TYPE.TASK]: TaskItem,
+  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: FileItem,
+  [RIGHT_RAIL_ITEM_TYPE.TASKS]: TaskItem,
 };
 
 const subheaderType = {
-  [ITEM_LIST_TYPE.FILE]: 'fileListSubheader',
-  [ITEM_LIST_TYPE.TASK]: 'taskListSubheader',
+  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: 'fileListSubheader',
+  [RIGHT_RAIL_ITEM_TYPE.TASKS]: 'taskListSubheader',
 };
 
 @observer
