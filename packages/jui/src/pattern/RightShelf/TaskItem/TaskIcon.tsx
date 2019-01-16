@@ -6,7 +6,10 @@
 
 import React from 'react';
 
-import { JuiIconography } from '../../../foundation/Iconography';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
 import { width, height, grey, spacing } from '../../../foundation/utils';
 
@@ -27,23 +30,30 @@ const TaskIconWrapper = styled.div`
   }
 `;
 
-const TaskIcon = styled(JuiIconography)`
+type TaskIconProps = JuiIconographyProps & { iconColor?: string };
+
+const WrapperTaskIcon = ({ iconColor, ...rest }: TaskIconProps) => (
+  <JuiIconography {...rest} />
+);
+
+const TaskIcon = styled<TaskIconProps>(WrapperTaskIcon)`
   && {
     font-size: ${spacing(5)};
-    color: ${grey('500')};
+    color: ${({ iconColor }) => (iconColor ? iconColor : grey('500'))};
   }
 `;
 
 type Props = {
   complete: boolean;
+  iconColor?: string;
 };
 
 const JuiTaskIcon = React.memo((props: Props) => {
-  const { complete } = props;
+  const { complete, iconColor } = props;
 
   return (
     <TaskIconWrapper>
-      <TaskIcon>
+      <TaskIcon iconColor={iconColor}>
         {complete ? TASK_TYPE.task : TASK_TYPE.task_incomplete}
       </TaskIcon>
     </TaskIconWrapper>

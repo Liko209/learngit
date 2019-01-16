@@ -21,16 +21,17 @@ class TaskItemView extends React.Component<TaskItemProps, {}> {
 
   render() {
     const { task, personName, dueTime } = this.props;
-    const { complete, text } = task;
+    const { complete, text, color } = task;
 
     return (
       <JuiListItem>
         <JuiListItemIcon>
           <div>
-            <JuiTaskIcon complete={complete} />
+            <JuiTaskIcon iconColor={color} complete={complete} />
           </div>
         </JuiListItemIcon>
         <JuiListItemText
+          primaryColor={color}
           primary={text}
           secondary={
             personName || dueTime ? (
