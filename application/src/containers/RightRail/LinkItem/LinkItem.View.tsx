@@ -9,7 +9,6 @@ import {
   JuiListItemText,
   JuiListItem,
   JuiListItemIcon,
-  JuiListItemTextWithDate,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
@@ -32,7 +31,7 @@ class LinkItemView extends Component<LinkItemViewProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={textPrimary} />}
-          secondary={<JuiListItemTextWithDate text={textSecondary} />}
+          secondary={'<JuiListItemTextWithDate text={textSecondary} />'}
         />
       </JuiListItem>
     );
