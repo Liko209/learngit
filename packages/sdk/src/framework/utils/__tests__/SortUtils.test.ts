@@ -28,11 +28,27 @@ describe('SortUtils', () => {
     name: 'item3',
   };
 
-  it('should return sorted items', () => {
+  it('should return sorted items by name', () => {
     const items = [item1, item2, item3];
     const sortFn = (lhs: any, rhs: any) => {
       return SortUtils.sortModelByKey(lhs, rhs, 'name', true);
     };
     expect(items.sort(sortFn)).toEqual([item3, item2, item1]);
+  });
+
+  it('should return sorted items by created_at', () => {
+    const items = [item1, item2, item3];
+    const sortFn = (lhs: any, rhs: any) => {
+      return SortUtils.sortModelByKey(lhs, rhs, 'created_at', false);
+    };
+    expect(items.sort(sortFn)).toEqual([item1, item2, item3]);
+  });
+
+  it('should return sorted items by default order', () => {
+    const items = [item2, item1, item3];
+    const sortFn = (lhs: any, rhs: any) => {
+      return SortUtils.sortModelByKey(lhs, rhs, 'jjj', false);
+    };
+    expect(items.sort(sortFn)).toEqual(items);
   });
 });

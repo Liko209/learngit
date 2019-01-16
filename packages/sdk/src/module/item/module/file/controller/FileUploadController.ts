@@ -765,13 +765,7 @@ class FileUploadController {
   }
 
   private _getFileType(file: File) {
-    if (file.type && file.type.length > 0) {
-      return file.type;
-    }
-    return this._extractFileType(file.name);
-  }
-
-  private _extractFileType(fileName: string) {
+    const fileName = file.name;
     let type: string = '';
     if (fileName) {
       const arr = fileName.split('/');

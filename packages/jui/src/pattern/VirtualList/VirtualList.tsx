@@ -20,6 +20,7 @@ import {
 } from 'react-virtualized';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
+import { JuiVirtualListWrapper } from './VirtualListWrapper';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
@@ -155,30 +156,32 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     }
 
     return (
-      <InfiniteLoader
-        isRowLoaded={this._isRowLoaded}
-        loadMoreRows={this._loadMoreRows}
-        rowCount={cellCount}
-        ref={this._loaderRef}
-      >
-        {({ onRowsRendered, registerChild }) => {
-          return (
-            <AutoSizer ref={this._sizerRef}>
-              {({ width, height }: Size) => {
-                return (
-                  <List
-                    ref={ref => this._registerRef(ref, registerChild)}
-                    onRowsRendered={onRowsRendered}
-                    height={height}
-                    width={width}
-                    {...props}
-                  />
-                );
-              }}
-            </AutoSizer>
-          );
-        }}
-      </InfiniteLoader>
+      <JuiVirtualListWrapper>
+        <InfiniteLoader
+          isRowLoaded={this._isRowLoaded}
+          loadMoreRows={this._loadMoreRows}
+          rowCount={cellCount}
+          ref={this._loaderRef}
+        >
+          {({ onRowsRendered, registerChild }) => {
+            return (
+              <AutoSizer ref={this._sizerRef}>
+                {({ width, height }: Size) => {
+                  return (
+                    <List
+                      ref={ref => this._registerRef(ref, registerChild)}
+                      onRowsRendered={onRowsRendered}
+                      height={height}
+                      width={width}
+                      {...props}
+                    />
+                  );
+                }}
+              </AutoSizer>
+            );
+          }}
+        </InfiniteLoader>
+      </JuiVirtualListWrapper>
     );
   }
 }

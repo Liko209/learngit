@@ -22,6 +22,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
@@ -37,12 +38,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
         name: uuid(),
         members: [loginUser.rcId, users[5].rcId],
       });
-    });
-
-    await h(t).withLog('And the conversations should not be hidden and unfavorited before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [groupId, teamId]);
-      await h(t).glip(loginUser).clearFavoriteGroups();
-    });
+     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -100,7 +96,8 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init(); 
-
+    await h(t).glip(loginUser).resetProfile();
+ 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
     const conversationPage = app.homePage.messageTab.conversationPage;
@@ -131,8 +128,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await h(t).glip(loginUser).showGroups(loginUser.rcId, [groupId, teamId, groupId1, teamId1]);
-        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+groupId, +teamId, +groupId1, +teamId1]);
+        await h(t).glip(loginUser).favoriteGroups([+groupId, +teamId, +groupId1, +teamId1]);
       },
     );
 
@@ -253,17 +249,16 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init(); 
+    await h(t).glip(loginUser).resetProfile();
 
     let meChatId;
     await h(t).withLog('Given I have an extension with a me conversation', async () => {
-      meChatId = (await h(t).glip(loginUser).getPerson(loginUser.rcId)).data.me_group_id;
+      meChatId = await h(t).glip(loginUser).getPerson().then(res => res.data.me_group_id);
     });
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await h(t).glip(loginUser).showGroups(loginUser.rcId, [meChatId]);
-        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+meChatId]);
-
+         await h(t).glip(loginUser).favoriteGroups([+meChatId]);
       },
     );
 

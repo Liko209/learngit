@@ -8,13 +8,15 @@ import { Group } from '../entity';
 import _ from 'lodash';
 import { Api } from '../../../api';
 import { TeamActionController } from './TeamActionController';
+import { TeamPermissionController } from './TeamPermissionController';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { daoManager, GroupDao } from '../../../dao';
 
 class TeamController {
   private _actionController: TeamActionController;
+  private _permissionController: TeamPermissionController;
 
-  constructor(public controllerBuilder: IControllerBuilder<Group>) { }
+  constructor(public controllerBuilder: IControllerBuilder<Group>) {}
 
   getTeamActionController(): TeamActionController {
     if (!this._actionController) {
@@ -41,6 +43,12 @@ class TeamController {
     return this._actionController;
   }
 
+  getTeamPermissionController(): TeamPermissionController {
+    if (!this._permissionController) {
+      this._permissionController = new TeamPermissionController();
+    }
+    return this._permissionController;
+  }
 }
 
 export { TeamController };

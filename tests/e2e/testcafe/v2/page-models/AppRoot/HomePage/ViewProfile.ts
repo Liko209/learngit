@@ -102,6 +102,14 @@ export class MiniProfile extends BaseWebComponent {
   async goToMessages() {
     await this.t.click(this.messageButton);
   }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.header);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.header);
+  }
 }
 
 export class ProfileDialog extends BaseWebComponent {
