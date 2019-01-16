@@ -53,18 +53,18 @@ describe('ImageItemViewModel', () => {
   });
 
   describe('personName', () => {
-    it('should be a person name string when invoke person entity', () => {
+    it('should be a person name string when invoke person entity [JPT-965]', () => {
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
 
-    it('should be a new person name string when change person name', () => {
+    it('should be a new person name string when change person name [JPT-965]', () => {
       mockPerson.userDisplayName = 'new name';
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
   });
 
   describe('createdTime', () => {
-    it('should be a date string when incoming timestamp', () => {
+    it('should be a date string when incoming timestamp [JPT-965]', () => {
       expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
     });
   });
@@ -72,7 +72,7 @@ describe('ImageItemViewModel', () => {
   describe('url', () => {
     const previewUrl = 'IMAGE_URL';
 
-    it('should be a string when item is image type', () => {
+    it('should be a string when item is image type [JPT-965]', () => {
       (getFileType as jest.Mock).mockReturnValue({
         previewUrl,
         type: FileType.image,
