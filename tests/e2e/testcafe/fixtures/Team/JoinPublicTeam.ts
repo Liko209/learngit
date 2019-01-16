@@ -340,7 +340,6 @@ test(formalName(`The user should see go to conversation icon instead of the join
   });
 
   await h(t).withLog(`Then "go to conversation" icon should be shown`, async () => {
-    await t.debug();
     await t.expect(profileDialog.messageButton.exists).ok();
   });
 });

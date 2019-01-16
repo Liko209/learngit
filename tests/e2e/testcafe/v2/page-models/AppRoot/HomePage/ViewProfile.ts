@@ -268,7 +268,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get joinTeamButton() {
-    return this.getSelectorByAutomationId('add_member');
+    return this.getSelectorByIcon('add_member');
   }
 
   async joinTeam() {
