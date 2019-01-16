@@ -9,7 +9,6 @@ import { IdModel } from '../../../../../framework/model';
 type SanitizedItem = IdModel & {
   group_ids: number[];
   created_at: number;
-  name: string;
 };
 
 export { SanitizedItem };
