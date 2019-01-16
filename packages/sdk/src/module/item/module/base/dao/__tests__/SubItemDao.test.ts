@@ -6,7 +6,7 @@
 
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { SubItemDao } from '../SubItemDao';
-import { SanitizedItem } from '../../entity';
+import { SanitizedItem, Item } from '../../entity';
 
 describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
@@ -94,6 +94,13 @@ describe('Event Item Dao', () => {
     it('should return count of items of the group', async () => {
       expect(await dao.getGroupItemCount(groupId)).toBe(3);
     });
+
+    it('should return count of items of the group after filtered', async () => {
+      const filterFunc = (item: Item) => {
+        return item.id > 2;
+      };
+      expect(await dao.getGroupItemCount(groupId, filterFunc)).toBe(1);
+    });
   });
 
   describe('getSortedIds()', () => {
@@ -114,6 +121,22 @@ describe('Event Item Dao', () => {
         });
     });
 
+    it('filter function should work', async () => {
+      const filterFunc = (value: any) => {
+        return value.id !== 1;
+      };
+      const result = await dao.getSortedIds({
+        groupId,
+        filterFunc,
+        limit: 3,
+        desc: true,
+        typeId: 10,
+        sortKey: name,
+        offsetItemId: undefined,
+      });
+      expect(result).toEqual([item2.id, item3.id]);
+    });
+
     it.each`
       groupId     | sortKey         | limit | offsetItemId | expects                           | desc     | comment
       ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by name desc'}
@@ -127,13 +150,14 @@ describe('Event Item Dao', () => {
     `(
       '$comment',
       async ({ groupId, sortKey, limit, offsetItemId, desc, expects }) => {
-        const result = await dao.getSortedIds(
+        const result = await dao.getSortedIds({
           groupId,
           limit,
           offsetItemId,
           sortKey,
           desc,
-        );
+          typeId: 10,
+        });
         expect(result).toEqual(expects);
       },
     );
