@@ -6,7 +6,7 @@
 import React from 'react';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
-import { grey, width, height, spacing } from '../../foundation/utils';
+import { grey, width, height } from '../../foundation/utils';
 
 const JuiIconWrapper = styled.div`
   background: ${grey('100')};
