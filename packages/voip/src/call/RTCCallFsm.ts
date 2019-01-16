@@ -17,11 +17,17 @@ const CallFsmEvent = {
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
+  HOLD: 'holdEvent',
+  UNHOLD: 'unholdEvent',
   ACCOUNT_READY: 'accountReadyEvent',
   ACCOUNT_NOT_READY: 'accountNotReadyEvent',
   SESSION_CONFIRMED: 'sessionConfirmedEvent',
   SESSION_DISCONNECTED: 'sessionDisconnectedEvent',
   SESSION_ERROR: 'sessionErrorEvent',
+  HOLD_SUCCESS: 'holdSuccessEvent',
+  HOLD_FAILED: 'holdFailedEvent',
+  UNHOLD_SUCCESS: 'unholdSuccessEvent',
+  UNHOLD_FAILED: 'unholdFailedEvent',
 };
 
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
@@ -65,6 +71,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
           this._onSendToVoicemail();
           break;
         }
+        case CallFsmEvent.HOLD: {
+          this._onHold();
+          break;
+        }
+        case CallFsmEvent.UNHOLD: {
+          this._onUnhold();
+          break;
+        }
         case CallFsmEvent.ACCOUNT_READY: {
           this._onAccountReady();
           break;
@@ -83,6 +97,22 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.SESSION_ERROR: {
           this._onSessionError();
+          break;
+        }
+        case CallFsmEvent.HOLD_SUCCESS: {
+          this._onHoldSuccess();
+          break;
+        }
+        case CallFsmEvent.HOLD_FAILED: {
+          this._onHoldFailed();
+          break;
+        }
+        case CallFsmEvent.UNHOLD_SUCCESS: {
+          this._onUnholdSuccess();
+          break;
+        }
+        case CallFsmEvent.UNHOLD_FAILED: {
+          this._onUnholdFailed();
           break;
         }
         default: {
@@ -152,6 +182,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     );
   }
 
+  hold(): void {
+    this._eventQueue.push({ name: CallFsmEvent.HOLD }, () => {});
+  }
+
+  unhold(): void {
+    this._eventQueue.push({ name: CallFsmEvent.UNHOLD }, () => {});
+  }
+
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
   }
@@ -169,6 +207,22 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
       { name: CallFsmEvent.SESSION_DISCONNECTED },
       () => {},
     );
+  }
+
+  public holdSuccess() {
+    this._eventQueue.push({ name: CallFsmEvent.HOLD_SUCCESS }, () => {});
+  }
+
+  public holdFailed() {
+    this._eventQueue.push({ name: CallFsmEvent.HOLD_FAILED }, () => {});
+  }
+
+  public unholdSuccess() {
+    this._eventQueue.push({ name: CallFsmEvent.UNHOLD_SUCCESS }, () => {});
+  }
+
+  public unholdFailed() {
+    this._eventQueue.push({ name: CallFsmEvent.UNHOLD_FAILED }, () => {});
   }
 
   public sessionError() {
@@ -215,6 +269,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name);
   }
 
+  onHoldAction(): void {
+    this.emit(CALL_FSM_NOTIFY.HOLD_ACTION);
+  }
+
+  onUnholdAction(): void {
+    this.emit(CALL_FSM_NOTIFY.UNHOLD_ACTION);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
   }
@@ -247,6 +309,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._callFsmTable.sendToVoicemail();
   }
 
+  private _onHold() {
+    this._callFsmTable.hold();
+  }
+
+  private _onUnhold() {
+    this._callFsmTable.unhold();
+  }
+
   private _onAccountReady() {
     this._callFsmTable.accountReady();
   }
@@ -265,6 +335,22 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onSessionError() {
     this._callFsmTable.sessionError();
+  }
+
+  private _onHoldSuccess() {
+    this._callFsmTable.holdSuccess();
+  }
+
+  private _onHoldFailed() {
+    this._callFsmTable.holdFailed();
+  }
+
+  private _onUnholdSuccess() {
+    this._callFsmTable.unholdSuccess();
+  }
+
+  private _onUnholdFailed() {
+    this._callFsmTable.unholdFailed();
   }
 
   private _onEnterAnswering() {

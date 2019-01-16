@@ -98,6 +98,14 @@ class RTCCall {
     this._fsm.stopRecord();
   }
 
+  hold(): void {
+    this._fsm.hold();
+  }
+
+  unhold(): void {
+    this._fsm.unhold();
+  }
+
   transfer(target: string): void {
     if (target.length === 0) {
       this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER);
@@ -195,6 +203,12 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.SEND_TO_VOICEMAIL_ACTION, () => {
       this._onSendToVoicemailAction();
     });
+    this._fsm.on(CALL_FSM_NOTIFY.HOLD_ACTION, () => {
+      this._onHoldAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.UNHOLD_ACTION, () => {
+      this._onUnholdAction();
+    });
   }
 
   private _destroy() {
@@ -212,11 +226,33 @@ class RTCCall {
         this._isRecording = false;
         break;
       }
+      case RTC_CALL_ACTION.HOLD: {
+        this._fsm.holdSuccess();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._fsm.unholdSuccess();
+        break;
+      }
+      default:
+        break;
     }
     this._delegate.onCallActionSuccess(callAction);
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
+    switch (callAction) {
+      case RTC_CALL_ACTION.HOLD: {
+        this._fsm.holdFailed();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._fsm.unholdFailed();
+        break;
+      }
+      default:
+        break;
+    }
     this._delegate.onCallActionFailed(callAction);
   }
 
@@ -243,6 +279,14 @@ class RTCCall {
 
   private _onSendToVoicemailAction() {
     this._callSession.sendToVoicemail();
+  }
+
+  private _onHoldAction() {
+    this._callSession.hold();
+  }
+
+  private _onUnholdAction() {
+    this._callSession.unhold();
   }
 
   private _onHangupAction() {

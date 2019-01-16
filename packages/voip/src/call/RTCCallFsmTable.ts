@@ -13,6 +13,9 @@ const CallFsmState = {
   ANSWERING: 'answering',
   CONNECTING: 'connecting',
   CONNECTED: 'connected',
+  HOLDING: 'holding',
+  HOLDED: 'holded',
+  UNHOLDING: 'unholding',
   DISCONNECTED: 'disconnected',
 };
 
@@ -27,9 +30,15 @@ const CallFsmEvent = {
   TRANSFER: 'transfer',
   START_RECORD: 'startRecord',
   STOP_RECORD: 'stopRecord',
+  HOLD: 'hold',
+  UNHOLD: 'unhold',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
+  HOLD_SUCCESS: 'holdSuccess',
+  HOLD_FAILED: 'holdFailed',
+  UNHOLD_SUCCESS: 'unholdSuccess',
+  UNHOLD_FAILED: 'unholdFailed',
 };
 
 interface IRTCCallFsmTableDependency {
@@ -43,6 +52,8 @@ interface IRTCCallFsmTableDependency {
   onStartRecordAction(): void;
   onStopRecordAction(): void;
   onReportCallActionFailed(name: string): void;
+  onHoldAction(): void;
+  onUnholdAction(): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -95,6 +106,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.PENDING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: () => {
             dependency.onHangupAction();
@@ -190,6 +204,42 @@ class RTCCallFsmTable extends StateMachine {
           },
         },
         {
+          name: CallFsmEvent.HOLD,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onHoldAction();
+            return CallFsmState.HOLDING;
+          },
+        },
+        {
+          name: CallFsmEvent.HOLD_SUCCESS,
+          from: CallFsmState.HOLDING,
+          to: CallFsmState.HOLDED,
+        },
+        {
+          name: CallFsmEvent.HOLD_FAILED,
+          from: CallFsmState.HOLDING,
+          to: CallFsmState.CONNECTED,
+        },
+        {
+          name: CallFsmEvent.UNHOLD,
+          from: CallFsmState.HOLDED,
+          to: () => {
+            dependency.onUnholdAction();
+            return CallFsmState.UNHOLDING;
+          },
+        },
+        {
+          name: CallFsmEvent.UNHOLD_SUCCESS,
+          from: CallFsmState.UNHOLDING,
+          to: CallFsmState.CONNECTED,
+        },
+        {
+          name: CallFsmEvent.UNHOLD_FAILED,
+          from: CallFsmState.UNHOLDING,
+          to: CallFsmState.HOLDED,
+        },
+        {
           name: CallFsmEvent.SESSION_CONFIRMED,
           from: [CallFsmState.ANSWERING, CallFsmState.CONNECTING],
           to: CallFsmState.CONNECTED,
@@ -201,6 +251,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.ANSWERING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: CallFsmState.DISCONNECTED,
         },
@@ -211,6 +264,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.ANSWERING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: CallFsmState.DISCONNECTED,
         },
