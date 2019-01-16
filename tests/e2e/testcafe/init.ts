@@ -1,17 +1,16 @@
 import 'testcafe';
 import * as JSZip from 'jszip';
 import * as fs from 'fs';
-import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
-import { BeatsClient, Run } from 'bendapi';
+import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
-const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL) : null;
+const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
 // _runId is a share state
 let _runId = getRunIdFromFile();
 
@@ -25,7 +24,7 @@ function getRunIdFromFile(runIdFile: string = './runId') {
 
 export async function getOrCreateRunId(runIdFile: string = './runId') {
   if (!_runId) {
-    const runName = RUN_NAME || uuid();
+    const runName = RUN_NAME;
     const metadata = {};
     for (const key in ENV_OPTS) {
       metadata[key] = JSON.stringify(ENV_OPTS[key]);
@@ -47,12 +46,12 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
       ].indexOf(key) > 0 || key.startsWith('gitlab'))
         metadata[key] = process.env[key];
     }
-    const run = await beatsClient.createRun({
-      name: runName,
-      metadata,
-    } as Run);
-    // update share state
-    _runId = run ? run.id : null;
+    const run = new Run();
+    run.name = runName;
+    run.metadata = metadata;
+    // TODO: hostname, hostip, etc
+    const res = await beatsClient.createRun(run).catch(() => null);
+    _runId = res ? res.body.id : null;
     console.log(`a new Run Id is created: ${_runId}`);
   }
   return _runId;

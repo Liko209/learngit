@@ -1,8 +1,10 @@
-import * as _ from 'lodash';
 import 'testcafe';
+import * as _ from 'lodash';
+import * as fs from 'fs';
+
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog } from "../models";
-import { BeatsClient, Step, Test, Attachment } from 'bendapi';
+import { BeatsClient, Test, Step } from 'bendapi-ts';
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
@@ -21,28 +23,24 @@ export class DashboardHelper {
 
   constructor(private t: TestController) { }
 
-  private async uploadAttachment(file: string, stepId: number, fileContentType: string = "multipart/form-data;") {
-    return await this.beatsClient.createAttachment({
-      file,
-      fileContentType,
-      contentType: "step",
-      objectId: stepId
-    } as Attachment);
+  private uploadAttachment(file: string, stepId: number, ) {
+    return this.beatsClient.createAttachment('step', stepId, fs.createReadStream(file));
   }
 
   private async createStepInDashboard(step: IStep, testId: number) {
-    const beatStep = await this.beatsClient.createStep({
-      name: step.message,
-      status: StatusMap[step.status],
-      startTime: (new Date(step.startTime)).toISOString(),
-      endTime: (new Date(step.endTime)).toISOString()
-    } as Step, testId);
+    const beatStep = new Step();
+    beatStep.name = step.message;
+    beatStep.status = StatusMap[step.status];
+    beatStep.startTime = new Date(step.startTime);
+    beatStep.endTime = new Date(step.endTime);
+    beatStep.test = testId;
+    const res = await this.beatsClient.createStep(beatStep);
     if (step.screenshotPath) {
-      await this.uploadAttachment(step.screenshotPath, beatStep.id);
+      await this.uploadAttachment(step.screenshotPath, res.body.id);
     }
     if (step.attachments) {
       for (const attachmentPath of step.attachments) {
-        await this.uploadAttachment(attachmentPath, beatStep.id);
+        await this.uploadAttachment(attachmentPath, res.body.id);
       }
     }
   }
@@ -54,21 +52,23 @@ export class DashboardHelper {
     const tags = parseFormalName(testRun.test.name).tags;
 
     // TODO: browser, browserVer, os, osVer
-    const beatsTest = await this.beatsClient.createTest({
-      name: `${testRun.test.name}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`,
-      status: StatusMap[status],
-      metadata: {
-        user_agent: testRun.browserConnection.browserInfo.userAgent,
-      },
-      manual_ids: getTmtIds(tags, 'JPT'),
-      startTime: testRun.startTime,
-      endTime: new Date().toISOString()
-    } as any, runId);
+    const beatsTest = new Test();
+    beatsTest.name = `${testRun.test.name}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`;
+    beatsTest.status = StatusMap[status];
+    beatsTest.metadata = {
+      user_agent: testRun.browserConnection.browserInfo.userAgent,
+    }
+    beatsTest.manualIds = getTmtIds(tags, 'JPT');
+    beatsTest.startTime = testRun.startTime;
+    beatsTest.endTime = new Date();
+    beatsTest.run = runId;
+    const res = await this.beatsClient.createTest(beatsTest);
+
     for (const step of this.t.ctx.logs) {
-      await this.createStepInDashboard(step, beatsTest.id);
+      await this.createStepInDashboard(step, res.body.id);
     }
     // create a step to store test level data
-    logger.info(`add detail as an extra step to case ${beatsTest.id}`);
+    logger.info(`add detail as an extra step to case ${res.body.id}`);
     const detailStep = <IStep>{
       status,
       message: `Test Detail: warning(${consoleLog.warnConsoleLogNumber}), error(${consoleLog.errorConsoleLogNumber})`,
@@ -88,7 +88,7 @@ export class DashboardHelper {
       }
     }
     detailStep.endTime = Date.now();
-    await this.createStepInDashboard(detailStep, beatsTest.id);
+    await this.createStepInDashboard(detailStep, res.body.id);
   }
 
   public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog, accountType: string) {
