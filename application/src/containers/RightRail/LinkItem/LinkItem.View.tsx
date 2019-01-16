@@ -13,7 +13,6 @@ import {
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
-import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { LinkItemViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 
@@ -46,11 +45,11 @@ class LinkItemView extends Component<LinkItemViewProps> {
           {faviconUrl ? (
             <JuiThumbnail url={faviconUrl} />
           ) : (
-            <JuiIconography>link</JuiIconography>
+            <JuiIconography fontSize="large">link</JuiIconography>
           )}
         </JuiListItemIcon>
         <JuiListItemText
-          primary={<FileName filename={textPrimary} />}
+          primary={textPrimary}
           secondary={this._renderSecondaryText()}
         />
       </JuiListItem>
