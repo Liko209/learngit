@@ -24,9 +24,10 @@ import {
 } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
+const LOG_TAG = 'RTCRegistrationManager';
+
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
-  private _kTag: string = 'RTCRegistrationManager';
   private _fsm: RTCRegistrationFSM;
   private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
@@ -214,7 +215,7 @@ class RTCRegistrationManager extends EventEmitter2
 
   private _scheduleRegisterRetryTimer() {
     rtcLogger.debug(
-      this._kTag,
+      LOG_TAG,
       `Schedule retry registration in ${this._retryInterval} seconds`,
     );
     if (this._retryTimer) {
@@ -227,7 +228,7 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _clearRegisterRetryTimer() {
-    rtcLogger.debug(this._kTag, 'Clear retry registration timer');
+    rtcLogger.debug(LOG_TAG, 'Clear retry registration timer');
     if (this._retryTimer) {
       clearTimeout(this._retryTimer);
     }
