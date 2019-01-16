@@ -66,12 +66,16 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     return (
       <JuiTeamSettingEditSection>
         <JuiTeamSettingEditSectionLeft>
-          <GroupAvatar cid={id} size="xlarge" />
+          <GroupAvatar
+            cid={id}
+            size="xlarge"
+            data-test-automation-id="teamAvatar"
+          />
         </JuiTeamSettingEditSectionLeft>
         <JuiTeamSettingEditSectionRight>
           <JuiTextField
-            id="names"
             label={toTitleCase(t('teamName_plural'))}
+            data-test-automation-id="teamName"
             value={this.state.name}
             fullWidth={true}
             error={nameError}
@@ -82,8 +86,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             onChange={this.handleNameChange}
           />
           <JuiTextarea
-            id="description"
             label={toTitleCase(t('description'))}
+            data-test-automation-id="teamDescription"
             value={this.state.description}
             inputProps={{
               maxLength: DESC_MAX_LENGTH,

@@ -166,7 +166,10 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
-        <JuiMenuItem onClick={this._handleProfileDialog}>
+        <JuiMenuItem
+          data-test-automation-id="profileEntry"
+          onClick={this._handleProfileDialog}
+        >
           {t('viewProfile')}
         </JuiMenuItem>
         {this.renderCloseMenuItem(t, closable)}
