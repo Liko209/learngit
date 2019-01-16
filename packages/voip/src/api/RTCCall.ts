@@ -213,11 +213,15 @@ class RTCCall {
         break;
       }
     }
-    this._delegate.onCallActionSuccess(callAction);
+    if (this._delegate) {
+      this._delegate.onCallActionSuccess(callAction);
+    }
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
-    this._delegate.onCallActionFailed(callAction);
+    if (this._delegate) {
+      this._delegate.onCallActionFailed(callAction);
+    }
   }
 
   // session listener
@@ -281,7 +285,9 @@ class RTCCall {
       return;
     }
     this._callState = state;
-    this._delegate.onCallStateChange(state);
+    if (this._delegate) {
+      this._delegate.onCallStateChange(state);
+    }
     if (this._callState === RTC_CALL_STATE.DISCONNECTED) {
       this._account.removeCallFromCallManager(this._callInfo.uuid);
     }
