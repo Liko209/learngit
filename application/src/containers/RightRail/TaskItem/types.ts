@@ -11,7 +11,6 @@ type TaskProps = {
 };
 
 type TaskItemProps = {
-  subTitle: string;
   personName: string;
   dueTime: string;
   task: TaskItemModel;

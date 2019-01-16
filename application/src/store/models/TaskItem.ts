@@ -31,7 +31,6 @@ export default class TaskItemModel extends ItemModel {
 
   constructor(data: TaskItem) {
     super(data);
-    console.log(data, '---nello');
     const {
       color,
       complete,
