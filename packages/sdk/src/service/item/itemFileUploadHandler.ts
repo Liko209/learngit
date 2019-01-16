@@ -374,7 +374,7 @@ class ItemFileUploadHandler {
 
     newFormFile.append(
       FILE_FORM_DATA_KEYS.CONTENT_TYPE,
-      this._getFileType(file),
+      file.type,
     );
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
