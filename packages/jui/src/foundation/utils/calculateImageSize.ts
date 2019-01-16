@@ -17,6 +17,108 @@ type ThumbnailInfo = {
   justifyHeight: boolean;
 };
 
+type CaseTye = {
+  match: (width: number, height: number) => boolean;
+  calculate: (width: number, height: number, result: ThumbnailInfo) => void;
+};
+
+const case1: CaseTye = {
+  match(width: number, height: number) {
+    const ratio = height / width;
+    return height <= MIN_HEIGHT && ratio >= 1 / 5 && ratio <= 2 / 5;
+  },
+  calculate(width: number, height: number, result: ThumbnailInfo) {
+    const scale = MIN_HEIGHT / height;
+    result.width *= scale;
+    result.height = MIN_HEIGHT;
+    result.justifyHeight = true;
+  },
+};
+
+const case2: CaseTye = {
+  match(width: number, height: number) {
+    const ratio = height / width;
+    return width <= MIN_WIDTH && ratio > 2 / 5 && ratio <= 2;
+  },
+  calculate(width: number, height: number, result: ThumbnailInfo) {
+    const scale = MIN_WIDTH / width;
+    result.width = MIN_WIDTH;
+    result.height *= scale;
+    result.justifyWidth = true;
+  },
+};
+
+const case3: CaseTye = {
+  match(width: number, height: number) {
+    return (
+      width > MIN_WIDTH &&
+      width <= MAX_WIDTHHEIGHT &&
+      height > MIN_HEIGHT &&
+      height <= MAX_WIDTHHEIGHT
+    );
+  },
+  calculate() {
+    // do nothing
+  },
+};
+
+const case4: CaseTye = {
+  match(width: number, height: number) {
+    const ratio = height / width;
+    return (
+      height > MAX_WIDTHHEIGHT &&
+      width > MAX_WIDTHHEIGHT &&
+      ratio > 1 / 5 &&
+      ratio < 2
+    );
+  },
+  calculate(width: number, height: number, result: ThumbnailInfo) {
+    if (width < height) {
+      const scale = MAX_WIDTHHEIGHT / width;
+      result.width = MAX_WIDTHHEIGHT;
+      result.height = MAX_WIDTHHEIGHT;
+      result.justifyWidth = true;
+      result.top = (MAX_WIDTHHEIGHT - height * scale) / 2;
+    } else {
+      const scale = MAX_WIDTHHEIGHT / height;
+      result.width = MAX_WIDTHHEIGHT;
+      result.height = MAX_WIDTHHEIGHT;
+      result.justifyHeight = true;
+      result.left = (MAX_WIDTHHEIGHT - width * scale) / 2;
+    }
+  },
+};
+
+const case5: CaseTye = {
+  match(width: number, height: number) {
+    const ratio = height / width;
+    return ratio < 1 / 5;
+  },
+  calculate(width: number, height: number, result: ThumbnailInfo) {
+    const ratio = height / width;
+    result.width = MAX_WIDTHHEIGHT;
+    result.height = MIN_HEIGHT;
+    result.justifyHeight = true;
+    result.left = (MAX_WIDTHHEIGHT - MIN_HEIGHT / ratio) / 2;
+  },
+};
+
+const case6: CaseTye = {
+  match(width: number, height: number) {
+    const ratio = height / width;
+    return ratio > 2;
+  },
+  calculate(width: number, height: number, result: ThumbnailInfo) {
+    const ratio = height / width;
+    result.height = MAX_WIDTHHEIGHT;
+    result.width = MIN_WIDTH;
+    result.justifyWidth = true;
+    result.top = (MAX_WIDTHHEIGHT - MIN_WIDTH * ratio) / 2;
+  },
+};
+
+const StrategyMap: CaseTye[] = [case1, case2, case3, case4, case5, case6];
+
 function getThumbnailSize(width: number, height: number): ThumbnailInfo {
   const result = {
     width,
@@ -27,58 +129,12 @@ function getThumbnailSize(width: number, height: number): ThumbnailInfo {
     justifyHeight: false,
   };
   if (typeof width === 'number' && typeof height === 'number') {
-    const ratio = height / width;
-    if (height <= MIN_HEIGHT && ratio >= 1 / 5 && ratio <= 2 / 5) {
-      // case 1
-      const scale = MIN_HEIGHT / height;
-      result.width *= scale;
-      result.height = MIN_HEIGHT;
-      result.justifyHeight = true;
-    } else if (width <= MIN_WIDTH && ratio > 2 / 5 && ratio <= 2) {
-      // case 2
-      const scale = MIN_WIDTH / width;
-      result.width = MIN_WIDTH;
-      result.height *= scale;
-      result.justifyWidth = true;
-    } else if (
-      width > MIN_WIDTH &&
-      width <= MAX_WIDTHHEIGHT &&
-      height > MIN_HEIGHT &&
-      height <= MAX_WIDTHHEIGHT
-    ) {
-      // case 3, perfect image
-    } else if (
-      height > MAX_WIDTHHEIGHT &&
-      width > MAX_WIDTHHEIGHT &&
-      ratio > 1 / 5 &&
-      ratio < 2
-    ) {
-      // case 4
-      if (width < height) {
-        const scale = MAX_WIDTHHEIGHT / width;
-        result.width = MAX_WIDTHHEIGHT;
-        result.height = MAX_WIDTHHEIGHT;
-        result.justifyWidth = true;
-        result.top = (MAX_WIDTHHEIGHT - height * scale) / 2;
-      } else {
-        const scale = MAX_WIDTHHEIGHT / height;
-        result.width = MAX_WIDTHHEIGHT;
-        result.height = MAX_WIDTHHEIGHT;
-        result.justifyHeight = true;
-        result.left = (MAX_WIDTHHEIGHT - width * scale) / 2;
+    for (let i = 0; i < StrategyMap.length; ++i) {
+      const item = StrategyMap[i];
+      if (item.match(width, height)) {
+        item.calculate(width, height, result);
+        break;
       }
-    } else if (ratio < 1 / 5) {
-      // case 5
-      result.width = MAX_WIDTHHEIGHT;
-      result.height = MIN_HEIGHT;
-      result.justifyHeight = true;
-      result.left = (MAX_WIDTHHEIGHT - MIN_HEIGHT / ratio) / 2;
-    } else if (ratio > 2) {
-      // case 6
-      result.height = MAX_WIDTHHEIGHT;
-      result.width = MIN_WIDTH;
-      result.justifyWidth = true;
-      result.top = (MAX_WIDTHHEIGHT - MIN_WIDTH * ratio) / 2;
     }
   }
   result.width = Math.round(result.width);
