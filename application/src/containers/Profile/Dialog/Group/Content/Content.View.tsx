@@ -105,7 +105,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
                 )}
               {showJoinTeam &&
                 this.renderButton(
-                  'chat_bubble',
+                  'add_member',
                   'joinTeam',
                   ['ariaJoinTeam', 'ariaJoinTeam'],
                   this.joinTeamAfterClick,
