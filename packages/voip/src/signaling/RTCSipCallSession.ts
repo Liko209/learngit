@@ -8,12 +8,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import { RTC_CALL_ACTION } from '../api/types';
-
-enum WEBPHONE_STATE {
-  ACCEPTED = 'accepted',
-  BYE = 'bye',
-  FAILED = 'failed',
-}
+import { WEBPHONE_SESSION_STATE } from '../signaling/types';
 
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
@@ -32,13 +27,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
-    this._session.on(WEBPHONE_STATE.ACCEPTED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, () => {
       this._onSessionConfirmed();
     });
-    this._session.on(WEBPHONE_STATE.BYE, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
       this._onSessionDisconnected();
     });
-    this._session.on(WEBPHONE_STATE.FAILED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.FAILED, () => {
       this._onSessionError();
     });
   }

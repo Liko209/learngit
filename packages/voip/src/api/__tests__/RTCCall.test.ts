@@ -10,6 +10,7 @@ import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../types';
+import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
@@ -47,6 +48,9 @@ describe('RTC call', () => {
     stopRecord = jest.fn();
     transfer = jest.fn();
 
+    hold = jest.fn();
+    unhold = jest.fn();
+
     mockSignal(signal: string): void {
       this.emit(signal);
     }
@@ -54,6 +58,7 @@ describe('RTC call', () => {
     accept() {}
     reject() {}
     toVoicemail() {}
+
     public remoteIdentity: any;
   }
 
@@ -896,4 +901,273 @@ describe('RTC call', () => {
       });
     });
   });
+
+  describe('Hold / Unhold Call', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+    }
+
+    it('should enter holding state and trigger hold action when hold call in connected state. [JPT-820]', done => {
+      setup();
+      jest.spyOn(call._fsm, 'holdSuccess').mockImplementation(() => {});
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      setImmediate(() => {
+        expect(session.hold).toBeCalled();
+        expect(call._fsm.state()).toBe('holding');
+        done();
+      });
+    });
+
+    it('should enter holded state when hold call success. [JPT-822]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holded');
+        done();
+      });
+    });
+
+    it('should enter connected state when hold call failed in holding state. [JPT-823]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+        RTC_CALL_ACTION.HOLD,
+      );
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        done();
+      });
+    });
+
+    it('should enter unholding state when unhold call in holded state. [JPT-824]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('unholding');
+        done();
+      });
+    });
+
+    it('should enter holded state when unhold call failed in unholding state. [JPT-825]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+        RTC_CALL_ACTION.UNHOLD,
+      );
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holded');
+        done();
+      });
+    });
+
+    it('should enter connected state when unhold success in unholding state. [JPT-842]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.UNHOLD,
+      );
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when hangup in holding state. [JPT-832]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call.hangup();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when session error in holding state. [JPT-833]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when session disconnected in holding state. [JPT-834]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when hangup in holded state. [JPT-836]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.hangup();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when session error in holded state. [JPT-837]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when session disconnected in holded state. [JPT-838]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when hangup in unholding state. [JPT-839]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call.hangup();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when session error in unholding state. [JPT-840]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should enter disconnected state when session disconnected in unholding state. [JPT-841]', done => {
+      setup();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+  });
+
+  describe('Unhold Call', async () => {});
 });
