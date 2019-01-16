@@ -6,13 +6,13 @@ interface IGroupService {
 
   canJoinTeam(team: Group): boolean;
 
-  joinTeam(userId: number, teamId: number): Promise<Group | null>;
+  joinTeam(userId: number, teamId: number): void;
 
-  leaveTeam(userId: number, teamId: number): Promise<Group | null>;
+  leaveTeam(userId: number, teamId: number): void;
 
-  addTeamMembers(members: number[], teamId: number): Promise<Group | null>;
+  addTeamMembers(members: number[], teamId: number): void;
 
-  removeTeamMembers(members: number[], teamId: number): Promise<Group | null>;
+  removeTeamMembers(members: number[], teamId: number): void;
 
   isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean;
 
