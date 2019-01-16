@@ -4,6 +4,7 @@ import { IdModel } from 'sdk/framework/model';
 
 export type Entity = {
   id: number;
+  isMocked: boolean;
   data?: any;
   [name: string]: any;
 };

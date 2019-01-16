@@ -10,6 +10,7 @@ enum ENTITY_NAME {
   'EVENT_ITEM' = 'eventItem',
   'LINK_ITEM' = 'linkItem',
   'NOTE_ITEM' = 'noteItem',
+  'CODE_ITEM' = 'codeItem',
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',

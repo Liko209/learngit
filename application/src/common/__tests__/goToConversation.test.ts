@@ -125,7 +125,7 @@ describe('getConversationId() with  multiple person type conversationId', () => 
 });
 
 describe('getConversationId() with message', () => {
-  it('should show loading then open the conversation and send the message when success, JPT-692 JPT-697', async () => {
+  it('should show loading then open the conversation and send the message when success [JPT-692] [JPT-697]', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
       ok({
@@ -150,7 +150,7 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/2');
   });
 
-  it('should show loading then show error page if failed', async () => {
+  it('should show loading then show error page if failed [JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
       err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
@@ -171,7 +171,7 @@ describe('getConversationId() with message', () => {
     });
   });
 
-  it('should show loading then show error page if failed', async () => {
+  it('should show loading then show error page if failed [JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(new Error());
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(

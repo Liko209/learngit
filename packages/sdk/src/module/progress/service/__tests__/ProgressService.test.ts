@@ -63,7 +63,7 @@ describe('ProgressService', () => {
 
     describe('getById()', () => {
       it('should call getProgress api in ProgressCacheController', () => {
-        progressService.getById(-1);
+        progressService.getByIdSync(-1);
         expect(progressCacheController.getProgress).toBeCalledWith(-1);
       });
     });
