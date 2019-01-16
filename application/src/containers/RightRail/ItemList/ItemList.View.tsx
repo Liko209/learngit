@@ -6,9 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
-import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ViewProps, Props } from './types';
-import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { debounce } from 'lodash';
 import {
@@ -20,18 +18,9 @@ import {
   JuiConversationRightRailLoading,
   JuiRightShelfContent,
 } from 'jui/pattern/RightShelf';
-import { NoteItem } from '../NoteItem';
+
 import { emptyView } from './Empty';
-
-const itemType = {
-  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: FileItem,
-  [RIGHT_RAIL_ITEM_TYPE.NOTES]: NoteItem,
-};
-
-const subheaderType = {
-  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: 'fileListSubheader',
-  [RIGHT_RAIL_ITEM_TYPE.NOTES]: 'noteListSubheader',
-};
+import { TAB_CONFIG, TabConfig } from './config';
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
@@ -48,7 +37,8 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   cellAtIndex = (index: number, style: React.CSSProperties) => {
     const { ids, type } = this.props;
-    const Component: any = itemType[type];
+    const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
+    const Component: any = config.item;
     const id = ids[index];
     return (
       <div key={index} style={style}>
@@ -78,7 +68,8 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   render() {
     const { type, totalCount } = this.props;
-    const subheaderText = subheaderType[type];
+    const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
+    const subheaderText = config.subheader;
     return (
       <JuiRightShelfContent>
         {totalCount > 0 && (

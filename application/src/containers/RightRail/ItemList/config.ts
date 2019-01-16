@@ -3,6 +3,9 @@
  * @Date: 2019-01-11 15:30:28
  * Copyright © RingCentral. All rights reserved.
  */
+import { ComponentType } from 'react';
+import { FileItem } from '../FileItem';
+import { NoteItem } from '../NoteItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -23,6 +26,8 @@ type EmptyConfig = {
 type TabConfig = {
   title: string;
   type: RIGHT_RAIL_ITEM_TYPE;
+  item: ComponentType;
+  subheader: string;
   empty: EmptyConfig;
 };
 
@@ -30,6 +35,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'pinned',
     type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
+    item: FileItem,
+    subheader: '',
     empty: {
       text: 'youHaveNothingPinnedYet',
       content: 'noPinSubText',
@@ -39,6 +46,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'files',
     type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+    item: FileItem,
+    subheader: 'fileListSubheader',
     empty: {
       text: 'noFilesSharedYet',
       content: 'noFileSubText',
@@ -48,6 +57,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'images',
     type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
+    item: FileItem,
+    subheader: '',
     empty: {
       text: 'noImagesSharedYet',
       content: 'noImageSubText',
@@ -57,6 +68,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'tasks',
     type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+    item: FileItem,
+    subheader: '',
     empty: {
       text: 'noTasksYet',
       content: 'noTaskSubText',
@@ -66,6 +79,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'links',
     type: RIGHT_RAIL_ITEM_TYPE.LINKS,
+    item: FileItem,
+    subheader: '',
     empty: {
       text: 'noLinksSharedYet',
       content: 'noLinkSubText',
@@ -75,6 +90,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'notes',
     type: RIGHT_RAIL_ITEM_TYPE.NOTES,
+    item: NoteItem,
+    subheader: 'noteListSubheader',
     empty: {
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',
@@ -84,6 +101,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
+    item: FileItem,
+    subheader: '',
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',
@@ -93,6 +112,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'integrations',
     type: RIGHT_RAIL_ITEM_TYPE.INTEGRATIONS,
+    item: FileItem,
+    subheader: '',
     empty: {
       text: 'noIntegrationInstallationYet',
       content: 'noIntegrationSubText',
