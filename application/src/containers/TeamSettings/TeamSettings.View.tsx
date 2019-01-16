@@ -82,7 +82,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         </JuiTeamSettingEditSectionLeft>
         <JuiTeamSettingEditSectionRight>
           <JuiTextField
-            label={toTitleCase(t('teamName_plural'))}
+            label={t('teamName')}
             data-test-automation-id="teamName"
             value={this.state.name}
             fullWidth={true}
@@ -92,7 +92,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             onChange={this.handleNameChange}
           />
           <JuiTextarea
-            label={toTitleCase(t('description'))}
+            label={t('teamDescription')}
             data-test-automation-id="teamDescription"
             value={this.state.description}
             inputProps={TeamSettings.DESCRIPTION_INPUT_PROPS}
