@@ -122,10 +122,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   mute() {
     this._session.mute();
+    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.MUTE);
   }
 
   unmute() {
     this._session.unmute();
+    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.UNMUTE);
   }
 
   answer() {
