@@ -104,7 +104,8 @@ test(formalName('Each conversation should be represented by the team name.',
   },
 );
 
-test(formalName('Conversation that received post should be moved to top', ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']), async (t: TestController) => {
+// case JPT-47 expire
+test.skip(formalName('Conversation that received post should be moved to top', ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
@@ -129,43 +130,28 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
   });
 
   await h(t).withLog('Send a new post to team1', async () => {
-    await h(t).platform(loginUser).createPost(
-      { text: 'test move team to top' },
-      teamOneId,
-    );
+    await h(t).platform(loginUser).sendTextPost('test move team to top', teamOneId);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('Then I can find team1 on the top of Team section', async () => {
     await teamsSection.expand();
-    await t
-      .expect(teamsSection.conversations.nth(0).getAttribute('data-group-id'))
-      .eql(teamOneId);
+    await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamOneId);
   }, true);
 
   await h(t).withLog('When send a new post to team2', async () => {
-    await h(t).platform(loginUser).createPost(
-      { text: 'test move team to top' },
-      teamTwoId,
-    );
+    await h(t).platform(loginUser).sendTextPost('test move team to top', teamTwoId);
   });
 
   await h(t).withLog('Then I can find team2 on the top of Team section', async () => {
-    await teamsSection.expand();
-    await t.wait(1e3);
-    await t
-      .expect(teamsSection.conversations.nth(0).getAttribute('data-group-id'))
-      .eql(teamTwoId);
+    await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamTwoId);
   }, true);
-},
-);
+});
 
 test(formalName('Can expand and collapse the team section by clicking the section name.',
   ['JPT-11', 'P2', 'ConversationList']),

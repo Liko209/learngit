@@ -38,7 +38,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   });
 
   await h(t).withLog('Make sure the conversations are shown and marked as favorite', async () => {
-     await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+pvtChatId, +teamId])
+     await h(t).glip(loginUser).favoriteGroups([+pvtChatId, +teamId])
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {

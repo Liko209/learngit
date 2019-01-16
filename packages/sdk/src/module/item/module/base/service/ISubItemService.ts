@@ -5,14 +5,10 @@
  */
 
 import { Item } from '../entity';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+
 interface ISubItemService {
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]>;
+  getSortedIds(options: ItemQueryOptions): Promise<number[]>;
 
   updateItem(item: Item): void;
 
@@ -20,7 +16,10 @@ interface ISubItemService {
 
   createItem(item: Item): void;
 
-  getSubItemsCount(groupId: number): Promise<number>;
+  getSubItemsCount(
+    groupId: number,
+    filterFunc?: ItemFilterFunction,
+  ): Promise<number>;
 }
 
 export { ISubItemService };
