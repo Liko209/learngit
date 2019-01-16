@@ -7,9 +7,12 @@
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { LinkItemController } from '../controller/LinkItemController';
 import { EntityBaseService } from '../../../../../framework/service';
-import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
-import { ItemQueryOptions } from '../../../types';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+import { LinkItem, SanitizedLinkItem } from '../entity';
+import { LinkItemDao } from '../dao';
+import { daoManager } from '../../../../../dao';
+import { ItemUtils } from '../../../utils';
 
 class LinkItemService extends EntityBaseService implements ISubItemService {
   private _linkItemController: LinkItemController;
@@ -25,18 +28,35 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
     return this._linkItemController;
   }
 
-  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    return Promise.resolve([]);
+  async updateItem(link: LinkItem) {
+    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
+    await sanitizedDao.update(this._toSanitizedLink(link));
   }
 
-  updateItem(item: Item) {}
+  async deleteItem(itemId: number) {
+    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
+    await sanitizedDao.delete(itemId);
+  }
 
-  createItem(item: Item) {}
+  async createItem(link: LinkItem) {
+    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
+    await sanitizedDao.put(this._toSanitizedLink(link));
+  }
 
-  deleteItem(itemId: number) {}
+  private _toSanitizedLink(link: LinkItem) {
+    return {
+      ...ItemUtils.toSanitizedItem(link),
+    } as SanitizedLinkItem;
+  }
 
-  async getSubItemsCount(groupId: number) {
-    return 0;
+  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
+    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
+    return await sanitizedDao.getSortedIds(options);
+  }
+
+  async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
+    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
+    return await sanitizedDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 
