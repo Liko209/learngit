@@ -10,10 +10,10 @@ import {
   JuiFlexWrapper,
 } from 'jui/pattern/EmptyScreen';
 
-import { ITEM_LIST_TYPE } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { TAB_CONFIG, TabConfig } from './config';
 
-const emptyView = (type: ITEM_LIST_TYPE) => {
+const emptyView = (type: RIGHT_RAIL_ITEM_TYPE) => {
   const config = TAB_CONFIG.find((looper: TabConfig) => looper.type === type);
   if (config) {
     const { text, content, image } = config.empty;

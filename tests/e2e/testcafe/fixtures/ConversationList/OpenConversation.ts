@@ -90,7 +90,7 @@ test(formalName('Should display in the top when open a closed conversation from 
     });
 
     await h(t).withLog('The conversation should be closed before login', async () => {
-      await h(t).glip(user).hideGroups(user.rcId, [teamId]);
+      await h(t).glip(user).hideGroups([teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension} and URL contain ${teamId}`, async () => {
@@ -136,11 +136,11 @@ test(formalName('Should not display in conversation list when last conversation 
     });
 
     await h(t).withLog('The conversation should be last conversation', async () => {
-      await h(t).glip(user).setLastGroupId(user.rcId, teamId);
+      await h(t).glip(user).setLastGroupId(teamId);
     });
 
     await h(t).withLog('The last conversation should be closed before login', async () => {
-      await h(t).glip(user).hideGroups(user.rcId, [teamId]);
+      await h(t).glip(user).hideGroups([teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
