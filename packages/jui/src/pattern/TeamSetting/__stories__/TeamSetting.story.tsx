@@ -42,7 +42,7 @@ storiesOf('Pattern/SettingDialogs', module).add('Team Settings', () => {
         <JuiTeamSettingEditSectionRight>
           <JuiTextField
             id="names"
-            label="Team Names"
+            label="Team name"
             fullWidth={true}
             error={nameTakenError}
             inputProps={{
@@ -57,7 +57,7 @@ storiesOf('Pattern/SettingDialogs', module).add('Team Settings', () => {
           />
           <JuiTextarea
             id="Description"
-            label="Description"
+            label="Team description"
             inputProps={{
               maxLength: descMaxLength,
             }}
