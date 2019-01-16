@@ -55,14 +55,20 @@ class BaseService<
   }
 
   async getById(id: number): Promise<SubModel | null> {
-    let result: SubModel | null = null;
-    if (this.isCacheInitialized()) {
-      result = this._cachedManager.getEntity(id);
-    } else {
-      result = await this.getByIdFromDao(id);
-    }
+    const result = await this.getByIdFromLocal(id);
     if (!result) {
       return this.getByIdFromAPI(id);
+    }
+    return result;
+  }
+
+  async getByIdFromLocal(id: number): Promise<SubModel> {
+    let result: SubModel | null = null;
+    if (this.isCacheInitialized()) {
+      result = this.getEntityFromCache(id);
+    }
+    if (!result) {
+      result = await this.getByIdFromDao(id);
     }
     return result;
   }

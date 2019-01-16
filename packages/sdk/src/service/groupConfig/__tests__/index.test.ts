@@ -19,9 +19,7 @@ describe('GroupConfigService', () => {
         id: 2,
         draft: 'draft',
       };
-      jest
-        .spyOn(groupConfigService, 'getByIdFromDao')
-        .mockResolvedValueOnce(mock);
+      jest.spyOn(groupConfigDao, 'get').mockResolvedValueOnce(mock);
 
       const data = await groupConfigService.getById(2);
       expect(data).toEqual(mock);

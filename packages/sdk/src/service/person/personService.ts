@@ -27,6 +27,15 @@ import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
 import { AccountService } from '../account/accountService';
 
+const PersonFlags = {
+  deactivated: 2,
+  has_registered: 4,
+  is_removed_guest: 1024,
+  am_removed_guest: 2048,
+};
+
+const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
+
 class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
 
@@ -270,8 +279,31 @@ class PersonService extends BaseService<Person> {
     return !person.is_pseudo_user;
   }
 
+  private _isVisible(person: Person): boolean {
+    return person.email !== SERVICE_ACCOUNT_EMAIL;
+  }
+
+  private _hasTrueValue(person: Person, key: number) {
+    if (person.flags === undefined) {
+      return false;
+    }
+    return (person.flags & key) === key;
+  }
+
+  private _isDeactivated(person: Person): boolean {
+    return (
+      person.deactivated || this._hasTrueValue(person, PersonFlags.deactivated)
+    );
+  }
+
   private _isValid(person: Person) {
-    return !person.deactivated && !person.is_pseudo_user;
+    return (
+      !this._isDeactivated(person) &&
+      this._isVisible(person) &&
+      !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
+      !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
+      !person.is_pseudo_user
+    );
   }
 
   getAvailablePhoneNumbers(

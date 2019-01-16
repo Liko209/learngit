@@ -111,7 +111,7 @@ describe('PersonService', () => {
           modified_at: i,
           creator_id: i,
           is_new: false,
-          deactivated: false,
+          has_registered: true,
           version: i,
           company_id: 1,
           email: `cat${i.toString()}@ringcentral.com`,
@@ -130,7 +130,7 @@ describe('PersonService', () => {
           modified_at: i,
           creator_id: i,
           is_new: false,
-          deactivated: false,
+          flags: 4,
           version: i,
           company_id: 1,
           email: `dog${i.toString()}@ringcentral.com`,
@@ -150,6 +150,7 @@ describe('PersonService', () => {
           creator_id: i,
           is_new: false,
           deactivated: false,
+          has_registered: true,
           version: i,
           company_id: 1,
           email: `monkey${i.toString()}@ringcentral.com`,
@@ -169,6 +170,7 @@ describe('PersonService', () => {
           creator_id: i,
           is_new: false,
           deactivated: false,
+          flags: 4,
           version: i,
           company_id: 1,
           email: `master${i.toString()}@ringcentral.com`,
@@ -179,6 +181,75 @@ describe('PersonService', () => {
         };
         cacheManager.set(person);
       }
+
+      const deactivatedByField: Person = {
+        id: 20021,
+        created_at: 20021,
+        modified_at: 20021,
+        creator_id: 20021,
+        is_new: false,
+        deactivated: true,
+        version: 20021,
+        company_id: 1,
+        email: 'master20021@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'deactivatedByField',
+        last_name: 'deactivatedByField',
+        display_name: 'deactivatedByField',
+      };
+      cacheManager.set(deactivatedByField);
+
+      const deactivatedByFlags: Person = {
+        id: 20022,
+        created_at: 20022,
+        modified_at: 20022,
+        creator_id: 20022,
+        is_new: false,
+        flags: 2,
+        version: 20022,
+        company_id: 1,
+        email: 'master20022@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'deactivatedByFlags',
+        last_name: 'deactivatedByFlags',
+        display_name: 'deactivatedByFlags',
+      };
+      cacheManager.set(deactivatedByFlags);
+
+      const isRemovedGuest: Person = {
+        id: 20023,
+        created_at: 20023,
+        modified_at: 20023,
+        creator_id: 20023,
+        is_new: false,
+        has_registered: true,
+        flags: 1024,
+        version: 20023,
+        company_id: 1,
+        email: 'master20023@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'isRemovedGuest',
+        last_name: 'isRemovedGuest',
+        display_name: 'isRemovedGuest',
+      };
+      cacheManager.set(isRemovedGuest);
+
+      const amRemovedGuest: Person = {
+        id: 20024,
+        created_at: 20024,
+        modified_at: 20024,
+        creator_id: 20024,
+        is_new: false,
+        flags: 2052,
+        version: 20024,
+        company_id: 1,
+        email: 'master20024@ringcentral.com',
+        me_group_id: 1,
+        first_name: 'amRemovedGuest',
+        last_name: 'amRemovedGuest',
+        display_name: 'amRemovedGuest',
+      };
+      cacheManager.set(amRemovedGuest);
     }
 
     prepareDataForSearchUTs();
@@ -373,6 +444,26 @@ describe('PersonService', () => {
       expect(result.sortableModels[9].id).toBe(20010);
       expect(result.sortableModels[10].id).toBe(20011);
       expect(result.sortableModels[19].id).toBe(20020);
+    });
+
+    it('search persons, with name matched, check if they are deactivated', async () => {
+      let result = await personService.doFuzzySearchPersons(
+        'deactivatedByField',
+      );
+      expect(result.sortableModels.length).toBe(0);
+
+      result = await personService.doFuzzySearchPersons('deactivatedByFlags');
+      expect(result.sortableModels.length).toBe(0);
+    });
+
+    it('search persons, with name matched, check if they are isRemovedGuest ', async () => {
+      const result = await personService.doFuzzySearchPersons('isRemovedGuest');
+      expect(result.sortableModels.length).toBe(0);
+    });
+
+    it('search persons, with name matched, check if they are amRemovedGuest ', async () => {
+      const result = await personService.doFuzzySearchPersons('amRemovedGuest');
+      expect(result.sortableModels.length).toBe(0);
     });
   });
 

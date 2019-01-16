@@ -140,6 +140,8 @@ export type Person = ExtendedBaseModel & {
   location?: string;
   homepage?: string;
   teams_removed_from?: number[];
+  flags?: number;
+  has_registered?: boolean;
 };
 
 export type UserInfo = {
@@ -206,6 +208,11 @@ export type Post = ExtendedBaseModel & {
   items?: object[];
   source?: string;
   parent_id?: number;
+};
+
+export type PostView = BaseModel & {
+  group_id: number;
+  created_at: number;
 };
 
 export type ItemVersionPage = {
