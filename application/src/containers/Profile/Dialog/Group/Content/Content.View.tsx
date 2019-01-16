@@ -17,54 +17,22 @@ import {
   JuiProfileDialogContentSummaryName as Name,
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
-  JuiProfileDialogContentSummaryButton,
   JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
 import { goToConversation } from '@/common/goToConversation';
-import { JuiIconography } from 'jui/foundation/Iconography';
 import { MemberHeader, MemberList } from './Members';
-import { TypeDictionary } from 'sdk/utils';
 import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
+import { renderButton } from './common/button';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupContentViewProps
 > {
-  getAriaLabelKey = ([ariaTeam, ariaGroup]: string[]) => {
-    const { typeId } = this.props;
-    const mapping = {
-      [TypeDictionary.TYPE_ID_TEAM]: ariaTeam,
-      [TypeDictionary.TYPE_ID_GROUP]: ariaGroup,
-    };
-    return mapping[typeId];
-  }
-
   joinTeamAfterClick = () => {
     const handerJoinTeam = joinTeam(this.props.group);
     portalManager.dismiss();
     handerJoinTeam();
-  }
-
-  renderButton = (
-    iconName: string,
-    buttonMessage: string,
-    ariaLabelKey: string[],
-    handleClick: (e: React.MouseEvent<HTMLElement>) => any,
-  ) => {
-    const { t, group } = this.props;
-    return (
-      <JuiProfileDialogContentSummaryButton
-        aria-label={t(this.getAriaLabelKey(ariaLabelKey), {
-          name: group.displayName,
-        })}
-        tabIndex={0}
-        onClick={handleClick}
-      >
-        <JuiIconography fontSize="small">{iconName}</JuiIconography>
-        {t(buttonMessage)}
-      </JuiProfileDialogContentSummaryButton>
-    );
   }
 
   messageAfterClick = async () => {
@@ -97,17 +65,19 @@ class ProfileDialogGroupContentViewComponent extends Component<
             </Description>
             <Buttons>
               {showMessage &&
-                this.renderButton(
+                renderButton(
                   'chat_bubble',
                   'message',
                   ['ariaGoToTeam', 'ariaGoToGroup'],
+                  this.props,
                   this.messageAfterClick,
                 )}
               {showJoinTeam &&
-                this.renderButton(
+                renderButton(
                   'add_member',
                   'joinTeam',
                   ['ariaJoinTeam', 'ariaJoinTeam'],
+                  this.props,
                   this.joinTeamAfterClick,
                 )}
             </Buttons>
