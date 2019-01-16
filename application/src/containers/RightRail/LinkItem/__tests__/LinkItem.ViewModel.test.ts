@@ -59,7 +59,7 @@ describe('ImageItemViewModel', () => {
       );
     });
 
-    it('should be a new string when change person name', () => {
+    it('should be a new person name string when change person name', () => {
       mockPerson.userDisplayName = 'new name';
       expect(vm.textSecondary).toEqual(
         `${mockPerson.userDisplayName} · ${dateFormatter.date(
@@ -68,11 +68,16 @@ describe('ImageItemViewModel', () => {
       );
     });
 
-    it('should be a date string when without creatorId', () => {
+    it('should be only a date string when display secondary text', () => {
       mockLink.creatorId = 0;
-      expect(vm.textSecondary).toEqual(
-        ` · ${dateFormatter.date(mockLink.createdAt)}`,
-      );
+      mockLink.createdAt = 1547086968632;
+      expect(vm.textSecondary).toEqual(dateFormatter.date(mockLink.createdAt));
+    });
+
+    it('should be only a person name string when display secondary text', () => {
+      mockLink.creatorId = 123;
+      mockLink.createdAt = 0;
+      expect(vm.textSecondary).toEqual(mockPerson.userDisplayName);
     });
   });
 });

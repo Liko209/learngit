@@ -38,8 +38,15 @@ class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
   @computed
   get textSecondary() {
     const { createdAt } = this.link;
-    const personName = this._person.userDisplayName || '';
-    return `${personName} · ${dateFormatter.date(createdAt)}`;
+    const result = [];
+    const name = this._person.userDisplayName;
+    if (name) {
+      result.push(name);
+    }
+    if (createdAt) {
+      result.push(dateFormatter.date(createdAt));
+    }
+    return result.join(' · ');
   }
 }
 
