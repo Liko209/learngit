@@ -11,7 +11,8 @@ type FilesProps = {
 
 type FileItemProps = {
   file: FileItemModel;
-  subTitle: string;
+  personName: string;
+  createdTime: string;
   fileTypeOrUrl: {
     icon: string;
     url: string;

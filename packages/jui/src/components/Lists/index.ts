@@ -10,4 +10,5 @@ export * from './ListItemIcon';
 export * from './ListItemSecondaryAction';
 export * from './ListSubheader';
 export * from './ListItemText';
-export * from './ListItemTextWithDate';
+export * from './ListItemSecondaryText';
+export * from './ListItemSecondaryName';
