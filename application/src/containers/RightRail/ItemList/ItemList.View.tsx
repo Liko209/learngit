@@ -3,7 +3,7 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
@@ -44,7 +44,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         </div>
       );
     }
-    return <></>;
+    return <Fragment key={index} />;
   }
 
   fixedCellHeight() {

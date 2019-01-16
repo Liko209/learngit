@@ -7,7 +7,7 @@
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { Item } from 'sdk/module/item/entity';
-import NoteItem from '@/store/models/NoteItem';
+import NoteItemModel from '@/store/models/NoteItem';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
@@ -24,7 +24,7 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
   get note() {
     const id = this._id;
     if (typeof id !== 'undefined') {
-      return getEntity<Item, NoteItem>(ENTITY_NAME.NOTE_ITEM, this._id);
+      return getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, id);
     }
     return null;
   }
@@ -42,9 +42,11 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
   get subTitle() {
     const note = this.note;
     if (note) {
-      const { id } = note;
-      const personName = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id)
-        .userDisplayName;
+      const { creator_id } = note;
+      const personName = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        creator_id,
+      ).userDisplayName;
       return personName;
     }
     return '';
