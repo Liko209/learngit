@@ -47,6 +47,7 @@ describe('RTC call', () => {
     startRecord = jest.fn();
     stopRecord = jest.fn();
     transfer = jest.fn();
+    park = jest.fn();
 
     hold = jest.fn();
     unhold = jest.fn();
@@ -100,6 +101,7 @@ describe('RTC call', () => {
         expect(session.flip).toHaveBeenCalledWith(5);
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.FLIP,
+          {},
         );
         done();
       });
@@ -240,6 +242,7 @@ describe('RTC call', () => {
         );
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
+          {},
         );
         done();
       });
@@ -269,6 +272,7 @@ describe('RTC call', () => {
         );
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.START_RECORD,
+          {},
         );
         done();
       });
@@ -409,6 +413,7 @@ describe('RTC call', () => {
         expect(session.stopRecord).toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.STOP_RECORD,
+          {},
         );
         done();
       });
@@ -429,6 +434,7 @@ describe('RTC call', () => {
         expect(session.stopRecord).not.toHaveBeenCalled();
         expect(account.onCallActionSuccess).toHaveBeenCalledWith(
           RTC_CALL_ACTION.STOP_RECORD,
+          {},
         );
         done();
       });
@@ -588,6 +594,7 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(account.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.TRANSFER,
+          {},
         );
         done();
       });
@@ -902,6 +909,135 @@ describe('RTC call', () => {
     });
   });
 
+  describe('park()', async () => {
+    let account = null;
+    let call = null;
+    let session = null;
+
+    function setUpAccount() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+    }
+
+    it('should report park success with msg when FSM in connected state and park success [JPT-835]', done => {
+      setUpAccount();
+      session.park.mockResolvedValue('park ok');
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('connected');
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.PARK,
+          'park ok',
+        );
+        expect(account.onCallActionSuccess).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+          'park ok',
+        );
+        done();
+      });
+    });
+
+    it('should report park failed when FSM in connected state and park failed [JPT-831]', done => {
+      setUpAccount();
+      session.park.mockRejectedValue(null);
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('connected');
+        call._callSession.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.PARK,
+        );
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+
+    it('should report park failed when FSM in pending state [JPT-827]', done => {
+      setUpAccount();
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('pending');
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+
+    it('should report park failed when FSM in connecting state [JPT-828]', done => {
+      setUpAccount();
+      call.onAccountReady();
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('connecting');
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+
+    it('should report park failed when FSM in disconnected state [JPT-830]', done => {
+      setUpAccount();
+      call.onAccountReady();
+      session.mockSignal('accepted');
+      session.mockSignal('failed');
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('disconnected');
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+
+    it('should report park failed when FSM in idle state [JPT-826]', done => {
+      account = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, account, account);
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('idle');
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+
+    it('should report park failed when FSM in answering state [JPT-829]', done => {
+      account = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, account, account);
+      call._fsm.answer();
+      call.park();
+      setImmediate(() => {
+        const fsmState = call._fsm.state();
+        expect(fsmState).toBe('answering');
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+  });
+
   describe('Hold / Unhold Call', async () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
@@ -1168,6 +1304,4 @@ describe('RTC call', () => {
       });
     });
   });
-
-  describe('Unhold Call', async () => {});
 });

@@ -9,7 +9,12 @@ import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
-import { RTCCallInfo, RTC_CALL_STATE, RTC_CALL_ACTION } from './types';
+import {
+  RTCCallInfo,
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
+} from './types';
 import { v4 as uuid } from 'uuid';
 
 class RTCCall {
@@ -106,6 +111,10 @@ class RTCCall {
     this._fsm.unhold();
   }
 
+  park(): void {
+    this._fsm.park();
+  }
+
   transfer(target: string): void {
     if (target.length === 0) {
       this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER);
@@ -143,8 +152,11 @@ class RTCCall {
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      (callAction: RTC_CALL_ACTION) => {
-        this._onCallActionSuccess(callAction);
+      (
+        callAction: RTC_CALL_ACTION,
+        options: RTCCallActionSuccessOptions = {},
+      ) => {
+        this._onCallActionSuccess(callAction, options);
       },
     );
     this._callSession.on(
@@ -182,6 +194,9 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
     });
+    this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
+      this._onParkAction();
+    });
     this._fsm.on(CALL_FSM_NOTIFY.START_RECORD_ACTION, () => {
       this._onStartRecordAction();
     });
@@ -216,7 +231,10 @@ class RTCCall {
     this._callSession.destroy();
   }
   // call action listener
-  private _onCallActionSuccess(callAction: RTC_CALL_ACTION) {
+  private _onCallActionSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions = {},
+  ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
         this._isRecording = true;
@@ -237,8 +255,9 @@ class RTCCall {
       default:
         break;
     }
+
     if (this._delegate) {
-      this._delegate.onCallActionSuccess(callAction);
+      this._delegate.onCallActionSuccess(callAction, options);
     }
   }
 
@@ -303,6 +322,10 @@ class RTCCall {
 
   private _onTransferAction(target: string) {
     this._callSession.transfer(target);
+  }
+
+  private _onParkAction() {
+    this._callSession.park();
   }
 
   private _onStartRecordAction() {

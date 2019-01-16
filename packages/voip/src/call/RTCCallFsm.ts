@@ -28,6 +28,7 @@ const CallFsmEvent = {
   HOLD_FAILED: 'holdFailedEvent',
   UNHOLD_SUCCESS: 'unholdSuccessEvent',
   UNHOLD_FAILED: 'unholdFailedEvent',
+  PARK: 'parkEvent',
 };
 
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
@@ -57,6 +58,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.TRANSFER: {
           this._onTransfer(task.params);
+          break;
+        }
+        case CallFsmEvent.PARK: {
+          this._onPark();
           break;
         }
         case CallFsmEvent.ANSWER: {
@@ -175,6 +180,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
   }
 
+  park() {
+    this._eventQueue.push({ name: CallFsmEvent.PARK }, () => {});
+  }
+
   transfer(target: string): void {
     this._eventQueue.push(
       { name: CallFsmEvent.TRANSFER, params: target },
@@ -257,6 +266,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onParkAction() {
+    this.emit(CALL_FSM_NOTIFY.PARK_ACTION);
+  }
+
   onStartRecordAction() {
     this.emit(CALL_FSM_NOTIFY.START_RECORD_ACTION);
   }
@@ -287,6 +300,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onTransfer(target: string) {
     this._callFsmTable.transfer(target);
+  }
+
+  private _onPark() {
+    this._callFsmTable.park();
   }
 
   private _onStartRecord() {

@@ -32,6 +32,7 @@ const CallFsmEvent = {
   STOP_RECORD: 'stopRecord',
   HOLD: 'hold',
   UNHOLD: 'unhold',
+  PARK: 'park',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
@@ -54,6 +55,7 @@ interface IRTCCallFsmTableDependency {
   onReportCallActionFailed(name: string): void;
   onHoldAction(): void;
   onUnholdAction(): void;
+  onParkAction(): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -129,6 +131,28 @@ class RTCCallFsmTable extends StateMachine {
           to: (target: string) => {
             dependency.onTransferAction(target);
             return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.PARK,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onParkAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.PARK,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.PARK);
+            return s;
           },
         },
         {

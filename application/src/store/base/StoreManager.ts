@@ -2,7 +2,8 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-03-01 23:06:10
  */
-
+// @ts-ignore
+import remotedev from 'mobx-remotedev';
 import MultiEntityMapStore from './MultiEntityMapStore';
 import SingleEntityMapStore from './SingleEntityMapStore';
 import GlobalStore from './GlobalStore';
@@ -95,6 +96,7 @@ class StoreManager {
           ENTITY_SETTING[entityStoreName],
         );
       }
+      remotedev(store, { name: entityStoreName });
       this.injectStore(store);
     }
     return store;

@@ -33,6 +33,7 @@ enum CALL_FSM_NOTIFY {
   CALL_ACTION_FAILED = 'callActionFailed',
   HOLD_ACTION = 'holdAction',
   UNHOLD_ACTION = 'unholdAction',
+  PARK_ACTION = 'parkAction',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };
