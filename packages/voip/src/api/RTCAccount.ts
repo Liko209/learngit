@@ -35,8 +35,9 @@ const options = {
   logLevel: 10,
 };
 
+const LOG_TAG = 'RTCAccount';
+
 class RTCAccount implements IRTCAccount {
-  private _kTag: string = 'RTCAccount';
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
@@ -72,11 +73,11 @@ class RTCAccount implements IRTCAccount {
     delegate: IRTCCallDelegate,
   ): RTCCall | null {
     if (toNumber.length === 0) {
-      rtcLogger.error(this._kTag, 'Failed to make call. To number is empty');
+      rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
       return null;
     }
     if (!this._callManager.allowCall()) {
-      rtcLogger.warn(this._kTag, 'Failed to make call. Max call count reached');
+      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
       return null;
     }
     const call = new RTCCall(false, toNumber, null, this, delegate);
@@ -147,14 +148,14 @@ class RTCAccount implements IRTCAccount {
   private _onReceiveInvite(session: any) {
     if (session === null) {
       rtcLogger.error(
-        this._kTag,
+        LOG_TAG,
         'Failed to receive incoming call. Session is null',
       );
       return;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(
-        this._kTag,
+        LOG_TAG,
         'Failed to receive incoming call. Max call count is reached',
       );
       return;
