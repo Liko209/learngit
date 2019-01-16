@@ -40,8 +40,16 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     };
   }
 
-  onClose = () => portalManager.dismiss();
-  onOk = () => {
+  static NAME_INPUT_PROPS = {
+    maxLength: NAME_MAX_LENGTH,
+  };
+
+  static DESCRIPTION_INPUT_PROPS = {
+    maxLength: DESC_MAX_LENGTH,
+  };
+
+  handleClose = () => portalManager.dismiss();
+  handleOk = () => {
     this.props.save({
       name: this.state.name,
       description: this.state.description,
@@ -79,9 +87,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             value={this.state.name}
             fullWidth={true}
             error={nameError}
-            inputProps={{
-              maxLength: NAME_MAX_LENGTH,
-            }}
+            inputProps={TeamSettings.NAME_INPUT_PROPS}
             helperText={t(nameErrorMsg || '')}
             onChange={this.handleNameChange}
           />
@@ -89,9 +95,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             label={toTitleCase(t('description'))}
             data-test-automation-id="teamDescription"
             value={this.state.description}
-            inputProps={{
-              maxLength: DESC_MAX_LENGTH,
-            }}
+            inputProps={TeamSettings.DESCRIPTION_INPUT_PROPS}
             fullWidth={true}
             onChange={this.handleDescriptionChange}
           />
@@ -111,8 +115,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
         title={t('Settings')}
-        onCancel={this.onClose}
-        onOK={this.onOk}
+        onCancel={this.handleClose}
+        onOK={this.handleOk}
         okText={t('save')}
         cancelText={t('cancel')}
       >
