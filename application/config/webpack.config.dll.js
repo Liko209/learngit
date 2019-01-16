@@ -31,7 +31,7 @@ module.exports = {
   mode: "development",
   context: process.cwd(),
   entry: dllPlugin.entry(appPackage),
-  devtool: "cheap-module-source-map",
+  devtool: "eval-source-map",
   output: {
     filename: "[name].dll.js",
     path: outputPath,

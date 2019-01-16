@@ -5,9 +5,15 @@
  */
 
 import { Post } from 'sdk/module/post/entity';
-import { GlipTypeUtil } from 'sdk/utils';
+import { Item } from 'sdk/module/item/entity';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import Base from './Base';
 import { observable, computed } from 'mobx';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import FileItemModel from '@/store/models/FileItem';
+import LinkItemModel from '@/store/models/LinkItem';
+
 export default class PostModel extends Base<Post> {
   createdAt: number;
   @observable
@@ -73,7 +79,28 @@ export default class PostModel extends Base<Post> {
 
   @computed
   get existItemIds() {
-    return this.itemId ? [this.itemId] : this.itemIds;
+    const ids = this.itemId ? [this.itemId] : this.itemIds;
+    return ids
+      .map((id: number) => {
+        const typeId = GlipTypeUtil.extractTypeId(id);
+        switch (typeId) {
+          case TypeDictionary.TYPE_ID_FILE:
+            return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+          case TypeDictionary.TYPE_ID_LINK:
+            return getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, id);
+          default:
+            return {
+              id,
+              deactivated: false,
+            };
+        }
+      })
+      .filter((item: any) => {
+        return !item.deactivated;
+      })
+      .map((item: any) => {
+        return item.id;
+      });
   }
 
   @computed

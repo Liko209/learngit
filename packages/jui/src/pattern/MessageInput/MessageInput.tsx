@@ -113,6 +113,17 @@ class JuiMessageInput extends React.Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props) {
+    if (
+      this._inputRef.current &&
+      prevProps.modules !== this.props.modules &&
+      this.props.isEditMode
+    ) {
+      const quill = this._inputRef.current.getEditor();
+      quill.enable(false);
+      setTimeout(() => {
+        quill.enable(true);
+      },         0);
+    }
     if (prevProps.id !== this.props.id) {
       this.focusEditor();
     }
