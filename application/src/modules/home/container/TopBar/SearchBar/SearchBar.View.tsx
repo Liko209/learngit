@@ -18,6 +18,7 @@ import { JuiButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
+import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 // import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
@@ -50,6 +51,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
   private timer: number;
+  textInput: React.RefObject<JuiSearchInput> = React.createRef();
 
   state = {
     terms: [],
@@ -71,8 +73,19 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
         groups,
         persons,
         teams,
+        selectIndex: -1,
       });
     },                              SEARCH_DELAY);
+  }
+
+  componentDidMount() {
+    visibilityChangeEvent(() => {
+      const { focus } = this.state;
+      if (focus) {
+        this.textInput.current!.blurTextInput();
+        this.onClose();
+      }
+    });
   }
 
   private _resetData() {
@@ -293,6 +306,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
   }
 
+  onKeyEsc = () => this.onClose();
+
   searchBarBlur = () => {
     this.timer = setTimeout(() => {
       this.onClose();
@@ -319,9 +334,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             enter: this.onEnter,
             up: this.onKeyUp,
             down: this.onKeyDown,
+            esc: this.onKeyEsc,
           }}
         >
           <JuiSearchInput
+            ref={this.textInput}
             focus={focus}
             onFocus={this.onFocus}
             onClear={this.onClear}
