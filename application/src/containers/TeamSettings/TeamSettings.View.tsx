@@ -117,8 +117,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         title={t('Settings')}
         onCancel={this.handleClose}
         onOK={this.handleOk}
-        okText={t('save')}
-        cancelText={t('cancel')}
+        okText={toTitleCase(t('save'))}
+        cancelText={toTitleCase(t('cancel'))}
       >
         {isAdmin ? this.renderEditSection() : null}
       </JuiModal>
