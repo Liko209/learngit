@@ -385,7 +385,7 @@ class ItemFileUploadHandler {
       size: file.size,
       filename: file.name,
       for_file_type: true,
-      filetype: this._getFileType(file),
+      filetype: file.type,
     });
   }
 
