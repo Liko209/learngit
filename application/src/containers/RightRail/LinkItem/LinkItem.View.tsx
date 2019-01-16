@@ -29,12 +29,19 @@ class LinkItemView extends Component<LinkItemViewProps> {
     );
   }
 
+  private _openLink = () => {
+    const { link } = this.props;
+    if (link.data) {
+      window.open(link.data.url, '_blank');
+    }
+  }
+
   render() {
     const { link } = this.props;
     const textPrimary = link.title || link.url || '';
     const faviconUrl = link.faviconUrl;
     return (
-      <JuiListItem>
+      <JuiListItem onClick={this._openLink}>
         <JuiListItemIcon>
           {faviconUrl ? (
             <JuiThumbnail url={faviconUrl} />

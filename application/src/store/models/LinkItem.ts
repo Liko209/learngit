@@ -24,6 +24,7 @@ export default class LinkItemModel extends ItemModel {
   data?: {
     provider_name: string;
     favicon_url: string;
+    url: string;
   };
   @observable
   favicon: string;
