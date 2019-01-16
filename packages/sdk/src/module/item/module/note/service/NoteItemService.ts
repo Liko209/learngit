@@ -7,9 +7,12 @@
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { NoteItemController } from '../controller/NoteItemController';
 import { EntityBaseService } from '../../../../../framework/service';
-import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
-import { ItemQueryOptions } from '../../../types';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+import { NoteItem, SanitizedNoteItem } from '../entity';
+import { NoteItemDao } from '../dao';
+import { daoManager } from '../../../../../dao';
+import { ItemUtils } from '../../../utils';
 
 class NoteItemService extends EntityBaseService implements ISubItemService {
   private _noteItemController: NoteItemController;
@@ -25,18 +28,33 @@ class NoteItemService extends EntityBaseService implements ISubItemService {
     return this._noteItemController;
   }
 
-  updateItem(item: Item) {}
-
-  createItem(item: Item) {}
-
-  deleteItem(itemId: number) {}
-
-  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    return Promise.resolve([]);
+  async updateItem(note: NoteItem) {
+    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
+    await sanitizedDao.update(this._toSanitizedNote(note));
   }
 
-  async getSubItemsCount(groupId: number) {
-    return 0;
+  async deleteItem(itemId: number) {
+    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
+    await sanitizedDao.delete(itemId);
+  }
+
+  async createItem(note: NoteItem) {
+    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
+    await sanitizedDao.put(this._toSanitizedNote(note));
+  }
+
+  private _toSanitizedNote(note: NoteItem) {
+    return { ...ItemUtils.toSanitizedItem(note) } as SanitizedNoteItem;
+  }
+
+  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
+    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
+    return await sanitizedDao.getSortedIds(options);
+  }
+
+  async getSubItemsCount(groupId: number, filterFunc: ItemFilterFunction) {
+    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
+    return await sanitizedDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 
