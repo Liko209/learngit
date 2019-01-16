@@ -21,6 +21,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   const otherUser = users[5];
   await h(t).resetGlipAccount(loginUser);
   await h(t).glip(loginUser).init();
+  console.log(h(t).glip(loginUser).accessToken)
   const secondTeamName = `second-${uuid()}`;
   const otherUserName = await h(t).glip(loginUser).getPerson(otherUser.rcId).then(res => res.data.display_name);
 
@@ -35,34 +36,46 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   let teamId, directMessageChatId, teamMentionPostId, directMessageMentionPostId;
   await h(t).withLog(`Given I have Team conversation A (with mention and bookmark post) exists and in the position 2 in the Team section`, async () => {
     teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
+      name: secondTeamName,
+      type: 'Team',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+    teamMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      `${uuid()}, ![:Person](${loginUser.rcId})`,
+      teamId
+    );
+    const firstTeamId = await h(t).platform(loginUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
     });
-    teamMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`${uuid}, ![:Person](${loginUser.rcId})`, teamId);
-    await h(t).platform(loginUser).createGroup({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, users[6].rcId],
-    });
+    await h(t).platform(otherUser).sendTextPost(
+      uuid(),
+      firstTeamId
+    );
   })
 
   await h(t).withLog(`And directMessage conversation B (with mention and bookmark post) exists in the position 2 in the DirectMessage section`, async () => {
-    directMessageChatId = await h(t).platform(loginUser).createGroup({
+    directMessageChatId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).platform(loginUser).createGroup({
+    const firstDMId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[6].rcId],
     });
-
-    directMessageMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`${uuid}, ![:Person](${loginUser.rcId})`, directMessageChatId);
+    directMessageMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      `${uuid()}, ![:Person](${loginUser.rcId})`,
+      directMessageChatId
+    );
+    await h(t).platform(loginUser).sendTextPost(
+      uuid(),
+      firstDMId
+    );
     await h(t).glip(loginUser).updateProfile({
       favorite_post_ids: [+teamMentionPostId, +directMessageMentionPostId]
     });
+    await h(t).glip(loginUser).clearAllUmi(); 
     await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
   });
 
@@ -70,7 +83,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await cb();
 
     await h(t).withLog(`Then ${teamName} should keep its position 2 in ${sectionName} section`, async () => {
-      conversationPage.groupIdShouldBe(chatId);
+      await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(1).groupIdShouldBe(chatId);
     });
 
@@ -93,6 +106,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
+      await t.debug();
     });
   });
 
@@ -140,8 +154,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   });
 
   // Login -> Last open DM conversation B
-
-
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`When I open directMessage conversation B, logout and login again`, async () => {
       await directMessagesSection.nthConversationEntry(1).enter();
@@ -152,8 +164,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     });
   });
   // open via mentions
-
-
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
       await mentionPageEntry.enter();
@@ -162,8 +172,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     });
   });
   // open via bookmark
-
-
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
       await bookmarkEntry.enter();
@@ -172,8 +180,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     });
   });
   // open via search 
-
-
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`When I open conversation B via search entry`, async () => {
       await search.typeText(otherUserName, { replace: true, paste: true });
@@ -187,7 +193,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     });
   });
   // open via URL 
-
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`When I open conversation B via URL `, async () => {
       const url = new URL(SITE_URL)
@@ -195,6 +200,5 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
       await t.navigateTo(NEW_URL);
       await app.homePage.ensureLoaded();
     });
-
   });
 });
