@@ -12,7 +12,7 @@ import {
   JuiListItemIcon,
   JuiListItemSecondaryAction,
   JuiListItemSecondaryText,
-  JuiListItemSecondaryName,
+  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -54,8 +54,9 @@ class FileItemView extends Component<FileItemProps> {
           primary={<FileName filename={name} />}
           secondary={
             <JuiListItemSecondaryText>
-              <JuiListItemSecondaryName name={personName} />
-              <span>&nbsp;·&nbsp;{createdTime}</span>
+              <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
+              &nbsp;·&nbsp;
+              <JuiListItemSecondarySpan text={createdTime} />
             </JuiListItemSecondaryText>
           }
         />
