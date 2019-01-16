@@ -1055,9 +1055,10 @@ describe('RTC call', () => {
       expect(call._isMute).toBeTruthy();
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
         expect(observer.onCallActionSuccess).toBeCalledTimes(1);
         expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
+          RTC_CALL_ACTION.MUTE,
           {},
         );
         done();
@@ -1071,12 +1072,9 @@ describe('RTC call', () => {
       expect(call._fsm.state()).toBe('connected');
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(1);
         expect(call._isMute).toBeTruthy();
-        expect(observer.onCallActionSuccess).toBeCalledTimes(2);
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
+        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
         expect(observer.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.MUTE,
           {},
@@ -1091,12 +1089,8 @@ describe('RTC call', () => {
       call._isMute = true;
       call._fsm._callFsmTable.sessionConfirmed();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(1);
         expect(call._fsm.state()).toBe('connected');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
-          {},
-        );
         done();
       });
     });
@@ -1105,9 +1099,13 @@ describe('RTC call', () => {
       setupCall();
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
         expect(call._isMute).toBeTruthy();
         expect(call._fsm.state()).toBe('idle');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
         done();
       });
     });
@@ -1117,9 +1115,13 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.accountReady();
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
         expect(call._isMute).toBeTruthy();
         expect(call._fsm.state()).toBe('connecting');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
         done();
       });
     });
@@ -1129,9 +1131,13 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.answer();
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
         expect(call._isMute).toBeTruthy();
         expect(call._fsm.state()).toBe('answering');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
         done();
       });
     });
@@ -1141,9 +1147,13 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.accountNotReady();
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
         expect(call._isMute).toBeTruthy();
         expect(call._fsm.state()).toBe('pending');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
         done();
       });
     });
@@ -1155,11 +1165,11 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.sessionDisconnected();
       call.mute();
       setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
         expect(call._isMute).toBeTruthy();
         expect(call._fsm.state()).toBe('disconnected');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
         expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
+          RTC_CALL_ACTION.MUTE,
           {},
         );
         done();
@@ -1186,7 +1196,7 @@ describe('RTC call', () => {
       call._isMute = false;
       call.unmute();
       setImmediate(() => {
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
+        expect(session.unmute).toBeCalledTimes(1);
         expect(observer.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.UNMUTE,
           {},
@@ -1202,14 +1212,10 @@ describe('RTC call', () => {
       call._isMute = true;
       call.unmute();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(2);
         expect(call._isMute).not.toBeTruthy();
-        expect(observer.onCallActionSuccess).toBeCalledTimes(2);
         expect(observer.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
-        expect(observer.onCallActionSuccess).not.toBeCalledWith(
-          RTC_CALL_ACTION.MUTE,
           {},
         );
         done();
@@ -1222,12 +1228,9 @@ describe('RTC call', () => {
       call._isMute = false;
       call._fsm._callFsmTable.sessionConfirmed();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(1);
         expect(call._fsm.state()).toBe('connected');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
-        expect(observer.onCallActionSuccess).toBeCalledWith(
-          RTC_CALL_ACTION.UNMUTE,
-          {},
-        );
+        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
         done();
       });
     });
@@ -1236,9 +1239,13 @@ describe('RTC call', () => {
       setupCall();
       call.unmute();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
         expect(call._isMute).not.toBeTruthy();
         expect(call._fsm.state()).toBe('idle');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
         done();
       });
     });
@@ -1248,9 +1255,13 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.accountReady();
       call.unmute();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
         expect(call._isMute).not.toBeTruthy();
         expect(call._fsm.state()).toBe('connecting');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
         done();
       });
     });
@@ -1260,9 +1271,13 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.answer();
       call.unmute();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
         expect(call._isMute).not.toBeTruthy();
         expect(call._fsm.state()).toBe('answering');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
         done();
       });
     });
@@ -1272,9 +1287,13 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.accountNotReady();
       call.unmute();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
         expect(call._isMute).not.toBeTruthy();
         expect(call._fsm.state()).toBe('pending');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
         done();
       });
     });
@@ -1286,9 +1305,9 @@ describe('RTC call', () => {
       call._fsm._callFsmTable.sessionDisconnected();
       call.unmute();
       setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(1);
         expect(call._isMute).not.toBeTruthy();
         expect(call._fsm.state()).toBe('disconnected');
-        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
         expect(observer.onCallActionSuccess).toBeCalledWith(
           RTC_CALL_ACTION.UNMUTE,
           {},
