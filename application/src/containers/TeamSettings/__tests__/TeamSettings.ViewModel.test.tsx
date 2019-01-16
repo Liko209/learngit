@@ -13,14 +13,6 @@ jest.mock('sdk/module/group', () => ({
 }));
 
 describe('TeamSettingsViewModel', () => {
-  describe('setNameError()', () => {
-    it('should not show error when given message is empty', () => {
-      const vm = new TeamSettingsViewModel();
-      vm.setNameError('');
-      expect(vm.nameError).toBe(false);
-    });
-  });
-
   describe('save()', () => {
     const groupService = new GroupService();
     beforeEach(() => {

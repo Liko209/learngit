@@ -17,7 +17,6 @@ type ViewProps = {
   id: number;
   isAdmin: boolean;
   save: (params: SaveParams) => boolean;
-  nameError?: boolean;
   nameErrorMsg?: string;
 };
 

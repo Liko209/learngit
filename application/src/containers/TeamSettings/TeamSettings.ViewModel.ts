@@ -27,8 +27,6 @@ import { generalErrorHandler } from '@/utils/error';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
-  nameError?: boolean = false;
-  @observable
   nameErrorMsg?: string = '';
 
   @computed
@@ -56,7 +54,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @action
   setNameError(msg: string) {
-    this.nameError = !!msg;
     this.nameErrorMsg = msg;
   }
 
