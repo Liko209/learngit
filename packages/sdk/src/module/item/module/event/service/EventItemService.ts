@@ -5,27 +5,47 @@
  */
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
-import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
-import { ItemQueryOptions } from '../../../types';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+import { EventItem, SanitizedEventItem } from '../entity';
+import { EventItemDao } from '../dao';
+import { daoManager } from '../../../../../dao';
+import { ItemUtils } from '../../../utils';
 
 class EventItemService extends EntityBaseService implements ISubItemService {
   constructor(itemService: IItemService) {
     super();
   }
 
-  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    return Promise.resolve([]);
+  async updateItem(event: EventItem) {
+    const sanitizedDao = daoManager.getDao<EventItemDao>(EventItemDao);
+    await sanitizedDao.update(this._toSanitizedEvent(event));
   }
 
-  updateItem(item: Item) {}
+  async deleteItem(itemId: number) {
+    const sanitizedDao = daoManager.getDao<EventItemDao>(EventItemDao);
+    await sanitizedDao.delete(itemId);
+  }
 
-  createItem(item: Item) {}
+  async createItem(event: EventItem) {
+    const sanitizedDao = daoManager.getDao<EventItemDao>(EventItemDao);
+    await sanitizedDao.put(this._toSanitizedEvent(event));
+  }
 
-  deleteItem(itemId: number) {}
+  private _toSanitizedEvent(event: EventItem) {
+    return {
+      ...ItemUtils.toSanitizedItem(event),
+    } as SanitizedEventItem;
+  }
 
-  async getSubItemsCount(groupId: number) {
-    return 0;
+  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
+    const sanitizedDao = daoManager.getDao<EventItemDao>(EventItemDao);
+    return await sanitizedDao.getSortedIds(options);
+  }
+
+  async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
+    const sanitizedDao = daoManager.getDao<EventItemDao>(EventItemDao);
+    return await sanitizedDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 

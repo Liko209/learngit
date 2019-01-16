@@ -31,7 +31,7 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
   deleteItem(itemId: number) {}
 
   getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    return Promise.resolve([]);
+    return Promise.resolve([16393, 32777, 57353, 65545]);
   }
 
   async getSubItemsCount(groupId: number) {
