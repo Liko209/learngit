@@ -11,7 +11,7 @@ type JuiListItemSecondaryTextProps = {
   children: React.ReactNode;
 };
 
-const ListItemSecondaryTextWrapper = styled('div')`
+const ListItemSecondaryTextWrapper = styled('span')`
   display: flex;
   min-width: 0;
   align-items: center;
