@@ -129,12 +129,12 @@ export default class MultiEntityMapStore<
   }
 
   remove(id: number) {
-    setImmediate(() => {
+    setTimeout(() => {
       const model = this._data[id];
       if (model) {
         delete this._data[id];
       }
-    });
+    },         0);
   }
 
   batchRemove(ids: number[]) {
