@@ -50,7 +50,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
     iconName: string,
     buttonMessage: string,
     ariaLabelKey: string[],
-    handerClick: (e: React.MouseEvent<HTMLElement>) => any,
+    handleClick: (e: React.MouseEvent<HTMLElement>) => any,
   ) => {
     const { t, group } = this.props;
     return (
@@ -59,7 +59,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
           name: group.displayName,
         })}
         tabIndex={0}
-        onClick={handerClick}
+        onClick={handleClick}
       >
         <JuiIconography fontSize="small">{iconName}</JuiIconography>
         {t(buttonMessage)}
