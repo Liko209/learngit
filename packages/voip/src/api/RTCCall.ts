@@ -178,7 +178,7 @@ class RTCCall {
       this._onHangupAction();
     });
     this._fsm.on(CALL_FSM_NOTIFY.CREATE_OUTGOING_CALL_SESSION, () => {
-      this._onCreateOutCallSession();
+      this._onCreateOutingCallSession();
     });
     this._fsm.on(CALL_FSM_NOTIFY.FLIP_ACTION, (target: number) => {
       this._onFlipAction(target);
@@ -232,11 +232,15 @@ class RTCCall {
       }
     }
 
-    this._delegate.onCallActionSuccess(callAction, options);
+    if (this._delegate) {
+      this._delegate.onCallActionSuccess(callAction, options);
+    }
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
-    this._delegate.onCallActionFailed(callAction);
+    if (this._delegate) {
+      this._delegate.onCallActionFailed(callAction);
+    }
   }
 
   // session listener
@@ -292,15 +296,23 @@ class RTCCall {
       : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
   }
 
-  private _onCreateOutCallSession() {
-    const session = this._account.createOutCallSession(this._callInfo.toNum);
+  private _onCreateOutingCallSession() {
+    const session = this._account.createOutgoingCallSession(
+      this._callInfo.toNum,
+    );
     this.setCallSession(session);
   }
 
   private _onCallStateChange(state: RTC_CALL_STATE): void {
-    if (this._callState !== state) {
-      this._callState = state;
+    if (this._callState === state) {
+      return;
+    }
+    this._callState = state;
+    if (this._delegate) {
       this._delegate.onCallStateChange(state);
+    }
+    if (this._callState === RTC_CALL_STATE.DISCONNECTED) {
+      this._account.removeCallFromCallManager(this._callInfo.uuid);
     }
   }
 }

@@ -6,7 +6,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
-import { ITEM_LIST_TYPE } from '../types';
+import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';
@@ -15,16 +15,18 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
-import { JuiConversationRightRailLoading } from 'jui/pattern/RightShelf';
-// import { observable } from 'mobx';
+import {
+  JuiConversationRightRailLoading,
+  JuiRightShelfContent,
+} from 'jui/pattern/RightShelf';
 import { emptyView } from './Empty';
 
 const itemType = {
-  [ITEM_LIST_TYPE.FILE]: FileItem,
+  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: FileItem,
 };
 
 const subheaderType = {
-  [ITEM_LIST_TYPE.FILE]: 'fileListSubheader',
+  [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: 'fileListSubheader',
 };
 
 @observer
@@ -74,14 +76,14 @@ class ItemListView extends React.Component<ViewProps & Props>
     const { type, totalCount } = this.props;
     const subheaderText = subheaderType[type];
     return (
-      <>
+      <JuiRightShelfContent>
         {totalCount > 0 && (
           <JuiListSubheader>
             {t(subheaderText)} ({totalCount})
           </JuiListSubheader>
         )}
         <JuiVirtualList dataSource={this} />
-      </>
+      </JuiRightShelfContent>
     );
   }
 }

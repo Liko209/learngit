@@ -13,6 +13,10 @@ import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../types';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
+    createOutgoingCallSession(toNum: string): void {
+      this.toNum = toNum;
+    }
+    removeCallFromCallManager(uuid: string): void {}
     public callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
     public callAction: RTC_CALL_ACTION;
     public isReadyReturnValue: boolean = false;
@@ -27,9 +31,6 @@ describe('RTC call', () => {
 
     isReady(): boolean {
       return this.isReadyReturnValue;
-    }
-    createOutCallSession(toNum: string): void {
-      this.toNum = toNum;
     }
   }
   class MockSession extends EventEmitter2 {
@@ -737,27 +738,27 @@ describe('RTC call', () => {
   describe('Idle state transitions', async () => {
     it('should state transition from Idle to Pending when account not ready [JPT-601]', done => {
       const account = new VirturlAccountAndCallObserver();
-      jest.spyOn(account, 'createOutCallSession');
+      jest.spyOn(account, 'createOutgoingCallSession');
       account.isReadyReturnValue = false;
       const call = new RTCCall(false, '123', null, account, account);
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
-        expect(account.createOutCallSession).not.toBeCalled();
+        expect(account.createOutgoingCallSession).not.toBeCalled();
         done();
       });
     });
 
     it('should state transition from Idle to Connecting when Account ready [JPT-602]', done => {
       const account = new VirturlAccountAndCallObserver();
-      jest.spyOn(account, 'createOutCallSession');
+      jest.spyOn(account, 'createOutgoingCallSession');
       account.isReadyReturnValue = true;
       const call = new RTCCall(false, '123', null, account, account);
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.toNum).toBe('123');
-        expect(account.createOutCallSession).toBeCalled();
+        expect(account.createOutgoingCallSession).toBeCalled();
         done();
       });
     });
@@ -766,14 +767,14 @@ describe('RTC call', () => {
   describe('Pending state transitions', async () => {
     it("should state transition from Pending to Connecting when receive 'Account ready' event [JPT-603]", done => {
       const account = new VirturlAccountAndCallObserver();
-      jest.spyOn(account, 'createOutCallSession');
+      jest.spyOn(account, 'createOutgoingCallSession');
       const call = new RTCCall(false, '123', null, account, account);
       call.onAccountReady();
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.toNum).toBe('123');
-        expect(account.createOutCallSession).toBeCalled();
+        expect(account.createOutgoingCallSession).toBeCalled();
         done();
       });
     });
