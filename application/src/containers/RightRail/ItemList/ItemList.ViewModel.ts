@@ -79,6 +79,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return ItemUtils.fileFilter(this._groupId, true);
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
         return ItemUtils.fileFilter(this._groupId, false);
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
+        return ItemUtils.taskFilter(this._groupId, false);
       default:
         return undefined;
     }
@@ -175,19 +177,19 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
-    let isValidItem =
-      item.id > 0 &&
-      !item.deactivated &&
-      GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
-      item.group_ids.includes(this._groupId) &&
-      item.post_ids.length > 0;
+    let isValidItem = !item.deactivated && item.post_ids.length > 0;
     switch (this.type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
         isValidItem =
           isValidItem &&
           (this._getFilterFunc() as (valid: Item) => boolean)(item);
       default:
+        isValidItem =
+          isValidItem &&
+          GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
+          ItemUtils.isValidItem(this._groupId, item);
     }
     return isValidItem;
   }

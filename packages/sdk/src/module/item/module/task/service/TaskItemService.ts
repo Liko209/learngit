@@ -46,6 +46,7 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
   private _toSanitizedTask(task: TaskItem) {
     return {
       ...ItemUtils.toSanitizedItem(task),
+      complete: task.complete,
       due: task.due || undefined,
       assigned_to_ids: task.assigned_to_ids,
       section: task.section,

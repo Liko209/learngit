@@ -45,6 +45,7 @@ describe('TaskItemService', () => {
       assigned_to_ids: [1, 2],
       section: 'sec',
       color: '#1231',
+      complete: true,
     };
 
     return { taskItem };
@@ -64,6 +65,7 @@ describe('TaskItemService', () => {
         id: taskItem.id,
         group_ids: taskItem.group_ids,
         created_at: taskItem.created_at,
+        complete: taskItem.complete,
         due: taskItem.due,
         assigned_to_ids: taskItem.assigned_to_ids,
         section: taskItem.section,
@@ -86,6 +88,7 @@ describe('TaskItemService', () => {
         id: taskItem.id,
         group_ids: taskItem.group_ids,
         created_at: taskItem.created_at,
+        complete: taskItem.complete,
         due: taskItem.due,
         assigned_to_ids: taskItem.assigned_to_ids,
         section: taskItem.section,

@@ -6,7 +6,6 @@
 
 import { Item } from '../../module/base/entity';
 import { FileItem } from '../../module/file/entity';
-
 import { ItemUtils } from '../ItemUtils';
 
 function clearMocks() {
@@ -121,6 +120,35 @@ describe('ItemUtils', () => {
         group_ids: [123123],
         created_at: 1231233,
       });
+    });
+  });
+
+  describe('taskFilter', () => {
+    it('should return true when want to show completed tasks', () => {
+      const task = {
+        id: 9,
+        group_ids: [11, 222, 33],
+        complete: true,
+      };
+      expect(ItemUtils.taskFilter(11, true)(task)).toBeTruthy();
+    });
+
+    it('should return false when dont want to show completed tasks', () => {
+      const task = {
+        id: 9,
+        group_ids: [11, 222, 33],
+        complete: true,
+      };
+      expect(ItemUtils.taskFilter(11, false)(task)).toBeFalsy();
+    });
+
+    it('should return true when want to show not completed tasks', () => {
+      const task = {
+        id: 9,
+        group_ids: [11, 222, 33],
+        complete: false,
+      };
+      expect(ItemUtils.taskFilter(11, false)(task)).toBeTruthy();
     });
   });
 });
