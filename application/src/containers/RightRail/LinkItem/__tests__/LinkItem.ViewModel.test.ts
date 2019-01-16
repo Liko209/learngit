@@ -51,18 +51,18 @@ describe('ImageItemViewModel', () => {
   });
 
   describe('personName', () => {
-    it('should be a person name string when invoke person entity', () => {
+    it('should be a person name string when invoke person entity [JPT-868]', () => {
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
 
-    it('should be a new person name string when change person name', () => {
+    it('should be a new person name string when change person name [JPT-868]', () => {
       mockPerson.userDisplayName = 'new name';
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
   });
 
   describe('createdTime', () => {
-    it('should be a date string when incoming timestamp', () => {
+    it('should be a date string when incoming timestamp [JPT-868]', () => {
       expect(vm.createdTime).toEqual(dateFormatter.date(mockLink.createdAt));
     });
   });
