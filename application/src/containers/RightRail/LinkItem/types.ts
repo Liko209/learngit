@@ -12,7 +12,8 @@ type LinkItemProps = {
 
 type LinkItemViewProps = {
   link: LinkItemModel;
-  textSecondary: string;
+  personName: string;
+  createdTime: string;
 };
 
 export { LinkItemProps, LinkItemViewProps };

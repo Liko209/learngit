@@ -36,17 +36,14 @@ class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
   }
 
   @computed
-  get textSecondary() {
+  get personName() {
+    return this._person.userDisplayName || '';
+  }
+
+  @computed
+  get createdTime() {
     const { createdAt } = this.link;
-    const result = [];
-    const name = this._person.userDisplayName;
-    if (name) {
-      result.push(name);
-    }
-    if (createdAt) {
-      result.push(dateFormatter.date(createdAt));
-    }
-    return result.join(' · ');
+    return dateFormatter.date(createdAt);
   }
 }
 

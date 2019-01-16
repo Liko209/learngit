@@ -50,34 +50,20 @@ describe('ImageItemViewModel', () => {
     });
   });
 
-  describe('textSecondary', () => {
-    it('should be a string when invoke person id', () => {
-      expect(vm.textSecondary).toEqual(
-        `${mockPerson.userDisplayName} · ${dateFormatter.date(
-          mockLink.createdAt,
-        )}`,
-      );
+  describe('personName', () => {
+    it('should be a person name string when invoke person entity', () => {
+      expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
 
     it('should be a new person name string when change person name', () => {
       mockPerson.userDisplayName = 'new name';
-      expect(vm.textSecondary).toEqual(
-        `${mockPerson.userDisplayName} · ${dateFormatter.date(
-          mockLink.createdAt,
-        )}`,
-      );
+      expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
+  });
 
-    it('should be only a date string when display secondary text', () => {
-      mockLink.creatorId = 0;
-      mockLink.createdAt = 1547086968632;
-      expect(vm.textSecondary).toEqual(dateFormatter.date(mockLink.createdAt));
-    });
-
-    it('should be only a person name string when display secondary text', () => {
-      mockLink.creatorId = 123;
-      mockLink.createdAt = 0;
-      expect(vm.textSecondary).toEqual(mockPerson.userDisplayName);
+  describe('createdTime', () => {
+    it('should be a date string when incoming timestamp', () => {
+      expect(vm.createdTime).toEqual(dateFormatter.date(mockLink.createdAt));
     });
   });
 });
