@@ -128,7 +128,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-        await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+groupId, +teamId, +groupId1, +teamId1]);
+        await h(t).glip(loginUser).favoriteGroups([+groupId, +teamId, +groupId1, +teamId1]);
       },
     );
 
@@ -253,12 +253,12 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
 
     let meChatId;
     await h(t).withLog('Given I have an extension with a me conversation', async () => {
-      meChatId = await h(t).glip(loginUser).getPerson(loginUser.rcId).then(res => res.data.me_group_id);
+      meChatId = await h(t).glip(loginUser).getPerson().then(res => res.data.me_group_id);
     });
 
     await h(t).withLog('Before login, the conversations should not be hidden and should have been marked as favorite already',
       async () => {
-         await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+meChatId]);
+         await h(t).glip(loginUser).favoriteGroups([+meChatId]);
       },
     );
 

@@ -94,12 +94,12 @@ test(formalName('When update user name, can sync dynamically in message metadata
     });
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
-      await h(t).glip(loginUser).updatePerson(null, { first_name: changedName });
+      await h(t).glip(loginUser).updatePerson({ first_name: changedName });
     });
 
     await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
       await t.expect(targetPost.child().withText(changedName).exists).ok();
-      await h(t).glip(loginUser).updatePerson(null, { first_name: 'John' }); // reset first_name
+      await h(t).glip(loginUser).updatePerson({ first_name: 'John' }); // reset first_name
     }, true);
   },
 );
@@ -136,7 +136,7 @@ test(formalName('When update custom status, can sync dynamically in message meta
     const userStatusList = ['In a meeting', 'content of user modify']
     for (const userStatus of userStatusList) {
       await h(t).withLog(`When I modify user status "${userStatus}" through api`, async () => {
-        await h(t).glip(loginUser).updatePerson(null, { away_status: userStatus });
+        await h(t).glip(loginUser).updatePerson({ away_status: userStatus });
       });
 
       await h(t).withLog(`Then I can find user status display change to "${userStatus}"`, async () => {
@@ -145,7 +145,7 @@ test(formalName('When update custom status, can sync dynamically in message meta
     }
 
     await h(t).withLog(`When I delete user status through api request`, async () => {
-      await h(t).glip(loginUser).updatePerson(null, { away_status: null });
+      await h(t).glip(loginUser).updatePerson({ away_status: null });
     });
 
     await h(t).withLog(`Then I only can find username display without status`, async () => {
