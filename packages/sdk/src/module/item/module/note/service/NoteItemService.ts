@@ -9,6 +9,7 @@ import { NoteItemController } from '../controller/NoteItemController';
 import { EntityBaseService } from '../../../../../framework/service';
 import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
+import { ItemQueryOptions } from '../../../types';
 
 class NoteItemService extends EntityBaseService implements ISubItemService {
   private _noteItemController: NoteItemController;
@@ -30,13 +31,7 @@ class NoteItemService extends EntityBaseService implements ISubItemService {
 
   deleteItem(itemId: number) {}
 
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
+  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return Promise.resolve([]);
   }
 

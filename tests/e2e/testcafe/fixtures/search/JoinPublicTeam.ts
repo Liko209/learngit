@@ -24,7 +24,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
   const otherUser = h(t).rcData.mainCompany.users[5];
   await h(t).platform(otherUser).init();
   await h(t).glip(otherUser).init();
-  const otherUserName = await h(t).glip(otherUser).getPerson(otherUser.rcId)
+  const otherUserName = await h(t).glip(otherUser).getPerson()
     .then(res => res.data.display_name);
 
   const publicTeamName = uuid();

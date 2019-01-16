@@ -13,6 +13,7 @@ import { Api } from '../../../api';
 import { daoManager, ItemDao } from '../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { IItemService } from '../service/IItemService';
+import { ItemQueryOptions, ItemFilterFunction } from '../types';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
@@ -53,33 +54,24 @@ class ItemServiceController {
     return this._itemActionController;
   }
 
-  async getGroupItemsCount(groupId: number, typeId: number) {
+  async getGroupItemsCount(
+    groupId: number,
+    typeId: number,
+    filterFunc?: ItemFilterFunction,
+  ) {
     let totalCount = 0;
     const subItemService = this.getSubItemService(typeId);
     if (subItemService) {
-      totalCount = await subItemService.getSubItemsCount(groupId);
+      totalCount = await subItemService.getSubItemsCount(groupId, filterFunc);
     }
     return totalCount;
   }
 
-  async getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ) {
+  async getItems(options: ItemQueryOptions) {
     let ids: number[] = [];
-    const subItemService = this.getSubItemService(typeId);
+    const subItemService = this.getSubItemService(options.typeId);
     if (subItemService) {
-      ids = await subItemService.getSortedIds(
-        groupId,
-        limit,
-        offsetItemId,
-        sortKey,
-        desc,
-      );
+      ids = await subItemService.getSortedIds(options);
     }
     const itemDao = daoManager.getDao(ItemDao);
     const items = await itemDao.getItemsByIds(ids);
@@ -98,7 +90,7 @@ class ItemServiceController {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
 
-    item.id > 0 &&
+    this._shouldSaveSanitizedItem(item) &&
       (await this._getSubItemServiceByITemId(item.id).createItem(item));
   }
 
@@ -106,7 +98,7 @@ class ItemServiceController {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
 
-    item.id > 0 &&
+    this._shouldSaveSanitizedItem(item) &&
       (await this._getSubItemServiceByITemId(item.id).updateItem(item));
   }
 
@@ -157,6 +149,10 @@ class ItemServiceController {
     normalData.forEach((item: Item) => {
       subItemService.createItem(item);
     });
+  }
+
+  private _shouldSaveSanitizedItem(item: Item) {
+    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
   }
 }
 

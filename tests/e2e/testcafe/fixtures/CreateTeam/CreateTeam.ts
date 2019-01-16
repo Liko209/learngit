@@ -194,8 +194,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
 
   let name; //  email;  TODO: currently no support  email search. {name, email}
   await h(t).withLog(`Given I one exist user name and email`, async () => {
-    const personData = await h(t).glip(loginUser).getPerson(users[1].rcId);
-    name = personData.data.first_name + " " + personData.data.last_name;
+    name = await h(t).glip(loginUser).getPerson(users[1].rcId).then(res => res.data.display_name);
     // email = personData.data.email;  // TODO: currently no support  email search. {name, email} 
   });
 

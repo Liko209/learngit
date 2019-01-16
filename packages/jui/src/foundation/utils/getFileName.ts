@@ -23,7 +23,7 @@ const truncateLongName = (name: string) => {
   return [name, ''];
 };
 
-const getListItemTextWithDate = (text: string) => {
+const getListItemSecondaryText = (text: string) => {
   if (!text) return '';
 
   const textArr = text.split('·');
@@ -36,4 +36,4 @@ const getListItemTextWithDate = (text: string) => {
   return [text, ''];
 };
 
-export { getFileName, truncateLongName, getListItemTextWithDate };
+export { getFileName, truncateLongName, getListItemSecondaryText };
