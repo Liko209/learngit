@@ -11,8 +11,6 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
-import { service } from 'sdk';
-
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
@@ -108,23 +106,12 @@ export class MessageRouterChangeHelper {
 
   static handleSourceOfRouter(id: number) {
     const handler = SectionGroupHandler.getInstance();
-    const triggerReady = () => {
-      handler.onReady((conversationList: Set<number>) => {
-        GroupHandler.ensureGroupOpened(id);
-        if (conversationList.has(id)) {
-          return;
-        }
-        GroupHandler.accessGroup(id);
-      });
-    };
-    if (this.isIndexDone) {
-      triggerReady();
-    } else {
-      const { notificationCenter, SERVICE } = service;
-      notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
-        this.isIndexDone = true;
-        triggerReady();
-      });
-    }
+    handler.onReady((conversationList: Set<number>) => {
+      GroupHandler.ensureGroupOpened(id);
+      if (conversationList.has(id)) {
+        return;
+      }
+      GroupHandler.accessGroup(id);
+    });
   }
 }
