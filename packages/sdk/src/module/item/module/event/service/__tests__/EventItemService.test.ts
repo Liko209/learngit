@@ -8,7 +8,6 @@ import { daoManager } from '../../../../../../dao';
 import { IItemService } from '../../../../service/IItemService';
 import { EventItemDao } from '../../dao/EventItemDao';
 import { EventItemService } from '../EventItemService';
-import { EventItem } from '../../entity';
 
 jest.mock('../../../../../../dao');
 jest.mock('../../dao/EventItemDao');
@@ -41,7 +40,7 @@ describe('EventItemService', () => {
       created_at: 11231333,
       group_ids: [123],
       start: 111,
-      end: 333,
+      end: 222,
     };
 
     return { eventItem };

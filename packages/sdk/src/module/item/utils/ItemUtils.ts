@@ -6,7 +6,6 @@
 
 import { ImageFileExtensions } from './ImageFileExtensions';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
-import { Item, SanitizedItem } from '../module/base/entity';
 
 class ItemUtils {
   static isValidItem<T extends { id: number; group_ids: number[] }>(
@@ -54,12 +53,31 @@ class ItemUtils {
     };
   }
 
-  static toSanitizedItem(item: Item) {
-    return {
-      id: item.id,
-      group_ids: item.group_ids,
-      created_at: item.created_at,
-    } as SanitizedItem;
+  static eventFilter<
+    T extends { id: number; group_ids: number[]; end: number }
+  >(groupId: number) {
+    return (event: T) => {
+      let result = false;
+      do {
+        if (!ItemUtils.isValidItem(groupId, event)) {
+          break;
+        }
+
+        if (
+          GlipTypeUtil.extractTypeId(event.id) !== TypeDictionary.TYPE_ID_EVENT
+        ) {
+          break;
+        }
+
+        if (event.end < Date.now()) {
+          break;
+        }
+
+        result = true;
+      } while (false);
+
+      return result;
+    };
   }
 }
 

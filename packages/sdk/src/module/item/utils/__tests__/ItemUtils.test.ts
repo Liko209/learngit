@@ -107,20 +107,29 @@ describe('ItemUtils', () => {
     });
   });
 
-  describe('toSanitizedItem', () => {
-    it('should return sanitized item', () => {
-      const item = {
-        id: 1111,
-        group_ids: [123123],
-        created_at: 1231233,
-        name: '1231233',
-      };
+  describe('eventFilter', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
 
-      expect(ItemUtils.toSanitizedItem(item)).toEqual({
-        id: 1111,
-        group_ids: [123123],
-        created_at: 1231233,
-      });
+    const item1 = {
+      id: 14,
+      group_ids: [11, 222, 33],
+      start: 111,
+      end: 9007199254740992,
+    };
+
+    const item2 = {
+      id: 111,
+      group_ids: [11, 222, 33],
+    };
+
+    it('should return false when is not event', () => {
+      expect(ItemUtils.eventFilter(11)(item2)).toBeFalsy();
+    });
+
+    it('should return false when is over due event', () => {
+      expect(ItemUtils.eventFilter(11)(item1)).toBeTruthy();
     });
   });
 });

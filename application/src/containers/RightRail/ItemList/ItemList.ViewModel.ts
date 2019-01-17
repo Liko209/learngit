@@ -79,6 +79,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return ItemUtils.fileFilter(this._groupId, true);
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
         return ItemUtils.fileFilter(this._groupId, false);
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+        return ItemUtils.eventFilter(this._groupId);
       default:
         return undefined;
     }
@@ -186,6 +188,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     switch (this.type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
         isValidItem =
           isValidItem &&
           (this._getFilterFunc() as (valid: Item) => boolean)(item);
