@@ -1,17 +1,16 @@
 @font-face {
-  font-family: 'jupiter_icon';
-  src:
-    url('fonts/jupiter_icon.woff2?68fuel') format('woff2'),
-    url('fonts/jupiter_icon.ttf?68fuel') format('truetype'),
-    url('fonts/jupiter_icon.woff?68fuel') format('woff'),
-    url('fonts/jupiter_icon.svg?68fuel#jupiter_icon') format('svg');
+  font-family: "jupiter_icon";
+  src: url("fonts/jupiter_icon.woff2?td7avy") format("woff2"),
+    url("fonts/jupiter_icon.ttf?td7avy") format("truetype"),
+    url("fonts/jupiter_icon.woff?td7avy") format("woff"),
+    url("fonts/jupiter_icon.svg?td7avy#jupiter_icon") format("svg");
   font-weight: normal;
   font-style: normal;
 }
 
 .icon {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'jupiter_icon' !important;
+  font-family: "jupiter_icon" !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -24,16 +23,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.addmember:before {
+.default-integration:before {
+  content: "\e94a";
+}
+.repeat:before {
+  content: "\e949";
+}
+.add-member:before {
   content: "\e947";
 }
-.addteam:before {
+.add-team:before {
   content: "\e948";
 }
 .conference:before {
   content: "\e946";
 }
-.codesnippet:before {
+.code-snippet:before {
   content: "\e945";
 }
 .webpage:before {
@@ -97,15 +102,15 @@
   content: "\e938";
   color: #d94d1f;
 }
-.dafaultfile:before {
+.dafault-file:before {
   content: "\e93c";
   color: #0684bd;
 }
-.defaultmusic:before {
+.default-music:before {
   content: "\e93d";
   color: #0684bd;
 }
-.defaultvideo:before {
+.default-video:before {
   content: "\e93e";
   color: #0684bd;
 }
@@ -113,7 +118,7 @@
   content: "\e93f";
   color: #0684bd;
 }
-.imagepreview:before {
+.image-preview:before {
   content: "\e940";
   color: #f6ad16;
 }
@@ -189,10 +194,10 @@
 .chevron_right:before {
   content: "\e92b";
 }
-.doublechevron_right:before {
+.double-chevron_right:before {
   content: "\e920";
 }
-.doublechevron_left:before {
+.double-chevron_left:before {
   content: "\e922";
 }
 .bulleted:before {

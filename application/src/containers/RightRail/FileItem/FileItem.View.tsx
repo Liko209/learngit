@@ -63,17 +63,15 @@ class FileItemView extends Component<FileItemProps> {
         />
         {isHover && (
           <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton
-                component="a"
-                download={true}
-                href={downloadUrl}
-                variant="plain"
-                tooltipTitle={t('download')}
-              >
-                download
-              </JuiIconButton>
-            </JuiListItemIcon>
+            <JuiIconButton
+              component="a"
+              download={true}
+              href={downloadUrl}
+              variant="plain"
+              tooltipTitle={t('download')}
+            >
+              download
+            </JuiIconButton>
           </JuiListItemSecondaryAction>
         )}
       </JuiListItem>

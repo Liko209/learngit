@@ -17,6 +17,7 @@ import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
+import { ITEM_SORT_KEYS } from 'sdk/module/item';
 
 type Props = {
   id: number;
@@ -74,11 +75,26 @@ class RightRailComponent extends React.Component<Props> {
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
             {TAB_CONFIG.map(
               (
-                { title, type }: { title: string; type: RIGHT_RAIL_ITEM_TYPE },
+                {
+                  title,
+                  type,
+                  sortKey,
+                  desc,
+                }: {
+                  title: string;
+                  type: RIGHT_RAIL_ITEM_TYPE;
+                  sortKey?: ITEM_SORT_KEYS;
+                  desc?: boolean;
+                },
                 index: number,
               ) => (
                 <JuiTab key={index} title={t(title)}>
-                  <ItemList type={type} groupId={id} />
+                  <ItemList
+                    type={type}
+                    groupId={id}
+                    sortKey={sortKey}
+                    desc={desc}
+                  />
                 </JuiTab>
               ),
             )}

@@ -55,8 +55,9 @@ const name2icon = {
   location: 'location',
   link: 'webpage',
   send_failure: 'refresh',
-  add_member: 'addmember',
-  add_team: 'addteam',
+  add_member: 'add-member',
+  add_team: 'add-team',
+  repeat: 'repeat',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
