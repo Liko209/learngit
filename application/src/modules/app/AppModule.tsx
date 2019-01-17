@@ -20,6 +20,7 @@ import { App } from './container';
 
 import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';
+import { HomeService } from '@/modules/home';
 
 import './index.css';
 
@@ -29,6 +30,7 @@ import './index.css';
  */
 class AppModule extends AbstractModule {
   @inject(RouterService) private _routerService: RouterService;
+  @inject(HomeService) private _homeService: HomeService;
   @inject(AppStore) private _appStore: AppStore;
 
   async bootstrap() {
@@ -92,6 +94,20 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       updateAccountInfoForGlobalStore();
+
+      // TODO register subModule according to account profile
+      this._homeService.registerSubModules([
+        'dashboard',
+        'message',
+        'telephony',
+        'meeting',
+        'contact',
+        'calendar',
+        'task',
+        'note',
+        'file',
+        'setting',
+      ]);
     });
 
     notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, () => {

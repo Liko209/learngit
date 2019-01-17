@@ -3,9 +3,22 @@
  * @Date: 2019-01-09 10:25:03
  * Copyright © RingCentral. All rights reserved.
  */
-import { VersionInfo } from '@/containers/VersionInfo';
-import { Home } from '@/modules/home';
-import { UnifiedLogin } from '@/modules/login';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
+
+const Home = lazyComponent({
+  loader: () => import(/*
+    webpackChunkName: "c.home" */ './lazy/Home'),
+});
+const UnifiedLogin = lazyComponent({
+  loader: () =>
+    import(/*
+    webpackChunkName: "c.unified-login" */ './lazy/UnifiedLogin'),
+});
+const VersionInfo = lazyComponent({
+  loader: () =>
+    import(/*
+    webpackChunkName: "c.version-info" */ './lazy/VersionInfo'),
+});
 
 const config = {
   routes: [

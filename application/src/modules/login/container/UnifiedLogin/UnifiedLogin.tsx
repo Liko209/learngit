@@ -96,7 +96,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   //   this.setState({ brandId: event.currentTarget.value });
   // }
 
-  onSubmit = (event: React.SyntheticEvent) => {
+  handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     const { location } = this.props;
     window.location.href = getUrl(location);
@@ -106,7 +106,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     const { t } = this.props;
     return (
       <div>
-        <Form onSubmit={this.onSubmit}>
+        <Form onSubmit={this.handleSubmit}>
           <Button type="submit" data-anchor="btnLogin">
             {t('signIn')}
           </Button>

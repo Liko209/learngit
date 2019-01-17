@@ -4,15 +4,27 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { t } from 'i18next';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
+  route: {
+    path: '/phone',
+    component: lazyComponent({
+      loader: () =>
+        import(/*
+        webpackChunkName: "c.telephony" */ './lazy/Telephony'),
+    }),
+  },
   nav: () => ({
     url: '/phone',
     icon: 'phone',
     title: t('Phone'),
     placement: 'top',
   }),
+  loader: () =>
+    import(/*
+    webpackChunkName: "m.telephony" */ '@/modules/telephony'),
 };
 
 export { config };

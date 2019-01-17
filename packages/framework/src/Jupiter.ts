@@ -10,28 +10,36 @@ import { ModuleConfig } from './types';
 /**
  * Jupiter Framework
  */
+@injectable()
 class Jupiter {
   private _running = false;
   private _moduleEntries: interfaces.Newable<AbstractModule>[] = [];
   private _container: Container = container;
   private _asyncModulePromises: Promise<void>[] = [];
 
-  registerModule({ provides, entry }: ModuleConfig): void {
+  registerModule(
+    { provides, entry }: ModuleConfig,
+    afterBootstrap?: () => void,
+  ): void {
     provides && this.bindProvides(provides);
     if (entry) {
       this.bindProvide(entry);
       this.addEntry(entry);
       if (this._running) {
-        this.bootstrapModule(entry);
+        this.bootstrapModule(entry, afterBootstrap);
       }
     }
   }
 
-  registerModuleAsync(moduleName: string) {
-    const promise = import(`@/modules/${moduleName}/module.config`).then(
-      electron => this.registerModule(electron.config),
+  registerModuleAsync(
+    loader: () => Promise<{ config: ModuleConfig }>,
+    afterBootstrap?: () => void,
+  ) {
+    const promise = loader().then(m =>
+      this.registerModule(m.config, afterBootstrap),
     );
     this._asyncModulePromises.push(promise);
+    return promise;
   }
 
   addEntry(m: interfaces.Newable<AbstractModule>) {
@@ -51,9 +59,14 @@ class Jupiter {
 
   async bootstrapModule<T extends AbstractModule>(
     moduleEntry: interfaces.ServiceIdentifier<T>,
+    afterBootstrap?: () => void | Promise<void>,
   ) {
     const m = this._container.get<AbstractModule>(moduleEntry);
     await m.bootstrap();
+
+    if (afterBootstrap) {
+      await afterBootstrap();
+    }
   }
 
   async bootstrap() {
