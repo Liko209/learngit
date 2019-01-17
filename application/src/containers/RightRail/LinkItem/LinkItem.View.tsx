@@ -30,9 +30,11 @@ class LinkItemView extends Component<LinkItemViewProps> {
 
   private _openLink = () => {
     const { link } = this.props;
-    if (link.data) {
-      window.open(link.data.url, '_blank');
+    let { url } = link;
+    if (!/^http/.test(link.url)) {
+      url = `http://${url}`;
     }
+    window.open(url, '_blank');
   }
 
   render() {
