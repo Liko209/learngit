@@ -29,7 +29,7 @@ import { MessageRouterChangeHelper } from './helper';
 
 const LeftRailResponsive = withResponsive(LeftRail, {
   maxWidth: 360,
-  minWidth: 180,
+  minWidth: 200,
   defaultWidth: 268,
   visualMode: VISUAL_MODE.AUTOMATIC,
   enable: {
@@ -46,7 +46,7 @@ const SwitchResponsive = withResponsive(Switch, {
 const RightRailResponsive = withResponsive(RightRail, {
   TriggerButton,
   maxWidth: 360,
-  minWidth: 180,
+  minWidth: 200,
   defaultWidth: 268,
   visualMode: VISUAL_MODE.BOTH,
   enable: {

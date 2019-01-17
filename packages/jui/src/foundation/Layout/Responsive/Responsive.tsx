@@ -8,9 +8,7 @@ import React, { PureComponent, ComponentType } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import Resizable from 're-resizable';
 import { StyledPanel, StyledContent } from './StyledPanel';
-// import { StyledButton } from './StyledButton';
-import { ResponsiveContext } from './responsiveContext';
-import Optimizer from './optimizer';
+import { StyledMain } from './StyledMain';
 
 enum VISUAL_MODE {
   BOTH,
@@ -23,25 +21,27 @@ type Enable = {
   left?: boolean;
 };
 
-type ResponsiveProps = {
+type ResponsiveInfo = {
   maxWidth?: number;
   minWidth?: number;
   defaultWidth?: number;
   visualMode?: VISUAL_MODE;
+  priority?: number;
+  tag: string;
+};
+
+type ResponsiveProps = ResponsiveInfo & {
   enable?: Enable;
   width?: number;
-  tag: string;
-  priority?: number;
   visual?: boolean;
   TriggerButton?: React.ComponentType<any>;
-  responsiveInfo: object;
+  addResponsiveInfo?: (info: ResponsiveInfo) => {};
 };
 
 type ResponsiveState = {
-  width: number;
-  lastWidth: number;
-  localChange: boolean;
   isShow: boolean;
+  width: number;
+  prevVisual: boolean;
 };
 
 class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
@@ -66,33 +66,11 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     priority: 0,
   };
 
-  optimizer = new Optimizer();
-
   state = {
-    lastWidth: this.localWidth,
-    width: this.localWidth,
-    localChange: false,
     isShow: false,
+    width: this.localWidth,
+    prevVisual: true,
   };
-
-  static getDerivedStateFromProps(
-    props: ResponsiveProps,
-    state: ResponsiveState,
-  ) {
-    if (state.localChange) {
-      return {
-        localChange: false,
-      };
-    }
-    const { width } = props;
-    const { lastWidth, width: stateWidth } = state;
-    if (width && (lastWidth !== width || stateWidth < width)) {
-      return {
-        width,
-      };
-    }
-    return null;
-  }
 
   componentDidMount() {
     const {
@@ -102,9 +80,9 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       visualMode,
       priority,
       tag,
-      responsiveInfo,
+      addResponsiveInfo,
     } = this.props;
-    responsiveInfo[tag] = {
+    const responsiveInfo = {
       maxWidth,
       minWidth,
       defaultWidth,
@@ -112,19 +90,24 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       priority,
       tag,
     };
-    this.optimizer = new Optimizer();
-    this.optimizer.addResizeListener(this.handlerClickHidePanel);
+    addResponsiveInfo && addResponsiveInfo(responsiveInfo);
   }
 
-  componentWillUnmount() {
-    this.optimizer.removeResizeListener();
-    delete this.optimizer;
+  componentWillReceiveProps(nextProps: ResponsiveProps) {
+    const { visual: nextVisual } = nextProps;
+    const { defaultWidth, visual } = this.props;
+    if (defaultWidth && visual === false && nextVisual === true) {
+      this.setState({
+        width: defaultWidth,
+        isShow: false,
+      });
+    }
   }
 
   get localWidth() {
-    const { defaultWidth, tag, width } = this.props;
+    const { defaultWidth, tag } = this.props;
     const value = Number(localStorage.getItem(tag));
-    return width || value || defaultWidth || 0;
+    return value || defaultWidth || 0;
   }
 
   set localWidth(value: number) {
@@ -145,23 +128,19 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
 
   onResize = (width: number) => {
     this.localWidth = width;
-    const { tag, responsiveInfo } = this.props;
-    const info = responsiveInfo[tag];
-    info.width = width;
     this.setState({
       width,
-      localChange: true,
     });
   }
 
   handlerClickShowPanel = () => {
-    this.setState({ isShow: true, localChange: true });
+    this.setState({ isShow: true });
   }
 
   handlerClickHidePanel = () => {
     const { isShow } = this.state;
     if (isShow) {
-      this.setState({ isShow: false, localChange: true });
+      this.setState({ isShow: false });
     }
   }
 
@@ -174,7 +153,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
         this.localShowState = !localShowState;
       }
     }
-    this.setState({ isShow: !isShow, localChange: true });
+    this.setState({ isShow: !isShow });
   }
 
   renderButton = () => {
@@ -204,7 +183,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       minWidth,
       maxWidth,
       visual,
-      visualMode,
+      priority,
     } = this.props;
     if (this.isManualMode && !this.localShowState) {
       return this.renderButton();
@@ -212,7 +191,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     return (
       <>
         {(this.isManualMode || visual === false) && this.renderButton()}
-        {visual || visualMode === undefined ? (
+        {visual ? (
           <Resizable
             enable={{ ...Responsive.DEFAULT_OPTIONS.enable, ...enable }}
             minWidth={minWidth}
@@ -222,7 +201,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
               height: 'auto',
             }}
             style={{
-              flex: maxWidth ? '0 1 auto' : 1,
+              flex: `0 ${priority} auto`,
             }}
           >
             {children}
@@ -239,36 +218,38 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     );
   }
 
+  renderMain = () => {
+    const { children, minWidth } = this.props;
+    return <StyledMain minWidth={Number(minWidth)}>{children}</StyledMain>;
+  }
+
   render() {
-    return this.renderMode();
+    const { visualMode } = this.props;
+    switch (true) {
+      case visualMode === undefined:
+        return this.renderMain();
+      default:
+        return this.renderMode();
+    }
   }
 }
 
 const withResponsive = (
   WrappedComponent: ComponentType<any>,
-  props?: Partial<ResponsiveProps>,
+  props: Partial<ResponsiveProps>,
 ) =>
   class ResponsiveHOC extends PureComponent<any> {
     static tag = `responsive(${WrappedComponent.displayName ||
       WrappedComponent.name})`;
     render() {
       return (
-        <ResponsiveContext.Consumer>
-          {({ responsiveInfo }) => (
-            <Responsive
-              {...props}
-              {...this.props}
-              tag={ResponsiveHOC.tag}
-              responsiveInfo={responsiveInfo}
-            >
-              <WrappedComponent {...this.props} />
-            </Responsive>
-          )}
-        </ResponsiveContext.Consumer>
+        <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
+          <WrappedComponent {...this.props} />
+        </Responsive>
       );
     }
   };
 
 export default Responsive;
 
-export { withResponsive, VISUAL_MODE, ResponsiveProps };
+export { withResponsive, VISUAL_MODE, ResponsiveProps, ResponsiveInfo };
