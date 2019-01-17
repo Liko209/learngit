@@ -53,6 +53,8 @@ describe('ItemListViewModel', () => {
         _desc: false,
       });
 
+      expect(ViewModel.ids).toEqual([1, 2]);
+
       _sortableDataHandler = {
         sortableListStore: {
           getIds: jest.fn().mockReturnValue([1, 2, 3]),
@@ -81,6 +83,7 @@ describe('ItemListViewModel', () => {
         _sortKey: 'time',
         _desc: false,
       });
+      expect(ViewModel.ids).toEqual([1, 2]);
 
       _sortableDataHandler = {
         sortableListStore: {
