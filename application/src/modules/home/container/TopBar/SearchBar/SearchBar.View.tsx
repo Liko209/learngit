@@ -34,7 +34,6 @@ const SEARCH_DELAY = 100;
 
 type State = {
   terms: string[];
-  focus: boolean;
   persons: SearchResult['persons'];
   groups: SearchResult['groups'];
   teams: SearchResult['teams'];
@@ -115,9 +114,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   onFocus = () => {
     const { updateFocus } = this.props;
     updateFocus(true);
-    // this.setState({
-    // focus: true,
-    // });
   }
 
   onClear = () => {
