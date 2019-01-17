@@ -3,9 +3,9 @@ type TeamSetting = {
   name?: string;
   description?: string;
   isPublic?: boolean;
-  permissionMap?: TeamPermissionMap;
+  permissionFlags?: PermissionFlags;
 };
+type PermissionKeys = keyof typeof PERMISSION_ENUM;
+type PermissionFlags = { [KEY in PermissionKeys]?: boolean };
 
-type TeamPermissionMap = { [key in PERMISSION_ENUM]?: boolean };
-
-export { TeamSetting, TeamPermissionMap };
+export { TeamSetting, PermissionKeys, PermissionFlags };

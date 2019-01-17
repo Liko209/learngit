@@ -45,11 +45,8 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .joinTeam(userId, teamId);
   }
 
-  async updateTeamSetting(
-    teamId: number,
-    teamSetting: TeamSetting,
-  ): Promise<TeamSetting> {
-    return await this.getTeamController()
+  async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
+    await this.getTeamController()
       .getTeamActionController()
       .updateTeamSetting(teamId, teamSetting);
   }

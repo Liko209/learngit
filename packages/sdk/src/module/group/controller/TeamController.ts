@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Group } from '../entity';
 import _ from 'lodash';
 import { Api } from '../../../api';
+import { daoManager, GroupDao } from '../../../dao';
+import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
+import { Group } from '../entity';
 import { TeamActionController } from './TeamActionController';
 import { TeamPermissionController } from './TeamPermissionController';
-import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
-import { daoManager, GroupDao } from '../../../dao';
 
 class TeamController {
   private _actionController: TeamActionController;
@@ -35,8 +35,10 @@ class TeamController {
       );
 
       this._actionController = new TeamActionController(
+        entitySourceController,
         partialModifyController,
         requestController,
+        this.getTeamPermissionController(),
         this.controllerBuilder,
       );
     }
