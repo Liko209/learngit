@@ -127,9 +127,9 @@ describe('GroupService', () => {
         name: 'test team',
         description: 'this is a team',
         isPublic: true,
-        permissionMap: {
-          [PERMISSION_ENUM.TEAM_POST]: true,
-          [PERMISSION_ENUM.TEAM_ADD_MEMBER]: true,
+        permissionFlags: {
+          TEAM_POST: true,
+          TEAM_ADD_MEMBER: true,
         },
       };
       await groupService.updateTeamSetting(mockTeamId, mockTeamSetting);

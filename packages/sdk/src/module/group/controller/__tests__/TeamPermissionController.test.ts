@@ -12,7 +12,10 @@ import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
 } from '../../../../dao/account/constants';
-import { PERMISSION_ENUM } from '../../constants';
+import {
+  PERMISSION_ENUM,
+  DEFAULT_USER_PERMISSION_LEVEL,
+} from '../../constants';
 
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
@@ -167,7 +170,7 @@ describe('TeamPermissionController', () => {
       });
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(group),
-      ).toEqual(31);
+      ).toEqual(DEFAULT_USER_PERMISSION_LEVEL);
     });
     it('return team permission level for common user and user permissions level is defined', () => {
       const group = groupFactory.build({
