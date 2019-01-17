@@ -7,7 +7,7 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
-import { RTC_CALL_ACTION } from '../api/types';
+import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from '../api/types';
 
 enum WEBPHONE_STATE {
   ACCEPTED = 'accepted',
@@ -86,6 +86,24 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     );
   }
 
+  park() {
+    this._session.park().then(
+      (parkOptions: any) => {
+        const options: RTCCallActionSuccessOptions = {
+          parkExtension: parkOptions['park extension'],
+        };
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.PARK,
+          options,
+        );
+      },
+      () => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.PARK);
+      },
+    );
+  }
+
   startRecord() {
     this._session.startRecord().then(
       () => {
@@ -118,6 +136,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         );
       },
     );
+  }
+
+  mute() {
+    this._session.mute();
+  }
+
+  unmute() {
+    this._session.unmute();
   }
 
   answer() {

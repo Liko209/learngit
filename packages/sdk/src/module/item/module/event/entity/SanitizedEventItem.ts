@@ -6,4 +6,7 @@
 
 import { SanitizedItem } from '../../base/entity';
 
-export type SanitizedEventItem = SanitizedItem & {};
+export type SanitizedEventItem = SanitizedItem & {
+  start: number;
+  end: number;
+};

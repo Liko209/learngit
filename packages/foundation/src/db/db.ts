@@ -21,6 +21,7 @@ export interface IDatabase {
 export interface IDatabaseCollection<T> {
   // private collection: any;
   // private table: any;
+  primaryKeys(query?: IQuery<T>): Promise<number[]>;
   primaryKeyName: () => string;
   put: (item: T) => Promise<void>;
   bulkPut: (array: T[]) => Promise<void>;
