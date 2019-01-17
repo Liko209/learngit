@@ -14,6 +14,7 @@ type LinkItemViewProps = {
   link: LinkItemModel;
   personName: string;
   createdTime: string;
+  url: string;
 };
 
 export { LinkItemProps, LinkItemViewProps };
