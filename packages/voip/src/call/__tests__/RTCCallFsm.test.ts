@@ -425,4 +425,19 @@ describe('Call FSM UT', async () => {
       });
     });
   });
+
+  describe('park()', async () => {
+    it('should call park api when fsm in connected state [JPT-821]', done => {
+      const callFsm = new RTCCallFsm();
+      jest.spyOn(callFsm, 'onParkAction');
+      callFsm.accountReady();
+      callFsm.sessionConfirmed();
+      callFsm.park();
+      setImmediate(() => {
+        expect(callFsm.state()).toBe('connected');
+        expect(callFsm.onParkAction).toBeCalled();
+        done();
+      });
+    });
+  });
 });

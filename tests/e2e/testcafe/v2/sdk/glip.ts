@@ -214,19 +214,32 @@ export class GlipSdk {
     });
   }
 
-  updateGroup(groupId, data) {
+  updateGroup(groupId: string | number, data) {
     const uri = `/api/group/${groupId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
   }
 
-  modifyGroupName(groupId, name) {
+  modifyGroupName(groupId: string | number, name) {
     const uri = `/api/group/${groupId}`;
     const data = { set_abbreviation: name };
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async addGroupMembers(groupId: string | number, rcIds: string[] | string) {
+    const oldMembers: number[] = await this.getGroup(groupId).then(res => res.data.members);
+    let members = [];
+    const personIds = await this.toPersonId(rcIds);
+    if (Object.prototype.toString.call(personIds) === '[object Array]') {
+      members = oldMembers.concat(personIds);
+    } else {
+      members = oldMembers;
+      members.push(personIds);
+    }
+    await this.updateGroup(groupId, { members });
   }
 
   /* post */
