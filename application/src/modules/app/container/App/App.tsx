@@ -34,6 +34,7 @@ class App extends React.Component {
 
   componentWillUnmount() {
     this._unListenHistory && this._unListenHistory();
+    window.removeEventListener('focus', this._focusHandler);
   }
 
   componentDidMount() {
@@ -42,6 +43,8 @@ class App extends React.Component {
         this._upgradeHandler.upgradeIfAvailable();
       }
     });
+
+    window.addEventListener('focus', this._focusHandler);
 
     analytics.bootstrap();
   }
@@ -86,6 +89,10 @@ class App extends React.Component {
     if (window.jupiterElectron && window.jupiterElectron.setBadgeCount) {
       window.jupiterElectron.setBadgeCount(appUmi || 0);
     }
+  }
+
+  private _focusHandler() {
+    this._upgradeHandler.upgradeIfAvailable();
   }
 }
 const HotApp = hot(module)(App);
