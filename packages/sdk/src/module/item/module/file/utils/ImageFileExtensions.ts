@@ -1,3 +1,11 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-16 17:02:47
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+const GifFileExtensions = ['gif', 'giphy'];
+
 const ImageFileExtensions = [
   'ase',
   'art',
@@ -13,7 +21,6 @@ const ImageFileExtensions = [
   'djvu',
   'egt',
   'exif',
-  'gif',
   'gpl',
   'grf',
   'icns',
@@ -121,4 +128,4 @@ const ImageFileExtensions = [
   'tga',
 ];
 
-export { ImageFileExtensions };
+export { ImageFileExtensions, GifFileExtensions };

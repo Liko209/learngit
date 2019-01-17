@@ -4,18 +4,40 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ControllerBuilder } from '../../../../../framework/controller/impl/ControllerBuilder';
-import { FileUploadController } from '../controller/FileUploadController';
 import { Api } from '../../../../../api';
 import { daoManager, ItemDao } from '../../../../../dao';
-import { FileItem } from '../entity';
+import { Item, ItemFile } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
+import { FileActionController } from './FileActionController';
+import { FileUploadController } from './FileUploadController';
 
 class FileItemController {
   private _fileUploadController: FileUploadController;
+  private _fileActionController: FileActionController;
   constructor(
     private _itemService: IItemService,
-    private _controllerBuilder: ControllerBuilder<FileItem>,
+    private _controllerBuilder: ControllerBuilder<Item>,
   ) {}
+
+  get fileActionController() {
+    if (!this._fileActionController) {
+      const itemRequestController = this._controllerBuilder.buildRequestController(
+        {
+          basePath: '/file',
+          networkClient: Api.glipNetworkClient,
+        },
+      );
+      const entitySourceController = this._controllerBuilder.buildEntitySourceController(
+        daoManager.getDao(ItemDao),
+        itemRequestController,
+      );
+
+      this._fileActionController = new FileActionController(
+        entitySourceController,
+      );
+    }
+    return this._fileActionController;
+  }
 
   get fileUploadController() {
     if (!this._fileUploadController) {
@@ -52,7 +74,7 @@ class FileItemController {
     const dao = daoManager.getDao(ItemDao) as ItemDao;
     const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
     return files.length > 0
-      ? files.some((x: FileItem) => {
+      ? files.some((x: ItemFile) => {
         return x.post_ids.length > 0;
       })
       : false;

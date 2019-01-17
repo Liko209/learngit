@@ -109,6 +109,14 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
       type: file.type,
     } as SanitizedFileItem;
   }
+
+  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+    return this.fileItemController.fileActionController.getThumbsUrlWithSize(
+      itemId,
+      width,
+      height,
+    );
+  }
 }
 
 export { FileItemService };
