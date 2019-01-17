@@ -1095,7 +1095,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute true when FSM state in idle state [JPT-880]', done => {
+    it('should only set isMute true when FSM state in idle state and isMute is false [JPT-880]', done => {
       setupCall();
       call.mute();
       setImmediate(() => {
@@ -1110,7 +1110,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute true when FSM state in connecting [JPT-882]', done => {
+    it('should only set isMute true when FSM state in connecting and isMute is false [JPT-882]', done => {
       setupCall();
       call._fsm._callFsmTable.accountReady();
       call.mute();
@@ -1126,7 +1126,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute true when FSM state in answering [JPT-884]', done => {
+    it('should only set isMute true when FSM state in answering and isMute is false [JPT-884]', done => {
       setupCall();
       call._fsm._callFsmTable.answer();
       call.mute();
@@ -1142,7 +1142,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute true when FSM state in pending [JPT-881]', done => {
+    it('should only set isMute true when FSM state in pending and isMute is false [JPT-881]', done => {
       setupCall();
       call._fsm._callFsmTable.accountNotReady();
       call.mute();
@@ -1158,7 +1158,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute true when FSM state in disconnected [JPT-885]', done => {
+    it('should only set isMute true when FSM state in disconnected and isMute is false [JPT-885]', done => {
       setupCall();
       call._fsm._callFsmTable.accountReady();
       call._fsm._callFsmTable.sessionConfirmed();
@@ -1235,8 +1235,9 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute false when FSM state in idle state [JPT-898]', done => {
+    it('should only set isMute false when FSM state in idle state and isMute is true [JPT-898]', done => {
       setupCall();
+      call._isMute = true;
       call.unmute();
       setImmediate(() => {
         expect(session.unmute).toBeCalledTimes(0);
@@ -1250,9 +1251,10 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute false when FSM state in connecting [JPT-900]', done => {
+    it('should only set isMute false when FSM state in connecting and isMute is true [JPT-900]', done => {
       setupCall();
       call._fsm._callFsmTable.accountReady();
+      call._isMute = true;
       call.unmute();
       setImmediate(() => {
         expect(session.unmute).toBeCalledTimes(0);
@@ -1266,9 +1268,10 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute false when FSM state in answering [JPT-901]', done => {
+    it('should only set isMute false when FSM state in answering and isMute is true [JPT-901]', done => {
       setupCall();
       call._fsm._callFsmTable.answer();
+      call._isMute = true;
       call.unmute();
       setImmediate(() => {
         expect(session.unmute).toBeCalledTimes(0);
@@ -1282,9 +1285,10 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute false when FSM state in pending [JPT-899]', done => {
+    it('should only set isMute false when FSM state in pending and isMute is true [JPT-899]', done => {
       setupCall();
       call._fsm._callFsmTable.accountNotReady();
+      call._isMute = true;
       call.unmute();
       setImmediate(() => {
         expect(session.unmute).toBeCalledTimes(0);
@@ -1298,11 +1302,12 @@ describe('RTC call', () => {
       });
     });
 
-    it('should only set isMute false when FSM state in disconnected [JPT-902]', done => {
+    it('should only set isMute false when FSM state in disconnected and isMute is true [JPT-902]', done => {
       setupCall();
       call._fsm._callFsmTable.accountReady();
       call._fsm._callFsmTable.sessionConfirmed();
       call._fsm._callFsmTable.sessionDisconnected();
+      call._isMute = true;
       call.unmute();
       setImmediate(() => {
         expect(session.unmute).toBeCalledTimes(1);
