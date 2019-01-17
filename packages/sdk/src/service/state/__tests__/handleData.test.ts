@@ -25,9 +25,14 @@ jest.mock('../../../dao', () => {
   const dao = {
     bulkUpdate: jest.fn(),
   };
+  const kvDao = {
+    put: jest.fn(),
+  };
+
   return {
     daoManager: {
       getDao: jest.fn(() => dao),
+      getKVDao: jest.fn(() => kvDao),
     },
   };
 });

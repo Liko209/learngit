@@ -12,3 +12,4 @@ export const DB_SCHEMA_VERSION = 'DB_SCHEMA_VERSION';
 export const CLIENT_ID = 'CLIENT_ID';
 export const LAST_CLICKED_GROUP = 'LAST_CLICKED_GROUP';
 export const PRE_INSERT_IDS = 'PRE_INSERT_IDS';
+export const MY_STATE_ID = 'MY_STATE_ID';
