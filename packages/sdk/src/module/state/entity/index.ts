@@ -4,6 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { State } from './State';
-
-export { State };
+export { State, MyState, GroupState } from './State';
