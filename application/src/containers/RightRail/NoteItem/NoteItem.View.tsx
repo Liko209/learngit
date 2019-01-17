@@ -18,7 +18,10 @@ class NoteItemView extends Component<NoteItemProps> {
     const { disabled, title, subTitle } = this.props;
 
     return (
-      <JuiListItem disabled={disabled}>
+      <JuiListItem
+        disabled={disabled}
+        data-test-automation-id="rightRail-note-item"
+      >
         <JuiListItemIcon>
           <JuiIconWrapper>
             <JuiNoteIcon />

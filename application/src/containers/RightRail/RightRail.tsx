@@ -27,6 +27,12 @@ type TriggerButtonProps = {
   onClick: () => {};
 } & WithNamespaces;
 
+type TabInfo = {
+  title: string;
+  type: RIGHT_RAIL_ITEM_TYPE;
+  automationID?: string;
+};
+
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
@@ -73,11 +79,12 @@ class RightRailComponent extends React.Component<Props> {
         {(width: number) => (
           <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
             {TAB_CONFIG.map(
-              (
-                { title, type }: { title: string; type: RIGHT_RAIL_ITEM_TYPE },
-                index: number,
-              ) => (
-                <JuiTab key={index} title={t(title)}>
+              ({ title, type, automationID }: TabInfo, index: number) => (
+                <JuiTab
+                  key={index}
+                  title={t(title)}
+                  automationID={automationID}
+                >
                   <ItemList type={type} groupId={id} />
                 </JuiTab>
               ),

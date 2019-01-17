@@ -30,6 +30,7 @@ type TabConfig = {
   subheader: string;
   empty: EmptyConfig;
   offlinePrompt: string;
+  automationID?: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -98,6 +99,7 @@ const TAB_CONFIG: TabConfig[] = [
     type: RIGHT_RAIL_ITEM_TYPE.NOTES,
     item: NoteItem,
     subheader: 'noteListSubheader',
+    automationID: 'rightRail-tab-notes',
     empty: {
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',
