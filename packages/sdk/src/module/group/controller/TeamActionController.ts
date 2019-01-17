@@ -140,7 +140,7 @@ class TeamActionController {
   }
 
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
-    this.partialModifyController.updatePartially(
+    await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         return this._teamSetting2partialTeam(

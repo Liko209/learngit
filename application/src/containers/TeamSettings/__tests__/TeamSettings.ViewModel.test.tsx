@@ -40,7 +40,9 @@ describe('TeamSettingsViewModel', () => {
       groupService.updateTeamSetting = jest
         .fn()
         .mockRejectedValueOnce(new Error());
-      jest.spyOn(errorHelper, 'isNotNetworkError').mockReturnValueOnce(true);
+      jest
+        .spyOn(errorHelper, 'isNetworkConnectionError')
+        .mockReturnValueOnce(true);
       Notification.flashToast = jest.fn();
       const vm = new TeamSettingsViewModel();
       vm.getDerivedProps({ id: 123 });

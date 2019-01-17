@@ -80,7 +80,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
         this.setNameError('alreadyTaken');
         return false;
       }
-      if (errorHelper.isNotNetworkError(error)) {
+      if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
           message: 'SorryWeWereNotAbleToSaveTheUpdate',
           type: ToastType.ERROR,

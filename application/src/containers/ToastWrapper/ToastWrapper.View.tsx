@@ -17,7 +17,9 @@ class ToastWrapperView extends React.Component<ToastWrapperViewProps> {
   }
   render() {
     return (
-      <JuiToastWrapper {...this.props}>{this.renderToasts()}</JuiToastWrapper>
+      <JuiToastWrapper className="toastWrapper" {...this.props}>
+        {this.renderToasts()}
+      </JuiToastWrapper>
     );
   }
 }
