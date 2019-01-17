@@ -12,9 +12,6 @@ import { SectionType, ViewProps, Person, Group, Props } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { Notification } from '@/containers/Notification';
-import { errorHelper } from 'sdk/error';
-
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
 
@@ -71,25 +68,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   getSectionItemSize(sectionCount: number) {
     return sectionCount <= 1 ? ONLY_ONE_SECTION_LENGTH : MORE_SECTION_LENGTH;
-  }
-
-  joinTeam = async (teamId: number) => {
-    const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    try {
-      await this.nGroupService.joinTeam(useId, teamId);
-    } catch (error) {
-      const e = error;
-      if (errorHelper.isNotAuthorizedError(e)) {
-        Notification.flashToast({
-          message: 'JoinTeamNotAuthorizedError',
-          type: 'error',
-          messageAlign: 'left',
-          fullWidth: false,
-          dismissible: false,
-        });
-      }
-      throw error;
-    }
   }
 
   hasMore<T>(section: SectionType<T>, sectionCount: number) {

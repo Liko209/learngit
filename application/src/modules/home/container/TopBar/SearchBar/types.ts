@@ -29,7 +29,6 @@ type ViewProps = {
   setValue: (value: string) => void;
   currentUserId: number;
   isTeamOrGroup: (id: number) => boolean;
-  joinTeam: (id: number) => {};
 };
 
 type SectionType<T> = {

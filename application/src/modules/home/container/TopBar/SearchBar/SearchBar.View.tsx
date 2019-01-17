@@ -16,10 +16,10 @@ import {
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiButton } from 'jui/components/Buttons';
-import { Dialog } from '@/containers/Dialog';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
+import { joinTeam } from '@/common/joinPublicTeam';
 // import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
@@ -160,30 +160,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await this._goToConversation(id);
   }
 
-  addPublicTeam = (item: SortableModel<Group>) => (
-    e: React.MouseEvent<HTMLElement>,
-  ) => {
-    const { joinTeam } = this.props;
-    e.stopPropagation();
-    Dialog.confirm({
-      title: t('joinTeamTitle'),
-      content: t('joinTeamContent', { teamName: item.displayName }),
-      okText: t('join'),
-      cancelText: t('Cancel'),
-      onOK: () =>
-        goToConversation({
-          id: item.id,
-          async beforeJump(conversationId: number) {
-            await joinTeam(conversationId);
-          },
-        }),
-    });
-  }
-
   private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
-        onClick={this.addPublicTeam(item)}
+        onClick={joinTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"

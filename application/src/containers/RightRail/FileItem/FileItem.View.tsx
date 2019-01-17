@@ -11,7 +11,8 @@ import {
   JuiListItem,
   JuiListItemIcon,
   JuiListItemSecondaryAction,
-  JuiListItemTextWithDate,
+  JuiListItemSecondaryText,
+  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -29,13 +30,20 @@ class FileItemView extends Component<FileItemProps> {
     this.setState({ isHover: false });
   }
   render() {
-    const { disabled, file, fileTypeOrUrl, subTitle } = this.props;
+    const {
+      disabled,
+      file,
+      fileTypeOrUrl,
+      personName,
+      createdTime,
+    } = this.props;
     const fileInfo = file || {};
     const { name, downloadUrl } = fileInfo;
     const { isHover } = this.state;
 
     return (
       <JuiListItem
+        data-test-automation-id="rightRail-file-item"
         disabled={disabled}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
@@ -45,7 +53,13 @@ class FileItemView extends Component<FileItemProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
-          secondary={<JuiListItemTextWithDate text={subTitle} />}
+          secondary={
+            <JuiListItemSecondaryText>
+              <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
+              &nbsp;·&nbsp;
+              <JuiListItemSecondarySpan text={createdTime} />
+            </JuiListItemSecondaryText>
+          }
         />
         {isHover && (
           <JuiListItemSecondaryAction>

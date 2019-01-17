@@ -27,7 +27,8 @@ export default class ProfileModel extends Base<Profile> {
     });
   }
 
-  hiddenGroupIds = computed(() => {
+  @computed
+  get hiddenGroupIds() {
     const hiddenGroupIds: number[] = [];
     Object.keys(this).forEach((key: string) => {
       if (this[key] === true) {
@@ -38,7 +39,7 @@ export default class ProfileModel extends Base<Profile> {
       }
     });
     return hiddenGroupIds;
-  });
+  }
 
   static fromJS(data: Profile) {
     return new ProfileModel(data);
