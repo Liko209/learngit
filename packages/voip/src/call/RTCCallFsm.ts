@@ -13,6 +13,8 @@ const CallFsmEvent = {
   FLIP: 'flipEvent',
   START_RECORD: 'startRecordEvent',
   STOP_RECORD: 'stopRecordEvent',
+  MUTE: 'mute',
+  UNMUTE: 'unmute',
   TRANSFER: 'transferEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
@@ -22,6 +24,7 @@ const CallFsmEvent = {
   SESSION_CONFIRMED: 'sessionConfirmedEvent',
   SESSION_DISCONNECTED: 'sessionDisconnectedEvent',
   SESSION_ERROR: 'sessionErrorEvent',
+  PARK: 'park',
 };
 
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
@@ -49,8 +52,20 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
           this._onStopRecord();
           break;
         }
+        case CallFsmEvent.MUTE: {
+          this._onMute();
+          break;
+        }
+        case CallFsmEvent.UNMUTE: {
+          this._onUnmute();
+          break;
+        }
         case CallFsmEvent.TRANSFER: {
           this._onTransfer(task.params);
+          break;
+        }
+        case CallFsmEvent.PARK: {
+          this._onPark();
           break;
         }
         case CallFsmEvent.ANSWER: {
@@ -145,6 +160,18 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
   }
 
+  mute(): void {
+    this._eventQueue.push({ name: CallFsmEvent.MUTE }, () => {});
+  }
+
+  unmute(): void {
+    this._eventQueue.push({ name: CallFsmEvent.UNMUTE }, () => {});
+  }
+
+  park() {
+    this._eventQueue.push({ name: CallFsmEvent.PARK }, () => {});
+  }
+
   transfer(target: string): void {
     this._eventQueue.push(
       { name: CallFsmEvent.TRANSFER, params: target },
@@ -203,12 +230,24 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onParkAction() {
+    this.emit(CALL_FSM_NOTIFY.PARK_ACTION);
+  }
+
   onStartRecordAction() {
     this.emit(CALL_FSM_NOTIFY.START_RECORD_ACTION);
   }
 
   onStopRecordAction() {
     this.emit(CALL_FSM_NOTIFY.STOP_RECORD_ACTION);
+  }
+
+  onMuteAction() {
+    this.emit(CALL_FSM_NOTIFY.MUTE_ACTION);
+  }
+
+  onUnmuteAction() {
+    this.emit(CALL_FSM_NOTIFY.UNMUTE_ACTION);
   }
 
   onReportCallActionFailed(name: string): void {
@@ -227,12 +266,24 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._callFsmTable.transfer(target);
   }
 
+  private _onPark() {
+    this._callFsmTable.park();
+  }
+
   private _onStartRecord() {
     this._callFsmTable.startRecord();
   }
 
   private _onStopRecord() {
     this._callFsmTable.stopRecord();
+  }
+
+  private _onMute() {
+    this._callFsmTable.mute();
+  }
+
+  private _onUnmute() {
+    this._callFsmTable.unmute();
   }
 
   private _onAnswer() {

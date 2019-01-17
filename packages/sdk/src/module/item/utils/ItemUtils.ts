@@ -25,6 +25,28 @@ class ItemUtils {
     );
   }
 
+  static taskFilter<
+    T extends { id: number; group_ids: number[]; complete: boolean }
+  >(groupId: number, showCompleted: boolean) {
+    return (task: T) => {
+      let result = false;
+      do {
+        if (!ItemUtils.isValidItem(groupId, task)) {
+          result = false;
+        }
+
+        if (
+          GlipTypeUtil.extractTypeId(task.id) !== TypeDictionary.TYPE_ID_TASK
+        ) {
+          break;
+        }
+
+        result = showCompleted || !task.complete;
+      } while (false);
+      return result;
+    };
+  }
+
   static fileFilter<
     T extends { id: number; group_ids: number[]; type: string }
   >(groupId: number, showImage: boolean) {

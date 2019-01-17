@@ -57,6 +57,8 @@ const name2icon = {
   send_failure: 'refresh',
   task: 'task',
   task_incomplete: 'task_incomplete',
+  add_member: 'addmember',
+  add_team: 'addteam',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
