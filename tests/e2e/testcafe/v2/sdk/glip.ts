@@ -530,7 +530,7 @@ export class GlipSdk {
     });
   }
 
-  async simpleTask(groupIds: string[] | string, rcIds: string[] | string, title: string, options?: object) {
+  async createSimpleTask(groupIds: string[] | string, rcIds: string[] | string, title: string, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     let personIds = this.toPersonId(rcIds);
     let assignees;
@@ -578,7 +578,7 @@ export class GlipSdk {
     });
   }
 
-  async simpleNote(groupIds: string[] | string, title: string, body: string, options?: object) {
+  async createSimpleNote(groupIds: string[] | string, title: string, body: string, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       title,
@@ -612,7 +612,7 @@ export class GlipSdk {
     });
   }
 
-  async simpleEvent(groupIds: string[] | string, title: string, rcIds?, options?: object) {
+  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       text: title,
