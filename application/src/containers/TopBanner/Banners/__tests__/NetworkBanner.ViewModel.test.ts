@@ -6,6 +6,7 @@
 
 import { getGlobalValue } from '../../../../store/utils';
 import { NetworkBannerViewModel } from '../NetworkBanner.ViewModel';
+import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('../../../../store/utils');
 
@@ -23,7 +24,7 @@ describe('NetworkBannerViewModel', () => {
       const viewModel = new NetworkBannerViewModel();
       expect(viewModel.banner).toEqual({
         message: 'NoInternetConnection',
-        type: 'error',
+        type: ToastType.ERROR,
       });
     });
 

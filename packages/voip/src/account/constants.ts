@@ -9,3 +9,4 @@ export const kRTCProvRequestErrorRertyTimerMin = 8;
 export const kRTCProvRequestErrorRertyTimerMax = 3600;
 export const kRTCProvParamsErrorRertyTimer = 7200;
 export const kRTCProvFreshTimer = 24 * 3600;
+export const kRTCMaxCallCount = 1;

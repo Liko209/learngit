@@ -10,5 +10,17 @@ type ToastProps = ShowNotificationOptions & {
   dismiss: () => void;
 };
 
+enum ToastType {
+  WARN = 'warn',
+  SUCCESS = 'success',
+  ERROR = 'error',
+  INFO = 'info',
+}
+
+enum ToastMessageAlign {
+  LEFT = 'left',
+  CENTER = 'center',
+}
+
 type ToastViewProps = ToastProps;
-export { ToastProps, ToastViewProps };
+export { ToastProps, ToastViewProps, ToastType, ToastMessageAlign };

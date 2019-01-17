@@ -70,7 +70,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
     });
 
     await h(t).withLog('And favorite 2 conversation before login', async () => {
-      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favPrivateChatId, +favTeamId]);
+      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
     });
 
     await h(t).withLog('And clear all UMIs before login', async () => {

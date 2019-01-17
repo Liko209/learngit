@@ -148,6 +148,9 @@
   "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
   "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
   "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+  "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
+  "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
+  "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
   "copyEmail": "Copy Email",
   "copyUrl": "Copy URL",
   "profile": "Profile",
@@ -224,5 +227,11 @@
   "noEventsCreatedYet": "No events created yet",
   "noEventSubText": "Events on your calendar will automatically show up here.",
   "noIntegrationInstallationYet": "No integration installation yet",
-  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here."
+  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here.",
+  "setting": "setting",
+  "setting_plural": "settings",
+  "save": "save",
+  "cancel": "cancel",
+  "teamName": "Team name",
+  "teamDescription": "Team description"
 }

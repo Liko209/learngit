@@ -7,19 +7,14 @@ import { ISubItemService } from '../../base/service/ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
 import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
+import { ItemQueryOptions } from '../../../types';
 
 class EventItemService extends EntityBaseService implements ISubItemService {
   constructor(itemService: IItemService) {
     super();
   }
 
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
+  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return Promise.resolve([]);
   }
 
