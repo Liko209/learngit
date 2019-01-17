@@ -5,8 +5,13 @@
  */
 
 import { daoManager } from '../../dao';
+<<<<<<< HEAD
 import PostDao from '../../dao/post';
 import { Post } from '../../module/post/entity';
+=======
+import PostDao, { PostViewDao } from '../../dao/post';
+import { Post } from '../../models';
+>>>>>>> hotfix/0.1.1.190111
 import { mainLogger } from 'foundation';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';
@@ -55,17 +60,20 @@ class IncomingPostHandler {
     }
     try {
       if (postsShouldBeRemovedGroupIds.length) {
-        const dao = daoManager.getDao(PostDao);
+        const postDao = daoManager.getDao(PostDao);
+        const postViewDao = daoManager.getDao(PostViewDao);
+
         let postsInDB: Post[] = [];
         await Promise.all(
           postsShouldBeRemovedGroupIds.map(async (id: number) => {
-            const posts = await dao.queryPostsByGroupId(id);
+            const posts = await postViewDao.queryPostsByGroupId(id);
             postsInDB = postsInDB.concat(posts);
           }),
         );
         if (postsInDB.length) {
           const ids = postsInDB.map(item => item.id);
-          dao.bulkDelete(ids);
+          postDao.bulkDelete(ids);
+          postViewDao.bulkDelete(ids);
           // should notifiy ???
           return transformedData.filter(item => ids.indexOf(item.id) === -1);
         }
@@ -97,13 +105,14 @@ class IncomingPostHandler {
     const keys = Object.keys(groupPosts);
     const groupIds = [];
     const postQueries = [];
-    const dao = daoManager.getDao(PostDao);
+    const postDao = daoManager.getDao(PostDao);
+    const postViewDao = daoManager.getDao(PostViewDao);
 
     for (let i = 0; i < keys.length; i += 1) {
       if (IncomingPostHandler.isGroupPostsDiscontinuous(groupPosts[keys[i]])) {
         const key = Number(keys[i]);
         groupIds.push(key);
-        postQueries.push(dao.queryOldestPostByGroupId(key));
+        postQueries.push(postDao.queryOldestPostByGroupId(key));
       }
     }
     try {
@@ -157,7 +166,8 @@ class IncomingPostHandler {
         for (let i = 0; i < shouldBeMovedPosts.length; i += 1) {
           ids.push(shouldBeMovedPosts[i].id);
         }
-        await dao.bulkDelete(ids);
+        await postDao.bulkDelete(ids);
+        await postViewDao.bulkDelete(ids);
         return ids;
       }
       return [];

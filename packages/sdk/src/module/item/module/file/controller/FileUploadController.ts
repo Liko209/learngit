@@ -397,7 +397,11 @@ class FileUploadController {
 
     newFormFile.append(
       FILE_FORM_DATA_KEYS.CONTENT_TYPE,
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/FileUploadController.ts
       this._getFileType(file),
+=======
+      file.type,
+>>>>>>> hotfix/0.1.1.190111:packages/sdk/src/service/item/itemFileUploadHandler.ts
     );
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
@@ -772,7 +776,11 @@ class FileUploadController {
       if (arr && arr.length > 0) {
         const name = arr[arr.length - 1];
         const seArr = name.split('.');
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/FileUploadController.ts
         type = seArr[seArr.length - 1];
+=======
+        type = seArr && seArr.length > 1 ? seArr[seArr.length - 1] : '';
+>>>>>>> hotfix/0.1.1.190111:packages/sdk/src/service/item/itemFileUploadHandler.ts
       }
     }
     return type;

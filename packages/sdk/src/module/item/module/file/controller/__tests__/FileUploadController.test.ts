@@ -185,8 +185,13 @@ describe('fileUploadController', () => {
         },
       );
 
+<<<<<<< HEAD:packages/sdk/src/module/item/module/file/controller/__tests__/FileUploadController.test.ts
       const file = { name: '1.ts', type: 'ts', size: 123 } as File;
       const res = (await fileUploadController.sendItemFile(
+=======
+      const file = { name: '1.ts', type: 'image/ts', size: 123 } as File;
+      const res = await itemFileUploadHandler.sendItemFile(
+>>>>>>> hotfix/0.1.1.190111:packages/sdk/src/service/item/__tests__/itemFileUploadHandler.test.ts
         groupId,
         file,
         false,
@@ -198,6 +203,7 @@ describe('fileUploadController', () => {
       expect(res.deactivated).toBeFalsy;
       expect(res.company_id).toBe(companyId);
       expect(res.type_id).toBe(10);
+      expect(res.type).toBe('ts');
 
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
