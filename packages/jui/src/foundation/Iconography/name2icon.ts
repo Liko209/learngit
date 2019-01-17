@@ -55,6 +55,7 @@ const name2icon = {
   location: 'location',
   link: 'webpage',
   send_failure: 'refresh',
+  repeat: 'repeat',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

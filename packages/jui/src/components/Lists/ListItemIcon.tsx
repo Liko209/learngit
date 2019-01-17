@@ -12,7 +12,7 @@ import { spacing, width, height, grey, shape } from '../../foundation/utils';
 
 type JuiListItemIconProps = MuiListItemIconProps;
 
-const StyledListItemIcon = styled(MuiListItemIcon)`
+const ListItemIconWrapper = styled.div`
   && {
     display: flex;
     align-items: center;
@@ -28,7 +28,11 @@ const StyledListItemIcon = styled(MuiListItemIcon)`
 
 const JuiListItemIcon = (props: JuiListItemIconProps) => {
   const { children } = props;
-  return <StyledListItemIcon>{children}</StyledListItemIcon>;
+  return (
+    <MuiListItemIcon>
+      <ListItemIconWrapper {...props}>{children}</ListItemIconWrapper>
+    </MuiListItemIcon>
+  );
 };
 
 JuiListItemIcon.displayName = 'JuiListItemIcon';
