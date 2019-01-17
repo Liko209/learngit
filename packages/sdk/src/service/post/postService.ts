@@ -193,23 +193,9 @@ class PostService extends BaseService<Post> {
       }
     }
 
-<<<<<<< HEAD
     result.limit = limit;
 
     return result;
-=======
-      result.limit = limit;
-      return result;
-    } catch (e) {
-      mainLogger.error(`getPostsByGroupId: ${JSON.stringify(e)}`);
-      return {
-        limit,
-        posts: [],
-        items: [],
-        hasMore: true,
-      };
-    }
->>>>>>> hotfix/0.1.1.190111
   }
 
   async getPostsByIds(

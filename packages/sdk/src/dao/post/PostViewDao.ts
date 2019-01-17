@@ -5,7 +5,7 @@
  */
 import { BaseDao } from '../base';
 import PostDao from '.';
-import { Post, PostView } from '../../models';
+import { Post, PostView } from '../../module/post/entity';
 import { IDatabase, mainLogger } from 'foundation';
 import { QUERY_DIRECTION } from '../constants';
 import _ from 'lodash';

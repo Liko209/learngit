@@ -5,13 +5,8 @@
  */
 
 import { daoManager } from '../../dao';
-<<<<<<< HEAD
-import PostDao from '../../dao/post';
-import { Post } from '../../module/post/entity';
-=======
 import PostDao, { PostViewDao } from '../../dao/post';
-import { Post } from '../../models';
->>>>>>> hotfix/0.1.1.190111
+import { Post } from '../../module/post/entity';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';

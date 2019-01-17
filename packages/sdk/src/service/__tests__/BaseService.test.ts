@@ -12,7 +12,11 @@ import { SortableModel } from '../../models';
 import { IdModel, Raw } from '../../framework/model';
 import _ from 'lodash';
 import { ApiResultOk } from '../../api/ApiResult';
-import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation/src';
+import {
+  BaseResponse,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from 'foundation/src';
 
 jest.mock('../../dao/base/BaseDao');
 jest.mock('../../dao/base/Query');
@@ -321,11 +325,10 @@ describe('BaseService', () => {
       jest
         .spyOn(service, 'doUpdateModel')
         .mockResolvedValue(
-<<<<<<< HEAD
-          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'fake network error'),
-=======
-          new BaseError(ErrorTypes.API_NETWORK, 'fake network error'),
->>>>>>> hotfix/0.1.1.190111
+          new JNetworkError(
+            ERROR_CODES_NETWORK.NOT_NETWORK,
+            'fake network error',
+          ),
         );
 
       jest

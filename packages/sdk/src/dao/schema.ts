@@ -60,7 +60,6 @@ const schema: ISchema = {
     },
     8: { groupConfig: gen() },
     9: { item: gen('id', ['*group_ids', 'name']) },
-<<<<<<< HEAD
     10: {
       fileItem: gen('id', ['*group_ids']),
       taskItem: gen('id', ['*group_ids']),
@@ -68,9 +67,7 @@ const schema: ISchema = {
       eventItem: gen('id', ['*group_ids']),
       linkItem: gen('id', ['*group_ids']),
     },
-=======
-    10: { postView: gen('id', ['group_id', 'created_at']) },
->>>>>>> hotfix/0.1.1.190111
+    11: { postView: gen('id', ['group_id', 'created_at']) },
   },
 };
 

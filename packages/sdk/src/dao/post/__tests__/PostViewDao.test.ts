@@ -6,7 +6,7 @@
 import PostDao, { PostViewDao } from '..';
 import { setup } from '../../__tests__/utils';
 import _ from 'lodash';
-import { Post, PostView } from '../../../models';
+import { Post, PostView } from '../../../module/post/entity';
 import { QUERY_DIRECTION } from '../../constants';
 import { postFactory } from '../../../__tests__/factories';
 import { daoManager } from '../..';
