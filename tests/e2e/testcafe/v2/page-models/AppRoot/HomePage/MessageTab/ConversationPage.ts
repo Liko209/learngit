@@ -182,8 +182,8 @@ export class ConversationPage extends BaseConversationPage {
 
   async sendMessage(message: string, options?: TypeActionOptions) {
     await this.t
-      .typeText(this.messageInputArea, message, options)
       .click(this.messageInputArea)
+      .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
   }
 
