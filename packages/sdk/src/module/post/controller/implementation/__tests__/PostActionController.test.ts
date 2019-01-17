@@ -11,12 +11,20 @@ import { IRequestController } from '../../../../../framework/controller/interfac
 import { daoManager, PostDao } from '../../../../../dao';
 import { ProgressService } from '../../../../progress';
 import { notificationCenter, GroupConfigService } from '../../../../../service';
+import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
 import _ from 'lodash';
 
 jest.mock('../../../../../dao');
 jest.mock('../../../../progress');
 jest.mock('../../../../../service');
 jest.mock('../../../../item/service');
+
+class TestPreInsertController implements IPreInsertController<Post> {
+  async preInsert(entity: Post): Promise<void> {
+    return;
+  }
+  incomesStatusChange(id: number, shouldDelete: boolean): void {}
+}
 
 class TestPartialModifyController implements IPartialModifyController<Post> {
   updatePartially = jest.fn();
@@ -45,6 +53,7 @@ describe('PostController', () => {
     postActionController = new PostActionController(
       testPartialModifyController,
       testRequestController,
+      new TestPreInsertController<Post>(),
     );
   });
   afterAll(() => {
@@ -84,8 +93,6 @@ describe('PostController', () => {
     it('should call _deletePreInsertedPost when id < 0', async () => {
       postDao.get.mockResolvedValueOnce({ _id: -4, group_id: 10, text: '444' });
       const result = await postActionController.deletePost(-4);
-      expect(progressService.deleteProgress).toBeCalledTimes(1);
-      expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
       expect(groupConfigService.deletePostId).toBeCalledTimes(1);
       expect(result).toBeTruthy();
     });
