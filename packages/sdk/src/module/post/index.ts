@@ -1,5 +1,2 @@
-import { PostService } from './service/PostService';
-const postService = new PostService();
-export {
-  postService,
-};
+import { NewPostService } from './service/PostService';
+export { NewPostService };
