@@ -48,7 +48,7 @@ export class DashboardHelper {
     }
   }
 
-  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog, accountType: string) {
+  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
@@ -86,6 +86,7 @@ export class DashboardHelper {
     detailStep.attachments.push(consoleLog.consoleLogPath);
     detailStep.attachments.push(consoleLog.warnConsoleLogPath);
     detailStep.attachments.push(consoleLog.errorConsoleLogPath);
+    detailStep.attachments.push(rcDataPath);
     if (status === Status.FAILED) {
       const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))
       detailStep.attachments.push(errorDetailPath);
@@ -99,11 +100,11 @@ export class DashboardHelper {
     await this.createStepInDashboard(detailStep, res.body.id);
   }
 
-  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog, accountType: string) {
+  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     this.beatsClient = beatsClient;
     const ts = Date.now();
     try {
-      await this.createTestInDashboard(runId, consoleLog, accountType);
+      await this.createTestInDashboard(runId, consoleLog, accountType, rcDataPath);
     } catch (error) {
       logger.error('fail to create test in dashboard', error);
     }

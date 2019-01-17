@@ -94,9 +94,9 @@ export function teardownCase() {
 
     // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
-    const zip = new JSZip();
-    zip.file('console-log.json', JSON.stringify(consoleLog, null, 2));
-    const consoleLogPath = MiscUtils.createTmpFile(await zip.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
+    const zipConsoleLog = new JSZip();
+    zipConsoleLog.file('console-log.json', JSON.stringify(consoleLog, null, 2));
+    const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
     const warnConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['warn'], null, 2));
     const errorConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['error'], null, 2));
     const warnConsoleLogNumber = consoleLog['warn'].length;
@@ -109,14 +109,22 @@ export function teardownCase() {
       errorConsoleLogNumber
     };
 
+    // dump account pool data
+    const zipRcData = new JSZip();
+    zipRcData.file('rc-data.json', JSON.stringify(h(t).dataHelper.originData, null, 2));
+    const rcDataPath = MiscUtils.createTmpFile(await zipRcData.generateAsync({ type: "nodebuffer" }), 'rc-data.zip');
+
+    // get account type
+    const accountType = h(t).dataHelper.rcData.mainCompany.type;
+
     // create allure report
-    h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
+    h(t).allureHelper.writeReport(consoleLogObj, accountType, rcDataPath);
 
     // create beats report when ENABLE_REMOTE_DASHBOARD=true
     if (beatsClient) {
       const runId = await getOrCreateRunId();
       if (runId) {
-        await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
+        await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
   }
