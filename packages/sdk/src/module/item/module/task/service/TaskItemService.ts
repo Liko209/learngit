@@ -9,7 +9,7 @@ import { TaskItemController } from '../controller/TaskItemController';
 import { Item } from '../../../entity';
 import { EntityBaseService } from '../../../../../framework/service';
 import { IItemService } from '../../../service/IItemService';
-
+import { ItemQueryOptions } from '../../../types';
 class TaskItemService extends EntityBaseService implements ISubItemService {
   private _taskItemController: TaskItemController;
 
@@ -30,13 +30,7 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
 
   deleteItem(itemId: number) {}
 
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
+  getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return Promise.resolve([]);
   }
 

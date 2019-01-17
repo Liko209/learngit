@@ -8,6 +8,8 @@ import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
 import { BaseDao } from '../../../../../dao/base';
 import { SanitizedItem } from '../entity';
+import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+
 class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);
@@ -18,23 +20,23 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return query.toArray();
   }
 
-  async getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
-    const sanitizedItems = await this.queryItemsByGroupId(groupId);
+  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
+    const { groupId, sortKey, desc, limit, offsetItemId, filterFunc } = options;
+    let sanitizedItems = await this.queryItemsByGroupId(groupId);
+
+    if (filterFunc) {
+      sanitizedItems = sanitizedItems.filter(filterFunc);
+    }
+
     const sortFunc = (lhs: T, rhs: T): number => {
       return SortUtils.sortModelByKey(lhs, rhs, sortKey, desc);
     };
 
-    const sortedItems = sanitizedItems.sort(sortFunc);
+    sanitizedItems = sanitizedItems.sort(sortFunc);
     const itemIds: number[] = [];
     let insertAble: boolean = offsetItemId ? false : true;
-    for (let i = 0; i < sortedItems.length; ++i) {
-      const itemId = sortedItems[i].id;
+    for (let i = 0; i < sanitizedItems.length; ++i) {
+      const itemId = sanitizedItems[i].id;
       if (!insertAble && itemId === offsetItemId) {
         insertAble = true;
       }
@@ -50,8 +52,11 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return itemIds;
   }
 
-  async getGroupItemCount(groupId: number) {
+  async getGroupItemCount(groupId: number, filterFunc?: ItemFilterFunction) {
     const query = this.createQuery().contain('group_ids', groupId);
+    if (filterFunc) {
+      query.filter((item: SanitizedItem) => filterFunc(item));
+    }
     return query.count();
   }
 }

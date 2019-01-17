@@ -6,7 +6,7 @@
 
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { spacing } from '../../../foundation/utils/styles';
+import { spacing, ellipsis, width } from '../../../foundation/utils/styles';
 
 type Props = {
   Avatar: JSX.Element;
@@ -15,8 +15,12 @@ type Props = {
 
 const StyledAvatarName = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   margin: ${spacing(0, 4, 0, 0)};
+  & span {
+    max-width: ${width(45)};
+    ${ellipsis()};
+  }
 `;
 
 const StyledName = styled.span`
