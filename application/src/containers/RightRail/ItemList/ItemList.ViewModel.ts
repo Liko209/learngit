@@ -54,9 +54,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   totalCount: number = 0;
   @observable
-  private _sortKey: ITEM_SORT_KEYS = ITEM_SORT_KEYS.CREATE_TIME;
+  private _sortKey: ITEM_SORT_KEYS;
   @observable
-  private _desc: boolean = true;
+  private _desc: boolean;
   @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @computed
@@ -86,6 +86,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor(props: Props) {
     super(props);
+    this._sortKey = props.sortKey || ITEM_SORT_KEYS.CREATE_TIME;
+    this._desc = props.desc || false;
     this.reaction(
       () => this.props.groupId,
       () => {
@@ -111,10 +113,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   async loadTotalCount() {
     // To do in image: https://jira.ringcentral.com/browse/FIJI-2341, remove this RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES
     // To do in https://jira.ringcentral.com/browse/FIJI-2344, remove this RIGHT_RAIL_ITEM_TYPE.EVENTS
-    if (
-      this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS
-    ) {
+    if (this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES) {
       this.totalCount = 0;
       return;
     }

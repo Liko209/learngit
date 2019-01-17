@@ -13,6 +13,7 @@ import NotesEmptyImage from '../images/Notes.svg';
 import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
+import { ITEM_SORT_KEYS } from 'sdk/module/item';
 
 type EmptyConfig = {
   text: string;
@@ -24,6 +25,8 @@ type TabConfig = {
   title: string;
   type: RIGHT_RAIL_ITEM_TYPE;
   empty: EmptyConfig;
+  sortKey?: ITEM_SORT_KEYS;
+  desc?: boolean;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -84,6 +87,7 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
+    sortKey: ITEM_SORT_KEYS.START_TIME,
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',
