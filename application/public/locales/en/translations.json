@@ -45,6 +45,7 @@
   "joinTheTeam": "{{newUser}} joined the team",
   "join": "Join",
   "joinTeamTitle": "Join team?",
+  "joinTeam": "Join team",
   "joinTeamContent": "You are not currently a member of the {{teamName}} team. Would you like to join the team?",
   "mentions": "mentions",
   "bookmarks": "bookmarks",
@@ -185,6 +186,7 @@
   "ariaGoToGroup": "Go to the conversation with group",
   "ariaGoToMe": "Go to the workstation of yourself",
   "ariaGoToOther": "Go to the conversation with {{name}}",
+  "ariaJoinTeam": "Join the {{name}} team",
   "locationTitle": "Location",
   "viewYourProfile": "View Your Profile",
   "deletePost": "Delete post",
@@ -225,5 +227,11 @@
   "noEventsCreatedYet": "No events created yet",
   "noEventSubText": "Events on your calendar will automatically show up here.",
   "noIntegrationInstallationYet": "No integration installation yet",
-  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here."
+  "noIntegrationSubText": "There are currently no integrations installed. Once you install an integration it will show up here.",
+  "setting": "setting",
+  "setting_plural": "settings",
+  "save": "save",
+  "cancel": "cancel",
+  "teamName": "Team name",
+  "teamDescription": "Team description"
 }

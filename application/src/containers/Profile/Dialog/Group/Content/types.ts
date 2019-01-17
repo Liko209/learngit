@@ -11,6 +11,7 @@ type ProfileDialogGroupContentProps = ProfileDialogGroupProps;
 type ProfileDialogGroupContentViewProps = ProfileDialogGroupViewProps & {
   showMessage: boolean;
   typeId: number;
+  showJoinTeam: boolean;
 };
 
 export { ProfileDialogGroupContentProps, ProfileDialogGroupContentViewProps };
