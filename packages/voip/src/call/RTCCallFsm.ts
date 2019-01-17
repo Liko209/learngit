@@ -13,6 +13,8 @@ const CallFsmEvent = {
   FLIP: 'flipEvent',
   START_RECORD: 'startRecordEvent',
   STOP_RECORD: 'stopRecordEvent',
+  MUTE: 'mute',
+  UNMUTE: 'unmute',
   TRANSFER: 'transferEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
@@ -48,6 +50,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.STOP_RECORD: {
           this._onStopRecord();
+          break;
+        }
+        case CallFsmEvent.MUTE: {
+          this._onMute();
+          break;
+        }
+        case CallFsmEvent.UNMUTE: {
+          this._onUnmute();
           break;
         }
         case CallFsmEvent.TRANSFER: {
@@ -150,6 +160,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
   }
 
+  mute(): void {
+    this._eventQueue.push({ name: CallFsmEvent.MUTE }, () => {});
+  }
+
+  unmute(): void {
+    this._eventQueue.push({ name: CallFsmEvent.UNMUTE }, () => {});
+  }
+
   park() {
     this._eventQueue.push({ name: CallFsmEvent.PARK }, () => {});
   }
@@ -224,6 +242,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.STOP_RECORD_ACTION);
   }
 
+  onMuteAction() {
+    this.emit(CALL_FSM_NOTIFY.MUTE_ACTION);
+  }
+
+  onUnmuteAction() {
+    this.emit(CALL_FSM_NOTIFY.UNMUTE_ACTION);
+  }
+
   onReportCallActionFailed(name: string): void {
     this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name);
   }
@@ -250,6 +276,14 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onStopRecord() {
     this._callFsmTable.stopRecord();
+  }
+
+  private _onMute() {
+    this._callFsmTable.mute();
+  }
+
+  private _onUnmute() {
+    this._callFsmTable.unmute();
   }
 
   private _onAnswer() {
