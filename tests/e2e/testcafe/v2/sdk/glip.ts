@@ -630,7 +630,6 @@ export class GlipSdk {
       }
       data["invitee_ids"] = inviteeIds;
     }
-    console.log(data);
     return await this.createEvent(data);
   }
 }
