@@ -87,6 +87,16 @@ class JuiConversationLoading extends React.Component<
     },                      DELAY_LOADING);
   }
 
+  componentWillReceiveProps(props: JuiConversationLoadingProps) {
+    if (props.showTip) {
+      setTimeout(() => {
+        this.setState({
+          showLink: true,
+        });
+      },         1000);
+    }
+  }
+
   componentWillUnmount() {
     clearTimeout(this.timer);
   }
