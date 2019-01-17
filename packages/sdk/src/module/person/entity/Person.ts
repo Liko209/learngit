@@ -46,4 +46,6 @@ export type Person = ExtendedBaseModel & {
   location?: string;
   homepage?: string;
   teams_removed_from?: number[];
+  flags?: number;
+  has_registered?: boolean;
 };

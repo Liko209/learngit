@@ -40,6 +40,8 @@ enum RTC_CALL_ACTION {
   START_RECORD = 'startRecord',
   STOP_RECORD = 'stopRecord',
   TRANSFER = 'transfer',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
   PARK = 'park',
 }
 

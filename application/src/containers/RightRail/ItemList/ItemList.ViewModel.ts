@@ -109,6 +109,17 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   async loadTotalCount() {
+    // To Do in  https://jira.ringcentral.com/browse/FIJI-1416
+    if (
+      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.LINKS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.NOTES
+    ) {
+      this.totalCount = 0;
+      return;
+    }
+
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
