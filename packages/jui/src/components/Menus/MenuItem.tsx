@@ -63,7 +63,7 @@ class JuiMenuItem extends React.Component<JuiMenuItemProps> {
     if (typeof icon !== 'string') {
       iconElement = icon;
     } else {
-      iconElement = <JuiIconography fontSize="inherit">{icon}</JuiIconography>;
+      iconElement = <JuiIconography fontSize="small">{icon}</JuiIconography>;
     }
     return (
       <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>

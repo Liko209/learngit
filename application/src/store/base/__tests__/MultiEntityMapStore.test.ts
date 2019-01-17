@@ -82,7 +82,9 @@ describe('handleIncomingData()', () => {
     };
     instance.handleIncomingData(data);
     const models = instance.getData();
-    expect(Object.keys(models)).toHaveLength(0);
+    setTimeout(() => {
+      expect(Object.keys(models)).toHaveLength(0);
+    },         0);
   });
 });
 

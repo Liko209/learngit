@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { LinkItemController } from '../controller/LinkItemController';
-import { EntityBaseService } from '../../../../../framework/service';
 import { IItemService } from '../../../service/IItemService';
-import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { LinkItem, SanitizedLinkItem } from '../entity';
-import { LinkItemDao } from '../dao';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { LinkItemDao } from '../dao/LinkItemDao';
 import { daoManager } from '../../../../../dao';
-import { ItemUtils } from '../../../utils';
 
-class LinkItemService extends EntityBaseService implements ISubItemService {
+class LinkItemService extends BaseSubItemService<LinkItem, SanitizedLinkItem> {
   private _linkItemController: LinkItemController;
 
   constructor(itemService: IItemService) {
-    super();
+    super(daoManager.getDao<LinkItemDao>(LinkItemDao));
   }
 
   protected get linkItemController() {
@@ -26,37 +23,6 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
       this._linkItemController = new LinkItemController();
     }
     return this._linkItemController;
-  }
-
-  async updateItem(link: LinkItem) {
-    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
-    await sanitizedDao.update(this._toSanitizedLink(link));
-  }
-
-  async deleteItem(itemId: number) {
-    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
-    await sanitizedDao.delete(itemId);
-  }
-
-  async createItem(link: LinkItem) {
-    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
-    await sanitizedDao.put(this._toSanitizedLink(link));
-  }
-
-  private _toSanitizedLink(link: LinkItem) {
-    return {
-      ...ItemUtils.toSanitizedItem(link),
-    } as SanitizedLinkItem;
-  }
-
-  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
-    return await sanitizedDao.getSortedIds(options);
-  }
-
-  async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
-    const sanitizedDao = daoManager.getDao<LinkItemDao>(LinkItemDao);
-    return await sanitizedDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 

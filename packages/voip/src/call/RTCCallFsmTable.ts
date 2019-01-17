@@ -24,12 +24,15 @@ const CallFsmEvent = {
   SEND_TO_VOICEMAIL: 'sendToVoicemail',
   HANGUP: 'hangup',
   FLIP: 'flip',
+  MUTE: 'mute',
+  UNMUTE: 'Unmute',
   TRANSFER: 'transfer',
   START_RECORD: 'startRecord',
   STOP_RECORD: 'stopRecord',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
+  PARK: 'park',
 };
 
 interface IRTCCallFsmTableDependency {
@@ -42,7 +45,10 @@ interface IRTCCallFsmTableDependency {
   onTransferAction(target: string): void;
   onStartRecordAction(): void;
   onStopRecordAction(): void;
+  onMuteAction(): void;
+  onUnmuteAction(): void;
   onReportCallActionFailed(name: string): void;
+  onParkAction(): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -110,11 +116,49 @@ class RTCCallFsmTable extends StateMachine {
           },
         },
         {
+          name: CallFsmEvent.MUTE,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onMuteAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.UNMUTE,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onUnmuteAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
           name: CallFsmEvent.TRANSFER,
           from: CallFsmState.CONNECTED,
           to: (target: string) => {
             dependency.onTransferAction(target);
             return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.PARK,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onParkAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.PARK,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.PARK);
+            return s;
           },
         },
         {

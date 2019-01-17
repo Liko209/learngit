@@ -7,6 +7,7 @@ import Loki from 'lokijs';
 import { execQuery } from './queryExecutor';
 import _ from 'lodash';
 import { IDatabaseCollection, IQuery, IQueryOption } from '../../db';
+
 /**
  * return every item will has $loki like this
  * { name: 'nello', age: 18, $loki: 1 }
@@ -27,6 +28,12 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
 
   getCollection() {
     return this.collection;
+  }
+
+  primaryKeys(query?: IQuery<T>): Promise<number[]> {
+    return this.getAll(query).then((result: T[]) => {
+      return result.map(item => item[this.primaryKeyName()]);
+    });
   }
 
   primaryKeyName(): string {
