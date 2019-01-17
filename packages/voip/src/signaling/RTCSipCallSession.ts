@@ -138,6 +138,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     );
   }
 
+  mute() {
+    this._session.mute();
+  }
+
+  unmute() {
+    this._session.unmute();
+  }
+
   answer() {
     if (this._session != null) {
       this._session.accept();
