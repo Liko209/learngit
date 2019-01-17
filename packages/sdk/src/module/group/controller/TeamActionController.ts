@@ -6,6 +6,7 @@
 
 import _ from 'lodash';
 import { Api } from '../../../api';
+import { JSdkError, ERROR_CODES_SDK } from '../../../error';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
@@ -120,7 +121,13 @@ class TeamActionController {
   }
 
   async getTeamSetting(teamId: number): Promise<TeamSetting> {
-    const team = <Group>await this.entitySourceController.getEntity(teamId);
+    const team = await this.entitySourceController.getEntity(teamId);
+    if (!team) {
+      throw new JSdkError(
+        ERROR_CODES_SDK.MODEL_NOT_FOUND,
+        `Team id:${teamId} is not founded!`,
+      );
+    }
     const teamSetting = {
       name: team.set_abbreviation,
       description: team.description,
