@@ -76,6 +76,10 @@ class RTCCall {
     return this._callInfo;
   }
 
+  isMuted(): boolean {
+    return this._isMute;
+  }
+
   answer(): void {
     this._fsm.answer();
   }

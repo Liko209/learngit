@@ -1180,6 +1180,58 @@ describe('RTC call', () => {
         done();
       });
     });
+
+    it('should isMute is true when mute call and call is in holded state [JPT-886]', done => {
+      setupCall();
+      session.hold.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.mute();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holded');
+        expect(call.isMuted()).toBe(true);
+        done();
+      });
+    });
+
+    it('should isMute is true when mute call and call is in holding state [JPT-887]', done => {
+      setupCall();
+      session.hold.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call.mute();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holding');
+        expect(call.isMuted()).toBe(true);
+        done();
+      });
+    });
+
+    it('should isMute is true when mute call and call is in unholding state [JPT-888]', done => {
+      setupCall();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call.mute();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('unholding');
+        expect(call.isMuted()).toBe(true);
+        done();
+      });
+    });
   });
 
   describe('unmute()', () => {
@@ -1317,6 +1369,61 @@ describe('RTC call', () => {
           RTC_CALL_ACTION.UNMUTE,
           {},
         );
+        done();
+      });
+    });
+
+    it('should isMute is false when unmute call and call is in holded state [JPT-903]', done => {
+      setupCall();
+      session.hold.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.mute();
+      call.unmute();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holded');
+        expect(call.isMuted()).toBe(false);
+        done();
+      });
+    });
+
+    it('should isMute is false when unmute call and call is in holding state [JPT-904]', done => {
+      setupCall();
+      session.hold.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call.mute();
+      call.unmute();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holding');
+        expect(call.isMuted()).toBe(false);
+        done();
+      });
+    });
+
+    it('should isMute is false when unmute call and call is in unholding state [JPT-905]', done => {
+      setupCall();
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+      call.answer();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call.mute();
+      call.unmute();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('unholding');
+        expect(call.isMuted()).toBe(false);
         done();
       });
     });

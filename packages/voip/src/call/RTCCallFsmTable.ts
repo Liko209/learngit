@@ -169,6 +169,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.PARK);
@@ -183,6 +186,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.TRANSFER);
@@ -197,6 +203,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: (target: number, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FLIP);
@@ -219,6 +228,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_RECORD);
@@ -241,6 +253,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
