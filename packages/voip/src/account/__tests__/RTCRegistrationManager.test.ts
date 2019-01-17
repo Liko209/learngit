@@ -119,7 +119,7 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it.only('Should send reRegister when retry timer reached. [JPT-812]', done => {
+    it('Should send reRegister when retry timer reached. [JPT-812]', done => {
       jest.useFakeTimers();
       setup();
       jest.spyOn(regManager, 'reRegister');
