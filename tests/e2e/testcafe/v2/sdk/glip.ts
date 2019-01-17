@@ -523,27 +523,30 @@ export class GlipSdk {
     });
   }
 
-
-  async simpleTask(groupIds: string[], rcIds: string[] | string, title: string, options?: object) {
-    let personIds = this.toPersonId(rcIds);
-    if (typeof personIds == "string") {
-      personIds = Number(personIds);
-    }
-    const data = _.assign({
-      text: title,
-      assigned_to_ids: personIds,
-      group_ids: groupIds
-    },
-      options
-    )
-    return await this.createTask(data);
-  }
-
   updateTask(taskId: string | number, data: object) {
     const uri = `api/task/${taskId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async simpleTask(groupIds: string[] | string, rcIds: string[] | string, title: string, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    let personIds = this.toPersonId(rcIds);
+    let assignees;
+    if (Object.prototype.toString.call(personIds) === '[object Array]') {
+      assignees = personIds.map(id => Number(id));
+    } else {
+      assignees = [Number(personIds)];
+    }
+    const data = _.assign({
+      text: title,
+      assigned_to_ids: assignees,
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createTask(data);
   }
 
   /* note */
@@ -568,7 +571,15 @@ export class GlipSdk {
     });
   }
 
-  async simpleNote(groupIds: string[], title: string, body: string, options?: object) {
+  updateNote(noteId: string | number, data: object) {
+    const uri = `api/page/${noteId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async simpleNote(groupIds: string[] | string, title: string, body: string, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       title,
       body,
@@ -577,13 +588,6 @@ export class GlipSdk {
       options
     )
     return await this.createNote(data);
-  }
-
-  updateNote(noteId: string | number, data: object) {
-    const uri = `api/page/${noteId}`;
-    return this.axiosClient.put(uri, data, {
-      headers: this.headers,
-    });
   }
 
   /* event */
@@ -601,26 +605,32 @@ export class GlipSdk {
     });
   }
 
-  async simpleEvent(groupIds: string[], title: string, rcIds?, options?: object) {
-    let personIds = this.toPersonId(rcIds);
-    if (typeof personIds == "string") {
-      personIds = Number(personIds);
-    } else {
-      personIds = personIds.map(id => Number(id));
-    }
+  updateEvent(eventId: string | number, data: object) {
+    const uri = `api/event/${eventId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async simpleEvent(groupIds: string[] | string, title: string, rcIds?, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       text: title,
       group_ids: groupIds
     },
       options
     )
-    return await this.createNote(data);
-  }
-
-  updateEvent(eventId: string | number, data: object) {
-    const uri = `api/event/${eventId}`;
-    return this.axiosClient.put(uri, data, {
-      headers: this.headers,
-    });
+    if (rcIds) {
+      let inviteeIds: number[];
+      const personIds = this.toPersonId(rcIds);
+      if (Object.prototype.toString.call(personIds) === '[object Array]') {
+        inviteeIds = personIds.map(id => Number(id));
+      } else {
+        inviteeIds = [Number(personIds)];
+      }
+      data["invitee_ids"] = inviteeIds;
+    }
+    console.log(data);
+    return await this.createEvent(data);
   }
 }
