@@ -92,7 +92,7 @@ class App extends React.Component {
   }
 
   private _focusHandler() {
-    upgradeHandler.upgradeIfAvailable();
+    this._upgradeHandler.upgradeIfAvailable();
   }
 }
 const HotApp = hot(module)(App);
