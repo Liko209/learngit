@@ -106,17 +106,17 @@ class RTCCall {
 
   mute(): void {
     if (!this._isMute) {
+      this._isMute = true;
       this._fsm.mute();
     }
-    this._isMute = true;
     this._onCallActionSuccess(RTC_CALL_ACTION.MUTE, {});
   }
 
   unmute(): void {
     if (this._isMute) {
+      this._isMute = false;
       this._fsm.unmute();
     }
-    this._isMute = false;
     this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {});
   }
 
