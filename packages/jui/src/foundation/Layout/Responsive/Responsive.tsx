@@ -41,7 +41,7 @@ type ResponsiveProps = ResponsiveInfo & {
 type ResponsiveState = {
   isShow: boolean;
   width: number;
-  prevVisual: boolean;
+  prevVisual?: boolean;
 };
 
 class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
@@ -69,7 +69,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   state = {
     isShow: false,
     width: this.localWidth,
-    prevVisual: true,
+    prevVisual: this.props.visual,
   };
 
   componentDidMount() {
@@ -93,15 +93,26 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     addResponsiveInfo && addResponsiveInfo(responsiveInfo);
   }
 
-  componentWillReceiveProps(nextProps: ResponsiveProps) {
-    const { visual: nextVisual } = nextProps;
-    const { defaultWidth, visual } = this.props;
-    if (defaultWidth && visual === false && nextVisual === true) {
-      this.setState({
-        width: defaultWidth,
-        isShow: false,
-      });
+  static getDerivedStateFromProps(
+    nextProps: ResponsiveProps,
+    prevState: ResponsiveState,
+  ) {
+    const { visual, defaultWidth } = nextProps;
+    const { prevVisual } = prevState;
+    if (visual === false && prevVisual !== visual) {
+      return {
+        prevVisual: visual,
+      };
     }
+    if (defaultWidth && prevVisual === false && visual === true) {
+      return {
+        width: defaultWidth,
+        prevVisual: visual,
+        isShow: false,
+      };
+    }
+
+    return null;
   }
 
   get localWidth() {
