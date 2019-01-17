@@ -223,7 +223,7 @@ node(buildNode) {
                     branches: [[name: "${env.gitlabSourceNamespace}/${env.gitlabSourceBranch}"]],
                     extensions: [
                             [$class: 'PruneStaleBranch'],
-                            [$class: 'CleanCheckout'],
+                            [$class: 'CleanBeforeCheckout'],
                             [
                                     $class: 'PreBuildMerge',
                                     options: [
