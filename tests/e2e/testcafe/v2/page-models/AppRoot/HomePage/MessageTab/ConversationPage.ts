@@ -59,6 +59,7 @@ class BaseConversationPage extends BaseWebComponent {
   get headerStatus() {
     return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
   }
+  
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }

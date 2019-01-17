@@ -315,8 +315,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       dataProvider,
       config,
     );
-    // @ts-ignore
-    window.handler = this._handlersMap[SECTION_TYPE.TEAM];
     return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
   }
 
