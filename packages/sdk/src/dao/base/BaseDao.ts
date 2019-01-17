@@ -72,6 +72,17 @@ class BaseDao<T extends {}> {
     }
   }
 
+  async primaryKeys(ids: number[]): Promise<number[]> {
+    try {
+      await this.db.ensureDBOpened();
+      const query = this.createQuery();
+      return await query.anyOf('id', ids).primaryKeys();
+    } catch (err) {
+      errorHandler(err);
+      return [];
+    }
+  }
+
   async clear(): Promise<void> {
     try {
       await this.collection.clear();
@@ -113,13 +124,13 @@ class BaseDao<T extends {}> {
       } else {
         this._validateItem(item, true);
         await this.db.ensureDBOpened();
-        const primKey = this.collection.primaryKeyName();
-        const saved = await this.get(item[primKey]);
+        const primaryKeyName = this.collection.primaryKeyName();
+        const saved = await this.get(item[primaryKeyName]);
         // If item not exists, will put
         if (!saved) {
           await this.put(item as T);
         } else {
-          await this.collection.update(item[primKey], item);
+          await this._update(item, primaryKeyName);
         }
       }
     } catch (err) {
@@ -127,11 +138,46 @@ class BaseDao<T extends {}> {
     }
   }
 
+  private async _update(item: Partial<T>, primaryKeyName: string) {
+    await this.collection.update(item[primaryKeyName], item);
+  }
+
   async bulkUpdate(array: Partial<T>[]): Promise<void> {
     try {
       await this.db.ensureDBOpened();
+      const primaryKeyName = this.collection.primaryKeyName();
+      const ids = array.map((iter: Partial<T>) => {
+        return iter[primaryKeyName];
+      });
       await this.doInTransaction(async () => {
-        await Promise.all(array.map(item => this.update(item)));
+        const exists = await this.primaryKeys(ids);
+        if (!exists || exists.length === 0) {
+          await this.bulkPut(array as T[]);
+        } else if (exists && exists.length === array.length) {
+          await Promise.all(
+            array.map(item => this._update(item, primaryKeyName)),
+          );
+        } else if (exists) {
+          const idsSet = new Set<number>();
+          exists.forEach((item: number) => {
+            idsSet.add(item);
+          });
+
+          const updates: Partial<T>[] = [];
+          const puts: Partial<T>[] = [];
+          array.forEach((item: Partial<T>) => {
+            if (idsSet.has(item[primaryKeyName])) {
+              updates.push(item);
+            } else {
+              puts.push(item);
+            }
+          });
+
+          await Promise.all(
+            updates.map(item => this._update(item, primaryKeyName)),
+          );
+          await this.bulkPut(puts as T[]);
+        }
       });
     } catch (err) {
       errorHandler(err);

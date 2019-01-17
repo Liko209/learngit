@@ -22,6 +22,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
 
   let pvtChatId, teamId;
   await h(t).withLog('Given I have an extension with a private chat and a team', async () => {
@@ -37,16 +38,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   });
 
   await h(t).withLog('Make sure the conversations are shown and marked as favorite', async () => {
-    const profile = await h(t).glip(loginUser).getProfile(loginUser.rcId);
-    const favorites = profile.data.favorite_group_ids || [];
-    if (favorites.indexOf(+pvtChatId) < 0) {
-      favorites.push(+pvtChatId);
-    }
-    if (favorites.indexOf(+teamId) < 0) {
-      favorites.push(+teamId);
-    }
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvtChatId, teamId]);
-    await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, favorites)
+     await h(t).glip(loginUser).favoriteGroups([+pvtChatId, +teamId])
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {

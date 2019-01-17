@@ -199,10 +199,7 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
   await h(t).glip(loginUser).init();
   await h(t).platform(adminUser).init();
 
-  const otherUserName = await h(t).glip(loginUser).getPerson(users[5].rcId)
-    .then(res => {
-      return res.data.display_name;
-    });
+  const otherUserName = await h(t).glip(loginUser).getPerson(users[5].rcId).then(res => res.data.display_name);
 
   const conversationSection = app.homePage.messageTab.conversationPage;
 

@@ -36,10 +36,27 @@ class RTCLoggerProxy {
     this._doLog(LOG_LEVEL.TRACE, tag, message);
   }
 
+  private _loglevelString(level: LOG_LEVEL): string {
+    switch (level) {
+      case LOG_LEVEL.FATAL:
+        return 'Fatal';
+      case LOG_LEVEL.WARN:
+        return 'Warning';
+      case LOG_LEVEL.ERROR:
+        return 'Error';
+      case LOG_LEVEL.DEBUG:
+        return 'Debug';
+      case LOG_LEVEL.INFO:
+        return 'Info';
+      case LOG_LEVEL.TRACE:
+        return 'Trace';
+    }
+  }
+
   private _doLog(level: LOG_LEVEL, tag: string, message: string): void {
     if (!this._logger) {
       const msg = this._formatMsg(tag, message);
-      console.log(`[${level}] ${msg}`);
+      console.log(`[${this._loglevelString(level)}] ${msg}`);
       return;
     }
     const msg = this._formatMsg(tag, message);

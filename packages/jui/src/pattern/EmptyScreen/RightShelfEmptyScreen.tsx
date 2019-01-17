@@ -36,6 +36,11 @@ const Content = styled(EmptyScreen.Content)`
   margin: ${spacing(0, 0, 2)};
 `;
 
+const JuiFlexWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
   const { image, text, content, actions } = props;
 
@@ -57,4 +62,4 @@ const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
   );
 };
 
-export { JuiRightShelfEmptyScreen };
+export { JuiRightShelfEmptyScreen, JuiFlexWrapper };

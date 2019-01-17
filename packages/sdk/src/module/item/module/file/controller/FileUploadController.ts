@@ -39,7 +39,7 @@ type ItemFileUploadStatus = {
 class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
-
+  private _canceledUploadFileIds: Set<number> = new Set();
   constructor(
     private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<ItemFile>,
@@ -242,6 +242,7 @@ class FileUploadController {
   }
 
   async cancelUpload(itemId: number) {
+    this._canceledUploadFileIds.add(itemId);
     const status = this._progressCaches.get(itemId);
     if (status) {
       if (status.requestHolder) {
@@ -394,10 +395,7 @@ class FileUploadController {
       newFormFile.append(val, storedPostForm[val]);
     });
 
-    newFormFile.append(
-      FILE_FORM_DATA_KEYS.CONTENT_TYPE,
-      this._getFileType(file),
-    );
+    newFormFile.append(FILE_FORM_DATA_KEYS.CONTENT_TYPE, file.type);
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
   }
@@ -469,7 +467,7 @@ class FileUploadController {
         preInsertItem,
       );
     } else {
-      this._handleItemFileSendFailed(preInsertItem.id);
+      this._handleItemFileSendFailed(itemId);
       mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
     }
   }
@@ -588,7 +586,7 @@ class FileUploadController {
   }
 
   private _handleItemFileSendFailed(preInsertId: number) {
-    if (!this._progressCaches.get(preInsertId)) {
+    if (this._canceledUploadFileIds.has(preInsertId)) {
       return;
     }
     this._updateFileProgress(preInsertId, PROGRESS_STATUS.FAIL);
@@ -764,20 +762,14 @@ class FileUploadController {
   }
 
   private _getFileType(file: File) {
-    if (file.type && file.type.length > 0) {
-      return file.type;
-    }
-    return this._extractFileType(file.name);
-  }
-
-  private _extractFileType(fileName: string) {
+    const fileName = file.name;
     let type: string = '';
     if (fileName) {
       const arr = fileName.split('/');
       if (arr && arr.length > 0) {
         const name = arr[arr.length - 1];
         const seArr = name.split('.');
-        type = seArr[seArr.length - 1];
+        type = seArr && seArr.length > 1 ? seArr[seArr.length - 1] : '';
       }
     }
     return type;

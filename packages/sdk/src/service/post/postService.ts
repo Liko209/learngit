@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { daoManager, PostDao, GroupConfigDao } from '../../dao';
+import { daoManager, PostDao, GroupConfigDao, PostViewDao } from '../../dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -78,8 +78,8 @@ class PostService extends BaseService<Post> {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
-    const postDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(
+    const postViewDao = daoManager.getDao(PostViewDao);
+    const posts: Post[] = await postViewDao.queryPostsByGroupId(
       groupId,
       postId,
       direction,
@@ -113,29 +113,21 @@ class PostService extends BaseService<Post> {
     if (postId) {
       params.post_id = postId;
     }
-    try {
-      const requestResult = await PostAPI.requestPosts(params);
-      const result: IRawPostResult = {
-        posts: [],
-        items: [],
-        hasMore: false,
-      };
-      const data = requestResult.expect('Get Remote post failed');
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        if (result.posts.length === limit) {
-          result.hasMore = true;
-        }
+    const requestResult = await PostAPI.requestPosts(params);
+    const result: IRawPostResult = {
+      posts: [],
+      items: [],
+      hasMore: false,
+    };
+    const data = requestResult.expect('Get Remote post failed');
+    if (data) {
+      result.posts = data.posts;
+      result.items = data.items;
+      if (result.posts.length === limit) {
+        result.hasMore = true;
       }
-      return result;
-    } catch (e) {
-      return {
-        posts: [],
-        items: [],
-        hasMore: true,
-      };
     }
+    return result;
   }
 
   async getPostsByGroupId({
@@ -299,7 +291,10 @@ class PostService extends BaseService<Post> {
   }
 
   private _isValidPost(post: Post) {
-    return post && (post.text.length > 0 || post.item_ids.length > 0);
+    return (
+      post &&
+      ((post.text && post.text.trim().length > 0) || post.item_ids.length > 0)
+    );
   }
 
   private async _sendPostWithPreInsertItems(post: Post): Promise<PostData[]> {
@@ -341,6 +336,7 @@ class PostService extends BaseService<Post> {
       }
 
       const clonePost = _.cloneDeep(post);
+      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       if (shouldUpdatePost) {
         await this.handlePartialUpdate(
           {
@@ -370,7 +366,6 @@ class PostService extends BaseService<Post> {
         await this.deletePost(clonePost.id);
       }
 
-      const itemStatuses = this._getPseudoItemStatusInPost(clonePost);
       // remove listener if item files are not in progress
       if (!itemStatuses.includes(PROGRESS_STATUS.INPROGRESS)) {
         // has failed
@@ -403,8 +398,14 @@ class PostService extends BaseService<Post> {
       id: buildPost.id,
       status: PROGRESS_STATUS.INPROGRESS,
     });
-    const dao = daoManager.getDao(PostDao);
-    await dao.put(buildPost);
+    const postDao = daoManager.getDao(PostDao);
+    await postDao.put(buildPost);
+    const postViewDao = daoManager.getDao(PostViewDao);
+    await postViewDao.put({
+      id: buildPost.id,
+      group_id: buildPost.group_id,
+      created_at: buildPost.created_at,
+    });
     notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
   }
 
@@ -439,7 +440,8 @@ class PostService extends BaseService<Post> {
     replacePosts.set(preInsertId, post);
 
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
-    const dao = daoManager.getDao(PostDao);
+    const postDao = daoManager.getDao(PostDao);
+    const postViewDao = daoManager.getDao(PostViewDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -453,8 +455,14 @@ class PostService extends BaseService<Post> {
         send_failure_post_ids: failIds,
       });
     }
-    await dao.delete(preInsertId);
-    await dao.put(post);
+    await postDao.delete(preInsertId);
+    await postDao.put(post);
+    await postViewDao.delete(preInsertId);
+    await postViewDao.put({
+      id: post.id,
+      group_id: post.group_id,
+      created_at: post.created_at,
+    });
     return result;
   }
 
@@ -476,31 +484,29 @@ class PostService extends BaseService<Post> {
     return [];
   }
 
-  async cancelUpload(postId: number, itemId: number) {
-    const preHandlePartialPost = (
-      partialModel: Partial<Raw<Post>>,
-      originalModel: Post,
-    ): Partial<Raw<Post>> => {
-      const itemIds = originalModel.item_ids.filter((value: number) => {
+  async removeItemFromPost(postId: number, itemId: number) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.deleteItemData(itemId);
+
+    const post = await this.getByIdFromDao(postId);
+    if (post) {
+      const itemIds = post.item_ids.filter((value: number) => {
         return value !== itemId;
       });
-      const partialPost = {
-        ...partialModel,
-        item_ids: itemIds,
-      };
-      return partialPost;
-    };
-
-    const partialModel = { id: postId };
-    await this.handlePartialUpdate(
-      partialModel,
-      preHandlePartialPost,
-      async (updatedModel: Post) => {
-        const itemService: ItemService = ItemService.getInstance();
-        await itemService.cancelUpload(itemId);
-        return updatedModel;
-      },
-    );
+      post.item_ids = itemIds;
+      if (!this._isValidPost(post)) {
+        await this.deletePost(postId);
+      } else {
+        const partialModel = { id: postId, _id: postId, item_ids: itemIds };
+        await this.handlePartialUpdate(
+          partialModel,
+          undefined,
+          async (updatedModel: Post) => {
+            return updatedModel;
+          },
+        );
+      }
+    }
   }
 
   /**
@@ -525,14 +531,13 @@ class PostService extends BaseService<Post> {
 
   async deletePost(id: number): Promise<boolean> {
     const postDao = daoManager.getDao(PostDao);
+    const postViewDao = daoManager.getDao(PostViewDao);
     const post = (await postDao.get(id)) as Post;
 
     if (id < 0) {
-      const progressService: ProgressService = ProgressService.getInstance();
-      progressService.deleteProgress(id);
-
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
+      postViewDao.delete(id);
 
       const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
       const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -546,6 +551,10 @@ class PostService extends BaseService<Post> {
           send_failure_post_ids: failIds,
         });
       }
+
+      const progressService: ProgressService = ProgressService.getInstance();
+      progressService.deleteProgress(id);
+
       return true;
     }
 
@@ -717,6 +726,8 @@ class PostService extends BaseService<Post> {
     const posts = _.union(...postsMap);
     const ids = posts.map(post => post.id);
     await dao.bulkDelete(ids);
+    const postViewDao = daoManager.getDao(PostViewDao);
+    await postViewDao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);
     }

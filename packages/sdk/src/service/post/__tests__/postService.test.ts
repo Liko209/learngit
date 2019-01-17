@@ -19,7 +19,13 @@ import { serviceErr, serviceOk } from '../../ServiceResult';
 import notificationCenter from '../../notificationCenter';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
-import { err, ok, BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import {
+  err,
+  ok,
+  BaseResponse,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from 'foundation';
 import { JServerError, ERROR_CODES_SERVER } from '../../../error';
 import GroupConfigService from '../../groupConfig';
 import { ItemService } from '../../../module/item';
@@ -229,17 +235,18 @@ describe('PostService', () => {
       });
     });
 
-    it('should return hasMore = true if request failed', async () => {
+    it('should throw if request failed', async () => {
       groupService.getById.mockResolvedValue({
         most_recent_post_created_at: 1,
       });
       PostAPI.requestPosts.mockRejectedValueOnce({});
-      const result = await postService.getPostsFromRemote({
-        groupId: 1,
-        postId: 1,
-        limit: 1,
-      });
-      expect(result.hasMore).toBe(true);
+      await expect(
+        postService.getPostsFromRemote({
+          groupId: 1,
+          postId: 1,
+          limit: 1,
+        }),
+      ).rejects.toBeDefined();
     });
   });
 
@@ -357,7 +364,6 @@ describe('PostService', () => {
         });
         done();
       });
-      
     });
 
     it('should return remote data', async () => {
@@ -420,8 +426,6 @@ describe('PostService', () => {
         hasMore: false,
         limit: 20,
       });
-
-      
     });
 
     it('should return local+remote data when localData + remoteData > pageSize', async () => {
@@ -454,16 +458,19 @@ describe('PostService', () => {
       });
     });
 
-    it.only('should throw error when error occur', async () => {
-      jest.spyOn(postService, 'getPostsFromLocal')
-        .mockResolvedValueOnce({
-          posts: [],
-          items: [],
-          hasMore: true,
-          limit: 20,
-        });
-      const error = new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, 'NOT_AUTHORIZED');
-      jest.spyOn(postService, 'getPostsFromRemote')
+    it('should throw error when error occur', async () => {
+      jest.spyOn(postService, 'getPostsFromLocal').mockResolvedValueOnce({
+        posts: [],
+        items: [],
+        hasMore: true,
+        limit: 20,
+      });
+      const error = new JServerError(
+        ERROR_CODES_SERVER.NOT_AUTHORIZED,
+        'NOT_AUTHORIZED',
+      );
+      jest
+        .spyOn(postService, 'getPostsFromRemote')
         .mockImplementationOnce(async () => {
           throw error;
         });
@@ -605,7 +612,7 @@ describe('PostService', () => {
         .mockReturnValue(groupConfigService);
       groupConfigService.getGroupSendFailurePostIds.mockResolvedValue([]);
       daoManager.getDao.mockReturnValue(postDao);
-      postDao.put.mockImplementation(() => { });
+      postDao.put.mockImplementation(() => {});
 
       const info = _.cloneDeep(postMockInfo);
       const responseData = _.cloneDeep(postMockInfo);
@@ -697,7 +704,7 @@ describe('PostService', () => {
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
       expect(result.isOk()).toBe(true);
-      expect(result.data.likes).toEqual([101]);
+      expect(result.isOk() && result.data.likes).toEqual([101]);
       // expect(post.likes).toEqual([101]);
     });
 
@@ -705,7 +712,7 @@ describe('PostService', () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
       const result = await postService.likePost(100, 102, false);
-      expect(result.data.likes).toEqual([]);
+      expect(result.isOk() && result.data.likes).toEqual([]);
     });
     it('should return new post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
@@ -715,7 +722,7 @@ describe('PostService', () => {
         new ApiResultOk(data, { status: 200, headers: {} } as BaseResponse),
       );
       const result = await postService.likePost(100, 101, true);
-      expect(result.data.likes).toEqual([101]);
+      expect(result.isOk() && result.data.likes).toEqual([101]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
@@ -728,7 +735,7 @@ describe('PostService', () => {
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
-      expect(result.data.likes).toEqual([102]);
+      expect(result.isOk() && result.data.likes).toEqual([102]);
     });
 
     it('should return error when server error', async () => {
@@ -810,7 +817,9 @@ describe('PostService', () => {
 
   describe('bookMark Post', () => {
     it('book post should return serviceErr', async () => {
-      profileService.putFavoritePost.mockResolvedValueOnce(serviceErr(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '500'));
+      profileService.putFavoritePost.mockResolvedValueOnce(
+        serviceErr(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '500'),
+      );
       const result = await postService.bookmarkPost(1, true);
       expect(result.isErr()).toBe(true);
     });
@@ -880,10 +889,10 @@ describe('PostService', () => {
 
     it('should return null if error', async () => {
       PostAPI.requestPosts.mockRejectedValue(
-        new ApiResultErr(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''), {
-          status: 500,
-          headers: {},
-        } as BaseResponse),
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
+          { status: 500, headers: {} } as BaseResponse,
+        ),
       );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);
@@ -994,22 +1003,52 @@ describe('PostService', () => {
       jest.spyOn(postService, 'sendPost');
 
       let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
-      expect(result.data).toEqual({ id: 44 });
+      expect(result.isOk() && result.data).toEqual({ id: 44 });
       result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
-      expect(result.data).toEqual({ id: 44 });
+      expect(result.isOk() && result.data).toEqual({ id: 44 });
 
       expect(postService.sendPost).not.toBeCalled();
     });
   });
 
-  describe('cancelUpload', async () => {
-    it('should call partial update once ', async () => {
+  describe('removeItemFromPost', () => {
+    const post1 = {
+      id: -1,
+      item_ids: [3],
+      text: '',
+    };
+
+    const post2 = {
+      id: -2,
+      item_ids: [1, 2],
+    };
+
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      daoManager.getDao.mockReturnValue(postDao);
+      itemService.deleteItemData = jest.fn();
+    });
+
+    it('should delete post when post is invalid  after remvoe item id ', async () => {
+      const spyDelete = jest.spyOn(postService, 'deletePost');
+      spyDelete.mockImplementation(() => {});
+      postDao.get = jest.fn().mockResolvedValue(post1);
+      await postService.removeItemFromPost(post1.id, post1.item_ids[0]);
+      expect(spyDelete).toBeCalledWith(post1.id);
+      expect(itemService.deleteItemData).toBeCalled();
+    });
+
+    it('should update post when post is valid after remvoe item id', async () => {
       jest
         .spyOn(postService, 'handlePartialUpdate')
-        .mockImplementation(() => { });
-
-      await postService.cancelUpload(1, 1);
-
+        .mockImplementation(() => {});
+      const spyDelete = jest.spyOn(postService, 'deletePost');
+      spyDelete.mockImplementation(() => {});
+      postDao.get = jest.fn().mockResolvedValue(post2);
+      await postService.removeItemFromPost(post2.id, post2.item_ids[0]);
+      expect(itemService.deleteItemData).toBeCalled();
+      expect(spyDelete).not.toBeCalled();
       expect(postService.handlePartialUpdate).toBeCalledTimes(1);
     });
   });
@@ -1021,7 +1060,7 @@ describe('PostService', () => {
       clearMocks();
       setup();
       daoManager.getDao.mockReturnValue(postDao);
-      postDao.update.mockImplementation(() => { });
+      postDao.update.mockImplementation(() => {});
     });
 
     it('should resend failed items and then send post', async (done: jest.DoneCallback) => {
@@ -1034,19 +1073,19 @@ describe('PostService', () => {
         postService,
         '_handlePreInsertProcess',
       );
-      spyHandlePreInsertProcess.mockImplementation(() => { });
+      spyHandlePreInsertProcess.mockImplementation(() => {});
 
       const spySendPostWithPreInsertItems = jest.spyOn(
         postService,
         '_sendPostWithPreInsertItems',
       );
-      spySendPostWithPreInsertItems.mockImplementation(() => { });
+      spySendPostWithPreInsertItems.mockImplementation(() => {});
 
       const spyCleanUploadingFiles = jest.spyOn(
         postService,
         '_cleanUploadingFiles',
       );
-      spyCleanUploadingFiles.mockImplementation(() => { });
+      spyCleanUploadingFiles.mockImplementation(() => {});
 
       await postService.reSendPost(info.id);
       setTimeout(() => {
@@ -1066,13 +1105,13 @@ describe('PostService', () => {
 
       const spyDeletePost = jest
         .spyOn(postService, 'deletePost')
-        .mockImplementation(() => { });
+        .mockImplementation(() => {});
 
       const spyResendFailedItems = jest.spyOn(
         postService,
         '_resendFailedItems',
       );
-      spyResendFailedItems.mockImplementation(() => { });
+      spyResendFailedItems.mockImplementation(() => {});
 
       const spyHandlePreInsertProcess = jest.spyOn(
         postService,
@@ -1080,12 +1119,12 @@ describe('PostService', () => {
       );
 
       const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
-      spyPartialUpdate.mockImplementation(() => { });
+      spyPartialUpdate.mockImplementation(() => {});
 
-      spyHandlePreInsertProcess.mockImplementation(() => { });
+      spyHandlePreInsertProcess.mockImplementation(() => {});
       const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => { });
-      itemService.sendItemData.mockImplementationOnce(() => { });
+      spySendPost.mockImplementation(() => {});
+      itemService.sendItemData.mockImplementationOnce(() => {});
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
           listener({
@@ -1130,7 +1169,7 @@ describe('PostService', () => {
       info.item_data = itemData;
 
       const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
-      spyPartialUpdate.mockImplementation(() => { });
+      spyPartialUpdate.mockImplementation(() => {});
 
       PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
@@ -1138,16 +1177,16 @@ describe('PostService', () => {
         postService,
         '_resendFailedItems',
       );
-      spyResendFailedItems.mockImplementation(() => { });
+      spyResendFailedItems.mockImplementation(() => {});
 
       const spyHandlePreInsertProcess = jest.spyOn(
         postService,
         '_handlePreInsertProcess',
       );
-      spyHandlePreInsertProcess.mockImplementation(() => { });
+      spyHandlePreInsertProcess.mockImplementation(() => {});
       const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => { });
-      itemService.sendItemData.mockImplementationOnce(() => { });
+      spySendPost.mockImplementation(() => {});
+      itemService.sendItemData.mockImplementationOnce(() => {});
       notificationCenter.on.mockImplementationOnce(
         (event: string | string[], listener: Listener) => {
           listener({
@@ -1220,7 +1259,7 @@ describe('PostService', () => {
       });
     });
 
-    it('should let post failed if send post with pseudo items and all items are failed', async () => {
+    it('should let post failed if send post with pseudo items and all items are failed', async done => {
       const info = _.cloneDeep(postMockInfo);
       info.item_ids = [-1, 3];
       PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
@@ -1229,22 +1268,22 @@ describe('PostService', () => {
         postService,
         '_resendFailedItems',
       );
-      spyResendFailedItems.mockImplementation(() => { });
+      spyResendFailedItems.mockImplementation(() => {});
 
       const spyHandlePreInsertProcess = jest.spyOn(
         postService,
         '_handlePreInsertProcess',
       );
-      spyHandlePreInsertProcess.mockImplementation(() => { });
+      spyHandlePreInsertProcess.mockImplementation(() => {});
 
       const spyHandleSendPostFail = jest.spyOn(
         postService,
         'handleSendPostFail',
       );
-      spyHandleSendPostFail.mockImplementation(() => { });
+      spyHandleSendPostFail.mockImplementation(() => {});
 
       const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => { });
+      spySendPost.mockImplementation(() => {});
 
       itemService.getItemsSendingStatus.mockReturnValue([PROGRESS_STATUS.FAIL]);
 
@@ -1256,7 +1295,7 @@ describe('PostService', () => {
         expect(spyHandlePreInsertProcess).toBeCalledWith(info);
         expect(notificationCenter.removeListener).not.toBeCalled();
         expect(notificationCenter.on).not.toBeCalled();
-        expect(spyResendFailedItems).toBeCalled(info.id);
+        expect(spyResendFailedItems).toBeCalledWith(info.id);
         expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
         done();
       });

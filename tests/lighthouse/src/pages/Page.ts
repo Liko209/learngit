@@ -7,7 +7,7 @@ import { puppeteerUtils, PuppeteerUtils } from '../utils/PuppeteerUtils'
 
 class Page {
     private _browser;
-    protected _page;
+    private _page;
 
     protected passContext: any;
     protected utils: PuppeteerUtils = puppeteerUtils;

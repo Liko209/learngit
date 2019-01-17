@@ -6,7 +6,6 @@
 import StateMachine from 'ts-javascript-state-machine';
 import { RTC_CALL_ACTION } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { format as StringFormat } from 'util';
 
 const CallFsmState = {
   IDLE: 'idle',
@@ -25,12 +24,15 @@ const CallFsmEvent = {
   SEND_TO_VOICEMAIL: 'sendToVoicemail',
   HANGUP: 'hangup',
   FLIP: 'flip',
+  MUTE: 'mute',
+  UNMUTE: 'Unmute',
   TRANSFER: 'transfer',
   START_RECORD: 'startRecord',
   STOP_RECORD: 'stopRecord',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
+  PARK: 'park',
 };
 
 interface IRTCCallFsmTableDependency {
@@ -43,7 +45,10 @@ interface IRTCCallFsmTableDependency {
   onTransferAction(target: string): void;
   onStartRecordAction(): void;
   onStopRecordAction(): void;
+  onMuteAction(): void;
+  onUnmuteAction(): void;
   onReportCallActionFailed(name: string): void;
+  onParkAction(): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -111,11 +116,49 @@ class RTCCallFsmTable extends StateMachine {
           },
         },
         {
+          name: CallFsmEvent.MUTE,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onMuteAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.UNMUTE,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onUnmuteAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
           name: CallFsmEvent.TRANSFER,
           from: CallFsmState.CONNECTED,
           to: (target: string) => {
             dependency.onTransferAction(target);
             return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.PARK,
+          from: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onParkAction();
+            return CallFsmState.CONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.PARK,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+          ],
+          to: (s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.PARK);
+            return s;
           },
         },
         {
@@ -220,35 +263,22 @@ class RTCCallFsmTable extends StateMachine {
         onTransition(lifecycle) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            StringFormat(
-              'Transition: %s from: %s to: %s',
-              String(lifecycle.transition),
-              String(lifecycle.from),
-              String(lifecycle.to),
-            ),
+            `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
+              lifecycle.to
+            }`,
           );
           return true;
         },
         onInvalidTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            StringFormat(
-              'Invalid transition: %s from: %s to: %s',
-              String(transition),
-              String(from),
-              String(to),
-            ),
+            `Invalid transition: ${transition} from: ${from} to: ${to}`,
           );
         },
         onPendingTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            StringFormat(
-              'Call FSM: Pending transition: %s from: %s to: %s',
-              String(transition),
-              String(from),
-              String(to),
-            ),
+            `Pending transition: ${transition} from: ${from} to: ${to}`,
           );
         },
       },

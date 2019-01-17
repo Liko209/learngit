@@ -53,16 +53,16 @@ storiesOf('Components/ButtonBar', module)
       <div>
         <JuiButtonBar {...getKnobs()}>
           <JuiIconButton variant="plain" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
           <JuiIconButton variant="plain" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
           <JuiIconButton variant="plain" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
           <JuiIconButton variant="plain" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
         </JuiButtonBar>
       </div>
@@ -73,16 +73,16 @@ storiesOf('Components/ButtonBar', module)
       <div>
         <JuiButtonBar {...getKnobs()}>
           <JuiIconButton variant="round" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
           <JuiIconButton variant="round" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
           <JuiIconButton variant="round" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
           <JuiIconButton variant="round" tooltipTitle="like">
-            favorite
+            refresh
           </JuiIconButton>
         </JuiButtonBar>
       </div>
@@ -96,30 +96,22 @@ storiesOf('Components/ButtonBar', module)
             tooltipTitle="favorite"
             iconName="star_border"
             checkedIconName="star"
-          >
-            favorite
-          </JuiCheckboxButton>
+          />
           <JuiCheckboxButton
             tooltipTitle="favorite"
             iconName="star_border"
             checkedIconName="star"
-          >
-            favorite
-          </JuiCheckboxButton>
+          />
           <JuiCheckboxButton
             tooltipTitle="favorite"
             iconName="star_border"
             checkedIconName="star"
-          >
-            favorite
-          </JuiCheckboxButton>
+          />
           <JuiCheckboxButton
             tooltipTitle="favorite"
             iconName="star_border"
             checkedIconName="star"
-          >
-            favorite
-          </JuiCheckboxButton>
+          />
         </JuiButtonBar>
       </div>
     );

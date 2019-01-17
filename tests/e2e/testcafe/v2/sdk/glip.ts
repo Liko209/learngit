@@ -163,7 +163,7 @@ export class GlipSdk {
     });
   }
 
-  updatePerson(rcId: string, data) {
+  updatePerson(data: object, rcId?: string) {
     const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
     const uri = `api/person/${personId}`;
     return this.axiosClient.put(uri, data, {
@@ -181,14 +181,14 @@ export class GlipSdk {
   }
 
   async getTeamsIds() {
-    const teams = (await this.getTeams()).data.teams;
+    const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
     const ids = teams.filter(team => team['_id']).map(team => team['_id']);
     return ids;
   }
 
   async getCompanyTeamId() {
-    const teams = (await this.getTeams()).data.teams;
+    const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
     const ids = teams.filter(team => team["is_company_team"] == true).map(team => team['_id']);
     return ids;
@@ -214,19 +214,32 @@ export class GlipSdk {
     });
   }
 
-  updateGroup(groupId, data) {
+  updateGroup(groupId: string | number, data) {
     const uri = `/api/group/${groupId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
   }
 
-  modifyGroupName(groupId, name) {
+  modifyGroupName(groupId: string | number, name) {
     const uri = `/api/group/${groupId}`;
     const data = { set_abbreviation: name };
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async addGroupMembers(groupId: string | number, rcIds: string[] | string) {
+    const oldMembers: number[] = await this.getGroup(groupId).then(res => res.data.members);
+    let members = [];
+    const personIds = await this.toPersonId(rcIds);
+    if (Object.prototype.toString.call(personIds) === '[object Array]') {
+      members = oldMembers.concat(personIds);
+    } else {
+      members = oldMembers;
+      members.push(personIds);
+    }
+    await this.updateGroup(groupId, { members });
   }
 
   /* post */
@@ -314,7 +327,7 @@ export class GlipSdk {
     });
   }
 
-  updateProfile(rcId: string, data) {
+  updateProfile(data: object, rcId?: string) {
     const profileId = rcId ? this.toProfileId(rcId) : this.myProfile._id;
     const uri = `api/profile/${profileId}`;
     return this.axiosClient.put(uri, data, {
@@ -323,8 +336,12 @@ export class GlipSdk {
   }
 
   async resetProfile(rcId?: string) {
-    const groupList = await this.getTeamsIds();
-    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
+    const currentProfile = await this.getProfile().then(res => res.data);
+    const groups = Object.keys(currentProfile)
+      .filter((key: string) => {
+        return (/hide_group_/.test(key)) && (currentProfile[key] == true);
+      });
+    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
 
     const initData = {
       model_size: 0,
@@ -346,15 +363,11 @@ export class GlipSdk {
       favorite_group_ids: [+meChatId],
       me_tab: true,
       skip_close_conversation_confirmation: false,
-      max_leftrail_group_tabs2: 20
+      max_leftrail_group_tabs2: 20,
+      favorite_post_ids: []
     }
-    const data = _.assign(
-      initData,
-      ...groupList.map(id => (
-        { [`hide_group_${id}`]: false })
-      )
-    );
-    await this.updateProfile(rcId, data);
+    const data = _.assign(initData, ...groups.map(key => ({ [key]: false })));
+    return await this.updateProfile(data, rcId);
   }
 
   /* state */
@@ -366,7 +379,7 @@ export class GlipSdk {
     });
   }
 
-  updateState(rcId: string, data) {
+  updateState(data: object, rcId?: string) {
     const stateId = rcId ? this.toStateId(rcId) : this.myState._id;
     const uri = `api/state/${stateId}`;
     return this.axiosClient.put(uri, data, {
@@ -374,7 +387,7 @@ export class GlipSdk {
     });
   }
 
-  partialUpdateState(rcId: string, data) {
+  partialUpdateState(data: object, rcId?: string) {
     const stateId = rcId ? this.toStateId(rcId) : this.myState._id;
     const uri = `api/save_state_partial/${stateId}`;
     return this.axiosClient.put(uri, data, {
@@ -384,10 +397,10 @@ export class GlipSdk {
 
   /* high level API */
   deactivated(rcId: string) {
-    this.updatePerson(rcId, { deactivated: true });
+    this.updatePerson({ deactivated: true }, rcId);
   }
 
-  async markAsRead(rcId: string, groupIds: string[]) {
+  async markAsRead(groupIds: string[], rcId?: string, ) {
     if (!groupIds.length) return;
     const readThrough = {};
     for (let i = 0; i < groupIds.length; i++) {
@@ -407,10 +420,10 @@ export class GlipSdk {
         [`marked_as_unread:${id}`]: false,
       })),
     );
-    await this.partialUpdateState(rcId, params);
+    await this.partialUpdateState(params, rcId);
   }
 
-  async getIdsOfGroupsWithUnreadMessages(rcId: string) {
+  async getIdsOfGroupsWithUnreadMessages(rcId?: string) {
     const res = await this.getState(rcId);
     const state = res.data;
     const unreadGroups = Object.keys(state)
@@ -428,18 +441,16 @@ export class GlipSdk {
 
   async clearAllUmi(rcId?: string) {
     const unreadGroupIds = await this.getIdsOfGroupsWithUnreadMessages(rcId);
-    await this.markAsRead(rcId, unreadGroupIds);
+    await this.markAsRead(unreadGroupIds, rcId);
   }
 
-  async skipCloseConversationConfirmation(rcId: string, skipCloseConversationConfirm: boolean) {
+  async skipCloseConversationConfirmation(skipCloseConversationConfirm: boolean, rcId?: string) {
     const data: object = { skip_close_conversation_confirmation: skipCloseConversationConfirm };
-    return await this.updateProfile(rcId, data);
+    return await this.updateProfile(data, rcId);
   }
 
-  async setLastGroupId(rcId: string, groupId: string | number) {
-    await this.partialUpdateState(rcId, {
-      last_group_id: +groupId,
-    });
+  async setLastGroupId(groupId: string | number, rcId?: string) {
+    await this.partialUpdateState({ last_group_id: +groupId }, rcId);
   }
 
   async showAllGroups(rcId?: string) {
@@ -450,10 +461,10 @@ export class GlipSdk {
         return { [`hide_group_${id}`]: false }
       })
     )
-    await this.updateProfile(rcId, data);
+    await this.updateProfile(data, rcId);
   }
 
-  async showGroups(rcId: string, groupIds: string[] | number[] | string | number) {
+  async showGroups(groupIds: string[] | number[] | string | number, rcId?: string) {
     let data;
     if (Object.prototype.toString.call(groupIds) === '[object Array]') {
       data = _.assign(
@@ -465,10 +476,10 @@ export class GlipSdk {
     } else {
       data = { [`hide_group_${groupIds}`]: false }
     }
-    await this.updateProfile(rcId, data);
+    await this.updateProfile(data, rcId);
   }
 
-  async hideGroups(rcId: string, groupIds: string[] | number[]) {
+  async hideGroups(groupIds: string[] | number[] | string | number, rcId?: string) {
     let data;
     if (Object.prototype.toString.call(groupIds) === '[object Array]') {
       data = _.assign(
@@ -480,33 +491,158 @@ export class GlipSdk {
     } else {
       data = { [`hide_group_${groupIds}`]: true }
     }
-    await this.updateProfile(rcId, data);
+    await this.updateProfile(data, rcId);
   }
 
-  async favoriteGroups(rcId: string, groupIds: number[]) {
+  async favoriteGroups(groupIds: number[], rcId?: string) {
     const data = {
       favorite_group_ids: groupIds
     }
-    await this.updateProfile(rcId, data);
+    await this.updateProfile(data, rcId);
   }
 
   async clearFavoriteGroups(rcId?: string) {
     const data = {
       favorite_group_ids: [],
     }
-    await this.updateProfile(rcId, data);
+    await this.updateProfile(data, rcId);
   }
 
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
-    const meChatId = (await this.getPerson(rcId)).data.me_group_id;
-    await this.favoriteGroups(rcId, [+meChatId]);
+    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
+    await this.favoriteGroups([+meChatId], rcId);
   }
 
-  async setMaxTeamDisplay(rcId: string, n: number) {
-    await this.updateProfile(rcId, { max_leftrail_group_tabs2: n });
+  async setMaxTeamDisplay(n: number, rcId?: string) {
+    await this.updateProfile({ max_leftrail_group_tabs2: n }, rcId);
   }
 
   async updateTeamName(teamId: string | number, newName: string) {
     await this.updateGroup(+teamId, { set_abbreviation: newName });
+  }
+
+  /* task */
+  createTask(data: object) {
+    const uri = `api/task`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  getTask(taskId: string | number) {
+    const uri = `api/task/${taskId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateTask(taskId: string | number, data: object) {
+    const uri = `api/task/${taskId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async createSimpleTask(groupIds: string[] | string, rcIds: string[] | string, title: string, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    let personIds = this.toPersonId(rcIds);
+    let assignees;
+    if (Object.prototype.toString.call(personIds) === '[object Array]') {
+      assignees = personIds.map(id => Number(id));
+    } else {
+      assignees = [Number(personIds)];
+    }
+    const data = _.assign({
+      text: title,
+      assigned_to_ids: assignees,
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createTask(data);
+  }
+
+  /* note */
+  createNote(data: object) {
+    const uri = `api/page`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  getNote(noteId: string | number) {
+    const uri = `api/page/${noteId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  getNoteContent(noteId: string | number) {
+    const uri = `api/pages_body/${noteId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateNote(noteId: string | number, data: object) {
+    const uri = `api/page/${noteId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async createSimpleNote(groupIds: string[] | string, title: string, body: string, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    const data = _.assign({
+      title,
+      body,
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createNote(data);
+  }
+
+  /* event */
+  createEvent(data: object) {
+    const uri = `api/event`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  getEvent(eventId: string | number) {
+    const uri = `api/event/${eventId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateEvent(eventId: string | number, data: object) {
+    const uri = `api/event/${eventId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    const data = _.assign({
+      text: title,
+      group_ids: groupIds
+    },
+      options
+    )
+    if (rcIds) {
+      let inviteeIds: number[];
+      const personIds = this.toPersonId(rcIds);
+      if (Object.prototype.toString.call(personIds) === '[object Array]') {
+        inviteeIds = personIds.map(id => Number(id));
+      } else {
+        inviteeIds = [Number(personIds)];
+      }
+      data["invitee_ids"] = inviteeIds;
+    }
+    return await this.createEvent(data);
   }
 }

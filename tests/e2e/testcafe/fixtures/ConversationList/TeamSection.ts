@@ -22,6 +22,7 @@ test(formalName('Team section display the conversation which the login user as o
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
 
     let teamId;
@@ -31,10 +32,6 @@ test(formalName('Team section display the conversation which the login user as o
         name: `Team ${uuid()}`,
         members: [loginUser.rcId, users[5].rcId],
       });
-    });
-
-    await h(t).withLog('And the team should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -64,6 +61,7 @@ test(formalName('Each conversation should be represented by the team name.',
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const teamName = `Team ${uuid()}`;
 
@@ -74,10 +72,6 @@ test(formalName('Each conversation should be represented by the team name.',
         name: teamName,
         members: [loginUser.rcId, users[5].rcId],
       });
-    });
-
-    await h(t).withLog('And the team should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -116,10 +110,12 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-
+  await h(t).glip(loginUser).resetProfile();
 
   let teamOneId, teamTwoId;
   await h(t).withLog('Given I have an extension with two teams', async () => {
+    const meChatId = await h(t).glip(loginUser).getPerson().then(res => res.data.me_group_id);
+    await h(t).glip(loginUser).setLastGroupId(meChatId); // see https://jira.ringcentral.com/browse/FIJI-3008
     teamOneId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Team',
       name: `Team 1 ${uuid()}`,
@@ -133,48 +129,29 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
     });
   });
 
-  await h(t).withLog('And the team should not be hidden before login', async () => {
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamOneId, teamTwoId]);
-  });
-
   await h(t).withLog('Send a new post to team1', async () => {
-    await h(t).platform(loginUser).createPost(
-      { text: 'test move team to top' },
-      teamOneId,
-    );
+    await h(t).platform(loginUser).sendTextPost('test move team to top', teamOneId);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-    async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    },
-  );
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('Then I can find team1 on the top of Team section', async () => {
     await teamsSection.expand();
-    await t
-      .expect(teamsSection.conversations.nth(0).getAttribute('data-group-id'))
-      .eql(teamOneId);
+    await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamOneId);
   }, true);
 
   await h(t).withLog('When send a new post to team2', async () => {
-    await h(t).platform(loginUser).createPost(
-      { text: 'test move team to top' },
-      teamTwoId,
-    );
+    await h(t).platform(loginUser).sendTextPost('test move team to top', teamTwoId);
   });
 
   await h(t).withLog('Then I can find team2 on the top of Team section', async () => {
-    await teamsSection.expand();
-    await t.wait(1e3);
-    await t
-      .expect(teamsSection.conversations.nth(0).getAttribute('data-group-id'))
-      .eql(teamTwoId);
+    await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamTwoId);
   }, true);
-},
-);
+});
 
 test(formalName('Can expand and collapse the team section by clicking the section name.',
   ['JPT-11', 'P2', 'ConversationList']),

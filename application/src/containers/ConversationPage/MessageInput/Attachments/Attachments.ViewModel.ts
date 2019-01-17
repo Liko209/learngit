@@ -26,7 +26,12 @@ import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { ItemFile } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
+const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
@@ -43,8 +48,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this._postService = PostService.getInstance();
     this.reaction(
       () => this.id,
-      (id: number) => {
+      () => {
         this.reloadFiles();
+      },
+    );
+
+    this.reaction(
+      () => this.files,
+      () => {
+        const quill = (document.querySelector(QUILL_QUERY) as any).__quill;
+        requestAnimationFrame(() => {
+          quill.focus();
+        });
       },
     );
 
@@ -116,8 +131,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     if (!canUpload) {
       Notification.flashToast({
         message: 'uploadFailedMessageThereIsAlreadyAFileBeingUploaded',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
         autoHideDuration: 3000,

@@ -9,61 +9,20 @@ import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
-import { RegistrationManagerEvent } from '../account/types';
-import { RTCEngine } from './RTCEngine';
+import {
+  REGISTRATION_EVENT,
+  RTCSipProvisionInfo,
+  RTC_PROV_EVENT,
+} from '../account/types';
+import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
-
-const provisionData = {
-  data: {
-    device: {
-      uri:
-        'https://api-xmnup.lab.nordigy.ru/restapi/v1.0/account/142579004/device/803466956004',
-      id: '803466956004',
-      type: 'WebPhone',
-      status: 'Online',
-      phoneLines: [],
-      linePooling: 'None',
-    },
-    sipInfo: [
-      {
-        transport: 'WSS',
-        username: '18332118767*102',
-        password: '4cwxTF5j1',
-        authorizationId: '803466956004',
-        domain: 'sip-xmnup.lab.nordigy.ru',
-        outboundProxy: 'glip-sip-xmnup.lab.nordigy.ru:8083',
-        switchBackInterval: 3600,
-      },
-    ],
-    sipFlags: {
-      voipFeatureEnabled: true,
-      voipCountryBlocked: false,
-      outboundCallsEnabled: true,
-      dscpEnabled: false,
-      dscpSignaling: 26,
-      dscpVoice: 46,
-      dscpVideo: 34,
-    },
-    sipErrorCodes: ['503', '502', '504'],
-    pollingInterval: 7200,
-  },
-  status: 200,
-  statusText: 'OK',
-  headers: {
-    date: 'Sat, 29 Dec 2018 06:53:40 GMT',
-    'content-encoding': 'gzip',
-    'x-rate-limit-limit': '60',
-    routingkey: 'SJC01P01PAS01',
-    'x-rate-limit-remaining': '59',
-    'content-length': '429',
-    rcrequestid: '7920b73c-0b36-11e9-94ee-005056bea257',
-    'content-language': 'en-US',
-    'x-rate-limit-group': 'heavy',
-    'content-type': 'application/json; charset=UTF-8',
-    'x-rate-limit-window': '60',
-  },
-  retryAfter: 6000,
-};
+import { RTC_ACCOUNT_STATE } from './types';
+import { RTCProvManager } from '../account/RTCProvManager';
+import { RTCCallManager } from '../account/RTCCallManager';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
+import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
+import { Listener } from 'eventemitter2';
 
 const options = {
   appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
@@ -76,22 +35,137 @@ const options = {
   logLevel: 10,
 };
 
+const LOG_TAG = 'RTCAccount';
+
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
+  private _state: RTC_ACCOUNT_STATE;
+  private _provManager: RTCProvManager;
+  private _callManager: RTCCallManager;
+  private _networkListener: Listener;
 
   constructor(listener: IRTCAccountDelegate) {
+    this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
-    this._regManager = new RTCRegistrationManager(this._delegate);
-    this._regManager._eventEmitter.on(
-      RegistrationManagerEvent.RECEIVER_INCOMING_SESSION,
-      (session: any) => {
-        this._onReceiveInvite(session);
-      },
+    this._regManager = new RTCRegistrationManager();
+    this._provManager = new RTCProvManager();
+    this._callManager = new RTCCallManager();
+    this._networkListener = (params: any) => {
+      this._onNetworkChange(params);
+    };
+    this._initListener();
+  }
+
+  destroy() {
+    rtcNetworkNotificationCenter.removeListener(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      this._networkListener,
     );
   }
 
   public handleProvisioning() {
+    this._provManager.acquireSipProv();
+  }
+
+  public makeCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+  ): RTCCall | null {
+    if (toNumber.length === 0) {
+      rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
+      return null;
+    }
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
+      return null;
+    }
+    const call = new RTCCall(false, toNumber, null, this, delegate);
+    this._callManager.addCall(call);
+    return call;
+  }
+
+  isReady(): boolean {
+    return this._state === RTC_ACCOUNT_STATE.REGISTERED;
+  }
+
+  callList(): RTCCall[] {
+    return this._callManager.callList();
+  }
+
+  callCount(): number {
+    return this._callManager.callCount();
+  }
+
+  getCallByUuid(uuid: string): RTCCall | null {
+    return this._callManager.getCallByUuid(uuid);
+  }
+
+  createOutgoingCallSession(toNum: string): any {
+    return this._regManager.createOutgoingCallSession(toNum, {});
+  }
+
+  removeCallFromCallManager(uuid: string): void {
+    this._callManager.removeCall(uuid);
+  }
+
+  private _initListener() {
+    this._regManager.on(
+      REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION,
+      (session: any) => {
+        this._onReceiveInvite(session);
+      },
+    );
+    this._regManager.on(
+      REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
+      (state: RTC_ACCOUNT_STATE) => {
+        this._onAccountStateChanged(state);
+      },
+    );
+    this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
+      this._onNewProv(info);
+    });
+
+    rtcNetworkNotificationCenter.on(
+      RTC_NETWORK_EVENT.NETWORK_CHANGE,
+      this._networkListener,
+    );
+  }
+
+  private _onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
+    if (this._state === state) {
+      return;
+    }
+    this._state = state;
+    if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
+      this._callManager.notifyAccountReady();
+    }
+    if (this._delegate) {
+      this._delegate.onAccountStateChanged(state);
+    }
+  }
+
+  private _onReceiveInvite(session: any) {
+    if (session === null) {
+      rtcLogger.error(
+        LOG_TAG,
+        'Failed to receive incoming call. Session is null',
+      );
+      return;
+    }
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'Failed to receive incoming call. Max call count is reached',
+      );
+      return;
+    }
+    const call = new RTCCall(true, '', session, this, null);
+    this._callManager.addCall(call);
+    this._delegate.onReceiveIncomingCall(call);
+  }
+
+  private _onNewProv(sipProv: RTCSipProvisionInfo) {
     if (!this._regManager) {
       return;
     }
@@ -103,32 +177,17 @@ class RTCAccount implements IRTCAccount {
       audioHelper: options.audioHelper,
       logLevel: options.logLevel,
       media: {
-        remote: RTCEngine.getInstance().getRemoteAudio(),
-        local: RTCEngine.getInstance().getLocalAudio(),
+        remote: rtcMediaManager.getRemoteAudio(),
+        local: rtcMediaManager.getLocalAudio(),
       },
     };
-    this._regManager.provisionReady(provisionData.data, info);
+    this._regManager.provisionReady(sipProv, info);
   }
 
-  public makeCall(toNumber: string, delegate: IRTCCallDelegate): RTCCall {
-    const call = new RTCCall(false, toNumber, null, this, delegate);
-    return call;
-  }
-
-  isReady(): boolean {
-    if (this._regManager === null) {
-      return false;
+  private _onNetworkChange(params: any) {
+    if (RTC_NETWORK_STATE.ONLINE === params.state) {
+      this._regManager.networkChangeToOnline();
     }
-    return this._regManager.isReady();
-  }
-
-  createOutCallSession(toNum: string): any {
-    return this._regManager.createOutgoingCallSession(toNum, {});
-  }
-
-  private _onReceiveInvite(session: any) {
-    const call = new RTCCall(true, '', session, this, null);
-    this._delegate.onReceiveIncomingCall(call);
   }
 }
 

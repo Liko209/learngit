@@ -185,7 +185,7 @@ describe('fileUploadController', () => {
         },
       );
 
-      const file = { name: '1.ts', type: 'ts', size: 123 } as File;
+      const file = { name: '1.ts', type: 'image/ts', size: 123 } as File;
       const res = (await fileUploadController.sendItemFile(
         groupId,
         file,
@@ -198,6 +198,7 @@ describe('fileUploadController', () => {
       expect(res.deactivated).toBeFalsy;
       expect(res.company_id).toBe(companyId);
       expect(res.type_id).toBe(10);
+      expect(res.type).toBe('ts');
 
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
@@ -269,13 +270,16 @@ describe('fileUploadController', () => {
         .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
 
-      const progressCaches = new Map();
+      const cancel = {
+        has: jest.fn().mockReturnValue(true),
+      };
+
       Object.assign(fileUploadController, {
-        _progressCaches: progressCaches,
+        _canceledUploadFileIds: cancel,
       });
+
       const file = { name: '1.ts', type: 'ts' } as File;
       await fileUploadController.sendItemFile(groupId, file, true);
-      progressCaches.clear();
 
       setTimeout(() => {
         expect(ItemAPI.uploadFileItem).toBeCalled();

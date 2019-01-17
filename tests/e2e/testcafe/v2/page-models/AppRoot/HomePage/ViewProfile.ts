@@ -102,6 +102,14 @@ export class MiniProfile extends BaseWebComponent {
   async goToMessages() {
     await this.t.click(this.messageButton);
   }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.header);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.header);
+  }
 }
 
 export class ProfileDialog extends BaseWebComponent {
@@ -259,6 +267,13 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
+  get joinTeamButton() {
+    return this.getSelectorByIcon('add_member');
+  }
+
+  async joinTeam() {
+    await this.t.click(this.joinTeamButton);
+  }
 }
 
 class Member extends BaseWebComponent {

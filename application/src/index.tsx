@@ -1,24 +1,21 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import App from '@/App';
-import { upgradeHandler } from '@/upgrade';
-import registerServiceWorker from '@/registerServiceWorker';
-import { initAll } from '@/init';
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-01-07 11:28:43
+ * Copyright © RingCentral. All rights reserved.
+ */
+import 'reflect-metadata';
+import { Jupiter } from 'framework';
+import * as sw from '@/modules/service-worker/module.config';
+import * as router from '@/modules/router/module.config';
+import * as home from '@/modules/home/module.config';
+import * as app from '@/modules/app/module.config';
 
-import '@/index.css';
-import '@/i18n';
+const jupiter = new Jupiter();
 
-(async function () {
-  await initAll();
+// TODO auto load modules
+jupiter.registerModule(sw.config);
+jupiter.registerModule(router.config);
+jupiter.registerModule(home.config);
+jupiter.registerModule(app.config);
 
-  ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
-
-  registerServiceWorker(
-    (swURL: string) => {
-      upgradeHandler.setServiceWorkerURL(swURL);
-    },
-    () => {
-      upgradeHandler.onNewContentAvailable();
-    },
-  );
-})();
+jupiter.bootstrap();

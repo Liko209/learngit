@@ -81,7 +81,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
     const postsFromStore = idsInStore
       .map(id => getEntity(ENTITY_NAME.POST, id))
-      .filter((post: Post) => !post.deactivated);
+      .filter((post: PostModel) => !post.deactivated);
     try {
       if (idsOutOfStore.length) {
         const results = await postService.getPostsByIds(idsOutOfStore);

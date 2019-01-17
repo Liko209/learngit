@@ -11,6 +11,10 @@ import { Profile } from 'sdk/module/profile/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
@@ -31,8 +35,8 @@ class FavoriteViewComponent extends Component<Props> {
 
       Notification.flashToast({
         message,
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

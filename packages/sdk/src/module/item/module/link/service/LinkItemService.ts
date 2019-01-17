@@ -4,17 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { LinkItemController } from '../controller/LinkItemController';
-import { EntityBaseService } from '../../../../../framework/service';
-import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
+import { LinkItem, SanitizedLinkItem } from '../entity';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { LinkItemDao } from '../dao/LinkItemDao';
+import { daoManager } from '../../../../../dao';
 
-class LinkItemService extends EntityBaseService implements ISubItemService {
+class LinkItemService extends BaseSubItemService<LinkItem, SanitizedLinkItem> {
   private _linkItemController: LinkItemController;
 
   constructor(itemService: IItemService) {
-    super();
+    super(daoManager.getDao<LinkItemDao>(LinkItemDao));
   }
 
   protected get linkItemController() {
@@ -22,26 +23,6 @@ class LinkItemService extends EntityBaseService implements ISubItemService {
       this._linkItemController = new LinkItemController();
     }
     return this._linkItemController;
-  }
-
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
-    return Promise.resolve([]);
-  }
-
-  updateItem(item: Item) {}
-
-  createItem(item: Item) {}
-
-  deleteItem(itemId: number) {}
-
-  async getSubItemsCount(groupId: number) {
-    return 0;
   }
 }
 

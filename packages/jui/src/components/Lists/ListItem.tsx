@@ -3,36 +3,39 @@
  * @Date: 2018-09-27 13:53:47
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import MuiListItem, {
   ListItemProps as MuiListItemProps,
 } from '@material-ui/core/ListItem';
 import styled from '../../foundation/styled-components';
-import { grey } from '../../foundation/utils/styles';
+import { spacing } from '../../foundation/utils';
 
-type JuiListItemProps = MuiListItemProps;
+type JuiListItemProps = MuiListItemProps & {
+  singleLine?: boolean;
+};
 
-const JuiListItem = styled(MuiListItem)`
+const WrappedListItem = ({ singleLine, ...rests }: JuiListItemProps) => (
+  <MuiListItem {...rests} />
+);
+
+const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   && {
-    white-space: nowrap;
-    background: white;
-    color: ${grey('900')};
-    /**
-   * Workaround to resolve transition conflicts with react-sortable-hoc
-   * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
-   */
-    transition: transform 0s ease,
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  }
-
-  &&:hover {
-    background: ${grey('100')};
-  }
-
-  &&:focus {
-    background: ${grey('300')};
+    padding: ${spacing(2)};
+    padding-left: ${props => (props.singleLine ? spacing(4) : spacing(2))};
   }
 `;
 
+const JuiListItem = (props: JuiListItemProps) => {
+  return (
+    <StyledListItem button={true} {...props}>
+      {props.children}
+    </StyledListItem>
+  );
+};
+
+JuiListItem.defaultProps = {
+  singleLine: false,
+};
 JuiListItem.displayName = 'JuiListItem';
 
 export { JuiListItem, JuiListItemProps };
