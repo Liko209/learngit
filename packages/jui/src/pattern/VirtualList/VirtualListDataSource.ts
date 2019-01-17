@@ -36,6 +36,8 @@ interface IVirtualListDataSource {
 
   // loader for `load more`
   moreLoader?: () => ReactNode;
+
+  isEmptyList: () => boolean;
 }
 
 export { IVirtualListDataSource };

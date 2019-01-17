@@ -24,6 +24,7 @@ import { JuiVirtualListWrapper } from './VirtualListWrapper';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
+  isLoadingMore?: boolean;
 };
 
 @observer
@@ -33,6 +34,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   private _dataSource: IVirtualListDataSource;
   private _cache: CellMeasurerCache;
   private _listRef: List;
+  private _stopIndex: number;
 
   constructor(props: JuiVirtualListProps) {
     super(props);
@@ -57,6 +59,13 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   private _renderFixedCell = ({ index, style }: ListRowProps) => {
+    const { isLoadingMore } = this.props;
+    if (isLoadingMore && index === this._stopIndex) {
+      const { moreLoader } = this._dataSource;
+      if (moreLoader) {
+        return moreLoader();
+      }
+    }
     return this._dataSource.cellAtIndex(index, style);
   }
 
@@ -66,6 +75,13 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     parent,
     style,
   }: ListRowProps) => {
+    const { isLoadingMore } = this.props;
+    if (isLoadingMore && index === this._stopIndex) {
+      const { moreLoader } = this._dataSource;
+      if (moreLoader) {
+        return moreLoader();
+      }
+    }
     return (
       <CellMeasurer
         cache={this.cache}
@@ -91,6 +107,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   private _loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
     const { loadMore } = this._dataSource;
     if (loadMore) {
+      this._stopIndex = stopIndex;
       const result = await loadMore(startIndex, stopIndex);
       return result;
     }

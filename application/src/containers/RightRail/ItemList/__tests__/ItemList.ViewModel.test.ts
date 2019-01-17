@@ -20,7 +20,7 @@ describe('ItemListViewModel', () => {
       };
       ViewModel = new ItemListViewModel({
         groupId: 1,
-        type: RIGHT_RAIL_ITEM_TYPE,
+        type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
       });
       Object.assign(ViewModel, {
         _sortableDataHandler,

@@ -3,11 +3,11 @@
  * @Date: 2019-01-17 09:34:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { Component, ReactNode } from 'react';
+import React, { Component } from 'react';
 import { IVirtualListDataSource } from './VirtualListDataSource';
+import { JuiVirtualList, JuiVirtualListProps } from './VirtualList';
 
 type Props = {
-  content: () => ReactNode;
   pageSize?: number;
   dataSource: IVirtualListDataSource;
 };
@@ -15,7 +15,6 @@ type Props = {
 type State = {
   firstLoad: boolean;
   loading: boolean;
-  loadedCount: number;
 };
 
 class JuiVirtualListLoader extends Component<Props, State> {
@@ -25,7 +24,6 @@ class JuiVirtualListLoader extends Component<Props, State> {
     this.state = {
       firstLoad: false,
       loading: false,
-      loadedCount: 0,
     };
   }
   async componentDidMount() {
@@ -35,30 +33,27 @@ class JuiVirtualListLoader extends Component<Props, State> {
     } = this.props;
     const { loadMore } = dataSource;
     if (loadMore) {
-      const { loadedCount } = this.state;
       this.setState({ loading: true });
-      const result = await loadMore(0, pageSize);
+      await loadMore(0, pageSize);
       this.setState({
         firstLoad: true,
         loading: false,
-        loadedCount: loadedCount + result.length,
       });
     }
   }
 
   render() {
-    const { content, dataSource } = this.props;
-    const { renderEmptyContent, firstLoader, moreLoader } = dataSource;
-    const { firstLoad, loading, loadedCount } = this.state;
+    const { dataSource } = this.props;
+    const { renderEmptyContent, firstLoader, isEmptyList } = dataSource;
+    const { firstLoad, loading } = this.state;
     if (firstLoad) {
-      if (loading) {
-        // loading more
-        return moreLoader && moreLoader();
-      }
-      if (loadedCount === 0) {
+      if (!loading && isEmptyList()) {
         return renderEmptyContent && renderEmptyContent();
       }
-      return content();
+      const props: JuiVirtualListProps = {
+        dataSource,
+      };
+      return <JuiVirtualList {...props} />;
     }
     return firstLoader && firstLoader();
   }

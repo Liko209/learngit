@@ -10,7 +10,7 @@ import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 // import { debounce } from 'lodash';
 import {
-  JuiVirtualList,
+  // JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualListLoader,
 } from 'jui/pattern/VirtualList';
@@ -84,6 +84,11 @@ class ItemListView extends React.Component<ViewProps & Props>
     );
   }
 
+  isEmptyList = () => {
+    const { totalCount } = this.props;
+    return totalCount === 0;
+  }
+
   moreLoader = () => {
     return <JuiRightRailLoadingMore />;
   }
@@ -102,10 +107,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             {t(subheader)} ({this.props.totalCount})
           </JuiListSubheader>
         )}
-        <JuiVirtualListLoader
-          content={() => <JuiVirtualList dataSource={this} />}
-          dataSource={this}
-        />
+        <JuiVirtualListLoader dataSource={this} />
       </JuiRightShelfContent>
     );
   }
