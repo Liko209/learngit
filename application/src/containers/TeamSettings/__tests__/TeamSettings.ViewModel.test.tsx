@@ -16,7 +16,7 @@ describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
     const groupService = new GroupService();
     beforeEach(() => {
-      (GroupService as jest.Mock).mockImplementation(() => groupService);
+      (GroupService as any).mockImplementation(() => groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();
