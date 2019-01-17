@@ -144,7 +144,7 @@ class StreamViewComponent extends Component<Props> {
       return;
     }
     const width = entries[0].contentRect.width;
-    if (this._listLastWidth !== width) {
+    if (this._listLastWidth && this._listLastWidth !== width) {
       this._listLastWidth = width;
       return;
     }
