@@ -22,4 +22,12 @@ describe('NoteItemViewModel', () => {
     });
     expect(noteItemViewModel.title).toBe('This is note');
   });
+
+  it('get subTitle', () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      userDisplayName: 'username',
+    });
+
+    expect(noteItemViewModel.subTitle).toBe('username');
+  });
 });
