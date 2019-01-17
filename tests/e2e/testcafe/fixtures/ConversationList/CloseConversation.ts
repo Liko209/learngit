@@ -43,7 +43,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
         type: 'Team',
         members: [loginUser.rcId, users[5].rcId, users[6].rcId],
       });
-      await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favChatId]);
+      await h(t).glip(loginUser).favoriteGroups([+favChatId]);
     });
 
     await h(t).withLog('And I clean all UMI before login', async () => {
@@ -51,7 +51,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
-      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -143,7 +143,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login',
       async () => {
-        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+        await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
       },
     );
 
@@ -229,7 +229,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
-      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, false);
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(false);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -332,7 +332,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login',
       async () => {
-        await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, false);
+        await h(t).glip(loginUser).skipCloseConversationConfirmation(false);
       },
     );
 
@@ -422,7 +422,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       type: 'Group',
       members: [loginUser.rcId, users[5].rcId, users[6].rcId],
     });
-    await h(t).glip(loginUser).favoriteGroups(loginUser.rcId, [+favGroupId]);
+    await h(t).glip(loginUser).favoriteGroups([+favGroupId]);
     teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
       isPublic: true,
       name: `Team ${uuid()}`,
@@ -499,6 +499,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
@@ -527,16 +528,12 @@ test(formalName('JPT-138 Can display conversation history when receiving message
       }
     });
 
-    await h(t).withLog('And 2 conversations should not be hidden before login', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [privateChatId, teamId]);
-    });
-
     await h(t).withLog('And Clear all UMI for 2 conversations', async () => {
       await h(t).glip(loginUser).clearAllUmi();
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
-      await h(t).glip(loginUser).skipCloseConversationConfirmation(loginUser.rcId, true);
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {

@@ -3,34 +3,18 @@
  * @Date: 2019-01-02 15:58:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { ISubItemService } from '../../base/service/ISubItemService';
-import { EntityBaseService } from '../../../../../framework/service';
-import { Item } from '../../../entity';
+
 import { IItemService } from '../../../service/IItemService';
-
-class EventItemService extends EntityBaseService implements ISubItemService {
+import { EventItem, SanitizedEventItem } from '../entity';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { EventItemDao } from '../dao/EventItemDao';
+import { daoManager } from '../../../../../dao';
+class EventItemService extends BaseSubItemService<
+  EventItem,
+  SanitizedEventItem
+> {
   constructor(itemService: IItemService) {
-    super();
-  }
-
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
-    return Promise.resolve([]);
-  }
-
-  updateItem(item: Item) {}
-
-  createItem(item: Item) {}
-
-  deleteItem(itemId: number) {}
-
-  async getSubItemsCount(groupId: number) {
-    return 0;
+    super(daoManager.getDao<EventItemDao>(EventItemDao));
   }
 }
 

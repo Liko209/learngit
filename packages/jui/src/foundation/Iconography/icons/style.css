@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'jupiter_icon';
   src:
-    url('fonts/jupiter_icon.woff2?6hgitm') format('woff2'),
-    url('fonts/jupiter_icon.ttf?6hgitm') format('truetype'),
-    url('fonts/jupiter_icon.woff?6hgitm') format('woff'),
-    url('fonts/jupiter_icon.svg?6hgitm#jupiter_icon') format('svg');
+    url('fonts/jupiter_icon.woff2?68fuel') format('woff2'),
+    url('fonts/jupiter_icon.ttf?68fuel') format('truetype'),
+    url('fonts/jupiter_icon.woff?68fuel') format('woff'),
+    url('fonts/jupiter_icon.svg?68fuel#jupiter_icon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.addmember:before {
+  content: "\e947";
+}
+.addteam:before {
+  content: "\e948";
+}
+.conference:before {
+  content: "\e946";
+}
+.codesnippet:before {
+  content: "\e945";
+}
 .webpage:before {
   content: "\e943";
 }

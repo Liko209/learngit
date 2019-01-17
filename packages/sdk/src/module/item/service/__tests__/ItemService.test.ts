@@ -209,18 +209,20 @@ describe('ItemService', () => {
         _itemServiceController: itemServiceController,
       });
 
+      const options = {
+        groupId: 1,
+        typeId: 10,
+        limit: 10,
+        offsetItemId: 0,
+        sortKey: 'name',
+        desc: true,
+      };
+
       itemServiceController.getItems = jest.fn();
 
-      itemService.getItems(1, 1, 10, 10, 'name', true);
+      itemService.getItems(options);
 
-      expect(itemServiceController.getItems).toBeCalledWith(
-        1,
-        1,
-        10,
-        10,
-        'name',
-        true,
-      );
+      expect(itemServiceController.getItems).toBeCalledWith(options);
     });
   });
 
@@ -472,6 +474,7 @@ describe('ItemService', () => {
       expect(itemServiceController.getGroupItemsCount).toBeCalledWith(
         gId,
         TypeDictionary.TYPE_ID_PAGE,
+        undefined,
       );
     });
   });
