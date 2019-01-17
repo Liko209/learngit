@@ -55,6 +55,7 @@ const name2icon = {
   location: 'location',
   link: 'webpage',
   send_failure: 'refresh',
+  image_preview: 'imagepreview',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -15,6 +15,7 @@ import {
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
+import { JuiIconography } from 'jui/foundation/Iconography';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemProps } from './types';
@@ -52,7 +53,11 @@ class ImageItemView extends Component<ImageItemProps> {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <JuiThumbnail url={url} />
+          {url ? (
+            <JuiThumbnail url={url} />
+          ) : (
+            <JuiIconography fontSize="large">image_preview</JuiIconography>
+          )}
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
