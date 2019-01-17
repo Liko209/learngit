@@ -17,9 +17,7 @@ import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
-import { EPERM } from 'constants';
 import { TypeDictionary } from '../../../../utils';
-import { executionAsyncId } from 'async_hooks';
 
 jest.mock('../../../../service/utils', () => ({
   baseHandleData: jest.fn(),
