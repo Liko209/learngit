@@ -13,7 +13,10 @@ import { FileItem } from '../../entity/FileItem';
 import { Api } from '../../../../../../api';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
+import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
+import { FileActionController } from '../FileActionController';
 
+jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
 );
@@ -40,6 +43,12 @@ describe('FileItemController', () => {
       itemService,
       controllerBuilder as ControllerBuilder<FileItem>,
     );
+    Object.defineProperty(Api, 'glipNetworkClient', {
+      get: jest.fn(() => {
+        id: 1;
+      }),
+      configurable: true,
+    });
   }
 
   beforeEach(() => {
@@ -93,15 +102,36 @@ describe('FileItemController', () => {
     });
   });
 
+  describe('fileActionController', () => {
+    it('should return FileActionController', () => {
+      const fileRequestController = new RequestController(null);
+      const entitySourceController = new EntitySourceController(
+        null,
+        null,
+        null,
+      );
+
+      controllerBuilder.buildRequestController = jest
+        .fn()
+        .mockReturnValue(fileRequestController);
+      controllerBuilder.buildEntitySourceController = jest
+        .fn()
+        .mockReturnValue(entitySourceController);
+
+      const uploadController = fileItemController.fileActionController;
+      expect(uploadController).toBeInstanceOf(FileActionController);
+      expect(controllerBuilder.buildRequestController).toBeCalledWith(
+        expect.objectContaining({
+          basePath: '/file',
+        }),
+      );
+    });
+  });
+
   describe('fileUploadController', () => {
     it('should return fileUploadController', () => {
       const partialModifyController = new PartialModifyController(null);
       const fileRequestController = new RequestController(null);
-      Object.defineProperty(Api, 'glipNetworkClient', {
-        get: jest.fn(() => {
-          id: 1;
-        }),
-      });
       controllerBuilder.buildRequestController = jest
         .fn()
         .mockReturnValue(fileRequestController);

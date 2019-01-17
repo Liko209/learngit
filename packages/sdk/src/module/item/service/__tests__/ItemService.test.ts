@@ -19,6 +19,7 @@ import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
 import { EPERM } from 'constants';
 import { TypeDictionary } from '../../../../utils';
+import { executionAsyncId } from 'async_hooks';
 
 jest.mock('../../../../service/utils', () => ({
   baseHandleData: jest.fn(),
@@ -84,6 +85,16 @@ describe('ItemService', () => {
         .mockImplementation(() => {
           return fileItemService;
         });
+    });
+
+    describe('getThumbsUrlWithSize', () => {
+      it('should call file item service with correct parameter', async () => {
+        expect.assertions(2);
+        fileItemService.getThumbsUrlWithSize = jest.fn().mockResolvedValue('a');
+        const res = await itemService.getThumbsUrlWithSize(1, 2, 3);
+        expect(fileItemService.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
+        expect(res).toBe('a');
+      });
     });
 
     describe('sendItemFile()', () => {
