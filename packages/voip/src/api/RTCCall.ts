@@ -9,7 +9,12 @@ import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
-import { RTCCallInfo, RTC_CALL_STATE, RTC_CALL_ACTION } from './types';
+import {
+  RTCCallInfo,
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
+} from './types';
 import { v4 as uuid } from 'uuid';
 
 class RTCCall {
@@ -27,6 +32,7 @@ class RTCCall {
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
+  private _isMute: boolean = false;
 
   constructor(
     isIncoming: boolean,
@@ -98,6 +104,26 @@ class RTCCall {
     this._fsm.stopRecord();
   }
 
+  mute(): void {
+    if (!this._isMute) {
+      this._isMute = true;
+      this._fsm.mute();
+    }
+    this._onCallActionSuccess(RTC_CALL_ACTION.MUTE, {});
+  }
+
+  unmute(): void {
+    if (this._isMute) {
+      this._isMute = false;
+      this._fsm.unmute();
+    }
+    this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {});
+  }
+
+  park(): void {
+    this._fsm.park();
+  }
+
   transfer(target: string): void {
     if (target.length === 0) {
       this._delegate.onCallActionFailed(RTC_CALL_ACTION.TRANSFER);
@@ -135,8 +161,11 @@ class RTCCall {
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-      (callAction: RTC_CALL_ACTION) => {
-        this._onCallActionSuccess(callAction);
+      (
+        callAction: RTC_CALL_ACTION,
+        options: RTCCallActionSuccessOptions = {},
+      ) => {
+        this._onCallActionSuccess(callAction, options);
       },
     );
     this._callSession.on(
@@ -174,11 +203,20 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
     });
+    this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
+      this._onParkAction();
+    });
     this._fsm.on(CALL_FSM_NOTIFY.START_RECORD_ACTION, () => {
       this._onStartRecordAction();
     });
     this._fsm.on(CALL_FSM_NOTIFY.STOP_RECORD_ACTION, () => {
       this._onStopRecordAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.MUTE_ACTION, () => {
+      this._onMuteAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.UNMUTE_ACTION, () => {
+      this._onUnmuteAction();
     });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
@@ -202,7 +240,10 @@ class RTCCall {
     this._callSession.destroy();
   }
   // call action listener
-  private _onCallActionSuccess(callAction: RTC_CALL_ACTION) {
+  private _onCallActionSuccess(
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions = {},
+  ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
         this._isRecording = true;
@@ -213,8 +254,9 @@ class RTCCall {
         break;
       }
     }
+
     if (this._delegate) {
-      this._delegate.onCallActionSuccess(callAction);
+      this._delegate.onCallActionSuccess(callAction, options);
     }
   }
 
@@ -261,6 +303,10 @@ class RTCCall {
     this._callSession.transfer(target);
   }
 
+  private _onParkAction() {
+    this._callSession.park();
+  }
+
   private _onStartRecordAction() {
     this._isRecording
       ? this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD)
@@ -273,6 +319,13 @@ class RTCCall {
       : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
   }
 
+  private _onMuteAction() {
+    this._callSession.mute();
+  }
+
+  private _onUnmuteAction() {
+    this._callSession.unmute();
+  }
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,
@@ -288,8 +341,15 @@ class RTCCall {
     if (this._delegate) {
       this._delegate.onCallStateChange(state);
     }
-    if (this._callState === RTC_CALL_STATE.DISCONNECTED) {
-      this._account.removeCallFromCallManager(this._callInfo.uuid);
+    switch (this._callState) {
+      case RTC_CALL_STATE.CONNECTED: {
+        this._isMute ? this._callSession.mute() : this._callSession.unmute();
+        break;
+      }
+      case RTC_CALL_STATE.DISCONNECTED: {
+        this._account.removeCallFromCallManager(this._callInfo.uuid);
+        break;
+      }
     }
   }
 }
