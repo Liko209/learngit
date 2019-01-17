@@ -134,33 +134,37 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   mute() {
-    this._session.mute();
+    if (this._session) {
+      this._session.mute();
+    }
   }
 
   unmute() {
-    this._session.unmute();
+    if (this._session) {
+      this._session.unmute();
+    }
   }
 
   answer() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.accept();
     }
   }
 
   reject() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.reject();
     }
   }
 
   sendToVoicemail() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.toVoicemail();
     }
   }
 
   hold() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.hold().then(
         () => {
           this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
@@ -173,7 +177,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   unhold() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.unhold().then(
         () => {
           this.emit(
@@ -189,7 +193,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   setSession(session: any) {
-    if (session != null) {
+    if (session) {
       this._session = session;
       this._prepareSipSession();
     }
