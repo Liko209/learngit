@@ -30,7 +30,11 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   };
 
   componentDidUpdate(props: Props) {
-    if (props.children !== this.props.children) {
+    if (
+      props.children !== this.props.children &&
+      this.prevWidth !== 1 &&
+      props.children.length !== this.props.children.length
+    ) {
       this.initWidthAndResponsiveInfo();
       this.init(this.prevWidth);
     }
