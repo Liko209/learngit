@@ -155,7 +155,7 @@ String integrationBranch = 'develop'
 Boolean isMerge = (null != env.gitlabTargetBranch) && (env.gitlabSourceBranch != env.gitlabTargetBranch)
 Boolean skipEndToEnd = !isStableBranch(env.gitlabSourceBranch) && !isStableBranch(env.gitlabTargetBranch)
 Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && integrationBranch != env.gitlabSourceBranch
-Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || releaseBranch == env.gitlabSourceBranch
+Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || env.gitlabSourceBranch.endsWith('release') || releaseBranch == env.gitlabSourceBranch
 
 /* deploy params */
 String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
