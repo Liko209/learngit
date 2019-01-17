@@ -212,7 +212,7 @@ test(formalName('Should display in the top of conversation list when opening a c
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfile();
   console.log(h(t).glip(loginUser).accessToken)
-  const firstTeamName = `top-${uuid()}`;
+  const topTeamName = `top-${uuid()}`;
   const otherUserName = await h(t).glip(loginUser).getPerson(otherUser.rcId).then(res => res.data.display_name);
 
   const teamSection = app.homePage.messageTab.teamsSection;
@@ -222,11 +222,13 @@ test(formalName('Should display in the top of conversation list when opening a c
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
+  const search = app.homePage.header.search;
+
 
   let teamId, directMessageChatId, teamMentionPostId, directMessageMentionPostId;
   await h(t).withLog(`Given I have Team conversation A (with mention and bookmark post)`, async () => {
     teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: firstTeamName,
+      name: topTeamName,
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
     });
@@ -239,6 +241,18 @@ test(formalName('Should display in the top of conversation list when opening a c
       type: 'Team',
       members: [loginUser.rcId, users[5].rcId],
     });
+    await h(t).platform(loginUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+
+    await h(t).platform(loginUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+
   })
 
   await h(t).withLog(`And directMessage conversation B (with mention and bookmark post), and hide A & B`, async () => {
@@ -261,10 +275,6 @@ test(formalName('Should display in the top of conversation list when opening a c
   });
 
   const duplicateSteps = async (section, chatId, teamName, sectionName, cb: () => Promise<any>) => {
-    await h(t).withLog(`Given I hide the conversation A`, async () => {
-      await h(t).glip(loginUser).hideGroups([+chatId]);
-    });
-
     await cb();
 
     await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
@@ -285,7 +295,8 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // 1. Login -> Last open team conversation A
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`And set last_group_id is id of ${firstTeamName}`, async () => {
+    await h(t).withLog(`And set last_group_id is id of ${topTeamName}`, async () => {
+      await h(t).glip(loginUser).setMaxTeamDisplay(3); // if use hide group, no show last Group
       await h(t).glip(loginUser).setLastGroupId(teamId);
     });
 
@@ -297,6 +308,10 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // open via mentions
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
+    await h(t).withLog(`Given I hide the conversation A`, async () => {
+      await h(t).glip(loginUser).hideGroups([+teamId]);
+    });
+
     await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
       await mentionPageEntry.enter();
       await mentionPage.waitUntilPostsBeLoaded();
@@ -306,6 +321,10 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // open via bookmark
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
+    await h(t).withLog(`Given I hide the conversation A`, async () => {
+      await h(t).glip(loginUser).hideGroups([+teamId]);
+    });
+
     await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
       await bookmarkEntry.enter();
       await bookmarkPage.waitUntilPostsBeLoaded();
@@ -314,15 +333,18 @@ test(formalName('Should display in the top of conversation list when opening a c
   });
 
   // open via search 
-  const search = app.homePage.header.search;
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
+    await h(t).withLog(`Given I hide the conversation A`, async () => {
+      await h(t).glip(loginUser).hideGroups([+teamId]);
+    });
+
     await h(t).withLog(`When I open conversation A via search entry`, async () => {
-      await search.typeText(firstTeamName, { replace: true, paste: true });
+      await search.typeText(topTeamName, { replace: true, paste: true });
       await t.wait(3e3);
       // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
       await h(t).refresh();
       await app.homePage.ensureLoaded();
-      await search.typeText(firstTeamName, { replace: true, paste: true });
+      await search.typeText(topTeamName, { replace: true, paste: true });
       await t.wait(3e3); // wait search result show;
       await search.nthTeam(0).enter();
     });
@@ -394,6 +416,10 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // open via search 
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
+    await h(t).withLog(`Given I hide the conversation A`, async () => {
+      await h(t).glip(loginUser).hideGroups([+teamId]);
+    });
+
     await h(t).withLog(`When I open conversation B via search entry`, async () => {
       await search.typeText(otherUserName, { replace: true, paste: true });
       await t.wait(3e3);
@@ -408,6 +434,10 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // open via URL 
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
+    await h(t).withLog(`Given I hide the conversation A`, async () => {
+      await h(t).glip(loginUser).hideGroups([+teamId]);
+    });
+
     await h(t).withLog(`When I open conversation B via URL `, async () => {
       const url = new URL(SITE_URL)
       const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
@@ -418,6 +448,10 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // open via send new message entry
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
+    await h(t).withLog(`Given I hide the conversation A`, async () => {
+      await h(t).glip(loginUser).hideGroups([+teamId]);
+    });
+
     await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
       await app.homePage.openAddActionMenu();
       await app.homePage.addActionMenu.sendNewMessageEntry.enter();
