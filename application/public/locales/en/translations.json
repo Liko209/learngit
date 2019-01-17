@@ -234,5 +234,11 @@
   "networkErrorTasksPrompt": "Sorry, we weren't able to load more tasks.",
   "networkErrorEventsPrompt": "Sorry, we weren't able to load more events.",
   "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
-  "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations."
+  "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
+  "setting": "setting",
+  "setting_plural": "settings",
+  "save": "save",
+  "cancel": "cancel",
+  "teamName": "Team name",
+  "teamDescription": "Team description"
 }
