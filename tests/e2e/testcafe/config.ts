@@ -69,6 +69,7 @@ const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : config
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
+const MAX_RESOLUTION = (process.env.MAX_RESOLUTION || '1280x720').split('x').map(n => parseInt(n, 10));
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -82,6 +83,7 @@ const RUNNER_OPTS = {
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
   STOP_ON_FIRST_FAIL,
+  MAX_RESOLUTION,
 }
 
 // create electron configuration file
@@ -98,7 +100,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
 const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
-const RUN_NAME = process.env.RUN_NAME || uuid();
+const RUN_NAME = process.env.RUN_NAME || `[Jupiter][Debug][${new Date().toLocaleString()}]`;
 
 enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
