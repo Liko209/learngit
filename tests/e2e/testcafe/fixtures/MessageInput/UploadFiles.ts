@@ -168,7 +168,7 @@ test(formalName(`JPT-498 Can cancel files in the duplicate prompt when the same 
   });
 
   await h(t).withLog('When I send message to this conversation', async () => {
-    await conversationPage.sendMessageViaPressEnterOnly();
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
@@ -234,7 +234,7 @@ test(formalName('JPT-499 Can update files when click update the button in the du
   });
 
   await h(t).withLog('And I can send the file to this conversation', async () => {
-    await conversationPage.sendMessageViaPressEnterOnly()
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
@@ -556,7 +556,7 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
   const V2 = 'uploaded version 2';
 
   let teamId;
-  await h(t).withLog(`Given I create one new teams`, async () => {
+  await h(t).withLog(`Given I create one new team`, async () => {
     teamId = await h(t).platform(user).createAndGetGroupId({
       type: 'Team',
       name: uuid(),
@@ -573,20 +573,20 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
     await teamsSection.conversationEntryById(teamId).enter();
   });
 
-  await h(t).withLog(`And upload one file to the message attachment in the created conversation,size=${filesSize[0]} `, async () => {
+  await h(t).withLog(`And upload one file to the message attachment in the created conversation whose size is ${filesSize[0]} `, async () => {
     await conversationPage.uploadFilesToMessageAttachment(filesPath1);
   });
 
   await h(t).withLog('And I send the file to this conversation', async () => {
-    await conversationPage.sendMessageViaPressEnterOnly();
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-  await h(t).withLog(`And upload the same name file to the conversation,size=${filesSize[1]} `, async () => {
+  await h(t).withLog(`And upload the same name file to the conversation whose size is ${filesSize[1]} `, async () => {
     await conversationPage.uploadFilesToMessageAttachment(filesPath2);
   });
 
-  await h(t).withLog('Then will show a duplicate prompt ', async () => {
+  await h(t).withLog('Then will show a duplicate prompt', async () => {
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
     await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
   });
@@ -597,11 +597,11 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
 
   await h(t).withLog('Then the file is in the the message attachment and focus on the input area ', async () => {
     await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName).exists).ok();
-    await t.expect(conversationPage.judgeFocusOnInputArea).ok();
+    await conversationPage.shouldFocusOnMessageInputArea();
   });
 
   await h(t).withLog('When I send the file to this conversation', async () => {
-    await conversationPage.sendMessageViaPressEnterOnly();
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
@@ -615,11 +615,11 @@ test(formalName('JPT-593 Should update the oldest file when creating same name f
 
   await h(t).withLog('Then the file is in the the message attachment and focus on the input area ', async () => {
     await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName).exists).ok();
-    await t.expect(conversationPage.judgeFocusOnInputArea).ok();
+    await conversationPage.shouldFocusOnMessageInputArea();
   });
 
-  await h(t).withLog('When I can send file to this conversation', async () => {
-    await conversationPage.sendMessageViaPressEnterOnly();
+  await h(t).withLog('When I send file to this conversation', async () => {
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
@@ -746,7 +746,7 @@ test(formalName('JPT-515 The selected files shouldn\'t be in the other conversat
 
 });
 
-test(formalName('JPT-889 Check focus on input box when remove files',['P2', 'UploadFiles', 'Skye.Wang', 'JPT-889']), async t=>{
+test(formalName('JPT-889 Check focus on input box when remove files', ['P2', 'UploadFiles', 'Skye.Wang', 'JPT-889']), async t => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -757,7 +757,7 @@ test(formalName('JPT-889 Check focus on input box when remove files',['P2', 'Upl
   const filesPath = ['../../sources/1.txt'];
 
   let teamId;
-  await h(t).withLog('Give I create a new team', async () =>{
+  await h(t).withLog('Give I create a new team', async () => {
     teamId = await h(t).platform(loginUser).createAndGetGroupId({
       isPublic: true,
       name: uuid(),
@@ -783,8 +783,7 @@ test(formalName('JPT-889 Check focus on input box when remove files',['P2', 'Upl
     await conversationPage.removeFileOnMessageArea();
   });
 
-  await h(t).withLog('Then the mouse is focus on the input area', async ()=>{
-    await t.expect(conversationPage.judgeFocusOnInputArea).ok();
+  await h(t).withLog('Then the mouse is focus on the input area', async () => {
+    await conversationPage.shouldFocusOnMessageInputArea();
   });
 });
-
