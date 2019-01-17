@@ -14,7 +14,7 @@ import { PostActionController } from '../PostActionController';
 import { GroupConfigService } from '../../../../../service/groupConfig';
 
 import _ from 'lodash';
-import { IPreInsertController } from '../../../../../framework/controller/interface/IPreInsertController';
+import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
 import { IdModel } from '../../../../../framework/model';
 import { Post } from '../../../entity/Post';
 import { daoManager, PostDao, AccountDao } from '../../../../../dao';
@@ -32,7 +32,7 @@ class MockPreInsertController<T extends IdModel>
 jest.mock('../PostActionController');
 jest.mock('../../../../../service/groupConfig');
 jest.mock('../../../../../service/notificationCenter');
-jest.mock('../../../../../framework/controller/impl/PreInsertController');
+jest.mock('../../../../common/controller/impl/PreInsertController');
 jest.mock('../../../../../dao');
 
 describe('SendPostController', () => {

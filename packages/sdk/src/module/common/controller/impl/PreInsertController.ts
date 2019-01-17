@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
+import { IdModel } from '../../../../framework/model';
 import { IPreInsertController } from '../interface/IPreInsertController';
-import { ProgressService, PROGRESS_STATUS } from '../../../module/progress';
-import notificationCenter from '../../../service/notificationCenter';
-import { BaseDao } from '../../../dao';
+import { ProgressService, PROGRESS_STATUS } from '../../../progress';
+import notificationCenter from '../../../../service/notificationCenter';
+import { BaseDao } from '../../../../dao';
+import { ControllerUtils } from '../../../../framework/controller/ControllerUtils';
 class PreInsertController<T extends IdModel = IdModel>
   implements IPreInsertController {
   constructor(public dao: BaseDao<T>) {}
@@ -26,10 +27,13 @@ class PreInsertController<T extends IdModel = IdModel>
     key.length && notificationCenter.emitEntityUpdate(key, [entity]);
   }
 
-  async incomesStatusChange(id: number, success: boolean): Promise<void> {
+  async incomesStatusChange(id: number, shouldDelete: boolean): Promise<void> {
     const progressService: ProgressService = ProgressService.getInstance();
-    if (success) {
+    if (shouldDelete) {
       progressService.deleteProgress(id);
+      notificationCenter.emitEntityDelete(this.getEntityNotificationKey(), [
+        id,
+      ]);
       if (this.dao) {
         await this.dao.delete(id);
       }
@@ -42,13 +46,7 @@ class PreInsertController<T extends IdModel = IdModel>
   }
 
   getEntityNotificationKey() {
-    if (this.dao) {
-      console.log(this.dao);
-      const modelName = this.dao.modelName.toUpperCase();
-      const eventKey: string = `ENTITY.${modelName}`;
-      return eventKey;
-    }
-    throw new Error('PreInsertController not dao instance');
+    return ControllerUtils.getEntityNotificationKey(this.dao);
   }
 }
 

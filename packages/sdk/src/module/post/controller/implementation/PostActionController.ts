@@ -10,14 +10,14 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { daoManager, PostDao } from '../../../../dao';
 import { EditPostType } from '../../types';
-import { ENTITY } from '../../../../service/eventKey';
-import { ProgressService } from '../../../progress';
-import { notificationCenter, GroupConfigService } from '../../../../service';
+import { GroupConfigService } from '../../../../service';
 import { IPostActionController } from '../interface/IPostActionController';
+import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 class PostActionController implements IPostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
     public requestController: IRequestController<Post>,
+    public preInsertController: IPreInsertController<Post>,
   ) {}
 
   async likePost(
@@ -91,13 +91,8 @@ class PostActionController implements IPostActionController {
      */
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
-    // 1
-    const progressService: ProgressService = ProgressService.getInstance();
-    progressService.deleteProgress(id);
 
-    notificationCenter.emitEntityDelete(ENTITY.POST, [id]);
-    // 2
-    postDao.delete(id);
+    this.preInsertController.incomesStatusChange(id, true);
 
     // 4
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();

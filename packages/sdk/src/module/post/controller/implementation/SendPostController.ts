@@ -22,7 +22,7 @@ import { PostActionController } from './PostActionController';
 import { PostItemController } from './PostItemController';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
-import { IPreInsertController } from '../../../../framework/controller/interface/IPreInsertController';
+import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 
 type PostData = {
   id: number;

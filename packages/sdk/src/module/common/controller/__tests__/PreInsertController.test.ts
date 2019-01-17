@@ -3,13 +3,13 @@
  * @Date: 2019-01-16 13:25:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostDao } from '../../../dao';
+import { PostDao } from '../../../../dao';
 import { PreInsertController } from '../impl/PreInsertController';
-import { ProgressService } from '../../../module/progress';
+import { ProgressService } from '../../../progress';
 import { DexieDB } from 'foundation';
-import notificationCenter from '../../../service/notificationCenter';
-jest.mock('../../../module/progress');
-jest.mock('../../../service/notificationCenter');
+import notificationCenter from '../../../../service/notificationCenter';
+jest.mock('../../../progress');
+jest.mock('../../../../service/notificationCenter');
 
 const schema = {
   name: 'Glip',
@@ -35,12 +35,11 @@ describe('PreInsertController', () => {
     jest.clearAllMocks();
   });
   describe('preInsert', () => {
-    it('', async () => {
+    it('should call add progress and emit update', async () => {
       await preInsertController.preInsert({ id: -2 });
       expect(progressService.addProgress).toBeCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(1);
     });
-    it('', () => {});
   });
   describe('incomesStatusChange', () => {
     it('should call dao delete when success', async () => {
