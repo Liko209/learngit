@@ -7,7 +7,9 @@
 import React from 'react';
 import { StyledTextButton, StyledIconButton } from './style';
 import { Palette } from '../../foundation/theme/theme';
-import MuiSnackbarContent, { SnackbarContentProps as MuiSnackbarContentProps } from '@material-ui/core/SnackbarContent';
+import MuiSnackbarContent, {
+  SnackbarContentProps as MuiSnackbarContentProps,
+} from '@material-ui/core/SnackbarContent';
 import { JuiSnackbarAction } from './SnackbarAction';
 import styled from '../../foundation/styled-components';
 

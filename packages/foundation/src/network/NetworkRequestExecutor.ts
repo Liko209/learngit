@@ -170,7 +170,13 @@ export class NetworkRequestExecutor
 
   private _handle401XApiCompletionCallback(response: IResponse) {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
+    this._removeAuthorization();
     this.responseListener.onAccessTokenInvalid(this.handlerType);
+  }
+
+  private _removeAuthorization() {
+    this.request.headers.Authorization &&
+      delete this.request.headers.Authorization;
   }
 
   private _handle502XApiCompletionCallback(response: IResponse) {

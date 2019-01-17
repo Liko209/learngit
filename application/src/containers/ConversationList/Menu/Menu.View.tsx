@@ -18,6 +18,10 @@ import {
   ProfileDialogPerson,
 } from '@/containers/Profile/Dialog';
 import { TranslationFunction } from 'i18next';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -59,8 +63,8 @@ class MenuViewComponent extends Component<Props, State> {
 
       Notification.flashToast({
         message,
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });
@@ -130,8 +134,8 @@ class MenuViewComponent extends Component<Props, State> {
       Err: () => {
         Notification.flashToast({
           message: 'SorryWeWereNotAbleToCloseTheConversation',
-          type: 'error',
-          messageAlign: 'left',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
           dismissible: false,
         });
@@ -166,7 +170,10 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`conversationMenuItem:${favoriteText}`)}
         </JuiMenuItem>
-        <JuiMenuItem onClick={this._handleProfileDialog}>
+        <JuiMenuItem
+          data-test-automation-id="profileEntry"
+          onClick={this._handleProfileDialog}
+        >
           {t('viewProfile')}
         </JuiMenuItem>
         {this.renderCloseMenuItem(t, closable)}

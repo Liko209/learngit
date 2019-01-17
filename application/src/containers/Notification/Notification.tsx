@@ -7,7 +7,7 @@ import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
 import { observable, action, autorun } from 'mobx';
-import { ToastProps } from '../ToastWrapper/Toast/types';
+import { ToastProps, ToastMessageAlign } from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
 type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
@@ -52,7 +52,7 @@ class Notification extends AbstractViewModel {
 
   static flashToast(props: NotificationProps) {
     const config = {
-      messageAlign: 'left',
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       autoHideDuration: 2000,
       ...props,
@@ -62,7 +62,7 @@ class Notification extends AbstractViewModel {
 
   static flagToast(props: NotificationProps) {
     const config = {
-      messageAlign: 'left',
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       ...props,
     };
@@ -84,4 +84,8 @@ class Notification extends AbstractViewModel {
 
 autorun(Notification.checkBufferAvailability);
 
-export { Notification, NotificationProps, NotificationProps as ShowNotificationOptions };
+export {
+  Notification,
+  NotificationProps,
+  NotificationProps as ShowNotificationOptions,
+};

@@ -106,7 +106,7 @@ export class ConversationCard extends React.Component<
           <JuiConversationCardHeader
             data-name="header"
             name={name}
-            time={createTime}
+            time={showProgressActions ? '' : createTime}
             status={customStatus}
             from={from}
             notification={activity}
@@ -117,7 +117,7 @@ export class ConversationCard extends React.Component<
           <JuiConversationCardBody data-name="body">
             {hideText || isEditMode ? null : <TextMessage id={id} />}
             {isEditMode && <EditMessageInput id={id} />}
-            {idsToConversationSheet(itemTypeIds, id)}
+            {itemTypeIds ? idsToConversationSheet(itemTypeIds, id) : null}
           </JuiConversationCardBody>
           <Footer id={id} />
         </JuiConversationCard>

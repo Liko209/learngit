@@ -22,7 +22,7 @@ type ConversationCardViewProps = {
   name: string;
   customStatus?: string;
   createTime: string;
-  itemTypeIds: {
+  itemTypeIds?: {
     [key: number]: number[];
   };
   showProgressActions: boolean;
