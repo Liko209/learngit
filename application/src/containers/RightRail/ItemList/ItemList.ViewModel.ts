@@ -115,7 +115,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     // To do in task: https://jira.ringcentral.com/browse/FIJI-2343, remove this RIGHT_RAIL_ITEM_TYPE.TASKS
     if (
       this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS
+      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.LINKS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.NOTES
     ) {
       this.totalCount = 0;
       return;

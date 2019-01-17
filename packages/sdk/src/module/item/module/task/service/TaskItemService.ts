@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { TaskItemController } from '../controller/TaskItemController';
-import { EntityBaseService } from '../../../../../framework/service';
-import { IItemService } from '../../../service/IItemService';
-import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { TaskItem, SanitizedTaskItem } from '../entity';
-import { TaskItemDao } from '../dao';
+import { IItemService } from '../../../service/IItemService';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { TaskItemDao } from '../dao/TaskItemDao';
 import { daoManager } from '../../../../../dao';
-import { ItemUtils } from '../../../utils';
 
-class TaskItemService extends EntityBaseService implements ISubItemService {
+class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
   private _taskItemController: TaskItemController;
 
   constructor(itemService: IItemService) {
-    super();
+    super(daoManager.getDao<TaskItemDao>(TaskItemDao));
   }
 
   protected get taskItemController() {
@@ -26,42 +23,6 @@ class TaskItemService extends EntityBaseService implements ISubItemService {
       this._taskItemController = new TaskItemController();
     }
     return this._taskItemController;
-  }
-
-  async updateItem(task: TaskItem) {
-    const sanitizedDao = daoManager.getDao<TaskItemDao>(TaskItemDao);
-    await sanitizedDao.update(this._toSanitizedTask(task));
-  }
-
-  async deleteItem(itemId: number) {
-    const sanitizedDao = daoManager.getDao<TaskItemDao>(TaskItemDao);
-    await sanitizedDao.delete(itemId);
-  }
-
-  async createItem(task: TaskItem) {
-    const sanitizedDao = daoManager.getDao<TaskItemDao>(TaskItemDao);
-    await sanitizedDao.put(this._toSanitizedTask(task));
-  }
-
-  private _toSanitizedTask(task: TaskItem) {
-    return {
-      ...ItemUtils.toSanitizedItem(task),
-      complete: task.complete,
-      due: task.due || undefined,
-      assigned_to_ids: task.assigned_to_ids,
-      section: task.section,
-      color: task.color,
-    } as SanitizedTaskItem;
-  }
-
-  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const sanitizedDao = daoManager.getDao<TaskItemDao>(TaskItemDao);
-    return await sanitizedDao.getSortedIds(options);
-  }
-
-  async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
-    const sanitizedDao = daoManager.getDao<TaskItemDao>(TaskItemDao);
-    return await sanitizedDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 

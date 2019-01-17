@@ -31,6 +31,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
+const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
@@ -47,8 +48,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this._postService = PostService.getInstance();
     this.reaction(
       () => this.id,
-      (id: number) => {
+      () => {
         this.reloadFiles();
+      },
+    );
+
+    this.reaction(
+      () => this.files,
+      () => {
+        const quill = (document.querySelector(QUILL_QUERY) as any).__quill;
+        requestAnimationFrame(() => {
+          quill.focus();
+        });
       },
     );
 
