@@ -10,3 +10,5 @@ export * from './ListItemIcon';
 export * from './ListItemSecondaryAction';
 export * from './ListSubheader';
 export * from './ListItemText';
+export * from './ListItemSecondaryText';
+export * from './ListItemSecondarySpan';

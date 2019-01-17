@@ -22,12 +22,13 @@ type SearchResult = {
 type Props = {};
 
 type ViewProps = {
+  focus: boolean;
+  updateFocus: (focus: boolean) => void;
   search: (key: string) => Promise<SearchResult>;
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
   isTeamOrGroup: (id: number) => boolean;
-  joinTeam: (id: number) => {};
 };
 
 type SectionType<T> = {

@@ -86,20 +86,6 @@ describe('FileItemService', () => {
     setup();
   });
 
-  describe('getSortedIds', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-    });
-
-    it('should call fileItemDao and get result', async () => {
-      fileItemDao.getSortedIds = jest.fn().mockResolvedValue([1]);
-      const res = await fileItemService.getSortedIds(1, 10, 0, 'name', true);
-      expect(fileItemDao.getSortedIds).toBeCalledWith(1, 10, 0, 'name', true);
-      expect(res).toEqual([1]);
-    });
-  });
-
   describe('sendItemFile', () => {
     beforeEach(() => {
       clearMocks();
@@ -294,78 +280,6 @@ describe('FileItemService', () => {
     });
   });
 
-  // async updateItem(file: FileItem) {
-  //   const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-  //   await sanitizedDao.update(this._toSanitizedFile(file));
-  // }
-
-  describe('updateItem', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-    });
-
-    it('should sanitize item and update it', async () => {
-      const { fileItem } = setUpData();
-      fileItemDao.update = jest.fn();
-      await fileItemService.updateItem(fileItem);
-      expect(fileItemDao.update).toBeCalledWith({
-        id: fileItem.id,
-        group_ids: fileItem.group_ids,
-        created_at: fileItem.created_at,
-        name: fileItem.name,
-        type: fileItem.type,
-      });
-    });
-  });
-
-  describe('deleteItem', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-    });
-
-    it('should sanitize item and update it', async () => {
-      const { fileItem } = setUpData();
-      fileItemDao.delete = jest.fn();
-      await fileItemService.deleteItem(fileItem.id);
-      expect(fileItemDao.delete).toBeCalledWith(fileItem.id);
-    });
-  });
-
-  describe('createItem', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-    });
-
-    it('should sanitize item and update it', async () => {
-      const { fileItem } = setUpData();
-      fileItemDao.put = jest.fn();
-      await fileItemService.createItem(fileItem);
-      expect(fileItemDao.put).toBeCalledWith({
-        id: fileItem.id,
-        group_ids: fileItem.group_ids,
-        created_at: fileItem.created_at,
-        name: fileItem.name,
-        type: fileItem.type,
-      });
-    });
-  });
-
-  describe('getSubItemsCount()', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-    });
-
-    it('should call file item dao to get file count', async () => {
-      fileItemDao.getGroupItemCount = jest.fn();
-      await fileItemService.getSubItemsCount(111);
-      expect(fileItemDao.getGroupItemCount).toBeCalledWith(111);
-    });
-  });
-
   describe('isFileExists', () => {
     beforeEach(() => {
       clearMocks();
@@ -382,6 +296,19 @@ describe('FileItemService', () => {
         groupId,
         file.name,
       );
+    });
+  });
+
+  describe('toSanitizedItem', () => {
+    const { fileItem } = setUpData();
+    it('should return sanitized item', () => {
+      expect(fileItemService.toSanitizedItem(fileItem)).toEqual({
+        id: fileItem.id,
+        group_ids: fileItem.group_ids,
+        created_at: fileItem.created_at,
+        name: fileItem.name,
+        type: fileItem.type,
+      });
     });
   });
 });

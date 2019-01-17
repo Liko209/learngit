@@ -7,4 +7,5 @@
 export type IdModel = {
   id: number;
   _id?: number;
+  isMocked?: boolean;
 };

@@ -13,9 +13,9 @@ import ThemeProvider from '@/containers/ThemeProvider';
 import history from '@/history';
 import { analytics } from '@/Analytics';
 import { AboutView } from '@/containers/About';
+import { generalErrorHandler } from '@/utils/error';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
-import { AppStore } from '../../store';
 import { TopBanner } from '../TopBanner';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
@@ -27,8 +27,13 @@ class App extends React.Component {
   private _appStore: AppStore = container.get(AppStore);
   private _unListenHistory: VoidFunction;
 
+  componentDidCatch(error: Error) {
+    generalErrorHandler(error);
+  }
+
   componentWillUnmount() {
     this._unListenHistory && this._unListenHistory();
+    window.removeEventListener('focus', this._focusHandler);
   }
 
   componentDidMount() {
@@ -37,6 +42,8 @@ class App extends React.Component {
         this._upgradeHandler.upgradeIfAvailable();
       }
     });
+
+    window.addEventListener('focus', this._focusHandler);
 
     analytics.bootstrap();
   }
@@ -58,6 +65,10 @@ class App extends React.Component {
         )}
       </ThemeProvider>
     );
+  }
+
+  private _focusHandler = () => {
+    this._upgradeHandler.upgradeIfAvailable();
   }
 }
 const HotApp = hot(module)(App);

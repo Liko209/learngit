@@ -7,6 +7,7 @@
 import { TeamController } from '../TeamController';
 import { Group } from '../../entity/Group';
 import { TeamActionController } from '../TeamActionController';
+import { TeamPermissionController } from '../TeamPermissionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 import { BaseDao, daoManager } from '../../../../dao';
@@ -55,6 +56,17 @@ describe('TeamController', () => {
       expect(controllerBuilder.buildEntitySourceController).toBeCalledTimes(1);
       expect(controllerBuilder.buildPartialModifyController).toBeCalledTimes(1);
       expect(controllerBuilder.buildRequestController).toBeCalledTimes(1);
+    });
+  });
+  describe('getTeamPermissionController()', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    it('should get TeamPermissionController', () => {
+      const controllerBuilder = new ControllerBuilder<Group>();
+      const teamController = new TeamController(controllerBuilder);
+      const result = teamController.getTeamPermissionController();
+      expect(result instanceof TeamPermissionController).toBe(true);
     });
   });
 });

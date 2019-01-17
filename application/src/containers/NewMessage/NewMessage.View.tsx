@@ -18,6 +18,10 @@ import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type State = {
   message: string;
@@ -68,8 +72,8 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const message = 'SorryWeWereNotAbleToSendTheMessage';
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });

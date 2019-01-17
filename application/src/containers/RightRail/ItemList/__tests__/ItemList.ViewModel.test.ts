@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ItemListViewModel } from '../ItemList.ViewModel';
-import { ITEM_LIST_TYPE } from '../../types';
+import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 
 let ViewModel: ItemListViewModel;
 
@@ -20,7 +20,7 @@ describe('ItemListViewModel', () => {
       };
       ViewModel = new ItemListViewModel({
         groupId: 1,
-        type: ITEM_LIST_TYPE.FILE,
+        type: RIGHT_RAIL_ITEM_TYPE,
       });
       Object.assign(ViewModel, {
         _sortableDataHandler,

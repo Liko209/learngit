@@ -6,6 +6,7 @@
 
 import { ExtendedBaseModel } from '../../models';
 import { PostItemData } from './PostItemData';
+import { IdModel } from '../../../framework/model';
 
 export type Post = ExtendedBaseModel & {
   group_id: number;
@@ -26,4 +27,9 @@ export type Post = ExtendedBaseModel & {
   items?: object[];
   source?: string;
   parent_id?: number;
+};
+
+export type PostView = IdModel & {
+  group_id: number;
+  created_at: number;
 };
