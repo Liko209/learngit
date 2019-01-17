@@ -23,4 +23,17 @@ const truncateLongName = (name: string) => {
   return [name, ''];
 };
 
-export { getFileName, truncateLongName };
+const getListItemSecondaryText = (text: string) => {
+  if (!text) return '';
+
+  const textArr = text.split('·');
+
+  if (textArr.length) {
+    const left = textArr[0];
+    const right = textArr[1];
+    return [left, right];
+  }
+  return [text, ''];
+};
+
+export { getFileName, truncateLongName, getListItemSecondaryText };

@@ -41,6 +41,7 @@ enum REGISTRATION_EVENT {
   UA_REGISTER_FAILED = 'uaRegisterFailed',
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
+  NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
 }
 
 enum REGISTRATION_FSM_STATE {

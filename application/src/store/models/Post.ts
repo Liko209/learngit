@@ -5,9 +5,15 @@
  */
 
 import { Post } from 'sdk/module/post/entity';
-import { GlipTypeUtil } from 'sdk/utils';
+import { Item } from 'sdk/module/item/entity';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import Base from './Base';
 import { observable, computed } from 'mobx';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import FileItemModel from '@/store/models/FileItem';
+import LinkItemModel from '@/store/models/LinkItem';
+
 export default class PostModel extends Base<Post> {
   createdAt: number;
   @observable
@@ -34,6 +40,8 @@ export default class PostModel extends Base<Post> {
   source?: string;
   @observable
   parentId?: number;
+  @observable
+  deactivated?: boolean;
 
   constructor(data: Post) {
     super(data);
@@ -51,6 +59,7 @@ export default class PostModel extends Base<Post> {
       item_data,
       source,
       parent_id,
+      deactivated,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -65,15 +74,40 @@ export default class PostModel extends Base<Post> {
     this.itemData = item_data;
     this.source = source;
     this.parentId = parent_id;
+    this.deactivated = deactivated;
   }
 
   @computed
   get existItemIds() {
-    return this.itemId ? [this.itemId] : this.itemIds;
+    const ids = this.itemId ? [this.itemId] : this.itemIds;
+    return ids
+      .map((id: number) => {
+        const typeId = GlipTypeUtil.extractTypeId(id);
+        switch (typeId) {
+          case TypeDictionary.TYPE_ID_FILE:
+            return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+          case TypeDictionary.TYPE_ID_LINK:
+            return getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, id);
+          default:
+            return {
+              id,
+              deactivated: false,
+            };
+        }
+      })
+      .filter((item: any) => {
+        return !item.deactivated;
+      })
+      .map((item: any) => {
+        return item.id;
+      });
   }
 
   @computed
   get itemTypeIds() {
+    if (!this.existItemIds) {
+      return undefined;
+    }
     const itemTypeIds = {};
     this.existItemIds.forEach((id: number) => {
       const typeId = GlipTypeUtil.extractTypeId(id);

@@ -82,7 +82,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 },
 );
 
-test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314', 'JPT-463']),
+test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -183,9 +183,6 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
       await conversationPage.expectStreamScrollToBottom();
     });
 
-    await h(t).withLog('And conversation should display in the top of conversation list', async () => {
-      await teamsSection.nthConversationEntry(0).groupIdShouldBe(teamId);
-    });
   },
 );
 
@@ -210,7 +207,6 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
       groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     });
 
     let newPostId;
@@ -286,7 +282,6 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `First AtMention, ![:Person](${loginUser.rcId})`,
       groupId,
@@ -343,6 +338,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     await h(t).platform(loginUser).init();
     await h(t).platform(otherUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     const mentionsEntry = app.homePage.messageTab.mentionsEntry;
     const postMentionPage = app.homePage.messageTab.mentionPage;
@@ -363,9 +359,6 @@ test(formalName('Jump to post position when click button or clickable area of po
         type: 'PrivateChat',
         members: [loginUser.rcId, otherUser.rcId],
       });
-
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId, pvChatId]);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       atMentionTeamPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
         `${verifyTextTeam}, ![:Person](${loginUser.rcId})`,

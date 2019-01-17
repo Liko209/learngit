@@ -17,6 +17,29 @@ class PuppeteerUtils {
   /**
    * @description: wait for element appear by selector
    */
+  async disappearForSelector(
+    page: Page,
+    selector: string,
+    options = {}
+  ): Promise<boolean> {
+    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+
+    let cnt = MAX_TRY_COUNT;
+    opt["timeout"] = opt["timeout"] / cnt;
+
+    while (cnt-- > 0) {
+      try {
+        await page.waitForSelector(selector, opt);
+      } catch (error) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @description: wait for element appear by selector
+   */
   async waitForSelector(
     page: Page,
     selector: string,
@@ -105,6 +128,53 @@ class PuppeteerUtils {
         }
 
         await page.type(selector, text, typeOpt);
+      } catch (error) {}
+    }
+
+    return false;
+  }
+
+  async setText(
+    page: Page,
+    selector: string,
+    text: string,
+    check: boolean = true,
+    options = {}
+  ): Promise<boolean> {
+    if (!(await this.waitForSelector(page, selector, options))) {
+      return false;
+    }
+
+    await page.$eval(selector, (node, args) => {
+      // clear text
+      node.value = "";
+    });
+
+    await page.type(selector, text, options);
+    if (!check) {
+      return true;
+    }
+
+    let cnt = MAX_TRY_COUNT,
+      res;
+    while (cnt-- > 0) {
+      try {
+        res = await page.$eval(
+          selector,
+          (node, args) => {
+            let result = node.value === args[0];
+            if (!result) {
+              // clear text
+              node.value = "";
+            }
+            return result;
+          },
+          [text]
+        );
+        if (res) {
+          return true;
+        }
+        await page.type(selector, text, options);
       } catch (error) {}
     }
 
