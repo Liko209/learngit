@@ -6,7 +6,6 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { writeFileSync } from 'fs';
-import { v4 as uuid } from 'uuid';
 import { getLogger } from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
