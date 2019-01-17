@@ -197,10 +197,12 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
+      this._account.removeCallFromCallManager(this._callInfo.uuid);
       this._destroy();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
@@ -402,16 +404,6 @@ class RTCCall {
     this._callState = state;
     if (this._delegate) {
       this._delegate.onCallStateChange(state);
-    }
-    switch (this._callState) {
-      case RTC_CALL_STATE.CONNECTED: {
-        this._isMute ? this._callSession.mute() : this._callSession.unmute();
-        break;
-      }
-      case RTC_CALL_STATE.DISCONNECTED: {
-        this._account.removeCallFromCallManager(this._callInfo.uuid);
-        break;
-      }
     }
   }
 }
