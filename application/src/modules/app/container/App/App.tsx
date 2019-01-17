@@ -91,7 +91,7 @@ class App extends React.Component {
     }
   }
 
-  private _focusHandler() {
+  private _focusHandler = () => {
     this._upgradeHandler.upgradeIfAvailable();
   }
 }
