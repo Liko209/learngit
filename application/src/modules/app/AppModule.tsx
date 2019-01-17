@@ -94,6 +94,20 @@ class AppModule extends AbstractModule {
         const currentCompanyId = UserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+
+        // TODO register subModule according to account profile
+        this._homeService.registerSubModules([
+          'dashboard',
+          'message',
+          'telephony',
+          'meeting',
+          'contact',
+          'calendar',
+          'task',
+          'note',
+          'file',
+          'setting',
+        ]);
       }
     };
 
@@ -103,20 +117,6 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       updateAccountInfoForGlobalStore();
-
-      // TODO register subModule according to account profile
-      this._homeService.registerSubModules([
-        'dashboard',
-        'message',
-        'telephony',
-        'meeting',
-        'contact',
-        'calendar',
-        'task',
-        'note',
-        'file',
-        'setting',
-      ]);
     });
 
     notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, () => {
