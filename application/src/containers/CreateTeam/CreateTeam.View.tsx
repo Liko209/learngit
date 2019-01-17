@@ -10,7 +10,6 @@ import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -123,7 +122,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   render() {
     const { items } = this.state;
     const {
-      t,
       nameError,
       emailError,
       emailErrorMsg,
@@ -146,7 +144,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: isOffline || disabledOkBtn }}
-        title={t('Create Team')}
+        title={t('CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
         okText={t('Create')}
@@ -160,8 +158,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         cancelText={t('Cancel')}
       >
         <JuiTextField
-          id={t('Team Name')}
-          label={t('Team Name')}
+          id={t('teamName')}
+          label={t('teamName')}
           fullWidth={true}
           error={nameError}
           inputProps={{
@@ -181,8 +179,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           isExcludeMe={true}
         />
         <JuiTextarea
-          id={t('Team Description')}
-          label={t('Team Description')}
+          id={t('teamDescription')}
+          label={t('teamDescription')}
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
             maxLength: 1000,
@@ -199,8 +197,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           TypographyProps={{
             align: 'center',
           }}
-          text={t('tips')}
-          linkText={t('linkTips')}
+          text={t('YouAreAnAdminToThisTeam')}
+          linkText={t('LearnAboutTeamAdministration')}
           href=""
         /> */}
       </JuiModal>
@@ -208,7 +206,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   }
 }
 
-const CreateTeamView = translate('team')(withRouter(CreateTeam));
+const CreateTeamView = withRouter(CreateTeam);
 const CreateTeamComponent = CreateTeam;
 
 export { CreateTeamView, CreateTeamComponent };

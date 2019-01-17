@@ -4,18 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { t } from 'i18next';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import portalManager from '@/common/PortalManager';
 
-type BaseType = {
+type BaseModalType = {
   isAlert?: boolean;
 } & JuiModalProps;
 
-type BaseModalType = WithNamespaces & BaseType;
-
 const BaseModal = (props: BaseModalType) => {
-  const { t, isAlert, ...newConfig } = props;
+  const { isAlert, ...newConfig } = props;
   const defaultBtnText = {
     okText: t('OK'),
     cancelText: t('Cancel'),
@@ -33,12 +31,10 @@ const BaseModal = (props: BaseModalType) => {
   return <JuiModal {...currentConfig} />;
 };
 
-const TranslateModal = translate('translates')(BaseModal);
-
-function modal(config: BaseType) {
+function modal(config: BaseModalType) {
   const { onOK, onCancel, isAlert, ...newConfig } = config;
 
-  const { dismiss, show } = portalManager.wrapper(TranslateModal);
+  const { dismiss, show } = portalManager.wrapper(BaseModal);
 
   const currentConfig = {
     ...newConfig,
