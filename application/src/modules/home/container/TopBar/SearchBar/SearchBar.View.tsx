@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { debounce } from 'lodash';
 import {
@@ -47,6 +48,7 @@ const defaultSection = {
 
 type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 
+@observer
 class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
@@ -80,7 +82,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
   componentDidMount() {
     visibilityChangeEvent(() => {
-      const { focus } = this.state;
+      const { focus } = this.props;
       if (focus) {
         this.textInput.current!.blurTextInput();
         this.onClose();
@@ -111,9 +113,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onFocus = () => {
-    this.setState({
-      focus: true,
-    });
+    const { updateFocus } = this.props;
+    updateFocus(true);
+    // this.setState({
+    // focus: true,
+    // });
   }
 
   onClear = () => {
@@ -123,12 +127,12 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onClose = () => {
-    const { closeSearchBar, isShowSearchBar } = this.props;
+    const { closeSearchBar, isShowSearchBar, updateFocus } = this.props;
     if (isShowSearchBar) {
       closeSearchBar();
     }
+    updateFocus(false);
     this.setState({
-      focus: false,
       selectIndex: -1,
     });
   }
@@ -319,8 +323,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   render() {
-    const { terms, persons, groups, teams, focus } = this.state;
-    const { searchValue } = this.props;
+    const { terms, persons, groups, teams } = this.state;
+    const { searchValue, focus } = this.props;
     return (
       <JuiSearchBar
         onClose={this.onClose}
