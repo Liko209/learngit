@@ -51,6 +51,7 @@ class ImageItemView extends Component<ImageItemProps> {
       <JuiListItem
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
+        data-test-automation-id="rightRail-image-item"
       >
         <JuiListItemIcon>
           {url ? (

@@ -9,9 +9,9 @@ export class RightRail extends BaseWebComponent {
         return this.getSelectorByAutomationId('rightRail');
     }
 
-    get tabList() {
-      return this.self.find('[role="tablist"]')
-    }
+    // get tabList() {
+    //   return this.self.find('[role="tablist"]')
+    // }
 
     get listSubTitle() {
       return this.getSelectorByAutomationId('rightRail-list-subtitle');
@@ -22,7 +22,7 @@ export class RightRail extends BaseWebComponent {
     }
 
     getTab(text: string) {
-      return this.tabList.find('button span').withText(text);
+      return this.getSelectorByAutomationId(`rightShelf-${text}`);
     }
 
     async clickTab(text: string) {

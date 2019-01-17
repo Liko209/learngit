@@ -226,6 +226,7 @@ class JuiTabs extends PureComponent<Props, States> {
 
   private _renderMoreAndMenu = () => {
     const { indexMenus, openMenu } = this.state;
+    const { tag } = this.props;
     if (indexMenus.length === 0) {
       return null; // no more tab
     }
@@ -238,14 +239,18 @@ class JuiTabs extends PureComponent<Props, States> {
         key={MORE}
       >
         <JuiMenuList onClick={this._hideMenuList}>
-          {indexMenus.map((item: number) => (
-            <JuiMenuItem
-              key={item}
-              onClick={this._handleMenuItemClick.bind(this, item)}
-            >
-              {this._tabTitles[item]}
-            </JuiMenuItem>
-          ))}
+          {indexMenus.map((item: number) => {
+            const text = this._tabTitles[item];
+            return (
+              <JuiMenuItem
+                data-test-automation-id={`${tag}-${text}`}
+                key={item}
+                onClick={this._handleMenuItemClick.bind(this, item)}
+              >
+                {text}
+              </JuiMenuItem>
+            );
+          })}
         </JuiMenuList>
       </JuiPopperMenu>
     );
@@ -281,8 +286,10 @@ class JuiTabs extends PureComponent<Props, States> {
     style,
     ref,
   }: StyledTabProps) => {
+    const { tag } = this.props;
     return (
       <StyledTab
+        data-test-automation-id={`${tag}-${label}`}
         value={value}
         key={value}
         label={label}
