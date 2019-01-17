@@ -17,7 +17,7 @@ fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check the upload image file and display on the right rail', ['Skye', 'Devin', 'P2','JPT-965']), async t => {
+test(formalName('Check the upload image file and display on the right rail', ['Skye', 'Devin', 'P2','JPT-752']), async t => {
   const app = new AppRoot(t);
   const homePage = app.homePage;
   const conversationPage = homePage.messageTab.conversationPage;
