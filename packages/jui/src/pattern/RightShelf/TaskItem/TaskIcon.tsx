@@ -15,7 +15,7 @@ import { width, height, grey, spacing } from '../../../foundation/utils';
 
 enum TASK_TYPE {
   task_incomplete = 'task_incomplete',
-  task = 'task',
+  tasks = 'tasks',
 }
 
 const TaskIconWrapper = styled.div`
@@ -54,7 +54,7 @@ const JuiTaskIcon = React.memo((props: Props) => {
   return (
     <TaskIconWrapper>
       <TaskIcon iconColor={iconColor}>
-        {complete ? TASK_TYPE.task : TASK_TYPE.task_incomplete}
+        {complete ? TASK_TYPE.tasks : TASK_TYPE.task_incomplete}
       </TaskIcon>
     </TaskIconWrapper>
   );
