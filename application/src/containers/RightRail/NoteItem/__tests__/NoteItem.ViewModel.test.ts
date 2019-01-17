@@ -16,14 +16,14 @@ describe('NoteItemViewModel', () => {
     jest.resetAllMocks();
   });
 
-  it('get title ', () => {
+  it('should get title ', () => {
     (getEntity as jest.Mock).mockReturnValue({
       title: 'This is note',
     });
     expect(noteItemViewModel.title).toBe('This is note');
   });
 
-  it('get subTitle', () => {
+  it('should get subTitle', () => {
     (getEntity as jest.Mock).mockReturnValue({
       userDisplayName: 'username',
     });
