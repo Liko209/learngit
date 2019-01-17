@@ -72,6 +72,17 @@ class BaseDao<T extends {}> {
     }
   }
 
+  async primaryKeys(ids: number[]): Promise<number[]> {
+    try {
+      await this.db.ensureDBOpened();
+      const query = this.createQuery();
+      return await query.anyOf('id', ids).primaryKeys();
+    } catch (err) {
+      errorHandler(err);
+      return [];
+    }
+  }
+
   async clear(): Promise<void> {
     try {
       await this.collection.clear();
@@ -139,7 +150,7 @@ class BaseDao<T extends {}> {
         return iter[primaryKeyName];
       });
       await this.doInTransaction(async () => {
-        const exists = await this.batchGet(ids);
+        const exists = await this.primaryKeys(ids);
         if (!exists || exists.length === 0) {
           await this.bulkPut(array as T[]);
         } else if (exists && exists.length === array.length) {
@@ -148,8 +159,8 @@ class BaseDao<T extends {}> {
           );
         } else if (exists) {
           const idsSet = new Set<number>();
-          exists.forEach((item: T) => {
-            idsSet.add(item[primaryKeyName]);
+          exists.forEach((item: number) => {
+            idsSet.add(item);
           });
 
           const updates: Partial<T>[] = [];

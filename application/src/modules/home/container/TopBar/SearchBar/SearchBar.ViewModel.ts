@@ -20,12 +20,17 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   groupService: GroupService;
   nGroupService: NGroupService;
   @observable value: string = '';
+  @observable focus: boolean = false;
 
   constructor() {
     super();
     this.personService = PersonService.getInstance();
     this.groupService = GroupService.getInstance();
     this.nGroupService = new NGroupService();
+  }
+
+  updateFocus = (focus: boolean) => {
+    this.focus = focus;
   }
 
   @computed

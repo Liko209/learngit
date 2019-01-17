@@ -14,7 +14,10 @@ interface IGroupService {
 
   removeTeamMembers(members: number[], teamId: number): void;
 
-  isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean;
+  isCurrentUserHasPermission(
+    groupId: number,
+    type: PERMISSION_ENUM,
+  ): Promise<boolean>;
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
 }

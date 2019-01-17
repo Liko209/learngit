@@ -28,8 +28,8 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   box-sizing: border-box;
   background: ${({ focus }) =>
       focus ? palette('common', 'white') : grey('100')}
-    ${({ hasValue }) => {
-      return hasValue
+    ${({ hasValue, focus }) => {
+      return hasValue && focus
         ? css`
             border-top-right-radius: ${spacing(1)};
             border-top-left-radius: ${spacing(1)};
