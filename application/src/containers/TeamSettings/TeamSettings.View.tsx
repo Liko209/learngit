@@ -13,12 +13,18 @@ import {
   JuiTeamSettingEditSection,
   JuiTeamSettingEditSectionLeft,
   JuiTeamSettingEditSectionRight,
+  JuiTeamSettingSubSection,
+  JuiTeamSettingSubSectionTitle,
+  JuiTeamSettingSubSectionList,
+  JuiTeamSettingSubSectionListItem,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { GroupAvatar } from '@/containers/Avatar';
 import { toTitleCase } from '@/utils/string';
+import { JuiDivider } from 'jui/components/Divider';
+import { JuiToggleButton } from 'jui/components/Buttons';
 
 type State = {
   name: string;
@@ -104,12 +110,36 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     );
   }
 
+  renderMemberPermissionSettings() {
+    const { t } = this.props;
+    return (
+      <>
+        <JuiDivider />
+        <JuiTeamSettingSubSection data-test-automation-id="memberPermission">
+          <JuiTeamSettingSubSectionTitle data-test-automation-id="memberPermissionTitle">
+            {t('allowTeamMembersTo')}
+          </JuiTeamSettingSubSectionTitle>
+          <JuiTeamSettingSubSectionList data-test-automation-id="memberPermissionList">
+            <JuiTeamSettingSubSectionListItem
+              data-test-automation-id="memberPermissionItem"
+              label={t('addTeamMembers')}
+            >
+              <JuiToggleButton data-test-automation-id="allowAddTeamMemberToggle" />
+            </JuiTeamSettingSubSectionListItem>
+            <JuiDivider />
+          </JuiTeamSettingSubSectionList>
+        </JuiTeamSettingSubSection>
+      </>
+    );
+  }
+
   render() {
     const { isAdmin, t } = this.props;
     const disabledOkBtn =
       !this.state.name || this.state.name.trim().length <= 0;
     return (
       <JuiModal
+        fillContent={true}
         open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
@@ -121,6 +151,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         cancelText={toTitleCase(t('cancel'))}
       >
         {isAdmin ? this.renderEditSection() : null}
+        {isAdmin ? this.renderMemberPermissionSettings() : null}
       </JuiModal>
     );
   }

@@ -9,14 +9,22 @@ import { JuiModal } from '../../../components/Dialog';
 import { JuiTextField } from '../../../components/Forms/TextField';
 import { JuiTextarea } from '../../../components/Forms/Textarea';
 import { JuiAvatar } from '../../../components/Avatar';
+import { JuiToggleButton } from '../../../components/Buttons/ToggleButton';
 import {
   JuiTeamSettingEditSection,
   JuiTeamSettingEditSectionLeft,
   JuiTeamSettingEditSectionRight,
 } from '../EditSection';
+import {
+  JuiTeamSettingSubSection,
+  JuiTeamSettingSubSectionTitle,
+  JuiTeamSettingSubSectionList,
+  JuiTeamSettingSubSectionListItem,
+} from '../SubSection';
 import defaultTeamAvatar from './defaultTeamAvatar.png';
 import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
+import { JuiDivider } from '../../../components/Divider/Divider';
 
 storiesOf('Pattern/SettingDialogs', module).add('Team Settings', () => {
   const nameTakenError = boolean('name taken error', false);
@@ -25,6 +33,7 @@ storiesOf('Pattern/SettingDialogs', module).add('Team Settings', () => {
   const descMaxLength = number('description max length', 1000);
   return (
     <JuiModal
+      fillContent={true}
       open={true}
       size={'medium'}
       modalProps={{ scroll: 'body' }}
@@ -66,6 +75,18 @@ storiesOf('Pattern/SettingDialogs', module).add('Team Settings', () => {
           />
         </JuiTeamSettingEditSectionRight>
       </JuiTeamSettingEditSection>
+      <JuiDivider />
+      <JuiTeamSettingSubSection>
+        <JuiTeamSettingSubSectionTitle>
+          Allow team members to
+        </JuiTeamSettingSubSectionTitle>
+        <JuiTeamSettingSubSectionList>
+          <JuiTeamSettingSubSectionListItem label="Add team members (Guest not allowed to add)">
+            <JuiToggleButton onChange={action('on allowMemberAdd change')} />
+          </JuiTeamSettingSubSectionListItem>
+          <JuiDivider />
+        </JuiTeamSettingSubSectionList>
+      </JuiTeamSettingSubSection>
     </JuiModal>
   );
 });

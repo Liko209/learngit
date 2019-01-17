@@ -233,5 +233,7 @@
   "save": "save",
   "cancel": "cancel",
   "teamName": "Team name",
-  "teamDescription": "Team description"
+  "teamDescription": "Team description",
+  "allowTeamMembersTo": "Allow team members to",
+  "addTeamMembers": "Add team members (Guest not allowed to add)"
 }
