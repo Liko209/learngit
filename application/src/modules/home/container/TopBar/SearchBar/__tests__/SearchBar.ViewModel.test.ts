@@ -47,32 +47,6 @@ describe('SearchBarViewModel', () => {
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
   });
 
-  describe('joinTeam()', () => {
-    it('should display flash toast notification has message {JoinTeamAuthorizedError} when join a public team then permission changed.[JPT-722]', async (done: jest.DoneCallback) => {
-      (NGroupService as jest.Mock).mockImplementation(() => {
-        return {
-          joinTeam: async () => {
-            throw new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, '');
-          },
-        };
-      });
-      Notification.flashToast = jest.fn();
-      (getGlobalValue as jest.Mock).mockImplementation(() => {});
-      const vm = new SearchBarViewModel();
-      try {
-        await vm.joinTeam(1);
-      } catch (error) {}
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'JoinTeamNotAuthorizedError',
-          }),
-        );
-        done();
-      },         0);
-    });
-  });
-
   describe('getSectionItemSize()', () => {
     it('If calculateSectionCount < 1 should return ONLY_ONE_SECTION_LENGTH', () => {
       const num1 = searchBarViewModel.getSectionItemSize(1);
