@@ -507,4 +507,120 @@ export class GlipSdk {
   async updateTeamName(teamId: string | number, newName: string) {
     await this.updateGroup(+teamId, { set_abbreviation: newName });
   }
+
+  /* task */
+  createTask(data: object) {
+    const uri = `api/task`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  getTask(taskId: string | number) {
+    const uri = `api/task/${taskId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+
+  async simpleTask(groupIds: string[], rcIds: string[] | string, title: string, options?: object) {
+    let personIds = this.toPersonId(rcIds);
+    if (typeof personIds == "string") {
+      personIds = Number(personIds);
+    }
+    const data = _.assign({
+      text: title,
+      assigned_to_ids: personIds,
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createTask(data);
+  }
+
+  updateTask(taskId: string | number, data: object) {
+    const uri = `api/task/${taskId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  /* note */
+  createNote(data: object) {
+    const uri = `api/page`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  getNote(noteId: string | number) {
+    const uri = `api/page/${noteId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  getNoteContent(noteId: string | number) {
+    const uri = `api/pages_body/${noteId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  async simpleNote(groupIds: string[], title: string, body: string, options?: object) {
+    const data = _.assign({
+      title,
+      body,
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createNote(data);
+  }
+
+  updateNote(noteId: string | number, data: object) {
+    const uri = `api/page/${noteId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  /* event */
+  createEvent(data: object) {
+    const uri = `api/event`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  getEvent(eventId: string | number) {
+    const uri = `api/event/${eventId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  async simpleEvent(groupIds: string[], title: string, rcIds?, options?: object) {
+    let personIds = this.toPersonId(rcIds);
+    if (typeof personIds == "string") {
+      personIds = Number(personIds);
+    } else {
+      personIds = personIds.map(id => Number(id));
+    }
+    const data = _.assign({
+      text: title,
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createNote(data);
+  }
+
+  updateEvent(eventId: string | number, data: object) {
+    const uri = `api/event/${eventId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
 }
