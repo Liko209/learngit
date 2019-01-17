@@ -47,6 +47,8 @@ describe('RTC call', () => {
     startRecord = jest.fn();
     stopRecord = jest.fn();
     transfer = jest.fn();
+    mute = jest.fn();
+    unmute = jest.fn();
     park = jest.fn();
 
     hold = jest.fn();
@@ -1032,6 +1034,288 @@ describe('RTC call', () => {
         expect(fsmState).toBe('answering');
         expect(account.onCallActionFailed).toHaveBeenCalledWith(
           RTC_CALL_ACTION.PARK,
+        );
+        done();
+      });
+    });
+  });
+
+  describe('mute()', () => {
+    let observer = null;
+    let session = null;
+    let call = null;
+
+    function setupCall() {
+      observer = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, observer, observer);
+    }
+
+    it('should do nothing when isMute is true [JPT-879]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionConfirmed();
+      expect(call._fsm.state()).toBe('connected');
+      call._isMute = true;
+      expect(call._isMute).toBeTruthy();
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
+        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should call mute api and set isMute to true when FSM state in connected [JPT-893]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionConfirmed();
+      expect(call._fsm.state()).toBe('connected');
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(1);
+        expect(call._isMute).toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledTimes(1);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should call mute api when FSM enter connected state and isMute is true[JPT-896]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._isMute = true;
+      call._fsm._callFsmTable.sessionConfirmed();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(1);
+        expect(call._fsm.state()).toBe('connected');
+        done();
+      });
+    });
+
+    it('should only set isMute true when FSM state in idle state [JPT-880]', done => {
+      setupCall();
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
+        expect(call._isMute).toBeTruthy();
+        expect(call._fsm.state()).toBe('idle');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute true when FSM state in connecting [JPT-882]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
+        expect(call._isMute).toBeTruthy();
+        expect(call._fsm.state()).toBe('connecting');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute true when FSM state in answering [JPT-884]', done => {
+      setupCall();
+      call._fsm._callFsmTable.answer();
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
+        expect(call._isMute).toBeTruthy();
+        expect(call._fsm.state()).toBe('answering');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute true when FSM state in pending [JPT-881]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountNotReady();
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
+        expect(call._isMute).toBeTruthy();
+        expect(call._fsm.state()).toBe('pending');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute true when FSM state in disconnected [JPT-885]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionConfirmed();
+      call._fsm._callFsmTable.sessionDisconnected();
+      call.mute();
+      setImmediate(() => {
+        expect(session.mute).toBeCalledTimes(0);
+        expect(call._isMute).toBeTruthy();
+        expect(call._fsm.state()).toBe('disconnected');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.MUTE,
+          {},
+        );
+        done();
+      });
+    });
+  });
+
+  describe('unmute()', () => {
+    let observer = null;
+    let session = null;
+    let call = null;
+
+    function setupCall() {
+      observer = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, observer, observer);
+    }
+
+    it('should do nothing when isMute is false [JPT-897]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionConfirmed();
+      expect(call._fsm.state()).toBe('connected');
+      call._isMute = false;
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(1);
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should call unmute api and set isMute to false when FSM state in connected and isMute is true [JPT-906]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionConfirmed();
+      call._isMute = true;
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(2);
+        expect(call._isMute).not.toBeTruthy();
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should call unmute api when FSM enter connected state and isMute is false[JPT-908]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._isMute = false;
+      call._fsm._callFsmTable.sessionConfirmed();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(1);
+        expect(call._fsm.state()).toBe('connected');
+        expect(observer.onCallActionSuccess).toBeCalledTimes(0);
+        done();
+      });
+    });
+
+    it('should only set isMute false when FSM state in idle state [JPT-898]', done => {
+      setupCall();
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
+        expect(call._isMute).not.toBeTruthy();
+        expect(call._fsm.state()).toBe('idle');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute false when FSM state in connecting [JPT-900]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
+        expect(call._isMute).not.toBeTruthy();
+        expect(call._fsm.state()).toBe('connecting');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute false when FSM state in answering [JPT-901]', done => {
+      setupCall();
+      call._fsm._callFsmTable.answer();
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
+        expect(call._isMute).not.toBeTruthy();
+        expect(call._fsm.state()).toBe('answering');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute false when FSM state in pending [JPT-899]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountNotReady();
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(0);
+        expect(call._isMute).not.toBeTruthy();
+        expect(call._fsm.state()).toBe('pending');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
+        );
+        done();
+      });
+    });
+
+    it('should only set isMute false when FSM state in disconnected [JPT-902]', done => {
+      setupCall();
+      call._fsm._callFsmTable.accountReady();
+      call._fsm._callFsmTable.sessionConfirmed();
+      call._fsm._callFsmTable.sessionDisconnected();
+      call.unmute();
+      setImmediate(() => {
+        expect(session.unmute).toBeCalledTimes(1);
+        expect(call._isMute).not.toBeTruthy();
+        expect(call._fsm.state()).toBe('disconnected');
+        expect(observer.onCallActionSuccess).toBeCalledWith(
+          RTC_CALL_ACTION.UNMUTE,
+          {},
         );
         done();
       });

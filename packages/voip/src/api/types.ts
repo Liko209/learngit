@@ -42,6 +42,8 @@ enum RTC_CALL_ACTION {
   TRANSFER = 'transfer',
   HOLD = 'hold',
   UNHOLD = 'unhold',
+  MUTE = 'mute',
+  UNMUTE = 'unmute',
   PARK = 'park',
 }
 
