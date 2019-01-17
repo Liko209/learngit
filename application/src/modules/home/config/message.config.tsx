@@ -6,14 +6,19 @@
 import React from 'react';
 import { t } from 'i18next';
 import { container } from 'framework';
-import { Message, MessageService } from '@/modules/message';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
+import { MessageService } from '@/modules/message/service/MessageService';
 import { MessageUmi } from '../container/MessageUmi';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    component: Message,
+    component: lazyComponent({
+      loader: () =>
+        import(/*
+        webpackChunkName: "c.message" */ './lazy/Message'),
+    }),
   },
   nav: () => {
     return {
