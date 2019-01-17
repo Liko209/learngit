@@ -19,6 +19,7 @@ import {
 } from '../../types';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ItemService } from '../../../item';
+import { PostControllerUtils } from './PostControllerUtils';
 
 class PostItemController implements IPostItemController {
   constructor(public postActionController: IPostActionController) {}
@@ -116,7 +117,7 @@ class PostItemController implements IPostItemController {
         itemService.deleteFileItemCache(preInsertId);
       }
 
-      if (this.isValidPost(clonePost)) {
+      if (PostControllerUtils.isValidPost(clonePost)) {
         if (!isPostSent && this.getPseudoItemIds(clonePost).length === 0) {
           isPostSent = true;
           // callback
@@ -210,10 +211,6 @@ class PostItemController implements IPostItemController {
   }
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this.getPseudoItemStatusInPost(post).indexOf(status) > -1;
-  }
-
-  isValidPost(post: Post) {
-    return post && (post.text.length > 0 || post.item_ids.length > 0);
   }
 }
 

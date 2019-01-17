@@ -21,6 +21,7 @@ import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
 import { UserConfig } from '../../../../service/account';
+import { PostControllerUtils } from './PostControllerUtils';
 
 type PostData = {
   id: number;
@@ -87,7 +88,7 @@ class SendPostController implements ISendPostController {
       Object.keys(result.obj).forEach((key: string) => {
         post[key] = _.cloneDeep(result.obj[key]);
       });
-      if (this.isValidPost(post)) {
+      if (PostControllerUtils.isValidPost(post)) {
         if (result.success) {
           this.sendPostToServer(post);
         } else {
@@ -187,10 +188,6 @@ class SendPostController implements ISendPostController {
   private async _cleanUploadingFiles(groupId: number, itemIds: number[]) {
     const itemService: ItemService = ItemService.getInstance();
     itemService.cleanUploadingFiles(groupId, itemIds);
-  }
-
-  isValidPost(post: Post) {
-    return post && (post.text.length > 0 || post.item_ids.length > 0);
   }
 }
 

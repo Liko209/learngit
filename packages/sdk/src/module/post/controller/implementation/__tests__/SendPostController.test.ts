@@ -238,24 +238,4 @@ describe('SendPostController', () => {
       expect(groupConfigService.addPostId).toBeCalledTimes(1);
     });
   });
-  describe('isValidPost', () => {
-    it('should return true when post has text', () => {
-      expect(sendPostController.isValidPost(localPostJson4UnitTest)).toBe(true);
-    });
-
-    it('should return true when post has not text but has item_ids', () => {
-      const data = _.cloneDeep(localPostJson4UnitTest);
-      data['text'] = '';
-      data['item_ids'] = [1];
-      expect(data['text']).toEqual('');
-      expect(sendPostController.isValidPost(data)).toBe(true);
-    });
-    it('should return false when post has not text or item_ids', () => {
-      const data = _.cloneDeep(localPostJson4UnitTest);
-      data['text'] = '';
-      data['item_ids'] = [];
-      expect(data['text']).toEqual('');
-      expect(sendPostController.isValidPost(data)).toBe(false);
-    });
-  });
 });
