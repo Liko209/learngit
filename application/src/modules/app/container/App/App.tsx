@@ -17,6 +17,7 @@ import { generalErrorHandler } from '@/utils/error';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
 import { TopBanner } from '../TopBanner';
+import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
 
