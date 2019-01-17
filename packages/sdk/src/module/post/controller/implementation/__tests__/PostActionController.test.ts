@@ -10,7 +10,7 @@ import { Post } from '../../../entity';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { daoManager, PostDao } from '../../../../../dao';
 import { ProgressService } from '../../../../progress';
-import { notificationCenter, GroupConfigService } from '../../../../../service';
+import { GroupConfigService } from '../../../../../service';
 import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
 import _ from 'lodash';
 

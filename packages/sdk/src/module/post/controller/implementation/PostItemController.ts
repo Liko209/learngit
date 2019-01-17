@@ -13,7 +13,10 @@ import { PROGRESS_STATUS } from '../../../progress';
 import { notificationCenter } from '../../../../service';
 import { SERVICE } from '../../../../service/eventKey';
 import { IPostActionController } from '../interface/IPostActionController';
-import { PostItemsReadyCallback } from '../../types';
+import {
+  PostItemsReadyCallback,
+  SendPostItemsUpdateCallback,
+} from '../../types';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ItemService } from '../../../item';
 
@@ -26,26 +29,27 @@ class PostItemController implements IPostItemController {
   async waiting4ItemsReady(
     post: Post,
     isResend: boolean,
-    callback: PostItemsReadyCallback,
+    itemReadyCallback: PostItemsReadyCallback,
+    postUpdateCallback: SendPostItemsUpdateCallback,
   ) {
     const pseudoItemIds = this.getPseudoItemIds(post);
     if (pseudoItemIds.length) {
       if (isResend) {
         this.resendFailedItems(pseudoItemIds);
-        await this.waiting4Items(post, callback);
-      } else if (
-        !this.hasItemInTargetStatus(post, PROGRESS_STATUS.INPROGRESS)
-      ) {
+        await this.waiting4Items(post, itemReadyCallback, postUpdateCallback);
+        return;
+      }
+      if (!this.hasItemInTargetStatus(post, PROGRESS_STATUS.INPROGRESS)) {
         // return ;
-        callback({
+        itemReadyCallback({
           success: false,
           obj: {},
         });
       } else {
-        await this.waiting4Items(post, callback);
+        await this.waiting4Items(post, itemReadyCallback, postUpdateCallback);
       }
     } else {
-      callback({
+      itemReadyCallback({
         success: true,
         obj: {},
       });
@@ -87,7 +91,11 @@ class PostItemController implements IPostItemController {
    * private APIs
    */
 
-  async waiting4Items(post: Post, callback: PostItemsReadyCallback) {
+  async waiting4Items(
+    post: Post,
+    itemReadyCallback: PostItemsReadyCallback,
+    postUpdateCallback: SendPostItemsUpdateCallback,
+  ) {
     let isPostSent: boolean = false;
     const listener = async (params: {
       status: PROGRESS_STATUS;
@@ -103,7 +111,7 @@ class PostItemController implements IPostItemController {
       const clonePost = _.cloneDeep(result.post);
       const itemStatuses = this.getPseudoItemStatusInPost(clonePost);
       if (result.shouldUpdatePost) {
-        await this.updatePreInsertedItemIdsInPost.bind(this)(clonePost);
+        await postUpdateCallback(clonePost);
         const itemService: ItemService = ItemService.getInstance();
         itemService.deleteFileItemCache(preInsertId);
       }
@@ -112,10 +120,16 @@ class PostItemController implements IPostItemController {
         if (!isPostSent && this.getPseudoItemIds(clonePost).length === 0) {
           isPostSent = true;
           // callback
-          callback({ success: true, obj: { item_ids: clonePost.item_ids } });
+          itemReadyCallback({
+            success: true,
+            obj: { item_ids: clonePost.item_ids },
+          });
         }
       } else {
-        callback({ success: false, obj: { item_ids: clonePost.item_ids } });
+        itemReadyCallback({
+          success: false,
+          obj: { item_ids: clonePost.item_ids },
+        });
       }
 
       // remove listener if item files are not in progress
@@ -123,7 +137,10 @@ class PostItemController implements IPostItemController {
         // has failed
         if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
           // callback
-          callback({ success: false, obj: { item_ids: clonePost.item_ids } });
+          itemReadyCallback({
+            success: false,
+            obj: { item_ids: clonePost.item_ids },
+          });
         }
 
         notificationCenter.removeListener(
@@ -137,10 +154,6 @@ class PostItemController implements IPostItemController {
 
     const itemService: ItemService = ItemService.getInstance();
     itemService.sendItemData(post.group_id, post.item_ids);
-  }
-
-  async updatePreInsertedItemIdsInPost(clonePost: Post) {
-    await this.postActionController.updateLocalPost(clonePost);
   }
 
   updatePreInsertItemVersion(

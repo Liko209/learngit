@@ -12,13 +12,19 @@ import { TestDatabase } from '../../../../framework/controller/__tests__/TestTyp
 import { BaseDao, daoManager, PostDao } from '../../../../dao';
 import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
 import { SendPostController } from '../implementation/SendPostController';
+import { ProgressService } from '../../../progress';
 
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
+jest.mock('../../../progress');
 
 describe('PostController', () => {
+  const progressService: ProgressService = new ProgressService();
+  beforeEach(() => {
+    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+  });
   describe('getPostActionController()', () => {
-    beforeEach(() => {
+    afterAll(() => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {

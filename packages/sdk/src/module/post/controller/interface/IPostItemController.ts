@@ -5,7 +5,10 @@
  */
 import { Post } from '../../entity/Post';
 import { PostItemData } from '../../entity/PostItemData';
-import { PostItemsReadyCallback } from '../../types';
+import {
+  PostItemsReadyCallback,
+  SendPostItemsUpdateCallback,
+} from '../../types';
 interface IPostItemController {
   buildItemVersionMap(
     groupId: number,
@@ -16,6 +19,7 @@ interface IPostItemController {
     post: Post,
     isResend: boolean,
     callback: PostItemsReadyCallback,
+    updateLocalPostCallback: SendPostItemsUpdateCallback,
   ): void;
 }
 

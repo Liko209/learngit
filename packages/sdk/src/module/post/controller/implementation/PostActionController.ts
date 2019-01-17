@@ -100,6 +100,13 @@ class PostActionController implements IPostActionController {
     return true;
   }
 
+  async deletePost(id: number): Promise<boolean> {
+    if (id < 0) {
+      return this._deletePreInsertedPost(id);
+    }
+    return !!this._deletePostFromRemote(id);
+  }
+
   private async _deletePostFromRemote(id: number) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
@@ -118,36 +125,6 @@ class PostActionController implements IPostActionController {
         return this.requestController.put(newPost);
       },
     );
-  }
-
-  async deletePost(id: number): Promise<boolean> {
-    if (id < 0) {
-      return this._deletePreInsertedPost(id);
-    }
-    return !!this._deletePostFromRemote(id);
-  }
-
-  async updateLocalPost(post: Partial<Post>) {
-    const backup = _.cloneDeep(post);
-    const preHandlePartial = (
-      partialPost: Partial<Raw<Post>>,
-      originalPost: Post,
-    ): Partial<Raw<Post>> => {
-      return {
-        ...partialPost,
-        ...backup,
-      };
-    };
-    if (backup.id) {
-      return this.partialModifyController.updatePartially(
-        backup.id,
-        preHandlePartial,
-        async (newPost: Post) => {
-          return newPost;
-        },
-      );
-    }
-    throw new Error('updateLocalPost error invalid id');
   }
 }
 

@@ -5,6 +5,7 @@
  */
 
 import { daoManager, ConfigDao, BaseDao } from '../../../dao';
+import { JSdkError } from '../../../error';
 
 type PreInsertIdType = {
   id: number;
@@ -35,7 +36,10 @@ class PreInsertIdController<T> {
 
   async insertId({ id, version }: PreInsertIdType): Promise<void> {
     if (this._versionIdMap[version]) {
-      throw new Error(`Already has the version ${version}`);
+      throw new JSdkError(
+        'PreInsertIdController',
+        `Already has the version ${version}`,
+      );
     }
     this._versionIdMap[version] = id;
     this._syncDataDB();

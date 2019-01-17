@@ -11,6 +11,7 @@ import { IControllerBuilder } from '../../../framework/controller/interface/ICon
 import { daoManager, PostDao } from '../../../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
+import { ProgressService } from '../../progress';
 
 class PostController {
   private _actionController: PostActionController;
@@ -55,8 +56,10 @@ class PostController {
 
   private _getPreInsertController() {
     if (!this._preInsertController) {
+      const progressService: ProgressService = ProgressService.getInstance();
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
+        progressService,
       );
     }
     return this._preInsertController;

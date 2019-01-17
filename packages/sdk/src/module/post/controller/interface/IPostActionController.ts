@@ -14,7 +14,5 @@ interface IPostActionController {
   editPost(params: EditPostType): Promise<Post | null>;
 
   deletePost(id: number): Promise<boolean>;
-
-  updateLocalPost(post: Partial<Post>): Promise<Post | null>;
 }
 export { IPostActionController };

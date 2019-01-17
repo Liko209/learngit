@@ -5,13 +5,9 @@
  */
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, PostDao, AccountDao } from '../../../../dao';
+import { daoManager, PostDao } from '../../../../dao';
 import { Post } from '../../entity';
 import { SendPostType, PostItemsReadyCallbackType } from '../../types';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../../../dao/account/constants';
 import SendPostControllerHelper from './SendPostControllerHelper';
 import { ItemService } from '../../../item/service';
 
@@ -23,6 +19,8 @@ import { PostItemController } from './PostItemController';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
+import { Raw } from '../../../../framework/model';
+import { UserConfig } from '../../../../service/account';
 
 type PostData = {
   id: number;
@@ -43,10 +41,8 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
-    const userId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-    const companyId: number = daoManager
-      .getKVDao(AccountDao)
-      .get(ACCOUNT_COMPANY_ID);
+    const userId: number = UserConfig.getCurrentUserId();
+    const companyId: number = UserConfig.getCurrentCompanyId();
     const paramsInfo = {
       userId,
       companyId,
@@ -104,11 +100,41 @@ class SendPostController implements ISendPostController {
       }
     };
 
+    const updateLocalPostCallback = async (
+      post: Partial<Post>,
+    ): Promise<Post | null> => {
+      return await this.updateLocalPost(post);
+    };
+
     await this._postItemController.waiting4ItemsReady(
       post,
       isResend,
       sendPostAfterItemsReady,
+      updateLocalPostCallback,
     );
+  }
+
+  async updateLocalPost(post: Partial<Post>) {
+    const backup = _.cloneDeep(post);
+    const preHandlePartial = (
+      partialPost: Partial<Raw<Post>>,
+      originalPost: Post,
+    ): Partial<Raw<Post>> => {
+      return {
+        ...partialPost,
+        ...backup,
+      };
+    };
+    if (backup.id) {
+      return this.postActionController.partialModifyController.updatePartially(
+        backup.id,
+        preHandlePartial,
+        async (newPost: Post) => {
+          return newPost;
+        },
+      );
+    }
+    throw new Error('updateLocalPost error invalid id');
   }
 
   async sendPostToServer(post: Post): Promise<PostData[]> {

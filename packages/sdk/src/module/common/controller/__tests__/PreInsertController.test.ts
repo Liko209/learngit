@@ -28,7 +28,7 @@ describe('PreInsertController', () => {
 
   beforeEach(() => {
     const dao = new PostDao(new DexieDB(schema));
-    preInsertController = new PreInsertController(dao);
+    preInsertController = new PreInsertController(dao, progressService);
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
   });
   afterEach(() => {

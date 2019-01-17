@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseDao } from '../../dao';
+import { JSdkError } from '../../error/sdk/JSdkError';
 class ControllerUtils {
   static getEntityNotificationKey<T>(dao: BaseDao<T>) {
     if (dao) {
@@ -11,7 +12,10 @@ class ControllerUtils {
       const eventKey: string = `ENTITY.${modelName}`;
       return eventKey;
     }
-    throw new Error('getEntityNotificationKey error without invalid dao');
+    throw new JSdkError(
+      'ControllerUtils',
+      'getEntityNotificationKey error without invalid dao',
+    );
   }
 }
 
