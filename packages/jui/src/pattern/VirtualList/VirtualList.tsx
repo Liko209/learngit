@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, RefObject, createRef } from 'react';
+import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
   AutoSizer,
@@ -32,9 +32,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   static OVERSCAN_ROW_COUNT: number = 4;
   private _dataSource: IVirtualListDataSource;
   private _cache: CellMeasurerCache;
-  private _sizerRef: RefObject<AutoSizer> = createRef();
   private _listRef: List;
-  private _loaderRef: RefObject<InfiniteLoader> = createRef();
 
   constructor(props: JuiVirtualListProps) {
     super(props);
@@ -93,7 +91,8 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   private _loadMoreRows = async ({ startIndex, stopIndex }: IndexRange) => {
     const { loadMore } = this._dataSource;
     if (loadMore) {
-      return await loadMore(startIndex, stopIndex);
+      const result = await loadMore(startIndex, stopIndex);
+      return result;
     }
   }
 
@@ -125,9 +124,6 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   componentWillReact() {
-    this._sizerRef.current && this._sizerRef.current.forceUpdate();
-    this._loaderRef.current && this._loaderRef.current.forceUpdate();
-    this._listRef.forceUpdate();
     this._listRef.forceUpdateGrid();
   }
 
@@ -161,11 +157,10 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
           isRowLoaded={this._isRowLoaded}
           loadMoreRows={this._loadMoreRows}
           rowCount={cellCount}
-          ref={this._loaderRef}
         >
           {({ onRowsRendered, registerChild }) => {
             return (
-              <AutoSizer ref={this._sizerRef}>
+              <AutoSizer>
                 {({ width, height }: Size) => {
                   return (
                     <List

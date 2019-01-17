@@ -3,7 +3,7 @@
  * @Date: 2019-01-02 15:02:50
  * Copyright © RingCentral. All rights reserved.
  */
-import { CSSProperties, ReactElement } from 'react';
+import { CSSProperties, ReactElement, ReactNode } from 'react';
 import { JuiVirtualCellProps, JuiVirtualCellOnLoadFunc } from './VirtualCell';
 
 interface IVirtualListDataSource {
@@ -30,6 +30,12 @@ interface IVirtualListDataSource {
   renderEmptyContent?: () => JSX.Element;
 
   onScroll?: (event: any) => void;
+
+  // loader for full page
+  firstLoader?: () => ReactNode;
+
+  // loader for `load more`
+  moreLoader?: () => ReactNode;
 }
 
 export { IVirtualListDataSource };

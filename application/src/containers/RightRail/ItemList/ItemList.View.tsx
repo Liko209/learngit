@@ -8,10 +8,11 @@ import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import { debounce } from 'lodash';
+// import { debounce } from 'lodash';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
+  JuiVirtualListLoader,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
@@ -30,7 +31,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   private _config: TabConfig;
   constructor(props: ViewProps & Props) {
     super(props);
-    this._fetchMore = debounce(this.props.fetchNextPageItems, 200);
+    this._fetchMore = this.props.fetchNextPageItems;
     this._config = TAB_CONFIG.find(looper => looper.type === props.type)!;
   }
   countOfCell() {
@@ -68,10 +69,23 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    this.setState({ loadingMore: true });
     const result = await this._fetchMore();
-    this.setState({ loadingMore: false });
     return result;
+  }
+
+  firstLoader = () => {
+    return (
+      <JuiRightRailContentLoading
+        showTip={false}
+        tip={t(this._config.tryAgainPrompt)}
+        linkText={t('tryAgain')}
+        onClick={this._handleRetry}
+      />
+    );
+  }
+
+  moreLoader = () => {
+    return <JuiRightRailLoadingMore />;
   }
 
   onScroll = () => {};
@@ -79,26 +93,19 @@ class ItemListView extends React.Component<ViewProps & Props>
   private _handleRetry = () => {};
 
   render() {
-    const { totalCount, loading } = this.props;
+    const { totalCount, ids } = this.props;
     const { subheader } = this._config;
-    const { loadingMore } = this.state;
     return (
       <JuiRightShelfContent>
-        {loading && (
-          <JuiRightRailContentLoading
-            showTip={false}
-            tip={t(this._config.tryAgainPrompt)}
-            linkText={t('tryAgain')}
-            onClick={this._handleRetry}
-          />
-        )}
-        {totalCount > 0 && (
+        {totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader>
             {t(subheader)} ({this.props.totalCount})
           </JuiListSubheader>
         )}
-        {totalCount > 0 && <JuiVirtualList dataSource={this} />}
-        {loadingMore && <JuiRightRailLoadingMore />}
+        <JuiVirtualListLoader
+          content={() => <JuiVirtualList dataSource={this} />}
+          dataSource={this}
+        />
       </JuiRightShelfContent>
     );
   }
