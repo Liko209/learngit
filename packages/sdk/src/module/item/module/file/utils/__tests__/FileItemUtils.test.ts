@@ -21,12 +21,18 @@ describe('FileItemUtils', () => {
   describe('isImageItem', () => {
     const itemA = { type: 'pc' };
     const itemB = { type: 'jpg' };
-    it('should return true when is image', () => {
+    const itemC = { type: 'image/jpg' };
+
+    it('should return false when is not image', () => {
       expect(FileItemUtils.isImageItem(itemA)).toBeFalsy();
     });
 
-    it('should return false when is not image', () => {
+    it('should return true when is image', () => {
       expect(FileItemUtils.isImageItem(itemB)).toBeTruthy();
+    });
+
+    it('should return true when type is mime and include is image', () => {
+      expect(FileItemUtils.isImageItem(itemC)).toBeTruthy();
     });
   });
 
