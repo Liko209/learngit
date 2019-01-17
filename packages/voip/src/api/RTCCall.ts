@@ -290,6 +290,14 @@ class RTCCall {
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
     switch (callAction) {
+      case RTC_CALL_ACTION.START_RECORD: {
+        this._isRecording = false;
+        break;
+      }
+      case RTC_CALL_ACTION.STOP_RECORD: {
+        this._isRecording = true;
+        break;
+      }
       case RTC_CALL_ACTION.HOLD: {
         this._fsm.holdFailed();
         break;
@@ -356,15 +364,21 @@ class RTCCall {
   }
 
   private _onStartRecordAction() {
-    this._isRecording
-      ? this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD)
-      : this._callSession.startRecord();
+    if (this._isRecording) {
+      this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
+    } else {
+      this._isRecording = true;
+      this._callSession.startRecord();
+    }
   }
 
   private _onStopRecordAction() {
-    this._isRecording
-      ? this._callSession.stopRecord()
-      : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
+    if (this._isRecording) {
+      this._isRecording = false;
+      this._callSession.stopRecord();
+    } else {
+      this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
+    }
   }
 
   private _onMuteAction() {
