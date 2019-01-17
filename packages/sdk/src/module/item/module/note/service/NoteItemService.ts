@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { NoteItemController } from '../controller/NoteItemController';
-import { EntityBaseService } from '../../../../../framework/service';
 import { IItemService } from '../../../service/IItemService';
-import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { NoteItem, SanitizedNoteItem } from '../entity';
-import { NoteItemDao } from '../dao';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { NoteItemDao } from '../dao/NoteItemDao';
 import { daoManager } from '../../../../../dao';
-import { ItemUtils } from '../../../utils';
 
-class NoteItemService extends EntityBaseService implements ISubItemService {
+class NoteItemService extends BaseSubItemService<NoteItem, SanitizedNoteItem> {
   private _noteItemController: NoteItemController;
 
   constructor(itemService: IItemService) {
-    super();
+    super(daoManager.getDao<NoteItemDao>(NoteItemDao));
   }
 
   protected get noteItemController() {
@@ -26,35 +23,6 @@ class NoteItemService extends EntityBaseService implements ISubItemService {
       this._noteItemController = new NoteItemController();
     }
     return this._noteItemController;
-  }
-
-  async updateItem(note: NoteItem) {
-    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
-    await sanitizedDao.update(this._toSanitizedNote(note));
-  }
-
-  async deleteItem(itemId: number) {
-    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
-    await sanitizedDao.delete(itemId);
-  }
-
-  async createItem(note: NoteItem) {
-    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
-    await sanitizedDao.put(this._toSanitizedNote(note));
-  }
-
-  private _toSanitizedNote(note: NoteItem) {
-    return { ...ItemUtils.toSanitizedItem(note) } as SanitizedNoteItem;
-  }
-
-  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
-    return await sanitizedDao.getSortedIds(options);
-  }
-
-  async getSubItemsCount(groupId: number, filterFunc: ItemFilterFunction) {
-    const sanitizedDao = daoManager.getDao<NoteItemDao>(NoteItemDao);
-    return await sanitizedDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 
