@@ -11,7 +11,7 @@ import { IRequestController } from '../../../framework/controller/interface/IReq
 import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Group } from '../entity';
-import { TeamSetting } from '../types';
+import { TeamSetting, PermissionFlags } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
 
 class TeamActionController {
@@ -129,7 +129,7 @@ class TeamActionController {
         team,
       ),
     };
-    return _.pickBy(teamSetting, (value: string) => !_.isUndefined(value));
+    return teamSetting;
   }
 
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
@@ -169,30 +169,38 @@ class TeamActionController {
     originalEntity: Group,
     partialEntity: Partial<Group>,
   ) {
-    partialEntity.set_abbreviation = teamSetting.name;
-    partialEntity.description = teamSetting.description;
-    partialEntity.privacy = teamSetting.isPublic ? 'protected' : 'private';
-    const permissions = originalEntity.permissions || { user: {} };
-    const { permissionFlags = {} } = teamSetting;
-    const level = this.teamPermissionController.getTeamUserLevel(
-      originalEntity,
-    );
-    const mergeLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
-      permissionFlags,
-      level,
-    );
-    if (mergeLevel !== level) {
-      _.merge(
-        partialEntity,
-        { permissions },
-        {
-          permissions: {
-            user: { level: mergeLevel },
-          },
-        },
-      );
-    }
-    return _.pickBy(partialEntity, (value: string) => !_.isUndefined(value));
+    const transformMap: { [key in keyof TeamSetting]: Function } = {
+      name: (value: string) => (partialEntity.set_abbreviation = value),
+      description: (value: string) => (partialEntity.description = value),
+      isPublic: (value: boolean) =>
+        (partialEntity.privacy = value ? 'protected' : 'private'),
+      permissionFlags: (permissionFlags: PermissionFlags) => {
+        const permissions = originalEntity.permissions || { user: {} };
+        const level = this.teamPermissionController.getTeamUserLevel(
+          originalEntity,
+        );
+        const mergeLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
+          permissionFlags,
+          level,
+        );
+        if (mergeLevel !== level) {
+          _.merge(
+            partialEntity,
+            { permissions },
+            {
+              permissions: {
+                user: { level: mergeLevel },
+              },
+            },
+          );
+        }
+      },
+    };
+    _.each(teamSetting, (value: any, key: string) => {
+      transformMap[key] && transformMap[key](value);
+    });
+
+    return partialEntity;
   }
 }
 
