@@ -15,7 +15,7 @@ import { Api } from '../../../api';
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   teamController: TeamController;
   constructor() {
-    super(true, daoManager.getDao(GroupDao), {
+    super(false, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
     });

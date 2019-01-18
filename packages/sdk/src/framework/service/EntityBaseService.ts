@@ -17,10 +17,14 @@ import {
   buildEntityPersistentController,
   buildEntitySourceController,
 } from '../controller';
+import { mainLogger } from 'foundation';
+import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 
 class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   private _subscribeController: ISubscribeController;
   private _entitySourceController: IEntitySourceController<T>;
+  private _entityCacheController: IEntityCacheController<T>;
+
   constructor(
     public isSupportedCache: boolean,
     public dao?: BaseDao<T>,
@@ -57,15 +61,34 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   }
 
   private _initControllers() {
+    if (this.isSupportedCache && !this._entityCacheController) {
+      this._entityCacheController = buildEntityCacheController<T>();
+      this._initialEntitiesCache();
+    }
+
     this._entitySourceController = buildEntitySourceController(
-      buildEntityPersistentController<T>(
-        this.dao,
-        this.isSupportedCache ? buildEntityCacheController<T>() : undefined,
-      ),
+      buildEntityPersistentController<T>(this.dao, this._entityCacheController),
       this.networkConfig
         ? buildRequestController<T>(this.networkConfig)
         : undefined,
     );
+  }
+
+  private async _initialEntitiesCache() {
+    mainLogger.debug('_initialEntitiesCache begin');
+    if (
+      this.dao &&
+      this._entityCacheController &&
+      !this._entityCacheController.isStartInitial()
+    ) {
+      const models = await this.dao.getAll();
+      this._entityCacheController.initialize(models);
+      mainLogger.debug('_initialEntitiesCache done');
+    } else {
+      mainLogger.debug(
+        'initial cache without permission or already initialized',
+      );
+    }
   }
 
   static getInstance<T extends EntityBaseService<any>>(): T {
