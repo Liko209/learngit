@@ -9,9 +9,9 @@ export class RightRail extends BaseWebComponent {
         return this.getSelectorByAutomationId('rightRail');
     }
 
-    // get tabList() {
-    //   return this.self.find('[role="tablist"]')
-    // }
+    get tabList() {
+      return this.self.find('[role="tablist"]')
+    }
 
     get listSubTitle() {
       return this.getSelectorByAutomationId('rightRail-list-subtitle');

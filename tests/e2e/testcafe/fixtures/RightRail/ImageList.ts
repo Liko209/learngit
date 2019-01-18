@@ -17,51 +17,67 @@ fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check the upload image file and display on the right rail', ['Skye', 'Devin', 'P2','JPT-752']), async t => {
+test(formalName('Check the upload image file and display on the right rail', ['Skye', 'Devin', 'P2', 'JPT-752']), async t => {
   const app = new AppRoot(t);
-  const homePage = app.homePage;
-  const conversationPage = homePage.messageTab.conversationPage;
-  const rightRail = homePage.rightRail;
-  const loginUser = h(t).rcData.mainCompany.users[0];
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const rightRail = app.homePage.messageTab.rightRail;
   const teamName = `Team ${uuid()}`;
-  const filesPath = ['../../sources/1.png'];
+  const filesPath = ['../../sources/1.png','../../sources/2.png'];
   const message = uuid();
   const listItemId = 'rightRail-image-item';
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).platform(loginUser).init();
 
-  // step 1 create team
-  await h(t).withLog('Then User can create a team', async () => {
+  await h(t).withLog('Given I have a team before login ', async () => {
+    await h(t).platform(loginUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [loginUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await homePage.ensureLoaded();
-    await homePage.openAddActionMenu();
-    const createTeamModal = homePage.createTeamModal;
-    await homePage.addActionMenu.createTeamEntry.enter();
-    await createTeamModal.ensureLoaded();
-    await createTeamModal.setTeamName(teamName);
-    await createTeamModal.clickCreateButton();
-    await conversationPage.waitUntilVisible(conversationPage.getSelectorByAutomationId('conversation-page-header').withText(teamName));
+    await app.homePage.ensureLoaded();
   });
 
-  // step 2 upload one file
-  await h(t).withLog('Then User upload a image file', async () => {
-    await conversationPage.uploadFilesToMessageAttachment(filesPath);
+  await h(t).withLog('When I open a team and  upload a image file', async () => {
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+    await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
-
-    await rightRail.clickTab('Images');
-    await rightRail.waitUntilVisible(rightRail.listSubTitle.withText('Images'));
-    await t.expect(rightRail.listSubTitle.textContent).contains('1');
-    await t.expect(rightRail.nthListItem(listItemId, 0).find('span').withText('1.png').exists).ok();
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-  // upload one file again
-  await h(t).withLog('Then User can upload another image file again', async () => {
-    await conversationPage.uploadFilesToMessageAttachment(['../../sources/2.png']);
+  const imagesTab = rightRail.imagesTab;
+  await h(t).withLog('And I click Images Tab', async () => {
+    await rightRail.imagesEntry.enter();
+    await rightRail.imagesEntry.shouldBeOpened();
+  })
+
+  await h(t).withLog('Then The images number is correct: 1', async () => {
+    await imagesTab.waitUntilImagesItemExist();
+    await imagesTab.countOnSubTitleShouldBe(1);
+    await imagesTab.nthItem(0).nameShouldBe('1.png');
+  });
+
+  await h(t).withLog('When I  upload another image file', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(filesPath[1]);
     await conversationPage.sendMessage(message);
-    await t.expect(rightRail.listSubTitle.textContent).contains('2');
-    await rightRail.waitUntilVisible(rightRail.nthListItem(listItemId, 1));
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-  // last upload will on the top
+   await h(t).withLog('And I click Images Tab', async () => {
+    await rightRail.imagesEntry.enter();
+    await rightRail.imagesEntry.shouldBeOpened();
+  })
+
+  await h(t).withLog('Then The images number is correct: 2', async () => {
+    await imagesTab.waitUntilImagesItemExist();
+    await imagesTab.countOnSubTitleShouldBe(2);
+    await imagesTab.nthItem(0).nameShouldBe('2.png');
+  });
+
   await h(t).withLog('The new item is on the top of list', async () => {
-    await t.expect(rightRail.nthListItem(listItemId, 0).find('span').withText('2.png').exists).ok();
+    await imagesTab.nthItem(0).nameShouldBe('2.png');
   });
 });
