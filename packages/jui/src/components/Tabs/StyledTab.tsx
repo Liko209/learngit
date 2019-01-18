@@ -18,7 +18,10 @@ import {
   spacing,
 } from '../../foundation/utils';
 
-type StyledTabProps = MuiTabProps & { ref?: React.RefObject<any> };
+type StyledTabProps = MuiTabProps & {
+  ref?: React.RefObject<any>;
+  automationId?: string;
+};
 
 const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
   &.root {
