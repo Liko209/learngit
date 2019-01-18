@@ -925,6 +925,7 @@ describe('PostService', () => {
     });
 
     afterEach(() => {
+      jest.clearAllMocks();
       jest.restoreAllMocks();
     });
 
@@ -971,9 +972,9 @@ describe('PostService', () => {
     const accountDao = new AccountDao(null);
     daoManager.getKVDao.mockReturnValue(accountDao);
     accountDao.get.mockReturnValue(1); // userId
-    it.skip('should get group success then send post', async () => {
+    it.only('should get group success then send post', async () => {
       const g = { id: 44 };
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
+      groupService.getOrCreateGroupByMemberList.mockResolvedValue(ok(g));
 
       const msg = '  text message  ';
       const spy = jest.spyOn(postService, 'sendPost');
@@ -981,7 +982,7 @@ describe('PostService', () => {
       const result = await postService.newMessageWithPeopleIds([1, 2, 3], msg);
 
       expect(spy).toBeCalledWith({ groupId: g.id, text: msg });
-      expect(result).toEqual({ id: 44 });
+      expect(result.isOk()).toEqual({ id: 44 });
     });
 
     it('should not call send post when get group failed', async () => {

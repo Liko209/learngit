@@ -59,11 +59,11 @@ describe('LoadingMorePlugin', () => {
 
   describe('wrapView()', () => {
     // TODO need to make theme provider work
-    it.skip('should wrap View with loadingTop & loadingBottom', () => {
+    it('should wrap View with loadingTop & loadingBottom', () => {
       const plugin = new LoadingMorePlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
       const wrapper = mount(<View />);
-      expect(wrapper.find(JuiCircularProgress).exists()).toBeTruthy();
+      expect(wrapper.contains(JuiCircularProgress)).toBeTruthy();
     });
   });
 
