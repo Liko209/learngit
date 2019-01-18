@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-interface IProps extends RouteComponentProps<any> { }
+interface IProps extends RouteComponentProps<any> {}
 
 const NotFound = ({ location }: IProps) => (
   <div>
