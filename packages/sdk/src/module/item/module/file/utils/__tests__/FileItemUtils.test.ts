@@ -4,8 +4,38 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FileItemUtils } from '../FileItemUtils';
+import {
+  GifFileExtensions,
+  ImageFileExtensions,
+  ResizableExtensions,
+  SupportPreviewImageExtensions,
+} from '../ImageFileExtensions';
 
 describe('FileItemUtils', () => {
+  describe('isSupportPreview', () => {
+    it('should return true when is support preview ', () => {
+      SupportPreviewImageExtensions.forEach((element: string) => {
+        expect(FileItemUtils.isSupportPreview({ type: element })).toBeTruthy();
+      });
+    });
+
+    it('should return false when is not gif', () => {
+      expect(FileItemUtils.isSupportPreview({ type: 'gg' })).toBeFalsy();
+    });
+  });
+
+  describe('isImageResizable', () => {
+    it('should return true when is support resize ', () => {
+      ResizableExtensions.forEach((element: string) => {
+        expect(FileItemUtils.isImageResizable({ type: element })).toBeTruthy();
+      });
+    });
+
+    it('should return false when is not support resize ', () => {
+      expect(FileItemUtils.isImageResizable({ type: 'gg' })).toBeFalsy();
+    });
+  });
+
   describe('isGifItem', () => {
     const itemA = { type: 'pc' };
     const itemB = { type: 'gif' };

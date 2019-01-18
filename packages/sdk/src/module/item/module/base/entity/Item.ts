@@ -21,7 +21,7 @@ export type ItemVersions = {
   orig_height?: number;
   orig_width?: number;
   pages?: ItemVersionPage[];
-  stored_file_id?: number;
+  stored_file_id: number;
 };
 
 export type Item = ExtendedBaseModel & {

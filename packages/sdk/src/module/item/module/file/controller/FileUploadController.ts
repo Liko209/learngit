@@ -690,7 +690,9 @@ class FileUploadController {
       name: file.name,
       type_id: 10,
       type: this._getFileType(file),
-      versions: [{ download_url: '', size: file.size, url: '' }],
+      versions: [
+        { download_url: '', size: file.size, url: '', stored_file_id: 0 },
+      ],
       url: '',
     };
   }

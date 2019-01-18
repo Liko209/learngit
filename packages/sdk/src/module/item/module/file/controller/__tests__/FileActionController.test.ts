@@ -83,6 +83,7 @@ describe('FileActionController', () => {
       const fileItemC = {
         id: 10,
         source: 'giphy',
+        type: 'giphy',
         url: 'c.com',
         versions: [],
       };
@@ -135,15 +136,15 @@ describe('FileActionController', () => {
       expect(entitySourceController.getEntity).toBeCalledWith(11);
     });
 
-    it('should return url when is not image', async () => {
+    it('should return empty when is not support preview', async () => {
       const { fileItemE } = setUpData();
       entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemE);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
-      expect(res).toBe(fileItemE.versions[0].url);
+      expect(res).toBe('');
       expect(entitySourceController.getEntity).toBeCalledWith(11);
     });
 
-    it('should return url when has no cache server', async () => {
+    it('should return empty when has no cache server', async () => {
       Object.defineProperty(Api, 'httpConfig', {
         get: () => {
           return { glip: { cacheServer: undefined } };
@@ -154,7 +155,7 @@ describe('FileActionController', () => {
       const { fileItemE } = setUpData();
       entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemE);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
-      expect(res).toBe(fileItemE.versions[0].url);
+      expect(res).toBe('');
       expect(entitySourceController.getEntity).toBeCalledWith(11);
     });
 

@@ -6,6 +6,20 @@
 
 const GifFileExtensions = ['gif', 'giphy'];
 
+const SupportPreviewImageExtensions = [
+  'jpg',
+  'png',
+  'jpeg',
+  'bmp',
+  'tif',
+  'tiff',
+  'heic',
+  'giphy',
+  'gif',
+];
+
+const ResizableExtensions = ['bmp', 'jpg', 'jpeg', 'png'];
+
 const ImageFileExtensions = [
   'ase',
   'art',
@@ -128,4 +142,9 @@ const ImageFileExtensions = [
   'tga',
 ];
 
-export { ImageFileExtensions, GifFileExtensions };
+export {
+  ImageFileExtensions,
+  GifFileExtensions,
+  ResizableExtensions,
+  SupportPreviewImageExtensions,
+};

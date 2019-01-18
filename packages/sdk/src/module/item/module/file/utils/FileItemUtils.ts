@@ -4,12 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GifFileExtensions, ImageFileExtensions } from './ImageFileExtensions';
+import {
+  GifFileExtensions,
+  ImageFileExtensions,
+  ResizableExtensions,
+  SupportPreviewImageExtensions,
+} from './ImageFileExtensions';
 import { ItemVersions } from '../../../entity';
 
 const GifSource = 'giphy';
 
 class FileItemUtils {
+  static isSupportPreview<T extends { type: string }>(file: T) {
+    return SupportPreviewImageExtensions.includes(file.type);
+  }
+
+  static isImageResizable<T extends { type: string }>(file: T) {
+    return ResizableExtensions.includes(file.type);
+  }
+
   static isGifItem<T extends { type: string }>(file: T) {
     const type = file.type.toLocaleLowerCase();
     return GifFileExtensions.includes(type);
