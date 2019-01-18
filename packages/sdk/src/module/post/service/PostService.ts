@@ -7,16 +7,21 @@
 import { PostController } from '../controller/PostController';
 import { Post } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { daoManager, PostDao } from '../../../dao';
+import { Api } from '../../../api';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
   constructor() {
-    super();
+    super(false, daoManager.getDao(PostDao), {
+      basePath: '/item',
+      networkClient: Api.glipNetworkClient,
+    });
   }
 
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController(this.getControllerBuilder());
+      this.postController = new PostController();
     }
     return this.postController;
   }
