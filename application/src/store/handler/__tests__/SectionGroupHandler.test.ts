@@ -14,16 +14,17 @@ import {
   GroupService,
 } from 'sdk/service';
 
+jest.mock('sdk/service/profile');
+jest.mock('sdk/service/state');
+jest.mock('sdk/service/group');
+jest.mock('../../utils/entities');
+
 const profileService = new ProfileService();
 const stateService = new StateService();
 const groupService = new GroupService();
 (ProfileService as any).getInstance = () => profileService;
 (StateService as any).getInstance = () => stateService;
 (GroupService as any).getInstance = () => groupService;
-jest.mock('sdk/service/profile');
-jest.mock('sdk/service/state');
-jest.mock('sdk/service/group');
-jest.mock('../../utils/entities');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -409,9 +410,9 @@ describe('SectionGroupHandler', () => {
       expect(handler.getAllGroupIds().length).toBe(2);
     });
 
-    it('should add id into idset', async (done: any) => {
-      const handler = setup([1, 2]);
-      (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
+    it.skip('should add id into id set', done => {
+      jest.spyOn(groupService, 'getGroupsByType').mockResolvedValue([]);
+      jest.spyOn(groupService, 'getGroupsByIds').mockResolvedValue([
         {
           id: 3,
           company_id: 1,
@@ -420,20 +421,20 @@ describe('SectionGroupHandler', () => {
           most_recent_content_modified_at: 1,
         },
       ]);
-      notificationCenter.emitEntityUpdate(
-        ENTITY.GROUP_STATE,
-        [{ id: 3, unread_count: 1 }],
-        [],
-      );
+      const handler = setup([1, 2]);
       setTimeout(() => {
-        expect(handler.getAllGroupIds().length).toBe(3);
+        notificationCenter.emitEntityUpdate(
+          ENTITY.GROUP_STATE,
+          [{ id: 3, unread_count: 1 }],
+          [],
+        );
+        expect(handler.getAllGroupIds().length).toEqual(3);
         done();
       });
     });
-    it.skip('should be removed from id set because it has not unread and over limit', (done: any) => {
+    it.skip('should be removed from id set because it has not unread and over limit', done => {
       jest.spyOn(groupService, 'getGroupsByType').mockResolvedValue([]);
-      profileService.getMaxLeftRailGroup = async () => 2;
-      groupService.getGroupsByIds = async () => [
+      jest.spyOn(groupService, 'getGroupsByIds').mockResolvedValue([
         {
           id: 4,
           company_id: 1,
@@ -441,7 +442,8 @@ describe('SectionGroupHandler', () => {
           email_friendly_abbreviation: '',
           most_recent_content_modified_at: 1,
         },
-      ];
+      ]);
+      jest.spyOn(profileService, 'getMaxLeftRailGroup').mockResolvedValue(2);
       const handler = setup([1, 2, 3, 4]);
       notificationCenter.emitEntityUpdate(
         ENTITY.GROUP_STATE,
@@ -449,7 +451,10 @@ describe('SectionGroupHandler', () => {
         [],
       );
       jest.spyOn(handler, 'getGroupIds').mockReturnValue([1, 2, 3, 4]);
-      expect(handler.getAllGroupIds().length).toBe(4);
+      setTimeout(() => {
+        expect(handler.getAllGroupIds().length).toBe(4);
+        done();
+      });
     });
 
     it('should not be removed from id set because it is current group even has not unread and over limit', (done: any) => {
