@@ -10,6 +10,12 @@ enum UA_EVENT {
   RECEIVE_INVITE = 'uaReceiveInvite',
 }
 
+enum WEBPHONE_SESSION_STATE {
+  ACCEPTED = 'accepted',
+  BYE = 'bye',
+  FAILED = 'failed',
+}
+
 type ProvisionDataOptions = {
   appKey?: string;
   appName?: string;
@@ -20,4 +26,4 @@ type ProvisionDataOptions = {
   onSession?: string;
 };
 
-export { UA_EVENT, ProvisionDataOptions };
+export { UA_EVENT, WEBPHONE_SESSION_STATE, ProvisionDataOptions };

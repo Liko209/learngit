@@ -13,7 +13,7 @@ class ProgressService extends EntityBaseService<Progress>
   static serviceName = 'ProgressService';
   private _progressCacheController: ProgressCacheController;
   constructor() {
-    super();
+    super(false);
   }
 
   protected get progressCacheController() {

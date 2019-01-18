@@ -9,6 +9,7 @@ import React, { PureComponent } from 'react';
 type JuiTabProps = {
   title: JSX.Element | string;
   children: React.ReactNode | string; // Container
+  automationId: string;
 };
 
 class JuiTab extends PureComponent<JuiTabProps> {

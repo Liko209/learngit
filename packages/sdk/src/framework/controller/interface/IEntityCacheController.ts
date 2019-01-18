@@ -5,8 +5,10 @@
  */
 
 import { IdModel, Raw } from '../../../framework/model';
+import { IEntityPersistentController } from './IEntityPersistentController';
 
-interface IEntityCacheController<T extends IdModel = IdModel> {
+interface IEntityCacheController<T extends IdModel = IdModel>
+  extends IEntityPersistentController<T> {
   initialize(entities: T[]): void;
 
   isInitialized(): boolean;
@@ -15,22 +17,12 @@ interface IEntityCacheController<T extends IdModel = IdModel> {
 
   getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 
-  getMultiEntities(ids: number[]): Promise<T[]>;
-
-  getEntity(id: number): T | null;
-
-  set(entity: T): void;
-
-  clear(): void;
-
   replace(ids: number[], entities: Map<number, T>): Promise<void>;
 
-  update(
+  updateEx(
     entities: Map<number, T>,
     partials?: Map<number, Partial<Raw<T>>>,
   ): Promise<void>;
-
-  delete(ids: number[]): Promise<void>;
 }
 
 export { IEntityCacheController };

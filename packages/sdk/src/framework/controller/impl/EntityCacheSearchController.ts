@@ -16,15 +16,15 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   implements IEntityCacheSearchController<T> {
   constructor(public entityCacheController: IEntityCacheController<T>) {}
 
-  getEntityFromCache(id: number): T | null {
-    return this.entityCacheController.getEntity(id);
+  async getEntity(id: number): Promise<T | null> {
+    return await this.entityCacheController.get(id);
   }
 
-  async getMultiEntitiesFromCache(
+  async getMultiEntities(
     ids: number[],
     filterFunc?: (entity: T) => boolean,
   ): Promise<T[]> {
-    const entities = await this.entityCacheController.getMultiEntities(ids);
+    const entities = await this.entityCacheController.batchGet(ids);
 
     if (filterFunc) {
       const filteredResult: T[] = [];
@@ -38,13 +38,11 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     return entities;
   }
 
-  async getEntitiesFromCache(
-    filterFunc?: (entity: T) => boolean,
-  ): Promise<T[]> {
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
     return this.entityCacheController.getEntities(filterFunc);
   }
 
-  async searchEntitiesFromCache(
+  async searchEntities(
     genSortableModelFunc: (
       entity: T,
       terms: string[],
@@ -65,9 +63,9 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     }
 
     if (arrangeIds) {
-      entities = await this.entityCacheController.getMultiEntities(arrangeIds);
+      entities = await this.entityCacheController.batchGet(arrangeIds);
     } else {
-      entities = await this.getEntitiesFromCache();
+      entities = await this.getEntities();
     }
 
     entities.forEach((entity: T) => {
