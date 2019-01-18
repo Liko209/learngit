@@ -39,7 +39,12 @@ const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
     min-height: 120px;
   }
   & .paper {
+    margin: 0;
     max-width: inherit;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
   & .sm {
     width: 400px;
