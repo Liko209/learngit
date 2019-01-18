@@ -243,7 +243,7 @@ test(formalName('Should display in the top of conversation list when opening a c
       members: [loginUser.rcId, users[1].rcId],
     });
 
-    const dm3 =await h(t).platform(loginUser).createAndGetGroupId({
+    const dm3 = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[2].rcId],
     });
@@ -281,7 +281,7 @@ test(formalName('Should display in the top of conversation list when opening a c
   // 1. Login -> Last open team conversation A
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
     await h(t).withLog(`And set last_group_id is id of ${topTeamName}`, async () => {
-      await h(t).glip(loginUser).setMaxTeamDisplay(3); 
+      await h(t).glip(loginUser).setMaxTeamDisplay(3);
       await h(t).glip(loginUser).setLastGroupId(teamId);
     });
 
@@ -351,7 +351,7 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   await h(t).withLog(`Then ${newTeamName} should be still on the top in team section`, async () => {
     await t.expect(conversationPage.title.textContent).eql(newTeamName);
-    await teamSection.nthConversationEntry(0).nameShouldBe(newTeamName);  
+    await teamSection.nthConversationEntry(0).nameShouldBe(newTeamName);
   });
 
 
@@ -415,5 +415,116 @@ test(formalName('Should display in the top of conversation list when opening a c
       await sendNewMessageModal.selectMemberByNth(0);
       await sendNewMessageModal.clickSendButton();
     });
+  });
+});
+
+test(formalName('Should display in the top of conversation list when searching whether it is out of the left list or not', ['P2', 'JPT-968', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[7];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
+
+  const showedTeamName = uuid();
+  const hidedTeamName = uuid();
+  const showedChatName = await h(t).glip(loginUser).getPerson(users[5].rcId).then(
+    res => res.data.display_name
+  )
+  const hidedChatName = await h(t).glip(loginUser).getPerson(users[6].rcId).then(
+    res => res.data.display_name
+  )
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const search = app.homePage.header.search;
+
+
+  let showedTeamId, hideTeamId;
+  await h(t).withLog(`Given I have one showed team and one hided team`, async () => {
+    showedTeamId = await h(t).platform(loginUser).createAndGetGroupId({
+      name: showedTeamName,
+      type: 'Team',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+
+    hideTeamId = await h(t).platform(loginUser).createAndGetGroupId({
+      name: hidedTeamName,
+      type: 'Team',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+    await h(t).glip(loginUser).hideGroups(hideTeamId);
+  });
+
+  let showedChatId, hidedChatId
+  await h(t).withLog(`one showed private chat and one hided private chat`, async () => {
+    showedChatId = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'PrivateChat',
+      members: [loginUser.rcId, users[5].rcId],
+    });
+
+    hidedChatId = await h(t).platform(loginUser).createAndGetGroupId({
+      type: 'PrivateChat',
+      members: [loginUser.rcId, users[6].rcId],
+    });
+    await h(t).glip(loginUser).hideGroups(hideTeamId);
+  })
+
+  const duplicateSteps = async (section, chatId, teamName, sectionName, cb: () => Promise<any>) => {
+    await cb();
+
+    await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
+      await conversationPage.groupIdShouldBe(chatId);
+      await section.nthConversationEntry(0).groupIdShouldBe(chatId);
+    });
+
+    await h(t).withLog(`When I refresh page`, async () => {
+      await h(t).refresh();
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog(`Then ${teamName} should be still opened and on the top in ${sectionName} section`, async () => {
+      await conversationPage.groupIdShouldBe(chatId);
+      await section.nthConversationEntry(0).groupIdShouldBe(chatId);
+    });
+
+  }
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  // team
+  await duplicateSteps(teamSection, showedTeamId, showedTeamName, 'team', async () => {
+    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+      await search.typeText(showedTeamName, { replace: true, paste: true });
+      await t.wait(3e3);
+      await search.nthTeam(0).enter();
+    })
+  });
+
+  await duplicateSteps(teamSection, hideTeamId, hidedTeamName, 'team', async () => {
+    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+      await search.typeText(hidedTeamName, { replace: true, paste: true });
+      await t.wait(3e3);
+      await search.nthTeam(0).enter();
+    })
+  });
+
+  // directMessage
+  await duplicateSteps(directMessagesSection, showedChatId, showedChatName, 'directMessage', async () => {
+    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+      await search.typeText(showedChatName, { replace: true, paste: true });
+      await t.wait(3e3);
+      await search.nthPeople(0).enter();
+    })
+  });
+
+  await duplicateSteps(directMessagesSection, hidedChatId, hidedChatName, 'directMessage', async () => {
+    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+      await search.typeText(hidedChatName, { replace: true, paste: true });
+      await t.wait(3e3);
+      await search.nthPeople(0).enter();
+    })
   });
 });
