@@ -17,8 +17,8 @@ import {
   IFetchSortableDataProvider,
   ISortableModel,
 } from '@/store/base/fetch';
-import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME } from '@/store/constants';
+import { ENTITY } from 'sdk/service';
 import { GlipTypeUtil } from 'sdk/utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
@@ -112,10 +112,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   async loadTotalCount() {
     // To do in image: https://jira.ringcentral.com/browse/FIJI-2341, remove this RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES
-    // To do in task: https://jira.ringcentral.com/browse/FIJI-2343, remove this RIGHT_RAIL_ITEM_TYPE.TASKS
     if (
       this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
       this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS ||
       this.type === RIGHT_RAIL_ITEM_TYPE.LINKS ||
       this.type === RIGHT_RAIL_ITEM_TYPE.NOTES
