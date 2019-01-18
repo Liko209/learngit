@@ -20,7 +20,7 @@ import {
 
 type StyledTabProps = MuiTabProps & {
   ref?: React.RefObject<any>;
-  automationID?: string;
+  automationId?: string;
 };
 
 const StyledMuiTab = styled<MuiTabProps>(MuiTab)`

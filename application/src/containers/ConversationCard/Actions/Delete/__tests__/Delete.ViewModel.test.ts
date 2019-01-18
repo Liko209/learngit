@@ -4,28 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { DeleteViewModel } from '../Delete.ViewModel';
+import { NewPostService } from 'sdk/module/post';
 
-const mockPostService = {
+const postService = {
   deletePost: jest.fn(),
 };
-jest.mock('sdk/service/post', () => ({
-  default: {
-    getInstance: () => mockPostService,
-  },
-}));
+NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let viewModel: DeleteViewModel;
 
 describe('DeleteViewModel', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-    viewModel = new DeleteViewModel({ id: 1 });
-  });
-
   describe('deletePost()', () => {
     it('should call service deletePost [JPT-467]', async () => {
+      viewModel = new DeleteViewModel({ id: 1 });
       await viewModel.deletePost();
-      expect(mockPostService.deletePost).toBeCalled();
+      expect(postService.deletePost).toBeCalled();
     });
   });
 });

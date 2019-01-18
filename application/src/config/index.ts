@@ -89,7 +89,7 @@ function set(object: object, property: string | string[], value: any) {
 
 class Config {
   private static _instance: Config;
-  private _config = {};
+  private _config: any = {};
   private _env = '';
 
   private constructor() {
@@ -106,6 +106,14 @@ class Config {
     const value = configService.getEnv() || this.defaultEnv();
     this._env = value;
     this._config = loadFileConfigs(value);
+    this._config.iconLink = this._selectIconLink(this._config.iconLinkSet);
+  }
+
+  private _selectIconLink(iconLinkSet: any) {
+    if (this.isProductionBuild) {
+      return iconLinkSet.production;
+    }
+    return iconLinkSet.development;
   }
 
   public isProductionBuild() {

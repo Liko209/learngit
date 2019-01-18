@@ -65,7 +65,8 @@ class JuiExpandImage extends React.Component<Props, State> {
         <JuiPreviewImage
           url={previewUrl}
           fileName={fileName}
-          ratio={1}
+          width={360}
+          height={202}
           Actions={
             <>
               {ImageActions}

@@ -6,6 +6,7 @@
 import { ComponentType } from 'react';
 import { FileItem } from '../FileItem';
 import { NoteItem } from '../NoteItem';
+import { ImageItem } from '../ImageItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -30,7 +31,6 @@ type TabConfig = {
   subheader: string;
   empty: EmptyConfig;
   offlinePrompt: string;
-  automationID?: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -61,8 +61,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'images',
     type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
-    item: FileItem,
-    subheader: '',
+    item: ImageItem,
+    subheader: 'imageListSubheader',
     empty: {
       text: 'noImagesSharedYet',
       content: 'noImageSubText',
@@ -99,7 +99,6 @@ const TAB_CONFIG: TabConfig[] = [
     type: RIGHT_RAIL_ITEM_TYPE.NOTES,
     item: NoteItem,
     subheader: 'noteListSubheader',
-    automationID: 'rightRail-tab-notes',
     empty: {
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',

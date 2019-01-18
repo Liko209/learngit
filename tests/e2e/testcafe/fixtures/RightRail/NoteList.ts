@@ -18,7 +18,7 @@ fixture('RightRail')
 test(formalName('Check the create note and display on the right rail', ['Isaac', 'P2','JPT-779']), async t => {
   const app = new AppRoot(t);
   const homePage = app.homePage;
-  const rightRail = homePage.rightRail;
+  const rightRail = homePage.messageTab.rightRail;
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[0];
 
@@ -47,9 +47,9 @@ test(formalName('Check the create note and display on the right rail', ['Isaac',
   // step 2 create a note
   await h(t).withLog('Then User create a note', async () => {
     await h(t).glip(loginUser).createSimpleNote(groupId, noteTitle, uuid());
-    await rightRail.clickMore();
-    await rightRail.waitUntilVisible(rightRail.getMenu('rightRail-tab-notes'));
-    await rightRail.clickMenu('rightRail-tab-notes');
+    await rightRail.openMore();
+    await rightRail.waitUntilVisible(rightRail.notesEntry);
+    await rightRail.notesEntry.enter();
     await rightRail.waitUntilVisible(rightRail.nthListItem(noteItemAutomationID, 0));
     await t.expect(rightRail.listSubTitle.textContent).contains('1');
     await t.expect(rightRail.nthListItem(noteItemAutomationID, 0).find('span').withText(noteTitle).exists).ok();

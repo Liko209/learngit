@@ -6,8 +6,7 @@
 
 import React, { PureComponent } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import { ResponsiveContext } from './responsiveContext';
-import { ResponsiveProps, VISUAL_MODE } from './Responsive';
+import { ResponsiveInfo, VISUAL_MODE } from './Responsive';
 import { StyledWrapper } from './StyledWrapper';
 
 type Props = {
@@ -15,13 +14,12 @@ type Props = {
 };
 
 type State = {
-  width: { [key: string]: number };
   visual: { [key: string]: boolean };
 };
 
 class JuiResponsiveLayout extends PureComponent<Props, State> {
-  responsiveInfo: { [key: string]: ResponsiveProps } = {};
-  hasSortedResponsiveInfo: ResponsiveProps[] = [];
+  responsiveInfo: { [key: string]: ResponsiveInfo } = {};
+  hasSortedResponsiveInfo: ResponsiveInfo[] = [];
   prevWidth: number = 1;
   visualWidth: number = 0;
   contentWidth: number = 0;
@@ -32,7 +30,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   };
 
   componentDidUpdate(props: Props) {
-    if (props.children !== this.props.children) {
+    if (props.children !== this.props.children && this.prevWidth !== 1) {
       this.initWidthAndResponsiveInfo();
       this.init(this.prevWidth);
     }
@@ -48,7 +46,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
     this.hasSortedResponsiveInfo = [...Object.values(this.responsiveInfo)].sort(
       (a, b) => Number(b.priority) - Number(a.priority),
     );
-    this.hasSortedResponsiveInfo.forEach((info: ResponsiveProps) => {
+    this.hasSortedResponsiveInfo.forEach((info: ResponsiveInfo) => {
       const { defaultWidth, minWidth, visualMode } = info;
       const checkWidth = Number(defaultWidth) || Number(minWidth);
       if (visualMode === undefined) {
@@ -96,10 +94,6 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
               ...this.state.visual,
               [tag]: true,
             },
-            width: {
-              ...this.state.width,
-              [tag]: checkWidth,
-            },
           });
           arr.splice(1);
         }
@@ -107,27 +101,10 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
       },      0);
   }
 
-  smallHandler = (width: number, diffWidth: number) => {
-    const canChangeWidth = this.hasSortedResponsiveInfo.some(
-      (info: ResponsiveProps) => {
-        const checkWidth = Number(info.defaultWidth) || Number(info.minWidth);
-        const infoDiffWidth = Number(info.width) - checkWidth;
-        if (infoDiffWidth > 0) {
-          const panelWidth = Number(info.width) - diffWidth;
-          this.setState({
-            width: {
-              ...this.state.width,
-              [info.tag]: panelWidth > checkWidth ? panelWidth : checkWidth,
-            },
-          });
-          return true;
-        }
-        return false;
-      },
-    );
-    if (!canChangeWidth) {
+  smallHandler = (width: number) => {
+    if (width < this.contentWidth) {
       const { visual } = this.state;
-      this.hasSortedResponsiveInfo.some((info: ResponsiveProps) => {
+      this.hasSortedResponsiveInfo.some((info: ResponsiveInfo) => {
         if (info.visualMode !== undefined && visual[info.tag] !== false) {
           this.setState({
             visual: {
@@ -153,31 +130,31 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
     if (diffWidth < 0) {
       this.largeHandler(width);
     } else {
-      this.smallHandler(width, diffWidth);
+      this.smallHandler(width);
     }
+  }
+
+  addResponsiveInfo = (Info: ResponsiveInfo) => {
+    const { tag } = Info;
+    this.responsiveInfo[tag] = Info;
   }
 
   render() {
     const { children } = this.props;
-    const { width, visual } = this.state;
+    const { visual } = this.state;
     return (
       <StyledWrapper>
-        <ResponsiveContext.Provider
-          value={{ responsiveInfo: this.responsiveInfo }}
-        >
-          {React.Children.map(children, (child: React.ReactElement<any>) => {
-            return (
-              child &&
-              React.createElement(child.type, {
-                ...child.props,
-                // @ts-ignore
-                width: width[child.type.tag],
-                // @ts-ignore
-                visual: visual[child.type.tag],
-              })
-            );
-          })}
-        </ResponsiveContext.Provider>
+        {React.Children.map(children, (child: React.ReactElement<any>) => {
+          return (
+            child &&
+            React.createElement(child.type, {
+              ...child.props,
+              // @ts-ignore
+              visual: visual[child.type.tag],
+              addResponsiveInfo: this.addResponsiveInfo,
+            })
+          );
+        })}
         <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
       </StyledWrapper>
     );

@@ -18,7 +18,7 @@ export class RightRail extends BaseWebComponent {
     }
 
     get moreTab() {
-      return this.getSelectorByAutomationId('rightRail-tab-more');
+      return this.getSelectorByAutomationId('right-shelf-more');
     }
 
     nthListItem(automationId: string, n: number) {
@@ -26,7 +26,7 @@ export class RightRail extends BaseWebComponent {
     }
 
     getTab(text: string) {
-      return this.tabList.find('button span').withText(text);
+      return this.getSelectorByAutomationId(`rightShelf-${text}`);
     }
 
     async clickTab(text: string) {

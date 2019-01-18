@@ -38,6 +38,8 @@ const StyledThumbnail = styled<JuiThumbnailProps, 'div'>('div')`
     size === 'small' ? shape('borderRadius', 0.5) : shape('borderRadius')};
   background-image: url(${({ url, iconType }) => getBgImage(url, iconType)});
   background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 `;
 
 const JuiThumbnail = (props: JuiThumbnailProps) => {
