@@ -45,6 +45,15 @@ class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
     const { createdAt } = this.link;
     return dateFormatter.date(createdAt);
   }
+
+  @computed
+  get url() {
+    let { url } = this.link;
+    if (!/^http/.test(url)) {
+      url = `http://${url}`;
+    }
+    return url;
+  }
 }
 
 export { LinkItemViewModel };
