@@ -2,7 +2,6 @@ import { BaseWebComponent } from "../../../BaseWebComponent";
 
 
 export class RightRail extends BaseWebComponent {
-
   get self() {
     return this.getSelectorByAutomationId('rightRail');
   }
@@ -23,12 +22,56 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId(`rightShelf-${text}`);
   }
 
-  async clickTab(text: string) {
-    await this.t.click(this.getTab(text))
+  getEntry(automationId: string) {
+    return this.getComponent(TabEntry, this.getSelectorByAutomationId(automationId));
   }
 
-  get images() {
-    return this.getComponent(Images)
+  get pinnedEntry() {
+    return this.getEntry('rightShelf-Pinned');
+  }
+
+  get filesEntry() {
+    return this.getEntry('rightShelf-Files');
+  }
+
+  get imagesEntry() {
+    return this.getEntry('rightShelf-Images');
+  }
+  get tasksEntry() {
+    return this.getEntry('rightShelf-Tasks');
+  }
+
+  get moreButton() {
+    return this.getSelectorByAutomationId('rightShelf-undefined')
+  }
+
+  async openMore() {
+    await this.t.click(this.moreButton);
+  }
+
+  get linksEntry() {
+    return this.getEntry('rightShelf-Links');
+  }
+
+
+  get notesEntry() {
+    return this.getEntry('rightShelf-Notes');
+  }
+
+  get eventsEntry() {
+    return this.getEntry('rightShelf-Events');
+  }
+
+  get integrationsEntry() {
+    return this.getEntry('rightShelf-Integrations');
+  }
+
+  get imagesTab() {
+    return this.getComponent(ImagesTab);
+  }
+
+  get filesTab() {
+    return this.getComponent(FilesTab); 
   }
 }
 
@@ -41,44 +84,76 @@ class TabEntry extends BaseWebComponent {
     return this.self.getAttribute('aria-selected');
   }
 
-  async shouldBeOpen() {
+  async shouldBeOpened() {
     await this.t.expect(this.selected).eql('true');
   }
+}
 
+class FilesTab extends BaseWebComponent {
+  // this is a temp. selector
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get subTitle() {
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Files/);
+  }
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
+  }
+
+  async waitUntilFilesItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-file-item');
+  }
+
+  nthItem(n: number) {
+    return this.getComponent(ImageAndFileItem, this.items.nth(n));
+  }
 
 }
 
-class Images extends BaseWebComponent {
-
-  // need a way to get self......
-  // get self() {
-
-  // }
+class ImagesTab extends BaseWebComponent {
+  // this is a temp. selector
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
 
   get subTitle() {
-    return this.getSelectorByAutomationId('rightRail-list-subtitle');
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Images/);
   }
-  
-  countOnSubTitle() {
-    
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
   }
+
+  async waitUntilImagesItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
   get items() {
     return this.getSelectorByAutomationId('rightRail-image-item');
   }
 
   nthItem(n: number) {
-    return this.getComponent(ImageItem, this.items.nth(n));
-  }
-
-  async shouldBeShow() {
-    await this.t.expect(this.subTitle.exists).ok()
+    return this.getComponent(ImageAndFileItem, this.items.nth(n));
   }
 
 }
 
-class ImageItem extends BaseWebComponent {
+class ImageAndFileItem extends BaseWebComponent {
   get name() {
     return this.getSelectorByAutomationId('file-name', this.self);
+  }
+
+  async nameShouldBe(name: string) {
+    await this.t.expect(this.name.withText(name).exists).ok();
   }
 
   get secondaryText() {
@@ -91,14 +166,14 @@ class ImageItem extends BaseWebComponent {
 
   get time() {
     return this.secondaryText.find('span').nth(1);
-  } 
+  }
 
   get downloadIcon() {
-    return this.getSelectorByIcon('download',this.self);
+    return this.getSelectorByIcon('download', this.self);
   }
 
   get previewIcon() {
-    return this.getSelectorByIcon('image_preview',this.self);
+    return this.getSelectorByIcon('image_preview', this.self);
   }
 
 }
