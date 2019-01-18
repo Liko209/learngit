@@ -5,16 +5,92 @@
  */
 
 import { EntityBaseService } from '../EntityBaseService';
-import { BaseModel } from '../../../models';
-import { ControllerBuilder } from '../../controller/impl/ControllerBuilder';
+import { BaseDao, daoManager } from '../../../dao';
+import { TestDatabase, TestEntity } from '../../controller/__tests__/TestTypes';
+import NetworkClient from '../../../api/NetworkClient';
+import { JNetworkError, ERROR_CODES_NETWORK } from '../../../error';
+import { ApiResultErr, ApiResultOk } from '../../../api/ApiResult';
+import { BaseResponse } from 'foundation/';
 
 describe('EntityBaseService', () => {
-  describe('getControllerBuilder()', () => {
-    it('should return controller builder instance', () => {
-      const service = new EntityBaseService<BaseModel>();
-      const result = service.getControllerBuilder();
-      const isInstance = result instanceof ControllerBuilder;
-      expect(isInstance).toBe(true);
+  describe('getById()', () => {
+    let dao: BaseDao<TestEntity> = null;
+    let deactivatedDao: BaseDao<TestEntity> = null;
+    const networkConfig = {
+      basePath: '/basePath',
+      networkClient: new NetworkClient(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ),
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      dao = new BaseDao('TestEntity', new TestDatabase());
+      deactivatedDao = new BaseDao('DeactivatedDao', new TestDatabase());
+
+      jest.spyOn(daoManager, 'getDao').mockImplementation(() => {
+        return deactivatedDao;
+      });
+    });
+
+    it('should call entity source controller once', async () => {
+      const service = new EntityBaseService<TestEntity>(
+        false,
+        dao,
+        networkConfig,
+      );
+      jest.spyOn(dao, 'get').mockImplementation(() => {
+        return { id: 1, name: 'hello' };
+      });
+      const result = await service.getById(1);
+
+      expect(result).toEqual({ id: 1, name: 'hello' });
+    });
+
+    it('should call network client once', async () => {
+      const service = new EntityBaseService<TestEntity>(
+        false,
+        dao,
+        networkConfig,
+      );
+      jest.spyOn(dao, 'get').mockImplementation(() => {
+        return null;
+      });
+
+      jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
+        new ApiResultOk({ id: 1, name: 'jupiter' }, {
+          status: 200,
+          headers: {},
+        } as BaseResponse),
+      );
+      expect(service.getById(1)).resolves.toEqual({ id: 1, name: 'jupiter' });
+    });
+
+    it('should call network client once and throw error', async () => {
+      const service = new EntityBaseService<TestEntity>(
+        false,
+        dao,
+        networkConfig,
+      );
+      jest.spyOn(dao, 'get').mockImplementation(() => {
+        return null;
+      });
+
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.NOT_FOUND,
+        'Not Found',
+      );
+      jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
+        new ApiResultErr(error, {
+          status: 404,
+          headers: {},
+        } as BaseResponse),
+      );
+      expect(service.getById(1)).resolves.toThrow();
     });
   });
 });

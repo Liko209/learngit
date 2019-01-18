@@ -14,7 +14,7 @@ class BaseSubItemService<K extends Item, T extends SanitizedItem>
   extends EntityBaseService<K>
   implements ISubItemService {
   constructor(private _subItemDao: SubItemDao<T>) {
-    super();
+    super(false);
   }
 
   async createItem(item: K) {

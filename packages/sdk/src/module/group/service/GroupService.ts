@@ -15,13 +15,15 @@ import { Api } from '../../../api';
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   teamController: TeamController;
   constructor() {
-    super();
-    this.setEntitySource(this._buildEntitySourceController());
+    super(true, daoManager.getDao(GroupDao), {
+      basePath: '/team',
+      networkClient: Api.glipNetworkClient,
+    });
   }
 
   protected getTeamController() {
     if (!this.teamController) {
-      this.teamController = new TeamController(this.getControllerBuilder());
+      this.teamController = new TeamController(this.getEntitySource());
     }
     return this.teamController;
   }
@@ -72,19 +74,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.getTeamController()
       .getTeamPermissionController()
       .isTeamAdmin(personId, permission);
-  }
-
-  private _buildEntitySourceController() {
-    const requestController = this.getControllerBuilder().buildRequestController(
-      {
-        basePath: '/team',
-        networkClient: Api.glipNetworkClient,
-      },
-    );
-    return this.getControllerBuilder().buildEntitySourceController(
-      daoManager.getDao(GroupDao),
-      requestController,
-    );
   }
 }
 

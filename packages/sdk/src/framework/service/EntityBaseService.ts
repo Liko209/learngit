@@ -6,20 +6,32 @@
 
 import { AbstractService } from './AbstractService';
 import { IdModel } from '../model';
-import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
 import { container } from '../../container';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
+import { BaseDao } from '../../dao';
+import NetworkClient from '../../api/NetworkClient';
+import {
+  buildRequestController,
+  buildEntityCacheController,
+  buildEntityPersistentController,
+  buildEntitySourceController,
+} from '../controller';
 
 class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   private _subscribeController: ISubscribeController;
-  private entitySourceController: IEntitySourceController<T>;
-  constructor() {
+  private _entitySourceController: IEntitySourceController<T>;
+  constructor(
+    public isSupportedCache: boolean,
+    public dao?: BaseDao<T>,
+    public networkConfig?: { basePath: string; networkClient: NetworkClient },
+  ) {
     super();
+    this._initControllers();
   }
 
-  setEntitySource(sourceController: IEntitySourceController<T>) {
-    this.entitySourceController = sourceController;
+  getEntitySource() {
+    return this._entitySourceController;
   }
 
   setSubscriptionController(subscribeController: ISubscribeController) {
@@ -38,14 +50,22 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   }
 
   getById(id: number): Promise<T | null> {
-    if (this.entitySourceController) {
-      return Promise.resolve(this.entitySourceController.getEntity(id));
+    if (this._entitySourceController) {
+      return Promise.resolve(this._entitySourceController.get(id));
     }
     throw new Error('entitySourceController is null');
   }
 
-  getControllerBuilder() {
-    return new ControllerBuilder<T>();
+  private _initControllers() {
+    this._entitySourceController = buildEntitySourceController(
+      buildEntityPersistentController<T>(
+        this.dao,
+        this.isSupportedCache ? buildEntityCacheController<T>() : undefined,
+      ),
+      this.networkConfig
+        ? buildRequestController<T>(this.networkConfig)
+        : undefined,
+    );
   }
 
   static getInstance<T extends EntityBaseService<any>>(): T {

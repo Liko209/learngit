@@ -10,9 +10,14 @@ import { PostActionController } from '../PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 import { BaseDao, daoManager } from '../../../../dao';
-import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import {
+  buildEntitySourceController,
+  buildRequestController,
+  buildPartialModifyController,
+} from '../../../../framework/controller';
 
 jest.mock('../../../../api');
+jest.mock('../../../../framework/controller');
 
 describe('PostController', () => {
   describe('getPostActionController()', () => {
@@ -20,8 +25,7 @@ describe('PostController', () => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {
-      const controllerBuilder = new ControllerBuilder<Post>();
-      const postController = new PostController(controllerBuilder);
+      const postController = new PostController();
 
       const dao = new BaseDao('Post', new TestDatabase());
       jest.spyOn(daoManager, 'getDao').mockImplementationOnce(() => {
@@ -32,29 +36,23 @@ describe('PostController', () => {
         glipNetworkClient: null,
       });
 
-      jest
-        .spyOn(controllerBuilder, 'buildPartialModifyController')
-        .mockImplementationOnce(() => {
-          return undefined;
-        });
+      buildPartialModifyController.mockImplementationOnce(() => {
+        return undefined;
+      });
 
-      jest
-        .spyOn(controllerBuilder, 'buildRequestController')
-        .mockImplementationOnce(() => {
-          return undefined;
-        });
+      buildRequestController.mockImplementationOnce(() => {
+        return undefined;
+      });
 
-      jest
-        .spyOn(controllerBuilder, 'buildEntitySourceController')
-        .mockImplementationOnce(() => {
-          return undefined;
-        });
+      buildEntitySourceController.mockImplementationOnce(() => {
+        return undefined;
+      });
 
       const result = postController.getPostActionController();
       expect(result instanceof PostActionController).toBe(true);
-      expect(controllerBuilder.buildEntitySourceController).toBeCalledTimes(1);
-      expect(controllerBuilder.buildPartialModifyController).toBeCalledTimes(1);
-      expect(controllerBuilder.buildRequestController).toBeCalledTimes(1);
+      expect(buildEntitySourceController).toBeCalledTimes(1);
+      expect(buildPartialModifyController).toBeCalledTimes(1);
+      expect(buildRequestController).toBeCalledTimes(1);
     });
   });
 });
