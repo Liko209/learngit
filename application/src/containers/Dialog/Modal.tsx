@@ -8,31 +8,31 @@ import { t } from 'i18next';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import portalManager from '@/common/PortalManager';
 
-type BaseModalType = {
+type BaseType = {
   isAlert?: boolean;
 } & JuiModalProps;
 
-const BaseModal = (props: BaseModalType) => {
-  const { isAlert, ...newConfig } = props;
-  const defaultBtnText = {
-    okText: t('OK'),
-    cancelText: t('Cancel'),
-  };
-
-  if (isAlert) {
-    Reflect.deleteProperty(defaultBtnText, 'cancelText');
-  }
-
-  const currentConfig = {
-    ...defaultBtnText,
-    ...newConfig,
-  };
-
-  return <JuiModal {...currentConfig} />;
-};
-
-function modal(config: BaseModalType) {
+function modal(config: BaseType) {
   const { onOK, onCancel, isAlert, ...newConfig } = config;
+
+  const BaseModal = (props: BaseType) => {
+    const { isAlert, ...newConfig } = props;
+    const defaultBtnText = {
+      okText: t('OK'),
+      cancelText: t('Cancel'),
+    };
+
+    if (isAlert) {
+      Reflect.deleteProperty(defaultBtnText, 'cancelText');
+    }
+
+    const currentConfig = {
+      ...defaultBtnText,
+      ...newConfig,
+    };
+
+    return <JuiModal {...currentConfig} />;
+  };
 
   const { dismiss, show } = portalManager.wrapper(BaseModal);
 
