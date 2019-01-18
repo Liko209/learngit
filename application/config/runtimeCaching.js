@@ -32,9 +32,7 @@ module.exports = [
   //   handler: "staleWhileRevalidate"
   // }
   {
-    urlPattern: new RegExp(
-      "https://i.icomoon.io/public/6483cc0f53/Jupiter/style.css"
-    ),
+    urlPattern: new RegExp("https://i.icomoon.io/public/6483cc0f53/Jupiter/*"),
     handler: "cacheFirst"
   }
 ];

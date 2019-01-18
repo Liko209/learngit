@@ -20,6 +20,7 @@ import { TopBanner } from '@/containers/TopBanner';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
 import { generalErrorHandler } from '@/utils/error';
+import config from '@/config';
 
 @observer
 class App extends React.Component {
@@ -48,17 +49,25 @@ class App extends React.Component {
 
   public render() {
     return (
-      <ThemeProvider>
-        {this.isLoading ? (
-          <JuiContentLoader />
-        ) : (
-          <>
-            <TopBanner />
-            <Router />
-            <AboutView />
-          </>
-        )}
-      </ThemeProvider>
+      <>
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href={config.get('iconLink')}
+          crossOrigin="anonymous"
+        />
+        <ThemeProvider>
+          {this.isLoading ? (
+            <JuiContentLoader />
+          ) : (
+            <>
+              <TopBanner />
+              <Router />
+              <AboutView />
+            </>
+          )}
+        </ThemeProvider>
+      </>
     );
   }
 
