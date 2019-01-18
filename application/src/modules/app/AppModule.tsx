@@ -33,6 +33,7 @@ class AppModule extends AbstractModule {
   @inject(RouterService) private _routerService: RouterService;
   @inject(HomeService) private _homeService: HomeService;
   @inject(AppStore) private _appStore: AppStore;
+  private _subModuleRegistered: boolean = false;
 
   async bootstrap() {
     try {
@@ -95,19 +96,24 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
 
-        // TODO register subModule according to account profile
-        this._homeService.registerSubModules([
-          'dashboard',
-          'message',
-          'telephony',
-          'meeting',
-          'contact',
-          'calendar',
-          'task',
-          'note',
-          'file',
-          'setting',
-        ]);
+        if (!this._subModuleRegistered) {
+          // TODO register subModule according to account profile
+          this._homeService.registerSubModules([
+            'dashboard',
+            'message',
+            'telephony',
+            'meeting',
+            'contact',
+            'calendar',
+            'task',
+            'note',
+            'file',
+            'setting',
+          ]);
+
+          // Avoid duplicate register
+          this._subModuleRegistered = true;
+        }
       }
     };
 
