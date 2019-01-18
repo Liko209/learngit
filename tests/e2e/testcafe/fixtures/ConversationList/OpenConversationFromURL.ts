@@ -504,7 +504,7 @@ test(formalName('Should display in the top of conversation list when searching w
   });
 
   await duplicateSteps(teamSection, hideTeamId, hidedTeamName, 'team', async () => {
-    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+    await h(t).withLog(`When I search the showed team ${hidedTeamName} and click it`, async () => {
       await search.typeText(hidedTeamName, { replace: true, paste: true });
       await t.wait(3e3);
       await search.nthTeam(0).enter();
@@ -513,7 +513,7 @@ test(formalName('Should display in the top of conversation list when searching w
 
   // directMessage
   await duplicateSteps(directMessagesSection, showedChatId, showedChatName, 'directMessage', async () => {
-    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+    await h(t).withLog(`When I search the showed team ${showedChatName} and click it`, async () => {
       await search.typeText(showedChatName, { replace: true, paste: true });
       await t.wait(3e3);
       await search.nthPeople(0).enter();
@@ -521,7 +521,7 @@ test(formalName('Should display in the top of conversation list when searching w
   });
 
   await duplicateSteps(directMessagesSection, hidedChatId, hidedChatName, 'directMessage', async () => {
-    await h(t).withLog(`When I search the showed team ${showedTeamName} and click it`, async () => {
+    await h(t).withLog(`When I search the showed team ${hidedChatName} and click it`, async () => {
       await search.typeText(hidedChatName, { replace: true, paste: true });
       await t.wait(3e3);
       await search.nthPeople(0).enter();
