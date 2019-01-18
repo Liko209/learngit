@@ -16,12 +16,12 @@ class EntitySourceController<T extends IdModel = IdModel>
   constructor(
     public dao: BaseDao<T>,
     public deactivatedDao: DeactivatedDao,
-    public requestController: IRequestController<T>,
+    public requestController?: IRequestController<T>,
   ) {}
 
   async getEntity(id: number): Promise<T | null> {
     const result = await this.getEntityLocally(id);
-    if (!result) {
+    if (!result && this.requestController) {
       return this.requestController.get(id);
     }
     return result;

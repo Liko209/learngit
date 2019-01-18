@@ -10,11 +10,21 @@ interface IStateService {
 
   updateLastGroup(groupId: number): Promise<void>;
 
-  getGroupStatesFromLocalWithUnread(ids: number[]): Promise<GroupState[]>;
-
   getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]>;
 
+  getGroupStatesFromLocalWithUnread(ids: number[]): Promise<GroupState[]>;
+
   getMyState(): Promise<MyState | null>;
+
+  getMyStateId(): Promise<number>;
+
+  handleState(): Promise<void>;
+
+  handlePartialState(): Promise<void>;
+
+  handlePartialGroup(): Promise<void>;
+
+  handleGroup(): Promise<void>;
 }
 
 export { IStateService };

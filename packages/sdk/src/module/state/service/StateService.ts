@@ -11,24 +11,40 @@ import { GroupState, MyState } from '../entity';
 import { SOCKET } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
-class StateService extends EntityBaseService implements IStateService {
+class StateService extends EntityBaseService<GroupState>
+  implements IStateService {
   static serviceName = 'StateService';
   private _stateController: StateController;
+  private _entitySourceController: IEntitySourceController;
   constructor() {
     super();
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
+        [SOCKET.GROUP]: this.handleGroup,
         [SOCKET.PARTIAL_STATE]: this.handlePartialState,
         [SOCKET.PARTIAL_GROUP]: this.handlePartialGroup,
       }),
     );
   }
 
+  private _getEntitySourceController() {
+    if (!this._entitySourceController) {
+      this._entitySourceController = this.getControllerBuilder().buildEntitySourceController(
+        daoManager.getDao(GroupStateDao),
+      );
+    }
+    return this._entitySourceController;
+  }
+
   protected getStateController(): StateController {
     if (!this._stateController) {
-      this._stateController = new StateController();
+      this._stateController = new StateController(
+        this.getControllerBuilder(),
+        this._getEntitySourceController(),
+      );
     }
     return this._stateController;
   }
@@ -37,30 +53,41 @@ class StateService extends EntityBaseService implements IStateService {
 
   async updateLastGroup(groupId: number): Promise<void> {}
 
+  async getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]> {
+    return await this.getStateController()
+      .getStateFetchDataController()
+      .getAllGroupStatesFromLocal(ids);
+  }
+
   async getGroupStatesFromLocalWithUnread(
     ids: number[],
   ): Promise<GroupState[]> {
-    const states = await this.getAllGroupStatesFromLocal(ids);
-    const result = states.filter((item: GroupState) => {
-      return item.unread_count || item.unread_mentions_count;
-    });
-    return result;
-  }
-
-  async getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]> {
-    const groupStateDao = daoManager.getDao(GroupStateDao);
-    return groupStateDao.getByIds(ids);
+    return await this.getStateController()
+      .getStateFetchDataController()
+      .getGroupStatesFromLocalWithUnread(ids);
   }
 
   async getMyState(): Promise<MyState | null> {
-    return null;
+    return await this.getStateController()
+      .getStateFetchDataController()
+      .getMyState();
   }
 
-  async handleState() {}
+  async getMyStateId(): Promise<number> {
+    return await this.getStateController()
+      .getStateFetchDataController()
+      .getMyStateId();
+  }
 
-  async handlePartialState() {}
+  async handleState(): Promise<void> {}
 
-  async handlePartialGroup() {}
+  async handlePartialState(): Promise<void> {}
+
+  async handlePartialGroup(): Promise<void> {}
+
+  async handleGroup(): Promise<void> {
+    // favorite member deactivated
+  }
 }
 
 export { StateService };

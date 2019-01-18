@@ -22,7 +22,7 @@ class ControllerBuilder<T extends IdModel = IdModel>
   constructor() {}
   buildEntitySourceController(
     dao: BaseDao<T>,
-    requestController: IRequestController<T>,
+    requestController?: IRequestController<T>,
   ) {
     return new EntitySourceController<T>(
       dao,
