@@ -9,12 +9,7 @@ import { AddMembersComponent } from '../AddMembers.View';
 import { JuiButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { JuiModal } from 'jui/components/Dialog';
-import {
-  JServerError,
-  JNetworkError,
-  ERROR_CODES_SERVER,
-  ERROR_CODES_NETWORK,
-} from 'sdk/error';
+import { JServerError, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 jest.mock('@/containers/Notification');
 
 describe('AddMembersView', () => {
@@ -27,7 +22,7 @@ describe('AddMembersView', () => {
         members: [],
         group: {},
         addTeamMembers: () => {
-          throw new JServerError(ERROR_CODES_SERVER.BAD_REQUEST, '');
+          throw new JServerError(ERROR_CODES_NETWORK.BAD_REQUEST, '');
         },
         handleSearchContactChange: (items: any) => {},
       };
