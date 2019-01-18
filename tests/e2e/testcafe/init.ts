@@ -25,6 +25,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 // initialize account pool client
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
+// initialize beat dashboard
 const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
 
 // _runId is a share state
@@ -73,6 +74,7 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
   return _runId;
 }
 
+// inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
     h(t).allureHelper.initReporter();
