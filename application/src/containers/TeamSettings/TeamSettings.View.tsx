@@ -10,13 +10,13 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import {
-  JuiTeamSettingEditSection,
-  JuiTeamSettingEditSectionLeft,
-  JuiTeamSettingEditSectionRight,
-  JuiTeamSettingSubSection,
-  JuiTeamSettingSubSectionTitle,
-  JuiTeamSettingSubSectionList,
-  JuiTeamSettingSubSectionListItem,
+  JuiTeamSettingEditSection as EditSection,
+  JuiTeamSettingEditSectionLeft as EditSectionLeft,
+  JuiTeamSettingEditSectionRight as EditSectionRight,
+  JuiTeamSettingSubSection as SubSection,
+  JuiTeamSettingSubSectionTitle as SubSectionTitle,
+  JuiTeamSettingSubSectionList as SubSectionList,
+  JuiTeamSettingSubSectionListItem as SubSectionListItem,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
@@ -78,15 +78,15 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     const { t, id, nameError, nameErrorMsg } = this.props;
 
     return (
-      <JuiTeamSettingEditSection>
-        <JuiTeamSettingEditSectionLeft>
+      <EditSection>
+        <EditSectionLeft>
           <GroupAvatar
             cid={id}
             size="xlarge"
             data-test-automation-id="teamAvatar"
           />
-        </JuiTeamSettingEditSectionLeft>
-        <JuiTeamSettingEditSectionRight>
+        </EditSectionLeft>
+        <EditSectionRight>
           <JuiTextField
             label={t('teamName')}
             data-test-automation-id="teamName"
@@ -105,8 +105,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             fullWidth={true}
             onChange={this.handleDescriptionChange}
           />
-        </JuiTeamSettingEditSectionRight>
-      </JuiTeamSettingEditSection>
+        </EditSectionRight>
+      </EditSection>
     );
   }
 
@@ -115,20 +115,20 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     return (
       <>
         <JuiDivider />
-        <JuiTeamSettingSubSection data-test-automation-id="memberPermission">
-          <JuiTeamSettingSubSectionTitle data-test-automation-id="memberPermissionTitle">
+        <SubSection data-test-automation-id="memberPermission">
+          <SubSectionTitle data-test-automation-id="memberPermissionTitle">
             {t('allowTeamMembersTo')}
-          </JuiTeamSettingSubSectionTitle>
-          <JuiTeamSettingSubSectionList data-test-automation-id="memberPermissionList">
-            <JuiTeamSettingSubSectionListItem
+          </SubSectionTitle>
+          <SubSectionList data-test-automation-id="memberPermissionList">
+            <SubSectionListItem
               data-test-automation-id="memberPermissionItem"
               label={t('addTeamMembers')}
             >
               <JuiToggleButton data-test-automation-id="allowAddTeamMemberToggle" />
-            </JuiTeamSettingSubSectionListItem>
+            </SubSectionListItem>
             <JuiDivider />
-          </JuiTeamSettingSubSectionList>
-        </JuiTeamSettingSubSection>
+          </SubSectionList>
+        </SubSection>
       </>
     );
   }
