@@ -6,8 +6,10 @@
 
 import { Item } from '../../module/base/entity';
 import { FileItem } from '../../module/file/entity';
-
 import { ItemUtils } from '../ItemUtils';
+import { TimeUtils } from '../../../../utils/TimeUtils';
+
+jest.mock('../../../../utils/TimeUtils');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -57,7 +59,12 @@ describe('ItemUtils', () => {
       expect(ItemUtils.isImageItem(item1)).toBeFalsy();
     });
   });
+
   describe('isValidItem', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
     const item1 = {
       id: 10,
       group_ids: [11, 222, 33],
@@ -128,8 +135,14 @@ describe('ItemUtils', () => {
       expect(ItemUtils.eventFilter(11)(item2)).toBeFalsy();
     });
 
-    it('should return false when is over due event', () => {
+    it('should return true when is not over due event', () => {
+      TimeUtils.compareDate = jest.fn().mockReturnValue(true);
       expect(ItemUtils.eventFilter(11)(item1)).toBeTruthy();
+    });
+
+    it('should return false when is over due event', () => {
+      TimeUtils.compareDate = jest.fn().mockReturnValue(false);
+      expect(ItemUtils.eventFilter(11)(item1)).toBeFalsy();
     });
   });
 });
