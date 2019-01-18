@@ -84,6 +84,27 @@ class GroupConfigService extends BaseService<GroupConfig> {
       throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
+
+  async deletePostId(groupId: number, postId: number) {
+    const failIds = await this.getGroupSendFailurePostIds(groupId);
+    const index = failIds.indexOf(postId);
+    if (index > -1) {
+      failIds.splice(index, 1);
+      await this.updateGroupSendFailurePostIds({
+        id: groupId,
+        send_failure_post_ids: failIds,
+      });
+    }
+  }
+
+  async addPostId(groupId: number, postId: number) {
+    const failIds = await this.getGroupSendFailurePostIds(groupId);
+    const newIds = [...new Set([...failIds, postId])];
+    await this.updateGroupSendFailurePostIds({
+      id: groupId,
+      send_failure_post_ids: newIds,
+    });
+  }
 }
 
 export { GroupConfigService };
