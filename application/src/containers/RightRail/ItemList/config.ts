@@ -7,6 +7,7 @@ import { ComponentType } from 'react';
 import { FileItem } from '../FileItem';
 import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
+import { LinkItem } from '../LinkItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -85,8 +86,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'links',
     type: RIGHT_RAIL_ITEM_TYPE.LINKS,
-    item: FileItem,
-    subheader: '',
+    item: LinkItem,
+    subheader: 'linkListSubheader',
     empty: {
       text: 'noLinksSharedYet',
       content: 'noLinkSubText',
