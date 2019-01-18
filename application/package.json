@@ -19,7 +19,7 @@
     "i18next-browser-languagedetector": "2.2.3",
     "i18next-intervalplural-postprocessor": "1.0.2",
     "i18next-xhr-backend": "1.5.1",
-    "jui": "0.1.0",
+    "jui": "0.1.2",
     "libphonenumber-js": "1.6.4",
     "load-segment": "git+ssh://git@git.ringcentral.com:Fiji/segment.git",
     "lodash": "4.17.11",
@@ -31,7 +31,7 @@
     "react-i18next": "8.3.5",
     "react-router-dom": "4.3.1",
     "react-visibility-sensor": "5.0.2",
-    "sdk": "0.1.0",
+    "sdk": "0.1.2",
     "styled-components": "4.0.2",
     "typeface-roboto": "0.0.54"
   },
