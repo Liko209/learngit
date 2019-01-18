@@ -64,10 +64,16 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .removeTeamMembers(members, teamId);
   }
 
-  isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean {
-    return this.getTeamController()
-      .getTeamPermissionController()
-      .isCurrentUserHasPermission(group, type);
+  async isCurrentUserHasPermission(
+    groupId: number,
+    type: PERMISSION_ENUM,
+  ): Promise<boolean> {
+    const group = await this.getById(groupId);
+    return group
+      ? this.getTeamController()
+          .getTeamPermissionController()
+          .isCurrentUserHasPermission(group, type)
+      : false;
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {

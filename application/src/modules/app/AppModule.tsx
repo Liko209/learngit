@@ -15,10 +15,12 @@ import history from '@/history';
 import { GLOBAL_KEYS } from '@/store/constants';
 import '@/i18n';
 
+import { AppStore } from './store';
 import { App } from './container';
 
 import { RouterService } from '@/modules/router';
 import { config as appConfig } from './app.config';
+import { HomeService } from '@/modules/home';
 
 import './index.css';
 import { generalErrorHandler } from '@/utils/error';
@@ -28,8 +30,10 @@ import { generalErrorHandler } from '@/utils/error';
  * it would be the first module being bootstrapped
  */
 class AppModule extends AbstractModule {
-  @inject(RouterService)
-  private _routerService: RouterService;
+  @inject(RouterService) private _routerService: RouterService;
+  @inject(HomeService) private _homeService: HomeService;
+  @inject(AppStore) private _appStore: AppStore;
+  private _subModuleRegistered: boolean = false;
 
   async bootstrap() {
     try {
@@ -74,12 +78,11 @@ class AppModule extends AbstractModule {
       CONFIG,
     } = service;
 
-    window.jupiterElectron = {
-      ...window.jupiterElectron,
-      onPowerMonitorEvent: (actionName: string) => {
+    if (window.jupiterElectron) {
+      window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
         socketManager.onPowerMonitorEvent(actionName);
-      },
-    };
+      };
+    }
 
     // subscribe service notification to global store
     const globalStore = storeManager.getGlobalStore();
@@ -92,6 +95,25 @@ class AppModule extends AbstractModule {
         const currentCompanyId = UserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+
+        if (!this._subModuleRegistered) {
+          // TODO register subModule according to account profile
+          this._homeService.registerSubModules([
+            'dashboard',
+            'message',
+            'telephony',
+            'meeting',
+            'contact',
+            'calendar',
+            'task',
+            'note',
+            'file',
+            'setting',
+          ]);
+
+          // Avoid duplicate register
+          this._subModuleRegistered = true;
+        }
       }
     };
 
@@ -115,14 +137,14 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
       // 1. show loading
-      globalStore.set(GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING, true);
+      this._appStore.setGlobalLoading(true);
       // 2. clear store data
       storeManager.resetStores();
     });
 
     notificationCenter.on(SERVICE.SYNC_SERVICE.END_CLEAR_DATA, () => {
       // stop loading
-      globalStore.set(GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING, false);
+      this._appStore.setGlobalLoading(false);
       history.replace('/messages');
     });
 

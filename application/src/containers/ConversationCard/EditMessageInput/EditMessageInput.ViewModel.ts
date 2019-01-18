@@ -6,7 +6,7 @@
 
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
-import { PostService } from 'sdk/service';
+import { NewPostService } from 'sdk/module/post';
 import { getEntity } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
@@ -25,7 +25,7 @@ enum ERROR_TYPES {
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
-  private _postService: PostService;
+  private _postService: NewPostService;
   @computed
   get id() {
     return this.props.id;
@@ -45,7 +45,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   constructor(props: EditMessageInputProps) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = NewPostService.getInstance();
     this._exitEditMode = this._exitEditMode.bind(this);
     this._editPost = this._editPost.bind(this);
   }
@@ -102,14 +102,15 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   private async _editPost(content: string, ids: number[]) {
     try {
-      await this._postService.modifyPost({
+      await this._postService.editPost({
         text: content,
         groupId: this.gid,
         postId: this.id,
-        mentionsIds: ids,
+        mentionIds: ids,
       });
       this._exitEditMode();
     } catch (e) {
+      this._exitEditMode();
       // You do not need to handle the error because the message will display a resend
     }
   }

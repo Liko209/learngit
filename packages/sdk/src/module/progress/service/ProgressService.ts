@@ -7,8 +7,9 @@
 import { Progress } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ProgressCacheController } from '../controller/ProgressCacheController';
-
-class ProgressService extends EntityBaseService<Progress> {
+import { IProgressService } from './IProgressService';
+class ProgressService extends EntityBaseService<Progress>
+  implements IProgressService {
   static serviceName = 'ProgressService';
   private _progressCacheController: ProgressCacheController;
   constructor() {
