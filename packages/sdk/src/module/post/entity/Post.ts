@@ -7,6 +7,8 @@
 import { ExtendedBaseModel } from '../../models';
 import { PostItemData } from './PostItemData';
 import { IdModel } from '../../../framework/model';
+import { Item } from '../../item/entity';
+import { QUERY_DIRECTION } from '../../../dao/constants';
 
 export type Post = ExtendedBaseModel & {
   group_id: number;
@@ -32,4 +34,18 @@ export type Post = ExtendedBaseModel & {
 export type PostView = IdModel & {
   group_id: number;
   created_at: number;
+};
+
+export type IPostQuery = {
+  groupId: number;
+  limit?: number;
+  postId?: number;
+  direction?: QUERY_DIRECTION;
+};
+
+export type IPostResult = {
+  posts: Post[];
+  items: Item[];
+  hasMore: boolean;
+  limit?: number;
 };

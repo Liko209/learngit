@@ -17,11 +17,13 @@ import { daoManager, PostDao } from '../../../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
 import { ProgressService } from '../../progress';
+import { PostFetchController } from './PostFetchController';
 
 class PostController {
   private _actionController: PostActionController;
   private _sendController: SendPostController;
   private _preInsertController: PreInsertController;
+  private _fetchController: PostFetchController;
 
   constructor() {}
 
@@ -52,6 +54,7 @@ class PostController {
     }
     return this._actionController;
   }
+
   getSendPostController(): SendPostController {
     if (!this._sendController) {
       this._sendController = new SendPostController(
@@ -60,6 +63,12 @@ class PostController {
       );
     }
     return this._sendController;
+  }
+
+  getPostFetchController() {
+    if (!this._fetchController) {
+      this._fetchController = new PostFetchController();
+    }
   }
 
   private _getPreInsertController() {
