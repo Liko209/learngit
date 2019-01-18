@@ -16,21 +16,20 @@ const GifSource = 'giphy';
 
 class FileItemUtils {
   static isSupportPreview<T extends { type: string }>(file: T) {
-    return SupportPreviewImageExtensions.includes(file.type);
+    return SupportPreviewImageExtensions.includes(file.type.toLowerCase());
   }
 
   static isImageResizable<T extends { type: string }>(file: T) {
-    return ResizableExtensions.includes(file.type);
+    return ResizableExtensions.includes(file.type.toLowerCase());
   }
 
   static isGifItem<T extends { type: string }>(file: T) {
-    const type = file.type.toLocaleLowerCase();
-    return GifFileExtensions.includes(type);
+    return GifFileExtensions.includes(file.type.toLowerCase());
   }
 
   static isImageItem<T extends { type: string }>(file: T) {
-    const type = file.type.toLocaleLowerCase();
-    return ImageFileExtensions.includes(type) || type.indexOf('image') !== -1;
+    const type = file.type.toLowerCase();
+    return ImageFileExtensions.includes(type) || type.indexOf('image/') !== -1;
   }
 
   static getUrl<T extends { versions: ItemVersions[] }>(file: T) {
