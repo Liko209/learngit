@@ -8,7 +8,6 @@ import { action, observable } from 'mobx';
 import history from '@/history';
 import historyStack from '@/common/HistoryStack';
 import { StoreViewModel } from '@/store/ViewModel';
-import isElectron from '@/common/isElectron';
 
 class HomeViewModel extends StoreViewModel {
   @observable
@@ -24,20 +23,18 @@ class HomeViewModel extends StoreViewModel {
   }
 
   private _initHistoryListen() {
-    if (isElectron) {
-      history.listen((location: Location, action: Action) => {
-        const { state, pathname } = location;
-        if (state && state.navByBackNForward) {
-          return;
-        }
-        if (action === 'PUSH') {
-          historyStack.push(pathname);
-        }
-        if (action === 'REPLACE') {
-          historyStack.replace(pathname);
-        }
-      });
-    }
+    history.listen((location: Location, action: Action) => {
+      const { state, pathname } = location;
+      if (state && state.navByBackNForward) {
+        return;
+      }
+      if (action === 'PUSH') {
+        historyStack.push(pathname);
+      }
+      if (action === 'REPLACE') {
+        historyStack.replace(pathname);
+      }
+    });
   }
 }
 export { HomeViewModel };
