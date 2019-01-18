@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import { translate } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
@@ -13,12 +12,13 @@ import { Notification } from '@/containers/Notification';
 import { ContactSearch } from '@/containers/ContactSearch';
 import portalManager from '@/common/PortalManager';
 import { errorHelper } from 'sdk/error';
+import { generalErrorHandler } from '@/utils/error';
 
 import { ViewProps } from './types';
 
 @observer
 class AddMembers extends React.Component<ViewProps> {
-  onClose = () => portalManager.dismiss();
+  handleClose = () => portalManager.dismiss();
 
   renderFlashToast = (message: string) => {
     Notification.flashToast({
@@ -30,7 +30,7 @@ class AddMembers extends React.Component<ViewProps> {
     });
   }
 
-  handerAddTeam = async () => {
+  handleAddTeam = async () => {
     const { addTeamMembers } = this.props;
     try {
       portalManager.dismiss();
@@ -45,12 +45,14 @@ class AddMembers extends React.Component<ViewProps> {
         this.renderFlashToast('AddTeamMembersBackendError');
         return false;
       }
-      throw error;
+      generalErrorHandler(error);
+      return false;
     }
   }
 
   render() {
     const {
+      t,
       disabledOkBtn,
       handleSearchContactChange,
       isOffline,
@@ -63,8 +65,8 @@ class AddMembers extends React.Component<ViewProps> {
         size={'medium'}
         okBtnProps={{ disabled: isOffline || disabledOkBtn }}
         title={t('AddTeamMembers')}
-        onCancel={this.onClose}
-        onOK={this.handerAddTeam}
+        onCancel={this.handleClose}
+        onOK={this.handleAddTeam}
         okText={t('Add')}
         cancelText={t('Cancel')}
       >
