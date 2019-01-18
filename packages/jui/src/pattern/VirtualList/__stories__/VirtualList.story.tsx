@@ -12,6 +12,7 @@ import {
   IVirtualListDataSource,
   JuiVirtualCellOnLoadFunc,
   JuiVirtualCellProps,
+  TableView,
 } from '..';
 import { IndexRange, Index } from 'react-virtualized';
 import { FileItem } from './FileItem';
@@ -67,6 +68,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   class Content extends Component {
     private _listRef: RefObject<JuiVirtualList> = createRef();
@@ -74,7 +76,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
       setTimeout(() => {
         const { current } = this._listRef;
         if (current) {
-          current.scrollToCell(cellIndex);
+          // current.scrollToCell(cellIndex);
         }
       },         100);
     }
@@ -82,6 +84,89 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
       return (
         <div style={style}>
           <JuiVirtualList ref={this._listRef} dataSource={dataSource} />
+        </div>
+      );
+    }
+  }
+  return <Content />;
+});
+
+storiesOf('Pattern/VirtualList', module).add('TableView', () => {
+  let count = number('cell count', 1000);
+  if (count < 0) {
+    count = 1000;
+  }
+  const part = ['Hello', 'This is title', 'A long text'];
+
+  type CellProps = {
+    title: string;
+    onLoad?: () => void;
+  };
+
+  const StaticCell = ({ title, ...rest }: CellProps) => (
+    <div {...rest}>{title}</div>
+  );
+
+  class DataSource implements IVirtualListDataSource {
+    private _list: string[] = [];
+
+    countOfCell = () => {
+      return count;
+    }
+
+    cellAtIndex = (index: number, style: CSSProperties) => {
+      const text = `${this._list[index]}-${index + 1}`;
+      const s = {
+        ...style,
+        borderBottom: '1px dashed',
+      };
+      return <StaticCell title={text} style={s} key={index} />;
+    }
+
+    isRowLoaded = (index: number) => {
+      return index < this._list.length;
+    }
+
+    loadMore = async (startIndex: number, endIndex: number) => {
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          const array: string[] = Array(endIndex - startIndex)
+            .fill(part)
+            .flat();
+          this._list = this._list.concat(array);
+          resolve(this._list);
+        },         5000);
+      });
+      return await p;
+    }
+
+    fixedCellHeight(): number {
+      return 44;
+    }
+  }
+
+  const dataSource = new DataSource();
+
+  const style = {
+    width: 400,
+    height: 400,
+    border: '1px solid',
+    display: 'flex',
+  };
+  class Content extends Component {
+    private _listRef: RefObject<JuiVirtualList> = createRef();
+    componentDidMount() {
+      setTimeout(() => {
+        const { current } = this._listRef;
+        if (current) {
+          // current.scrollToCell(cellIndex);
+        }
+      },         100);
+    }
+    render() {
+      return (
+        <div style={style}>
+          <TableView ref={this._listRef} dataSource={dataSource} />
         </div>
       );
     }
@@ -169,6 +254,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   class Content extends Component {
     private _listRef: RefObject<JuiVirtualList> = createRef();
@@ -176,7 +262,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
       setTimeout(() => {
         const { current } = this._listRef;
         if (current) {
-          current.scrollToCell(cellIndex);
+          // current.scrollToCell(cellIndex);
         }
       },         100);
     }
@@ -218,6 +304,7 @@ storiesOf('Pattern/VirtualList', module).add('Empty VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   return (
     <div style={style}>
@@ -290,6 +377,7 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   return (
     <div style={style}>
@@ -375,6 +463,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   const Comp = () => (
     <div style={style}>

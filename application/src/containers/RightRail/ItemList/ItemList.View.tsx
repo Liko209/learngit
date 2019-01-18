@@ -10,9 +10,9 @@ import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 // import { debounce } from 'lodash';
 import {
-  // JuiVirtualList,
+  JuiVirtualList,
   IVirtualListDataSource,
-  JuiVirtualListLoader,
+  // JuiVirtualListLoader,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
@@ -23,15 +23,19 @@ import {
 } from 'jui/pattern/RightShelf';
 import { TAB_CONFIG, TabConfig } from './config';
 
+async function delay(time: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(resolve, time);
+  });
+}
+
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
   state = { loadingMore: false };
-  private _fetchMore: any;
   private _config: TabConfig;
   constructor(props: ViewProps & Props) {
     super(props);
-    this._fetchMore = this.props.fetchNextPageItems;
     this._config = TAB_CONFIG.find(looper => looper.type === props.type)!;
   }
   countOfCell() {
@@ -57,6 +61,10 @@ class ItemListView extends React.Component<ViewProps & Props>
     return 52;
   }
 
+  overscanCount() {
+    return 0;
+  }
+
   renderEmptyContent = () => {
     const { type } = this.props;
     return emptyView(type);
@@ -69,7 +77,8 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    const result = await this._fetchMore();
+    const result = await this.props.fetchNextPageItems();
+    await delay(5000);
     return result;
   }
 
@@ -107,7 +116,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             {t(subheader)} ({this.props.totalCount})
           </JuiListSubheader>
         )}
-        <JuiVirtualListLoader dataSource={this} />
+        <JuiVirtualList dataSource={this} />
       </JuiRightShelfContent>
     );
   }

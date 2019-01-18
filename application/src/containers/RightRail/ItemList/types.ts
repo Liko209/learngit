@@ -13,7 +13,7 @@ type Props = {
 type ViewProps = {
   ids: number[];
   totalCount: number;
-  fetchNextPageItems: () => void;
+  fetchNextPageItems: () => Promise<any>;
 };
 
 export { Props, ViewProps };
