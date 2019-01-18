@@ -10,6 +10,7 @@ import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ViewProps, Props } from './types';
 import { FileItem } from '../FileItem';
 import { EventItem } from '../EventItem';
+import { ImageItem } from '../ImageItem';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { debounce } from 'lodash';
 import {
@@ -25,11 +26,13 @@ import { emptyView } from './Empty';
 const itemType = {
   [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: FileItem,
   [RIGHT_RAIL_ITEM_TYPE.EVENTS]: EventItem,
+  [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES]: ImageItem,
 };
 
 const subheaderType = {
   [RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES]: 'fileListSubheader',
   [RIGHT_RAIL_ITEM_TYPE.EVENTS]: 'eventListSubheader',
+  [RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES]: 'imageListSubheader',
 };
 
 @observer

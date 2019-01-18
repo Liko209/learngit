@@ -117,6 +117,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     if (
       this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
       this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS ||
       this.type === RIGHT_RAIL_ITEM_TYPE.LINKS ||
       this.type === RIGHT_RAIL_ITEM_TYPE.NOTES
     ) {

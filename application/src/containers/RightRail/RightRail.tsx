@@ -72,7 +72,7 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
-          <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
+          <JuiTabs defaultActiveIndex={0} tag="right-shelf" width={width}>
             {TAB_CONFIG.map(
               (
                 {
@@ -88,7 +88,11 @@ class RightRailComponent extends React.Component<Props> {
                 },
                 index: number,
               ) => (
-                <JuiTab key={index} title={t(title)}>
+                <JuiTab
+                  key={index}
+                  title={t(title)}
+                  automationId={`right-shelf-${title}`}
+                >
                   <ItemList
                     type={type}
                     groupId={id}

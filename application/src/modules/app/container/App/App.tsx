@@ -20,6 +20,7 @@ import { TopBanner } from '../TopBanner';
 import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
+import config from '@/config';
 
 @observer
 class App extends React.Component {
@@ -52,19 +53,27 @@ class App extends React.Component {
   public render() {
     const { globalLoading } = this._appStore;
     return (
-      <ThemeProvider>
-        {globalLoading ? (
-          <JuiContentLoader />
-        ) : (
-          <>
-            <Title />
-            <TopBanner />
-            <Router />
-            <AboutView />
-            {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
-          </>
-        )}
-      </ThemeProvider>
+      <>
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href={config.get('iconLink')}
+          crossOrigin="anonymous"
+        />
+        <ThemeProvider>
+          {globalLoading ? (
+            <JuiContentLoader />
+          ) : (
+            <>
+              <Title />
+              <TopBanner />
+              <Router />
+              <AboutView />
+              {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
+            </>
+          )}
+        </ThemeProvider>
+      </>
     );
   }
 
