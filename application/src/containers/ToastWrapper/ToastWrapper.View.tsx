@@ -16,9 +16,16 @@ class ToastWrapperView extends React.Component<ToastWrapperViewProps> {
     return this.props.toasts.map(toast => <Toast key={toast.id} {...toast} />);
   }
   render() {
-    return (
-      <JuiToastWrapper {...this.props}>{this.renderToasts()}</JuiToastWrapper>
-    );
+    let paddingTop;
+    const mainSection = document.querySelector('#app-main-section');
+    if (mainSection) {
+      paddingTop = (mainSection as HTMLElement).offsetTop;
+    }
+    return this.props.toasts.length ? (
+      <JuiToastWrapper paddingTop={paddingTop} {...this.props}>
+        {this.renderToasts()}
+      </JuiToastWrapper>
+    ) : null;
   }
 }
 
