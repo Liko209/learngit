@@ -267,6 +267,13 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
+  get joinTeamButton() {
+    return this.getSelectorByIcon('add_member');
+  }
+
+  async joinTeam() {
+    await this.t.click(this.joinTeamButton);
+  }
 }
 
 class Member extends BaseWebComponent {

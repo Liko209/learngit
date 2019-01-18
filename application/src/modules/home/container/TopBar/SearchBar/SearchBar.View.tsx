@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { debounce } from 'lodash';
 import {
@@ -15,9 +16,10 @@ import {
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiButton } from 'jui/components/Buttons';
-import { Dialog } from '@/containers/Dialog';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
+import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
+import { joinTeam } from '@/common/joinPublicTeam';
 // import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
@@ -32,7 +34,6 @@ const SEARCH_DELAY = 100;
 
 type State = {
   terms: string[];
-  focus: boolean;
   persons: SearchResult['persons'];
   groups: SearchResult['groups'];
   teams: SearchResult['teams'];
@@ -46,10 +47,12 @@ const defaultSection = {
 
 type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 
+@observer
 class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _debounceSearch: Function;
   private _searchItems: HTMLElement[];
   private timer: number;
+  textInput: React.RefObject<JuiSearchInput> = React.createRef();
 
   state = {
     terms: [],
@@ -71,8 +74,19 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
         groups,
         persons,
         teams,
+        selectIndex: -1,
       });
     },                              SEARCH_DELAY);
+  }
+
+  componentDidMount() {
+    visibilityChangeEvent(() => {
+      const { focus } = this.props;
+      if (focus) {
+        this.textInput.current!.blurTextInput();
+        this.onClose();
+      }
+    });
   }
 
   private _resetData() {
@@ -98,9 +112,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onFocus = () => {
-    this.setState({
-      focus: true,
-    });
+    const { updateFocus } = this.props;
+    updateFocus(true);
   }
 
   onClear = () => {
@@ -110,12 +123,12 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onClose = () => {
-    const { closeSearchBar, isShowSearchBar } = this.props;
+    const { closeSearchBar, isShowSearchBar, updateFocus } = this.props;
     if (isShowSearchBar) {
       closeSearchBar();
     }
+    updateFocus(false);
     this.setState({
-      focus: false,
       selectIndex: -1,
     });
   }
@@ -147,30 +160,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await this._goToConversation(id);
   }
 
-  addPublicTeam = (item: SortableModel<Group>) => (
-    e: React.MouseEvent<HTMLElement>,
-  ) => {
-    const { joinTeam } = this.props;
-    e.stopPropagation();
-    Dialog.confirm({
-      title: t('joinTeamTitle'),
-      content: t('joinTeamContent', { teamName: item.displayName }),
-      okText: t('join'),
-      cancelText: t('Cancel'),
-      onOK: () =>
-        goToConversation({
-          id: item.id,
-          async beforeJump(conversationId: number) {
-            await joinTeam(conversationId);
-          },
-        }),
-    });
-  }
-
   private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
-        onClick={this.addPublicTeam(item)}
+        onClick={joinTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
@@ -293,6 +286,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
   }
 
+  onKeyEsc = () => this.onClose();
+
   searchBarBlur = () => {
     this.timer = setTimeout(() => {
       this.onClose();
@@ -304,8 +299,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   render() {
-    const { terms, persons, groups, teams, focus } = this.state;
-    const { searchValue } = this.props;
+    const { terms, persons, groups, teams } = this.state;
+    const { searchValue, focus } = this.props;
     return (
       <JuiSearchBar
         onClose={this.onClose}
@@ -319,9 +314,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             enter: this.onEnter,
             up: this.onKeyUp,
             down: this.onKeyDown,
+            esc: this.onKeyEsc,
           }}
         >
           <JuiSearchInput
+            ref={this.textInput}
             focus={focus}
             onFocus={this.onFocus}
             onClear={this.onClear}
