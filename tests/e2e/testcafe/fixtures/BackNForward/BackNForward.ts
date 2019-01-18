@@ -119,4 +119,5 @@ test(formalName('reLoad should disable backward and forward button', ['P2', 'JPT
     await forwardButton.shouldBeDisabled();
     await backButton.shouldBeDisabled();
   });
+  
 });
