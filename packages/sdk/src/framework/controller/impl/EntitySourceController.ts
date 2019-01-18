@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
+import { ControllerUtils } from '../ControllerUtils';
 
 class EntitySourceController<T extends IdModel = IdModel>
   implements IEntitySourceController<T> {
@@ -62,9 +63,7 @@ class EntitySourceController<T extends IdModel = IdModel>
   }
 
   getEntityNotificationKey() {
-    const modelName = this.dao.modelName.toUpperCase();
-    const eventKey: string = `ENTITY.${modelName}`;
-    return eventKey;
+    return ControllerUtils.getEntityNotificationKey(this.dao);
   }
 }
 
