@@ -22,8 +22,9 @@ export class TestDatabase implements IDatabase {
 
   close() {}
   async delete() {}
+
   getCollection<T extends object>(name: string) {
-    return null;
+    return { delete: () => {} };
   }
 
   async getTransaction(

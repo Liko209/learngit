@@ -1,26 +1,21 @@
 import 'testcafe';
 import * as JSZip from 'jszip';
 import * as fs from 'fs';
-import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { SITE_URL, SITE_ENV, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
-import { BeatsClient, Run } from 'bendapi';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
-let beatsClient: BeatsClient;
-let runId = getRunIdFromFile();
+const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
 
-if (ENABLE_REMOTE_DASHBOARD) {
-  beatsClient = new BeatsClient(DASHBOARD_API_KEY, DASHBOARD_URL);
-}
+// _runId is a share state
+let _runId = getRunIdFromFile();
 
 function getRunIdFromFile(runIdFile: string = './runId') {
-  if (!ENABLE_REMOTE_DASHBOARD)
-    return null;
   if (fs.existsSync(runIdFile)) {
     const content = fs.readFileSync(runIdFile, 'utf8');
     return Number(content);
@@ -28,11 +23,9 @@ function getRunIdFromFile(runIdFile: string = './runId') {
   return null;
 }
 
-export async function getOrCreateRunId() {
-  if (!ENABLE_REMOTE_DASHBOARD)
-    return null;
-  if (!runId) {
-    const runName = RUN_NAME || uuid();
+export async function getOrCreateRunId(runIdFile: string = './runId') {
+  if (!_runId) {
+    const runName = RUN_NAME;
     const metadata = {};
     for (const key in ENV_OPTS) {
       metadata[key] = JSON.stringify(ENV_OPTS[key]);
@@ -40,8 +33,7 @@ export async function getOrCreateRunId() {
     for (const key in RUNNER_OPTS) {
       if ([
         'EXCLUDE_TAGS',
-        'INCLUDE_TAGS',
-        'QUARANTINE_MODE'
+        'INCLUDE_TAGS'
       ].indexOf(key) > 0)
         metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
     }
@@ -51,24 +43,19 @@ export async function getOrCreateRunId() {
         'HOST_NAME',
         'BUILD_URL',
         'SITE_URL',
-        'gitlabActionType',
-        'gitlabBranch',
-        'gitlabMergedByUser',
-        'gitlabMergeRequestLastCommit',
-        'gitlabMergeRequestTitle',
-        'gitlabSourceBranch',
-        'gitlabTargetBranch',
-      ].indexOf(key) > 0)
+        'SITE_ENV',
+      ].indexOf(key) > 0 || key.startsWith('gitlab'))
         metadata[key] = process.env[key];
     }
-    const run = await beatsClient.createRun({
-      name: runName,
-      metadata,
-    } as Run);
-    runId = run ? run.id : null;
-    console.log(`a new Run Id is created: ${runId}`);
+    const run = new Run();
+    run.name = runName;
+    run.metadata = metadata;
+    run.hostName = process.env.HOST_NAME;
+    const res = await beatsClient.createRun(run).catch(() => null);
+    _runId = res ? res.body.id : null;
+    console.log(`a new Run Id is created: ${_runId}`);
   }
-  return runId;
+  return _runId;
 }
 
 export function setupCase(accountType: string) {
@@ -89,48 +76,56 @@ export function setupCase(accountType: string) {
       ENV_OPTS.JUPITER_APP_KEY,
     )
     await h(t).logHelper.setup();
-    await t.resizeWindow(1280, 720);
+    await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);
     await t.maximizeWindow();
   }
 }
 
 export function teardownCase() {
   return async (t: TestController) => {
+    // release account
+    await h(t).dataHelper.teardown();
+
+    // convert screenshot to webp format
     const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
     if (failScreenShotPath) {
       t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
     };
+
+    // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
-    const consoleLogPath = MiscUtils.createTmpFilePath("console_log.zip");
-    let zip = new JSZip();
-    zip.file('consoleLog.txt', JSON.stringify(consoleLog, null, 2));
-    await zip.generateAsync({ type: "nodebuffer" }).then(
-      function (content) {
-        fs.writeFileSync(consoleLogPath, content);
-      }
-    )
+    const zipConsoleLog = new JSZip();
+    zipConsoleLog.file('console-log.json', JSON.stringify(consoleLog, null, 2));
+    const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
     const warnConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['warn'], null, 2));
     const errorConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['error'], null, 2));
     const warnConsoleLogNumber = consoleLog['warn'].length;
     const errorConsoleLogNumber = consoleLog['error'].length;
-
-    let consoleLogObj: IConsoleLog = {
+    const consoleLogObj: IConsoleLog = {
       consoleLogPath,
       warnConsoleLogPath,
       errorConsoleLogPath,
       warnConsoleLogNumber,
       errorConsoleLogNumber
-    }
+    };
 
-    h(t).allureHelper.writeReport(consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
-    if (ENABLE_REMOTE_DASHBOARD) {
-      let runId = await getOrCreateRunId();
+    // dump account pool data
+    const zipRcData = new JSZip();
+    zipRcData.file('rc-data.json', JSON.stringify(h(t).dataHelper.originData, null, 2));
+    const rcDataPath = MiscUtils.createTmpFile(await zipRcData.generateAsync({ type: "nodebuffer" }), 'rc-data.zip');
+
+    // get account type
+    const accountType = h(t).dataHelper.rcData.mainCompany.type;
+
+    // create allure report
+    h(t).allureHelper.writeReport(consoleLogObj, accountType, rcDataPath);
+
+    // create beats report when ENABLE_REMOTE_DASHBOARD=true
+    if (beatsClient) {
+      const runId = await getOrCreateRunId();
       if (runId) {
-        await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, h(t).dataHelper.rcData.mainCompany.type);
-      } else {
-        console.error("Couldn't create Run for the test, please check the dashboard connection!")
+        await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
-    await h(t).dataHelper.teardown();
   }
 }
