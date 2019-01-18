@@ -3,35 +3,40 @@
  * @Date: 2019-01-03 13:54:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { ControllerBuilder } from '../../../../../framework/controller/impl/ControllerBuilder';
+import {
+  buildRequestController,
+  buildEntityPersistentController,
+  buildEntitySourceController,
+  buildPartialModifyController,
+} from '../../../../../framework/controller';
 import { FileUploadController } from '../controller/FileUploadController';
 import { Api } from '../../../../../api';
 import { daoManager, ItemDao } from '../../../../../dao';
 import { FileItem } from '../entity';
 import { IItemService } from '../../../service/IItemService';
+import { Item } from '../../../entity';
 
 class FileItemController {
   private _fileUploadController: FileUploadController;
-  constructor(
-    private _itemService: IItemService,
-    private _controllerBuilder: ControllerBuilder<FileItem>,
-  ) {}
+  constructor(private _itemService: IItemService) {}
 
   get fileUploadController() {
     if (!this._fileUploadController) {
-      const itemRequestController = this._controllerBuilder.buildRequestController(
-        {
-          basePath: '/file',
-          networkClient: Api.glipNetworkClient,
-        },
+      const itemRequestController = buildRequestController<Item>({
+        basePath: '/file',
+        networkClient: Api.glipNetworkClient,
+      });
+
+      const persistentController = buildEntityPersistentController<Item>(
+        daoManager.getDao(ItemDao),
       );
 
-      const entitySourceController = this._controllerBuilder.buildEntitySourceController(
-        daoManager.getDao(ItemDao),
+      const entitySourceController = buildEntitySourceController<Item>(
+        persistentController,
         itemRequestController,
       );
 
-      const partialModifyController = this._controllerBuilder.buildPartialModifyController(
+      const partialModifyController = buildPartialModifyController<Item>(
         entitySourceController,
       );
 

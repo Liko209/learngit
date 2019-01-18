@@ -10,6 +10,7 @@ import _ from 'lodash';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';
 import { IPartialModifyController } from '../interface/IPartialModifyController';
+import { transform } from '../../../service/utils';
 
 class PartialModifyController<T extends IdModel = IdModel>
   implements IPartialModifyController<T> {
@@ -32,7 +33,7 @@ class PartialModifyController<T extends IdModel = IdModel>
     let result: T | null = null;
 
     do {
-      const originalEntity = await this.entitySourceController.getEntity(id);
+      const originalEntity = await this.entitySourceController.get(id);
       if (!originalEntity) {
         mainLogger.warn('handlePartialUpdate: originalEntity is nil');
         break;
@@ -182,7 +183,14 @@ class PartialModifyController<T extends IdModel = IdModel>
     const originalEntities: T[] = [originalEntity];
     const updatedEntities: T[] = [updatedEntity];
     const partialEntities: Partial<Raw<T>>[] = [partialEntity];
-    await this.entitySourceController.bulkUpdate(partialEntities);
+
+    const transformedModels: T[] = partialEntities.map(
+      (item: Partial<Raw<T>>) => {
+        return transform(item);
+      },
+    );
+
+    await this.entitySourceController.bulkUpdate(transformedModels);
     if (doPartialNotify) {
       doPartialNotify(originalEntities, updatedEntities, partialEntities);
     } else {

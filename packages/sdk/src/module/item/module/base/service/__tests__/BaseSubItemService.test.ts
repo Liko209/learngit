@@ -6,6 +6,8 @@
 
 import { BaseSubItemService } from '../BaseSubItemService';
 import { SubItemDao } from '../../dao';
+import { daoManager, DeactivatedDao } from '../../../../../../dao';
+import { TestDatabase } from '../../../../../../framework/controller/__tests__/TestTypes';
 
 jest.mock('../../dao');
 
@@ -17,6 +19,11 @@ function clearMocks() {
 
 describe('BaseSubItemService', () => {
   const subItemDao = new SubItemDao('', null);
+  const deactivatedDao = new DeactivatedDao(new TestDatabase());
+  jest.spyOn(daoManager, 'getDao').mockImplementation(() => {
+    return deactivatedDao;
+  });
+
   const baseSubItemService = new BaseSubItemService(subItemDao);
 
   beforeAll(async () => {

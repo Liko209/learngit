@@ -10,16 +10,21 @@ import { Raw } from '../../../framework/model';
 import { TestEntity, TestDatabase } from './TestTypes';
 import { BaseDao, DeactivatedDao } from '../../../dao';
 import notificationCenter from '../../../service/notificationCenter';
+import { EntityPersistentController } from '../impl/EntityPersistentController';
 
 describe('PartialModelController', () => {
   let partialModifyController: PartialModifyController;
+
   let entitySourceController: EntitySourceController<TestEntity>;
   beforeEach(() => {
     const dao = new BaseDao<TestEntity>('TestEntity', new TestDatabase());
     const deactivatedDao = new DeactivatedDao(new TestDatabase());
+    const entityPersistentController: EntityPersistentController<
+      TestEntity
+    > = new EntityPersistentController(dao);
 
     entitySourceController = new EntitySourceController<TestEntity>(
-      dao,
+      entityPersistentController,
       deactivatedDao,
       undefined,
     );
@@ -37,7 +42,7 @@ describe('PartialModelController', () => {
     it('should trigger partial update event once, and update successfully', async () => {
       const updatedEntity = { id: 1, name: 'someone', note: 'a player' };
       jest
-        .spyOn(entitySourceController, 'getEntity')
+        .spyOn(entitySourceController, 'get')
         .mockResolvedValue({ id: 1, name: 'trump', note: 'a player' });
 
       jest
@@ -77,7 +82,7 @@ describe('PartialModelController', () => {
 
     it('should not trigger partial update event once, when no changes', async () => {
       jest
-        .spyOn(entitySourceController, 'getEntity')
+        .spyOn(entitySourceController, 'get')
         .mockResolvedValue({ id: 1, name: 'someone', note: 'a player' });
 
       jest
@@ -112,7 +117,7 @@ describe('PartialModelController', () => {
 
     it('should trigger rollback, when exception', async () => {
       jest
-        .spyOn(entitySourceController, 'getEntity')
+        .spyOn(entitySourceController, 'get')
         .mockResolvedValue({ id: 1, name: 'someone', note: 'a player' });
 
       jest
