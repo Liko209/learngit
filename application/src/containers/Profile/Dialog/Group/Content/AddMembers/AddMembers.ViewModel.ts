@@ -28,6 +28,7 @@ class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
   }
 
+  @action
   handleSearchContactChange = (items: SelectedMember[]) => {
     const members = items.map((item: any) => {
       if (item.id) {
