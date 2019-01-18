@@ -13,7 +13,6 @@ import { AvatarActions } from './AvatarActions';
 import { NewActions } from './NewActions';
 import { BackNForward } from './BackNForward';
 import { SearchBar } from './SearchBar';
-import isElectron from '@/common/isElectron';
 
 type TopBarProps = WithNamespaces & {
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
@@ -58,7 +57,7 @@ class TopBar extends React.Component<TopBarProps> {
           NewActions={NewActions}
           SearchBar={SearchBar}
           Logo={this._Logo}
-          BackNForward={isElectron ? BackNForward : undefined}
+          BackNForward={BackNForward}
         />
       </React.Fragment>
     );
