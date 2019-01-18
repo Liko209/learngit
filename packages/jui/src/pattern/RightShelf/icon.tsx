@@ -6,13 +6,13 @@
 import React from 'react';
 import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
-import { grey, width, height, spacing } from '../../foundation/utils';
+import { grey, width, height } from '../../foundation/utils';
 
 const JuiIconWrapper = styled.div`
   background: ${grey('100')};
   width: ${width(9)};
   height: ${height(9)};
-  border-radius: ${spacing(1)};
+  border-radius: ${({ theme }) => theme.shape.borderRadius};
   display: flex;
   justify-content: center;
   align-items: center;
