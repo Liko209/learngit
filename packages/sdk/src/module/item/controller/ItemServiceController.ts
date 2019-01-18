@@ -10,7 +10,7 @@ import { ItemActionController } from './ItemActionController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
 import { daoManager, ItemDao } from '../../../dao';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
@@ -107,18 +107,11 @@ class ItemServiceController {
   async handleSanitizedItems(incomingItems: Item[]) {
     const typeItemsMap: Map<number, Item[]> = new Map();
     incomingItems.forEach((item: Item) => {
-      const type = GlipTypeUtil.extractTypeId(item.id);
-      switch (type) {
-        case TypeDictionary.TYPE_ID_FILE:
-          typeItemsMap.has(TypeDictionary.TYPE_ID_FILE)
-            ? (typeItemsMap.get(TypeDictionary.TYPE_ID_FILE) as Item[]).push(
-                item,
-              )
-            : typeItemsMap.set(TypeDictionary.TYPE_ID_FILE, [item]);
-          break;
-        default:
-          break;
-      }
+      this._saveItemsToTypeIdMap(
+        GlipTypeUtil.extractTypeId(item.id),
+        typeItemsMap,
+        item,
+      );
     });
 
     typeItemsMap.forEach(
@@ -128,8 +121,21 @@ class ItemServiceController {
     );
   }
 
+  private _saveItemsToTypeIdMap(
+    typeId: number,
+    typeItemsMap: Map<number, Item[]>,
+    item: Item,
+  ) {
+    typeItemsMap.has(typeId)
+      ? (typeItemsMap.get(typeId) as Item[]).push(item)
+      : typeItemsMap.set(typeId, [item]);
+  }
+
   private async _updateSanitizedItems(typeId: number, items: Item[]) {
     const subItemService = this.getSubItemService(typeId);
+    if (!subItemService) {
+      return;
+    }
     const deactivatedItems = items.filter(item => item.deactivated);
     deactivatedItems.forEach((item: Item) => {
       subItemService.deleteItem(item.id);

@@ -212,6 +212,7 @@
   "events": "Events",
   "integrations": "Integrations",
   "fileListSubheader": "Files",
+  "linkListSubheader": "Links",
   "imageListSubheader": "Images",
   "youHaveNothingPinnedYet": "You have nothing pinned yet",
   "noPinSubText": "Anything you pin shows up here so you can reference it later.",
