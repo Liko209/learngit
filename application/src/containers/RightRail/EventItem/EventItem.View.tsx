@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-// import { t } from 'i18next';
 import { observer } from 'mobx-react';
 import {
   JuiListItemText,
@@ -13,7 +12,6 @@ import {
   JuiListItemSecondaryText,
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
-// import { JuiEventIcon } from 'jui/pattern/RightShelf';
 import { JuiEventIcon, JuiEventRepeatIcon } from 'jui/pattern/RightShelf';
 import { ViewProps } from './types';
 

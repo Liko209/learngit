@@ -10,7 +10,7 @@ import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
 
 enum REPEAT_ICON_TYPE {
-  repeat = 'event',
+  repeat = 'repeat',
 }
 
 const StyledRepeatIcon = styled(JuiIconography)`
