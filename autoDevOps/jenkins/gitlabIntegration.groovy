@@ -408,7 +408,7 @@ node(buildNode) {
             }
         )
 
-        condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
+        condStage (name: 'E2E Automation', enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
             withEnv([
@@ -433,7 +433,7 @@ node(buildNode) {
                 sh 'npm install --unsafe-perm'
                 if ('true' == env.E2E_ENABLE_REMOTE_DASHBOARD){
                     sh 'npx ts-node create-run-id.ts'
-                    report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl').trim()
+                    report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl || true').trim()
                 } else {
                     report.e2eUrl = 'beat dashboard is disabled'
                 }
