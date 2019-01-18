@@ -13,13 +13,14 @@ import {
   JuiListItemSecondaryText,
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
-import { JuiEventIcon } from 'jui/pattern/RightShelf';
+// import { JuiEventIcon } from 'jui/pattern/RightShelf';
+import { JuiEventIcon, JuiEventRepeatIcon } from 'jui/pattern/RightShelf';
 import { ViewProps } from './types';
 
 @observer
 class EventItemView extends React.Component<ViewProps> {
   render() {
-    const { text, createdTime, event } = this.props;
+    const { text, startTime, event, isRepeat } = this.props;
     const { color } = event;
     return (
       <JuiListItem>
@@ -30,7 +31,10 @@ class EventItemView extends React.Component<ViewProps> {
           primary={text}
           secondary={
             <JuiListItemSecondaryText>
-              <JuiListItemSecondarySpan>{createdTime}</JuiListItemSecondarySpan>
+              <JuiListItemSecondarySpan>
+                {isRepeat && <JuiEventRepeatIcon />}
+                {startTime}
+              </JuiListItemSecondarySpan>
             </JuiListItemSecondaryText>
           }
         />

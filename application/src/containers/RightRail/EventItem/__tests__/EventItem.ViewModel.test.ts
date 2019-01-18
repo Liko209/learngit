@@ -16,38 +16,35 @@ const mockEvent = {
   text: 'Google',
 };
 
-const mappingEntity = {
-  [ENTITY_NAME.EVENT_ITEM]: mockEvent,
-};
-
-const props = {
-  id: 1,
-};
-
-let vm: EventItemViewModel;
+const vm = new EventItemViewModel();
 
 describe('EventItemViewModel', () => {
-  beforeAll(() => {
-    (getEntity as jest.Mock).mockImplementation(
-      (name, id) => mappingEntity[name],
-    );
-  });
-
   beforeEach(() => {
     jest.clearAllMocks();
-    vm = new EventItemViewModel(props);
   });
 
-  describe('text', () => {
-    it('should be a event item title text when props incoming id', () => {
+  describe('get text()', () => {
+    it('should be a event item title text when props incoming id [JPT-845]', () => {
+      (getEntity as jest.Mock).mockReturnValue(mockEvent);
       expect(vm.text).toEqual(mockEvent.text);
+      (getEntity as jest.Mock).mockReturnValue({
+        text: 'Facebook',
+      });
+      expect(vm.text).toEqual('Facebook');
     });
   });
 
-  describe('createdTime', () => {
-    it('should be a date string when incoming timestamp', () => {
-      expect(vm.createdTime).toEqual(
+  describe('get startTime()', () => {
+    it('should be a date string when incoming timestamp [JPT-845]', () => {
+      (getEntity as jest.Mock).mockReturnValue(mockEvent);
+      expect(vm.startTime).toEqual(
         dateFormatter.dateAndTimeWithoutWeekday(moment(mockEvent.start)),
+      );
+      (getEntity as jest.Mock).mockReturnValue({
+        start: 1547631484105,
+      });
+      expect(vm.startTime).toEqual(
+        dateFormatter.dateAndTimeWithoutWeekday(moment(1547631484105)),
       );
     });
   });

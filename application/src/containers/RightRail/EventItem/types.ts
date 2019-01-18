@@ -11,8 +11,9 @@ type Props = {
 
 type ViewProps = {
   text: string;
-  createdTime: string;
+  startTime: string;
   event: EventItemModel;
+  isRepeat: boolean;
 };
 
 export { Props, ViewProps };

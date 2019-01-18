@@ -33,8 +33,11 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
   get personName() {
     if (this.file) {
       const { creatorId } = this.file;
-      return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId)
-        .userDisplayName;
+      if (typeof creatorId !== 'undefined') {
+        return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId)
+          .userDisplayName;
+      }
+      return '';
     }
     return '';
   }

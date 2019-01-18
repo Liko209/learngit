@@ -177,6 +177,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
     });
+    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
