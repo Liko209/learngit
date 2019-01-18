@@ -16,50 +16,65 @@ fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check the upload file and display on the right rail', ['Allen', 'Isaac', 'P1','JPT-907']), async t => {
+test(formalName('Check the upload file and display on the right rail', ['Allen', 'Isaac', 'P1', 'JPT-907']), async t => {
   const app = new AppRoot(t);
-  const homePage = app.homePage;
-  const conversationPage = homePage.messageTab.conversationPage;
-  const rightRail = homePage.rightRail;
-  const loginUser = h(t).rcData.mainCompany.users[0];
-  const teamName = `Team ${uuid()}`;
-  const filesPath = ['../../sources/1.txt'];
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const rightRail = app.homePage.messageTab.rightRail;
+  const filesPath = ['../../sources/1.txt', '../../sources/3.txt'];
   const message = uuid();
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).platform(loginUser).init();
 
-  // step 1 create team
-  await h(t).withLog('Then User can create a team', async () => {
+  let teamId;
+  await h(t).withLog('Given I have a team before login ', async () => {
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [loginUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await homePage.ensureLoaded();
-    await homePage.openAddActionMenu();
-    const createTeamModal = homePage.createTeamModal;
-    await homePage.addActionMenu.createTeamEntry.enter();
-    await createTeamModal.ensureLoaded();
-    await createTeamModal.setTeamName(teamName);
-    await createTeamModal.clickCreateButton();
-    await conversationPage.waitUntilVisible(conversationPage.getSelectorByAutomationId('conversation-page-header').withText(teamName));
+    await app.homePage.ensureLoaded();
   });
 
-  // step 2 upload one file
-  await h(t).withLog('Then User upload a file', async () => {
-    await conversationPage.uploadFilesToMessageAttachment(filesPath);
+  await h(t).withLog('When I open a team and  upload a text file', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
-
-    await rightRail.clickTab('Files');
-    await rightRail.waitUntilVisible(rightRail.listSubTitle.withText('Files'));
-    await t.expect(rightRail.listSubTitle.textContent).contains('1');
-    await t.expect(rightRail.nthListItem('rightRail-file-item', 0).find('span').withText('1.txt').exists).ok();
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-  // upload one file again
-  await h(t).withLog('Then User can upload another file again', async () => {
-    await conversationPage.uploadFilesToMessageAttachment(['../../sources/3.txt']);
+  const filesTab = rightRail.filesTab;
+  await h(t).withLog('And I click Files Tab', async () => {
+    await rightRail.filesEntry.enter();
+    await rightRail.filesEntry.shouldBeOpened();
+  })
+
+  await h(t).withLog('Then The files number is correct: 1', async () => {
+    await filesTab.waitUntilFilesItemExist();
+    await filesTab.countOnSubTitleShouldBe(1);
+    await filesTab.nthItem(0).nameShouldBe('1.txt');
+  });
+
+  await h(t).withLog('When I  upload another text file', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(filesPath[1]);
     await conversationPage.sendMessage(message);
-    await t.expect(rightRail.listSubTitle.textContent).contains('2');
-    await rightRail.waitUntilVisible(rightRail.nthListItem('rightRail-file-item', 1));
+    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-  // last upload will on the top
+  await h(t).withLog('And I click Files Tab', async () => {
+    await rightRail.filesEntry.enter();
+    await rightRail.filesEntry.shouldBeOpened();
+  })
+
+  await h(t).withLog('Then The files number is correct: 2', async () => {
+    await filesTab.waitUntilFilesItemExist();
+    await filesTab.countOnSubTitleShouldBe(2);
+  });
+
   await h(t).withLog('The new item is on the top of list', async () => {
-    await t.expect(rightRail.nthListItem('rightRail-file-item', 0).find('span').withText('3.txt').exists).ok();
+    await filesTab.nthItem(0).nameShouldBe('3.txt');
   });
 });

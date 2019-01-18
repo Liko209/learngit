@@ -19,7 +19,7 @@ const JuiSearchBarWrapper = styled.div`
 
 const StyledBackdrop = styled<JuiBackdropProps>(JuiBackdrop)`
   && {
-    position: ${({ open }) => (open ? 'fixed' : 'relative')};
+    position: fixed;
     z-index: ${({ open, theme }) => (open ? theme.zIndex.drawer + 11 : -1)};
   }
 `;
@@ -37,7 +37,7 @@ class JuiSearchBar extends React.Component<Props, {}> {
     const { children, focus, onClose, ...rest } = this.props;
     return (
       <JuiSearchBarWrapper className="search-bar" {...rest}>
-        <StyledBackdrop onClick={onClose} open={focus} />
+        {focus && <StyledBackdrop onClick={onClose} open={focus} />}
         {children}
       </JuiSearchBarWrapper>
     );

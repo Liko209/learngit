@@ -1,4 +1,3 @@
-import { getEntity, getGlobalValue } from '@/store/utils';
 /*
  * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
  * @Date: 2018-09-29 19:01:54
@@ -6,15 +5,19 @@ import { getEntity, getGlobalValue } from '@/store/utils';
  */
 import { computed, untracked } from 'mobx';
 import _ from 'lodash';
-
+import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { UmiProps, UmiViewProps } from './types';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { AppStore } from '@/modules/app/store';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
+  private _appStore = container.get(AppStore);
+
   constructor(props: UmiProps) {
     super(props);
 
@@ -60,7 +63,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   }
 
   updateAppUmi() {
-    storeManager.getGlobalStore().set(GLOBAL_KEYS.APP_UMI, this.unreadCount);
+    this._appStore.setUmi(this.unreadCount);
   }
 
   @computed
