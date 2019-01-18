@@ -12,6 +12,7 @@ const JuiIconWrapper = styled.div`
   background: ${grey('100')};
   width: ${width(9)};
   height: ${height(9)};
+  border-radius: ${({ theme }) => theme.shape.borderRadius};
   display: flex;
   justify-content: center;
   align-items: center;
