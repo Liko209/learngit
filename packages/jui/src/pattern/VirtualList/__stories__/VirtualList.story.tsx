@@ -135,7 +135,7 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
             .flat();
           this._list = this._list.concat(array);
           resolve(this._list);
-        },         5000);
+        },         500);
       });
       return await p;
     }

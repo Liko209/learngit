@@ -13,6 +13,8 @@ type Props = {
 type ViewProps = {
   ids: number[];
   totalCount: number;
+  loading: boolean;
+  firstLoaded: boolean;
   fetchNextPageItems: () => Promise<any>;
 };
 

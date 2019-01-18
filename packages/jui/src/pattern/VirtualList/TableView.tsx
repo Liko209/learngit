@@ -14,6 +14,22 @@ import { IVirtualListDataSource } from './VirtualListDataSource';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { JuiRightRailLoadingMore } from '../RightShelf';
 
+const Overlay = () => (
+  <div
+    style={{
+      background: 'transparent',
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
+      zIndex: 1,
+      top: 0,
+      left: 0,
+    }}
+  >
+    xxx
+  </div>
+);
+
 type Props = {
   dataSource: IVirtualListDataSource;
 };
@@ -88,8 +104,6 @@ class TableView extends Component<Props, State> {
         dataSource.loadMore(start, start + length).then(() => {
           this.setState({ loadingMore: false });
         });
-      } else {
-        event.preventDefault();
       }
     } else {
       this.setState({ visibleRange: range });
@@ -137,17 +151,23 @@ class TableView extends Component<Props, State> {
     }
 
     return (
-      <JuiVirtualListWrapper
-        style={{ overflowY: 'auto', height: '100%' }}
-        onScroll={this._onScroll}
-        ref={this._wrapperRef}
+      <div
+        style={{
+          overflowY: 'auto',
+          height: '100%',
+          width: '100%',
+          position: 'relative',
+        }}
       >
-        <div
-          style={{ position: 'relative', width: '100%', height: totalHeight }}
+        <JuiVirtualListWrapper
+          style={{ overflowY: 'auto', height: '100%', position: 'relative' }}
+          onScroll={this._onScroll}
+          ref={this._wrapperRef}
         >
-          {cells}
-        </div>
-      </JuiVirtualListWrapper>
+          <div style={{ width: '100%', height: totalHeight }}>{cells}</div>
+        </JuiVirtualListWrapper>
+        {loadingMore && <Overlay />}
+      </div>
     );
   }
 }

@@ -3,7 +3,7 @@
  * @Date: 2019-01-11 15:30:28
  * Copyright © RingCentral. All rights reserved.
  */
-import { Fragment, ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { FileItem } from '../FileItem';
 
 import FilesEmptyImage from '../images/Files.svg';
@@ -37,7 +37,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'pinned',
     type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'youHaveNothingPinnedYet',
       content: 'noPinSubText',
@@ -63,7 +63,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'images',
     type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'noImagesSharedYet',
       content: 'noImageSubText',
@@ -76,7 +76,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'tasks',
     type: RIGHT_RAIL_ITEM_TYPE.TASKS,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'noTasksYet',
       content: 'noTaskSubText',
@@ -89,7 +89,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'links',
     type: RIGHT_RAIL_ITEM_TYPE.LINKS,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'noLinksSharedYet',
       content: 'noLinkSubText',
@@ -102,7 +102,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'notes',
     type: RIGHT_RAIL_ITEM_TYPE.NOTES,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',
@@ -115,7 +115,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',
@@ -128,7 +128,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'integrations',
     type: RIGHT_RAIL_ITEM_TYPE.INTEGRATIONS,
     subheader: '',
-    item: Fragment,
+    item: FileItem,
     empty: {
       text: 'noIntegrationInstallationYet',
       content: 'noIntegrationSubText',

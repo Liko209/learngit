@@ -32,15 +32,19 @@ async function delay(time: number) {
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
-  state = { loadingMore: false };
   private _config: TabConfig;
   constructor(props: ViewProps & Props) {
     super(props);
     this._config = TAB_CONFIG.find(looper => looper.type === props.type)!;
   }
+
+  async componentDidMount() {
+    await this.loadMore(0, 0);
+  }
+
   countOfCell() {
-    const { totalCount } = this.props;
-    return totalCount;
+    const { ids } = this.props;
+    return this.props.loading ? ids.length + 1 : ids.length;
   }
 
   cellAtIndex = (index: number, style: React.CSSProperties) => {
@@ -78,7 +82,7 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   loadMore = async (startIndex: number, stopIndex: number) => {
     const result = await this.props.fetchNextPageItems();
-    await delay(5000);
+    await delay(5);
     return result;
   }
 
@@ -107,16 +111,17 @@ class ItemListView extends React.Component<ViewProps & Props>
   private _handleRetry = () => {};
 
   render() {
-    const { totalCount, ids } = this.props;
+    const { totalCount, ids, firstLoaded } = this.props;
     const { subheader } = this._config;
     return (
       <JuiRightShelfContent>
-        {totalCount > 0 && ids.length > 0 && (
+        {firstLoaded && totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader>
             {t(subheader)} ({this.props.totalCount})
           </JuiListSubheader>
         )}
-        <JuiVirtualList dataSource={this} />
+        {firstLoaded && <JuiVirtualList dataSource={this} />}
+        {!firstLoaded && this.firstLoader()}
       </JuiRightShelfContent>
     );
   }

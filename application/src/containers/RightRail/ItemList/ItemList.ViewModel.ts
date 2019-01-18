@@ -60,6 +60,8 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 
 class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
+  private _firstLoaded: boolean = false;
+  @observable
   private _loading: boolean = false;
   @observable
   totalCount: number = 0;
@@ -217,15 +219,19 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return;
       }
 
-      console.log(7777777, 'load more');
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
       this._loading = false;
-      console.log(7777777, result);
+      this._firstLoaded = true;
       return result;
     }
     return;
+  }
+
+  @computed
+  get firstLoaded() {
+    return this._firstLoaded;
   }
 
   @computed
