@@ -25,8 +25,9 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
 
+  let teamId;
   await h(t).withLog('Given I have a team before login ', async () => {
-    await h(t).platform(loginUser).createAndGetGroupId({
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
       members: [loginUser.rcId],
@@ -39,7 +40,7 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
   });
 
   await h(t).withLog('When I open a team and  upload a text file', async () => {
-    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();

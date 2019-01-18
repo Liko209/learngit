@@ -18,52 +18,48 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId(automationId).nth(n);
   }
 
-  getTab(text: string) {
-    return this.getSelectorByAutomationId(`rightShelf-${text}`);
-  }
-
   getEntry(automationId: string) {
     return this.getComponent(TabEntry, this.getSelectorByAutomationId(automationId));
   }
 
   get pinnedEntry() {
-    return this.getEntry('rightShelf-Pinned');
+    return this.getEntry('right-shelf-pinned');
   }
 
   get filesEntry() {
-    return this.getEntry('rightShelf-Files');
+    return this.getEntry('right-shelf-files');
   }
 
   get imagesEntry() {
-    return this.getEntry('rightShelf-Images');
+    return this.getEntry('right-shelf-images');
   }
+
   get tasksEntry() {
-    return this.getEntry('rightShelf-Tasks');
+    return this.getEntry('right-shelf-tasks');
+  }
+
+  get linksEntry() {
+    return this.getEntry('right-shelf-links');
+  }
+
+  get notesEntry() {
+    return this.getEntry('right-shelf-notes');
+  }
+
+  get eventsEntry() {
+    return this.getEntry('right-shelf-events');
+  }
+
+  get integrationsEntry() {
+    return this.getEntry('right-shelf-integrations');
   }
 
   get moreButton() {
-    return this.getSelectorByAutomationId('rightShelf-undefined')
+    return this.getSelectorByAutomationId('right-shelf-more')
   }
 
   async openMore() {
     await this.t.click(this.moreButton);
-  }
-
-  get linksEntry() {
-    return this.getEntry('rightShelf-Links');
-  }
-
-
-  get notesEntry() {
-    return this.getEntry('rightShelf-Notes');
-  }
-
-  get eventsEntry() {
-    return this.getEntry('rightShelf-Events');
-  }
-
-  get integrationsEntry() {
-    return this.getEntry('rightShelf-Integrations');
   }
 
   get imagesTab() {
@@ -71,7 +67,7 @@ export class RightRail extends BaseWebComponent {
   }
 
   get filesTab() {
-    return this.getComponent(FilesTab); 
+    return this.getComponent(FilesTab);
   }
 }
 

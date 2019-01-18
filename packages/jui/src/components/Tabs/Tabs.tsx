@@ -61,6 +61,7 @@ class JuiTabs extends PureComponent<Props, States> {
   private _tabRefs: RefObject<HTMLElement>[] = [];
   private _tabWidths: number[] = [];
   private _tabWidthsTotal: number = 0;
+  private _automationIds: string[] = []; // automation ids, not include more tab
   // more tab
   private _moreRef: RefObject<HTMLElement>;
   private _moreWidth: number = 0;
@@ -74,6 +75,7 @@ class JuiTabs extends PureComponent<Props, States> {
       props.children,
       (child: ReactElement<JuiTabProps>) => {
         this._tabTitles.push(child.props.title); // add tab title
+        this._automationIds.push(child.props.automationId || ''); // add automation id
         return createRef(); // add tab ref
       },
     );
@@ -226,7 +228,6 @@ class JuiTabs extends PureComponent<Props, States> {
 
   private _renderMoreAndMenu = () => {
     const { indexMenus, openMenu } = this.state;
-    const { tag } = this.props;
     if (indexMenus.length === 0) {
       return null; // no more tab
     }
@@ -240,14 +241,13 @@ class JuiTabs extends PureComponent<Props, States> {
       >
         <JuiMenuList onClick={this._hideMenuList}>
           {indexMenus.map((item: number) => {
-            const text = this._tabTitles[item];
             return (
               <JuiMenuItem
-                data-test-automation-id={`${tag}-${text}`}
+                data-test-automation-id={this._automationIds[item]}
                 key={item}
                 onClick={this._handleMenuItemClick.bind(this, item)}
               >
-                {text}
+                {this._tabTitles[item]}
               </JuiMenuItem>
             );
           })}
@@ -257,19 +257,25 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   private _renderMore = () => {
+    const { tag } = this.props;
     return this._renderStyledTab({
       value: MORE,
       icon: <MoreHoriz />,
       onClick: this._showMenuList,
       style: STYLE,
       ref: this._moreRef,
+      automationId: `${tag}-more`,
     });
   }
 
   private _renderForShow = () => {
     const { indexTabs } = this.state;
     const tabs = indexTabs.map((item: number) =>
-      this._renderStyledTab({ value: item, label: this._tabTitles[item] }),
+      this._renderStyledTab({
+        value: item,
+        label: this._tabTitles[item],
+        automationId: this._automationIds[item],
+      }),
     );
     const tabMoreAndMenu = this._renderMoreAndMenu();
     if (tabMoreAndMenu) {
@@ -285,11 +291,11 @@ class JuiTabs extends PureComponent<Props, States> {
     onClick,
     style,
     ref,
+    automationId,
   }: StyledTabProps) => {
-    const { tag } = this.props;
     return (
       <StyledTab
-        data-test-automation-id={`${tag}-${label}`}
+        data-test-automation-id={automationId}
         value={value}
         key={value}
         label={label}
@@ -311,6 +317,7 @@ class JuiTabs extends PureComponent<Props, States> {
           value: index,
           label: child.props.title,
           ref: this._tabRefs[index],
+          automationId: this._automationIds[index],
         }),
     );
     tabs.push(this._renderMore()); // add more tab
