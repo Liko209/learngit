@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TTimeUtils } from '../TTimeUtils';
+import { TimeUtils } from '../TimeUtils';
 
-describe('TTimeUtils', () => {
+describe('TimeUtils', () => {
   describe('compareDate', () => {
     it.each`
       lTime            | rTime            | res      | comments
@@ -16,7 +16,7 @@ describe('TTimeUtils', () => {
       ${1550397048111} | ${1550397048000} | ${true}  | ${'lhs > rhs less then a day'}
       ${1550397048000} | ${1550397048000} | ${true}  | ${'lhs === rhs'}
     `('should return expect res: $comments', ({ lTime, rTime, res }) => {
-      expect(TTimeUtils.compareDate(lTime, rTime)).toEqual(res);
+      expect(TimeUtils.compareDate(lTime, rTime)).toEqual(res);
     });
   });
 });

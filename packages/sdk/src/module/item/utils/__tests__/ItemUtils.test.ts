@@ -7,9 +7,9 @@
 import { Item } from '../../module/base/entity';
 import { FileItem } from '../../module/file/entity';
 import { ItemUtils } from '../ItemUtils';
-import { TTimeUtils } from '../../../../utils/TTimeUtils';
+import { TimeUtils } from '../../../../utils/TimeUtils';
 
-jest.mock('../../../../utils/TTimeUtils');
+jest.mock('../../../../utils/TimeUtils');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -136,12 +136,12 @@ describe('ItemUtils', () => {
     });
 
     it('should return true when is not over due event', () => {
-      TTimeUtils.compareDate = jest.fn().mockReturnValue(true);
+      TimeUtils.compareDate = jest.fn().mockReturnValue(true);
       expect(ItemUtils.eventFilter(11)(item1)).toBeTruthy();
     });
 
     it('should return false when is over due event', () => {
-      TTimeUtils.compareDate = jest.fn().mockReturnValue(false);
+      TimeUtils.compareDate = jest.fn().mockReturnValue(false);
       expect(ItemUtils.eventFilter(11)(item1)).toBeFalsy();
     });
   });

@@ -5,7 +5,7 @@
  */
 
 import { ImageFileExtensions } from './ImageFileExtensions';
-import { GlipTypeUtil, TypeDictionary, TTimeUtils } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary, TimeUtils } from '../../../utils';
 class ItemUtils {
   static isValidItem<T extends { id: number; group_ids: number[] }>(
     groupId: number,
@@ -68,7 +68,7 @@ class ItemUtils {
           break;
         }
 
-        if (!TTimeUtils.compareDate(event.end, Date.now())) {
+        if (!TimeUtils.compareDate(event.end, Date.now())) {
           break;
         }
 

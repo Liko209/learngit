@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-class TTimeUtils {
+class TimeUtils {
   static compareDate(lhsTime: number, rhsTime: number) {
     const lhsDate = new Date(lhsTime).toISOString(); // format to: "2019-01-10T08:01:09.471Z"
     const rhsDate = new Date(rhsTime).toISOString();
@@ -15,4 +15,4 @@ class TTimeUtils {
   }
 }
 
-export { TTimeUtils };
+export { TimeUtils };

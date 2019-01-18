@@ -4,4 +4,4 @@ export * from './error';
 export * from './glip-type-dictionary';
 export * from './serialize';
 export * from './performance';
-export { TTimeUtils } from './TTimeUtils';
+export { TimeUtils } from './TimeUtils';
