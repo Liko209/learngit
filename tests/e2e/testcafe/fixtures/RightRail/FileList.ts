@@ -38,7 +38,7 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('When I open a team and  upload a image file', async () => {
+  await h(t).withLog('When I open a team and  upload a text file', async () => {
     await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
@@ -57,7 +57,7 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
     await filesTab.nthItem(0).nameShouldBe('1.txt');
   });
 
-  await h(t).withLog('When I  upload another image file', async () => {
+  await h(t).withLog('When I  upload another text file', async () => {
     await conversationPage.uploadFilesToMessageAttachment(filesPath[1]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
