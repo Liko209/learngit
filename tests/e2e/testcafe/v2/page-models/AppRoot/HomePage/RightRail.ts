@@ -17,6 +17,10 @@ export class RightRail extends BaseWebComponent {
       return this.getSelectorByAutomationId('rightRail-list-subtitle');
     }
 
+    get moreTab() {
+      return this.getSelectorByAutomationId('rightRail-tab-more');
+    }
+
     nthListItem(automationId: string, n: number) {
       return this.getSelectorByAutomationId(automationId).nth(n);
     }
@@ -29,5 +33,16 @@ export class RightRail extends BaseWebComponent {
       await this.t.click(this.getTab(text))
     }
 
+    async clickMore() {
+      await this.t.click(this.moreTab);
+    }
+
+    getMenu(automationID: string) {
+      return this.getSelectorByAutomationId(automationID);
+    }
+
+    async clickMenu(automationID: string) {
+      await this.t.click(this.getMenu(automationID));
+    }
 
 }

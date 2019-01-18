@@ -57,6 +57,7 @@ const STYLE: CSSProperties = {
 
 class JuiTabs extends PureComponent<Props, States> {
   // not include more tab
+  private _automationIDs: string[] = [];
   private _tabTitles: (string | JSX.Element)[] = [];
   private _tabRefs: RefObject<HTMLElement>[] = [];
   private _tabWidths: number[] = [];
@@ -74,6 +75,7 @@ class JuiTabs extends PureComponent<Props, States> {
       props.children,
       (child: ReactElement<JuiTabProps>) => {
         this._tabTitles.push(child.props.title); // add tab title
+        this._automationIDs.push(child.props.automationID || '');
         return createRef(); // add tab ref
       },
     );
@@ -241,6 +243,7 @@ class JuiTabs extends PureComponent<Props, States> {
           {indexMenus.map((item: number) => (
             <JuiMenuItem
               key={item}
+              data-test-automation-id={this._automationIDs[item]}
               onClick={this._handleMenuItemClick.bind(this, item)}
             >
               {this._tabTitles[item]}
@@ -258,6 +261,7 @@ class JuiTabs extends PureComponent<Props, States> {
       onClick: this._showMenuList,
       style: STYLE,
       ref: this._moreRef,
+      automationID: 'rightRail-tab-more',
     });
   }
 
@@ -280,19 +284,22 @@ class JuiTabs extends PureComponent<Props, States> {
     onClick,
     style,
     ref,
+    automationID,
   }: StyledTabProps) => {
-    return (
-      <StyledTab
-        value={value}
-        key={value}
-        label={label}
-        icon={icon}
-        onClick={onClick}
-        classes={CLASSES.tab}
-        style={style}
-        ref={ref}
-      />
-    );
+    const props = {
+      value,
+      label,
+      icon,
+      onClick,
+      style,
+      ref,
+      classes: CLASSES.tab,
+      key: value,
+    };
+    if (automationID) {
+      props['data-test-automation-id'] = automationID;
+    }
+    return <StyledTab {...props} />;
   }
 
   private _renderForMeasure = () => {
@@ -303,6 +310,7 @@ class JuiTabs extends PureComponent<Props, States> {
         this._renderStyledTab({
           value: index,
           label: child.props.title,
+          automationID: child.props.automationID,
           ref: this._tabRefs[index],
         }),
     );
