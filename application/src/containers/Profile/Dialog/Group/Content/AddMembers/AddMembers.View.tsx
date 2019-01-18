@@ -33,8 +33,8 @@ class AddMembers extends React.Component<ViewProps> {
   handerAddTeam = async () => {
     const { addTeamMembers } = this.props;
     try {
-      await addTeamMembers();
       portalManager.dismiss();
+      await addTeamMembers();
       return true;
     } catch (error) {
       if (errorHelper.isNotNetworkError(error)) {
