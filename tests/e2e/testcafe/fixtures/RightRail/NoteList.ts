@@ -15,7 +15,7 @@ fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check the create note and display on the right rail', ['Isaac', 'P1','JPT-907']), async t => {
+test(formalName('Check the create note and display on the right rail', ['Isaac', 'P2','JPT-779']), async t => {
   const app = new AppRoot(t);
   const homePage = app.homePage;
   const rightRail = homePage.rightRail;
@@ -56,7 +56,7 @@ test(formalName('Check the create note and display on the right rail', ['Isaac',
   });
 
   // create another note
-  await h(t).withLog('Then User can upload another file again', async () => {
+  await h(t).withLog('Then User can create another note', async () => {
     const title2 = uuid();
     await h(t).glip(loginUser).createSimpleNote(groupId, title2, uuid());
     await rightRail.waitUntilVisible(rightRail.nthListItem(noteItemAutomationID, 1));
