@@ -40,6 +40,7 @@ const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
   }
   & .paper {
     max-width: inherit;
+    overflow-y: visible;
   }
   & .sm {
     width: 400px;
