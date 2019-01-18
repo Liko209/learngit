@@ -14,12 +14,15 @@ import { daoManager, ItemDao } from '../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
+import { ItemSyncController } from './ItemSyncController';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
   private _itemActionController: ItemActionController;
+  private _itemSyncController: ItemSyncController;
+
   constructor(
-    _itemService: IItemService,
+    private _itemService: IItemService,
     private _controllerBuilder: ControllerBuilder<Item>,
   ) {
     this._subItemServices = SubItemServiceRegister.buildSubItemServices(
@@ -29,6 +32,14 @@ class ItemServiceController {
 
   getSubItemService(typeId: number) {
     return this._subItemServices.get(typeId) as ISubItemService;
+  }
+
+  get itemSyncController() {
+    if (!this._itemSyncController) {
+      this._itemSyncController = new ItemSyncController(this._itemService);
+    }
+
+    return this._itemSyncController;
   }
 
   get itemActionController() {
