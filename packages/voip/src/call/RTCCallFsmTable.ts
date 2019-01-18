@@ -35,6 +35,7 @@ const CallFsmEvent = {
   HOLD: 'hold',
   UNHOLD: 'unhold',
   PARK: 'park',
+  DTMF: 'dtmf',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
@@ -60,6 +61,7 @@ interface IRTCCallFsmTableDependency {
   onHoldAction(): void;
   onUnholdAction(): void;
   onParkAction(): void;
+  onDtmfAction(digits: string): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -297,6 +299,21 @@ class RTCCallFsmTable extends StateMachine {
           name: CallFsmEvent.UNHOLD_FAILED,
           from: CallFsmState.UNHOLDING,
           to: CallFsmState.HOLDED,
+        },
+        {
+          name: CallFsmEvent.DTMF,
+          from: [
+            CallFsmState.CONNECTING,
+            CallFsmState.CONNECTED,
+            CallFsmState.ANSWERING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
+          ],
+          to: (digits: string, s: any) => {
+            dependency.onDtmfAction(digits);
+            return s;
+          },
         },
         {
           name: CallFsmEvent.SESSION_CONFIRMED,

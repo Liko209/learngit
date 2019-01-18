@@ -144,6 +144,13 @@ class RTCCall {
     this._fsm.transfer(target);
   }
 
+  dtmf(digits: string): void {
+    if (digits.length === 0) {
+      return;
+    }
+    this._fsm.dtmf(digits);
+  }
+
   onAccountReady(): void {
     this._fsm.accountReady();
   }
@@ -229,6 +236,9 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.UNMUTE_ACTION, () => {
       this._onUnmuteAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.DTMF_ACTION, (digits: string) => {
+      this._onDtmfAction(digits);
     });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
@@ -388,6 +398,11 @@ class RTCCall {
   private _onUnmuteAction() {
     this._callSession.unmute();
   }
+
+  private _onDtmfAction(digits: string) {
+    this._callSession.dtmf(digits);
+  }
+
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,

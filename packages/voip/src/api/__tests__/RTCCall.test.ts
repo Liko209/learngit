@@ -53,6 +53,7 @@ describe('RTC call', () => {
 
     hold = jest.fn();
     unhold = jest.fn();
+    dtmf = jest.fn();
 
     mockSignal(signal: string): void {
       this.emit(signal);
@@ -1696,6 +1697,137 @@ describe('RTC call', () => {
       session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+  });
+
+  describe('DTMF', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+    }
+
+    it('should trigger dtmf function when call dtmf and call is in connected state. [JPT-859]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in connecting state. [JPT-860]', done => {
+      setup();
+      call.onAccountReady();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connecting');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in answering state. [JPT-861]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.answer();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('answering');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in holding state.', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holding');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in holded state.', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holded');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in unholding state.', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('unholding');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should not trigger dtmf function when call dtmf in idle state. [JPT-862]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('idle');
+        expect(session.dtmf).toBeCalledTimes(0);
+        done();
+      });
+    });
+
+    it('should not trigger dtmf function when call dtmf in pending state. [JPT-863]', done => {
+      setup();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('pending');
+        expect(session.dtmf).toBeCalledTimes(0);
+        done();
+      });
+    });
+
+    it('should not trigger dtmf function when call dtmf in disconnected state. [JPT-864]', done => {
+      setup();
+      call.hangup();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        expect(session.dtmf).toBeCalledTimes(0);
         done();
       });
     });
