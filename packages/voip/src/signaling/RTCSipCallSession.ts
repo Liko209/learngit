@@ -8,12 +8,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from '../api/types';
-
-enum WEBPHONE_STATE {
-  ACCEPTED = 'accepted',
-  BYE = 'bye',
-  FAILED = 'failed',
-}
+import { WEBPHONE_SESSION_STATE } from '../signaling/types';
 
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
@@ -32,13 +27,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
-    this._session.on(WEBPHONE_STATE.ACCEPTED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, () => {
       this._onSessionConfirmed();
     });
-    this._session.on(WEBPHONE_STATE.BYE, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
       this._onSessionDisconnected();
     });
-    this._session.on(WEBPHONE_STATE.FAILED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.FAILED, () => {
       this._onSessionError();
     });
   }
@@ -139,33 +134,66 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   mute() {
-    this._session.mute();
+    if (this._session) {
+      this._session.mute();
+    }
   }
 
   unmute() {
-    this._session.unmute();
+    if (this._session) {
+      this._session.unmute();
+    }
   }
 
   answer() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.accept();
     }
   }
 
   reject() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.reject();
     }
   }
 
   sendToVoicemail() {
-    if (this._session != null) {
+    if (this._session) {
       this._session.toVoicemail();
     }
   }
 
+  hold() {
+    if (this._session) {
+      this._session.hold().then(
+        () => {
+          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
+        },
+        () => {
+          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
+        },
+      );
+    }
+  }
+
+  unhold() {
+    if (this._session) {
+      this._session.unhold().then(
+        () => {
+          this.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+            RTC_CALL_ACTION.UNHOLD,
+          );
+        },
+        () => {
+          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
+        },
+      );
+    }
+  }
+
   setSession(session: any) {
-    if (session != null) {
+    if (session) {
       this._session = session;
       this._prepareSipSession();
     }
@@ -176,4 +204,4 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 }
 
-export { RTCSipCallSession, WEBPHONE_STATE };
+export { RTCSipCallSession };
