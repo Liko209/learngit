@@ -1,10 +1,16 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-03-05 11:25:49
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-03-05 11:25:49
+ * Copyright © RingCentral. All rights reserved.
+ */
 
-import { IDatabaseCollection, IQueryCriteria, IQuery, IFilter, IDatabase } from 'foundation';
+import {
+  IDatabaseCollection,
+  IQueryCriteria,
+  IQuery,
+  IFilter,
+  IDatabase,
+} from 'foundation';
 import { errorHandler } from '../errors/handler';
 class Query<T> implements IQuery<T> {
   criteria: IQueryCriteria<T>[] = [];
@@ -130,7 +136,11 @@ class Query<T> implements IQuery<T> {
     return this;
   }
 
-  startsWith(key: string, value: string, ignoreCase: boolean = false): Query<T> {
+  startsWith(
+    key: string,
+    value: string,
+    ignoreCase: boolean = false,
+  ): Query<T> {
     this.criteria.push({
       key,
       value,
@@ -173,13 +183,27 @@ class Query<T> implements IQuery<T> {
     return this;
   }
 
-  async toArray({ sortBy, desc }: { sortBy?: string; desc?: boolean } = {}): Promise<T[]> {
+  async toArray({
+    sortBy,
+    desc,
+  }: { sortBy?: string; desc?: boolean } = {}): Promise<T[]> {
     if (typeof desc === 'boolean' && !sortBy) {
       throw new Error('sortBy should be specified if desc is specified');
     }
     try {
       await this.db.ensureDBOpened();
       const result = await this.collection.getAll(this, { sortBy, desc });
+      return result;
+    } catch (err) {
+      errorHandler(err);
+      return [];
+    }
+  }
+
+  async primaryKeys(): Promise<number[]> {
+    try {
+      await this.db.ensureDBOpened();
+      const result = await this.collection.primaryKeys(this);
       return result;
     } catch (err) {
       errorHandler(err);

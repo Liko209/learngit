@@ -58,12 +58,6 @@ export class MiscUtils {
     }
   }
 
-  static createTmpFilePath(filename?: string) {
-    filename = filename || `${uuid()}.tmp`;
-    const filepath = path.join(TMPFILE_PATH, filename);
-    return filepath;
-  }
-
   static createDirIfNotExists(path) {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path)

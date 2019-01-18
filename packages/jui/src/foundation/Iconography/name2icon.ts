@@ -56,6 +56,7 @@ const name2icon = {
   link: 'webpage',
   send_failure: 'refresh',
   task_incomplete: 'task_incomplete',
+  image_preview: 'imagepreview',
   add_member: 'addmember',
   add_team: 'addteam',
 };

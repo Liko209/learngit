@@ -75,7 +75,7 @@ export class AllureHelper {
     this.allure.addArgument(argument, value);
   }
 
-  writeReport(consoleLog: IConsoleLog, accountType: string) {
+  writeReport(consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     this.configure();
     const testRun = this.t['testRun'];
     const {
@@ -102,10 +102,11 @@ export class AllureHelper {
     this.startSuite(fixtureName, fixtureStartTime);
     this.startCase(testCaseName, testCaseStartTime, userAgent, accountType);
     this.writeSteps(steps);
-    if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot On Fail');
-    this.addAttachment(consoleLog.consoleLogPath, 'Console Full Log');
-    this.addAttachment(consoleLog.warnConsoleLogPath, `Console Warning Log, Number: ${consoleLog.warnConsoleLogNumber}`);
-    this.addAttachment(consoleLog.errorConsoleLogPath, `Console Error Log, Number: ${consoleLog.errorConsoleLogNumber}`);
+    if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot on Failure');
+    this.addAttachment(consoleLog.consoleLogPath, 'Console Log Full');
+    this.addAttachment(consoleLog.warnConsoleLogPath, `Console Log Warning(${consoleLog.warnConsoleLogNumber})`);
+    this.addAttachment(consoleLog.errorConsoleLogPath, `Console Log Error(${consoleLog.errorConsoleLogNumber})`);
+    this.addAttachment(rcDataPath, 'RC Data')
     this.endCase(testStatus, testInfo, Date.now());
     this.endSuite(Date.now());
   }

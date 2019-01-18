@@ -8,11 +8,10 @@ import { HomeService } from './service';
 import { config } from './home.config';
 
 class HomeModule extends AbstractModule {
-  @inject(HomeService)
-  private _homeService: HomeService;
+  @inject(HomeService) private _homeService: HomeService;
 
   async bootstrap() {
-    this._homeService.loadConfig(config);
+    this._homeService.setDefaultRouterPath(config.defaultRouterPath);
   }
 }
 
