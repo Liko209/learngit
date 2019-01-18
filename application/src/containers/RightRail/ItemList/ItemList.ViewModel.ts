@@ -27,7 +27,7 @@ import {
 import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
-import { TAB_CONFIG, TabConfig } from './config';
+import { TAB_CONFIG } from './config';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -62,6 +62,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   private _firstLoaded: boolean = false;
   @observable
+  private _loadError: boolean = false;
+  @observable
   private _loading: boolean = false;
   @observable
   totalCount: number = 0;
@@ -78,6 +80,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get type() {
     return this.props.type;
+  }
+
+  @computed
+  get tabConfig() {
+    return TAB_CONFIG.find(looper => looper.type === this.props.type)!;
   }
 
   @computed
@@ -205,11 +212,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       this._loading = true;
       const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
       if (status === 'offline') {
-        const config: TabConfig = TAB_CONFIG.find(
-          looper => looper.type === this.props.type,
-        )!;
+        const { offlinePrompt } = this.tabConfig;
         Notification.flashToast({
-          message: t(config.offlinePrompt),
+          message: t(offlinePrompt),
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -219,14 +224,25 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return;
       }
 
-      const result = await this._sortableDataHandler.fetchData(
-        QUERY_DIRECTION.NEWER,
-      );
-      this._loading = false;
-      this._firstLoaded = true;
-      return result;
+      try {
+        const result = await this._sortableDataHandler.fetchData(
+          QUERY_DIRECTION.NEWER,
+        );
+        this._loading = false;
+        this._firstLoaded = true;
+        return result;
+      } catch (e) {
+        //
+        this._loading = false;
+        this._loadError = true;
+      }
     }
     return;
+  }
+
+  @computed
+  get loadError() {
+    return this._loadError;
   }
 
   @computed

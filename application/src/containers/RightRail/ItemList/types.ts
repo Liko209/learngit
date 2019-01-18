@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
+import { TabConfig } from './config';
 
 type Props = {
   groupId: number;
@@ -15,6 +16,8 @@ type ViewProps = {
   totalCount: number;
   loading: boolean;
   firstLoaded: boolean;
+  loadError: boolean;
+  tabConfig: TabConfig;
   fetchNextPageItems: () => Promise<any>;
 };
 

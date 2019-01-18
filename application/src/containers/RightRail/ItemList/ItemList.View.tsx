@@ -20,8 +20,8 @@ import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
+  JuiRightRailContentLoadError,
 } from 'jui/pattern/RightShelf';
-import { TAB_CONFIG, TabConfig } from './config';
 
 async function delay(time: number) {
   return new Promise((resolve: Function) => {
@@ -32,12 +32,6 @@ async function delay(time: number) {
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
-  private _config: TabConfig;
-  constructor(props: ViewProps & Props) {
-    super(props);
-    this._config = TAB_CONFIG.find(looper => looper.type === props.type)!;
-  }
-
   async componentDidMount() {
     await this.loadMore(0, 0);
   }
@@ -48,8 +42,8 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   cellAtIndex = (index: number, style: React.CSSProperties) => {
-    const { ids } = this.props;
-    const Component: any = this._config.item;
+    const { ids, tabConfig } = this.props;
+    const Component: any = tabConfig.item;
     const id = ids[index];
     if (id) {
       return (
@@ -87,14 +81,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   firstLoader = () => {
-    return (
-      <JuiRightRailContentLoading
-        showTip={false}
-        tip={t(this._config.tryAgainPrompt)}
-        linkText={t('tryAgain')}
-        onClick={this._handleRetry}
-      />
-    );
+    return <JuiRightRailContentLoading />;
   }
 
   isEmptyList = () => {
@@ -108,11 +95,20 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   onScroll = () => {};
 
-  private _handleRetry = () => {};
+  private _handleRetry = async () => {
+    return await this.loadMore(0, 0);
+  }
 
   render() {
-    const { totalCount, ids, firstLoaded } = this.props;
-    const { subheader } = this._config;
+    const {
+      totalCount,
+      ids,
+      firstLoaded,
+      loadError,
+      loading,
+      tabConfig,
+    } = this.props;
+    const { subheader, tryAgainPrompt } = tabConfig;
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
@@ -121,7 +117,14 @@ class ItemListView extends React.Component<ViewProps & Props>
           </JuiListSubheader>
         )}
         {firstLoaded && <JuiVirtualList dataSource={this} />}
-        {!firstLoaded && this.firstLoader()}
+        {loading && !firstLoaded && this.firstLoader()}
+        {loadError && (
+          <JuiRightRailContentLoadError
+            tip={t(tryAgainPrompt)}
+            linkText={t('tryAgain')}
+            onClick={this._handleRetry}
+          />
+        )}
       </JuiRightShelfContent>
     );
   }

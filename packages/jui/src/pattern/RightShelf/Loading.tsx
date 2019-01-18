@@ -67,25 +67,35 @@ const RightRailLoading = (props: ThemeProps) => {
 const JuiConversationRightRailLoading = withTheme(RightRailLoading);
 
 type JuiRightRailContentLoadingProps = {
-  showTip: boolean;
+  showTip?: boolean;
   tip?: string;
   linkText?: string;
+  loading?: boolean;
   onClick?: () => void;
 };
 
-const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => (
-  <LoadingWrapper>
-    <Loading>
-      <Progress />
-      {props.showTip && (
+const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => {
+  return (
+    <LoadingWrapper>
+      <Loading>{props.loading !== false && <Progress />}</Loading>
+    </LoadingWrapper>
+  );
+};
+
+const JuiRightRailContentLoadError = (
+  props: JuiRightRailContentLoadingProps,
+) => {
+  return (
+    <LoadingWrapper>
+      <Loading>
         <Tip>
           {props.tip}
           <TipLink handleOnClick={props.onClick}>{props.linkText}</TipLink>
         </Tip>
-      )}
-    </Loading>
-  </LoadingWrapper>
-);
+      </Loading>
+    </LoadingWrapper>
+  );
+};
 
 const LoadingMoreWrapper = styled.div`
   display: flex;
@@ -105,4 +115,5 @@ export {
   JuiConversationRightRailLoading,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
+  JuiRightRailContentLoadError,
 };
