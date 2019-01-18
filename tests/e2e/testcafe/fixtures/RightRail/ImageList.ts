@@ -65,11 +65,6 @@ test(formalName('Check the upload image file and display on the right rail', ['S
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-   await h(t).withLog('And I click Images Tab', async () => {
-    await rightRail.imagesEntry.enter();
-    await rightRail.imagesEntry.shouldBeOpened();
-  })
-
   await h(t).withLog('Then The images number is correct: 2', async () => {
     await imagesTab.waitUntilImagesItemExist();
     await imagesTab.countOnSubTitleShouldBe(2);

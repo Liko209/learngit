@@ -38,7 +38,10 @@ class LinkItemView extends Component<LinkItemViewProps> {
     const textPrimary = link.title || link.url || '';
     const faviconUrl = link.faviconUrl;
     return (
-      <JuiListItem onClick={this._openLink}>
+      <JuiListItem
+        onClick={this._openLink}
+        data-test-automation-id="rightRail-link-item"
+      >
         <JuiListItemIcon>
           {faviconUrl ? (
             <JuiThumbnail url={faviconUrl} />

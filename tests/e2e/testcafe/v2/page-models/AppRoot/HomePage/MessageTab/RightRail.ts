@@ -69,6 +69,10 @@ export class RightRail extends BaseWebComponent {
   get filesTab() {
     return this.getComponent(FilesTab);
   }
+
+  get linkTab() {
+    return this.getComponent(LinksTab);
+  }
 }
 
 class TabEntry extends BaseWebComponent {
@@ -143,6 +147,7 @@ class ImagesTab extends BaseWebComponent {
 
 }
 
+
 class ImageAndFileItem extends BaseWebComponent {
   get name() {
     return this.getSelectorByAutomationId('file-name', this.self);
@@ -173,6 +178,39 @@ class ImageAndFileItem extends BaseWebComponent {
   }
 
 }
+
+
+class LinksTab extends BaseWebComponent {
+  // this is a temp. selector
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get subTitle() {
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Links/);
+  }
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
+  }
+
+  async waitUntilLinksItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-link-item');
+  }
+
+  async linksCountsShouldBe(n: number) {
+    await this.t.expect(this.items.count).eql(n);
+  }
+
+
+}
+
+
 
 
 
