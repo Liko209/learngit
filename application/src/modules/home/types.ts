@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RouteProps } from 'react-router-dom';
+import { ModuleConfig } from 'framework';
 
 type NavConfig = {
   url: string;
@@ -16,12 +17,14 @@ type NavConfig = {
 type SubModuleConfig = {
   route?: RouteProps;
   nav?: () => NavConfig;
+  loader?: () => Promise<{ config: ModuleConfig }>;
+  afterBootstrap?: (...args: any[]) => void;
   isDefault?: boolean;
 };
 
 type HomeConfig = {
   defaultRouterPath: string;
-  subModules: SubModuleConfig[];
+  subModules: { [key: string]: SubModuleConfig };
 };
 
 export { HomeConfig, NavConfig, SubModuleConfig };

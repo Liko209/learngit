@@ -79,7 +79,7 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getComponent(PostItem, this.posts.nth(nth));
   }
 
-  async historyPostsDisplayedInOrder(posts: string[]){
+  async historyPostsDisplayedInOrder(posts: string[]) {
     for (const i of _.range(posts.length)) {
       await this.t.expect(this.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
     }
@@ -176,18 +176,20 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  async shouldFocusOnMessageInputArea() {
+    await this.t.expect(this.messageInputArea.focused).ok();
+  }
 
-  async sendMessage(message: string, options?) {
+  async sendMessage(message: string, options?: TypeActionOptions) {
     await this.t
-      .typeText(this.messageInputArea, message, options)
       .click(this.messageInputArea)
+      .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
   }
 
-  async sendMessageWithoutText() {
-    await this.t
-      .click(this.messageInputArea)
-      .pressKey('enter');
+  async pressEnterWhenFocusOnMessageInputArea() {
+    await this.shouldFocusOnMessageInputArea();
+    await this.t.pressKey('enter');
   }
 
   get privateButton() {
@@ -411,7 +413,7 @@ export class PostItem extends BaseWebComponent {
     return await this.getNumber(this.likeCount);
   }
 
-  async likeShouleBe(n: number, maxRetry = 5, interval = 5e3) {
+  async likeShouldBe(n: number, maxRetry = 5, interval = 5e3) {
     await H.retryUntilPass(async () => {
       const likes = await this.getLikeCount();
       assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);

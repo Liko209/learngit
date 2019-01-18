@@ -38,40 +38,40 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .canJoinTeam(team);
   }
 
-  async joinTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.getTeamController()
+  async joinTeam(userId: number, teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .joinTeam(userId, teamId);
   }
 
-  async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
-    return await this.getTeamController()
+  async leaveTeam(userId: number, teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .leaveTeam(userId, teamId);
   }
 
-  async addTeamMembers(
-    members: number[],
-    teamId: number,
-  ): Promise<Group | null> {
-    return await this.getTeamController()
+  async addTeamMembers(members: number[], teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .addTeamMembers(members, teamId);
   }
 
-  async removeTeamMembers(
-    members: number[],
-    teamId: number,
-  ): Promise<Group | null> {
-    return await this.getTeamController()
+  async removeTeamMembers(members: number[], teamId: number) {
+    await this.getTeamController()
       .getTeamActionController()
       .removeTeamMembers(members, teamId);
   }
 
-  isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean {
-    return this.getTeamController()
-      .getTeamPermissionController()
-      .isCurrentUserHasPermission(group, type);
+  async isCurrentUserHasPermission(
+    groupId: number,
+    type: PERMISSION_ENUM,
+  ): Promise<boolean> {
+    const group = await this.getById(groupId);
+    return group
+      ? this.getTeamController()
+          .getTeamPermissionController()
+          .isCurrentUserHasPermission(group, type)
+      : false;
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {

@@ -69,8 +69,7 @@ export function filterByTags(
   };
 }
 
-export function getTmtId(tags: string[]) {
-  return tags.filter((tag) => {
-    return /^[a-zA-Z_$]+-[$0-9]+$/.test(tag);
-  })
+export function getTmtIds(tags: string[], prefix: string) {
+  const reg = new RegExp(`^${prefix}-[$0-9]+$`);
+  return tags.filter(tag => reg.test(tag));
 }

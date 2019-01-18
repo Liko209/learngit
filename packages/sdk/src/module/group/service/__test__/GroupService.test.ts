@@ -150,6 +150,7 @@ describe('GroupService', () => {
     });
 
     it('should call with correct params', async () => {
+      const mockTeamId: number = 123;
       const mockTeam = groupFactory.build();
       const mockPermissionType = PERMISSION_ENUM.TEAM_ADD_MEMBER;
       const mockIsCurrentUserHasPermission = jest.fn();
@@ -159,7 +160,11 @@ describe('GroupService', () => {
         .mockReturnValue({
           isCurrentUserHasPermission: mockIsCurrentUserHasPermission,
         });
-      groupService.isCurrentUserHasPermission(mockTeam, mockPermissionType);
+      groupService.getById = jest.fn().mockReturnValue(mockTeam);
+      await groupService.isCurrentUserHasPermission(
+        mockTeamId,
+        mockPermissionType,
+      );
       expect(mockIsCurrentUserHasPermission).toBeCalledWith(
         mockTeam,
         mockPermissionType,

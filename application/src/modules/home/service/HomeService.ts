@@ -1,28 +1,37 @@
-import { inject } from 'framework';
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-01-17 10:03:23
+ * Copyright © RingCentral. All rights reserved.
+ */
+import _ from 'lodash';
+import { inject, Jupiter } from 'framework';
 import { HomeStore, SubModuleConfig } from '../store';
-import { HomeConfig } from '../types';
+import { config } from '../home.config';
 
 class HomeService {
-  @inject(HomeStore)
-  private readonly _homeStore: HomeStore;
+  @inject(Jupiter) private _jupiter: Jupiter;
+  @inject(HomeStore) private _homeStore: HomeStore;
 
-  loadConfig(config: HomeConfig) {
-    this.setDefaultRouterPath(config.defaultRouterPath);
-    this.registerSubModules(config.subModules);
+  registerSubModule(name: string) {
+    const subModuleConfig = config.subModules[name];
+    this._registerSubModule(subModuleConfig);
+  }
+
+  registerSubModules(names: string[]) {
+    names.forEach(name => this.registerSubModule(name));
   }
 
   setDefaultRouterPath(path: string) {
     this._homeStore.setDefaultRouterPath(path);
   }
 
-  registerSubModule(subModuleConfig: SubModuleConfig) {
-    this._homeStore.addSubModule(subModuleConfig);
-  }
+  private _registerSubModule(subModuleConfig: SubModuleConfig) {
+    const config = _.cloneDeep(subModuleConfig);
+    this._homeStore.addSubModule(config);
 
-  registerSubModules(subModuleConfigs: SubModuleConfig[]) {
-    subModuleConfigs.forEach(subModuleConfig =>
-      this.registerSubModule(subModuleConfig),
-    );
+    if (config.loader) {
+      this._jupiter.registerModuleAsync(config.loader, config.afterBootstrap);
+    }
   }
 }
 

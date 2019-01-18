@@ -15,7 +15,7 @@ export class LogHelper {
 
   async setup() {
     this.t.ctx.logs = [];
-    this.t['testRun'].startTime = new Date(Date.now()).toISOString();
+    this.t['testRun'].startTime = new Date();
   }
 
   async takeScreenShot(): Promise<string> {

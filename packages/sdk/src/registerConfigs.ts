@@ -34,6 +34,7 @@ import StateService from './service/state';
 import SyncService from './service/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
+import { NewPostService } from './module/post';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -75,6 +76,7 @@ const registerConfigs = {
     { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
+    { name: NewPostService.name, value: NewPostService },
     {
       name: ConfigService.name,
       value: ConfigService,
