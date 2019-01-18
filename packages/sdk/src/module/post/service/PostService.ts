@@ -7,8 +7,10 @@
 import { PostController } from '../controller/PostController';
 import { Post } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { SendPostType, EditPostType } from '../types';
 
-class PostService extends EntityBaseService<Post> {
+class NewPostService extends EntityBaseService<Post> {
+  static serviceName = 'NewPostService';
   postController: PostController;
   constructor() {
     super();
@@ -30,6 +32,30 @@ class PostService extends EntityBaseService<Post> {
       .getPostActionController()
       .likePost(postId, personId, toLike);
   }
+
+  async deletePost(id: number) {
+    return this.getPostController()
+      .getPostActionController()
+      .deletePost(id);
+  }
+
+  async editPost(params: EditPostType) {
+    return this.getPostController()
+      .getPostActionController()
+      .editPost(params);
+  }
+
+  async sendPost(params: SendPostType) {
+    return this.getPostController()
+      .getSendPostController()
+      .sendPost(params);
+  }
+
+  async reSendPost(postId: number) {
+    return this.getPostController()
+      .getSendPostController()
+      .reSendPost(postId);
+  }
 }
 
-export { PostService };
+export { NewPostService };

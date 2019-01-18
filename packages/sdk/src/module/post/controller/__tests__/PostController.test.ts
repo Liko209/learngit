@@ -6,17 +6,25 @@
 
 import { PostController } from '../PostController';
 import { Post } from '../../../../models';
-import { PostActionController } from '../PostActionController';
+import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager } from '../../../../dao';
+import { BaseDao, daoManager, PostDao } from '../../../../dao';
 import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import { SendPostController } from '../implementation/SendPostController';
+import { ProgressService } from '../../../progress';
 
 jest.mock('../../../../api');
+jest.mock('../../../../dao');
+jest.mock('../../../progress');
 
 describe('PostController', () => {
+  const progressService: ProgressService = new ProgressService();
+  beforeEach(() => {
+    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+  });
   describe('getPostActionController()', () => {
-    beforeEach(() => {
+    afterAll(() => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {
@@ -55,6 +63,19 @@ describe('PostController', () => {
       expect(controllerBuilder.buildEntitySourceController).toBeCalledTimes(1);
       expect(controllerBuilder.buildPartialModifyController).toBeCalledTimes(1);
       expect(controllerBuilder.buildRequestController).toBeCalledTimes(1);
+    });
+  });
+  describe('getSendPostController', () => {
+    it('getSendPostController should not be null/undefined', () => {
+      const controllerBuilder = new ControllerBuilder<Post>();
+      const postController = new PostController(controllerBuilder);
+      jest
+        .spyOn(postController, 'getPostActionController')
+        .mockReturnValueOnce(null);
+
+      daoManager.getDao.mockResolvedValue(new PostDao(null));
+      const result = postController.getSendPostController();
+      expect(result instanceof SendPostController).toBe(true);
     });
   });
 });
