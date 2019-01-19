@@ -63,3 +63,4 @@ class PostDao extends BaseDao<Post> {
 }
 
 export default PostDao;
+export { PostViewDao } from './PostViewDao';

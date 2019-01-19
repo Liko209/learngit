@@ -4,36 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { FileItemController } from '../controller/FileItemController';
 import { ItemFile } from '../../../entity';
 import { daoManager } from '../../../../../dao';
 import { Progress } from '../../../../progress';
-import { EntityBaseService } from '../../../../../framework/service/EntityBaseService';
 import { IItemService } from '../../../service/IItemService';
 import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
-import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 
-class FileItemService extends EntityBaseService<ItemFile>
-  implements ISubItemService {
+class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   private _fileItemController: FileItemController;
 
   constructor(private _itemService: IItemService) {
-    super();
-  }
-
-  async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    return await sanitizedDao.getSortedIds(options);
+    super(daoManager.getDao<FileItemDao>(FileItemDao));
   }
 
   protected get fileItemController() {
     if (!this._fileItemController) {
-      this._fileItemController = new FileItemController(
-        this._itemService,
-        this.getControllerBuilder(),
-      );
+      this._fileItemController = new FileItemController(this._itemService);
     }
     return this._fileItemController;
   }
@@ -110,35 +99,12 @@ class FileItemService extends EntityBaseService<ItemFile>
     this.fileUploadController.cleanUploadingFiles(groupId, itemIds);
   }
 
-  async updateItem(file: FileItem) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    await sanitizedDao.update(this._toSanitizedFile(file));
-  }
-
-  async deleteItem(itemId: number) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    await sanitizedDao.delete(itemId);
-  }
-
-  async createItem(file: FileItem) {
-    const sanitizedDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    await sanitizedDao.put(this._toSanitizedFile(file));
-  }
-
-  private _toSanitizedFile(file: FileItem) {
+  toSanitizedItem(file: FileItem) {
     return {
-      id: file.id,
-      group_ids: file.group_ids,
-      created_at: file.created_at,
+      ...super.toSanitizedItem(file),
       name: file.name,
       type: file.type,
-      post_ids: file.post_ids,
     } as SanitizedFileItem;
-  }
-
-  async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
-    const sanitizedFileDao = daoManager.getDao<FileItemDao>(FileItemDao);
-    return await sanitizedFileDao.getGroupItemCount(groupId, filterFunc);
   }
 }
 

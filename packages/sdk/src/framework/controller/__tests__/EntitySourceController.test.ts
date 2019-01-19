@@ -8,6 +8,7 @@ import { EntitySourceController } from '../impl/EntitySourceController';
 import { RequestController } from '../impl/RequestController';
 import { BaseDao, DeactivatedDao } from '../../../dao';
 import { TestEntity, TestDatabase } from './TestTypes';
+import { EntityPersistentController } from '../impl/EntityPersistentController';
 
 describe('RequestController', () => {
   let dao: BaseDao<TestEntity>;
@@ -18,8 +19,11 @@ describe('RequestController', () => {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new DeactivatedDao(new TestDatabase());
     requestController = new RequestController<TestEntity>(undefined);
+    const entityPersistentController: EntityPersistentController<
+      TestEntity
+    > = new EntityPersistentController(dao);
     entitySourceController = new EntitySourceController<TestEntity>(
-      dao,
+      entityPersistentController,
       deactivatedDao,
       requestController,
     );
@@ -33,7 +37,7 @@ describe('RequestController', () => {
 
       jest.spyOn(requestController, 'get').mockImplementation(() => {});
 
-      const result = await entitySourceController.getEntity(1);
+      const result = await entitySourceController.get(1);
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
       expect(requestController.get).not.toHaveBeenCalled();
@@ -46,7 +50,7 @@ describe('RequestController', () => {
       jest
         .spyOn(requestController, 'get')
         .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
-      const result = await entitySourceController.getEntity(1);
+      const result = await entitySourceController.get(1);
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');
       expect(requestController.get).toHaveBeenCalled();
@@ -56,7 +60,7 @@ describe('RequestController', () => {
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
-      expect(entitySourceController.getEntity(-1)).resolves.toThrow();
+      expect(entitySourceController.get(-1)).resolves.toThrow();
     });
   });
 

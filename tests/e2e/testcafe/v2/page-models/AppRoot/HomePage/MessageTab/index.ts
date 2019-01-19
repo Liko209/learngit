@@ -4,6 +4,7 @@ import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
+import { RightRail } from './RightRail';
 
 
 class Entry extends BaseWebComponent {
@@ -370,6 +371,10 @@ export class MessageTab extends BaseWebComponent {
     const url = await h(this.t).href;
     const result = /messages\/(\d+)/.test(url);
     assert(result, `invalid url: ${url}`);
+  }
+
+  get rightRail() {
+    return this.getComponent(RightRail);
   }
 }
 
