@@ -3,17 +3,14 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment } from 'react';
+import React, { CSSProperties } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-// import { debounce } from 'lodash';
 import {
-  // JuiVirtualList,
-  // IVirtualListDataSource,
-  // JuiVirtualListLoader,
-  JuiVirtualLoadList,
+  JuiInfiniteList,
+  JuiVirtualCellWrapper,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
@@ -26,27 +23,39 @@ import {
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
+  state = { loading: false };
+  private _updateStateTimer: NodeJS.Immediate | null;
   async componentDidMount() {
     await this.loadMore(0, 0);
   }
 
-  countOfCell() {
-    const { totalCount, loading } = this.props;
-    return loading ? totalCount + 1 : totalCount; // this.props.loading ? ids.length + 1 : ids.length;
+  componentWillUnmount() {
+    if (this._updateStateTimer) {
+      clearImmediate(this._updateStateTimer);
+      this._updateStateTimer = null;
+    }
   }
 
-  cellAtIndex = (index: number) => {
+  countOfCell() {
+    const { ids } = this.props;
+    const { loading } = this.state;
+    return loading ? ids.length + 1 : ids.length;
+  }
+
+  cellAtIndex = (index: number, style: CSSProperties) => {
     const { ids, tabConfig } = this.props;
     const Component: any = tabConfig.item;
     const id = ids[index];
+    let content;
     if (id) {
-      return <Component id={id} />;
+      content = <Component id={id} />;
     }
-    console.log(21111115, index, ids.length);
-    if (index === ids.length) {
-      return <JuiRightRailLoadingMore key={index} />;
-    }
-    return <Fragment key={index} />;
+
+    return (
+      <JuiVirtualCellWrapper key={index} style={style}>
+        {content}
+      </JuiVirtualCellWrapper>
+    );
   }
 
   fixedCellHeight() {
@@ -69,17 +78,26 @@ class ItemListView extends React.Component<ViewProps & Props> {
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    const result = await this.props.fetchNextPageItems();
+    const { firstLoaded, ids, totalCount } = this.props;
+    if (firstLoaded && ids.length === totalCount) {
+      return;
+    }
+    const p = new Promise((resolve: any) => {
+      this.setState({ loading: true }, () => {
+        this.props.fetchNextPageItems().then((result: any) => {
+          resolve(result);
+          this._updateStateTimer = setImmediate(() =>
+            this.setState({ loading: false }),
+          );
+        });
+      });
+    }).catch((error: Error) => {});
+    const result = await p;
     return result;
   }
 
   firstLoader = () => {
     return <JuiRightRailContentLoading />;
-  }
-
-  isEmptyList = () => {
-    const { totalCount } = this.props;
-    return totalCount === 0;
   }
 
   moreLoader = () => {
@@ -93,33 +111,26 @@ class ItemListView extends React.Component<ViewProps & Props> {
   }
 
   render() {
-    const {
-      totalCount,
-      ids,
-      firstLoaded,
-      loadError,
-      loading,
-      tabConfig,
-    } = this.props;
+    const { totalCount, ids, firstLoaded, loadError, tabConfig } = this.props;
+    const { loading } = this.state;
     const { subheader, tryAgainPrompt } = tabConfig;
-    const hasNextPage = ids.length < totalCount;
-    console.log(21111, ids.length, totalCount, loading);
     return (
       <JuiRightShelfContent>
-        {firstLoaded && ids.length > 0 && (
+        {firstLoaded && totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader>
             {t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
         {firstLoaded && (
-          <JuiVirtualLoadList
-            list={ids}
-            hasNextPage={hasNextPage}
-            isNextPageLoading={loading}
-            loadNextPage={this.loadMore}
-            renderCell={this.cellAtIndex}
-            moreLoader={this.moreLoader}
-            rowHeight={this.fixedCellHeight()}
+          <JuiInfiniteList
+            renderLoading={this.moreLoader}
+            rowHeight={this.fixedCellHeight}
+            threshold={1}
+            cellCount={this.countOfCell()}
+            isLoading={loading}
+            loadMore={this.loadMore}
+            renderRow={this.cellAtIndex}
+            reverse={false}
           />
         )}
         {loading && !firstLoaded && this.firstLoader()}

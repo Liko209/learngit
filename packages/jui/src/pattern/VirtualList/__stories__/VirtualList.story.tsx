@@ -5,14 +5,14 @@
  */
 import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import { storiesOf } from '@storybook/react';
-import { number } from '@storybook/addon-knobs';
+import { number, boolean } from '@storybook/addon-knobs';
 import uuid from 'uuid';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellOnLoadFunc,
   JuiVirtualCellProps,
-  TableView,
+  JuiInfiniteList,
 } from '..';
 import { IndexRange, Index } from 'react-virtualized';
 import { FileItem } from './FileItem';
@@ -93,6 +93,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
 
 storiesOf('Pattern/VirtualList', module).add('TableView', () => {
   let count = number('cell count', 1000);
+  const reverse = boolean('reverse?', false);
   if (count < 0) {
     count = 1000;
   }
@@ -107,20 +108,28 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
     <div {...rest}>{title}</div>
   );
 
-  class DataSource implements IVirtualListDataSource {
-    private _list: string[] = [];
-
+  const style = {
+    width: 400,
+    height: 400,
+    border: '1px solid',
+    display: 'flex',
+  };
+  class Content extends Component implements IVirtualListDataSource {
+    private _list: string[] = Array(5)
+      .fill(part)
+      .flat();
+    state = { isLoading: false };
     countOfCell = () => {
-      return count;
+      return this._list.length;
     }
 
     cellAtIndex = (index: number, style: CSSProperties) => {
       const text = `${this._list[index]}-${index + 1}`;
-      const s = {
-        ...style,
-        borderBottom: '1px dashed',
-      };
-      return <StaticCell title={text} style={s} key={index} />;
+      return (
+        <div key={index} style={style}>
+          <StaticCell title={text} />
+        </div>
+      );
     }
 
     isRowLoaded = (index: number) => {
@@ -128,14 +137,14 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
     }
 
     loadMore = async (startIndex: number, endIndex: number) => {
+      this.setState({ isLoading: true });
       const p = new Promise((resolve: any) => {
         setTimeout(() => {
-          const array: string[] = Array(endIndex - startIndex)
-            .fill(part)
-            .flat();
+          const array: string[] = Array(endIndex - startIndex).fill('XXX');
           this._list = this._list.concat(array);
-          resolve(this._list);
-        },         500);
+          resolve();
+          this.setState({ isLoading: false });
+        },         1000);
       });
       return await p;
     }
@@ -143,30 +152,21 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
     fixedCellHeight(): number {
       return 44;
     }
-  }
-
-  const dataSource = new DataSource();
-
-  const style = {
-    width: 400,
-    height: 400,
-    border: '1px solid',
-    display: 'flex',
-  };
-  class Content extends Component {
-    private _listRef: RefObject<JuiVirtualList> = createRef();
-    componentDidMount() {
-      setTimeout(() => {
-        const { current } = this._listRef;
-        if (current) {
-          // current.scrollToCell(cellIndex);
-        }
-      },         100);
-    }
+    componentDidMount() {}
     render() {
+      const cellCount = this.countOfCell();
       return (
         <div style={style}>
-          <TableView ref={this._listRef} dataSource={dataSource} />
+          <JuiInfiniteList
+            renderLoading={() => <div>Loading ...</div>}
+            rowHeight={this.fixedCellHeight}
+            threshold={10}
+            cellCount={cellCount}
+            isLoading={this.state.isLoading}
+            loadMore={this.loadMore}
+            renderRow={this.cellAtIndex}
+            reverse={reverse}
+          />
         </div>
       );
     }

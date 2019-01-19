@@ -64,7 +64,7 @@ const RightRailLoading = (props: ThemeProps) => {
   );
 };
 
-const JuiConversationRightRailLoading = withTheme(RightRailLoading);
+const JuiRightRailItemLoading = withTheme(RightRailLoading);
 
 type JuiRightRailContentLoadingProps = {
   showTip?: boolean;
@@ -112,7 +112,7 @@ const JuiRightRailLoadingMore = () => (
 );
 
 export {
-  JuiConversationRightRailLoading,
+  JuiRightRailItemLoading,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
   JuiRightRailContentLoadError,

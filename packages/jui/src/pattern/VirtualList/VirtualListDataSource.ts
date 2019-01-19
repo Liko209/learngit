@@ -30,14 +30,6 @@ interface IVirtualListDataSource {
   renderEmptyContent?: () => JSX.Element;
 
   onScroll?: (event: any) => void;
-
-  // loader for full page
-  firstLoader?: () => ReactNode;
-
-  // loader for `load more`
-  moreLoader?: () => ReactNode;
-
-  isEmptyList: () => boolean;
 }
 
 export { IVirtualListDataSource };

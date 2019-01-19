@@ -70,8 +70,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   private _loadError: boolean = false;
   @observable
-  private _loading: boolean = false;
-  @observable
   totalCount: number = 0;
   @observable
   private _sortKey: ITEM_SORT_KEYS = ITEM_SORT_KEYS.CREATE_TIME;
@@ -214,40 +212,30 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   fetchNextPageItems = async () => {
-    console.log(21111, 'try to load more');
-    if (!this._loading) {
-      console.log(21111222, 'load more');
-      this._loading = true;
-      const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
-      if (status === 'offline') {
-        const { offlinePrompt } = this.tabConfig;
-        Notification.flashToast({
-          message: t(offlinePrompt),
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
-        });
-        this._loading = false;
-        return;
-      }
-
-      try {
-        const result = await this._sortableDataHandler.fetchData(
-          QUERY_DIRECTION.NEWER,
-        );
-        await delay(1000);
-        this._loading = false;
-        this._firstLoaded = true;
-        console.log(2111111, this.ids);
-        return result;
-      } catch (e) {
-        //
-        this._loading = false;
-        this._loadError = true;
-      }
+    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
+    if (status === 'offline') {
+      const { offlinePrompt } = this.tabConfig;
+      Notification.flashToast({
+        message: t(offlinePrompt),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+      return;
     }
-    return;
+
+    try {
+      const result = await this._sortableDataHandler.fetchData(
+        QUERY_DIRECTION.NEWER,
+      );
+      this._firstLoaded = true;
+      await delay(1000);
+      return result;
+    } catch (e) {
+      //
+      this._loadError = true;
+    }
   }
 
   @computed
@@ -258,11 +246,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get firstLoaded() {
     return this._firstLoaded;
-  }
-
-  @computed
-  get loading() {
-    return this._loading;
   }
 
   @computed

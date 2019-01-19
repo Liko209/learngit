@@ -14,7 +14,6 @@ type Props = {
 type ViewProps = {
   ids: number[];
   totalCount: number;
-  loading: boolean;
   firstLoaded: boolean;
   loadError: boolean;
   tabConfig: TabConfig;
