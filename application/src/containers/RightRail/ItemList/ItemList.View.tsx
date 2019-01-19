@@ -10,9 +10,10 @@ import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 // import { debounce } from 'lodash';
 import {
-  JuiVirtualList,
-  IVirtualListDataSource,
+  // JuiVirtualList,
+  // IVirtualListDataSource,
   // JuiVirtualListLoader,
+  JuiVirtualLoadList,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
@@ -23,34 +24,27 @@ import {
   JuiRightRailContentLoadError,
 } from 'jui/pattern/RightShelf';
 
-async function delay(time: number) {
-  return new Promise((resolve: Function) => {
-    setTimeout(resolve, time);
-  });
-}
-
 @observer
-class ItemListView extends React.Component<ViewProps & Props>
-  implements IVirtualListDataSource {
+class ItemListView extends React.Component<ViewProps & Props> {
   async componentDidMount() {
     await this.loadMore(0, 0);
   }
 
   countOfCell() {
-    const { ids } = this.props;
-    return this.props.loading ? ids.length + 1 : ids.length;
+    const { totalCount, loading } = this.props;
+    return loading ? totalCount + 1 : totalCount; // this.props.loading ? ids.length + 1 : ids.length;
   }
 
-  cellAtIndex = (index: number, style: React.CSSProperties) => {
+  cellAtIndex = (index: number) => {
     const { ids, tabConfig } = this.props;
     const Component: any = tabConfig.item;
     const id = ids[index];
     if (id) {
-      return (
-        <div key={index} style={style}>
-          <Component id={id} />
-        </div>
-      );
+      return <Component id={id} />;
+    }
+    console.log(21111115, index, ids.length);
+    if (index === ids.length) {
+      return <JuiRightRailLoadingMore key={index} />;
     }
     return <Fragment key={index} />;
   }
@@ -76,7 +70,6 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   loadMore = async (startIndex: number, stopIndex: number) => {
     const result = await this.props.fetchNextPageItems();
-    await delay(5);
     return result;
   }
 
@@ -109,14 +102,26 @@ class ItemListView extends React.Component<ViewProps & Props>
       tabConfig,
     } = this.props;
     const { subheader, tryAgainPrompt } = tabConfig;
+    const hasNextPage = ids.length < totalCount;
+    console.log(21111, ids.length, totalCount, loading);
     return (
       <JuiRightShelfContent>
-        {firstLoaded && totalCount > 0 && ids.length > 0 && (
+        {firstLoaded && ids.length > 0 && (
           <JuiListSubheader>
-            {t(subheader)} ({this.props.totalCount})
+            {t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
-        {firstLoaded && <JuiVirtualList dataSource={this} />}
+        {firstLoaded && (
+          <JuiVirtualLoadList
+            list={ids}
+            hasNextPage={hasNextPage}
+            isNextPageLoading={loading}
+            loadNextPage={this.loadMore}
+            renderCell={this.cellAtIndex}
+            moreLoader={this.moreLoader}
+            rowHeight={this.fixedCellHeight()}
+          />
+        )}
         {loading && !firstLoaded && this.firstLoader()}
         {loadError && (
           <JuiRightRailContentLoadError

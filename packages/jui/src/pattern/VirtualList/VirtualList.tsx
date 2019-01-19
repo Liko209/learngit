@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, PureComponent, ReactNode } from 'react';
 import { observer } from 'mobx-react';
 import {
   AutoSizer,
@@ -199,4 +199,101 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 }
 
-export { JuiVirtualList, JuiVirtualListProps };
+type JuiVirtualLoadListProps = {
+  hasNextPage: boolean;
+  isNextPageLoading: boolean;
+  list: any[];
+  loadNextPage: any;
+  renderCell: (index: number) => ReactNode;
+  moreLoader: () => ReactNode;
+  rowHeight: number;
+};
+
+class JuiVirtualLoadList extends PureComponent<JuiVirtualLoadListProps> {
+  private _listRef: List;
+  private _registerRef = (ref: any, callback: (args: any) => void) => {
+    this._listRef = ref;
+    callback(ref);
+  }
+  componentWillReact() {
+    if (this._listRef) {
+      this._listRef.forceUpdateGrid();
+    }
+  }
+  render() {
+    const {
+      /** Are there more items to load? (This information comes from the most recent API request.) */
+      hasNextPage,
+      /** Are we currently loading a page of items? (This may be an in-flight flag in your Redux store for example.) */
+      isNextPageLoading,
+      /** List of items loaded so far */
+      list,
+      /** Callback function (eg. Redux action-creator) responsible for loading the next page of items */
+      loadNextPage,
+      renderCell,
+      moreLoader,
+      rowHeight,
+    } = this.props;
+    // If there are more items to be loaded then add an extra row to hold a loading indicator.
+    const rowCount = hasNextPage ? list.length + 1 : list.length;
+
+    // Only load 1 page of items at a time.
+    // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+    const loadMoreRows = isNextPageLoading ? () => {} : loadNextPage;
+
+    // Every row is loaded except for our loading indicator row.
+    const isRowLoaded = ({ index }: Index) =>
+      !hasNextPage || index < list.length;
+
+    // Render a list item or a loading indicator.
+    const rowRenderer = ({ index, key, style }: ListRowProps) => {
+      let content;
+
+      if (!isRowLoaded({ index })) {
+        content = moreLoader();
+      } else {
+        content = renderCell(index);
+      }
+
+      return (
+        <div key={key} style={style}>
+          {content}
+        </div>
+      );
+    };
+
+    const listProps = {
+      rowCount,
+      rowHeight,
+      rowRenderer,
+    } as ListProps;
+
+    return (
+      <JuiVirtualListWrapper>
+        <InfiniteLoader
+          isRowLoaded={isRowLoaded}
+          loadMoreRows={loadMoreRows}
+          rowCount={rowCount}
+        >
+          {({ onRowsRendered, registerChild }) => (
+            <AutoSizer>
+              {({ width, height }: Size) => {
+                return (
+                  <List
+                    ref={ref => this._registerRef(ref, registerChild)}
+                    onRowsRendered={onRowsRendered}
+                    height={height}
+                    width={width}
+                    {...listProps}
+                  />
+                );
+              }}
+            </AutoSizer>
+          )}
+        </InfiniteLoader>
+      </JuiVirtualListWrapper>
+    );
+  }
+}
+
+export { JuiVirtualList, JuiVirtualLoadList, JuiVirtualListProps };
