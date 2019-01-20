@@ -13,3 +13,4 @@ export * from './TaskAvatarNames';
 export * from './TaskContent';
 export * from './AvatarName';
 export * from './TimeMessage';
+export * from './CodeSnippet';
