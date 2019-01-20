@@ -41,6 +41,7 @@ describe('EventItemService', () => {
       group_ids: [123],
       start: 111,
       end: 222,
+      effective_end: 999,
     };
 
     return { eventItem };
@@ -55,6 +56,7 @@ describe('EventItemService', () => {
         created_at: eventItem.created_at,
         start: eventItem.start,
         end: eventItem.end,
+        effective_end: eventItem.effective_end,
       });
     });
   });

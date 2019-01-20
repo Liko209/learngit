@@ -53,7 +53,7 @@ class ItemUtils {
   }
 
   static eventFilter<
-    T extends { id: number; group_ids: number[]; end: number }
+    T extends { id: number; group_ids: number[]; effective_end: number }
   >(groupId: number) {
     return (event: T) => {
       let result = false;
@@ -68,7 +68,10 @@ class ItemUtils {
           break;
         }
 
-        if (!TimeUtils.compareDate(event.end, Date.now())) {
+        if (
+          event.effective_end < Number.MAX_SAFE_INTEGER &&
+          !TimeUtils.compareDate(event.effective_end, Date.now())
+        ) {
           break;
         }
 

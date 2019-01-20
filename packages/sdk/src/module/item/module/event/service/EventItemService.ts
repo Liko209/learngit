@@ -22,6 +22,7 @@ class EventItemService extends BaseSubItemService<
       ...super.toSanitizedItem(event),
       start: event.start,
       end: event.end,
+      effective_end: event.effective_end,
     } as SanitizedEventItem;
   }
 }

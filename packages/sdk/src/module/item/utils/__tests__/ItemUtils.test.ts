@@ -123,12 +123,21 @@ describe('ItemUtils', () => {
       id: 14,
       group_ids: [11, 222, 33],
       start: 111,
-      end: 9007199254740992,
+      end: 333,
+      effective_end: 3333,
     };
 
     const item2 = {
       id: 111,
       group_ids: [11, 222, 33],
+    };
+
+    const item3 = {
+      id: 14,
+      group_ids: [11, 222, 33],
+      start: 111,
+      end: 333,
+      effective_end: 9007199254740992,
     };
 
     it('should return false when is not event', () => {
@@ -143,6 +152,10 @@ describe('ItemUtils', () => {
     it('should return false when is over due event', () => {
       TimeUtils.compareDate = jest.fn().mockReturnValue(false);
       expect(ItemUtils.eventFilter(11)(item1)).toBeFalsy();
+    });
+
+    it('should return true when effect time is max int', () => {
+      expect(ItemUtils.eventFilter(11)(item3)).toBeTruthy();
     });
   });
 });
