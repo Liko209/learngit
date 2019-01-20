@@ -142,12 +142,32 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.privateButton);
   }
 
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon');
+  }
+
   get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon("star_border", this.profileTitle);
+    return this.getSelectorByIcon("star_border", this.favoriteButton);
   }
 
   get favoriteStatusIcon() {
-    return this.getSelectorByIcon("star", this.profileTitle);
+    return this.getSelectorByIcon("star", this.favoriteButton);
+  }
+
+  get settingButton() {
+    return this.getSelectorByAutomationId('settingButton');
+  }
+
+  get settingIcon() {
+    return this.getSelectorByIcon('settings', this.settingButton);
+  }
+
+  async clickSetting() {
+    return this.t.click(this.settingButton);
+  }
+
+  get moreButton() {
+    return this.getSelectorByAutomationId('actionBarMore', this.profileTitle);
   }
 
   get moreIcon() {
@@ -155,7 +175,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   async openMoreMenu() {
-    await this.t.click(this.moreIcon);
+    await this.t.click(this.moreButton);
   }
 
   get moreMenu() {
@@ -194,6 +214,10 @@ export class ProfileDialog extends BaseWebComponent {
 
   get status() {
     return this.getSelectorByAutomationId('profileDialogSummaryStatus');
+  }
+
+  get description() {
+    return this.getSelectorByAutomationId('profileDialogSummaryDescription');
   }
 
   get summaryTitle() {
