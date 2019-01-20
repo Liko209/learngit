@@ -24,7 +24,7 @@ class TaskItemView extends React.Component<TaskItemProps, {}> {
     const { complete, text, color } = task;
 
     return (
-      <JuiListItem>
+      <JuiListItem data-test-automation-id="rightRail-task-item">
         <JuiListItemIcon>
           <div>
             <JuiTaskIcon iconColor={color} complete={complete} />
