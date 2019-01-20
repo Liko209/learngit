@@ -27,6 +27,13 @@ class ItemListView extends React.Component<ViewProps & Props> {
     await this.loadMore(0, 0);
   }
 
+  componentWillReceiveProps(nextProps: ViewProps & Props) {
+    const { groupId, type } = this.props;
+    if (groupId !== nextProps.groupId || type !== nextProps.type) {
+      this.props.forceReload();
+    }
+  }
+
   countOfCell() {
     const { ids, loadStatus } = this.props;
     const { loading } = loadStatus;
@@ -71,7 +78,6 @@ class ItemListView extends React.Component<ViewProps & Props> {
   loadMore = async (startIndex: number, stopIndex: number) => {
     const { loadStatus, ids, totalCount } = this.props;
     const { firstLoaded } = loadStatus;
-    console.log(211111, ids.length, totalCount);
     if (firstLoaded && ids.length === totalCount) {
       return;
     }
@@ -96,7 +102,6 @@ class ItemListView extends React.Component<ViewProps & Props> {
     const { totalCount, ids, loadStatus, tabConfig } = this.props;
     const { loading, firstLoaded, loadError } = loadStatus;
     const { subheader, tryAgainPrompt } = tabConfig;
-    console.log(2111444, 'render', firstLoaded, loading, ids.length);
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
@@ -116,7 +121,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
             noRowsRenderer={this.renderEmptyContent}
           />
         )}
-        {loading && !firstLoaded && this.firstLoader()}
+        {!firstLoaded && this.firstLoader()}
         {loadError && (
           <JuiRightRailContentLoadError
             tip={t(tryAgainPrompt)}

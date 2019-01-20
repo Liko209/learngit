@@ -109,11 +109,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     super(props);
     this._loadStatus = { ...InitLoadStatus };
     this.reaction(
-      () => this.props.type,
+      () => this.type,
       () => (this._loadStatus = { ...InitLoadStatus }),
     );
     this.reaction(
-      () => this.props.groupId,
+      () => this._groupId,
       () => {
         this._loadStatus = { ...InitLoadStatus };
         this.props.groupId &&
@@ -201,6 +201,12 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       default:
     }
     return isValidItem;
+  }
+
+  @action
+  forceReload = async () => {
+    this._loadStatus.firstLoaded = false;
+    await this.fetchNextPageItems();
   }
 
   @action

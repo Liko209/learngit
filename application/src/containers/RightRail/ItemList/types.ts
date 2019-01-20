@@ -28,6 +28,7 @@ type ViewProps = {
   totalCount: number;
   loadStatus: LoadStatus;
   tabConfig: TabConfig;
+  forceReload: () => void;
   fetchNextPageItems: () => Promise<any>;
 };
 
