@@ -16,6 +16,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
 import GroupService, { TeamPermission } from 'sdk/service/group';
+import { GroupService as NGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 
 export default class GroupModel extends Base<Group> {
@@ -184,6 +185,15 @@ export default class GroupModel extends Base<Group> {
     return this.type === CONVERSATION_TYPES.TEAM
       ? groupService.isTeamAdmin(personId, this.permissions)
       : false;
+  }
+
+  @computed
+  get isCurrentUserHasPermissionAddTeam() {
+    const GroupService = new NGroupService();
+    return GroupService.isCurrentUserHasPermission(
+      this.data,
+      PERMISSION_ENUM.TEAM_ADD_MEMBER,
+    );
   }
 
   isThePersonGuest(personId: number) {
