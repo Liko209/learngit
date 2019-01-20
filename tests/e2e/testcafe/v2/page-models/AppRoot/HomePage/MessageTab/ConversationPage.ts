@@ -241,12 +241,9 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
-  private uploadFiles(selector: Selector, filesPath: Array<string>) {
-    return this.t.setFilesToUpload(selector, filesPath);
-  }
 
-  async uploadFilesToMessageAttachment(filesPath: Array<string>) {
-    await this.uploadFiles(this.uploadFileInput, filesPath);
+  async uploadFilesToMessageAttachment(filesPath: Array<string> | string) {
+    await this.t.setFilesToUpload(this.uploadFileInput, filesPath);
   }
 
   async removeFileOnMessageArea(n = 0) {
@@ -350,6 +347,10 @@ export class PostItem extends BaseWebComponent {
 
   get mentions() {
     return this.text.find('.at_mention_compose');
+  }
+
+  async clickNthMentions(n = 0) {
+    return this.t.click(this.mentions.nth(n));
   }
 
   getMentionByName(name: string) {

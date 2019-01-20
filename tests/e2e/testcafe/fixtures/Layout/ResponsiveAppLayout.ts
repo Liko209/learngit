@@ -46,19 +46,18 @@ test.skip(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']), async (t: 
   });
 
   await h(t).withLog('resize window', async () => {
-    // TODO: messageTab's locator is deprecated?
-    await t.expect(app.homePage.leftRail.visible).ok();
-    await t.expect(app.homePage.rightRail.visible).ok();
+    await t.expect(app.homePage.messageTab.leftRail.visible).ok();
+    await t.expect(app.homePage.messageTab.rightRail.visible).ok();
     await t.resizeWindow(750, 700);
-    await t.expect(app.homePage.leftRail.visible).notOk();
-    await t.expect(app.homePage.rightRail.visible).notOk();
+    await t.debug();
+    await t.expect(app.homePage.messageTab.leftRail.visible).notOk();
+    await t.expect(app.homePage.messageTab.rightRail.visible).notOk();
   }, true);
 
   await h(t).withLog('resize to max window', async () => {
     await t.resizeWindow(1280, 720);
-    await t.expect(app.homePage.leftRail.visible).ok();
-    await t.expect(app.homePage.rightRail.visible).ok();
-    // TODO: messageTab's locator is deprecated?
+    await t.expect(app.homePage.messageTab.leftRail.visible).ok();
+    await t.expect(app.homePage.messageTab.rightRail.visible).ok();
   }, true);
 
   await h(t).withLog('When I go to the Tasks', async () => {
@@ -70,19 +69,17 @@ test.skip(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']), async (t: 
   });
 
   await h(t).withLog('resize window', async () => {
-    await t.expect(app.homePage.leftRail.visible).ok();
-    await t.expect(app.homePage.rightRail.visible).ok();
+    await t.expect(app.homePage.messageTab.leftRail.visible).ok();
+    await t.expect(app.homePage.messageTab.rightRail.visible).ok();
     await t.resizeWindow(779, 700);
-    await t.expect(app.homePage.leftRail.visible).notOk();
-    await t.expect(app.homePage.rightRail.visible).notOk();
-    // TODO: messageTab's locator is deprecated?
+    await t.expect(app.homePage.messageTab.leftRail.visible).notOk();
+    await t.expect(app.homePage.messageTab.rightRail.visible).notOk();
   }, true);
 
   await h(t).withLog('resize window', async () => {
     await t.resizeWindow(1440, 700);
-    await t.expect(app.homePage.leftRail.visible).ok();
-    await t.expect(app.homePage.rightRail.visible).ok();
-    // TODO: messageTab's locator is deprecated?
+    await t.expect(app.homePage.messageTab.leftRail.visible).ok();
+    await t.expect(app.homePage.messageTab.rightRail.visible).ok();
   }, true);
 },
 );
