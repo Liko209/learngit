@@ -12,8 +12,9 @@ import {
   withRouter,
   RouteComponentProps,
 } from 'react-router-dom';
-import NotFound from '../NotFound';
 import { HomeRouterViewProps } from './types';
+
+const Empty = () => <div />;
 
 const HomeRouterViewComponent = ({
   routes,
@@ -24,7 +25,7 @@ const HomeRouterViewComponent = ({
     {routes.map((route: RouteProps, i: number) => (
       <Route key={`HOME_ROUTE_${i}`} {...route} />
     ))}
-    <Route component={NotFound} />
+    <Route component={Empty} />
   </Switch>
 );
 
