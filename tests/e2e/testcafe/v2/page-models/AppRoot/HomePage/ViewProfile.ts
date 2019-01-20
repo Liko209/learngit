@@ -113,19 +113,167 @@ export class MiniProfile extends BaseWebComponent {
 }
 
 export class ProfileDialog extends BaseWebComponent {
+  public id: Promise<string>;
+
+  async getId() {
+    if (await this.avatar.hasAttribute('cid')) {
+      return await this.cid;
+    }
+    return await this.uid;
+  }
+
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
-  }
-
-  get exists() {
-    return this.profileTitle.exists;
   }
 
   get profileTitle() {
     return this.getSelectorByAutomationId('profileDialogTitle');
   }
 
+  get exists() {
+    return this.profileTitle.exists;
+  }
+
+  async shouldBePopUp() {
+    await this.t.expect(this.profileTitle.exists).ok();
+  }
+
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon');
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.favoriteButton);
+  }
+
+  get content() {
+    return this.getSelectorByAutomationId('profileDialogContent');
+  }
+
+  get status() {
+    return this.getSelectorByAutomationId('profileDialogSummaryStatus');
+  }
+
+  get description() {
+    return this.getSelectorByAutomationId('profileDialogSummaryDescription');
+  }
+
+  get summaryTitle() {
+    return this.getSelectorByAutomationId('profileDialogSummaryTitle');
+  }
+
+  get summary() {
+    return this.getSelectorByAutomationId('profileDialogSummary');
+  }
+
+  get avatar() {
+    return this.getSelectorByAutomationId('profileAvatar');
+  }
+
+  get name() {
+    return this.getSelectorByAutomationId('profileDialogSummaryName');
+  }
+
+  get messageButton() {
+    return this.getSelectorByIcon('chat_bubble', this.summary);
+  }
+
+  async goToMessages() {
+    await this.t.click(this.messageButton);
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('close');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  async shouldBeId(id: string) {
+    await this.t.expect(this.id).eql(id, `Profile owner Id, expect: ${id}, but actual: ${this.id}`)
+  }
+
+
+  // people only
+  get formArea() {
+    return this.getSelectorByAutomationId('profileDialogForm');
+  }
+
+  get companyIcon() {
+    return this.getSelectorByIcon('work', this.formArea);
+  }
+
+  get companyName() {
+    return this.companyIcon.parent(0).find('div').withText('Company').nextSibling('div').textContent;
+  }
+
+  get extensionIcon() {
+    return this.getSelectorByIcon('call', this.formArea);
+  }
+
+  get extension() {
+    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div').textContent;
+  }
+
+  get emailIcon() {
+    return this.getSelectorByIcon('email', this.formArea);
+  }
+
+  get emailAddress() {
+    return this.emailIcon.parent(0).find('div').withText('Email').nextSibling('div').textContent;
+  }
+
+  get uid() {
+    return this.avatar.getAttribute('uid');
+  }
+
+
+  // team & group
+  get cid() {
+    return this.avatar.getAttribute('cid');
+  }
+
+  get memberHeader() {
+    return this.getSelectorByAutomationId('profileDialogMemberHeader');
+  }
+
+  async membersCountShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.memberHeader.textContent).match(reg);
+  }
+
+  get memberList() {
+    return this.getSelectorByAutomationId('profileDialogMemberList');
+  }
+
+  get memberNames() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName');
+  }
+
+  memberEntryById(id: string) {
+    return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
+  }
+
+  memberEntryByName(name: string) {
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
+  }
+
+  get addMembersIcon() {
+    return this.getSelectorByIcon('add_team',this.memberHeader);
+  }
+
+  async clickAddMembersIcon() {
+    await this.t.click(this.addMembersIcon);
+  }
+
+  // team only
   get privateButton() {
     return this.profileTitle.find('.privacy');
   }
@@ -140,18 +288,6 @@ export class ProfileDialog extends BaseWebComponent {
 
   async clickPrivate() {
     await this.t.click(this.privateButton);
-  }
-
-  get favoriteButton() {
-    return this.getSelectorByAutomationId('favorite-icon');
-  }
-
-  get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon("star_border", this.favoriteButton);
-  }
-
-  get favoriteStatusIcon() {
-    return this.getSelectorByIcon("star", this.favoriteButton);
   }
 
   get settingButton() {
@@ -182,115 +318,6 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getComponent(MoreMenu);
   }
 
-  async shouldBePopUp() {
-    await this.t.expect(this.profileTitle.exists).ok();
-  }
-
-  async shouldBeId(id: string) {
-    const currentId = await this.getId();
-    assert.strictEqual(id, currentId, `Profile owner Id, expect: ${id}, but actual: ${currentId}`);
-  }
-
-  get closeButton() {
-    this.warnFlakySelector();
-    return this.getSelectorByIcon('close');
-  }
-
-  get content() {
-    return this.getSelectorByAutomationId('profileDialogContent');
-  }
-
-  get summary() {
-    return this.getSelectorByAutomationId('profileDialogSummary');
-  }
-
-  get avatar() {
-    return this.getSelectorByAutomationId('profileAvatar');
-  }
-
-  get name() {
-    return this.getSelectorByAutomationId('profileDialogSummaryName');
-  }
-
-  get status() {
-    return this.getSelectorByAutomationId('profileDialogSummaryStatus');
-  }
-
-  get description() {
-    return this.getSelectorByAutomationId('profileDialogSummaryDescription');
-  }
-
-  get summaryTitle() {
-    return this.getSelectorByAutomationId('profileDialogSummaryTitle');
-  }
-
-  get messageButton() {
-    return this.getSelectorByIcon('chat_bubble', this.summary);
-  }
-
-  async goToMessages() {
-    await this.t.click(this.messageButton);
-  }
-
-  get formArea() {
-    return this.getSelectorByAutomationId('profileDialogForm');
-  }
-
-  get companyIcon() {
-    return this.getSelectorByIcon('work', this.formArea);
-  }
-
-  get companyName() {
-    return this.companyIcon.parent(0).find('div').withText('Company').nextSibling('div').textContent;
-  }
-
-  get extensionIcon() {
-    return this.getSelectorByIcon('call', this.formArea);
-  }
-
-  get extension() {
-    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div').textContent;
-  }
-
-  get emailIcon() {
-    return this.getSelectorByIcon('email', this.formArea);
-  }
-
-  get emailAddress() {
-    return this.emailIcon.parent(0).find('div').withText('Email').nextSibling('div').textContent;
-  }
-
-  // team
-  get memberHeader() {
-    return this.getSelectorByAutomationId('profileDialogMemberHeader');
-  }
-
-  async getMemberCount(): Promise<number> {
-    const text = await this.memberHeader.textContent;
-    const count = text.match(/\((\d+)\)/).pop().replace("(", "").replace(")", "");
-    return Number(count);
-  }
-
-  get memberList() {
-    return this.getSelectorByAutomationId('profileDialogMemberList');
-  }
-
-  memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
-  }
-
-
-  async getId() {
-    if (await this.avatar.hasAttribute('cid')) {
-      return await this.avatar.getAttribute('cid');
-    }
-    return await this.avatar.getAttribute('uid');
-  }
-
-  async close() {
-    await this.t.click(this.closeButton);
-  }
-
   get joinTeamButton() {
     return this.getSelectorByIcon('add_member');
   }
@@ -298,8 +325,8 @@ export class ProfileDialog extends BaseWebComponent {
   async joinTeam() {
     await this.t.click(this.joinTeamButton);
   }
-}
 
+}
 class Member extends BaseWebComponent {
   get uid() {
     return this.self.getAttribute('data-id');
