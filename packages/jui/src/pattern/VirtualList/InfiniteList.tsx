@@ -23,7 +23,7 @@ type InfiniteScrollProps = {
   isLoading: boolean;
   renderLoading: () => ReactNode;
   cellCount: number;
-  scrollRef?: (ref: any) => void;
+  noRowsRenderer?: () => JSX.Element;
 };
 
 class JuiInfiniteList extends Component<InfiniteScrollProps> {
@@ -72,7 +72,7 @@ class JuiInfiniteList extends Component<InfiniteScrollProps> {
   }
 
   render() {
-    const { isLoading, cellCount } = this.props;
+    const { isLoading, cellCount, noRowsRenderer } = this.props;
     const rowCount = isLoading ? cellCount + 1 : cellCount;
 
     return (
@@ -91,6 +91,7 @@ class JuiInfiniteList extends Component<InfiniteScrollProps> {
                   width={width}
                   height={height}
                   rowHeight={this._rowHeight}
+                  noRowsRenderer={noRowsRenderer}
                   ref={(virtualScroll: any) => {
                     this.virtualScroll = virtualScroll;
                     registerChild(virtualScroll);

@@ -109,9 +109,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor(props: Props) {
     super(props);
+    this.reaction(() => this.props.type, () => (this._firstLoaded = false));
     this.reaction(
       () => this.props.groupId,
       () => {
+        this._firstLoaded = false;
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
@@ -123,20 +125,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       },
       { fireImmediately: true },
     );
-    this.reaction(
-      () => this.ids,
-      () => {
-        this.loadTotalCount();
-      },
-    );
   }
 
   async loadTotalCount() {
-    // To do in image: https://jira.ringcentral.com/browse/FIJI-2341, remove this if...
-    if (this.type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES) {
-      this.totalCount = 0;
-      return;
-    }
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
@@ -226,13 +217,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     }
 
     try {
-      console.log(2111, 'will render?');
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
-      console.log(2112, 'will render?');
       this._firstLoaded = true;
-      console.log(2113, 'will render?');
       return result;
     } catch (e) {
       //

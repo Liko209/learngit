@@ -24,16 +24,15 @@ import {
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
   state = { loading: false };
-  private _updateStateTimer: NodeJS.Timeout | null;
+  private _mounted: boolean = false;
+
   async componentDidMount() {
+    this._mounted = true;
     await this.loadMore(0, 0);
   }
 
   componentWillUnmount() {
-    if (this._updateStateTimer) {
-      clearTimeout(this._updateStateTimer);
-      this._updateStateTimer = null;
-    }
+    this._mounted = false;
   }
 
   countOfCell() {
@@ -77,33 +76,18 @@ class ItemListView extends React.Component<ViewProps & Props> {
     return result;
   }
 
-  private _clearTimer = () => {
-    if (this._updateStateTimer) {
-      clearTimeout(this._updateStateTimer);
-      this._updateStateTimer = null;
-    }
-  }
-
   loadMore = async (startIndex: number, stopIndex: number) => {
     const { firstLoaded, ids, totalCount } = this.props;
+    console.log(211111, ids.length, totalCount);
     if (firstLoaded && ids.length === totalCount) {
+      this.setState({ loading: false });
       return;
     }
-    const p = new Promise((resolve: any) => {
-      this.setState({ loading: true }, () => {
-        this.props.fetchNextPageItems().then((result: any) => {
-          resolve(result);
-          this._updateStateTimer = setTimeout(() => {
-            this.setState({ loading: false });
-            this._clearTimer();
-          },                                  0);
-        });
-      });
-    }).catch((error: Error) => {
-      this._clearTimer();
-    });
-    const result = await p;
-    return result;
+    this.setState({ loading: true });
+    await this.props.fetchNextPageItems();
+    if (this._mounted) {
+      this.setState({ loading: false });
+    }
   }
 
   firstLoader = () => {
@@ -124,7 +108,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
     const { totalCount, ids, firstLoaded, loadError, tabConfig } = this.props;
     const { loading } = this.state;
     const { subheader, tryAgainPrompt } = tabConfig;
-    console.log(2111444, 'render');
+    console.log(2111444, 'render', firstLoaded, loading, ids.length);
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
@@ -141,6 +125,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
             isLoading={loading}
             loadMore={this.loadMore}
             renderRow={this.cellAtIndex}
+            noRowsRenderer={this.renderEmptyContent}
           />
         )}
         {loading && !firstLoaded && this.firstLoader()}
