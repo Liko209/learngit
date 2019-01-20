@@ -179,7 +179,6 @@ class ImageAndFileItem extends BaseWebComponent {
 
 }
 
-
 class LinksTab extends BaseWebComponent {
   // this is a temp. selector
   get self() {
@@ -206,11 +205,4 @@ class LinksTab extends BaseWebComponent {
   async linksCountsShouldBe(n: number) {
     await this.t.expect(this.items.count).eql(n);
   }
-
-
 }
-
-
-
-
-

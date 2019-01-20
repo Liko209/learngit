@@ -153,7 +153,6 @@ describe('FileItemController', () => {
       buildPartialModifyController.mockImplementation(() => {
         return partialModifyController;
       });
-
       const uploadController = fileItemController.fileUploadController;
       expect(uploadController).toBeInstanceOf(FileUploadController);
     });
