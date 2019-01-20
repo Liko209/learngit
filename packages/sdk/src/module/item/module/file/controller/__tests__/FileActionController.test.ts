@@ -27,7 +27,7 @@ function clearMocks() {
 
 describe('FileActionController', () => {
   const entitySourceController = {
-    getEntity: jest.fn(),
+    get: jest.fn(),
   };
   const fileActionController = new FileActionController(entitySourceController);
   const authDao = new AuthDao();
@@ -114,34 +114,34 @@ describe('FileActionController', () => {
     }
 
     it('should return empty when can not get file item', async () => {
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(undefined);
+      entitySourceController.get = jest.fn().mockResolvedValue(undefined);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
 
     it('should return download url when is from giphy', async () => {
       const { fileItemC } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemC);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemC);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe(fileItemC.url);
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
 
     it('should return url when is from gif file', async () => {
       const { fileItemB } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemB);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemB);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe(fileItemB.versions[0].url);
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
 
     it('should return empty when is not support preview', async () => {
       const { fileItemE } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemE);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemE);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
 
     it('should return empty when has no cache server', async () => {
@@ -153,38 +153,38 @@ describe('FileActionController', () => {
       });
 
       const { fileItemE } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemE);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemE);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
 
     it('should return empty when has no store file id', async () => {
       const { fileItemD } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemD);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemD);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
 
     it('should return empty when has no auth token', async () => {
       const { fileItemA } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemA);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
       authDao.get = jest.fn().mockReturnValue('');
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
       expect(authDao.get).toBeCalledWith(AUTH_GLIP_TOKEN);
     });
 
     it('should return expected url', async () => {
       const { fileItemA } = setUpData();
-      entitySourceController.getEntity = jest.fn().mockResolvedValue(fileItemA);
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe(
         'cacheServer.com/modify-image?size=1x2&id=852746252&source_type=files&source_id=10&t=token',
       );
-      expect(entitySourceController.getEntity).toBeCalledWith(11);
+      expect(entitySourceController.get).toBeCalledWith(11);
       expect(authDao.get).toBeCalledWith(AUTH_GLIP_TOKEN);
     });
   });
