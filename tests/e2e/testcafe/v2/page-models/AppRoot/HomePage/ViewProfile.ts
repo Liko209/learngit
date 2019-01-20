@@ -244,9 +244,13 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberHeader');
   }
 
-  async membersCountShouldBe(n: number) {
+  async countOnMemberHeaderShouldBe(n: number) {
     const reg = new RegExp(`\(${n}\)`)
     await this.t.expect(this.memberHeader.textContent).match(reg);
+  }
+  
+  async countOnMemberListShouldBe(n: number) {
+    await this.t.expect(this.memberList.find("li").count).eql(n);
   }
 
   get memberList() {
