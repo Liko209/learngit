@@ -6,15 +6,22 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('rightRail');
   }
 
-  isShowed() {
-    
-  }
-  show() {
-
+  get expandStatusButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('chevron_right').parent('button[aria-label="Hide details"]');
   }
 
-  hide() {
+  get foldStatusButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]'); 
+  }
 
+  async expand() {
+    await this.t.click(this.foldStatusButton);
+  }
+
+  async fold() {
+    await this.t.click(this.expandStatusButton);
   }
 
   get tabList() {
