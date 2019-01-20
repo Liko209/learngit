@@ -15,5 +15,7 @@ export type LinkItem = Item & {
   image: string;
   data: {
     provider_name: string;
+    favicon_url: string;
+    url: string;
   };
 };

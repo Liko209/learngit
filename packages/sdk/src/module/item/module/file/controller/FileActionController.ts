@@ -16,7 +16,7 @@ class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}
 
   async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
-    const file = (await this._sourceController.getEntity(itemId)) as FileItem;
+    const file = (await this._sourceController.get(itemId)) as FileItem;
     let url = '';
     do {
       if (!file) {

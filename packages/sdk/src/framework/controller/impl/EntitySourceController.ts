@@ -4,45 +4,68 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw } from '../../model';
-import { DeactivatedDao, BaseDao } from '../../../dao';
+import { IdModel } from '../../model';
+import { DeactivatedDao } from '../../../dao';
 import _ from 'lodash';
-import { transform } from '../../../service/utils';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
-import { ControllerUtils } from '../ControllerUtils';
+import { IEntityPersistentController } from '../interface/IEntityPersistentController';
 
 class EntitySourceController<T extends IdModel = IdModel>
   implements IEntitySourceController<T> {
   constructor(
-    public dao: BaseDao<T>,
+    public entityPersistentController: IEntityPersistentController<T>,
     public deactivatedDao: DeactivatedDao,
-    public requestController: IRequestController<T>,
+    public requestController?: IRequestController<T>,
   ) {}
 
-  async getEntity(id: number): Promise<T | null> {
-    const result = await this.getEntityLocally(id);
-    if (!result) {
-      return this.requestController.get(id);
+  async put(item: T | T[]): Promise<void> {
+    await this.entityPersistentController.put(item);
+  }
+
+  async bulkPut(array: T[]): Promise<void> {
+    await this.entityPersistentController.bulkPut(array);
+  }
+
+  async clear(): Promise<void> {
+    await this.entityPersistentController.clear();
+  }
+
+  async delete(key: number): Promise<void> {
+    await this.entityPersistentController.delete(key);
+  }
+
+  async bulkDelete(keys: number[]): Promise<void> {
+    await this.entityPersistentController.bulkDelete(keys);
+  }
+
+  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+    await this.entityPersistentController.update(item);
+  }
+
+  async bulkUpdate(array: Partial<T>[]): Promise<void> {
+    await this.entityPersistentController.bulkUpdate(array);
+  }
+
+  async get(key: number): Promise<T | null> {
+    const result = await this.getEntityLocally(key);
+    if (!result && this.requestController) {
+      return this.requestController.get(key);
     }
     return result;
   }
 
-  async getEntityLocally(id: number): Promise<T> {
-    const result = await this.dao.get(id);
-    return result || (await this.deactivatedDao.get(id));
+  async batchGet(ids: number[]): Promise<T[]> {
+    return await this.entityPersistentController.batchGet(ids);
   }
 
-  async bulkUpdate(partialModels: Partial<Raw<T>>[]) {
-    const transformedModels: T[] = [];
-    partialModels.forEach((item: Partial<Raw<T>>) => {
-      const transformedModel: T = transform(item);
-      transformedModels.push(transformedModel);
-    });
+  getEntityNotificationKey(): string {
+    return this.entityPersistentController.getEntityNotificationKey();
+  }
 
-    if (this.dao) {
-      await this.dao.bulkUpdate(transformedModels);
-    }
+  async getEntityLocally(id: number): Promise<T> {
+    const result = await this.entityPersistentController.get(id);
+    return result || (await this.deactivatedDao.get(id));
   }
 
   async getEntitiesLocally(
@@ -52,7 +75,7 @@ class EntitySourceController<T extends IdModel = IdModel>
     if (ids.length <= 0) {
       return [];
     }
-    let models = await this.dao.batchGet(ids);
+    let models = await this.entityPersistentController.batchGet(ids);
     if (includeDeactivated && models.length !== ids.length) {
       const modelIds = models.map(model => model.id);
       const diffIds = _.difference(ids, modelIds);
@@ -60,10 +83,6 @@ class EntitySourceController<T extends IdModel = IdModel>
       models = _.concat(models, deactivateModels);
     }
     return models;
-  }
-
-  getEntityNotificationKey() {
-    return ControllerUtils.getEntityNotificationKey(this.dao);
   }
 }
 

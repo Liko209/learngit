@@ -37,7 +37,7 @@ describe('FileItemService', () => {
     daoManager.getDao = jest.fn().mockReturnValue(fileItemDao);
     fileActionController = new FileActionController(null);
     fileUploadController = new FileUploadController(null, null, null);
-    fileItemController = new FileItemController(null, null);
+    fileItemController = new FileItemController(null);
     fileItemService = new FileItemService(itemService as IItemService);
     Object.defineProperties(fileItemService, {
       fileUploadController: {
