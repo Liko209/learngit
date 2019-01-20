@@ -457,7 +457,7 @@ describe('SectionGroupHandler', () => {
       });
     });
 
-    it('should not be removed from id set because it is current group even has not unread and over limit', (done: any) => {
+    it.skip('should not be removed from id set because it is current group even has not unread and over limit', (done: any) => {
       (getGlobalValue as jest.Mock).mockReturnValue(4);
       const handler = setup([1, 2, 3, 4]);
       (profileService.getMaxLeftRailGroup as jest.Mock).mockResolvedValue(2);

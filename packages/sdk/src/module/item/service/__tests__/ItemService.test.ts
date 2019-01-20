@@ -41,10 +41,7 @@ describe('ItemService', () => {
 
   function setup() {
     itemService = new ItemService();
-    itemServiceController = new ItemServiceController(
-      itemService.getControllerBuilder(),
-      null,
-    );
+    itemServiceController = new ItemServiceController(null, null);
     fileItemService = new FileItemService(itemService);
     itemActionController = new ItemActionController(
       undefined as IPartialModifyController<Item>,
@@ -398,8 +395,6 @@ describe('ItemService', () => {
     };
 
     beforeEach(() => {
-      clearMocks();
-      setup();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue(
         new ApiResultOk(
           {
@@ -411,10 +406,6 @@ describe('ItemService', () => {
       );
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       itemService.handleIncomingData = jest.fn();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
     });
 
     it('should call related api', () => {

@@ -22,10 +22,7 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
 
   protected get fileItemController() {
     if (!this._fileItemController) {
-      this._fileItemController = new FileItemController(
-        this._itemService,
-        this.getControllerBuilder(),
-      );
+      this._fileItemController = new FileItemController(this._itemService);
     }
     return this._fileItemController;
   }

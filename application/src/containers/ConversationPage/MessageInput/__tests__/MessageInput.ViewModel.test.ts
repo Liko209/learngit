@@ -15,11 +15,17 @@ import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { GroupConfigService } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
+import { daoManager } from 'sdk/src/dao';
 
 const groupConfigService = {
   updateDraft: jest.fn(),
   getDraft: jest.fn(),
 };
+
+GroupConfigService.getInstance = () => groupConfigService;
+jest.mock('sdk/service/groupConfig');
+jest.mock('sdk/api');
+
 const postService = {
   sendPost: jest.fn().mockResolvedValue(null),
 };

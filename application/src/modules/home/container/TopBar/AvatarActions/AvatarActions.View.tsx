@@ -19,10 +19,11 @@ import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
 class AvatarActionsView extends React.Component<ViewProps> {
   constructor(props: ViewProps) {
     super(props);
-    window.jupiterElectron = {
-      ...window.jupiterElectron,
-      handleAboutPage: props.toggleAboutPage,
-    };
+
+    if (window.jupiterElectron) {
+      window.jupiterElectron.handleAboutPage = props.toggleAboutPage;
+    }
+
     this._Anchor = this._Anchor.bind(this);
   }
 
