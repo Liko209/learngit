@@ -13,14 +13,10 @@ import {
   DidUploadFileCallback,
 } from './types';
 
-import {
-  PostService,
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 
 import { ItemService } from 'sdk/module/item';
+import { NewPostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
@@ -31,10 +27,11 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
+const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
-  private _postService: PostService;
+  private _postService: NewPostService;
   private _didUploadFileCallback?: DidUploadFileCallback;
   @observable
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
@@ -44,11 +41,21 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
-    this._postService = PostService.getInstance();
+    this._postService = NewPostService.getInstance();
     this.reaction(
       () => this.id,
-      (id: number) => {
+      () => {
         this.reloadFiles();
+      },
+    );
+
+    this.reaction(
+      () => this.files,
+      () => {
+        const quill = (document.querySelector(QUILL_QUERY) as any).__quill;
+        requestAnimationFrame(() => {
+          quill.focus();
+        });
       },
     );
 

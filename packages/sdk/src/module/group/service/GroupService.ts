@@ -15,13 +15,15 @@ import { Api } from '../../../api';
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   teamController: TeamController;
   constructor() {
-    super();
-    this.setEntitySource(this._buildEntitySourceController());
+    super(false, daoManager.getDao(GroupDao), {
+      basePath: '/team',
+      networkClient: Api.glipNetworkClient,
+    });
   }
 
   protected getTeamController() {
     if (!this.teamController) {
-      this.teamController = new TeamController(this.getControllerBuilder());
+      this.teamController = new TeamController(this.getEntitySource());
     }
     return this.teamController;
   }
@@ -62,29 +64,22 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .removeTeamMembers(members, teamId);
   }
 
-  isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean {
-    return this.getTeamController()
-      .getTeamPermissionController()
-      .isCurrentUserHasPermission(group, type);
+  async isCurrentUserHasPermission(
+    groupId: number,
+    type: PERMISSION_ENUM,
+  ): Promise<boolean> {
+    const group = await this.getById(groupId);
+    return group
+      ? this.getTeamController()
+          .getTeamPermissionController()
+          .isCurrentUserHasPermission(group, type)
+      : false;
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
     return this.getTeamController()
       .getTeamPermissionController()
       .isTeamAdmin(personId, permission);
-  }
-
-  private _buildEntitySourceController() {
-    const requestController = this.getControllerBuilder().buildRequestController(
-      {
-        basePath: '/team',
-        networkClient: Api.glipNetworkClient,
-      },
-    );
-    return this.getControllerBuilder().buildEntitySourceController(
-      daoManager.getDao(GroupDao),
-      requestController,
-    );
   }
 }
 

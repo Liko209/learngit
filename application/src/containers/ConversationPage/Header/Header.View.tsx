@@ -4,17 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, ComponentType } from 'react';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
+import { container } from 'framework';
 import {
   JuiConversationPageHeader,
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
-import { JuiButtonBar, JuiIconButton } from 'jui/components/Buttons';
+import { JuiButtonBar, JuiIconButtonProps } from 'jui/components/Buttons';
 import { Favorite, Privacy } from '@/containers/common';
 import { translate, WithNamespaces } from 'react-i18next';
-import { toTitleCase } from '@/utils/string';
 import { CONVERSATION_TYPES } from '@/constants';
+import { MessageExtension } from '@/modules/message/types';
+import { MessageStore } from '@/modules/message/store';
 
 type HeaderProps = {
   title: string;
@@ -31,37 +34,37 @@ type HeaderProps = {
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {
+  private _messageStore: MessageStore = container.get(MessageStore);
+
   constructor(props: HeaderProps) {
     super(props);
     this.state = {
       awake: false,
     };
-    this.rightButtonClickHandler = this.rightButtonClickHandler.bind(this);
     this._onHover = this._onHover.bind(this);
     this._onUnhover = this._onUnhover.bind(this);
   }
-  rightButtonClickHandler(evt: React.SyntheticEvent, name: string) {
-    // console.log(evt, name);
+
+  @computed
+  private get _rightButtonsComponents() {
+    const { extensions } = this._messageStore;
+    const buttons: ComponentType<JuiIconButtonProps>[] = [];
+    extensions.forEach((extension: MessageExtension) => {
+      const extensionButtons = extension['CONVERSATION_PAGE.HEADER.BUTTONS'];
+      if (extensionButtons) {
+        buttons.push(...extensionButtons);
+      }
+    });
+    return buttons;
   }
 
   private _ActionButtons() {
-    const { actions, t } = this.props;
-    const actionButtons = actions.map(({ name, iconName, tooltip }) =>
-      ((name: string) => {
-        const onRightButtonClick = (e: React.SyntheticEvent) =>
-          this.rightButtonClickHandler(e, name);
-        return (
-          <JuiIconButton
-            key={name}
-            tooltipTitle={toTitleCase(t(tooltip))}
-            onClick={onRightButtonClick}
-          >
-            {iconName}
-          </JuiIconButton>
-        );
-      })(name),
+    const actionButtons = this._rightButtonsComponents.map(
+      (Comp: ComponentType<JuiIconButtonProps>, i: number) => (
+        <Comp key={`ACTION_${i}`} />
+      ),
     );
-    // hide toggle right rail button
+
     return <JuiButtonBar overlapSize={1}>{actionButtons}</JuiButtonBar>;
   }
 

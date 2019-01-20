@@ -15,6 +15,7 @@ import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { NewPostService } from 'sdk/module/post';
 
 const mockPostEntityData = {
   id: 1,
@@ -42,11 +43,10 @@ jest.mock('@/store/utils', () => ({
   getEntity: jest.fn(name => mockEntity[name]),
 }));
 
-const { PostService } = service;
 const postService = {
-  modifyPost: jest.fn(),
+  editPost: jest.fn(),
 };
-PostService.getInstance = jest.fn().mockReturnValue(postService);
+NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let editMessageInputViewModel: EditMessageInputViewModel;
 let enterHandler: () => void;
@@ -102,7 +102,7 @@ describe('EditMessageInputViewModel', () => {
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
-      expect(postService.modifyPost).toBeCalled();
+      expect(postService.editPost).toBeCalled();
     });
     it('should edit post failure when content is empty', () => {
       const markdownFromDeltaRes = {
@@ -114,7 +114,7 @@ describe('EditMessageInputViewModel', () => {
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
-      expect(postService.modifyPost).not.toBeCalled();
+      expect(postService.editPost).not.toBeCalled();
     });
     it('should edit post failure when content is illegal', () => {
       const markdownFromDeltaRes = {
@@ -127,7 +127,7 @@ describe('EditMessageInputViewModel', () => {
       const handler = enterHandler.bind(that);
       handler();
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
-      expect(postService.modifyPost).not.toBeCalled();
+      expect(postService.editPost).not.toBeCalled();
     });
     it('should edit post failure when content is over length', () => {
       const markdownFromDeltaRes = {
@@ -140,11 +140,11 @@ describe('EditMessageInputViewModel', () => {
       const handler = enterHandler.bind(that);
       handler();
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
-      expect(postService.modifyPost).not.toBeCalled();
+      expect(postService.editPost).not.toBeCalled();
     });
 
     it('should edit post failure when service error', () => {
-      postService.modifyPost = jest
+      postService.editPost = jest
         .fn()
         .mockRejectedValueOnce(new Error('error'));
       const content = 'text';

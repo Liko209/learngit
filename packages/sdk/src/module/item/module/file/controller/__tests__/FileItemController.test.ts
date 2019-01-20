@@ -8,7 +8,11 @@ import { FileItemController } from '../FileItemController';
 import { FileUploadController } from '../FileUploadController';
 import { IItemService } from '../../../../service/IItemService';
 import { daoManager, ItemDao } from '../../../../../../dao';
-import { ControllerBuilder } from '../../../../../../framework/controller/impl/ControllerBuilder';
+import {
+  buildEntitySourceController,
+  buildPartialModifyController,
+  buildRequestController,
+} from '../../../../../../framework/controller';
 import { FileItem } from '../../entity/FileItem';
 import { Api } from '../../../../../../api';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
@@ -21,7 +25,7 @@ jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../api');
 jest.mock('../../../../../../dao');
 jest.mock('../FileUploadController');
-jest.mock('../../../../../../framework/controller/impl/ControllerBuilder');
+jest.mock('../../../../../../framework/controller');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -31,15 +35,10 @@ function clearMocks() {
 
 describe('FileItemController', () => {
   let fileItemController: FileItemController;
-  let controllerBuilder: ControllerBuilder;
   const itemDao = new ItemDao(null);
   const itemService = {} as IItemService;
   function setup() {
-    controllerBuilder = new ControllerBuilder<FileItem>();
-    fileItemController = new FileItemController(
-      itemService,
-      controllerBuilder as ControllerBuilder<FileItem>,
-    );
+    fileItemController = new FileItemController(itemService);
   }
 
   beforeEach(() => {
@@ -102,21 +101,20 @@ describe('FileItemController', () => {
           id: 1;
         }),
       });
-      controllerBuilder.buildRequestController = jest
-        .fn()
-        .mockReturnValue(fileRequestController);
-      controllerBuilder.buildEntitySourceController = jest.fn();
-      controllerBuilder.buildPartialModifyController = jest
-        .fn()
-        .mockReturnValue(partialModifyController);
 
+      buildRequestController.mockImplementation(() => {
+        return fileRequestController;
+      });
+
+      buildEntitySourceController.mockImplementation(() => {
+        return undefined;
+      });
+
+      buildPartialModifyController.mockImplementation(() => {
+        return partialModifyController;
+      });
       const uploadController = fileItemController.fileUploadController;
       expect(uploadController).toBeInstanceOf(FileUploadController);
-      expect(controllerBuilder.buildRequestController).toBeCalledWith(
-        expect.objectContaining({
-          basePath: '/file',
-        }),
-      );
     });
   });
 });

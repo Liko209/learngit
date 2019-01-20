@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { t } from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -27,8 +27,6 @@ type State = {
   message: string;
 };
 
-type NewMessageProps = WithNamespaces & ViewProps;
-
 const StyledSnackbarsContent = styled<any>(JuiSnackbarContent)`
   && {
     margin: 0 0 ${spacing(4)} 0;
@@ -42,8 +40,8 @@ const StyledTextWithLink = styled.div`
 `;
 
 @observer
-class NewMessage extends React.Component<NewMessageProps, State> {
-  constructor(props: NewMessageProps) {
+class NewMessage extends React.Component<ViewProps, State> {
+  constructor(props: ViewProps) {
     super(props);
     this.state = {
       message: '',
@@ -81,7 +79,6 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 
   render() {
     const {
-      t,
       emailError,
       emailErrorMsg,
       disabledOkBtn,
@@ -143,7 +140,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
   }
 }
 
-const NewMessageView = translate('team')(withRouter(NewMessage));
+const NewMessageView = withRouter(NewMessage);
 const NewMessageComponent = NewMessage;
 
 export { NewMessageView, NewMessageComponent };

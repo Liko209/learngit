@@ -15,16 +15,16 @@ type SortableModel<T> = {
 };
 
 interface IEntityCacheSearchController<T extends IdModel = IdModel> {
-  getEntityFromCache(id: number): T | null;
+  getEntity(id: number): Promise<T | null>;
 
-  getMultiEntitiesFromCache(
+  getMultiEntities(
     ids: number[],
     filterFunc?: (entity: T) => boolean,
   ): Promise<T[]>;
 
-  getEntitiesFromCache(filterFunc?: (entity: T) => boolean): Promise<T[]>;
+  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 
-  searchEntitiesFromCache(
+  searchEntities(
     genSortableModelFunc: (
       entity: T,
       terms: string[],

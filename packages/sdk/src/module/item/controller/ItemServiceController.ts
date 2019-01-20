@@ -7,20 +7,20 @@
 import { ISubItemService } from '../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../config';
 import { ItemActionController } from './ItemActionController';
-import { ControllerBuilder } from '../../../framework/controller/impl/ControllerBuilder';
+import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
-import { Api } from '../../../api';
 import { daoManager, ItemDao } from '../../../dao';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
   private _itemActionController: ItemActionController;
   constructor(
     _itemService: IItemService,
-    private _controllerBuilder: ControllerBuilder<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {
     this._subItemServices = SubItemServiceRegister.buildSubItemServices(
       _itemService,
@@ -33,18 +33,8 @@ class ItemServiceController {
 
   get itemActionController() {
     if (!this._itemActionController) {
-      const requestController = this._controllerBuilder.buildRequestController({
-        basePath: '/item',
-        networkClient: Api.glipNetworkClient,
-      });
-
-      const entitySourceController = this._controllerBuilder.buildEntitySourceController(
-        daoManager.getDao(ItemDao),
-        requestController,
-      );
-
-      const partialModifyController = this._controllerBuilder.buildPartialModifyController(
-        entitySourceController,
+      const partialModifyController = buildPartialModifyController<Item>(
+        this._entitySourceController,
       );
 
       this._itemActionController = new ItemActionController(
@@ -117,18 +107,11 @@ class ItemServiceController {
   async handleSanitizedItems(incomingItems: Item[]) {
     const typeItemsMap: Map<number, Item[]> = new Map();
     incomingItems.forEach((item: Item) => {
-      const type = GlipTypeUtil.extractTypeId(item.id);
-      switch (type) {
-        case TypeDictionary.TYPE_ID_FILE:
-          typeItemsMap.has(TypeDictionary.TYPE_ID_FILE)
-            ? (typeItemsMap.get(TypeDictionary.TYPE_ID_FILE) as Item[]).push(
-                item,
-              )
-            : typeItemsMap.set(TypeDictionary.TYPE_ID_FILE, [item]);
-          break;
-        default:
-          break;
-      }
+      this._saveItemsToTypeIdMap(
+        GlipTypeUtil.extractTypeId(item.id),
+        typeItemsMap,
+        item,
+      );
     });
 
     typeItemsMap.forEach(
@@ -138,8 +121,21 @@ class ItemServiceController {
     );
   }
 
+  private _saveItemsToTypeIdMap(
+    typeId: number,
+    typeItemsMap: Map<number, Item[]>,
+    item: Item,
+  ) {
+    typeItemsMap.has(typeId)
+      ? (typeItemsMap.get(typeId) as Item[]).push(item)
+      : typeItemsMap.set(typeId, [item]);
+  }
+
   private async _updateSanitizedItems(typeId: number, items: Item[]) {
     const subItemService = this.getSubItemService(typeId);
+    if (!subItemService) {
+      return;
+    }
     const deactivatedItems = items.filter(item => item.deactivated);
     deactivatedItems.forEach((item: Item) => {
       subItemService.deleteItem(item.id);
