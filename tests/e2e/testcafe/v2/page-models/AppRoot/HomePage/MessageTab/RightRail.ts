@@ -197,7 +197,6 @@ class ImageAndFileItem extends BaseWebComponent {
 
 }
 
-
 class LinksTab extends BaseWebComponent {
   // this is a temp. selector
   get self() {
@@ -227,8 +226,3 @@ class LinksTab extends BaseWebComponent {
 
 
 }
-
-
-
-
-
