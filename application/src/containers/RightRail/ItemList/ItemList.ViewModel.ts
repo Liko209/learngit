@@ -6,7 +6,7 @@
 
 import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps } from './types';
+import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
@@ -66,9 +66,7 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 
 class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
-  private _firstLoaded: boolean = false;
-  @observable
-  private _loadError: boolean = false;
+  private _loadStatus: LoadStatus;
   @observable
   totalCount: number = 0;
   @observable
@@ -109,11 +107,15 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor(props: Props) {
     super(props);
-    this.reaction(() => this.props.type, () => (this._firstLoaded = false));
+    this._loadStatus = { ...InitLoadStatus };
+    this.reaction(
+      () => this.props.type,
+      () => (this._loadStatus = { ...InitLoadStatus }),
+    );
     this.reaction(
       () => this.props.groupId,
       () => {
-        this._firstLoaded = false;
+        this._loadStatus = { ...InitLoadStatus };
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
@@ -217,25 +219,21 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     }
 
     try {
+      this._loadStatus.loading = true;
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
-      this._firstLoaded = true;
+      Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
       return result;
     } catch (e) {
       //
-      this._loadError = true;
+      this._loadStatus.loadError = true;
     }
   }
 
   @computed
-  get loadError() {
-    return this._loadError;
-  }
-
-  @computed
-  get firstLoaded() {
-    return this._firstLoaded;
+  get loadStatus() {
+    return this._loadStatus;
   }
 
   @computed

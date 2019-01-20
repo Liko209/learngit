@@ -6,6 +6,18 @@
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { TabConfig } from './config';
 
+type LoadStatus = {
+  firstLoaded: boolean;
+  loadError: boolean;
+  loading: boolean;
+};
+
+const InitLoadStatus: LoadStatus = {
+  firstLoaded: false,
+  loadError: false,
+  loading: false,
+};
+
 type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
@@ -14,10 +26,9 @@ type Props = {
 type ViewProps = {
   ids: number[];
   totalCount: number;
-  firstLoaded: boolean;
-  loadError: boolean;
+  loadStatus: LoadStatus;
   tabConfig: TabConfig;
   fetchNextPageItems: () => Promise<any>;
 };
 
-export { Props, ViewProps };
+export { Props, ViewProps, LoadStatus, InitLoadStatus };

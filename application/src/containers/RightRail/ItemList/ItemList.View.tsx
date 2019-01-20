@@ -23,21 +23,13 @@ import {
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
-  state = { loading: false };
-  private _mounted: boolean = false;
-
   async componentDidMount() {
-    this._mounted = true;
     await this.loadMore(0, 0);
   }
 
-  componentWillUnmount() {
-    this._mounted = false;
-  }
-
   countOfCell() {
-    const { ids } = this.props;
-    const { loading } = this.state;
+    const { ids, loadStatus } = this.props;
+    const { loading } = loadStatus;
     return loading ? ids.length + 1 : ids.length;
   }
 
@@ -77,17 +69,13 @@ class ItemListView extends React.Component<ViewProps & Props> {
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    const { firstLoaded, ids, totalCount } = this.props;
+    const { loadStatus, ids, totalCount } = this.props;
+    const { firstLoaded } = loadStatus;
     console.log(211111, ids.length, totalCount);
     if (firstLoaded && ids.length === totalCount) {
-      this.setState({ loading: false });
       return;
     }
-    this.setState({ loading: true });
     await this.props.fetchNextPageItems();
-    if (this._mounted) {
-      this.setState({ loading: false });
-    }
   }
 
   firstLoader = () => {
@@ -105,8 +93,8 @@ class ItemListView extends React.Component<ViewProps & Props> {
   }
 
   render() {
-    const { totalCount, ids, firstLoaded, loadError, tabConfig } = this.props;
-    const { loading } = this.state;
+    const { totalCount, ids, loadStatus, tabConfig } = this.props;
+    const { loading, firstLoaded, loadError } = loadStatus;
     const { subheader, tryAgainPrompt } = tabConfig;
     console.log(2111444, 'render', firstLoaded, loading, ids.length);
     return (
