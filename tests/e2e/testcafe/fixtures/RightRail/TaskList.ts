@@ -46,9 +46,12 @@ fixture('RightRail')
       await rightRail.tasksEntry.shouldBeOpened();
     })
     // step 2 create a task
-    await h(t).withLog('Then User create a task', async () => {
+    await h(t).withLog('Then User create tasks count should be 2', async () => {
       await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
       await t.expect(tasksTab.nthItem(0).withText(taskTitle).exists).ok();
+      await tasksTab.countOnSubTitleShouldBe(1);
+      await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+      await tasksTab.countOnSubTitleShouldBe(2);
     });
 
   });
