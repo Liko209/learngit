@@ -33,6 +33,8 @@ enum CALL_FSM_NOTIFY {
   UNMUTE_ACTION = 'unmuteAction',
   CALL_ACTION_SUCCESS = 'callActionSuccess',
   CALL_ACTION_FAILED = 'callActionFailed',
+  HOLD_ACTION = 'holdAction',
+  UNHOLD_ACTION = 'unholdAction',
   PARK_ACTION = 'parkAction',
 }
 
