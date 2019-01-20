@@ -160,10 +160,17 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await this._goToConversation(id);
   }
 
+  handleJoinTeam = (item: SortableModel<Group>) => async () => {
+    const joinTeamByItem = joinTeam(item);
+    this.onClear();
+    this.onClose();
+    await joinTeamByItem();
+  }
+
   private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
-        onClick={joinTeam(item)}
+        onClick={this.handleJoinTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
@@ -197,17 +204,21 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           type.sortableModel.map((item: any) => {
             const { id, displayName, entity } = item;
             const { is_team, privacy, members } = entity;
-            const hasAction =
+            const canJoinTeam =
               is_team &&
               privacy === 'protected' &&
               !members.includes(currentUserId);
 
-            const Actions = hasAction ? this._Actions(item) : null;
+            const Actions = canJoinTeam ? this._Actions(item) : null;
 
             return (
               <JuiSearchItem
                 key={id}
-                onClick={this.searchItemClickHandler(id)}
+                onClick={
+                  canJoinTeam
+                    ? this.handleJoinTeam(item)
+                    : this.searchItemClickHandler(id)
+                }
                 Avatar={this._Avatar(id)}
                 value={displayName}
                 terms={terms}
