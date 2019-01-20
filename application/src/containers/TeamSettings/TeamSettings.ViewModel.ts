@@ -37,6 +37,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   save = (params: SaveParams) => {};
+
+  leaveTeam = () => {};
 }
 
 export { TeamSettingsViewModel };

@@ -21,6 +21,11 @@ import {
   JuiTeamSettingSubSectionList,
   JuiTeamSettingSubSectionListItem,
 } from '../SubSection';
+import {
+  JuiTeamSettingButtonList,
+  JuiTeamSettingButtonListItem,
+  JuiTeamSettingButtonListItemText,
+} from '../ButtonList';
 import defaultTeamAvatar from './defaultTeamAvatar.png';
 import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
@@ -84,9 +89,17 @@ storiesOf('Pattern/SettingDialogs', module).add('Team Settings', () => {
           <JuiTeamSettingSubSectionListItem label="Add team members (Guest not allowed to add)">
             <JuiToggleButton onChange={action('on allowMemberAdd change')} />
           </JuiTeamSettingSubSectionListItem>
-          <JuiDivider />
         </JuiTeamSettingSubSectionList>
       </JuiTeamSettingSubSection>
+      <JuiDivider />
+      <JuiTeamSettingButtonList>
+        <JuiTeamSettingButtonListItem color="semantic.negative">
+          <JuiTeamSettingButtonListItemText color="semantic.negative">
+            Leave team
+          </JuiTeamSettingButtonListItemText>
+        </JuiTeamSettingButtonListItem>
+        <JuiDivider />
+      </JuiTeamSettingButtonList>
     </JuiModal>
   );
 });

@@ -17,6 +17,9 @@ import {
   JuiTeamSettingSubSectionTitle as SubSectionTitle,
   JuiTeamSettingSubSectionList as SubSectionList,
   JuiTeamSettingSubSectionListItem as SubSectionListItem,
+  JuiTeamSettingButtonList as ButtonList,
+  JuiTeamSettingButtonListItem as ButtonListItem,
+  JuiTeamSettingButtonListItemText as ButtonListItemText,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
@@ -25,6 +28,7 @@ import { GroupAvatar } from '@/containers/Avatar';
 import { toTitleCase } from '@/utils/string';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiToggleButton } from 'jui/components/Buttons';
+import { Dialog } from '@/containers/Dialog';
 
 type State = {
   name: string;
@@ -71,6 +75,24 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       description: e.target.value,
+    });
+  }
+
+  handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const { leaveTeam, t } = this.props;
+    portalManager.dismiss();
+    Dialog.confirm({
+      title: t('leaveTeamConfirmTitle'),
+      content: t('leaveTeamConfirmContent'),
+      okText: toTitleCase(t('leaveTeamConfirmOk')),
+      cancelText: toTitleCase(t('cancel')),
+      async onOK() {
+        try {
+          await leaveTeam();
+        } catch (e) {
+          // TODO: Error handling
+        }
+      },
     });
   }
 
@@ -126,10 +148,27 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             >
               <JuiToggleButton data-test-automation-id="allowAddTeamMemberToggle" />
             </SubSectionListItem>
-            <JuiDivider />
+            {/* <JuiDivider /> */}
           </SubSectionList>
         </SubSection>
       </>
+    );
+  }
+
+  renderButtonList() {
+    const { t } = this.props;
+    return (
+      <ButtonList>
+        <ButtonListItem
+          color="semantic.negative"
+          onClick={this.handleLeaveTeamClick}
+        >
+          <ButtonListItemText color="semantic.negative">
+            {t('leaveTeam')}
+          </ButtonListItemText>
+        </ButtonListItem>
+        <JuiDivider />
+      </ButtonList>
     );
   }
 
@@ -152,6 +191,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       >
         {isAdmin ? this.renderEditSection() : null}
         {isAdmin ? this.renderMemberPermissionSettings() : null}
+        <JuiDivider />
+        {this.renderButtonList()}
       </JuiModal>
     );
   }
