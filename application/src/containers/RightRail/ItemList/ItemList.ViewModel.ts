@@ -29,11 +29,11 @@ import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
 import { TAB_CONFIG } from './config';
 
-async function delay(time: number) {
-  return new Promise((resolve: Function) => {
-    setTimeout(resolve, time);
-  });
-}
+// async function delay(time: number) {
+//   return new Promise((resolve: Function) => {
+//     setTimeout(resolve, time);
+//   });
+// }
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -226,11 +226,13 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     }
 
     try {
+      console.log(2111, 'will render?');
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
+      console.log(2112, 'will render?');
       this._firstLoaded = true;
-      await delay(1000);
+      console.log(2113, 'will render?');
       return result;
     } catch (e) {
       //

@@ -93,7 +93,6 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
 
 storiesOf('Pattern/VirtualList', module).add('TableView', () => {
   let count = number('cell count', 1000);
-  const reverse = boolean('reverse?', false);
   if (count < 0) {
     count = 1000;
   }
@@ -152,7 +151,6 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
     fixedCellHeight(): number {
       return 44;
     }
-    componentDidMount() {}
     render() {
       const cellCount = this.countOfCell();
       return (
@@ -165,7 +163,6 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
             isLoading={this.state.isLoading}
             loadMore={this.loadMore}
             renderRow={this.cellAtIndex}
-            reverse={reverse}
           />
         </div>
       );

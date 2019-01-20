@@ -24,14 +24,14 @@ import {
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
   state = { loading: false };
-  private _updateStateTimer: NodeJS.Immediate | null;
+  private _updateStateTimer: NodeJS.Timeout | null;
   async componentDidMount() {
     await this.loadMore(0, 0);
   }
 
   componentWillUnmount() {
     if (this._updateStateTimer) {
-      clearImmediate(this._updateStateTimer);
+      clearTimeout(this._updateStateTimer);
       this._updateStateTimer = null;
     }
   }
@@ -77,6 +77,13 @@ class ItemListView extends React.Component<ViewProps & Props> {
     return result;
   }
 
+  private _clearTimer = () => {
+    if (this._updateStateTimer) {
+      clearTimeout(this._updateStateTimer);
+      this._updateStateTimer = null;
+    }
+  }
+
   loadMore = async (startIndex: number, stopIndex: number) => {
     const { firstLoaded, ids, totalCount } = this.props;
     if (firstLoaded && ids.length === totalCount) {
@@ -86,12 +93,15 @@ class ItemListView extends React.Component<ViewProps & Props> {
       this.setState({ loading: true }, () => {
         this.props.fetchNextPageItems().then((result: any) => {
           resolve(result);
-          this._updateStateTimer = setImmediate(() =>
-            this.setState({ loading: false }),
-          );
+          this._updateStateTimer = setTimeout(() => {
+            this.setState({ loading: false });
+            this._clearTimer();
+          },                                  0);
         });
       });
-    }).catch((error: Error) => {});
+    }).catch((error: Error) => {
+      this._clearTimer();
+    });
     const result = await p;
     return result;
   }
@@ -114,6 +124,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
     const { totalCount, ids, firstLoaded, loadError, tabConfig } = this.props;
     const { loading } = this.state;
     const { subheader, tryAgainPrompt } = tabConfig;
+    console.log(2111444, 'render');
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
@@ -130,7 +141,6 @@ class ItemListView extends React.Component<ViewProps & Props> {
             isLoading={loading}
             loadMore={this.loadMore}
             renderRow={this.cellAtIndex}
-            reverse={false}
           />
         )}
         {loading && !firstLoaded && this.firstLoader()}
