@@ -11,6 +11,7 @@ import { TaskItemService } from '../module/task/service';
 import { NoteItemService } from '../module/note/service';
 import { LinkItemService } from '../module/link/service';
 import { CodeItemService } from '../module/code/service';
+import { ConferenceItemService } from '../module/conference/service';
 import { ISubItemService } from '../module/base/service';
 import { TypeDictionary } from '../../../utils';
 type ClassConfig = {
@@ -28,6 +29,7 @@ const itemServiceConfigs: ClassConfig[] = [
   { typeId: TypeDictionary.TYPE_ID_LINK, value: LinkItemService },
   { typeId: TypeDictionary.TYPE_ID_EVENT, value: EventItemService },
   { typeId: TypeDictionary.TYPE_ID_CODE, value: CodeItemService },
+  { typeId: TypeDictionary.TYPE_ID_CONFERENCE, value: ConferenceItemService },
 ];
 
 class SubItemServiceRegister {
