@@ -3,7 +3,7 @@
  * @Date: 2019-01-19 21:41:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, ReactNode, CSSProperties } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {
   AutoSizer,
@@ -14,36 +14,35 @@ import {
   IndexRange,
 } from 'react-virtualized';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
+import { IVirtualListDataSource } from './VirtualListDataSource';
 
 type InfiniteScrollProps = {
-  loadMore: (startIndex: number, endIndex: number) => Promise<any>;
-  renderRow: (index: number, style: CSSProperties) => ReactNode;
-  rowHeight: (index: number) => number;
-  threshold: number;
+  dataSource: IVirtualListDataSource;
   isLoading: boolean;
-  renderLoading: () => ReactNode;
-  cellCount: number;
-  noRowsRenderer?: () => JSX.Element;
+  threshold?: number;
 };
 
 class JuiInfiniteList extends Component<InfiniteScrollProps> {
   static defaultProps = {
     isLoading: false,
+    threshold: 1,
   };
   private virtualScroll: List;
 
-  private _rowHeight = ({ index }: Index) => this.props.rowHeight(index);
+  private _rowHeight = ({ index }: Index) =>
+    this.props.dataSource.fixedCellHeight!()
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
-    const { isLoading, loadMore } = this.props;
+    const { isLoading, dataSource } = this.props;
     if (!isLoading) {
-      loadMore(startIndex, stopIndex);
+      return await dataSource.loadMore!(startIndex, stopIndex);
     }
   }
 
   isRowLoaded = ({ index }: Index) => {
-    const { cellCount, threshold } = this.props;
-    const loaded = index < cellCount - threshold;
+    const { dataSource, threshold } = this.props;
+    const cellCount = dataSource.countOfCell();
+    const loaded = index < cellCount - threshold!;
     return loaded;
   }
 
@@ -58,21 +57,22 @@ class JuiInfiniteList extends Component<InfiniteScrollProps> {
   }
 
   rowRenderer = ({ index, style }: ListRowProps) => {
-    const { cellCount, renderRow, renderLoading } = this.props;
-
+    const { dataSource } = this.props;
+    const cellCount = dataSource.countOfCell();
     if (index < cellCount) {
-      return renderRow(index, style);
+      return dataSource.cellAtIndex(index, style);
     }
 
     return (
       <div key={cellCount} style={style}>
-        {renderLoading()}
+        {dataSource.moreLoader!()}
       </div>
     );
   }
 
   render() {
-    const { isLoading, cellCount, noRowsRenderer } = this.props;
+    const { isLoading, dataSource } = this.props;
+    const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
 
     return (
@@ -91,7 +91,7 @@ class JuiInfiniteList extends Component<InfiniteScrollProps> {
                   width={width}
                   height={height}
                   rowHeight={this._rowHeight}
-                  noRowsRenderer={noRowsRenderer}
+                  noRowsRenderer={dataSource.renderEmptyContent}
                   ref={(virtualScroll: any) => {
                     this.virtualScroll = virtualScroll;
                     registerChild(virtualScroll);

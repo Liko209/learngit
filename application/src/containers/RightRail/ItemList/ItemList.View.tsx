@@ -111,14 +111,9 @@ class ItemListView extends React.Component<ViewProps & Props> {
         )}
         {firstLoaded && (
           <JuiInfiniteList
-            renderLoading={this.moreLoader}
-            rowHeight={this.fixedCellHeight}
+            dataSource={this}
             threshold={1}
-            cellCount={this.countOfCell()}
             isLoading={loading}
-            loadMore={this.loadMore}
-            renderRow={this.cellAtIndex}
-            noRowsRenderer={this.renderEmptyContent}
           />
         )}
         {!firstLoaded && this.firstLoader()}

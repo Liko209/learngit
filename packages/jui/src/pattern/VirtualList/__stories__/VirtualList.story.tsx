@@ -156,13 +156,9 @@ storiesOf('Pattern/VirtualList', module).add('TableView', () => {
       return (
         <div style={style}>
           <JuiInfiniteList
-            renderLoading={() => <div>Loading ...</div>}
-            rowHeight={this.fixedCellHeight}
+            dataSource={this}
             threshold={10}
-            cellCount={cellCount}
             isLoading={this.state.isLoading}
-            loadMore={this.loadMore}
-            renderRow={this.cellAtIndex}
           />
         </div>
       );
