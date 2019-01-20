@@ -6,6 +6,17 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('rightRail');
   }
 
+  isShowed() {
+    
+  }
+  show() {
+
+  }
+
+  hide() {
+
+  }
+
   get tabList() {
     return this.self.find('[role="tablist"]')
   }
