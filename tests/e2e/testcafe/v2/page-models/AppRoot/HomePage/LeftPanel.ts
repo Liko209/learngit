@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { Selector } from 'testcafe';
 
 class LeftNavigatorEntry extends BaseWebComponent {
 

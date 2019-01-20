@@ -7,9 +7,9 @@ import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { Header, joinTeamDialog } from './header';
-import { LeftRail } from './LeftRail';
-import { RightRail } from './RightRail';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
+import { AddTeamMembers } from './AddTeamMembers';
+
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded() {
@@ -24,13 +24,6 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(LeftPanel);
   }
 
-  get leftRail() {
-    return this.getComponent(LeftRail);
-  }
-
-  get rightRail() {
-    return this.getComponent(RightRail);
-  }
 
   get messageTab() {
     return this.getComponent(MessageTab);
@@ -71,6 +64,10 @@ export class HomePage extends BaseWebComponent {
 
   get settingMenu() {
     return this.getComponent(SettingMenu);
+  }
+
+  get addTeamMemberDialog() {
+    return this.getComponent(AddTeamMembers);
   }
 
   async openAddActionMenu() {

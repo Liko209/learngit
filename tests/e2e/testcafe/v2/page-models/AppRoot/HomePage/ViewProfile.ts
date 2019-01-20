@@ -113,71 +113,58 @@ export class MiniProfile extends BaseWebComponent {
 }
 
 export class ProfileDialog extends BaseWebComponent {
+  public id: Promise<string>;
+
+  async getId() {
+    if (await this.avatar.hasAttribute('cid')) {
+      return await this.cid;
+    }
+    return await this.uid;
+  }
+
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
-  }
-
-  get exists() {
-    return this.profileTitle.exists;
   }
 
   get profileTitle() {
     return this.getSelectorByAutomationId('profileDialogTitle');
   }
 
-  get privateButton() {
-    return this.profileTitle.find('.privacy');
-  }
-
-  get publicIcon() {
-    return this.getSelectorByIcon("lock_open", this.privateButton);
-  }
-
-  get privateIcon() {
-    return this.getSelectorByIcon('lock', this.privateButton);
-  }
-
-  async clickPrivate() {
-    await this.t.click(this.privateButton);
-  }
-
-  get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon("star_border", this.profileTitle);
-  }
-
-  get favoriteStatusIcon() {
-    return this.getSelectorByIcon("star", this.profileTitle);
-  }
-
-  get moreIcon() {
-    return this.getSelectorByIcon("more_horiz", this.profileTitle);
-  }
-
-  async openMoreMenu() {
-    await this.t.click(this.moreIcon);
-  }
-
-  get moreMenu() {
-    return this.getComponent(MoreMenu);
+  get exists() {
+    return this.profileTitle.exists;
   }
 
   async shouldBePopUp() {
     await this.t.expect(this.profileTitle.exists).ok();
   }
 
-  async shouldBeId(id: string) {
-    const currentId = await this.getId();
-    assert.strictEqual(id, currentId, `Profile owner Id, expect: ${id}, but actual: ${currentId}`);
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon');
   }
 
-  get closeButton() {
-    this.warnFlakySelector();
-    return this.getSelectorByIcon('close');
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.favoriteButton);
   }
 
   get content() {
     return this.getSelectorByAutomationId('profileDialogContent');
+  }
+
+  get status() {
+    return this.getSelectorByAutomationId('profileDialogSummaryStatus');
+  }
+
+  get description() {
+    return this.getSelectorByAutomationId('profileDialogSummaryDescription');
+  }
+
+  get summaryTitle() {
+    return this.getSelectorByAutomationId('profileDialogSummaryTitle');
   }
 
   get summary() {
@@ -192,14 +179,6 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogSummaryName');
   }
 
-  get status() {
-    return this.getSelectorByAutomationId('profileDialogSummaryStatus');
-  }
-
-  get summaryTitle() {
-    return this.getSelectorByAutomationId('profileDialogSummaryTitle');
-  }
-
   get messageButton() {
     return this.getSelectorByIcon('chat_bubble', this.summary);
   }
@@ -208,6 +187,21 @@ export class ProfileDialog extends BaseWebComponent {
     await this.t.click(this.messageButton);
   }
 
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('close');
+  }
+
+  async close() {
+    await this.t.click(this.closeButton);
+  }
+
+  async shouldBeId(id: string) {
+    await this.t.expect(this.id).eql(id, `Profile owner Id, expect: ${id}, but actual: ${this.id}`)
+  }
+
+
+  // people only
   get formArea() {
     return this.getSelectorByAutomationId('profileDialogForm');
   }
@@ -236,35 +230,96 @@ export class ProfileDialog extends BaseWebComponent {
     return this.emailIcon.parent(0).find('div').withText('Email').nextSibling('div').textContent;
   }
 
-  // team
+  get uid() {
+    return this.avatar.getAttribute('uid');
+  }
+
+
+  // team & group
+  get cid() {
+    return this.avatar.getAttribute('cid');
+  }
+
   get memberHeader() {
     return this.getSelectorByAutomationId('profileDialogMemberHeader');
   }
 
-  async getMemberCount(): Promise<number> {
-    const text = await this.memberHeader.textContent;
-    const count = text.match(/\((\d+)\)/).pop().replace("(", "").replace(")", "");
-    return Number(count);
+  async countOnMemberHeaderShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.memberHeader.textContent).match(reg);
+  }
+  
+  async countOnMemberListShouldBe(n: number) {
+    await this.t.expect(this.memberList.find("li").count).eql(n);
   }
 
   get memberList() {
     return this.getSelectorByAutomationId('profileDialogMemberList');
   }
 
+  get memberNames() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName');
+  }
+
   memberEntryById(id: string) {
     return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
   }
 
-
-  async getId() {
-    if (await this.avatar.hasAttribute('cid')) {
-      return await this.avatar.getAttribute('cid');
-    }
-    return await this.avatar.getAttribute('uid');
+  memberEntryByName(name: string) {
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
   }
 
-  async close() {
-    await this.t.click(this.closeButton);
+  get addMembersIcon() {
+    return this.getSelectorByIcon('add_team',this.memberHeader);
+  }
+
+  async clickAddMembersIcon() {
+    await this.t.click(this.addMembersIcon);
+  }
+
+  // team only
+  get privateButton() {
+    return this.profileTitle.find('.privacy');
+  }
+
+  get publicIcon() {
+    return this.getSelectorByIcon("lock_open", this.privateButton);
+  }
+
+  get privateIcon() {
+    return this.getSelectorByIcon('lock', this.privateButton);
+  }
+
+  async clickPrivate() {
+    await this.t.click(this.privateButton);
+  }
+
+  get settingButton() {
+    return this.getSelectorByAutomationId('settingButton');
+  }
+
+  get settingIcon() {
+    return this.getSelectorByIcon('settings', this.settingButton);
+  }
+
+  async clickSetting() {
+    return this.t.click(this.settingButton);
+  }
+
+  get moreButton() {
+    return this.getSelectorByAutomationId('actionBarMore', this.profileTitle);
+  }
+
+  get moreIcon() {
+    return this.getSelectorByIcon("more_horiz", this.profileTitle);
+  }
+
+  async openMoreMenu() {
+    await this.t.click(this.moreButton);
+  }
+
+  get moreMenu() {
+    return this.getComponent(MoreMenu);
   }
 
   get joinTeamButton() {
@@ -274,8 +329,8 @@ export class ProfileDialog extends BaseWebComponent {
   async joinTeam() {
     await this.t.click(this.joinTeamButton);
   }
-}
 
+}
 class Member extends BaseWebComponent {
   get uid() {
     return this.self.getAttribute('data-id');
