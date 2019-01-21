@@ -31,7 +31,7 @@ class TeamActionController {
   }
 
   async joinTeam(userId: number, teamId: number): Promise<Group | null> {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         return {
@@ -50,7 +50,7 @@ class TeamActionController {
   }
 
   async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
@@ -76,7 +76,7 @@ class TeamActionController {
     members: number[],
     basePath: string,
   ) {
-    return this.controllerBuilder
+    return await this.controllerBuilder
       .buildRequestController({
         basePath,
         networkClient: Api.glipNetworkClient,
@@ -88,7 +88,7 @@ class TeamActionController {
   }
 
   async addTeamMembers(members: number[], teamId: number) {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         return {
