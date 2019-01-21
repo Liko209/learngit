@@ -6,6 +6,24 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('rightRail');
   }
 
+  get expandStatusButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('chevron_right').parent('button[aria-label="Hide details"]');
+  }
+
+  get foldStatusButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]'); 
+  }
+
+  async expand() {
+    await this.t.click(this.foldStatusButton);
+  }
+
+  async fold() {
+    await this.t.click(this.expandStatusButton);
+  }
+
   get tabList() {
     return this.self.find('[role="tablist"]')
   }
@@ -205,6 +223,4 @@ class LinksTab extends BaseWebComponent {
   async linksCountsShouldBe(n: number) {
     await this.t.expect(this.items.count).eql(n);
   }
-
-
 }

@@ -12,12 +12,16 @@ import {
   buildEntitySourceController,
   buildPartialModifyController,
   buildRequestController,
+  buildEntityPersistentController,
 } from '../../../../../../framework/controller';
 import { FileItem } from '../../entity/FileItem';
 import { Api } from '../../../../../../api';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
+import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
+import { FileActionController } from '../FileActionController';
 
+jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
 );
@@ -39,6 +43,13 @@ describe('FileItemController', () => {
   const itemService = {} as IItemService;
   function setup() {
     fileItemController = new FileItemController(itemService);
+
+    Object.defineProperty(Api, 'glipNetworkClient', {
+      get: jest.fn(() => {
+        id: 1;
+      }),
+      configurable: true,
+    });
   }
 
   beforeEach(() => {
@@ -89,6 +100,35 @@ describe('FileItemController', () => {
         true,
       );
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('fileActionController', () => {
+    it('should return FileActionController', () => {
+      const fileRequestController = new RequestController(null);
+      const entitySourceController = new EntitySourceController(
+        null,
+        null,
+        null,
+      );
+
+      buildRequestController.mockImplementation(() => {
+        return fileRequestController;
+      });
+
+      buildEntityPersistentController.mockReturnValue(undefined);
+
+      buildEntitySourceController.mockImplementation(() => {
+        return undefined;
+      });
+
+      const fileActionController = fileItemController.fileActionController;
+      expect(fileActionController).toBeInstanceOf(FileActionController);
+      expect(buildRequestController).toBeCalledWith(
+        expect.objectContaining({
+          basePath: '/file',
+        }),
+      );
     });
   });
 

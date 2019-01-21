@@ -7,7 +7,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
-
 import { JuiListSubheader } from 'jui/components/Lists';
 import { debounce } from 'lodash';
 import {

@@ -23,21 +23,4 @@ describe('IndicatorViewModel', () => {
     indicatorViewModel.onReceiveProps({ id });
     expect(indicatorViewModel.id).toBe(id);
   });
-
-  it.skip('get computed _group', () => {
-    expect(indicatorViewModel.groupConfig).toBe(mockGroupEntityData);
-  });
-
-  it.skip('get computed draft', () => {
-    expect(indicatorViewModel.hasDraft).toBe(true);
-  });
-
-  it.skip('get computed sendFailurePostIds', () => {
-    expect(indicatorViewModel.sendFailurePostIds).toBe(
-      mockGroupEntityData.sendFailurePostIds,
-    );
-
-    mockGroupEntityData.sendFailurePostIds = [];
-    expect(indicatorViewModel.sendFailurePostIds).toEqual([]);
-  });
 });

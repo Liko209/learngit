@@ -1,7 +1,4 @@
-import { BaseWebComponent } from "../../BaseWebComponent";
-
-
-
+import { BaseWebComponent } from "../../../BaseWebComponent";
 
 export class LeftRail extends BaseWebComponent {
 

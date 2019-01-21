@@ -1,7 +1,7 @@
 import { GroupService } from '../GroupService';
 import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
-import { TeamPermission } from '../../entity';
+import { TeamPermission, TeamPermissionParams } from '../../entity';
 
 jest.mock('../../controller/TeamActionController');
 jest.mock('sdk/api');
@@ -150,8 +150,9 @@ describe('GroupService', () => {
     });
 
     it('should call with correct params', async () => {
-      const mockTeamId: number = 123;
-      const mockTeam = groupFactory.build();
+      const mockParams: TeamPermissionParams = {
+        members: [],
+      };
       const mockPermissionType = PERMISSION_ENUM.TEAM_ADD_MEMBER;
       const mockIsCurrentUserHasPermission = jest.fn();
       groupService['getTeamController']();
@@ -160,13 +161,12 @@ describe('GroupService', () => {
         .mockReturnValue({
           isCurrentUserHasPermission: mockIsCurrentUserHasPermission,
         });
-      groupService.getById = jest.fn().mockReturnValue(mockTeam);
       await groupService.isCurrentUserHasPermission(
-        mockTeamId,
+        mockParams,
         mockPermissionType,
       );
       expect(mockIsCurrentUserHasPermission).toBeCalledWith(
-        mockTeam,
+        mockParams,
         mockPermissionType,
       );
     });

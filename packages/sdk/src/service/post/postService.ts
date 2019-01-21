@@ -224,6 +224,7 @@ class PostService extends BaseService<Post> {
 
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
     mainLogger.info('start to send post log');
+
     const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
     return await this.innerSendPost(buildPost, false);
   }
