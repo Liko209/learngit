@@ -79,12 +79,23 @@ type JuiSearchItemProps = {
   Actions?: ReactNode;
   isJoined?: boolean;
   isPrivate?: boolean;
+  hovered?: boolean;
 } & MenuItemProps;
 
 const JuiSearchItem = (props: JuiSearchItemProps) => {
-  const { Avatar, Actions, value, terms, isPrivate, isJoined, ...rest } = props;
+  const {
+    Avatar,
+    Actions,
+    value,
+    terms,
+    isPrivate,
+    isJoined,
+    hovered,
+    ...rest
+  } = props;
+  const className = hovered ? 'search-items hover' : 'search-items';
   return (
-    <SearchItemWrapper className="search-items" disableRipple={true} {...rest}>
+    <SearchItemWrapper className={className} disableRipple={true} {...rest}>
       <SearchItemAvatar data-test-automation-id="search-item-avatar">
         {Avatar}
       </SearchItemAvatar>
