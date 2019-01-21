@@ -10,13 +10,16 @@ import MuiListItemText, {
 import styled from '../../foundation/styled-components';
 import { typography, ellipsis, grey } from '../../foundation/utils';
 
-type JuiListItemTextProps = MuiListItemTextProps;
+type JuiListItemTextProps = MuiListItemTextProps & {
+  primaryColor?: string;
+};
 
-const StyledListItemText = styled(MuiListItemText)`
+const StyledListItemText = styled<JuiListItemTextProps>(MuiListItemText)`
   && {
     padding: 0;
     .list-item-primary {
-      color: ${grey('900')};
+      color: ${({ primaryColor }) =>
+        primaryColor ? primaryColor : grey('900')};
       ${typography('body1')};
       ${ellipsis()};
     }
@@ -29,9 +32,10 @@ const StyledListItemText = styled(MuiListItemText)`
 `;
 
 const JuiListItemText = (props: JuiListItemTextProps) => {
-  const { primary, secondary } = props;
+  const { primary, primaryColor, secondary } = props;
   return (
     <StyledListItemText
+      primaryColor={primaryColor}
       primary={primary}
       secondary={secondary}
       classes={{
