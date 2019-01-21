@@ -28,6 +28,12 @@ const options = 'options';
 const phoneNumber = 'phoneNumber';
 
 describe('RTCSipUserAgent', async () => {
+  beforeEach(() => {
+    mockInvite.mockClear();
+    mockRegister.mockClear();
+    mockOn.mockClear();
+  });
+
   describe('create', () => {
     it('Should emit registered event when create webPhone and register success', () => {
       const eventEmitter = new EventEmitter2();
@@ -71,18 +77,31 @@ describe('RTCSipUserAgent', async () => {
   });
 
   describe('makeCall', () => {
-    it('Should call the invite function of WebPhone when UserAgent makeCall', async () => {
-      const eventEmitter = new EventEmitter2();
-      const userAgent = new RTCSipUserAgent(
-        provisionData,
-        options,
-        eventEmitter,
-      );
+    let userAgent = null;
+
+    function setupMakeCall() {
+      userAgent = new RTCSipUserAgent(provisionData, {});
       jest.spyOn(userAgent, 'makeCall');
-      userAgent.makeCall(phoneNumber, options);
-      expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, options);
+    }
+
+    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall', async () => {
+      setupMakeCall();
+      userAgent.makeCall(phoneNumber, {});
+      expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, {
+        homeCountryId: '1',
+      });
       expect(mockInvite.mock.calls[0][0]).toEqual(phoneNumber);
-      expect(mockInvite.mock.calls[0][1]).toEqual(options);
+      expect(mockInvite.mock.calls[0][1]).toEqual({ homeCountryId: '1' });
+    });
+
+    it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall', async () => {
+      setupMakeCall();
+      userAgent.makeCall(phoneNumber, { homeCountryId: '100' });
+      expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, {
+        homeCountryId: '100',
+      });
+      expect(mockInvite.mock.calls[0][0]).toEqual(phoneNumber);
+      expect(mockInvite.mock.calls[0][1]).toEqual({ homeCountryId: '100' });
     });
   });
 });
