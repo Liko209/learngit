@@ -11,11 +11,11 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 
-fixture('Team/PublicTeam')
+fixture('Profile/addTeamMember')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName(`The Add Team Members dialog display correctly after clicking 'Add team members' button`, ['P1', 'JPT-912', 'Member', 'Potar.He']), async t => {
+test(formalName(`The Add Team Members dialog display correctly after clicking 'Add team members' button`, ['P1', 'JPT-912', 'addTeamMember', 'Potar.He']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const otherUser = users[5];
@@ -59,6 +59,7 @@ test(formalName(`The Add Team Members dialog display correctly after clicking 'A
   const addTeamMemberDialog = app.homePage.addTeamMemberDialog;
   await h(t).withLog(`Then The add team members dialog display`, async () => {
     await addTeamMemberDialog.shouldBePopup();
+    await t.expect(addTeamMemberDialog.title.exists).ok();
     await t.expect(addTeamMemberDialog.memberInput.exists).ok();
     await t.expect(addTeamMemberDialog.cancelButton.exists).ok();
     await t.expect(addTeamMemberDialog.addButton.exists).ok();
@@ -110,6 +111,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
   const addTeamMemberDialog = app.homePage.addTeamMemberDialog;
   await h(t).withLog(`Then The add team members dialog display`, async () => {
     await addTeamMemberDialog.shouldBePopup();
+    await t.expect(addTeamMemberDialog.title.exists).ok();
     await t.expect(addTeamMemberDialog.memberInput.exists).ok();
     await t.expect(addTeamMemberDialog.cancelButton.exists).ok();
     await t.expect(addTeamMemberDialog.addButton.exists).ok();
@@ -169,7 +171,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
 });
 
 
-test(formalName(`The existing team members should not be displayed as search results.`, ['P2', 'JPT-913', 'Member', 'Potar.He']), async t => {
+test(formalName(`The existing team members should not be displayed as search results.`, ['P2', 'JPT-913', 'addTeamMember', 'Potar.He']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const otherUser = users[5];
@@ -213,6 +215,7 @@ test(formalName(`The existing team members should not be displayed as search res
   const addTeamMemberDialog = app.homePage.addTeamMemberDialog;
   await h(t).withLog(`Then The add team members dialog display`, async () => {
     await addTeamMemberDialog.shouldBePopup();
+    await t.expect(addTeamMemberDialog.title.exists).ok();
     await t.expect(addTeamMemberDialog.memberInput.exists).ok();
     await t.expect(addTeamMemberDialog.cancelButton.exists).ok();
     await t.expect(addTeamMemberDialog.addButton.exists).ok();
@@ -230,7 +233,7 @@ test(formalName(`The existing team members should not be displayed as search res
 }); 
 
 
-test(formalName(`The member list and counts are updated when the member is added.`, ['P2', 'JPT-921', 'Member', 'Potar.He']), async t => {
+test(formalName(`The member list and counts are updated when the member is added.`, ['P2', 'JPT-921', 'addTeamMember', 'Potar.He']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const otherUser = users[5];
@@ -275,6 +278,7 @@ test(formalName(`The member list and counts are updated when the member is added
   const addTeamMemberDialog = app.homePage.addTeamMemberDialog;
   await h(t).withLog(`Then The add team members dialog display`, async () => {
     await addTeamMemberDialog.shouldBePopup();
+    await t.expect(addTeamMemberDialog.title.exists).ok();
     await t.expect(addTeamMemberDialog.memberInput.exists).ok();
     await t.expect(addTeamMemberDialog.cancelButton.exists).ok();
     await t.expect(addTeamMemberDialog.addButton.exists).ok();

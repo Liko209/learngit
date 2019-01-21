@@ -8,7 +8,7 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get title() {
-    return this.self.find('h2');
+    return this.self.find('h2').withText('Add Team Members');
   }
 
   get memberInput() {
@@ -44,7 +44,7 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   async shouldBePopup() {
-    await this.t.expect(this.title.withText('Add Team Members').exists).ok();
+    await this.t.expect(this.self.exists).ok();
   }
 
 
