@@ -10,11 +10,15 @@ import { CodeEditor } from 'jui/pattern/CodeEditor';
 import { CodeSnippetViewProps } from './types';
 import { memoize } from 'lodash';
 import copy from 'copy-to-clipboard';
+import { translate, WithNamespaces } from 'react-i18next';
 
 const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
 const MAX_EDITOR_LINES = 200;
-export class CodeSnippetView extends React.Component<CodeSnippetViewProps> {
+
+class CodeSnippet extends React.Component<
+  WithNamespaces & CodeSnippetViewProps
+> {
   state = {
     showHeaderActions: false,
     isCollapse: true,
@@ -34,15 +38,16 @@ export class CodeSnippetView extends React.Component<CodeSnippetViewProps> {
   }
 
   _getHeaderActions = memoize(() => {
+    const { t } = this.props;
     return [
       {
         iconName: 'copy',
-        tooltip: 'copy',
+        tooltip: t('copy'),
         handler: this.handleCopy,
       },
       {
         iconName: 'download',
-        tooltip: 'download',
+        tooltip: t('download'),
         handler: this.handleDownload,
       },
     ];
@@ -53,22 +58,28 @@ export class CodeSnippetView extends React.Component<CodeSnippetViewProps> {
     showDownload: boolean,
     restLines: number,
   ) => {
+    const { t } = this.props;
     const actions = [];
+
     if (collapsed) {
       actions.push({
-        text: 'expand',
+        text: t('expand'),
         handler: this.handleExpand,
       });
     } else {
       actions.push({
-        text: 'collapse',
+        text: t('collapse'),
         handler: this.handleCollapse,
       });
     }
 
     if (!collapsed && showDownload) {
       actions.push({
-        text: `Download to see the rest ${restLines} lines`,
+        text:
+          t('DownloadToSeeTheRest', { restLines }) +
+          t('line', {
+            count: restLines,
+          }),
         handler: this.handleDownload,
       });
     }
@@ -142,3 +153,6 @@ export class CodeSnippetView extends React.Component<CodeSnippetViewProps> {
     );
   }
 }
+
+const CodeSnippetView = translate('translations')(CodeSnippet);
+export { CodeSnippetView };

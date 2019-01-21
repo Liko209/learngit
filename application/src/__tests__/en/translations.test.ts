@@ -372,4 +372,11 @@ describe('i18next-en', () => {
   );
   expect(i18next.t('newMessageTipLink')).toEqual('create a Team instead.');
   expect(i18next.t('InvalidEmail')).toEqual('Invalid Email');
+
+  const restLines = 1;
+  expect(i18next.t('DownloadToSeeTheRest', { restLines })).toEqual(
+    `Download to see the rest ${restLines}`,
+  );
+  expect(i18next.t('line', { count: restLines })).toEqual('line');
+  expect(i18next.t('line', { count: restLines + 1 })).toEqual('lines');
 });
