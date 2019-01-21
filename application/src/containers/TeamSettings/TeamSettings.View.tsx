@@ -10,19 +10,26 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import {
-  JuiTeamSettingEditSection,
-  JuiTeamSettingEditSectionLeft,
-  JuiTeamSettingEditSectionRight,
+  JuiTeamSettingEditSection as EditSection,
+  JuiTeamSettingEditSectionLeft as EditSectionLeft,
+  JuiTeamSettingEditSectionRight as EditSectionRight,
+  JuiTeamSettingSubSection as SubSection,
+  JuiTeamSettingSubSectionTitle as SubSectionTitle,
+  JuiTeamSettingSubSectionList as SubSectionList,
+  JuiTeamSettingSubSectionListItem as SubSectionListItem,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { GroupAvatar } from '@/containers/Avatar';
 import { toTitleCase } from '@/utils/string';
+import { JuiDivider } from 'jui/components/Divider';
+import { JuiToggleButton } from 'jui/components/Buttons';
 
 type State = {
   name: string;
   description: string;
+  allowMemberAddMember: boolean;
 };
 
 type TeamSettingsProps = WithNamespaces & ViewProps;
@@ -37,6 +44,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     this.state = {
       name: props.initialData.name,
       description: props.initialData.description,
+      allowMemberAddMember: props.initialData.allowMemberAddMember,
     };
   }
 
@@ -50,10 +58,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   handleClose = () => portalManager.dismiss();
   handleOk = async () => {
-    const shouldClose = await this.props.save({
-      name: this.state.name,
-      description: this.state.description,
-    });
+    const shouldClose = await this.props.save(this.state);
     if (shouldClose) {
       portalManager.dismiss();
     }
@@ -71,19 +76,28 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
+  handleAllowMemberAddMemberChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    this.setState({
+      allowMemberAddMember: checked,
+    });
+  }
+
   renderEditSection() {
     const { t, id, nameErrorMsg } = this.props;
 
     return (
-      <JuiTeamSettingEditSection>
-        <JuiTeamSettingEditSectionLeft>
+      <EditSection>
+        <EditSectionLeft>
           <GroupAvatar
             cid={id}
             size="xlarge"
             data-test-automation-id="teamAvatar"
           />
-        </JuiTeamSettingEditSectionLeft>
-        <JuiTeamSettingEditSectionRight>
+        </EditSectionLeft>
+        <EditSectionRight>
           <JuiTextField
             label={t('teamName')}
             data-test-automation-id="teamName"
@@ -102,8 +116,34 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             fullWidth={true}
             onChange={this.handleDescriptionChange}
           />
-        </JuiTeamSettingEditSectionRight>
-      </JuiTeamSettingEditSection>
+        </EditSectionRight>
+      </EditSection>
+    );
+  }
+
+  renderMemberPermissionSettings() {
+    const { t } = this.props;
+    return (
+      <>
+        <JuiDivider />
+        <SubSection data-test-automation-id="memberPermission">
+          <SubSectionTitle data-test-automation-id="memberPermissionTitle">
+            {t('allowTeamMembersTo')}
+          </SubSectionTitle>
+          <SubSectionList data-test-automation-id="memberPermissionList">
+            <SubSectionListItem
+              data-test-automation-id="memberPermissionItem"
+              label={t('addTeamMembers')}
+            >
+              <JuiToggleButton
+                data-test-automation-id="allowAddTeamMemberToggle"
+                onChange={this.handleAllowMemberAddMemberChange}
+              />
+            </SubSectionListItem>
+            <JuiDivider />
+          </SubSectionList>
+        </SubSection>
+      </>
     );
   }
 
@@ -113,6 +153,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       !this.state.name || this.state.name.trim().length <= 0;
     return (
       <JuiModal
+        fillContent={true}
         open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
@@ -124,6 +165,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         cancelText={toTitleCase(t('cancel'))}
       >
         {isAdmin ? this.renderEditSection() : null}
+        {isAdmin ? this.renderMemberPermissionSettings() : null}
       </JuiModal>
     );
   }

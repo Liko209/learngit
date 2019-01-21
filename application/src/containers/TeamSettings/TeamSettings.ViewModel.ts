@@ -10,7 +10,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
-import { SaveParams } from './types';
+import { TeamSettingTypes } from './types';
 import { GroupService } from 'sdk/module/group';
 import {
   ErrorParserHolder,
@@ -24,10 +24,14 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
+import { PERMISSION_ENUM } from 'sdk/service';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
   nameErrorMsg?: string = '';
+
+  @observable
+  allowMemberAddMember: boolean = true;
 
   @computed
   get id() {
@@ -39,6 +43,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     return {
       name: this._group.displayName,
       description: this._group.description,
+      allowMemberAddMember: this.allowMemberAddMember,
     };
   }
 
@@ -57,7 +62,21 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     this.nameErrorMsg = msg;
   }
 
-  save = async (params: SaveParams) => {
+  @action
+  async getTeamSetting() {
+    const groupService = new GroupService();
+    try {
+      const teamSettings = await groupService.getTeamSetting(this.id);
+      if (teamSettings.permissionFlags) {
+        this.allowMemberAddMember =
+          teamSettings.permissionFlags[PERMISSION_ENUM.TEAM_ADD_MEMBER] || true;
+      }
+    } catch (error) {
+      generalErrorHandler(error);
+    }
+  }
+
+  save = async (params: TeamSettingTypes) => {
     const name = params.name.trim();
     const description = params.description.trim();
     const groupService = new GroupService();
@@ -66,6 +85,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       await groupService.updateTeamSetting(this.id, {
         name,
         description,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: params.allowMemberAddMember,
+        },
       });
       return true;
     } catch (error) {
