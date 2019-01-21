@@ -37,7 +37,7 @@ class AddMembers extends React.Component<ViewProps> {
       await addTeamMembers();
       return true;
     } catch (error) {
-      if (errorHelper.isNotNetworkError(error)) {
+      if (errorHelper.isNetworkConnectionError(error)) {
         this.renderFlashToast('AddTeamMembersNetworkError');
         return false;
       }

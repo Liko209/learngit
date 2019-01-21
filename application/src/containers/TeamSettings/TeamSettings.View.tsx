@@ -49,11 +49,14 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   };
 
   handleClose = () => portalManager.dismiss();
-  handleOk = () => {
-    this.props.save({
+  handleOk = async () => {
+    const shouldClose = await this.props.save({
       name: this.state.name,
       description: this.state.description,
     });
+    if (shouldClose) {
+      portalManager.dismiss();
+    }
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +72,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   renderEditSection() {
-    const { t, id, nameError, nameErrorMsg } = this.props;
+    const { t, id, nameErrorMsg } = this.props;
 
     return (
       <JuiTeamSettingEditSection>
@@ -86,7 +89,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             data-test-automation-id="teamName"
             value={this.state.name}
             fullWidth={true}
-            error={nameError}
+            error={!!nameErrorMsg}
             inputProps={TeamSettings.NAME_INPUT_PROPS}
             helperText={t(nameErrorMsg || '')}
             onChange={this.handleNameChange}
