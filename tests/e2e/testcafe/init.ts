@@ -3,10 +3,13 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
+import { MockClient } from 'mock-client';
+
+export const mockClient = new MockClient("https://xmn02-i01-mck01.lab.nordigy.ru");
 
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
