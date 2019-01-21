@@ -19,6 +19,7 @@ type ViewProps = {
   save: (params: SaveParams) => void;
   nameError?: boolean;
   nameErrorMsg?: string;
+  leaveTeam: () => void;
 };
 
 export { ViewProps, SaveParams };
