@@ -19,15 +19,18 @@ const JuiTeamSettingButtonList = styled(MuiList)`
   }
 `;
 
-type JuiTeamSettingButtonListItemProps = ListItemProps;
+type JuiTeamSettingButtonListItemProps = ListItemProps & {
+  hide?: boolean;
+};
 const JuiTeamSettingButtonListItem = styled(
-  (props: JuiTeamSettingButtonListItemProps) => (
-    <MuiListItem button={true} {...props} />
+  ({ hide, ...rest }: JuiTeamSettingButtonListItemProps) => (
+    <MuiListItem button={true} {...rest} />
   ),
 )`
   && {
     padding-top: ${spacing(0)};
     padding-bottom: ${spacing(0)};
+    display: ${({ hide }) => (hide ? 'none' : 'block')};
   }
 `;
 

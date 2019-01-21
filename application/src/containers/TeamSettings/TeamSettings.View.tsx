@@ -156,18 +156,19 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   renderButtonList() {
-    const { t } = this.props;
+    const { t, isAdmin } = this.props;
     return (
       <ButtonList>
         <ButtonListItem
           color="semantic.negative"
           onClick={this.handleLeaveTeamClick}
+          hide={isAdmin}
         >
           <ButtonListItemText color="semantic.negative">
             {t('leaveTeam')}
           </ButtonListItemText>
         </ButtonListItem>
-        <JuiDivider />
+        {isAdmin ? null : <JuiDivider />}
       </ButtonList>
     );
   }
