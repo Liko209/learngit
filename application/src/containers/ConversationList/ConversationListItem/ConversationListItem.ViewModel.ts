@@ -65,9 +65,7 @@ class ConversationListItemViewModel extends StoreViewModel<
   }
 
   onClick = () => {
-    history.push(`/messages/${this.groupId}`, {
-      source: 'leftRail',
-    });
+    history.push(`/messages/${this.groupId}`);
   }
 
   @computed
