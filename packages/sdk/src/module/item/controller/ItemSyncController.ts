@@ -12,6 +12,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { GroupConfig } from '../../../models';
 
+const AvailableSocketStatus = ['connected', 'connecting'];
 const GroupItemKeyMap = {
   [TypeDictionary.TYPE_ID_TASK]: 'last_index_of_tasks',
   [TypeDictionary.TYPE_ID_FILE]: 'last_index_of_files',
@@ -29,7 +30,7 @@ class ItemSyncController {
   }
 
   private _onSocketIoStateChanged(state: string) {
-    if (state !== 'connected' && state !== 'connecting') {
+    if (!AvailableSocketStatus.includes(state)) {
       this._syncedGroupIds.clear();
     }
   }

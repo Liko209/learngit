@@ -497,15 +497,6 @@ describe('ItemService', () => {
     });
   });
 
-  describe('requestSyncGroupItems', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-    });
-
-    it('should call itemSyncController of itemServiceController', () => {});
-  });
-
   describe('handleIncomingData', () => {
     beforeEach(() => {
       clearMocks();
