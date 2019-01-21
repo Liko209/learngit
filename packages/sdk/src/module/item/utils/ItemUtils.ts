@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ImageFileExtensions } from './ImageFileExtensions';
+import { FileItemUtils } from '../module/file/utils';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { Item, SanitizedItem } from '../module/base/entity';
 
 class ItemUtils {
   static isValidItem<T extends { id: number; group_ids: number[] }>(
@@ -13,15 +14,6 @@ class ItemUtils {
     item: T,
   ) {
     return item.id > 0 && item.group_ids.includes(groupId);
-  }
-
-  static isImageItem<T extends { type: string }>(file: T) {
-    const type = file.type.toLocaleLowerCase();
-    return (
-      ImageFileExtensions.includes(type) ||
-      type.indexOf('image') !== -1 ||
-      type.indexOf('giphy') !== -1
-    );
   }
 
   static fileFilter<
@@ -40,9 +32,9 @@ class ItemUtils {
           break;
         }
         // show images only or non image file only
-        const isExpectedType = showImage
-          ? ItemUtils.isImageItem(file)
-          : !ItemUtils.isImageItem(file);
+        const isPic =
+          FileItemUtils.isImageItem(file) || FileItemUtils.isGifItem(file);
+        const isExpectedType = showImage ? isPic : !isPic;
         if (!isExpectedType) {
           break;
         }
@@ -51,6 +43,14 @@ class ItemUtils {
 
       return result;
     };
+  }
+
+  static toSanitizedItem(item: Item) {
+    return {
+      id: item.id,
+      group_ids: item.group_ids,
+      created_at: item.created_at,
+    } as SanitizedItem;
   }
 }
 

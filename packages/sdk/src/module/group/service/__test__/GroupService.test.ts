@@ -11,7 +11,7 @@ jest.mock('../../controller/TeamActionController', () => ({
 jest.mock('../../controller/TeamController', () => ({
   TeamController: jest.fn(),
 }));
-import { TeamPermission } from '../../entity';
+import { TeamPermission, TeamPermissionParams } from '../../entity';
 
 jest.mock('../../controller/TeamActionController');
 jest.mock('sdk/api');
@@ -24,6 +24,9 @@ describe('GroupService', () => {
     canJoinTeam: jest.fn(),
     getTeamSetting: jest.fn(),
     updateTeamSetting: jest.fn(),
+  };
+  const mockTeamPermissionController = {
+    getTeamUserPermissionFlags: jest.fn(),
   };
   function clearMocks() {
     jest.clearAllMocks();
@@ -38,6 +41,9 @@ describe('GroupService', () => {
         getTeamActionController: jest
           .fn()
           .mockReturnValue(mockTeamActionController),
+        getTeamPermissionController: jest
+          .fn()
+          .mockReturnValue(mockTeamPermissionController),
       };
     });
     (TeamActionController as any).mockImplementation(() => {
@@ -110,13 +116,13 @@ describe('GroupService', () => {
     });
   });
 
-  describe('getTeamSetting()', () => {
+  describe('getTeamUserPermissionFlags()', () => {
     it('should call teamActionController with correct parameter', async () => {
-      const mockTeamId = 123;
-      await groupService.getTeamSetting(mockTeamId);
-      expect(mockTeamActionController.getTeamSetting).toBeCalledWith(
-        mockTeamId,
-      );
+      const mockPermission = {};
+      await groupService.getTeamUserPermissionFlags(mockPermission);
+      expect(
+        mockTeamPermissionController.getTeamUserPermissionFlags,
+      ).toBeCalledWith(mockPermission);
     });
   });
 
@@ -206,8 +212,9 @@ describe('GroupService', () => {
     });
 
     it('should call with correct params', async () => {
-      const mockTeamId: number = 123;
-      const mockTeam = groupFactory.build();
+      const mockParams: TeamPermissionParams = {
+        members: [],
+      };
       const mockPermissionType = PERMISSION_ENUM.TEAM_ADD_MEMBER;
       const mockIsCurrentUserHasPermission = jest.fn();
       groupService['getTeamController']();
@@ -216,13 +223,12 @@ describe('GroupService', () => {
         .mockReturnValue({
           isCurrentUserHasPermission: mockIsCurrentUserHasPermission,
         });
-      groupService.getById = jest.fn().mockReturnValue(mockTeam);
       await groupService.isCurrentUserHasPermission(
-        mockTeamId,
+        mockParams,
         mockPermissionType,
       );
       expect(mockIsCurrentUserHasPermission).toBeCalledWith(
-        mockTeam,
+        mockParams,
         mockPermissionType,
       );
     });

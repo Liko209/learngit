@@ -13,7 +13,7 @@ import { CodeItem } from '../entity';
 class CodeItemService extends EntityBaseService<CodeItem>
   implements ISubItemService {
   constructor(itemService: IItemService) {
-    super();
+    super(false);
   }
 
   async updateItem(file: CodeItem) {}

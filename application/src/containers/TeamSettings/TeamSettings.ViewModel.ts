@@ -24,14 +24,20 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
-import { PERMISSION_ENUM } from 'sdk/service';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
   nameErrorMsg?: string = '';
 
-  @observable
-  allowMemberAddMember: boolean = true;
+  @computed
+  get allowMemberAddMember() {
+    const groupService = new GroupService();
+    const permissionFlags = groupService.getTeamUserPermissionFlags(
+      this._group.permissions || {},
+    );
+    console.log('hihi', permissionFlags);
+    return !!permissionFlags.TEAM_ADD_MEMBER;
+  }
 
   @computed
   get id() {
@@ -40,6 +46,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @computed
   get initialData() {
+    console.log('hihi', this._group);
     return {
       name: this._group.displayName,
       description: this._group.description,
@@ -62,25 +69,12 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     this.nameErrorMsg = msg;
   }
 
-  @action
-  async getTeamSetting() {
-    const groupService = new GroupService();
-    try {
-      const teamSettings = await groupService.getTeamSetting(this.id);
-      if (teamSettings.permissionFlags) {
-        this.allowMemberAddMember =
-          teamSettings.permissionFlags[PERMISSION_ENUM.TEAM_ADD_MEMBER] || true;
-      }
-    } catch (error) {
-      generalErrorHandler(error);
-    }
-  }
-
   save = async (params: TeamSettingTypes) => {
     const name = params.name.trim();
     const description = params.description.trim();
     const groupService = new GroupService();
     this.setNameError('');
+    console.log('hihi', params);
     try {
       await groupService.updateTeamSetting(this.id, {
         name,

@@ -137,6 +137,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             >
               <JuiToggleButton
                 data-test-automation-id="allowAddTeamMemberToggle"
+                checked={this.state.allowMemberAddMember}
                 onChange={this.handleAllowMemberAddMemberChange}
               />
             </SubSectionListItem>

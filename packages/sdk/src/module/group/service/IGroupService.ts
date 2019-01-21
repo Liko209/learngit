@@ -1,6 +1,6 @@
-import { Group, TeamPermission } from '../entity';
+import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PERMISSION_ENUM } from '../constants';
-import { TeamSetting } from '../types';
+import { TeamSetting, PermissionFlags } from '../types';
 
 interface IGroupService {
   isInTeam(userId: number, team: Group): boolean;
@@ -16,15 +16,15 @@ interface IGroupService {
   removeTeamMembers(members: number[], teamId: number): void;
 
   isCurrentUserHasPermission(
-    groupId: number,
+    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
-  ): Promise<boolean>;
+  ): boolean;
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
 
   updateTeamSetting(teamId: number, teamSetting: TeamSetting): Promise<void>;
 
-  getTeamSetting(teamId: number): Promise<TeamSetting>;
+  getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags;
 }
 
 export { IGroupService };

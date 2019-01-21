@@ -343,4 +343,39 @@ describe('i18next-en', () => {
       "Sorry, we weren't able to cancel the upload. Try again.",
     );
   });
+
+  expect(i18next.t('Team name required')).toEqual('Team name required');
+  expect(i18next.t('YouAreAnAdminToThisTeam')).toEqual(
+    'You are an admin to this team.',
+  );
+  expect(i18next.t('LearnAboutTeamAdministration')).toEqual(
+    'Learn about team administration.',
+  );
+  expect(i18next.t('Create')).toEqual('Create');
+
+  expect(i18next.t('Members')).toEqual('Members');
+
+  expect(i18next.t('alreadyTaken')).toEqual(
+    'The name is already taken, please choose another one.',
+  );
+
+  expect(i18next.t('Invalid Email')).toEqual('Invalid Email');
+
+  expect(i18next.t('Search Contact Placeholder')).toEqual(
+    'Members (enter names or email addresses)',
+  );
+
+  expect(i18next.t('New Message')).toEqual('New Message');
+  expect(i18next.t('Send')).toEqual('Send');
+  expect(i18next.t('New Message Error')).toEqual(
+    'We are having trouble creating this new message. Please try again later.',
+  );
+  expect(i18next.t('Create Team Error')).toEqual(
+    'We are having trouble creating this team. Please try again later.',
+  );
+  expect(i18next.t('newMessageTip')).toEqual(
+    'Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ',
+  );
+  expect(i18next.t('newMessageTipLink')).toEqual('create a Team instead.');
+  expect(i18next.t('InvalidEmail')).toEqual('Invalid Email');
 });

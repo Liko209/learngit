@@ -7,8 +7,6 @@ import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { Header, joinTeamDialog } from './header';
-import { LeftRail } from './LeftRail';
-import { RightRail } from './RightRail';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 
 export class HomePage extends BaseWebComponent {
@@ -24,13 +22,6 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(LeftPanel);
   }
 
-  get leftRail() {
-    return this.getComponent(LeftRail);
-  }
-
-  get rightRail() {
-    return this.getComponent(RightRail);
-  }
 
   get messageTab() {
     return this.getComponent(MessageTab);

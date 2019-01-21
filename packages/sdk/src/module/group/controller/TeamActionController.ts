@@ -6,22 +6,18 @@
 
 import _ from 'lodash';
 import { Api } from '../../../api';
-import { JSdkError, ERROR_CODES_SDK } from '../../../error';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Group } from '../entity';
 import { TeamSetting, PermissionFlags } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
+import { buildRequestController } from '../../../framework/controller';
 
 class TeamActionController {
   constructor(
-    public entitySourceController: IEntitySourceController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
-    public requestController: IRequestController<Group>,
+    public entitySourceController: IEntitySourceController<Group>,
     public teamPermissionController: TeamPermissionController,
-    public controllerBuilder: IControllerBuilder<Group>,
   ) {}
 
   isInTeam(userId: number, team: Group): boolean {
@@ -38,7 +34,7 @@ class TeamActionController {
   }
 
   async joinTeam(userId: number, teamId: number): Promise<Group | null> {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         return {
@@ -57,7 +53,7 @@ class TeamActionController {
   }
 
   async leaveTeam(userId: number, teamId: number): Promise<Group | null> {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
@@ -79,7 +75,7 @@ class TeamActionController {
   }
 
   async removeTeamMembers(members: number[], teamId: number) {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         const memberSet: Set<number> = new Set(originalEntity.members);
@@ -102,7 +98,7 @@ class TeamActionController {
   }
 
   async addTeamMembers(members: number[], teamId: number) {
-    return this.partialModifyController.updatePartially(
+    return await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity) => {
         return {
@@ -120,25 +116,6 @@ class TeamActionController {
     );
   }
 
-  async getTeamSetting(teamId: number): Promise<TeamSetting> {
-    const team = await this.entitySourceController.getEntity(teamId);
-    if (!team) {
-      throw new JSdkError(
-        ERROR_CODES_SDK.MODEL_NOT_FOUND,
-        `Team id:${teamId} is not founded!`,
-      );
-    }
-    const teamSetting = {
-      name: team.set_abbreviation,
-      description: team.description,
-      isPublic: team.privacy === 'protected',
-      permissionFlags: this.teamPermissionController.getTeamUserPermissionFlags(
-        team,
-      ),
-    };
-    return teamSetting;
-  }
-
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
     await this.partialModifyController.updatePartially(
       teamId,
@@ -150,7 +127,10 @@ class TeamActionController {
         );
       },
       async (updateEntity: Group) => {
-        return await this.requestController.put(updateEntity);
+        return await buildRequestController<Group>({
+          basePath: '/team',
+          networkClient: Api.glipNetworkClient,
+        }).put(updateEntity);
       },
     );
   }
@@ -160,15 +140,13 @@ class TeamActionController {
     members: number[],
     basePath: string,
   ) {
-    return this.controllerBuilder
-      .buildRequestController({
-        basePath,
-        networkClient: Api.glipNetworkClient,
-      })
-      .put({
-        members,
-        id: teamId,
-      });
+    return buildRequestController<Group>({
+      basePath,
+      networkClient: Api.glipNetworkClient,
+    }).put({
+      members,
+      id: teamId,
+    });
   }
 
   private _teamSetting2partialTeam(
@@ -184,7 +162,7 @@ class TeamActionController {
       permissionFlags: (permissionFlags: PermissionFlags) => {
         const permissions = originalEntity.permissions || { user: {} };
         const level = this.teamPermissionController.getTeamUserLevel(
-          originalEntity,
+          originalEntity.permissions,
         );
         const mergeLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
           permissionFlags,
