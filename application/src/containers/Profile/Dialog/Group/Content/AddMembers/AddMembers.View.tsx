@@ -64,7 +64,7 @@ class AddMembers extends React.Component<ViewProps> {
         open={true}
         size={'medium'}
         okBtnProps={{ disabled: isOffline || disabledOkBtn }}
-        title={t('AddTeamMembers')}
+        title={t('AddTeamMembersTitle')}
         onCancel={this.handleClose}
         onOK={this.handleAddTeam}
         okText={t('Add')}
