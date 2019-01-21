@@ -26,7 +26,7 @@ describe('CodeSnippetItem.view', () => {
         wrapLines: false,
       },
     };
-    it('call copy', () => {
+    it('should call copy when called', () => {
       const codeSnippet = new CodeSnippetView(props);
       codeSnippet.handleCopy();
       expect(copy).toBeCalledWith(token);

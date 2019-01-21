@@ -12,12 +12,12 @@ describe('CodeSnippetItemViewModel', () => {
     ids: [1, 2],
   };
 
-  it('computed _id', () => {
+  it('should compute _id correctly', () => {
     const codeSnippetViewModel = new CodeSnippetViewModel(props);
     expect(codeSnippetViewModel._id).toEqual(props.ids[0]);
   });
 
-  it('computed postItem', () => {
+  it('should compute postItem correctly', () => {
     const token = 'asdf';
     jest.spyOn(utils, 'getEntity').mockReturnValue(token);
     const codeSnippetViewModel = new CodeSnippetViewModel(props);

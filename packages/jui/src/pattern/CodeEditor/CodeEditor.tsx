@@ -8,6 +8,7 @@ import React from 'react';
 import { isEqual } from 'lodash';
 import 'codemirror/lib/codemirror.css';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
+import { grey } from '../../foundation/utils/styles';
 
 function normalizeLineEndings(str: string) {
   if (!str) return str;
@@ -30,13 +31,69 @@ ${StyledEditorWrapper} {
   }
 
   .CodeMirror-lines {
-    background-color: #fafafa;
+    background-color: ${grey('50')};
+  }
+
+  .CodeMirror-gutter{
+    background-color: ${grey('200')};
   }
 }
 `;
 
+type CodeMirrorOption = {
+  mode?: string | object;
+  lineSeparator?: string | null;
+  theme?: string;
+  indentUnit?: number;
+  smartIndent?: boolean;
+  tabSize?: number;
+  indentWithTabs?: boolean;
+  electricChars?: boolean;
+  specialChars?: RegExp;
+  direction?: 'ltr' | 'rtl';
+  rtlMoveVisually?: boolean;
+  keyMap?: string;
+  extraKeys?: object;
+  configureMouse?: Function;
+  lineWrapping?: boolean;
+  lineNumbers?: boolean;
+  firstLineNumber?: number;
+  lineNumberFormatter?: (line: number) => string;
+  gutters?: string[];
+  fixedGutter?: boolean;
+  scrollbarStyle?: string;
+  coverGutterNextToScrollbar?: boolean;
+  inputStyle?: string;
+  readOnly?: boolean | string;
+  showCursorWhenSelecting?: boolean;
+  lineWiseCopyCut?: boolean;
+  pasteLinesPerSelection?: boolean;
+  selectionsMayTouch?: boolean;
+  undoDepth?: number;
+  historyEventDelay?: number;
+  tabindex?: number;
+  autofocus?: boolean;
+  phrases?: object;
+  dragDrop?: boolean;
+  allowDropFileTypes?: string[];
+  cursorBlinkRate?: number;
+  cursorScrollMargin?: number;
+  cursorHeight?: number;
+  resetSelectionOnContextMenu?: boolean;
+  workTime?: number;
+  workDelay?: number;
+  pollInterval?: number;
+  flattenSpans?: boolean;
+  addModeClass?: boolean;
+  maxHighlightLength?: number;
+  viewportMargin?: number;
+  spellcheck?: boolean;
+  autocorrect?: boolean;
+  autocapitalize?: boolean;
+};
+
 export type CodeEditorProp = {
-  codeMirrorOption: any;
+  codeMirrorOption: CodeMirrorOption;
   value: string;
   mode: 'view' | 'edit';
   maxLine: number;

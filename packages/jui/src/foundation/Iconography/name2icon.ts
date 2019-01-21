@@ -59,6 +59,7 @@ const name2icon = {
   image_preview: 'image-preview',
   add_member: 'add-member',
   add_team: 'add-team',
+  code: 'code-snippet',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

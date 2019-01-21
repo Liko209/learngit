@@ -29,7 +29,7 @@ const StyledCodeEditorWrapper = styled('div')`
 
 const StyledButton = styled(JuiLozengeButton)`
   && {
-    margin: 0 ${spacing(1.5)};
+    margin: 0 ${spacing(0, 1.5)};
   }
 `;
 
