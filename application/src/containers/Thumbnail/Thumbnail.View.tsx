@@ -11,10 +11,10 @@ import { ViewProps } from './types';
 @observer
 class ThumbnailView extends React.Component<ViewProps> {
   render() {
-    const { fileTypeOrUrl } = this.props;
-    return (
-      <JuiThumbnail iconType={fileTypeOrUrl.icon} url={fileTypeOrUrl.url} />
-    );
+    const {
+      fileTypeOrUrl: { icon, url },
+    } = this.props;
+    return <JuiThumbnail iconType={icon} url={url} />;
   }
 }
 

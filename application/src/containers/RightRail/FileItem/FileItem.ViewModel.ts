@@ -22,10 +22,10 @@ class FileItemViewModel extends AbstractViewModel<FilesProps> {
   @computed
   get file() {
     const id = this.id;
-    if (typeof id !== 'undefined') {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this.id);
-    }
-    return null;
+
+    return id
+      ? getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this.id)
+      : null;
   }
 
   @computed

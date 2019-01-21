@@ -50,7 +50,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       icon: '',
       url: '',
     };
-    console.log(this.file);
+
     if (this.file) {
       const { type } = this.file;
       // const { previewUrl } = this.isImage(this.file);
