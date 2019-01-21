@@ -77,6 +77,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await h(t).glip(loginUser).clearAllUmi();
   });
 
+  // FIXME: it should be something like background, and outside test scope
   const duplicateSteps = async (section, chatId, teamName, sectionName, cb: () => Promise<any>) => {
     await cb();
 
@@ -127,7 +128,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   });
 
 
-  // open via URL 
+  // open via URL
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
     await h(t).withLog(`When I open conversation A via URL `, async () => {
       const url = new URL(SITE_URL)
@@ -164,7 +165,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     });
   });
 
-  // open via URL 
+  // open via URL
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`When I open conversation B via URL `, async () => {
       const url = new URL(SITE_URL)
@@ -232,7 +233,7 @@ test(formalName('Should display in the top of conversation list when opening a c
       type: 'PrivateChat',
       members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).hideGroups(directMessageChatId); // hide first then show for pre condition of last group 
+    await h(t).glip(loginUser).hideGroups(directMessageChatId); // hide first then show for pre condition of last group
     const dm1 = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[0].rcId],
@@ -318,7 +319,7 @@ test(formalName('Should display in the top of conversation list when opening a c
   });
 
 
-  // open via URL 
+  // open via URL
   await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
     await h(t).withLog(`When I open conversation A via URL `, async () => {
       const url = new URL(SITE_URL)
@@ -335,7 +336,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await app.homePage.openAddActionMenu();
     await app.homePage.addActionMenu.createTeamEntry.enter();
     await createTeamModal.ensureLoaded();
-    await createTeamModal.setTeamName(newTeamName);
+    await createTeamModal.typeTeamName(newTeamName);
     await createTeamModal.clickCreateButton();
   });
 
@@ -385,7 +386,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     });
   });
 
-  // open via URL 
+  // open via URL
   await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
     await h(t).withLog(`Given I hide the conversation A`, async () => {
       await h(t).glip(loginUser).hideGroups([+teamId]);
