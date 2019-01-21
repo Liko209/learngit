@@ -126,8 +126,6 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
     }
 
     &&.disabled {
-      pointer-events: ${({ alwaysEnableTooltip }) =>
-        alwaysEnableTooltip ? 'auto' : 'none'};
       ${StyledIcon} {
         color: ${({ theme }) =>
           palette('action', 'disabledBackground')({ theme })};
@@ -178,7 +176,6 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
         colorName={colorName}
         aria-label={ariaLabel}
         className={className}
-        alwaysEnableTooltip={alwaysEnableTooltip}
         {...rest}
       >
         <StyledIcon
@@ -193,10 +190,18 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
       </StyledIconButton>
     );
   };
-  if (!disableToolTip) {
-    return <JuiArrowTip title={tooltipTitle}>{renderToolTip()}</JuiArrowTip>;
+  let renderToolTipWrapper = renderToolTip;
+  if (alwaysEnableTooltip) {
+    renderToolTipWrapper = () => {
+      return <span>{renderToolTip()}</span>;
+    };
   }
-  return renderToolTip();
+  if (!disableToolTip) {
+    return (
+      <JuiArrowTip title={tooltipTitle}>{renderToolTipWrapper()}</JuiArrowTip>
+    );
+  }
+  return renderToolTipWrapper();
 };
 
 JuiIconButtonComponent.defaultProps = {
