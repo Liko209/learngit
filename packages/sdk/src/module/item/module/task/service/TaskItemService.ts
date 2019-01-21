@@ -24,6 +24,16 @@ class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
     }
     return this._taskItemController;
   }
+
+  toSanitizedItem(task: TaskItem) {
+    return {
+      ...super.toSanitizedItem(task),
+      complete: task.complete,
+      due: task.due,
+      assigned_to_ids: task.assigned_to_ids,
+      color: task.color,
+    } as SanitizedTaskItem;
+  }
 }
 
 export { TaskItemService };
