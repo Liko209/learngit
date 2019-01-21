@@ -14,8 +14,7 @@ import {
   JuiListItemSecondaryText,
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
-import { JuiThumbnail } from 'jui/components/Thumbnail';
-import { JuiIconography } from 'jui/foundation/Iconography';
+import { Thumbnail } from '@/containers/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemProps } from './types';
@@ -43,7 +42,7 @@ class ImageItemView extends Component<ImageItemProps> {
   }
 
   render() {
-    const { file, url } = this.props;
+    const { file, id } = this.props;
     const { name, downloadUrl } = file;
     const { isHover } = this.state;
 
@@ -54,11 +53,7 @@ class ImageItemView extends Component<ImageItemProps> {
         data-test-automation-id="rightRail-image-item"
       >
         <JuiListItemIcon>
-          {url ? (
-            <JuiThumbnail url={url} />
-          ) : (
-            <JuiIconography fontSize="large">image_preview</JuiIconography>
-          )}
+          <Thumbnail id={id} />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}

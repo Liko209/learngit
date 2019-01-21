@@ -10,6 +10,7 @@ type FilesProps = {
 };
 
 type FileItemProps = {
+  id: number;
   file: FileItemModel;
   personName: string;
   createdTime: string;

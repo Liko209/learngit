@@ -14,7 +14,7 @@ import {
   JuiListItemSecondaryText,
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
-import { JuiThumbnail } from 'jui/components/Thumbnail';
+import { Thumbnail } from '@/containers/Thumbnail';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { FileItemProps } from './types';
@@ -30,13 +30,7 @@ class FileItemView extends Component<FileItemProps> {
     this.setState({ isHover: false });
   }
   render() {
-    const {
-      disabled,
-      file,
-      fileTypeOrUrl,
-      personName,
-      createdTime,
-    } = this.props;
+    const { disabled, file, id, personName, createdTime } = this.props;
     const fileInfo = file || {};
     const { name, downloadUrl } = fileInfo;
     const { isHover } = this.state;
@@ -49,7 +43,7 @@ class FileItemView extends Component<FileItemProps> {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <JuiThumbnail iconType={fileTypeOrUrl.icon} url={fileTypeOrUrl.url} />
+          <Thumbnail id={id} />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}

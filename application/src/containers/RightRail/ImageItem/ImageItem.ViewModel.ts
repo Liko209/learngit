@@ -13,7 +13,6 @@ import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
-import { getFileType } from '@/common/getFileType';
 import { FilesProps } from './types';
 
 class ImageItemViewModel extends AbstractViewModel<FilesProps> {
@@ -45,12 +44,6 @@ class ImageItemViewModel extends AbstractViewModel<FilesProps> {
   get createdTime() {
     const { createdAt } = this.file;
     return dateFormatter.date(createdAt);
-  }
-
-  @computed
-  get url() {
-    const { previewUrl } = getFileType(this.file);
-    return previewUrl;
   }
 }
 

@@ -3,53 +3,66 @@
  * @Date: 2019-01-10 10:29:06
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileType } from '@/store/models/FileItem';
 import { getEntity } from '../../../../store/utils';
-import { getFileType } from '../../../../common/getFileType';
 import { FileItemViewModel } from '../FileItem.ViewModel';
+import { dateFormatter } from '../../../../utils/date';
+import { ENTITY_NAME } from '../../../../store';
 
 jest.mock('../../../../store/utils');
-jest.mock('../../../../common/getFileType');
 
-const fileItemViewModel = new FileItemViewModel({ id: 123 });
+const mockFile = {
+  createdAt: 1547086968632,
+  creatorId: 123,
+  name: '',
+};
 
-describe('dateFormatter', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
+const mockPerson = {
+  userDisplayName: 'name',
+};
+
+const mappingEntity = {
+  [ENTITY_NAME.FILE_ITEM]: mockFile,
+  [ENTITY_NAME.PERSON]: mockPerson,
+};
+
+const props = {
+  id: 1,
+};
+
+let vm: FileItemViewModel;
+
+describe('FileItemViewModel', () => {
+  beforeAll(() => {
+    (getEntity as jest.Mock).mockImplementation(
+      (name, id) => mappingEntity[name],
+    );
   });
 
-  it('get fileType ', () => {
-    const previewUrl = 'http://www.google.com';
-    (getEntity as jest.Mock).mockReturnValue({
-      type: 'application/json',
+  beforeEach(() => {
+    jest.clearAllMocks();
+    vm = new FileItemViewModel(props);
+  });
+
+  describe('file', () => {
+    it('should be a image item entity when props incoming id', () => {
+      expect(vm.file).toEqual(mockFile);
+    });
+  });
+
+  describe('personName', () => {
+    it('should be a person name string when invoke person entity [JPT-965]', () => {
+      expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
 
-    (getFileType as jest.Mock).mockReturnValue({
-      previewUrl,
-      type: FileType.image,
+    it('should be a new person name string when change person name [JPT-965]', () => {
+      mockPerson.userDisplayName = 'new name';
+      expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
+  });
 
-    expect(fileItemViewModel.fileTypeOrUrl).toEqual({
-      url: previewUrl,
-      icon: '',
+  describe('createdTime', () => {
+    it('should be a date string when incoming timestamp [JPT-965]', () => {
+      expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
     });
-
-    (getFileType as jest.Mock).mockReturnValue({
-      type: -1,
-    });
-
-    expect(fileItemViewModel.fileTypeOrUrl).toEqual({ icon: 'json', url: '' });
-
-    (getEntity as jest.Mock).mockReturnValue({
-      type: 'text',
-    });
-
-    expect(fileItemViewModel.fileTypeOrUrl).toEqual({ icon: 'text', url: '' });
-
-    (getEntity as jest.Mock).mockReturnValue({
-      type: '',
-    });
-
-    expect(fileItemViewModel.fileTypeOrUrl).toEqual({ icon: '', url: '' });
   });
 });

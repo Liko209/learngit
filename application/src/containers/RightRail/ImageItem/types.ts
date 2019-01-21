@@ -11,10 +11,10 @@ type FilesProps = {
 };
 
 type ImageItemProps = {
+  id: number;
   file: FileItemModel;
   personName: string;
   createdTime: string;
-  url: string;
 };
 
 export { ImageItemProps, FilesProps };
