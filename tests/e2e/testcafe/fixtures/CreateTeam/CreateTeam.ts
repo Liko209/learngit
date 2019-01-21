@@ -63,6 +63,7 @@ test(formalName('Check the maximum length of the Team Name input box', ['P1', 'J
 
   await h(t).withLog('Then I input team name exceeded max characters', async () => {
     // Here we type 202 chars, which exceeds max chars of 200
+    await t.wait(5e3); // due to: https://jira.ringcentral.com/browse/FIJI-3066
     await createTeamModal.inputRandomTeamName(202);
   });
 
@@ -96,6 +97,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
   });
 
   await h(t).withLog('Then I can input team name randomly', async () => {
+    await t.wait(5e3); // due to: https://jira.ringcentral.com/browse/FIJI-3066
     await createTeamModal.setTeamName(teamName);
   });
 
@@ -143,6 +145,7 @@ test(formalName('Check the Create button is disabled when user create team witho
     }, true);
 
     await h(t).withLog('Then CreateTeam button is enabled', async () => {
+      await t.wait(5e3); // due to: https://jira.ringcentral.com/browse/FIJI-3066
       await createTeamModal.setTeamName(teamName);
       await createTeamModal.createdTeamButtonShouldBeEnabled();
     }, true);
@@ -173,6 +176,7 @@ test(formalName('Check the maximum length of the Team Description input box', ['
 
     await h(t).withLog('Then I input team Description exceeded max characters', async () => {
       // Here we type 1002 chars, which exceeds max chars of 1000
+      await t.wait(5e3); // due to: https://jira.ringcentral.com/browse/FIJI-3066
       await createTeamModal.inputRandomTeamDescription(1002);
     });
 

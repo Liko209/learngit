@@ -404,8 +404,6 @@ describe('ItemService', () => {
     };
 
     beforeEach(() => {
-      clearMocks();
-      setup();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue(
         new ApiResultOk(
           {
@@ -417,10 +415,6 @@ describe('ItemService', () => {
       );
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       itemService.handleIncomingData = jest.fn();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
     });
 
     it('should call related api', () => {

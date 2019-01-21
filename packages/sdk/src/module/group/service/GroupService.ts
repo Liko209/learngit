@@ -5,7 +5,7 @@
  */
 
 import { TeamController } from '../controller/TeamController';
-import { Group, TeamPermission } from '../entity';
+import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { TeamSetting } from '../types';
 import { PERMISSION_ENUM } from '../constants';
@@ -77,16 +77,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .removeTeamMembers(members, teamId);
   }
 
-  async isCurrentUserHasPermission(
-    groupId: number,
+  isCurrentUserHasPermission(
+    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
-  ): Promise<boolean> {
-    const group = await this.getById(groupId);
-    return group
-      ? this.getTeamController()
-          .getTeamPermissionController()
-          .isCurrentUserHasPermission(group, type)
-      : false;
+  ): boolean {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .isCurrentUserHasPermission(teamPermissionParams, type);
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {

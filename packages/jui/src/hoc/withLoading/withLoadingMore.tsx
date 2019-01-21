@@ -30,7 +30,7 @@ const DefaultLoadingMore = () => (
   </StyledLoadingMore>
 );
 
-const DefaultLoadingMoreWithDelay = withDelay(DefaultLoadingMore);
+export const DefaultLoadingMoreWithDelay = withDelay(DefaultLoadingMore);
 
 const withLoadingMore = (
   Component: ComponentType<any>,
