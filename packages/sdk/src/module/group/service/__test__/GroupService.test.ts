@@ -25,6 +25,9 @@ describe('GroupService', () => {
     getTeamSetting: jest.fn(),
     updateTeamSetting: jest.fn(),
   };
+  const mockTeamPermissionController = {
+    getTeamUserPermissionFlags: jest.fn(),
+  };
   function clearMocks() {
     jest.clearAllMocks();
     jest.resetModules();
@@ -38,6 +41,9 @@ describe('GroupService', () => {
         getTeamActionController: jest
           .fn()
           .mockReturnValue(mockTeamActionController),
+        getTeamPermissionController: jest
+          .fn()
+          .mockReturnValue(mockTeamPermissionController),
       };
     });
     (TeamActionController as any).mockImplementation(() => {
@@ -110,13 +116,13 @@ describe('GroupService', () => {
     });
   });
 
-  describe('getTeamSetting()', () => {
+  describe('getTeamUserPermissionFlags()', () => {
     it('should call teamActionController with correct parameter', async () => {
-      const mockTeamId = 123;
-      await groupService.getTeamSetting(mockTeamId);
-      expect(mockTeamActionController.getTeamSetting).toBeCalledWith(
-        mockTeamId,
-      );
+      const mockPermission = {};
+      await groupService.getTeamUserPermissionFlags(mockPermission);
+      expect(
+        mockTeamPermissionController.getTeamUserPermissionFlags,
+      ).toBeCalledWith(mockPermission);
     });
   });
 

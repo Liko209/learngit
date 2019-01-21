@@ -6,7 +6,6 @@
 
 import _ from 'lodash';
 import { Api } from '../../../api';
-import { JSdkError, ERROR_CODES_SDK } from '../../../error';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Group } from '../entity';
@@ -117,25 +116,6 @@ class TeamActionController {
     );
   }
 
-  async getTeamSetting(teamId: number): Promise<TeamSetting> {
-    const team = await this.entitySourceController.get(teamId);
-    if (!team) {
-      throw new JSdkError(
-        ERROR_CODES_SDK.MODEL_NOT_FOUND,
-        `Team id:${teamId} is not founded!`,
-      );
-    }
-    const teamSetting = {
-      name: team.set_abbreviation,
-      description: team.description,
-      isPublic: team.privacy === 'protected',
-      permissionFlags: this.teamPermissionController.getTeamUserPermissionFlags(
-        team,
-      ),
-    };
-    return teamSetting;
-  }
-
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
     await this.partialModifyController.updatePartially(
       teamId,
@@ -182,7 +162,7 @@ class TeamActionController {
       permissionFlags: (permissionFlags: PermissionFlags) => {
         const permissions = originalEntity.permissions || { user: {} };
         const level = this.teamPermissionController.getTeamUserLevel(
-          originalEntity,
+          originalEntity.permissions,
         );
         const mergeLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
           permissionFlags,
