@@ -3,8 +3,7 @@
  * @Date: 2018-02-28 00:00:57
  */
 import { DBManager, KVStorageManager, DexieDB, DatabaseType } from 'foundation';
-import BaseDao from './base/BaseDao'; // eslint-disable-line
-import BaseKVDao from './base/BaseKVDao'; // eslint-disable-line
+import { BaseDao, BaseKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
@@ -22,7 +21,9 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async initDatabase(): Promise<void> {
-    const dbType = this.kvStorageManager.isLocalStorageSupported() ? DatabaseType.DexieDB : DatabaseType.LokiDB;
+    const dbType = this.kvStorageManager.isLocalStorageSupported()
+      ? DatabaseType.DexieDB
+      : DatabaseType.LokiDB;
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
@@ -48,8 +49,11 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         db.db.on('blocked', () => {
           configDao.put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
         });
-        window.addEventListener('storage', async (e) => {
-          if (e.key === configDao.getKey(BLOCK_MESSAGE_KEY) && Number(e.newValue) === BLOCK_MESSAGE_VALUE) {
+        window.addEventListener('storage', async (e: any) => {
+          if (
+            e.key === configDao.getKey(BLOCK_MESSAGE_KEY) &&
+            Number(e.newValue) === BLOCK_MESSAGE_VALUE
+          ) {
             configDao.remove(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
@@ -95,8 +99,13 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   private _isSchemaCompatible() {
-    const currentSchemaVersion = this.getKVDao(ConfigDao).get(DB_SCHEMA_VERSION);
-    return typeof currentSchemaVersion === 'number' && currentSchemaVersion === schema.version;
+    const currentSchemaVersion = this.getKVDao(ConfigDao).get(
+      DB_SCHEMA_VERSION,
+    );
+    return (
+      typeof currentSchemaVersion === 'number' &&
+      currentSchemaVersion === schema.version
+    );
   }
 }
 

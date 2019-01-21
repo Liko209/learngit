@@ -5,7 +5,8 @@
  */
 
 import { EntitySourceController } from './impl/EntitySourceController';
-import { daoManager, BaseDao, DeactivatedDao } from '../../dao';
+import { daoManager, DeactivatedDao } from '../../dao';
+import { IDao } from '../../framework/dao';
 import { RequestController } from './impl/RequestController';
 import { PartialModifyController } from './impl/PartialModifyController';
 import { IdModel } from '../model';
@@ -52,7 +53,7 @@ export function buildEntityCacheSearchController<T extends IdModel = IdModel>(
 }
 
 export function buildEntityPersistentController<T extends IdModel = IdModel>(
-  dao?: BaseDao<T>,
+  dao?: IDao<T>,
   cacheController?: IEntityPersistentController<T>,
 ) {
   return new EntityPersistentController<T>(dao, cacheController);

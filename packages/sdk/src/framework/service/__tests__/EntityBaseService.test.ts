@@ -5,7 +5,8 @@
  */
 
 import { EntityBaseService } from '../EntityBaseService';
-import { BaseDao, daoManager } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { BaseDao } from '../../../framework/dao';
 import { TestDatabase, TestEntity } from '../../controller/__tests__/TestTypes';
 import NetworkClient from '../../../api/NetworkClient';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../error';

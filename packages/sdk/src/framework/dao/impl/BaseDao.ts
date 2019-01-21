@@ -6,11 +6,12 @@
 import _ from 'lodash';
 import { DexieDB, LokiDB, IDatabaseCollection, IDatabase } from 'foundation';
 import Query from './Query';
-import { Throw } from '../../utils';
+import { Throw } from '../../../utils';
 import { errorHandler } from '../errors/handler';
-import { ERROR_CODES_DB } from '../../error';
+import { ERROR_CODES_DB } from '../../../error';
+import { IDao } from '../interface/IDao';
 
-class BaseDao<T extends {}> {
+class BaseDao<T extends {}> implements IDao<T> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T>;
   private db: IDatabase;
@@ -26,6 +27,10 @@ class BaseDao<T extends {}> {
 
   get modelName(): string {
     return this._modelName;
+  }
+
+  getEntityName(): string {
+    return this.modelName;
   }
 
   async put(item: T | T[]): Promise<void> {

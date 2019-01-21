@@ -8,15 +8,12 @@ import { IdModel } from '../../../../framework/model';
 import { IPreInsertController } from '../interface/IPreInsertController';
 import { IProgressService } from '../../../progress/service/IProgressService';
 import notificationCenter from '../../../../service/notificationCenter';
-import { BaseDao } from '../../../../dao';
+import { IDao } from '../../../../framework/dao';
 import { ControllerUtils } from '../../../../framework/controller/ControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 class PreInsertController<T extends IdModel = IdModel>
   implements IPreInsertController {
-  constructor(
-    public dao: BaseDao<T>,
-    public progressService: IProgressService,
-  ) {}
+  constructor(public dao: IDao<T>, public progressService: IProgressService) {}
 
   async preInsert(entity: T): Promise<void> {
     this.progressService.addProgress(entity.id, {

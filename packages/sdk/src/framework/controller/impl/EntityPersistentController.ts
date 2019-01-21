@@ -6,11 +6,11 @@
 
 import { IdModel } from '../../model';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
-import { BaseDao } from '../../../dao';
+import { IDao } from '../../../framework/dao';
 class EntityPersistentController<T extends IdModel = IdModel>
   implements IEntityPersistentController<T> {
   constructor(
-    public dao?: BaseDao<T>,
+    public dao?: IDao<T>,
     public entityCacheController?: IEntityPersistentController<T>,
   ) {}
 
@@ -103,18 +103,21 @@ class EntityPersistentController<T extends IdModel = IdModel>
     return items;
   }
 
-  getEntityNotificationKey() {
+  getEntityName(): string {
     if (this.dao) {
-      const modelName = this.dao.modelName.toUpperCase();
-      const eventKey: string = `ENTITY.${modelName}`;
-      return eventKey;
+      return this.dao.getEntityName();
     }
 
     if (this.entityCacheController) {
-      return this.entityCacheController.getEntityNotificationKey();
+      return this.entityCacheController.getEntityName();
     }
 
     return 'unknown';
+  }
+
+  getEntityNotificationKey() {
+    const modelName = this.getEntityName().toUpperCase();
+    return `ENTITY.${modelName}`;
   }
 }
 

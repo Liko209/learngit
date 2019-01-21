@@ -3,7 +3,7 @@
  * @Date: 2019-01-10 17:20:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import PostDao from '.';
 import { Post, PostView } from '../../module/post/entity';
 import { IDatabase, mainLogger } from 'foundation';

@@ -3,7 +3,7 @@
  * @Date: 2018-02-24 23:25:03
  */
 
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { Item } from '../../module/item/entity';
 import { IDatabase } from 'foundation';
 

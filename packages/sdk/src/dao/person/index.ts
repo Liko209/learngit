@@ -3,7 +3,7 @@
  * @Date: 2018-02-23 23:58:00
  */
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { IPagination } from '../../types';
 import { Person } from '../../module/person/entity';
 const ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');

@@ -12,7 +12,9 @@ import {
   IDatabase,
 } from 'foundation';
 import { errorHandler } from '../errors/handler';
-class Query<T> implements IQuery<T> {
+import { IQueryOpt } from '../interface/IQueryOpt';
+
+class Query<T> implements IQueryOpt<T> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
 

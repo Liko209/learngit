@@ -9,7 +9,7 @@ import { IdModel } from '../model';
 import { container } from '../../container';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
-import { BaseDao } from '../../dao';
+import { BaseDao } from '../../framework/dao';
 import NetworkClient from '../../api/NetworkClient';
 import {
   buildRequestController,

@@ -108,6 +108,10 @@ class EntityCacheController<T extends IdModel = IdModel>
     return entities;
   }
 
+  getEntityName(): string {
+    return '';
+  }
+
   getEntityNotificationKey(): string {
     return '';
   }

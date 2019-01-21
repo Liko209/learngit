@@ -9,7 +9,8 @@ import { Post } from '../../../../models';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager, PostDao } from '../../../../dao';
+import { daoManager, PostDao } from '../../../../dao';
+import { BaseDao } from '../../../../framework/dao';
 import {
   buildEntitySourceController,
   buildRequestController,

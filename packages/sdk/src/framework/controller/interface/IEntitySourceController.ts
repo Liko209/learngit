@@ -11,7 +11,7 @@ interface IEntitySourceController<T extends IdModel = IdModel>
   extends IEntityPersistentController<T> {
   get(id: number): Promise<T | null>;
 
-  getEntityLocally(id: number): Promise<T>;
+  getEntityLocally(id: number): Promise<T | null>;
 
   getEntitiesLocally(ids: number[], includeDeactivated: boolean): Promise<T[]>;
 }
