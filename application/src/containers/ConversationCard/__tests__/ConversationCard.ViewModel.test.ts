@@ -96,7 +96,7 @@ describe('ConversationCardViewModel', () => {
       ${DATE_2019_1_1}   | ${'Mon, 9:21 AM'}
       ${DATE_2018_12_28} | ${'Fri, 9:21 AM'}
     `(
-      'should be Weekday format when createdAt is not ${data}. [JPT-701]',
+      'should not Weekday format when createdAt is ${data}. [JPT-701]',
       ({ data, expected }) => {
         global.Date.now = jest.fn(() => DATE_2019_1_4);
         (getEntity as jest.Mock).mockReturnValue({
