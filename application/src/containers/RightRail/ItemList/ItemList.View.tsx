@@ -97,7 +97,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
-          <JuiListSubheader>
+          <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
             {t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
