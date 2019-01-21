@@ -21,20 +21,24 @@ describe('TeamSettingsViewModel', () => {
         dismissible: false,
       };
     };
-    it('should show leaveTeamServerErrorContent when server error occurs', () => {
+    it('should show leaveTeamServerErrorContent when server error occurs [JPT-931]', () => {
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
       jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(true);
       jest.spyOn(errorHelper, 'isNotNetworkError').mockReturnValue(false);
-      const flashToast = jest.spyOn(Notification, 'flashToast');
       const vm = setUp();
       vm.onLeaveTeamError(new Error(''));
       expect(flashToast).toBeCalledWith(
         toastParamsBuilder('leaveTeamServerErrorContent'),
       );
     });
-    it('should show leaveTeamNetworkErrorContent when server error occurs', () => {
+    it('should show leaveTeamNetworkErrorContent when network error occurs [JPT-930]', () => {
       jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(false);
       jest.spyOn(errorHelper, 'isNotNetworkError').mockReturnValue(true);
-      const flashToast = jest.spyOn(Notification, 'flashToast');
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
       const vm = setUp();
       vm.onLeaveTeamError(new Error(''));
       expect(flashToast).toBeCalledWith(
@@ -42,13 +46,15 @@ describe('TeamSettingsViewModel', () => {
       );
     });
     it('should call generalErrorHandler when server error occurs', () => {
-      const flashToast = jest.spyOn(Notification, 'flashToast');
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(false);
+      jest.spyOn(errorHelper, 'isNotNetworkError').mockReturnValue(false);
+      jest.spyOn(utils, 'generalErrorHandler').mockReturnValue(jest.fn());
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
       const vm = setUp();
       const err = new Error('');
       vm.onLeaveTeamError(err);
-      expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('leaveTeamNetworkErrorContent'),
-      );
       expect(flashToast).not.toBeCalled();
       expect(utils.generalErrorHandler).toBeCalledWith(err);
     });
