@@ -356,7 +356,7 @@ describe('i18next-en', () => {
   expect(i18next.t('Members')).toEqual('Members');
 
   expect(i18next.t('alreadyTaken')).toEqual(
-    'The name is already taken, please choose another one.',
+    'The name is already taken, choose another one.',
   );
 
   expect(i18next.t('Invalid Email')).toEqual('Invalid Email');
