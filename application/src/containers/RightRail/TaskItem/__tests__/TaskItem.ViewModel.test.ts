@@ -33,7 +33,7 @@ describe('taskItemViewModel', () => {
     (getEntity as jest.Mock).mockReturnValue(newTask);
     expect(taskItemViewModel.task).toEqual(newTask);
   });
-  it('get personName [JPT-960]', () => {
+  it('get personName [JPT-852]', () => {
     (getEntity as jest.Mock).mockReturnValue({});
     expect(taskItemViewModel.personName).toBe('');
     (getEntity as jest.Mock).mockImplementation((key: string) => {
@@ -46,7 +46,7 @@ describe('taskItemViewModel', () => {
     expect(taskItemViewModel.personName).toBe('name, name');
   });
 
-  it('get dueTime [JPT-960]', () => {
+  it('get dueTime [JPT-852]', () => {
     (getEntity as jest.Mock).mockReturnValue(mockTaskReturnValue);
 
     expect(taskItemViewModel.dueTime).toBe('1/10/2019');

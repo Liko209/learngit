@@ -140,8 +140,8 @@ test(formalName('Check the create task and delete task', ['Nello', 'P1', 'JPT-85
     await t.expect(tasksTab.nthItem(0).withText(taskTitle).exists).ok();
   });
 
-  // step 3 sync a task
-  await h(t).withLog('Then user complete a task', async () => {
+  // step 3 delete a task
+  await h(t).withLog('Then user delete a task', async () => {
     await h(t).glip(loginUser).updateTask(taskId, {
       deactivated: true,
     });
@@ -187,7 +187,7 @@ test(formalName('Check the create task and complete task', ['Nello', 'P1', 'JPT-
     await t.expect(tasksTab.nthItem(0).withText(taskTitle).exists).ok();
   });
 
-  // step 3 sync a task
+  // step 3 complete a task
   await h(t).withLog('Then user complete a task', async () => {
     await h(t).glip(loginUser).updateTask(taskId, {
       complete_boolean: true,
