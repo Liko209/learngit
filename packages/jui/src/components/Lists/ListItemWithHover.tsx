@@ -8,7 +8,7 @@ import React from 'react';
 import { JuiListItem, JuiListItemProps } from './ListItem';
 
 type Props = {
-  render: (state: States) => any; // any is children
+  render: (hover: boolean) => any; // any is children
 } & JuiListItemProps;
 
 type States = {
@@ -21,12 +21,20 @@ class JuiListItemWithHover extends React.PureComponent<Props, States> {
     this.state = { hover: false };
   }
 
-  handleMouseEnter = () => {
-    this.setState({ hover: true });
+  handleMouseOver = () => {
+    if (!this.state.hover) {
+      this.setState({ hover: true });
+    }
   }
 
-  handleMouseLeave = () => {
-    this.setState({ hover: false });
+  handleMouseOut = (event: React.MouseEvent) => {
+    const { target, currentTarget, relatedTarget } = event;
+    if (
+      !currentTarget.contains(target as Node) ||
+      !currentTarget.contains(relatedTarget as Node)
+    ) {
+      this.setState({ hover: false });
+    }
   }
 
   render() {
@@ -34,10 +42,10 @@ class JuiListItemWithHover extends React.PureComponent<Props, States> {
     return (
       <JuiListItem
         {...rest}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
       >
-        {render(this.state)}
+        {render(this.state.hover)}
       </JuiListItem>
     );
   }
