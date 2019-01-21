@@ -4,7 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Post } from './Post';
-import { PostItemData } from './PostItemData';
-
-export { Post, PostItemData };
+export { Post, PostView } from './Post';
+export { PostItemData } from './PostItemData';

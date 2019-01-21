@@ -5,4 +5,5 @@
  */
 
 import { ISubItemService } from './ISubItemService';
-export { ISubItemService };
+import { BaseSubItemService } from './BaseSubItemService';
+export { ISubItemService, BaseSubItemService };

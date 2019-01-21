@@ -6,6 +6,10 @@
 import { ComponentType } from 'react';
 import { FileItem } from '../FileItem';
 
+import { NoteItem } from '../NoteItem';
+import { ImageItem } from '../ImageItem';
+import { LinkItem } from '../LinkItem';
+
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
 import ImagesEmptyImage from '../images/Images.svg';
@@ -25,8 +29,8 @@ type EmptyConfig = {
 type TabConfig = {
   title: string;
   type: RIGHT_RAIL_ITEM_TYPE;
-  subheader: string;
   item: ComponentType;
+  subheader: string;
   empty: EmptyConfig;
   offlinePrompt: string;
   tryAgainPrompt: string;
@@ -36,8 +40,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'pinned',
     type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
-    subheader: '',
     item: FileItem,
+    subheader: '',
     empty: {
       text: 'youHaveNothingPinnedYet',
       content: 'noPinSubText',
@@ -49,8 +53,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'files',
     type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
-    subheader: 'fileListSubheader',
     item: FileItem,
+    subheader: 'fileListSubheader',
     empty: {
       text: 'noFilesSharedYet',
       content: 'noFileSubText',
@@ -62,8 +66,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'images',
     type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
-    subheader: '',
-    item: FileItem,
+    item: ImageItem,
+    subheader: 'imageListSubheader',
     empty: {
       text: 'noImagesSharedYet',
       content: 'noImageSubText',
@@ -75,8 +79,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'tasks',
     type: RIGHT_RAIL_ITEM_TYPE.TASKS,
-    subheader: '',
     item: FileItem,
+    subheader: '',
     empty: {
       text: 'noTasksYet',
       content: 'noTaskSubText',
@@ -88,8 +92,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'links',
     type: RIGHT_RAIL_ITEM_TYPE.LINKS,
-    subheader: '',
-    item: FileItem,
+    item: LinkItem,
+    subheader: 'linkListSubheader',
     empty: {
       text: 'noLinksSharedYet',
       content: 'noLinkSubText',
@@ -101,8 +105,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'notes',
     type: RIGHT_RAIL_ITEM_TYPE.NOTES,
-    subheader: '',
-    item: FileItem,
+    item: NoteItem,
+    subheader: 'noteListSubheader',
     empty: {
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',
@@ -114,8 +118,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
-    subheader: '',
     item: FileItem,
+    subheader: '',
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',
@@ -127,8 +131,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'integrations',
     type: RIGHT_RAIL_ITEM_TYPE.INTEGRATIONS,
-    subheader: '',
     item: FileItem,
+    subheader: '',
     empty: {
       text: 'noIntegrationInstallationYet',
       content: 'noIntegrationSubText',

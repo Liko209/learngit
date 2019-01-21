@@ -28,9 +28,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
   constructor() {
-    super();
-
-    this.setEntitySource(this._buildEntitySourceController());
+    super(false, daoManager.getDao(ItemDao), {
+      basePath: '/item',
+      networkClient: Api.glipNetworkClient,
+    });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.ITEM]: this.handleIncomingData,
@@ -52,25 +53,11 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     });
   }
 
-  private _buildEntitySourceController() {
-    const requestController = this.getControllerBuilder().buildRequestController(
-      {
-        basePath: '/item',
-        networkClient: Api.glipNetworkClient,
-      },
-    );
-
-    return this.getControllerBuilder().buildEntitySourceController(
-      daoManager.getDao(ItemDao),
-      requestController,
-    );
-  }
-
   protected get itemServiceController() {
     if (!this._itemServiceController) {
       this._itemServiceController = new ItemServiceController(
         this,
-        this.getControllerBuilder(),
+        this.getEntitySource(),
       );
     }
     return this._itemServiceController;
@@ -238,6 +225,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   async handleSanitizedItems(items: Item[]) {
     return await this.itemServiceController.handleSanitizedItems(items);
+  }
+
+  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+    return this.fileService.getThumbsUrlWithSize(itemId, width, height);
   }
 }
 

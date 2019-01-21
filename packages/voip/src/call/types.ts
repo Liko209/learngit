@@ -29,8 +29,13 @@ enum CALL_FSM_NOTIFY {
   TRANSFER_ACTION = 'transferAction',
   START_RECORD_ACTION = 'startRecordAction',
   STOP_RECORD_ACTION = 'stopRecordAction',
+  MUTE_ACTION = 'muteAction',
+  UNMUTE_ACTION = 'unmuteAction',
   CALL_ACTION_SUCCESS = 'callActionSuccess',
   CALL_ACTION_FAILED = 'callActionFailed',
+  HOLD_ACTION = 'holdAction',
+  UNHOLD_ACTION = 'unholdAction',
+  PARK_ACTION = 'parkAction',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

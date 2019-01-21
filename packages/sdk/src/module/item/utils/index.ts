@@ -5,4 +5,6 @@
  */
 
 import { ItemUtils } from './ItemUtils';
-export { ItemUtils };
+import { FileItemUtils } from '../module/file/utils';
+
+export { ItemUtils, FileItemUtils };

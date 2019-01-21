@@ -8,17 +8,17 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
-import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
-import { SortUtils } from 'sdk/framework/utils';
 import { getGlobalValue } from '@/store/utils';
-import { Item } from 'sdk/module/item/entity';
+import { t } from 'i18next';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { t } from 'i18next';
+import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
+import { SortUtils } from 'sdk/framework/utils';
+import { Item } from 'sdk/module/item/entity';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -28,12 +28,6 @@ import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
 import { TAB_CONFIG } from './config';
-
-// async function delay(time: number) {
-//   return new Promise((resolve: Function) => {
-//     setTimeout(resolve, time);
-//   });
-// }
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -130,6 +124,15 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   async loadTotalCount() {
+    // To Do in  https://jira.ringcentral.com/browse/FIJI-1416
+    if (
+      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
+      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS
+    ) {
+      this.totalCount = 0;
+      return;
+    }
+
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,

@@ -17,6 +17,7 @@ enum CACHE_INITIAL_STATUS {
 class EntityCacheController<T extends IdModel = IdModel>
   implements IEntityCacheController<T> {
   private _entities: { [id: number]: T } = {};
+
   private _initialStatus: CACHE_INITIAL_STATUS;
 
   constructor() {
@@ -27,7 +28,7 @@ class EntityCacheController<T extends IdModel = IdModel>
     this._initialStatus = CACHE_INITIAL_STATUS.INPROGRESS;
     this.clear();
     _.forEach(entities, (model: T) => {
-      this.set(model);
+      this.put(model);
     });
     this._initialStatus = CACHE_INITIAL_STATUS.SUCCESS;
   }
@@ -38,6 +39,77 @@ class EntityCacheController<T extends IdModel = IdModel>
 
   isStartInitial() {
     return this._initialStatus !== CACHE_INITIAL_STATUS.NONE;
+  }
+
+  async put(item: T | T[]): Promise<void> {
+    if (Array.isArray(item)) {
+      await this.bulkPut(item);
+    } else {
+      this._entities[item.id] = item;
+    }
+  }
+
+  async bulkPut(array: T[]): Promise<void> {
+    array.forEach(async (item: T) => {
+      await this.put(item);
+    });
+  }
+
+  async clear(): Promise<void> {
+    this._entities = {};
+  }
+
+  async delete(key: number): Promise<void> {
+    const entity = this._entities[key];
+    if (entity) {
+      delete this._entities[key];
+    }
+  }
+
+  async bulkDelete(keys: number[]): Promise<void> {
+    keys.forEach(async (key: number) => {
+      await this.delete(key);
+    });
+  }
+
+  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+    if (Array.isArray(item)) {
+      this.bulkUpdate(item);
+    } else {
+      const oldItem = this._entities[item.id!];
+      if (oldItem) {
+        Object.keys(item).forEach((key: string) => {
+          oldItem[key] = item[key];
+        });
+      } else {
+        await this.put(item as T);
+      }
+    }
+  }
+
+  async bulkUpdate(array: Partial<T>[]): Promise<void> {
+    array.forEach(async (item: Partial<T>) => {
+      await this.update(item);
+    });
+  }
+
+  async get(key: number): Promise<T | null> {
+    return this._entities[key];
+  }
+
+  async batchGet(ids: number[]): Promise<T[]> {
+    const entities: T[] = [];
+    ids.forEach(async (id: number) => {
+      const entity = await this.get(id);
+      if (entity) {
+        entities.push(entity);
+      }
+    });
+    return entities;
+  }
+
+  getEntityNotificationKey(): string {
+    return '';
   }
 
   async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
@@ -53,29 +125,6 @@ class EntityCacheController<T extends IdModel = IdModel>
     return Object.values(this._entities);
   }
 
-  async getMultiEntities(ids: number[]) {
-    const entities: T[] = [];
-    ids.forEach((id: number) => {
-      const entity = this.getEntity(id);
-      if (entity) {
-        entities.push(entity);
-      }
-    });
-    return entities;
-  }
-
-  getEntity(id: number): T | null {
-    return this._entities[id];
-  }
-
-  set(entity: T) {
-    this._entities[entity.id] = entity;
-  }
-
-  clear() {
-    this._entities = {};
-  }
-
   async replace(ids: number[], entities: Map<number, T>) {
     ids.forEach((id: number) => {
       const entity = this._entities[id];
@@ -89,7 +138,7 @@ class EntityCacheController<T extends IdModel = IdModel>
     });
   }
 
-  async update(
+  async updateEx(
     entities: Map<number, T>,
     partials?: Map<number, Partial<Raw<T>>>,
   ) {
@@ -105,15 +154,6 @@ class EntityCacheController<T extends IdModel = IdModel>
         this._update(entity, id);
       });
     }
-  }
-
-  async delete(ids: number[]) {
-    ids.forEach((id: number) => {
-      const entity = this._entities[id];
-      if (entity) {
-        delete this._entities[id];
-      }
-    });
   }
 
   private _update(entity: T, id: number) {

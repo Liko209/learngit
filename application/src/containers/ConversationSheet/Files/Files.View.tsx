@@ -11,6 +11,7 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { getThumbnailSize } from 'jui/foundation/utils/calculateImageSize';
 import {
   AttachmentItem,
   ITEM_STATUS,
@@ -18,6 +19,8 @@ import {
 import { getFileSize } from './helper';
 import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
+
+const SQUARE_SIZE = 180;
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -65,6 +68,7 @@ class FilesView extends React.Component<FilesViewProps> {
   }
   render() {
     const { files, progresses } = this.props;
+    const singleImage = files[FileType.image].length === 1;
     return (
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
@@ -73,10 +77,17 @@ class FilesView extends React.Component<FilesViewProps> {
           if (id < 0) {
             return this._renderItem(id, progresses, name);
           }
+          let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
+          if (singleImage) {
+            size = getThumbnailSize(origWidth, origHeight);
+          }
           return (
             <JuiPreviewImage
               key={id}
-              ratio={origHeight / origWidth}
+              width={size.width}
+              height={size.height}
+              forceSize={!singleImage}
+              squareSize={SQUARE_SIZE}
               fileName={name}
               url={previewUrl}
               Actions={downloadBtn(downloadUrl)}

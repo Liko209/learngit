@@ -31,7 +31,8 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
                 download
@@ -53,7 +54,8 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
                 download
@@ -75,7 +77,8 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
                 download
@@ -97,7 +100,8 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
                 download
@@ -119,7 +123,8 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
                 download

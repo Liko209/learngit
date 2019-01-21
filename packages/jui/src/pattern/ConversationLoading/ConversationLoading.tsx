@@ -62,15 +62,21 @@ type JuiConversationLoadingProps = {
   onClick: () => void;
 };
 
+type State = {
+  showLoading: boolean;
+  showLink: boolean;
+};
+
 const DELAY_LOADING = 300;
 
 class JuiConversationLoading extends React.Component<
   JuiConversationLoadingProps,
-  {}
+  State
 > {
   timer: NodeJS.Timeout;
+  showLinkTimer: NodeJS.Timeout;
 
-  state = {
+  readonly state = {
     showLoading: false,
     showLink: true,
   };
@@ -87,8 +93,19 @@ class JuiConversationLoading extends React.Component<
     },                      DELAY_LOADING);
   }
 
+  componentWillReceiveProps(props: JuiConversationLoadingProps) {
+    if (props.showTip) {
+      this.showLinkTimer = setTimeout(() => {
+        this.setState({
+          showLink: true,
+        });
+      },                              1000);
+    }
+  }
+
   componentWillUnmount() {
     clearTimeout(this.timer);
+    clearTimeout(this.showLinkTimer);
   }
 
   onClick = () => {

@@ -104,8 +104,7 @@ test(formalName('Each conversation should be represented by the team name.',
   },
 );
 
-// case JPT-47 expire
-test.skip(formalName('Conversation that received post should be moved to top', ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']), async (t: TestController) => {
+test(formalName('Conversation that received post should be moved to top', ['JPT-47', 'P2', 'Chris.Zhan', 'ConversationList']), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
@@ -113,9 +112,10 @@ test.skip(formalName('Conversation that received post should be moved to top', [
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfile();
 
-
   let teamOneId, teamTwoId;
   await h(t).withLog('Given I have an extension with two teams', async () => {
+    const meChatId = await h(t).glip(loginUser).getPerson().then(res => res.data.me_group_id);
+    await h(t).glip(loginUser).setLastGroupId(meChatId); // see https://jira.ringcentral.com/browse/FIJI-3008
     teamOneId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Team',
       name: `Team 1 ${uuid()}`,

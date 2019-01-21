@@ -8,7 +8,12 @@ import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import { JuiVirtualList, JuiVirtualCellWrapper } from 'jui/pattern/VirtualList';
+
+import {
+  JuiVirtualList,
+  IVirtualListDataSource,
+  JuiVirtualCellWrapper,
+} from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
 import {
@@ -19,7 +24,8 @@ import {
 } from 'jui/pattern/RightShelf';
 
 @observer
-class ItemListView extends React.Component<ViewProps & Props> {
+class ItemListView extends React.Component<ViewProps & Props>
+  implements IVirtualListDataSource {
   async componentDidMount() {
     await this.loadMore(0, 0);
   }
