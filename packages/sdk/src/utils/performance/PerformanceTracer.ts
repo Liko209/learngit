@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PerformanceItem } from './types';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 
 class PerformanceTracer {
   PERFORMANCE_KEY = 'jupiter';

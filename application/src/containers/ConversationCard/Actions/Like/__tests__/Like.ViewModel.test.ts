@@ -8,15 +8,13 @@ import { serviceOk, serviceErr } from 'sdk/service/ServiceResult';
 import { getEntity, getGlobalValue } from '../../../../../store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { LikeViewModel } from '../Like.ViewModel';
+import { NewPostService } from 'sdk/module/post';
 
 const mockPostService = {
   likePost: jest.fn(),
 };
-jest.mock('sdk/service/post', () => ({
-  default: {
-    getInstance: () => mockPostService,
-  },
-}));
+
+NewPostService.getInstance = jest.fn().mockReturnValue(mockPostService);
 
 jest.mock('../../../../../store/utils');
 
@@ -86,9 +84,7 @@ describe('likeViewModel', () => {
     });
 
     it('should return hasError=true when like failed', async () => {
-      mockPostService.likePost.mockImplementation(() =>
-        serviceErr(5300, 'mock error'),
-      );
+      mockPostService.likePost.mockRejectedValueOnce({});
       const result = await likeViewModel.like(true);
 
       expect(result.isFailed).toBeTruthy();

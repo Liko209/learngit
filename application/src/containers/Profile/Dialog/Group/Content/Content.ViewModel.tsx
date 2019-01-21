@@ -23,6 +23,15 @@ class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
   }
 
   @computed
+  get showJoinTeam() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const { isTeam, privacy, members } = this.group;
+    return Boolean(
+      isTeam && privacy === 'protected' && !members.includes(currentUserId),
+    );
+  }
+
+  @computed
   get typeId(): number {
     return GlipTypeUtil.extractTypeId(this.id);
   }

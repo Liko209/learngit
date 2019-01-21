@@ -17,6 +17,7 @@ import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
 import portalManager from '@/common/PortalManager';
+import { TeamSettingButton } from '@/containers/common/TeamSettingButton';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
@@ -34,6 +35,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
         <JuiDialogTitleWithActionRight>
           {group.isTeam && <Privacy id={id} size="medium" />}
           <Favorite id={id} size="medium" />
+          {group.isTeam && <TeamSettingButton id={id} size="medium" />}
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton
             onClick={this.dismiss}

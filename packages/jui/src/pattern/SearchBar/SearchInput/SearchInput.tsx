@@ -45,6 +45,13 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
     onBlur && onBlur(e);
   }
 
+  blurTextInput = () => {
+    const node = this._inputDom.current;
+    if (node) {
+      node.blur();
+    }
+  }
+
   render() {
     const { value, focus, onFocus, placeholder, showCloseBtn } = this.props;
 

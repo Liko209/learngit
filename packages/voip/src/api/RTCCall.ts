@@ -32,6 +32,7 @@ class RTCCall {
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
+  private _isMute: boolean = false;
 
   constructor(
     isIncoming: boolean,
@@ -75,6 +76,10 @@ class RTCCall {
     return this._callInfo;
   }
 
+  isMuted(): boolean {
+    return this._isMute;
+  }
+
   answer(): void {
     this._fsm.answer();
   }
@@ -101,6 +106,30 @@ class RTCCall {
 
   stopRecord(): void {
     this._fsm.stopRecord();
+  }
+
+  hold(): void {
+    this._fsm.hold();
+  }
+
+  unhold(): void {
+    this._fsm.unhold();
+  }
+
+  mute(): void {
+    if (!this._isMute) {
+      this._isMute = true;
+      this._fsm.mute();
+    }
+    this._onCallActionSuccess(RTC_CALL_ACTION.MUTE, {});
+  }
+
+  unmute(): void {
+    if (this._isMute) {
+      this._isMute = false;
+      this._fsm.unmute();
+    }
+    this._onCallActionSuccess(RTC_CALL_ACTION.UNMUTE, {});
   }
 
   park(): void {
@@ -168,10 +197,12 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
+      this._account.removeCallFromCallManager(this._callInfo.uuid);
       this._destroy();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
@@ -195,6 +226,12 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.STOP_RECORD_ACTION, () => {
       this._onStopRecordAction();
     });
+    this._fsm.on(CALL_FSM_NOTIFY.MUTE_ACTION, () => {
+      this._onMuteAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.UNMUTE_ACTION, () => {
+      this._onUnmuteAction();
+    });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
       (callAction: RTC_CALL_ACTION) => {
@@ -209,6 +246,12 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.SEND_TO_VOICEMAIL_ACTION, () => {
       this._onSendToVoicemailAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.HOLD_ACTION, () => {
+      this._onHoldAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.UNHOLD_ACTION, () => {
+      this._onUnholdAction();
     });
   }
 
@@ -230,6 +273,16 @@ class RTCCall {
         this._isRecording = false;
         break;
       }
+      case RTC_CALL_ACTION.HOLD: {
+        this._fsm.holdSuccess();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._fsm.unholdSuccess();
+        break;
+      }
+      default:
+        break;
     }
 
     if (this._delegate) {
@@ -238,6 +291,26 @@ class RTCCall {
   }
 
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
+    switch (callAction) {
+      case RTC_CALL_ACTION.START_RECORD: {
+        this._isRecording = false;
+        break;
+      }
+      case RTC_CALL_ACTION.STOP_RECORD: {
+        this._isRecording = true;
+        break;
+      }
+      case RTC_CALL_ACTION.HOLD: {
+        this._fsm.holdFailed();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._fsm.unholdFailed();
+        break;
+      }
+      default:
+        break;
+    }
     if (this._delegate) {
       this._delegate.onCallActionFailed(callAction);
     }
@@ -268,6 +341,14 @@ class RTCCall {
     this._callSession.sendToVoicemail();
   }
 
+  private _onHoldAction() {
+    this._callSession.hold();
+  }
+
+  private _onUnholdAction() {
+    this._callSession.unhold();
+  }
+
   private _onHangupAction() {
     this._callSession.hangup();
   }
@@ -285,17 +366,30 @@ class RTCCall {
   }
 
   private _onStartRecordAction() {
-    this._isRecording
-      ? this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD)
-      : this._callSession.startRecord();
+    if (this._isRecording) {
+      this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
+    } else {
+      this._isRecording = true;
+      this._callSession.startRecord();
+    }
   }
 
   private _onStopRecordAction() {
-    this._isRecording
-      ? this._callSession.stopRecord()
-      : this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
+    if (this._isRecording) {
+      this._isRecording = false;
+      this._callSession.stopRecord();
+    } else {
+      this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
+    }
   }
 
+  private _onMuteAction() {
+    this._callSession.mute();
+  }
+
+  private _onUnmuteAction() {
+    this._callSession.unmute();
+  }
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,
@@ -310,9 +404,6 @@ class RTCCall {
     this._callState = state;
     if (this._delegate) {
       this._delegate.onCallStateChange(state);
-    }
-    if (this._callState === RTC_CALL_STATE.DISCONNECTED) {
-      this._account.removeCallFromCallManager(this._callInfo.uuid);
     }
   }
 }

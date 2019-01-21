@@ -65,5 +65,11 @@ interface IItemService {
     typeId: number,
     filterFunc?: ItemFilterFunction,
   ): Promise<number>;
+
+  getThumbsUrlWithSize(
+    itemId: number,
+    width: number,
+    height: number,
+  ): Promise<string>;
 }
 export { IItemService };

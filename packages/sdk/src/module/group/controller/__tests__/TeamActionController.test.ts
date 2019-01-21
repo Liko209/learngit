@@ -10,9 +10,11 @@ import { Api } from '../../../../api';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
-import { IControllerBuilder } from '../../../../framework/controller/interface/IControllerBuilder';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
+import {
+  buildRequestController,
+  buildPartialModifyController,
+} from '../../../../framework/controller';
 import { Raw } from '../../../../framework/model';
 import { PERMISSION_ENUM } from '../../../../service';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
@@ -48,6 +50,8 @@ class TestEntitySourceController implements IEntitySourceController<Group> {
   getEntitiesLocally = jest.fn();
   getEntityNotificationKey = jest.fn().mockReturnValue([]);
 }
+
+jest.mock('../../../../framework/controller');
 
 class TestPartialModifyController implements IPartialModifyController<Group> {
   public partialModifyController: IPartialModifyController<Group>;
@@ -104,30 +108,32 @@ class TestRequestController implements IRequestController<Group> {
 }
 
 describe('TeamController', () => {
-  let testControllerBuilder: IControllerBuilder<Group>;
   let testEntitySourceController: IEntitySourceController<Group>;
   let teamActionController: TeamActionController;
   let testPartialModifyController: IPartialModifyController<Group>;
   let testRequestController: TestRequestController;
   beforeEach(() => {
-    testControllerBuilder = new ControllerBuilder<Group>();
     testEntitySourceController = new TestEntitySourceController();
     testPartialModifyController = new TestPartialModifyController(
       testEntitySourceController,
     );
-    testRequestController = new TestRequestController();
-    testControllerBuilder.buildRequestController = jest
-      .fn()
-      .mockReturnValue(testRequestController);
-    testControllerBuilder.buildPartialModifyController = jest
-      .fn()
-      .mockReturnValue(testPartialModifyController);
-    teamActionController = new TeamActionController(
+    testPartialModifyController = new TestPartialModifyController(
       testEntitySourceController,
+    );
+    testRequestController = new TestRequestController();
+
+    buildRequestController.mockImplementation(() => {
+      return testRequestController;
+    });
+
+    buildPartialModifyController.mockImplementation(() => {
+      return testPartialModifyController;
+    });
+
+    teamActionController = new TeamActionController(
       testPartialModifyController,
-      testRequestController,
+      testEntitySourceController,
       new TeamPermissionController(),
-      testControllerBuilder,
     );
   });
 

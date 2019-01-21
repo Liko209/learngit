@@ -4,7 +4,8 @@ import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
-
+import { RightRail } from './RightRail';
+import { LeftRail} from './LeftRail';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -357,7 +358,7 @@ export class MessageTab extends BaseWebComponent {
   }
 
 
-  get conversationListSections() {
+  get sections() {
     return this.getSelector('.conversation-list-section');
   }
 
@@ -371,6 +372,15 @@ export class MessageTab extends BaseWebComponent {
     const result = /messages\/(\d+)/.test(url);
     assert(result, `invalid url: ${url}`);
   }
+
+  get leftRail() {
+    return this.getComponent(LeftRail);
+  }
+
+  get rightRail() {
+    return this.getComponent(RightRail);
+  }
+
 }
 
 class Umi extends BaseWebComponent {

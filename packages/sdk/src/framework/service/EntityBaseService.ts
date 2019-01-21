@@ -6,20 +6,36 @@
 
 import { AbstractService } from './AbstractService';
 import { IdModel } from '../model';
-import { ControllerBuilder } from '../controller/impl/ControllerBuilder';
 import { container } from '../../container';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
+import { BaseDao } from '../../dao';
+import NetworkClient from '../../api/NetworkClient';
+import {
+  buildRequestController,
+  buildEntityCacheController,
+  buildEntityPersistentController,
+  buildEntitySourceController,
+} from '../controller';
+import { mainLogger } from 'foundation';
+import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 
 class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   private _subscribeController: ISubscribeController;
-  private entitySourceController: IEntitySourceController<T>;
-  constructor() {
+  private _entitySourceController: IEntitySourceController<T>;
+  private _entityCacheController: IEntityCacheController<T>;
+
+  constructor(
+    public isSupportedCache: boolean,
+    public dao?: BaseDao<T>,
+    public networkConfig?: { basePath: string; networkClient: NetworkClient },
+  ) {
     super();
+    this._initControllers();
   }
 
-  setEntitySource(sourceController: IEntitySourceController<T>) {
-    this.entitySourceController = sourceController;
+  getEntitySource() {
+    return this._entitySourceController;
   }
 
   setSubscriptionController(subscribeController: ISubscribeController) {
@@ -38,14 +54,41 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   }
 
   getById(id: number): Promise<T | null> {
-    if (this.entitySourceController) {
-      return Promise.resolve(this.entitySourceController.getEntity(id));
+    if (this._entitySourceController) {
+      return Promise.resolve(this._entitySourceController.get(id));
     }
     throw new Error('entitySourceController is null');
   }
 
-  getControllerBuilder() {
-    return new ControllerBuilder<T>();
+  private _initControllers() {
+    if (this.isSupportedCache && !this._entityCacheController) {
+      this._entityCacheController = buildEntityCacheController<T>();
+      this._initialEntitiesCache();
+    }
+
+    this._entitySourceController = buildEntitySourceController(
+      buildEntityPersistentController<T>(this.dao, this._entityCacheController),
+      this.networkConfig
+        ? buildRequestController<T>(this.networkConfig)
+        : undefined,
+    );
+  }
+
+  private async _initialEntitiesCache() {
+    mainLogger.debug('_initialEntitiesCache begin');
+    if (
+      this.dao &&
+      this._entityCacheController &&
+      !this._entityCacheController.isStartInitial()
+    ) {
+      const models = await this.dao.getAll();
+      this._entityCacheController.initialize(models);
+      mainLogger.debug('_initialEntitiesCache done');
+    } else {
+      mainLogger.debug(
+        'initial cache without permission or already initialized',
+      );
+    }
   }
 
   static getInstance<T extends EntityBaseService<any>>(): T {

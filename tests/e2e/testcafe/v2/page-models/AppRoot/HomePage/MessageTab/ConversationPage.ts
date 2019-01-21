@@ -79,7 +79,7 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getComponent(PostItem, this.posts.nth(nth));
   }
 
-  async historyPostsDisplayedInOrder(posts: string[]){
+  async historyPostsDisplayedInOrder(posts: string[]) {
     for (const i of _.range(posts.length)) {
       await this.t.expect(this.nthPostItem(-1 - i).body.withText(posts[posts.length - 1 - i]).exists).ok();
     }
@@ -176,18 +176,20 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  async shouldFocusOnMessageInputArea() {
+    await this.t.expect(this.messageInputArea.focused).ok();
+  }
 
-  async sendMessage(message: string, options?) {
+  async sendMessage(message: string, options?: TypeActionOptions) {
     await this.t
-      .typeText(this.messageInputArea, message, options)
       .click(this.messageInputArea)
+      .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
   }
 
-  async sendMessageWithoutText() {
-    await this.t
-      .click(this.messageInputArea)
-      .pressKey('enter');
+  async pressEnterWhenFocusOnMessageInputArea() {
+    await this.shouldFocusOnMessageInputArea();
+    await this.t.pressKey('enter');
   }
 
   get privateButton() {
@@ -239,12 +241,9 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
-  private uploadFiles(selector: Selector, filesPath: Array<string>) {
-    return this.t.setFilesToUpload(selector, filesPath);
-  }
 
-  async uploadFilesToMessageAttachment(filesPath: Array<string>) {
-    await this.uploadFiles(this.uploadFileInput, filesPath);
+  async uploadFilesToMessageAttachment(filesPath: Array<string> | string) {
+    await this.t.setFilesToUpload(this.uploadFileInput, filesPath);
   }
 
   async removeFileOnMessageArea(n = 0) {
