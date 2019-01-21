@@ -105,7 +105,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this._groupId,
       () => {
-        this._loadStatus = { ...InitLoadStatus };
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
@@ -114,6 +113,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
             this._desc,
           );
         this.loadTotalCount();
+        this.forceReload();
       },
       { fireImmediately: true },
     );
