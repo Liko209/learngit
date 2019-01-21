@@ -33,7 +33,7 @@ class PrivacyViewComponent extends Component<Props> {
     try {
       await handlePrivacy();
     } catch (error) {
-      if (errorHelper.isNotNetworkError(error)) {
+      if (errorHelper.isNetworkConnectionError(error)) {
         this.flashToast('teamNetError');
       } else {
         this.flashToast('markPrivateServerErrorForTeam');
