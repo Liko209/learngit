@@ -73,7 +73,7 @@ describe('TimeNodeDividerViewModel', () => {
       ${DATE_2019_1_3}   | ${'Monday'}
       ${DATE_2018_12_28} | ${'Friday'}
     `(
-      'should be Weekday format when createdAt is ${data}. [JPT-701]',
+      'should be Weekday format when createdAt is not ${data}. [JPT-701]',
       ({ data, expected }) => {
         global.Date.now = jest.fn(() => DATE_2019_1_4);
         timeNodeDividerViewModel.props.value = data;
