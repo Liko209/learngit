@@ -5,8 +5,8 @@
  */
 
 import { buildContainer } from '@/base';
-import { CodeSnippetView } from './CodeSnippetItem.view';
-import { CodeSnippetViewModel } from './CodeSnippetItem.viewModel';
+import { CodeSnippetView } from './CodeSnippetItem.View';
+import { CodeSnippetViewModel } from './CodeSnippetItem.ViewModel';
 
 const CodeSnippet = buildContainer({
   View: CodeSnippetView,
