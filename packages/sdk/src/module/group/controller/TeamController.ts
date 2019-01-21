@@ -5,41 +5,28 @@
  */
 
 import _ from 'lodash';
-import { Api } from '../../../api';
-import { daoManager, GroupDao } from '../../../dao';
-import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
 import { Group } from '../entity';
 import { TeamActionController } from './TeamActionController';
 import { TeamPermissionController } from './TeamPermissionController';
+import { buildPartialModifyController } from '../../../framework/controller';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class TeamController {
   private _actionController: TeamActionController;
   private _permissionController: TeamPermissionController;
 
-  constructor(public controllerBuilder: IControllerBuilder<Group>) {}
+  constructor(public entitySourceController: IEntitySourceController<Group>) {}
 
   getTeamActionController(): TeamActionController {
     if (!this._actionController) {
-      const requestController = this.controllerBuilder.buildRequestController({
-        basePath: '/team',
-        networkClient: Api.glipNetworkClient,
-      });
-
-      const entitySourceController = this.controllerBuilder.buildEntitySourceController(
-        daoManager.getDao(GroupDao),
-        requestController,
-      );
-
-      const partialModifyController = this.controllerBuilder.buildPartialModifyController(
-        entitySourceController,
+      const partialModifyController = buildPartialModifyController<Group>(
+        this.entitySourceController,
       );
 
       this._actionController = new TeamActionController(
-        entitySourceController,
         partialModifyController,
-        requestController,
+        this.entitySourceController,
         this.getTeamPermissionController(),
-        this.controllerBuilder,
       );
     }
     return this._actionController;

@@ -10,7 +10,7 @@ class TelephonyService extends EntityBaseService {
   private _telephonyEngineController: TelephonyEngineController;
 
   constructor() {
-    super();
+    super(false);
     this._init();
   }
 

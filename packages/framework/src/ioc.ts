@@ -13,8 +13,11 @@ import {
   autoProvide,
 } from 'inversify-binding-decorators';
 import getDecorators from 'inversify-inject-decorators';
+import { Jupiter } from './Jupiter';
 
 const container = new Container({ defaultScope: 'Singleton' });
+container.bind<Jupiter>(Jupiter).to(Jupiter);
+
 const {
   lazyInject,
   lazyInjectNamed,
