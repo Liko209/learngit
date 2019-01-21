@@ -27,15 +27,6 @@ describe('AddMembersViewModel', () => {
     jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(gs);
   });
 
-  describe('isOffline()', () => {
-    it('should isOffline to equal when getGlobalValue is offline or online', () => {
-      (getGlobalValue as jest.Mock).mockReturnValue('offline');
-      expect(AddMembersVM.isOffline).toEqual(true);
-      (getGlobalValue as jest.Mock).mockReturnValue('online');
-      expect(AddMembersVM.isOffline).toEqual(false);
-    });
-  });
-
   describe('handleSearchContactChange()', () => {
     it('should members to equal [1, 3] when search contact change to [{ id: 1 }, { email: 3 }]', () => {
       AddMembersVM.handleSearchContactChange([{ id: 1 }, { email: 3 }]);
