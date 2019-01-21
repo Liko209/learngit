@@ -35,7 +35,7 @@ const DefaultLoading = (props: any) => (
   <>
     {props.children}
     <JuiFade in={props.isVisible} style={{ transitionDelay: '100ms' }}>
-      <StyledLoading isVisible={props.isVisible}>
+      <StyledLoading isVisible={props.isVisible} data-test-automation-id='loading'>
         <div>
           <JuiCircularProgress />
         </div>
