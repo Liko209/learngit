@@ -17,6 +17,11 @@ const conversationCardVM = new ConversationCardViewModel();
 const DAY = 24 * 3600 * 1000;
 const DATE_2019_1_4 = 1546564919703;
 const DATE_2019_1_3 = 1546564919703 - DAY;
+const DATE_2019_1_2 = 1546564919703 - 2 * DAY;
+const DATE_2019_1_1 = 1546564919703 - 3 * DAY;
+const DATE_2018_12_30 = 1546564919703 - 5 * DAY;
+const DATE_2018_12_29 = 1546564919703 - 6 * DAY;
+const DATE_2018_12_28 = 1546564919703 - 7 * DAY;
 const DATE_2019_1_5 = 1546564919703 + DAY;
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
@@ -69,6 +74,38 @@ describe('ConversationCardViewModel', () => {
       });
       expect(conversationCardVM.createTime).toBe('Sat, 1/5/2019 9:21 AM');
     });
+    it.each`
+      data               | expected
+      ${DATE_2019_1_3}   | ${'Thu, 9:21 AM'}
+      ${DATE_2019_1_2}   | ${'Wed, 9:21 AM'}
+      ${DATE_2018_12_30} | ${'Sun, 9:21 AM'}
+      ${DATE_2018_12_29} | ${'Sat, 9:21 AM'}
+    `(
+      'should be Weekday format when createdAt is ${data}. [JPT-701]',
+      ({ data, expected }) => {
+        global.Date.now = jest.fn(() => DATE_2019_1_4);
+        (getEntity as jest.Mock).mockReturnValue({
+          createdAt: data,
+          creatorId: 107913219,
+        });
+        expect(conversationCardVM.createTime).toBe(expected);
+      },
+    );
+    it.each`
+      data               | expected
+      ${DATE_2019_1_1}   | ${'Mon, 9:21 AM'}
+      ${DATE_2018_12_28} | ${'Fri, 9:21 AM'}
+    `(
+      'should not Weekday format when createdAt is ${data}. [JPT-701]',
+      ({ data, expected }) => {
+        global.Date.now = jest.fn(() => DATE_2019_1_4);
+        (getEntity as jest.Mock).mockReturnValue({
+          createdAt: data,
+          creatorId: 107913219,
+        });
+        expect(conversationCardVM.createTime).not.toBe(expected);
+      },
+    );
   });
   it('creator()', () => {
     (getEntity as jest.Mock).mockReturnValue({
