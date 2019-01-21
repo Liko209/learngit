@@ -20,43 +20,6 @@ describe('ItemUtils', () => {
     clearMocks();
   });
 
-  describe('isImageItem()', () => {
-    it('should return true when is image', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'JPG',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
-    });
-
-    it('should return true when type has image', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'IMAGE/jpeg',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
-    });
-
-    it('should return true when type is giphy', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'giphy',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
-    });
-
-    it('should return false when is image', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'ppp',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeFalsy();
-    });
-  });
   describe('isValidItem', () => {
     const item1 = {
       id: 10,
