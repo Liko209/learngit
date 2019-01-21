@@ -6,4 +6,8 @@
 
 import { SanitizedItem } from '../../base/entity';
 
-export type SanitizedTaskItem = SanitizedItem & {};
+export type SanitizedTaskItem = SanitizedItem & {
+  due: number;
+  assigned_to_ids: number[];
+  color: string;
+};

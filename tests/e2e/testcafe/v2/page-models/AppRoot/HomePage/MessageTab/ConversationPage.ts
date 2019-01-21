@@ -59,6 +59,7 @@ class BaseConversationPage extends BaseWebComponent {
   get headerStatus() {
     return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
   }
+  
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
@@ -241,12 +242,9 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
 
-  private uploadFiles(selector: Selector, filesPath: Array<string>) {
-    return this.t.setFilesToUpload(selector, filesPath);
-  }
 
-  async uploadFilesToMessageAttachment(filesPath: Array<string>) {
-    await this.uploadFiles(this.uploadFileInput, filesPath);
+  async uploadFilesToMessageAttachment(filesPath: Array<string> | string) {
+    await this.t.setFilesToUpload(this.uploadFileInput, filesPath);
   }
 
   async removeFileOnMessageArea(n = 0) {

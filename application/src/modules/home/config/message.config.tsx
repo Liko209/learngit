@@ -5,14 +5,20 @@
  */
 import React from 'react';
 import { t } from 'i18next';
-import { Message } from '@/modules/message';
+import { container } from 'framework';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
+import { MessageService } from '@/modules/message/service/MessageService';
 import { MessageUmi } from '../container/MessageUmi';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
   route: {
     path: '/messages',
-    component: Message,
+    component: lazyComponent({
+      loader: () =>
+        import(/*
+        webpackChunkName: "c.message" */ './lazy/Message'),
+    }),
   },
   nav: () => {
     return {
@@ -22,6 +28,16 @@ const config: SubModuleConfig = {
       umi: <MessageUmi />,
       placement: 'top',
     };
+  },
+  loader: () =>
+    import(/*
+    webpackChunkName: "m.message" */ '@/modules/message'),
+  afterBootstrap: () => {
+    const messageService = container.get(MessageService);
+    // Check user permission and register extensions
+    messageService.registerExtension({
+      'CONVERSATION_PAGE.HEADER.BUTTONS': [], // [TelephonyButton, MeetingButton]
+    });
   },
 };
 

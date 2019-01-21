@@ -17,7 +17,10 @@ class BaseDao<T extends {}> {
   private _modelName: string;
   constructor(modelName: string, db: IDatabase) {
     this.db = db;
-    this.collection = db.getCollection<T>(modelName);
+    if (db) {
+      this.collection = db.getCollection<T>(modelName);
+    }
+
     this._modelName = modelName;
   }
 

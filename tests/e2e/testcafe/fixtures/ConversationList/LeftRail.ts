@@ -29,7 +29,7 @@ test(formalName('The default view of conversation list.', ['P0', 'JPT-2', 'Chris
       const order = ['Favorites', 'Direct Messages', 'Teams'];
       for (let i = 0; i < order.length; i++) {
         await t
-          .expect(app.homePage.messageTab.conversationListSections.nth(i).getAttribute('data-name'))
+          .expect(app.homePage.messageTab.sections.nth(i).getAttribute('data-name'))
           .eql(order[i]);
       }
     });
