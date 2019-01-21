@@ -1,9 +1,25 @@
 import 'testcafe';
-import { Selector } from 'testcafe';
+import { Selector, RequestHook } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
-import { SITE_ENV } from '../../config';
+import { SITE_ENV, ENV_OPTS } from '../../config';
+import { MockClient, BrowserInitDto } from 'mock-client';
+
+class MockClientHook extends RequestHook {
+  public requestId: string;
+
+  constructor(requestId) {
+    super();
+    this.requestId = requestId;
+  }
+  onRequest(event) {
+    event.requestOptions.headers['x-mock-request-id'] = this.requestId;
+  }
+
+  onResponse(event) {
+  }
+}
 
 export class JupiterHelper {
 
@@ -31,9 +47,18 @@ export class JupiterHelper {
     this.t.ctx.__appClientId = appClientId;
   }
 
-  async setup(authUrl: string, appClientId: string) {
+  get mockClient(): MockClient {
+    return this.t.ctx.__mockClient;
+  }
+
+  set mockClient(mockClient: MockClient) {
+    this.t.ctx.__mockClient = mockClient;
+  }
+
+  async setup(authUrl: string, appClientId: string, mockClient: MockClient) {
     this.authUrl = authUrl;
     this.appClientId = appClientId;
+    this.mockClient = mockClient;
   }
 
   async getUrlWithAuthCode(redirectUrl: string, user: IUser, ) {
@@ -62,6 +87,19 @@ export class JupiterHelper {
   }
 
   async directLoginWithUser(url: string, user: IUser, env: string = SITE_ENV) {
+    if (this.mockClient) {
+      const initDto = BrowserInitDto.of()
+        .credential(user.company.number)
+        .pin(user.extension)
+        .password(user.password)
+        .env(env)
+        .appKey(ENV_OPTS.appKey)
+        .appSecret(ENV_OPTS.appSecret);
+      const requestId = await this.mockClient.registerBrowser(initDto);
+      env = 'XMN-MOCK';
+      this.t.addRequestHooks(new MockClientHook(requestId));
+    }
+
     await this.selectEnvironment(url, env);
     const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
     await this.t.navigateTo(urlWithAuthCode);

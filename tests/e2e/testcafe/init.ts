@@ -3,14 +3,13 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL } from './config';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
 import { MockClient } from 'mock-client';
 
-export const mockClient = new MockClient("https://xmn02-i01-mck01.lab.nordigy.ru");
-
+export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
 const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
@@ -77,6 +76,7 @@ export function setupCase(accountType: string) {
     await h(t).jupiterHelper.setup(
       ENV_OPTS.AUTH_URL,
       ENV_OPTS.JUPITER_APP_KEY,
+      mockClient,
     )
     await h(t).logHelper.setup();
     await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);

@@ -22,7 +22,9 @@ const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
 const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
 const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
+
 const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+const ENABLE_MOCK_SERVER = (process.env.ENABLE_MOCK_SERVER === 'true');
 
 const ENV_OPTS = {
   'XMN-UP': {
@@ -41,15 +43,6 @@ const ENV_OPTS = {
     RC_PLATFORM_BASE_URL: 'https://api-glpci1xmn.lab.nordigy.ru',
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
-    JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-  },
-  'XMN-MOCK': {
-    ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
-    ACCOUNT_POOL_FOR_DEBUG_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9998',
-    ACCOUNT_POOL_ENV: 'glpci1xmn',  // FIXME: should support other env
-    RC_PLATFORM_BASE_URL: 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/glip2',
-    GLIP_SERVER_BASE_URL: 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/glip_desktop',
-    AUTH_URL: 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
   },
 }[SITE_ENV];
@@ -131,4 +124,5 @@ export {
   RUN_NAME,
   BrandTire,
   MOCK_SERVER_URL,
+  ENABLE_MOCK_SERVER,
 };
