@@ -47,6 +47,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noFileSubText',
       image: FilesEmptyImage,
     },
+    desc: true,
   },
   {
     title: 'images',

@@ -21,7 +21,7 @@ class EventItemView extends React.Component<ViewProps> {
     const { text, startTime, event, isRepeat } = this.props;
     const { color } = event;
     return (
-      <JuiListItem>
+      <JuiListItem data-test-automation-id="rightRail-event-item">
         <JuiListItemIcon>
           <JuiEventIcon iconColor={color} />
         </JuiListItemIcon>

@@ -69,6 +69,10 @@ export class RightRail extends BaseWebComponent {
   get filesTab() {
     return this.getComponent(FilesTab);
   }
+
+  get eventsTab() {
+    return this.getComponent(EventsTab);
+  }
 }
 
 class TabEntry extends BaseWebComponent {
@@ -134,13 +138,41 @@ class ImagesTab extends BaseWebComponent {
   }
 
   get items() {
-    return this.getSelectorByAutomationId('rightRail-image-item');
+    return this.getSelectorByAutomationId('e');
   }
 
   nthItem(n: number) {
     return this.getComponent(ImageAndFileItem, this.items.nth(n));
   }
 
+}
+
+class EventsTab extends BaseWebComponent {
+  // this is a temp. selector
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get subTitle() {
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Events/);
+  }
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
+  }
+
+  async waitUntilEventsItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-event-item');
+  }
+
+  nthItem(n: number) {
+    return this.items.nth(n).find('.list-item-primary');
+  }
 }
 
 class ImageAndFileItem extends BaseWebComponent {
@@ -171,8 +203,4 @@ class ImageAndFileItem extends BaseWebComponent {
   get previewIcon() {
     return this.getSelectorByIcon('image_preview', this.self);
   }
-
 }
-
-
-
