@@ -9,10 +9,6 @@ import { MockClient, BrowserInitDto } from 'mock-client';
 class MockClientHook extends RequestHook {
   public requestId: string;
 
-  constructor(requestId) {
-    super();
-    this.requestId = requestId;
-  }
   onRequest(event) {
     event.requestOptions.headers['x-mock-request-id'] = this.requestId;
   }
@@ -93,11 +89,14 @@ export class JupiterHelper {
         .pin(user.extension)
         .password(user.password)
         .env(env)
-        .appKey(ENV_OPTS.appKey)
-        .appSecret(ENV_OPTS.appSecret);
-      const requestId = await this.mockClient.registerBrowser(initDto);
+        .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
+        .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
+
+      const hook = new MockClientHook();
+      hook.requestId = await this.mockClient.registerBrowser(initDto);
+      await this.t.addRequestHooks([hook]);
+
       env = 'XMN-MOCK';
-      this.t.addRequestHooks(new MockClientHook(requestId));
     }
 
     await this.selectEnvironment(url, env);
