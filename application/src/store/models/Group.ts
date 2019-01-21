@@ -190,8 +190,15 @@ export default class GroupModel extends Base<Group> {
   @computed
   get isCurrentUserHasPermissionAddTeam() {
     const GroupService = new NGroupService();
+    const members = this.members || [];
+    const guestUserCompanyIds = this.guestUserCompanyIds || [];
     return GroupService.isCurrentUserHasPermission(
-      this.data,
+      {
+        members,
+        is_team: this.isTeam,
+        guest_user_company_ids: guestUserCompanyIds,
+        permissions: this.permissions,
+      },
       PERMISSION_ENUM.TEAM_ADD_MEMBER,
     );
   }
