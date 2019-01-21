@@ -72,7 +72,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   get teamSettingDialog() {
-    return this.getComponent(TeamSettingDialog)
+    return this.getComponent(TeamSettingDialog);
   }
 
   async openAddActionMenu() {

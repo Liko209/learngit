@@ -1,5 +1,4 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
-import * as faker from 'faker/locale/en';
 
 export class SendNewMessageModal extends BaseWebComponent {
   get self() {
@@ -50,19 +49,23 @@ export class SendNewMessageModal extends BaseWebComponent {
     await this.t.expect(this.isDisable).notOk();
   }
 
-  async setMember(name: string) {
-    await this.clickAndTypeText(this.membersInput, name, { replace: true, paste: true });
-    // FIXME: Need time to wait for search members to display
+  async setMemeber(name: string) {
+    await this.t.typeText(this.membersInput, `${name}`, { replace: true, paste: true });
+    // Need time to wait for serached members to display
     await this.t.wait(1000);
     await this.t.pressKey('enter');
   }
 
   async setNewMessage(message: string) {
-    await this.clickAndTypeText(this.newMessageTextarea, `${message}`, { replace: true, paste: true });
+    await this.t.typeText(this.newMessageTextarea, `${message}`, { replace: true, paste: true });
   }
 
-  async randomMessage(num: number) {
-    return faker.random.alphaNumeric(num);
+  async getNewMessage(num: number) {
+    const name = [];
+    for (let i = 0; i < num; i++) {
+      name.push(1);
+    }
+    return name.join('');
   }
 
   get membersInput() {
@@ -70,7 +73,7 @@ export class SendNewMessageModal extends BaseWebComponent {
   }
 
   async typeMember(text: string, options?) {
-    await this.clickAndTypeText(this.membersInput, text, options)
+    await this.t.typeText(this.membersInput, text, options)
   }
 
   get selectedMembers() {
