@@ -40,15 +40,33 @@ const delegate = (
 };
 
 class TestEntitySourceController implements IEntitySourceController<Group> {
-  getEntity = jest.fn().mockImplementation(async (id: number) => {
+  get = jest.fn().mockImplementation(async (id: number) => {
     return groupFactory.build({
       id,
     });
   });
+
   getEntityLocally = jest.fn();
-  bulkUpdate = jest.fn();
+
   getEntitiesLocally = jest.fn();
+
   getEntityNotificationKey = jest.fn().mockReturnValue([]);
+
+  put = jest.fn();
+
+  bulkPut = jest.fn();
+
+  clear = jest.fn();
+
+  delete = jest.fn();
+
+  bulkDelete = jest.fn();
+
+  update = jest.fn();
+
+  bulkUpdate = jest.fn();
+
+  batchGet = jest.fn().mockResolvedValue([]);
 }
 
 jest.mock('../../../../framework/controller');
@@ -71,7 +89,7 @@ class TestPartialModifyController implements IPartialModifyController<Group> {
         ) => Partial<Raw<Group>>,
         doUpdateEntity: (updatedEntity: Group) => Promise<Group>,
       ) => {
-        const originalEntity: Group = await this.entitySourceController.getEntity(
+        const originalEntity: Group = await this.entitySourceController.get(
           entityId,
         );
         let partialEntity: Partial<Group> = {
@@ -198,7 +216,7 @@ describe('TeamController', () => {
         id: 2,
         members: [55668833, 540524, 5683],
       });
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
       await teamActionController.leaveTeam(5683, 2);
@@ -217,7 +235,7 @@ describe('TeamController', () => {
         is_team: true,
         members: [5683, 55668833, 540524],
       });
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
       const result = await teamActionController.addTeamMembers([123, 456], 2);
@@ -241,7 +259,7 @@ describe('TeamController', () => {
         is_team: true,
         members: [5683, 55668833, 540524],
       });
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
       const result = await teamActionController.removeTeamMembers(
@@ -283,7 +301,7 @@ describe('TeamController', () => {
         set_abbreviation: 'abbreviation',
         description: 'desc',
       });
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
       const teamSetting = await teamActionController.getTeamSetting(123);
@@ -298,12 +316,12 @@ describe('TeamController', () => {
       const mockPublicGroup = groupFactory.build({
         privacy: 'protected',
       });
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockPrivateGroup,
       );
       let teamSetting = await teamActionController.getTeamSetting(123);
       expect(teamSetting.isPublic).toBeFalsy();
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockPublicGroup,
       );
       teamSetting = await teamActionController.getTeamSetting(123);
@@ -387,7 +405,7 @@ describe('TeamController', () => {
               },
             },
           });
-          (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+          (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
             mockGroup,
           );
           const teamSetting = await teamActionController.getTeamSetting(123);
@@ -419,7 +437,7 @@ describe('TeamController', () => {
           },
         },
       });
-      (testEntitySourceController.getEntity as jest.Mock).mockResolvedValueOnce(
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
       await teamActionController.updateTeamSetting(mockTeam.id, {
