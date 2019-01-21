@@ -3,11 +3,9 @@
  * @Date: 2019-01-15 15:03:48
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, computed, observable } from 'mobx';
+import { action, observable } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { AbstractViewModel } from '@/base';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { ViewModuleProps } from './types';
 
 type SelectedMember = {
@@ -22,11 +20,6 @@ class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
   disabledOkBtn: boolean = true;
   @observable
   members: number[] = [];
-
-  @computed
-  get isOffline() {
-    return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
-  }
 
   @action
   handleSearchContactChange = (items: SelectedMember[]) => {

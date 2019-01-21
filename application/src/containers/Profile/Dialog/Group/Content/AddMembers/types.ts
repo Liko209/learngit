@@ -14,7 +14,6 @@ type ViewProps = WithNamespaces &
   ViewModuleProps & {
     disabledOkBtn: boolean;
     members: number[];
-    isOffline: boolean;
     addTeamMembers: () => void;
     handleSearchContactChange: (items: any) => void;
   };

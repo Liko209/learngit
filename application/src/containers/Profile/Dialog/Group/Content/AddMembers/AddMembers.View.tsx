@@ -51,19 +51,13 @@ class AddMembers extends React.Component<ViewProps> {
   }
 
   render() {
-    const {
-      t,
-      disabledOkBtn,
-      handleSearchContactChange,
-      isOffline,
-      group,
-    } = this.props;
+    const { t, disabledOkBtn, handleSearchContactChange, group } = this.props;
     const { members } = group;
     return (
       <JuiModal
         open={true}
         size={'medium'}
-        okBtnProps={{ disabled: isOffline || disabledOkBtn }}
+        okBtnProps={{ disabled: disabledOkBtn }}
         title={t('AddTeamMembersTitle')}
         onCancel={this.handleClose}
         onOK={this.handleAddTeam}
