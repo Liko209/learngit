@@ -45,6 +45,7 @@
   "AddTeamMembers": "Add team members",
   "AddTeamMembersNetworkError": "Sorry, we weren't able to add team members.",
   "AddTeamMembersBackendError": "Sorry, we weren't able to add team members. Try again.",
+  "AddTeamMembersTitle": "Add Team Members",
   "Search Contact Placeholder": "Members (enter names or email addresses)",
   "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
   "joinTheTeam": "{{newUser}} joined the team",
