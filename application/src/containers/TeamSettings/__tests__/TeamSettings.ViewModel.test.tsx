@@ -7,7 +7,10 @@ import { TeamSettingsViewModel } from '../TeamSettings.ViewModel';
 import { GroupService } from 'sdk/module/group';
 import { errorHelper } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
-// import { PERMISSION_ENUM } from 'sdk/service';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
@@ -67,8 +70,8 @@ describe('TeamSettingsViewModel', () => {
         dismissible: false,
         fullWidth: false,
         message: 'SorryWeWereNotAbleToSaveTheUpdate',
-        messageAlign: 'left',
-        type: 'error',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
       });
       expect(result).toBe(false);
     });
@@ -97,8 +100,8 @@ describe('TeamSettingsViewModel', () => {
         dismissible: false,
         fullWidth: false,
         message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
-        messageAlign: 'left',
-        type: 'error',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
       });
       expect(result).toBe(false);
     });
