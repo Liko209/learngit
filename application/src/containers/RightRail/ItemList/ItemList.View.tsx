@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-
+import { ITEM_HEIGHT } from './config';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
@@ -28,13 +28,6 @@ class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
   async componentDidMount() {
     await this.loadMore(0, 0);
-  }
-
-  componentWillReceiveProps(nextProps: ViewProps & Props) {
-    const { groupId, type } = this.props;
-    if (groupId !== nextProps.groupId || type !== nextProps.type) {
-      this.props.forceReload();
-    }
   }
 
   countOfCell() {
@@ -60,11 +53,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   fixedCellHeight() {
-    return 52;
-  }
-
-  overscanCount() {
-    return 0;
+    return ITEM_HEIGHT;
   }
 
   renderEmptyContent = () => {

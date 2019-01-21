@@ -80,7 +80,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get tabConfig() {
-    return TAB_CONFIG.find(looper => looper.type === this.props.type)!;
+    return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
   @computed
@@ -102,10 +102,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   constructor(props: Props) {
     super(props);
     this._loadStatus = { ...InitLoadStatus };
-    this.reaction(
-      () => this.type,
-      () => (this._loadStatus = { ...InitLoadStatus }),
-    );
     this.reaction(
       () => this._groupId,
       () => {

@@ -20,6 +20,8 @@ import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 
+const ITEM_HEIGHT = 52;
+
 type EmptyConfig = {
   text: string;
   content: string;
@@ -143,4 +145,4 @@ const TAB_CONFIG: TabConfig[] = [
   },
 ];
 
-export { TAB_CONFIG, TabConfig, EmptyConfig };
+export { TAB_CONFIG, TabConfig, EmptyConfig, ITEM_HEIGHT };
