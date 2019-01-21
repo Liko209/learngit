@@ -70,5 +70,11 @@ interface IItemService {
   getItemDataHandler(): (items: Raw<Item>[]) => void;
 
   requestSyncGroupItems(groupId: number): Promise<void>;
+
+  getThumbsUrlWithSize(
+    itemId: number,
+    width: number,
+    height: number,
+  ): Promise<string>;
 }
 export { IItemService };
