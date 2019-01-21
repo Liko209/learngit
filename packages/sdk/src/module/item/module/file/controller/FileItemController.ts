@@ -12,13 +12,37 @@ import {
 import { FileUploadController } from '../controller/FileUploadController';
 import { Api } from '../../../../../api';
 import { daoManager, ItemDao } from '../../../../../dao';
-import { FileItem } from '../entity';
+import { Item, ItemFile } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
-import { Item } from '../../../entity';
+import { FileActionController } from './FileActionController';
 
 class FileItemController {
+  private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;
   constructor(private _itemService: IItemService) {}
+
+  get fileActionController() {
+    if (!this._fileActionController) {
+      const itemRequestController = buildRequestController<Item>({
+        basePath: '/file',
+        networkClient: Api.glipNetworkClient,
+      });
+
+      const persistentController = buildEntityPersistentController<Item>(
+        daoManager.getDao(ItemDao),
+      );
+
+      const entitySourceController = buildEntitySourceController<Item>(
+        persistentController,
+        itemRequestController,
+      );
+
+      this._fileActionController = new FileActionController(
+        entitySourceController,
+      );
+    }
+    return this._fileActionController;
+  }
 
   get fileUploadController() {
     if (!this._fileUploadController) {
@@ -57,7 +81,7 @@ class FileItemController {
     const dao = daoManager.getDao(ItemDao) as ItemDao;
     const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
     return files.length > 0
-      ? files.some((x: FileItem) => {
+      ? files.some((x: ItemFile) => {
         return x.post_ids.length > 0;
       })
       : false;

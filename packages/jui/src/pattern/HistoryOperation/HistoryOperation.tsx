@@ -7,7 +7,7 @@ import React from 'react';
 import { TowardIcons } from './TowardIcons';
 import { OPERATION } from './types';
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing, ellipsis } from '../../foundation/utils/styles';
 import { JuiMenuItem, JuiPopover, JuiMenuList } from '../../components';
 
 type TowardsProps = {
@@ -23,6 +23,10 @@ const MenuListCompositionWrapper = styled.div`
   position: relative;
   display: flex;
   margin-right: ${spacing(1)};
+`;
+
+const MenuListItemWrapper = styled.div`
+  ${ellipsis()}
 `;
 
 export class JuiHistoryOperation extends React.Component<
@@ -116,7 +120,7 @@ export class JuiHistoryOperation extends React.Component<
                   onClick={this.getClickMenuHander(key, type, index)}
                   key={key}
                 >
-                  {title}
+                  <MenuListItemWrapper>{title}</MenuListItemWrapper>
                 </JuiMenuItem>
               );
             })}

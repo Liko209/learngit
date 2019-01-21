@@ -226,6 +226,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   async handleSanitizedItems(items: Item[]) {
     return await this.itemServiceController.handleSanitizedItems(items);
   }
+
+  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+    return this.fileService.getThumbsUrlWithSize(itemId, width, height);
+  }
 }
 
 export { ItemService };

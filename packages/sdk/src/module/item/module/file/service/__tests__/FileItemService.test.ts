@@ -11,7 +11,9 @@ import { IItemService } from '../../../../service/IItemService';
 import { FileItemDao } from '../../dao/FileItemDao';
 import { FileItemService } from '../FileItemService';
 import { FileItem } from '../../entity';
+import { FileActionController } from '../../controller/FileActionController';
 
+jest.mock('../../controller/FileActionController');
 jest.mock('../../controller/FileUploadController');
 jest.mock('../../controller/FileItemController');
 jest.mock('../../../../../../dao');
@@ -29,14 +31,23 @@ describe('FileItemService', () => {
   const itemService = {};
   let fileItemService: FileItemService;
   let fileItemDao: FileItemDao;
+  let fileActionController: FileActionController;
   function setup() {
     fileItemDao = new FileItemDao(null);
     daoManager.getDao = jest.fn().mockReturnValue(fileItemDao);
+    fileActionController = new FileActionController(null);
     fileUploadController = new FileUploadController(null, null, null);
     fileItemController = new FileItemController(null);
     fileItemService = new FileItemService(itemService as IItemService);
-    Object.defineProperty(fileItemService, 'fileUploadController', {
-      get: jest.fn(() => fileUploadController),
+    Object.defineProperties(fileItemService, {
+      fileUploadController: {
+        get: jest.fn(() => fileUploadController),
+      },
+      fileActionController: {
+        get: jest.fn(() => {
+          return fileActionController;
+        }),
+      },
     });
 
     Object.defineProperty(fileItemService, 'fileItemController', {
@@ -296,6 +307,22 @@ describe('FileItemService', () => {
         groupId,
         file.name,
       );
+    });
+  });
+
+  describe('getThumbsUrlWithSize', async () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call api in fileActionController', async () => {
+      fileActionController.getThumbsUrlWithSize = jest
+        .fn()
+        .mockResolvedValue('a');
+      const res = await fileItemService.getThumbsUrlWithSize(1, 2, 3);
+      expect(res).toBe('a');
+      expect(fileActionController.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
     });
   });
 
