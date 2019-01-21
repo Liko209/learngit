@@ -1,10 +1,14 @@
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
+import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
 import { Post, IPostQuery, IPostResult } from '../entity';
+import { Raw } from '../../../framework/model';
 import { QUERY_DIRECTION } from '../../../dao/constants';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager, PostDao, GroupConfigDao } from '../../../dao';
 import { mainLogger } from 'foundation';
 import { ItemService } from '../../item/service/ItemService';
+import { transform } from '../../../service/utils';
+import { Item } from '../../item/entity';
 import _ from 'lodash';
 
 /*
@@ -15,10 +19,17 @@ import _ from 'lodash';
 const DEFAULT_PAGE_SIZE = 20;
 const TAG = 'PostFetchController';
 
+type IRawPostResult = {
+  posts: Raw<Post>[];
+  items: Raw<Item>[];
+  hasMore: boolean;
+};
+
 class PostFetchController {
   constructor(
     public requestController: IRequestController<Post>,
     public sourceEntityController: IEntitySourceController<Post>,
+    public preInsertController: IPreInsertController,
   ) {}
 
   async getPostsByGroupId({
@@ -29,7 +40,8 @@ class PostFetchController {
   }: IPostQuery): Promise<IPostResult> {
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
-      `PostDataHandler getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
+      TAG,
+      `getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
     );
     let result: IPostResult = {
       limit,
@@ -57,7 +69,8 @@ class PostFetchController {
       if (shouldGetMoreFromServer) {
         // Get more posts from server
         mainLogger.debug(
-          `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
+          TAG,
+          'getPostsByGroupId() db is not exceed limit, request from server',
         );
         do {
           const validAnchorPost = _.findLast(
@@ -67,7 +80,7 @@ class PostFetchController {
           const validAnchorPostId = validAnchorPost
             ? validAnchorPost.id
             : postId;
-          const serverResult = await this._requestHandler.fetchPaginationPosts({
+          const serverResult = await this.fetchPaginationPosts({
             groupId,
             direction,
             limit,
@@ -77,7 +90,9 @@ class PostFetchController {
           if (!serverResult) {
             break;
           }
-          const transformedData = transformData(serverResult.posts);
+          const transformedData = ([] as Raw<Post>[])
+            .concat(serverResult.posts)
+            .map((item: Raw<Post>) => transform<Post>(item));
           if (shouldSaveToDb) {
             await this._handlePreInsertPosts(transformedData);
           }
@@ -130,6 +145,60 @@ class PostFetchController {
       items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
     };
     return result;
+  }
+
+  async fetchPaginationPosts({
+    groupId,
+    postId,
+    limit,
+    direction,
+  }: IPostQuery): Promise<IRawPostResult | null> {
+    const result: IRawPostResult = {
+      posts: [],
+      items: [],
+      hasMore: false,
+    };
+
+    // if (await !GroupService.getInstance().hasPostsInGroup(groupId)) {
+    //   return result;
+    // }
+
+    const params: any = {
+      limit,
+      direction,
+      group_id: groupId,
+    };
+    if (postId) {
+      params.post_id = postId;
+    }
+    const requestResult = await PostAPI.requestPosts(params);
+    if (requestResult.isOk()) {
+      const data = requestResult.data;
+      if (data) {
+        result.posts = data.posts;
+        result.items = data.items;
+        result.hasMore = result.posts.length === limit;
+      }
+      return result;
+    }
+    return null;
+  }
+
+  private async _handlePreInsertPosts(posts: Post[]) {
+    if (!posts || !posts.length) {
+      return [];
+    }
+    const ids = posts
+      .filter((post: Post) => {
+        return this._postStatusHandler.isInPreInsert(post.id);
+      })
+      .map((post: Post) => post.id);
+
+    if (ids.length) {
+      const postDao = daoManager.getDao(PostDao);
+      await postDao.bulkDelete(ids);
+    }
+    return ids;
   }
 }
 

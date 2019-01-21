@@ -92,7 +92,7 @@ class PostActionController implements IPostActionController {
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
 
-    this.preInsertController.incomesStatusChange(id, true);
+    this.preInsertController.incomesStatusChange(post, true);
 
     // 4
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();

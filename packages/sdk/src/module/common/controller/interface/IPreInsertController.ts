@@ -7,7 +7,8 @@ import { IdModel } from '../../../../framework/model';
 
 interface IPreInsertController<T extends IdModel = IdModel> {
   preInsert(entity: T): Promise<void>;
-  incomesStatusChange(id: number, shouldDelete: boolean): void;
+  incomesStatusChange(entity: T, shouldDelete: boolean): void;
+  isInPreInsert(version: number): boolean;
 }
 
 export { IPreInsertController };

@@ -93,7 +93,7 @@ class SendPostController implements ISendPostController {
           this.sendPostToServer(post);
         } else {
           // handle failed
-          this.handleSendPostFail(post.id, post.group_id);
+          this.handleSendPostFail(post, post.group_id);
         }
       } else {
         // delete post
@@ -139,49 +139,48 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPostToServer(post: Post): Promise<PostData[]> {
-    const preInsertId = post.id;
     delete post.id;
     try {
       const result = await this.postActionController.requestController.post(
         post,
       );
-      return this.handleSendPostSuccess(result, preInsertId);
+      return this.handleSendPostSuccess(result, post);
     } catch (e) {
-      this.handleSendPostFail(preInsertId, post.group_id);
+      this.handleSendPostFail(post, post.group_id);
       throw ErrorParserHolder.getErrorParser().parse(e);
     }
   }
 
   async handleSendPostSuccess(
     post: Post,
-    preInsertId: number,
+    originalPost: Post,
   ): Promise<PostData[]> {
     const obj: PostData = {
-      id: preInsertId,
+      id: originalPost.id,
       data: post,
     };
     const result = [obj];
     const replacePosts = new Map<number, Post>();
-    replacePosts.set(preInsertId, post);
+    replacePosts.set(originalPost.id, post);
 
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
-    await groupConfigService.deletePostId(post.group_id, preInsertId);
+    await groupConfigService.deletePostId(post.group_id, originalPost.id);
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.incomesStatusChange(preInsertId, true);
+    await this.preInsertController.incomesStatusChange(originalPost, true);
 
     await dao.put(post);
     return result;
   }
 
-  async handleSendPostFail(preInsertId: number, groupId: number) {
-    this.preInsertController.incomesStatusChange(preInsertId, false);
+  async handleSendPostFail(originalPost: Post, groupId: number) {
+    this.preInsertController.incomesStatusChange(originalPost, false);
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
-    await groupConfigService.addPostId(groupId, preInsertId);
+    await groupConfigService.addPostId(groupId, originalPost.id);
     return [];
   }
 

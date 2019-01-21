@@ -4,19 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../../../framework/model';
+import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../interface/IPreInsertController';
+import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { IProgressService } from '../../../progress/service/IProgressService';
 import notificationCenter from '../../../../service/notificationCenter';
 import { BaseDao } from '../../../../dao';
 import { ControllerUtils } from '../../../../framework/controller/ControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
-class PreInsertController<T extends IdModel = IdModel>
-  implements IPreInsertController {
+import PreInsertIdController from './PreInsertIdController';
+class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
+  implements IPreInsertController<T> {
+  private _preInsertIdController: IPreInsertIdController;
+
   constructor(
     public dao: BaseDao<T>,
     public progressService: IProgressService,
-  ) {}
+  ) {
+    this._preInsertIdController = new PreInsertIdController(dao.modelName);
+  }
 
   async preInsert(entity: T): Promise<void> {
     this.progressService.addProgress(entity.id, {
@@ -27,23 +33,29 @@ class PreInsertController<T extends IdModel = IdModel>
     const key: string = this.getEntityNotificationKey();
     key.length && notificationCenter.emitEntityUpdate(key, [entity]);
     this.dao && (await this.dao.bulkPut([entity]));
+    this._preInsertIdController.insertId(entity.version);
   }
 
-  async incomesStatusChange(id: number, shouldDelete: boolean): Promise<void> {
+  async incomesStatusChange(entity: T, shouldDelete: boolean): Promise<void> {
     if (shouldDelete) {
-      this.progressService.deleteProgress(id);
+      this.progressService.deleteProgress(entity.id);
       notificationCenter.emitEntityDelete(this.getEntityNotificationKey(), [
-        id,
+        entity.id,
       ]);
       if (this.dao) {
-        await this.dao.delete(id);
+        await this.dao.delete(entity.id);
       }
+      this._preInsertIdController.deleteId(entity.version);
     } else {
-      this.progressService.updateProgress(id, {
-        id,
+      this.progressService.updateProgress(entity.id, {
+        id: entity.id,
         status: PROGRESS_STATUS.FAIL,
       });
     }
+  }
+
+  isInPreInsert(version: number): boolean {
+    return this._preInsertIdController.isInPreInsert(version);
   }
 
   getEntityNotificationKey() {
