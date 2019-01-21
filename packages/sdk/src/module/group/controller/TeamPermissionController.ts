@@ -16,7 +16,7 @@ import {
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
 } from '../constants';
-import { Group, TeamPermission, TeamPermissionParams } from '../entity';
+import { TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags } from '../types';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
@@ -122,16 +122,15 @@ class TeamPermissionController {
     return true;
   }
 
-  getTeamUserLevel(team: Group) {
-    const {
-      permissions: { user: { level = DEFAULT_USER_PERMISSION_LEVEL } = {} } = {},
-    } = team;
+  getTeamUserLevel(permission: TeamPermission | undefined) {
+    const { user: { level = DEFAULT_USER_PERMISSION_LEVEL } = {} } =
+      permission || {};
     return level;
   }
 
-  getTeamUserPermissionFlags(team: Group): PermissionFlags {
+  getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags {
     const permissionFlags: PermissionFlags = {};
-    const teamUserLevel = this.getTeamUserLevel(team);
+    const teamUserLevel = this.getTeamUserLevel(teamPermission);
     for (const key in PERMISSION_ENUM) {
       if (!REGEXP_IS_NUMBER.test(key)) {
         permissionFlags[key] = this._checkPermissionWithMask(

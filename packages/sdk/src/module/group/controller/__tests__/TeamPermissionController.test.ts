@@ -416,4 +416,96 @@ describe('TeamPermissionController', () => {
       expect(teamPermissionController.isTeamAdmin(4, permission)).toBeFalsy();
     });
   });
+
+  describe('getTeamUserPermissionFlags()', () => {
+    describe('should return permissionFlags correctly.', () => {
+      const ENUMS_DETAIL = [
+        {
+          key: 'TEAM_ADD_INTEGRATIONS',
+          mask: PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+        },
+        {
+          key: 'TEAM_ADD_MEMBER',
+          mask: PERMISSION_ENUM.TEAM_ADD_MEMBER,
+        },
+        {
+          key: 'TEAM_ADMIN',
+          mask: PERMISSION_ENUM.TEAM_ADMIN,
+        },
+        {
+          key: 'TEAM_PIN_POST',
+          mask: PERMISSION_ENUM.TEAM_PIN_POST,
+        },
+        {
+          key: 'TEAM_POST',
+          mask: PERMISSION_ENUM.TEAM_POST,
+        },
+      ];
+      const getTotalLevel = (indexs: number[]) => {
+        let level = 0;
+        indexs.forEach((index: number) => {
+          level = level | ENUMS_DETAIL[index].mask;
+        });
+        return level;
+      };
+
+      const getKeys = (indexs: number[]) => {
+        return indexs.map((index: number) => ENUMS_DETAIL[index].key);
+      };
+      it.each`
+        level                          | trueFlagsKeys            | falseFlagsKeys
+        ${getTotalLevel([0])}          | ${getKeys([0])}          | ${getKeys([1, 2, 3, 4])}
+        ${getTotalLevel([1])}          | ${getKeys([1])}          | ${getKeys([0, 2, 3, 4])}
+        ${getTotalLevel([2])}          | ${getKeys([2])}          | ${getKeys([0, 1, 3, 4])}
+        ${getTotalLevel([3])}          | ${getKeys([3])}          | ${getKeys([0, 1, 2, 4])}
+        ${getTotalLevel([4])}          | ${getKeys([4])}          | ${getKeys([0, 1, 2, 3])}
+        ${getTotalLevel([0, 1])}       | ${getKeys([0, 1])}       | ${getKeys([2, 3, 4])}
+        ${getTotalLevel([0, 2])}       | ${getKeys([0, 2])}       | ${getKeys([1, 3, 4])}
+        ${getTotalLevel([0, 3])}       | ${getKeys([0, 3])}       | ${getKeys([1, 2, 4])}
+        ${getTotalLevel([0, 4])}       | ${getKeys([0, 4])}       | ${getKeys([1, 2, 3])}
+        ${getTotalLevel([1, 2])}       | ${getKeys([1, 2])}       | ${getKeys([0, 3, 4])}
+        ${getTotalLevel([1, 3])}       | ${getKeys([1, 3])}       | ${getKeys([0, 2, 4])}
+        ${getTotalLevel([1, 4])}       | ${getKeys([1, 4])}       | ${getKeys([0, 2, 3])}
+        ${getTotalLevel([2, 3])}       | ${getKeys([2, 3])}       | ${getKeys([0, 1, 4])}
+        ${getTotalLevel([2, 4])}       | ${getKeys([2, 4])}       | ${getKeys([0, 1, 3])}
+        ${getTotalLevel([3, 4])}       | ${getKeys([3, 4])}       | ${getKeys([0, 1, 2])}
+        ${getTotalLevel([0, 1, 2])}    | ${getKeys([0, 1, 2])}    | ${getKeys([3, 4])}
+        ${getTotalLevel([0, 1, 3])}    | ${getKeys([0, 1, 3])}    | ${getKeys([2, 4])}
+        ${getTotalLevel([0, 1, 4])}    | ${getKeys([0, 1, 4])}    | ${getKeys([2, 3])}
+        ${getTotalLevel([0, 2, 3])}    | ${getKeys([0, 2, 3])}    | ${getKeys([1, 4])}
+        ${getTotalLevel([0, 2, 4])}    | ${getKeys([0, 2, 4])}    | ${getKeys([1, 3])}
+        ${getTotalLevel([0, 3, 4])}    | ${getKeys([0, 3, 4])}    | ${getKeys([1, 2])}
+        ${getTotalLevel([1, 2, 3])}    | ${getKeys([1, 2, 3])}    | ${getKeys([0, 4])}
+        ${getTotalLevel([1, 2, 4])}    | ${getKeys([1, 2, 4])}    | ${getKeys([0, 3])}
+        ${getTotalLevel([1, 3, 4])}    | ${getKeys([1, 3, 4])}    | ${getKeys([0, 2])}
+        ${getTotalLevel([2, 3, 4])}    | ${getKeys([2, 3, 4])}    | ${getKeys([0, 1])}
+        ${getTotalLevel([0, 1, 2, 3])} | ${getKeys([0, 1, 2, 3])} | ${getKeys([4])}
+        ${getTotalLevel([0, 1, 2, 4])} | ${getKeys([0, 1, 2, 4])} | ${getKeys([3])}
+        ${getTotalLevel([0, 1, 3, 4])} | ${getKeys([0, 1, 3, 4])} | ${getKeys([2])}
+        ${getTotalLevel([0, 2, 3, 4])} | ${getKeys([0, 2, 3, 4])} | ${getKeys([1])}
+        ${getTotalLevel([1, 2, 3, 4])} | ${getKeys([1, 2, 3, 4])} | ${getKeys([0])}
+      `(
+        'level = $level, $trueFlagsKeys = true',
+        async ({ level, trueFlagsKeys, falseFlagsKeys }) => {
+          const permission = {
+            user: {
+              level,
+              uids: [],
+            },
+          };
+          const teamPermissionFlags = await teamPermissionController.getTeamUserPermissionFlags(
+            permission,
+          );
+          const flags = {};
+          trueFlagsKeys.forEach((k: string) => {
+            flags[k] = true;
+          });
+          falseFlagsKeys.forEach((k: string) => {
+            flags[k] = false;
+          });
+          expect(teamPermissionFlags).toEqual(flags);
+        },
+      );
+    });
+  });
 });

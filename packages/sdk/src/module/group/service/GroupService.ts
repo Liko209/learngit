@@ -7,7 +7,7 @@
 import { TeamController } from '../controller/TeamController';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { TeamSetting } from '../types';
+import { TeamSetting, PermissionFlags } from '../types';
 import { PERMISSION_ENUM } from '../constants';
 import { IGroupService } from './IGroupService';
 import { daoManager, GroupDao } from '../../../dao';
@@ -53,10 +53,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .updateTeamSetting(teamId, teamSetting);
   }
 
-  async getTeamSetting(teamId: number): Promise<TeamSetting> {
-    return await this.getTeamController()
-      .getTeamActionController()
-      .getTeamSetting(teamId);
+  getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .getTeamUserPermissionFlags(teamPermission);
   }
 
   async leaveTeam(userId: number, teamId: number) {
