@@ -11,6 +11,7 @@ import {
   TeamPermission,
   Group,
   GroupCommon,
+  TeamPermissionParams,
 } from './Group';
 
 export {
@@ -20,4 +21,5 @@ export {
   TeamPermission,
   Group,
   GroupCommon,
+  TeamPermissionParams,
 };
