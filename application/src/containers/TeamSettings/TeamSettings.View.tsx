@@ -79,21 +79,20 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const { leaveTeam, t } = this.props;
+    const { t } = this.props;
     portalManager.dismiss();
     Dialog.confirm({
       title: t('leaveTeamConfirmTitle'),
       content: t('leaveTeamConfirmContent'),
       okText: toTitleCase(t('leaveTeamConfirmOk')),
       cancelText: toTitleCase(t('cancel')),
-      async onOK() {
-        try {
-          await leaveTeam();
-        } catch (e) {
-          // TODO: Error handling
-        }
-      },
+      onOK: this.leaveTeamOKButtonHandler,
     });
+  }
+
+  leaveTeamOKButtonHandler = async () => {
+    portalManager.dismiss();
+    this.props.leaveTeam();
   }
 
   renderEditSection() {
