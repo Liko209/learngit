@@ -21,6 +21,8 @@ import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
 import config from '@/config';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 @observer
 class App extends React.Component {
@@ -73,6 +75,11 @@ class App extends React.Component {
             </>
           )}
         </ThemeProvider>
+        <script
+          src={`${getGlobalValue(
+            GLOBAL_KEYS.STATIC_HTTP_SERVER,
+          )}/scripts/codemirror/5.36.1/codemirror_condensed.min.js?v=5.36.1&h=3`}
+        />
       </>
     );
   }

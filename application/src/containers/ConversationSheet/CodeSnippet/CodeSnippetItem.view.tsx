@@ -97,7 +97,7 @@ export class CodeSnippetView extends React.Component<CodeSnippetViewProps> {
   }
 
   render() {
-    const { title, body = '', mode: language } = this.props.postItem;
+    const { title, body = '', mode: language, mimeType } = this.props.postItem;
     const lineNumber = this.calcTotalLines(body);
     const showHoverAction =
       lineNumber > DEFAULT_LINE_LIMIT && this.state.showHoverAction;
@@ -133,6 +133,9 @@ export class CodeSnippetView extends React.Component<CodeSnippetViewProps> {
             defaultLineLimit={DEFAULT_LINE_LIMIT}
             isCollapse={this.state.isCollapse}
             language={language}
+            codeMirrorOption={{
+              mode: mimeType,
+            }}
           />
         </JuiCodeSnippetBody>
       </JuiConversationItemCard>
