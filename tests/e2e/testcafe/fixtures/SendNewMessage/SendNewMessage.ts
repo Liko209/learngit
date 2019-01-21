@@ -84,7 +84,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
   }, true);
 
   await h(t).withLog(`When I input new message with ${lessThanMax} character`, async () => {
-    const newMessage = await sendNewMessageModal.randomMessage(lessThanMax);
+    const newMessage = await sendNewMessageModal.getNewMessage(lessThanMax);
     await sendNewMessageModal.setNewMessage(newMessage);
   });
 
@@ -94,7 +94,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
   });
 
   await h(t).withLog(`When I input new message with ${MAX} character`, async () => {
-    const newMessage = await sendNewMessageModal.randomMessage(MAX);
+    const newMessage = await sendNewMessageModal.getNewMessage(MAX);
     await sendNewMessageModal.setNewMessage(newMessage);
   });
 
@@ -104,7 +104,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
   });
 
   await h(t).withLog(`When I input new message with more than ${moreThanMAX} character`, async () => {
-    const newMessage = await sendNewMessageModal.randomMessage(moreThanMAX);
+    const newMessage = await sendNewMessageModal.getNewMessage(moreThanMAX);
     await sendNewMessageModal.setNewMessage(newMessage);
   });
 
@@ -153,7 +153,7 @@ test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendN
   }, true);
 
   await h(t).withLog('When I input one memeber name', async () => {
-    await sendNewMessageModal.setMember(user2Name);
+    await sendNewMessageModal.setMemeber(user2Name);
 
   });
 

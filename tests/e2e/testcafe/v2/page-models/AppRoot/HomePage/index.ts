@@ -8,6 +8,7 @@ import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { Header, joinTeamDialog } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
+import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSetting';
 
 
@@ -65,11 +66,15 @@ export class HomePage extends BaseWebComponent {
   get settingMenu() {
     return this.getComponent(SettingMenu);
   }
-
-  get teamSettingDialog() {
-    return this.getComponent(TeamSettingDialog)
-  }
   
+  get teamSettingDialog() {
+    return this.getComponent(TeamSettingDialog);
+  }
+
+  get addTeamMemberDialog() {
+    return this.getComponent(AddTeamMembers);
+  }
+
   async openAddActionMenu() {
     await this.t.hover('html').click(this.addActionButton);
   }

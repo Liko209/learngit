@@ -31,10 +31,6 @@ export abstract class BaseWebComponent {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
-  // sandbox and helper
-  async clickAndTypeText(selector: Selector, text: string, options?: TypeActionOptions) {
-    return await this.t.click(selector).typeText(selector, text, options)
-  }
 
   // delegate testcafe method
   get exists() {
