@@ -35,7 +35,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     const permissionFlags = groupService.getTeamUserPermissionFlags(
       this._group.permissions || {},
     );
-    console.log('hihi', permissionFlags);
     return !!permissionFlags.TEAM_ADD_MEMBER;
   }
 
@@ -46,7 +45,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @computed
   get initialData() {
-    console.log('hihi', this._group);
     return {
       name: this._group.displayName,
       description: this._group.description,
@@ -74,7 +72,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     const description = params.description.trim();
     const groupService = new GroupService();
     this.setNameError('');
-    console.log('hihi', params);
     try {
       await groupService.updateTeamSetting(this.id, {
         name,
