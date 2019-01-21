@@ -16,7 +16,7 @@ import {
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
 } from '../constants';
-import { Group, TeamPermission } from '../entity';
+import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags } from '../types';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
@@ -24,38 +24,43 @@ const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
 class TeamPermissionController {
   constructor() {}
 
-  isCurrentUserGuest(group: Group): boolean {
+  isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
     const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
     const companyId = accountDao.get(ACCOUNT_COMPANY_ID);
-    const guestUserCompanyIds = group.guest_user_company_ids;
+    const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
       : false;
   }
 
-  isSelfGroup(group: Group): boolean {
+  isSelfGroup(
+    teamPermissionParams: TeamPermissionParams,
+    userId: number,
+  ): boolean {
     return (
-      group.members &&
-      group.members.length === 1 &&
-      group.creator_id === group.members[0]
+      teamPermissionParams.members &&
+      teamPermissionParams.members.length === 1 &&
+      userId === teamPermissionParams.members[0]
     );
   }
 
-  getCurrentUserPermissionLevel(group: Group): number {
-    if (!group.is_team) {
-      if (this.isSelfGroup(group)) {
+  getCurrentUserPermissionLevel(
+    teamPermissionParams: TeamPermissionParams,
+  ): number {
+    const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
+    const userId = accountDao.get(ACCOUNT_USER_ID);
+
+    if (!teamPermissionParams.is_team) {
+      if (this.isSelfGroup(teamPermissionParams, userId)) {
         return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADD_MEMBER;
       }
       return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
     }
 
-    const permissions = group.permissions;
+    const permissions = teamPermissionParams.permissions;
     if (!permissions || !permissions.admin) {
       return DEFAULT_ADMIN_PERMISSION_LEVEL;
     }
-
-    const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
-    const userId = accountDao.get(ACCOUNT_USER_ID);
     if (
       permissions.admin.uids.length === 0 ||
       permissions.admin.uids.includes(userId)
@@ -70,11 +75,13 @@ class TeamPermissionController {
     return permissions.user.level || DEFAULT_USER_PERMISSION_LEVEL;
   }
 
-  getCurrentUserPermissions(group: Group): PERMISSION_ENUM[] {
+  getCurrentUserPermissions(
+    teamPermissionParams: TeamPermissionParams,
+  ): PERMISSION_ENUM[] {
     let permissions = this._permissionLevelToArray(
-      this.getCurrentUserPermissionLevel(group),
+      this.getCurrentUserPermissionLevel(teamPermissionParams),
     );
-    if (this.isCurrentUserGuest(group)) {
+    if (this.isCurrentUserGuest(teamPermissionParams)) {
       permissions = permissions.filter(
         permission =>
           permission !== PERMISSION_ENUM.TEAM_ADD_MEMBER &&
@@ -84,8 +91,11 @@ class TeamPermissionController {
     return permissions;
   }
 
-  isCurrentUserHasPermission(group: Group, type: PERMISSION_ENUM): boolean {
-    const permissionList = this.getCurrentUserPermissions(group);
+  isCurrentUserHasPermission(
+    teamPermissionParams: TeamPermissionParams,
+    type: PERMISSION_ENUM,
+  ): boolean {
+    const permissionList = this.getCurrentUserPermissions(teamPermissionParams);
     return permissionList.includes(type);
   }
 
