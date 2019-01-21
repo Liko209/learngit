@@ -63,7 +63,7 @@ test(formalName('Check the maximum length of the Team Name input box', ['P1', 'J
 
   await h(t).withLog('Then I input team name exceeded max characters', async () => {
     // Here we type 202 chars, which exceeds max chars of 200
-    await createTeamModal.inputRandomTeamName(202);
+    await createTeamModal.typeRandomTeamName(202);
   });
 
   await h(t).withLog('Then I can input team name with 200 character', async () => {
@@ -96,7 +96,7 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
   });
 
   await h(t).withLog('Then I can input team name randomly', async () => {
-    await createTeamModal.setTeamName(teamName);
+    await createTeamModal.typeTeamName(teamName);
   });
 
   await h(t).withLog('Then I can set the team as Public', async () => {
@@ -143,7 +143,7 @@ test(formalName('Check the Create button is disabled when user create team witho
     }, true);
 
     await h(t).withLog('Then CreateTeam button is enabled', async () => {
-      await createTeamModal.setTeamName(teamName);
+      await createTeamModal.typeTeamName(teamName);
       await createTeamModal.createdTeamButtonShouldBeEnabled();
     }, true);
 
@@ -173,7 +173,7 @@ test(formalName('Check the maximum length of the Team Description input box', ['
 
     await h(t).withLog('Then I input team Description exceeded max characters', async () => {
       // Here we type 1002 chars, which exceeds max chars of 1000
-      await createTeamModal.inputRandomTeamDescription(1002);
+      await createTeamModal.typeRandomTeamDescription(1002);
     });
 
     await h(t).withLog('Then I can input team Description with 1000 character', async () => {
@@ -195,7 +195,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
   let name; //  email;  TODO: currently no support  email search. {name, email}
   await h(t).withLog(`Given I one exist user name and email`, async () => {
     name = await h(t).glip(loginUser).getPerson(users[1].rcId).then(res => res.data.display_name);
-    // email = personData.data.email;  // TODO: currently no support  email search. {name, email} 
+    // email = personData.data.email;  // TODO: currently no support  email search. {name, email}
   });
 
 
@@ -205,7 +205,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
     await app.homePage.ensureLoaded();
   });
 
-  // create team entry 
+  // create team entry
   const createTeamModal = app.homePage.createTeamModal;
   await h(t).withLog('When I click Create Team on AddActionMenu', async () => {
     await app.homePage.openAddActionMenu();
@@ -297,5 +297,3 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
   }
 
 });
-
-

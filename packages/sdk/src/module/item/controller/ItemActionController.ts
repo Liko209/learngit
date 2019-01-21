@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { Item } from '../entity';
 import { Raw } from '../../../framework/model';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { ControllerBuilder } from '../../../framework/controller/impl/ControllerBuilder';
+import { buildRequestController } from '../../../framework/controller';
 import { Api } from '../../../api';
 import {
   GlipTypeUtil,
@@ -55,8 +55,7 @@ class ItemActionController {
   }
 
   private _buildItemRequestController(path: string) {
-    const builder = ControllerBuilder.getControllerBuilder<Item>();
-    return builder.buildRequestController({
+    return buildRequestController<Item>({
       basePath: `/${path}`,
       networkClient: Api.glipNetworkClient,
     });

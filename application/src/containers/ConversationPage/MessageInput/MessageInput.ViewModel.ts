@@ -10,11 +10,7 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import {
-  PostService,
-  GroupConfigService,
-  notificationCenter,
-} from 'sdk/service';
+import { GroupConfigService, notificationCenter } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -25,6 +21,7 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
+import { NewPostService } from 'sdk/module/post';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -35,7 +32,7 @@ enum ERROR_TYPES {
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
-  private _postService: PostService;
+  private _postService: NewPostService;
   private _itemService: ItemService;
 
   private _onPostCallbacks: OnPostCallback[] = [];
@@ -67,7 +64,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = NewPostService.getInstance();
 
     this._itemService = ItemService.getInstance();
     this._groupConfigService = GroupConfigService.getInstance();
@@ -81,11 +78,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       },
     );
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, ({ quote, groupId }) => {
-      console.log(
-        '--------UI_NOTIFICATION_KEY.QUOTE-----------',
-        groupId,
-        quote,
-      );
       this._memoryDraftMap.set(groupId, quote);
     });
   }
@@ -169,6 +161,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
+
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -191,6 +184,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       let realContent: string = content;
+
       if (content.trim().length === 0) {
         realContent = '';
       }
@@ -198,7 +192,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         text: realContent,
         groupId: this.id,
         itemIds: items.map(item => item.id),
-        mentionsIds: ids,
+        mentionIds: ids,
       });
       // clear context (attachments) after post
       //

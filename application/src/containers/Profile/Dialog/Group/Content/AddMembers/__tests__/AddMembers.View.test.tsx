@@ -12,21 +12,26 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JServerError, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 jest.mock('@/containers/Notification');
 
+const someProps = {
+  t: (str: string) => {},
+  disabledOkBtn: false,
+  isOffline: false,
+  members: [],
+  group: {},
+  handleSearchContactChange: (items: any) => {},
+};
+
+Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
+
 describe('AddMembersView', () => {
   describe('render()', () => {
     it('should display flash toast notification with content AddTeamMembersBackendError when add members fail in backend error. [JPT-926]', (done: jest.DoneCallback) => {
       const props: any = {
-        t: (str: string) => {},
-        disabledOkBtn: false,
-        isOffline: false,
-        members: [],
-        group: {},
+        ...someProps,
         addTeamMembers: () => {
           throw new JServerError(ERROR_CODES_NETWORK.BAD_REQUEST, '');
         },
-        handleSearchContactChange: (items: any) => {},
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const Wrapper = shallow(<AddMembersComponent {...props} />);
       Wrapper.find(JuiModal)
         .shallow()
@@ -43,17 +48,11 @@ describe('AddMembersView', () => {
     });
     it('should display flash toast notification with content AddTeamMembersNetworkError when add members fail in network error. [JPT-925]', (done: jest.DoneCallback) => {
       const props: any = {
-        t: (str: string) => {},
-        disabledOkBtn: false,
-        isOffline: false,
-        members: [],
-        group: {},
+        ...someProps,
         addTeamMembers: () => {
           throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
         },
-        handleSearchContactChange: (items: any) => {},
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const Wrapper = shallow(<AddMembersComponent {...props} />);
       Wrapper.find(JuiModal)
         .shallow()

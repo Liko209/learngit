@@ -22,16 +22,17 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
 
   protected get fileItemController() {
     if (!this._fileItemController) {
-      this._fileItemController = new FileItemController(
-        this._itemService,
-        this.getControllerBuilder(),
-      );
+      this._fileItemController = new FileItemController(this._itemService);
     }
     return this._fileItemController;
   }
 
   protected get fileUploadController() {
     return this.fileItemController.fileUploadController;
+  }
+
+  protected get fileActionController() {
+    return this.fileItemController.fileActionController;
   }
 
   async sendItemFile(
@@ -108,6 +109,14 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
       name: file.name,
       type: file.type,
     } as SanitizedFileItem;
+  }
+
+  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+    return await this.fileActionController.getThumbsUrlWithSize(
+      itemId,
+      width,
+      height,
+    );
   }
 }
 

@@ -478,7 +478,7 @@ describe('StreamViewModel', () => {
   });
 });
 
-describe.only('fetchData()', () => {
+describe('fetchData()', () => {
   function setup() {
     const vm = new StreamViewModel();
     vm.groupId = 1;

@@ -17,7 +17,6 @@ import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
-import { EPERM } from 'constants';
 import { TypeDictionary } from '../../../../utils';
 
 jest.mock('../../../../service/utils', () => ({
@@ -41,10 +40,7 @@ describe('ItemService', () => {
 
   function setup() {
     itemService = new ItemService();
-    itemServiceController = new ItemServiceController(
-      itemService.getControllerBuilder(),
-      null,
-    );
+    itemServiceController = new ItemServiceController(null, null);
     fileItemService = new FileItemService(itemService);
     itemActionController = new ItemActionController(
       undefined as IPartialModifyController<Item>,
@@ -84,6 +80,16 @@ describe('ItemService', () => {
         .mockImplementation(() => {
           return fileItemService;
         });
+    });
+
+    describe('getThumbsUrlWithSize', () => {
+      it('should call file item service with correct parameter', async () => {
+        expect.assertions(2);
+        fileItemService.getThumbsUrlWithSize = jest.fn().mockResolvedValue('a');
+        const res = await itemService.getThumbsUrlWithSize(1, 2, 3);
+        expect(fileItemService.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
+        expect(res).toBe('a');
+      });
     });
 
     describe('sendItemFile()', () => {
@@ -398,8 +404,6 @@ describe('ItemService', () => {
     };
 
     beforeEach(() => {
-      clearMocks();
-      setup();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue(
         new ApiResultOk(
           {
@@ -411,10 +415,6 @@ describe('ItemService', () => {
       );
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       itemService.handleIncomingData = jest.fn();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
     });
 
     it('should call related api', () => {
