@@ -8,10 +8,7 @@ import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import {
-  JuiInfiniteList,
-  JuiVirtualCellWrapper,
-} from 'jui/pattern/VirtualList';
+import { JuiVirtualList, JuiVirtualCellWrapper } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
 import {
@@ -110,11 +107,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
           </JuiListSubheader>
         )}
         {firstLoaded && (
-          <JuiInfiniteList
-            dataSource={this}
-            threshold={1}
-            isLoading={loading}
-          />
+          <JuiVirtualList dataSource={this} threshold={1} isLoading={loading} />
         )}
         {!firstLoaded && this.firstLoader()}
         {loadError && (
