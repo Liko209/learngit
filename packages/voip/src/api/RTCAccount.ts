@@ -16,7 +16,7 @@ import {
 } from '../account/types';
 import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
-import { RTC_ACCOUNT_STATE } from './types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -44,6 +44,7 @@ class RTCAccount implements IRTCAccount {
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
+  private _isAnonymous: boolean = false;
 
   constructor(listener: IRTCAccountDelegate) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
@@ -85,6 +86,14 @@ class RTCAccount implements IRTCAccount {
     return call;
   }
 
+  public makeAnonymousCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+  ): RTCCall | null {
+    this._isAnonymous = true;
+    return this.makeCall(toNumber, delegate);
+  }
+
   isReady(): boolean {
     return this._state === RTC_ACCOUNT_STATE.REGISTERED;
   }
@@ -102,7 +111,10 @@ class RTCAccount implements IRTCAccount {
   }
 
   createOutgoingCallSession(toNum: string): any {
-    return this._regManager.createOutgoingCallSession(toNum, {});
+    const AnonymousOptions: RTCCallOptions = { anonymous: true };
+    return this._isAnonymous
+      ? this._regManager.createOutgoingCallSession(toNum, AnonymousOptions)
+      : this._regManager.createOutgoingCallSession(toNum, {});
   }
 
   removeCallFromCallManager(uuid: string): void {
