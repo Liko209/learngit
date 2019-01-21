@@ -3,7 +3,7 @@
  * @Date: 2018-11-23 16:26:44
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { debounce } from 'lodash';
@@ -69,13 +69,20 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     this._debounceSearch = debounce(async (value: string) => {
       const ret = await search(value);
       const { terms, persons, groups, teams } = ret;
-      this.setState({
-        terms,
-        groups,
-        persons,
-        teams,
-        selectIndex: -1,
-      });
+      this.setState(
+        {
+          terms,
+          groups,
+          persons,
+          teams,
+          selectIndex: -1,
+        },
+        () => {
+          this._searchItems = Array.from(
+            document.querySelectorAll('.search-items'),
+          );
+        },
+      );
     },                              SEARCH_DELAY);
   }
 
@@ -112,8 +119,9 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onFocus = () => {
-    const { updateFocus } = this.props;
+    const { updateFocus, searchValue } = this.props;
     updateFocus(true);
+    this._debounceSearch(searchValue);
   }
 
   onClear = () => {
@@ -206,6 +214,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
             return (
               <JuiSearchItem
+                onMouseEnter={this.mouseAddHighlight}
+                onMouseLeave={this.mouseRemoveHighlight}
                 key={id}
                 onClick={this.searchItemClickHandler(id)}
                 Avatar={this._Avatar(id)}
@@ -232,11 +242,12 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     this._searchItems.forEach((item: HTMLElement) => {
       item.classList.remove('hover');
     });
-    this._searchItems[index].classList.add('hover');
+    if (index > -1) {
+      this._searchItems[index].classList.add('hover');
+    }
   }
 
   private _getSelectIndex(type: string): number {
-    this._searchItems = Array.from(document.querySelectorAll('.search-items'));
     const { selectIndex } = this.state;
     let index: number;
     if (type === 'up') {
@@ -296,6 +307,23 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
   searchBarFocus = () => {
     clearTimeout(this.timer);
+  }
+
+  mouseAddHighlight = (e: MouseEvent<HTMLLIElement>) => {
+    let selectIndex = -1;
+    this._searchItems.forEach((item: HTMLLIElement, index: number) => {
+      if (item === e.currentTarget) {
+        selectIndex = index;
+      }
+    });
+    this._setSelectIndex(selectIndex);
+  }
+
+  mouseRemoveHighlight = () => {
+    this.setState({
+      selectIndex: -1,
+    });
+    this._searchItemSetClass(-1);
   }
 
   render() {
