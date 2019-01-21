@@ -37,6 +37,7 @@ export type Item = ExtendedBaseModel & {
   url?: string;
   image?: string;
   do_not_render?: boolean;
+  body?: string;
 };
 
 export type StoredFile = Raw<ExtendedBaseModel> & {

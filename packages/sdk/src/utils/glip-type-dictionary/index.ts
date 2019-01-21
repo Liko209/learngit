@@ -32,6 +32,7 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_LINK]: 'item',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
   [TypeDictionary.TYPE_ID_PAGE]: 'item',
+  [TypeDictionary.TYPE_ID_CODE]: 'item',
 };
 
 function parseSocketMessage(message: string | ISystemMessage) {

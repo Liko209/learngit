@@ -16,6 +16,7 @@ import { EventItem } from '../module/event/entity';
 import { FileItem } from '../module/file/entity';
 import { NoteItem } from '../module/note/entity';
 import { LinkItem } from '../module/link/entity';
+import { CodeItem } from '../module/code/entity';
 
 type ItemFile = FileItem;
 
@@ -29,4 +30,5 @@ export {
   NoteItem,
   LinkItem,
   StoredFile,
+  CodeItem,
 };
