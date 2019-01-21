@@ -3,7 +3,7 @@
  * @Date: 2019-01-18 13:39:25
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { mainLogger } from 'foundation';
 import { TypeDictionary } from '../../../utils';
 import ItemApi from '../../../api/glip/item';
 import { IItemService } from '../service/IItemService';
@@ -60,26 +60,29 @@ class ItemSyncController {
     newerThen: number,
   ) {
     const response = await ItemApi.getItems(typeId, groupId, newerThen);
-    const rawItem = response.expect(
-      `failed to request type:${typeId} of group($groupId)`,
-    );
-
-    this._updateGroupItemNewerThan(groupId, typeId);
-    this._itemService.getItemDataHandler()(rawItem);
+    if (response.isOk()) {
+      await this._updateGroupItemNewerThan(groupId, typeId);
+      await this._itemService.getItemDataHandler()(response.data);
+    } else {
+      debugger;
+      mainLogger.info(
+        `failed to request type:${typeId} of group($groupId), response: ${response}`,
+      );
+    }
   }
 
   private _getGroupItemNewerThan(groupConfig: GroupConfig, typeId: number) {
     return groupConfig[GroupItemKeyMap[typeId]] || 0;
   }
 
-  private _updateGroupItemNewerThan(groupId: number, typeId: number) {
+  private async _updateGroupItemNewerThan(groupId: number, typeId: number) {
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     const partialData = {
       id: groupId,
       [GroupItemKeyMap[typeId]]: Date.now(),
     };
 
-    groupConfigService.updateGroupConfigPartialData(partialData);
+    await groupConfigService.updateGroupConfigPartialData(partialData);
   }
 }
 
