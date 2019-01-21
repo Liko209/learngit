@@ -6,7 +6,7 @@
 import {
   ITelephonyNetworkDelegate,
   IRequest,
-  ITelephonyDBDelegate,
+  ITelephonyDaoDelegate,
 } from 'foundation';
 import RTCEngine from 'voip';
 import { Api } from '../../../api';
@@ -29,7 +29,7 @@ class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   }
 }
 
-class VoIPDBClient implements ITelephonyDBDelegate {
+class VoIPDaoClient implements ITelephonyDaoDelegate {
   put(key: string, value: any): void {
     const voipDao = daoManager.getKVDao(VoIPDao);
     voipDao.put(key, value);
@@ -50,17 +50,17 @@ class VoIPDBClient implements ITelephonyDBDelegate {
 class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
-  voipDBDelegate: VoIPDBClient;
+  voipDaoDelegate: VoIPDaoClient;
 
   constructor() {
     this.voipNetworkDelegate = new VoIPNetworkClient();
-    this.voipDBDelegate = new VoIPDBClient();
+    this.voipDaoDelegate = new VoIPDaoClient();
   }
 
   initEngine() {
     this.rtcEngine = RTCEngine.getInstance();
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
-    this.rtcEngine.setDBDelegate(this.voipDBDelegate);
+    this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
   }
 }
 
