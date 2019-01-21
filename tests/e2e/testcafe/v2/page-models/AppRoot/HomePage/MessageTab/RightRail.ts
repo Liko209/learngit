@@ -13,7 +13,7 @@ export class RightRail extends BaseWebComponent {
 
   get foldStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]'); 
+    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]');
   }
 
   async expand() {
@@ -223,5 +223,4 @@ class LinksTab extends BaseWebComponent {
   async linksCountsShouldBe(n: number) {
     await this.t.expect(this.items.count).eql(n);
   }
-
 }
