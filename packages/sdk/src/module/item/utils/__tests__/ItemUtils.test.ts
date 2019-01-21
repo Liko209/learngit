@@ -20,43 +20,6 @@ describe('ItemUtils', () => {
     clearMocks();
   });
 
-  describe('isImageItem()', () => {
-    it('should return true when is image', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'JPG',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
-    });
-
-    it('should return true when type has image', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'IMAGE/jpeg',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
-    });
-
-    it('should return true when type is giphy', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'giphy',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeTruthy();
-    });
-
-    it('should return false when is image', () => {
-      const item1 = {
-        id: 10,
-        group_ids: [11, 222, 33],
-        type: 'ppp',
-      } as FileItem;
-      expect(ItemUtils.isImageItem(item1)).toBeFalsy();
-    });
-  });
   describe('isValidItem', () => {
     const item1 = {
       id: 10,
@@ -104,6 +67,23 @@ describe('ItemUtils', () => {
     it('should return false when item is not file', () => {
       item1.id = 111;
       expect(ItemUtils.fileFilter(11, true)(item1)).toBeFalsy();
+    });
+  });
+
+  describe('toSanitizedItem', () => {
+    it('should return sanitized item', () => {
+      const item = {
+        id: 1111,
+        group_ids: [123123],
+        created_at: 1231233,
+        name: '1231233',
+      };
+
+      expect(ItemUtils.toSanitizedItem(item)).toEqual({
+        id: 1111,
+        group_ids: [123123],
+        created_at: 1231233,
+      });
     });
   });
 });

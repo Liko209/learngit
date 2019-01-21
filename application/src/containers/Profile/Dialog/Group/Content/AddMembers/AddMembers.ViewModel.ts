@@ -41,9 +41,9 @@ class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
   }
 
   @action
-  addTeamMembers = () => {
+  addTeamMembers = async () => {
     const { group } = this.props;
-    this._groupService.addTeamMembers(this.members, group.id);
+    await this._groupService.addTeamMembers(this.members, group.id);
   }
 }
 

@@ -5,6 +5,4 @@ declare global {
   }
 }
 
-window.jupiterElectron = window.jupiterElectron || {};
-
 export default global;

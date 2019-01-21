@@ -4,7 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ControllerBuilder } from '../impl/ControllerBuilder';
+import {
+  buildEntityCacheController,
+  buildEntityCacheSearchController,
+} from '../';
 import { IdModel } from '../../model';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import {
@@ -18,7 +21,6 @@ export type TestModel = IdModel & {
 };
 
 describe('Entity Cache Search Controller', () => {
-  const controllerBuilder = new ControllerBuilder<TestModel>();
   let entityCacheController: IEntityCacheController;
   let entityCacheSearchController: IEntityCacheSearchController;
 
@@ -36,8 +38,8 @@ describe('Entity Cache Search Controller', () => {
   }
 
   beforeAll(() => {
-    entityCacheController = controllerBuilder.buildEntityCacheController();
-    entityCacheSearchController = controllerBuilder.buildEntityCacheSearchController(
+    entityCacheController = buildEntityCacheController();
+    entityCacheSearchController = buildEntityCacheSearchController(
       entityCacheController,
     );
   });
@@ -48,24 +50,18 @@ describe('Entity Cache Search Controller', () => {
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
 
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const entity1 = entityCacheSearchController.getEntityFromCache(
-        entityA.id,
-      );
+      const entity1 = await entityCacheSearchController.getEntity(entityA.id);
       expect(entity1).toBe(entityA);
-      const entity2 = entityCacheSearchController.getEntityFromCache(
-        entityB.id,
-      );
+      const entity2 = await entityCacheSearchController.getEntity(entityB.id);
       expect(entity2).toBe(entityB);
-      const entity3 = entityCacheSearchController.getEntityFromCache(
-        entityC.id,
-      );
+      const entity3 = await entityCacheSearchController.getEntity(entityC.id);
       expect(entity3).toBe(entityC);
 
-      const entities = await entityCacheSearchController.getEntitiesFromCache(
+      const entities = await entityCacheSearchController.getEntities(
         (entity: TestModel) => {
           return entity.id === entityB.id;
         },
@@ -79,11 +75,11 @@ describe('Entity Cache Search Controller', () => {
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
 
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -112,11 +108,11 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -144,11 +140,11 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -177,11 +173,11 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -210,11 +206,11 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -244,11 +240,11 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -277,11 +273,11 @@ describe('Entity Cache Search Controller', () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
-      entityCacheController.set(entityA);
-      entityCacheController.set(entityB);
-      entityCacheController.set(entityC);
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
 
-      const result = await entityCacheSearchController.searchEntitiesFromCache(
+      const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
@@ -324,8 +320,10 @@ describe('Entity Cache Search Controller', () => {
         { id: 6, name: 'name', note: 'note' },
       ];
 
-      models.forEach(element => entityCacheController.set(element));
-      const res = await entityCacheSearchController.getMultiEntitiesFromCache(
+      models.forEach(async (element: TestModel) => {
+        await entityCacheController.put(element);
+      });
+      const res = await entityCacheSearchController.getMultiEntities(
         [1, 2, 3, 4, 5],
         (entity: TestModel) => {
           return entity.id > 3;

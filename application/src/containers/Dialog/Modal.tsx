@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { t } from 'i18next';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import portalManager from '@/common/PortalManager';
 
@@ -12,33 +12,29 @@ type BaseType = {
   isAlert?: boolean;
 } & JuiModalProps;
 
-type BaseModalType = WithNamespaces & BaseType;
-
-const BaseModal = (props: BaseModalType) => {
-  const { t, isAlert, ...newConfig } = props;
-  const defaultBtnText = {
-    okText: t('OK'),
-    cancelText: t('Cancel'),
-  };
-
-  if (isAlert) {
-    Reflect.deleteProperty(defaultBtnText, 'cancelText');
-  }
-
-  const currentConfig = {
-    ...defaultBtnText,
-    ...newConfig,
-  };
-
-  return <JuiModal {...currentConfig} />;
-};
-
-const TranslateModal = translate('translates')(BaseModal);
-
 function modal(config: BaseType) {
   const { onOK, onCancel, isAlert, ...newConfig } = config;
 
-  const { dismiss, show } = portalManager.wrapper(TranslateModal);
+  const BaseModal = (props: BaseType) => {
+    const { isAlert, ...newConfig } = props;
+    const defaultBtnText = {
+      okText: t('OK'),
+      cancelText: t('Cancel'),
+    };
+
+    if (isAlert) {
+      Reflect.deleteProperty(defaultBtnText, 'cancelText');
+    }
+
+    const currentConfig = {
+      ...defaultBtnText,
+      ...newConfig,
+    };
+
+    return <JuiModal {...currentConfig} />;
+  };
+
+  const { dismiss, show } = portalManager.wrapper(BaseModal);
 
   const currentConfig = {
     ...newConfig,
