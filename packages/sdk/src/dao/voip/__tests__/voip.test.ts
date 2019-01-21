@@ -9,17 +9,19 @@ import { setupKV } from '../../__tests__/utils';
 const KEY = 'test';
 const VALUE = '123';
 
-describe('', () => {
+describe('VoIPDao', () => {
   let dao: VoIPDao;
   beforeAll(() => {
     const { kvStorage } = setupKV();
     dao = new VoIPDao(kvStorage);
   });
 
-  it('get/set voip key', () => {
+  it('Should be able to write/read key & value', () => {
     dao.put(KEY, VALUE);
     expect(dao.get(KEY)).toBe(VALUE);
+  });
 
+  it('Should be able to remove record by key', () => {
     dao.remove(KEY);
     expect(dao.get(KEY)).toBeNull();
   });

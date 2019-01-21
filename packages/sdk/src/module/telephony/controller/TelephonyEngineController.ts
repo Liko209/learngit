@@ -40,6 +40,11 @@ class VoIPDBClient implements ITelephonyDBDelegate {
     const voipDao = daoManager.getKVDao(VoIPDao);
     return voipDao.get(key);
   }
+
+  remove(key: string): void {
+    const voipDao = daoManager.getKVDao(VoIPDao);
+    voipDao.remove(key);
+  }
 }
 
 class TelephonyEngineController {
