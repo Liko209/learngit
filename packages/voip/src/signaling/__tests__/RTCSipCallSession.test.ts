@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RTCSipCallSession, WEBPHONE_STATE } from '../RTCSipCallSession';
+import { RTCSipCallSession } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
+import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 
 describe('sip call session', () => {
   class VirtualSession extends EventEmitter2 {
@@ -14,15 +15,15 @@ describe('sip call session', () => {
     }
 
     emitSessionConfirmed() {
-      this.emit(WEBPHONE_STATE.ACCEPTED);
+      this.emit(WEBPHONE_SESSION_STATE.ACCEPTED);
     }
 
     emitSessionDisconnected() {
-      this.emit(WEBPHONE_STATE.BYE);
+      this.emit(WEBPHONE_SESSION_STATE.BYE);
     }
 
     emitSessionError() {
-      this.emit(WEBPHONE_STATE.FAILED);
+      this.emit(WEBPHONE_SESSION_STATE.FAILED);
     }
     terminate() {}
     flip = jest.fn();

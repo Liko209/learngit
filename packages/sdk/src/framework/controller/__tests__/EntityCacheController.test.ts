@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ControllerBuilder } from '../impl/ControllerBuilder';
-import { IdModel, Raw } from '../../model';
+import { buildEntityCacheController } from '../';
+import { IdModel } from '../../model';
+import { IEntityCacheController } from '../interface/IEntityCacheController';
 
 type EntityCacheTestModel = IdModel & {
   name: string;
@@ -13,34 +14,33 @@ type EntityCacheTestModel = IdModel & {
 };
 
 describe('Entity Cache Manager', () => {
-  const controllerBuilder = new ControllerBuilder<EntityCacheTestModel>();
-  const entityCacheController = controllerBuilder.buildEntityCacheController();
+  let entityCacheController: IEntityCacheController<EntityCacheTestModel>;
 
   const entityA = {
     id: 1,
     name: 'cat',
     age: 1,
   };
-  entityCacheController.set(entityA);
 
   const entityB = {
     id: 2,
     name: 'dog',
     age: 2,
   };
-  entityCacheController.set(entityB);
 
-  beforeAll(() => {
-    jest.spyOn(window, 'addEventListener');
+  beforeAll(async () => {
+    entityCacheController = buildEntityCacheController();
+    await entityCacheController.put(entityA);
+    await entityCacheController.put(entityB);
   });
   it('test for get func', async () => {
-    let entity = entityCacheController.getEntity(entityA.id);
+    let entity = await entityCacheController.get(entityA.id);
     expect(entity).toBe(entityA);
 
-    entity = entityCacheController.getEntity(entityB.id);
+    entity = await entityCacheController.get(entityB.id);
     expect(entity).toBe(entityB);
 
-    let entities = await entityCacheController.getMultiEntities([
+    let entities = await entityCacheController.batchGet([
       entityA.id,
       entityB.id,
     ]);
@@ -61,10 +61,10 @@ describe('Entity Cache Manager', () => {
   it('test for clear func', async () => {
     entityCacheController.clear();
 
-    let entity = entityCacheController.getEntity(entityA.id);
+    let entity = await entityCacheController.get(entityA.id);
     expect(entity).toBeUndefined();
 
-    entity = entityCacheController.getEntity(entityB.id);
+    entity = await entityCacheController.get(entityB.id);
     expect(entity).toBeUndefined();
   });
 
@@ -80,7 +80,7 @@ describe('Entity Cache Manager', () => {
 
     await entityCacheController.replace([entityA.id], eMap);
 
-    let entity = entityCacheController.getEntity(entityA.id);
+    let entity = await entityCacheController.get(entityA.id);
     expect(entity).toBe(entityC);
 
     const entityD = {
@@ -92,9 +92,9 @@ describe('Entity Cache Manager', () => {
     eMap2.set(entityA.id, entityD);
     await entityCacheController.replace([entityA.id], eMap2);
 
-    entity = entityCacheController.getEntity(entityA.id);
+    entity = await entityCacheController.get(entityA.id);
     expect(entity).toBeUndefined();
-    entity = entityCacheController.getEntity(entityD.id);
+    entity = await entityCacheController.get(entityD.id);
     expect(entity).toBe(entity);
   });
 
@@ -105,23 +105,16 @@ describe('Entity Cache Manager', () => {
       age: 3,
     };
 
-    const eMap = new Map<number, EntityCacheTestModel>();
-    eMap.set(entityC.id, entityC);
-
-    await entityCacheController.update(eMap);
-
-    let entity = entityCacheController.getEntity(entityA.id);
+    await entityCacheController.update(entityC);
+    let entity = await entityCacheController.get(entityA.id);
     expect(entity).toBe(entityC);
 
     const entityD = {
       id: 1,
       name: 'fish two',
     };
-    const eMap2 = new Map<number, Partial<Raw<EntityCacheTestModel>>>();
-    eMap2.set(entityA.id, entityD);
-    await entityCacheController.update(eMap, eMap2);
-
-    entity = entityCacheController.getEntity(entityC.id);
+    await entityCacheController.update(entityD);
+    entity = await entityCacheController.get(entityC.id);
     expect(entity.name).toBe(entityD.name);
     expect(entity.age).toBe(entityC.age);
   });
@@ -141,11 +134,9 @@ describe('Entity Cache Manager', () => {
       name: 'fish two',
       __additionalKey: 'additionalKey',
     };
-    const eMap2 = new Map<number, Partial<Raw<EntityCacheTestModel>>>();
-    eMap2.set(entityA.id, entityD);
-    await entityCacheController.update(eMap, eMap2);
+    await entityCacheController.update(entityD);
 
-    const entity = entityCacheController.getEntity(entityC.id);
+    const entity = await entityCacheController.get(entityC.id);
     expect(entity.name).toBe(entityD.name);
     expect(entity['__additionalKey']).toBe(entityD.__additionalKey);
     expect(entity.age).toBe(entityC.age);

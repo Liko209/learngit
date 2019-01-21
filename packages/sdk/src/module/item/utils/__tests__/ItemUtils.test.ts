@@ -106,4 +106,21 @@ describe('ItemUtils', () => {
       expect(ItemUtils.fileFilter(11, true)(item1)).toBeFalsy();
     });
   });
+
+  describe('toSanitizedItem', () => {
+    it('should return sanitized item', () => {
+      const item = {
+        id: 1111,
+        group_ids: [123123],
+        created_at: 1231233,
+        name: '1231233',
+      };
+
+      expect(ItemUtils.toSanitizedItem(item)).toEqual({
+        id: 1111,
+        group_ids: [123123],
+        created_at: 1231233,
+      });
+    });
+  });
 });

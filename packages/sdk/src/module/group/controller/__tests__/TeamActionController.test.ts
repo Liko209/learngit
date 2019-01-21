@@ -9,11 +9,15 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { Group } from '../../entity/Group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { groupFactory } from './factory';
-import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
-import { IControllerBuilder } from '../../../../framework/controller/interface/IControllerBuilder';
+import {
+  buildRequestController,
+  buildPartialModifyController,
+} from '../../../../framework/controller';
 import { Api } from '../../../../api';
 import { NetworkManager, OAuthTokenManager } from 'foundation/src';
 import { Raw } from '../../../../framework/model';
+
+jest.mock('../../../../framework/controller');
 
 class TestPartialModifyController implements IPartialModifyController<Group> {
   updatePartially = jest.fn(
@@ -44,24 +48,23 @@ class TestRequestController implements IRequestController<Group> {
 }
 
 describe('TeamController', () => {
-  let testControllerBuilder: IControllerBuilder<Group>;
   let teamActionController: TeamActionController;
   let testPartialModifyController: TestPartialModifyController;
   let testRequestController: TestRequestController;
   beforeEach(() => {
-    testControllerBuilder = new ControllerBuilder<Group>();
     testPartialModifyController = new TestPartialModifyController();
     testRequestController = new TestRequestController();
-    testControllerBuilder.buildRequestController = jest
-      .fn()
-      .mockReturnValue(testRequestController);
-    testControllerBuilder.buildPartialModifyController = jest
-      .fn()
-      .mockReturnValue(testPartialModifyController);
+
+    buildRequestController.mockImplementation(() => {
+      return testRequestController;
+    });
+
+    buildPartialModifyController.mockImplementation(() => {
+      return testPartialModifyController;
+    });
+
     teamActionController = new TeamActionController(
       testPartialModifyController,
-      testRequestController,
-      testControllerBuilder,
     );
   });
 

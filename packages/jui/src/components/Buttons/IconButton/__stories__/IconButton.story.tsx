@@ -72,7 +72,7 @@ storiesOf('Components/Buttons/IconButtons', module)
           invisible={knobs.invisible()}
           tooltipTitle="remove"
         >
-          remove_circle
+          remove
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
@@ -82,9 +82,9 @@ storiesOf('Components/Buttons/IconButtons', module)
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="add"
+          tooltipTitle="thumbup"
         >
-          add_circle_outlined
+          thumbup
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
@@ -94,9 +94,9 @@ storiesOf('Components/Buttons/IconButtons', module)
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="remove"
+          tooltipTitle="event"
         >
-          remove_circle_outlined
+          event
         </JuiIconButton>
       </Wrapper>
     );
@@ -124,9 +124,9 @@ storiesOf('Components/Buttons/IconButtons', module)
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="like"
+          tooltipTitle="attachment"
         >
-          favorite
+          attachment
         </JuiIconButton>
         <JuiIconButton
           className="iconButtonWrapper"
@@ -148,9 +148,9 @@ storiesOf('Components/Buttons/IconButtons', module)
           awake={knobs.awake()}
           disabled={knobs.disabled()}
           invisible={knobs.invisible()}
-          tooltipTitle="like"
+          tooltipTitle="dashboard"
         >
-          favorite_border
+          dashboard
         </JuiIconButton>
       </Wrapper>
     );
