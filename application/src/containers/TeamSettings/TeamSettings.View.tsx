@@ -82,6 +82,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     const { leaveTeam, t } = this.props;
     portalManager.dismiss();
     Dialog.confirm({
+      size: 'small',
+      okType: 'negative',
       title: t('leaveTeamConfirmTitle'),
       content: t('leaveTeamConfirmContent'),
       okText: toTitleCase(t('leaveTeamConfirmOk')),
