@@ -172,7 +172,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
    });
 
    const conversationPage = app.homePage.messageTab.conversationPage;
-   await h(t).withLog(`And the conversation stream should show 'loginUser added  user1 to  the team'`, async () => {
+   await h(t).withLog(`And the conversation stream should show "${addSuccessMessage}"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
     await conversationPage.ensureLoaded();
     await t.expect(conversationPage.self.find('div').withText(addSuccessMessage).exists).ok();
