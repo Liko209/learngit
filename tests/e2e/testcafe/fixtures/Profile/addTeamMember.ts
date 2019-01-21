@@ -67,7 +67,7 @@ test(formalName(`The Add Team Members dialog display correctly after clicking 'A
 });
 
 
-test(formalName(`Add team member successful after clicking Add button.`, ['P1', 'JPT-914', 'Member', 'Potar.He']), async t => {
+test(formalName(`Add team member successful after clicking Add button.`, ['P1', 'JPT-914', 'addTeamMember', 'Potar.He']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const otherUser = users[5];
