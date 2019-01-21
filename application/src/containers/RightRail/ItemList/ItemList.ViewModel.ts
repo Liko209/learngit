@@ -8,6 +8,13 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { getGlobalValue } from '@/store/utils';
+import { t } from 'i18next';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
@@ -17,9 +24,10 @@ import {
   IFetchSortableDataProvider,
   ISortableModel,
 } from '@/store/base/fetch';
-import { ENTITY_NAME } from '@/store/constants';
 import { ENTITY } from 'sdk/service';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
+import { TAB_CONFIG, TabConfig } from './config';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -112,11 +120,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   async loadTotalCount() {
     // To Do in  https://jira.ringcentral.com/browse/FIJI-1416
-    if (
-      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.LINKS ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.NOTES
-    ) {
+    if (this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS) {
       this.totalCount = 0;
       return;
     }
@@ -196,6 +200,20 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   fetchNextPageItems = () => {
+    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
+    if (status === 'offline') {
+      const config: TabConfig = TAB_CONFIG.find(
+        looper => looper.type === this.props.type,
+      )!;
+      Notification.flashToast({
+        message: t(config.offlinePrompt),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+      return;
+    }
     return this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
   }
 
