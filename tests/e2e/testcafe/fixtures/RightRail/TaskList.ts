@@ -41,7 +41,7 @@ fixture('RightRail')
     });
 
     const tasksTab = rightRail.tasksTab;
-    await h(t).withLog('And I click Task Tab', async () => {
+    await h(t).withLog('When I click Task Tab', async () => {
       await rightRail.tasksEntry.enter();
       await rightRail.tasksEntry.shouldBeOpened();
     })
@@ -82,7 +82,7 @@ fixture('RightRail')
     });
 
     const tasksTab = rightRail.tasksTab;
-    await h(t).withLog('And I click Task Tab', async () => {
+    await h(t).withLog('When I click Task Tab', async () => {
       await rightRail.tasksEntry.enter();
       await rightRail.tasksEntry.shouldBeOpened();
     })
@@ -129,7 +129,7 @@ test(formalName('Check the create task and delete task', ['Nello', 'P1', 'JPT-85
   });
 
   const tasksTab = rightRail.tasksTab;
-  await h(t).withLog('And I click Task Tab', async () => {
+  await h(t).withLog('When I click Task Tab', async () => {
     await rightRail.tasksEntry.enter();
     await rightRail.tasksEntry.shouldBeOpened();
   })
@@ -176,7 +176,7 @@ test(formalName('Check the create task and complete task', ['Nello', 'P1', 'JPT-
   });
 
   const tasksTab = rightRail.tasksTab;
-  await h(t).withLog('And I click Task Tab', async () => {
+  await h(t).withLog('When I click Task Tab', async () => {
     await rightRail.tasksEntry.enter();
     await rightRail.tasksEntry.shouldBeOpened();
   })
