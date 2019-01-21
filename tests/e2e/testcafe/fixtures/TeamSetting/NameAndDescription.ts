@@ -379,7 +379,7 @@ test(formalName(`The inline error should be displayed if the team is failed to b
 
   const teamName = uuid();
   const anotherTeamName = uuid();
-  const inlineError = 'The name is already taken, please choose another one.';
+  const inlineError = 'The name is already taken, choose another one.';
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
