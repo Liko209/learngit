@@ -12,7 +12,7 @@ import ConfigDao from '../../dao/config';
 import GroupDao from '../../dao/group';
 import PersonDao from '../../dao/person';
 import PostDao, { PostViewDao } from '../../dao/post';
-import ItemDao from '../../dao/item';
+import { ItemDao } from '../../module/item/dao';
 import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';
 import { FileItemDao } from '../../module/item/module/file/dao/FileItemDao';
 import { NoteItemDao } from '../../module/item/module/note/dao/NoteItemDao';

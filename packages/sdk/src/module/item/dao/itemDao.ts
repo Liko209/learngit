@@ -1,26 +1,23 @@
 /*
- * @Author: Steve Chen (steve.chen@ringcentral.com)
- * @Date: 2018-02-24 23:25:03
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-21 14:58:00
+ * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao } from '../../framework/dao';
-import { Item } from '../../module/item/entity';
+import { BaseDao } from '../../../framework/dao';
+import { Item } from './../entity';
 import { IDatabase } from 'foundation';
 
 class ItemDao extends BaseDao<Item> {
   static COLLECTION_NAME = 'item';
-  // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(ItemDao.COLLECTION_NAME, db);
   }
 
   async getItemsByIds(ids: number[]): Promise<Item[]> {
-    return (
-      this.createQuery()
-        .anyOf('id', ids)
-        // .filter(item => !item.deactivated)
-        .toArray()
-    );
+    return this.createQuery()
+      .anyOf('id', ids)
+      .toArray();
   }
 
   async getItemsByGroupId(groupId: number, limit?: number): Promise<Item[]> {
@@ -65,4 +62,4 @@ class ItemDao extends BaseDao<Item> {
   }
 }
 
-export default ItemDao;
+export { ItemDao };

@@ -9,10 +9,11 @@ import { IItemService } from '../../service/IItemService';
 import { Item } from '../../entity';
 import { ISubItemService } from '../../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../../config';
-import { daoManager, ItemDao } from '../../../../dao';
+import { ItemDao } from '../../dao';
+import { daoManager } from '../../../../dao';
 import { ItemUtils } from '../../utils';
 
-jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../config');
 jest.mock('../../module/base/service/ISubItemService');
 jest.mock('../../../../framework/controller');
