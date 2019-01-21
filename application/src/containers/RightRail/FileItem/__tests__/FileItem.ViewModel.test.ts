@@ -50,11 +50,11 @@ describe('FileItemViewModel', () => {
   });
 
   describe('personName', () => {
-    it('should be a person name string when invoke person entity [JPT-965]', () => {
+    it('should be a person name string when invoke person entity', () => {
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
 
-    it('should be a new person name string when change person name [JPT-965]', () => {
+    it('should be a new person name string when change person name', () => {
       mockPerson.userDisplayName = 'new name';
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
