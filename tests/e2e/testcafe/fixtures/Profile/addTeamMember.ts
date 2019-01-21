@@ -168,6 +168,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
     await t.expect(profileDialog.memberEntryByName(nonMemberName).exists).ok();
+    await profileDialog.close();
    });
 
    const conversationPage = app.homePage.messageTab.conversationPage;
@@ -238,7 +239,7 @@ test(formalName(`The existing team members should not be displayed as search res
     await t.expect(memberInput.contactSearchItems.find('.primary').withText(otherUserName).exists).notOk();
   });
 
-}); 
+});
 
 
 test(formalName(`The member list and counts are updated when the member is added.`, ['P2', 'JPT-921', 'addTeamMember', 'Potar.He']), async t => {
@@ -273,7 +274,7 @@ test(formalName(`The member list and counts are updated when the member is added
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
-  
+
   await h(t).withLog(`And members count only 1`, async () => {
     await profileDialog.countOnMemberListShouldBe(1);
     await profileDialog.countOnMemberHeaderShouldBe(1);
