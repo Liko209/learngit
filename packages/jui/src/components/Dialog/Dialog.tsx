@@ -3,6 +3,7 @@ import MuiDialog, {
   DialogProps as MuiDialogProps,
 } from '@material-ui/core/Dialog';
 import styled from 'styled-components';
+import { width } from '../../foundation/utils';
 
 type JuiDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
@@ -39,16 +40,22 @@ const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
     min-height: 120px;
   }
   & .paper {
+    margin: 0;
     max-width: inherit;
+    overflow-y: visible;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
   & .sm {
-    width: 400px;
+    width: ${width(100)};
   }
   & .md {
-    width: 640px;
+    width: ${width(160)};
   }
   & .lg {
-    width: 800px;
+    width: ${width(200)};
   }
   & .paperScrollPaper {
     max-height: ${({ theme }) => theme.maxHeight.dialog};

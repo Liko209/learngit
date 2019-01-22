@@ -5,8 +5,9 @@
  */
 
 import { TeamController } from '../controller/TeamController';
-import { Group, TeamPermission } from '../entity';
+import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { TeamSetting, PermissionFlags } from '../types';
 import { PERMISSION_ENUM } from '../constants';
 import { IGroupService } from './IGroupService';
 import { daoManager, GroupDao } from '../../../dao';
@@ -15,13 +16,15 @@ import { Api } from '../../../api';
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   teamController: TeamController;
   constructor() {
-    super();
-    this.setEntitySource(this._buildEntitySourceController());
+    super(false, daoManager.getDao(GroupDao), {
+      basePath: '/team',
+      networkClient: Api.glipNetworkClient,
+    });
   }
 
   protected getTeamController() {
     if (!this.teamController) {
-      this.teamController = new TeamController(this.getControllerBuilder());
+      this.teamController = new TeamController(this.getEntitySource());
     }
     return this.teamController;
   }
@@ -44,6 +47,18 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .joinTeam(userId, teamId);
   }
 
+  async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
+    await this.getTeamController()
+      .getTeamActionController()
+      .updateTeamSetting(teamId, teamSetting);
+  }
+
+  getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .getTeamUserPermissionFlags(teamPermission);
+  }
+
   async leaveTeam(userId: number, teamId: number) {
     await this.getTeamController()
       .getTeamActionController()
@@ -62,35 +77,19 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .removeTeamMembers(members, teamId);
   }
 
-  async isCurrentUserHasPermission(
-    groupId: number,
+  isCurrentUserHasPermission(
+    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
-  ): Promise<boolean> {
-    const group = await this.getById(groupId);
-    return group
-      ? this.getTeamController()
-          .getTeamPermissionController()
-          .isCurrentUserHasPermission(group, type)
-      : false;
+  ): boolean {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .isCurrentUserHasPermission(teamPermissionParams, type);
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
     return this.getTeamController()
       .getTeamPermissionController()
       .isTeamAdmin(personId, permission);
-  }
-
-  private _buildEntitySourceController() {
-    const requestController = this.getControllerBuilder().buildRequestController(
-      {
-        basePath: '/team',
-        networkClient: Api.glipNetworkClient,
-      },
-    );
-    return this.getControllerBuilder().buildEntitySourceController(
-      daoManager.getDao(GroupDao),
-      requestController,
-    );
   }
 }
 

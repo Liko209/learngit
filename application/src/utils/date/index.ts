@@ -83,10 +83,10 @@ const condition = {
     return diff === 1;
   },
   fromTwoToSix: (diff: number) => {
-    return _.inRange(diff, 2, 6);
+    return _.inRange(diff, 2, 7);
   },
   fromOneToSix: (diff: number) => {
-    return _.inRange(diff, 1, 6);
+    return _.inRange(diff, 1, 7);
   },
   overSevenOrLessZero: (diff: number) => {
     return 0 > diff || diff >= 7;

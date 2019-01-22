@@ -7,7 +7,12 @@ import { Post } from '../entity';
 import _ from 'lodash';
 import { Api } from '../../../api';
 import { PostActionController } from './implementation/PostActionController';
-import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
+import {
+  buildRequestController,
+  buildEntityPersistentController,
+  buildEntitySourceController,
+  buildPartialModifyController,
+} from '../../../framework/controller';
 import { daoManager, PostDao } from '../../../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
@@ -18,21 +23,24 @@ class PostController {
   private _sendController: SendPostController;
   private _preInsertController: PreInsertController;
 
-  constructor(public controllerBuilder: IControllerBuilder<Post>) {}
+  constructor() {}
 
   getPostActionController(): PostActionController {
     if (!this._actionController) {
-      const requestController = this.controllerBuilder.buildRequestController({
+      const requestController = buildRequestController<Post>({
         basePath: '/post',
         networkClient: Api.glipNetworkClient,
       });
 
-      const entitySourceController = this.controllerBuilder.buildEntitySourceController(
+      const persistentController = buildEntityPersistentController<Post>(
         daoManager.getDao(PostDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
         requestController,
       );
 
-      const partialModifyController = this.controllerBuilder.buildPartialModifyController(
+      const partialModifyController = buildPartialModifyController<Post>(
         entitySourceController,
       );
 

@@ -8,3 +8,4 @@ export * from './RightShelf';
 export * from './RightShelfHeader';
 export * from './Loading';
 export * from './EventItem';
+export * from './icon';

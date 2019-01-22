@@ -74,17 +74,13 @@ const case4: CaseTye = {
   },
   calculate(width: number, height: number, result: ThumbnailInfo) {
     if (width < height) {
-      const scale = MAX_WIDTHHEIGHT / width;
-      result.width = MAX_WIDTHHEIGHT;
-      result.height = MAX_WIDTHHEIGHT;
-      result.justifyWidth = true;
-      result.top = (MAX_WIDTHHEIGHT - height * scale) / 2;
-    } else {
-      const scale = MAX_WIDTHHEIGHT / height;
-      result.width = MAX_WIDTHHEIGHT;
+      result.width = (MAX_WIDTHHEIGHT * width) / height;
       result.height = MAX_WIDTHHEIGHT;
       result.justifyHeight = true;
-      result.left = (MAX_WIDTHHEIGHT - width * scale) / 2;
+    } else {
+      result.width = MAX_WIDTHHEIGHT;
+      result.height = (MAX_WIDTHHEIGHT * height) / width;
+      result.justifyWidth = true;
     }
   },
 };

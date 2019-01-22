@@ -6,7 +6,6 @@
 
 import { ItemServiceController } from '../ItemServiceController';
 import { IItemService } from '../../service/IItemService';
-import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
 import { Item } from '../../entity';
 import { ISubItemService } from '../../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../../config';
@@ -16,7 +15,7 @@ import { ItemUtils } from '../../utils';
 jest.mock('../../../../dao');
 jest.mock('../../config');
 jest.mock('../../module/base/service/ISubItemService');
-jest.mock('../../../../framework/controller/impl/ControllerBuilder');
+jest.mock('../../../../framework/controller');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -30,11 +29,8 @@ describe('ItemServiceController', () => {
   const itemDao = new ItemDao(null);
 
   const itemService = {} as IItemService;
-  const controllerBuilder = new ControllerBuilder<Item>();
-  const itemServiceController = new ItemServiceController(
-    itemService,
-    controllerBuilder,
-  );
+
+  const itemServiceController = new ItemServiceController(itemService, null);
   const subServices: Map<number, ISubItemService> = new Map();
 
   function setUp() {
