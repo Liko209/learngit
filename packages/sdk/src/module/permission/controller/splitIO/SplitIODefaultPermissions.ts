@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 const SplitIODefaultPermissions = {
-  JUPITER_CREATE_TEAM: false,
-  JUPITER_SEND_NEW_MESSAGE: false,
+  JUPITER_CREATE_TEAM: true,
+  JUPITER_SEND_NEW_MESSAGE: true,
 };
 
 export default SplitIODefaultPermissions;

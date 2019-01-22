@@ -30,7 +30,7 @@ describe('SplitIOController', () => {
       const permission = await controller.hasPermission(
         UserPermissionType.JUPITER_CREATE_TEAM,
       );
-      expect(permission).toBeFalsy();
+      expect(permission).toBeTruthy();
     });
     it('should return SplitIO value when SplitIO is ready', async () => {
       const controller = new SplitIOController(() => {});

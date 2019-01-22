@@ -6,7 +6,7 @@
 import SplitIODefaultPermissions from '../SplitIODefaultPermissions';
 describe('SplitIODefaultPermissions', () => {
   it('should have correct default value', () => {
-    expect(SplitIODefaultPermissions.JUPITER_CREATE_TEAM).toBeFalsy();
-    expect(SplitIODefaultPermissions.JUPITER_SEND_NEW_MESSAGE).toBeFalsy();
+    expect(SplitIODefaultPermissions.JUPITER_CREATE_TEAM).toBeTruthy();
+    expect(SplitIODefaultPermissions.JUPITER_SEND_NEW_MESSAGE).toBeTruthy();
   });
 });
