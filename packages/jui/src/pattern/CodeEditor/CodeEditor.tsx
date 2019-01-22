@@ -99,6 +99,7 @@ export type CodeEditorProp = {
   maxLine: number;
   collapseTo: number;
   defaultLineLimit: number;
+  shouldCollapse: boolean;
   isCollapse: boolean;
   language: string;
 };
@@ -205,17 +206,27 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     }
   }
 
-  calcHeight(isCollapse: boolean, maxLine: number, collapseTo: number) {
+  calcHeight(
+    isCollapse: boolean,
+    shouldCollapse: boolean,
+    maxLine: number,
+    collapseTo: number,
+  ) {
     const editorPadding = 4;
     const lineHeight = 20;
-    return isCollapse
+    return shouldCollapse && isCollapse
       ? collapseTo * lineHeight + editorPadding
       : maxLine * lineHeight + editorPadding;
   }
 
   render() {
-    const { isCollapse, maxLine, collapseTo } = this.props;
-    const height = this.calcHeight(isCollapse, maxLine, collapseTo);
+    const { isCollapse, shouldCollapse, maxLine, collapseTo } = this.props;
+    const height = this.calcHeight(
+      isCollapse,
+      shouldCollapse,
+      maxLine,
+      collapseTo,
+    );
     return (
       <>
         <StyledEditorWrapper maxHeight={height}>

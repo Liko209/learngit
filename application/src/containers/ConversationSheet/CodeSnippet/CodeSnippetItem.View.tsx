@@ -16,21 +16,13 @@ const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
 const MAX_EDITOR_LINES = 200;
 
-function getCodeString(lineNumber: number) {
-  let code = '';
-  for (let i = 0; i !== lineNumber - 1; i++) {
-    code += `code${i}\n`;
-  }
-  return code;
-}
-
 class CodeSnippet extends React.Component<
   WithNamespaces & CodeSnippetViewProps
 > {
   state = {
     showHeaderActions: false,
     isCollapse: true,
-    showHoverAction: false,
+    hover: false,
   };
 
   handleCopy = () => {
@@ -92,11 +84,11 @@ class CodeSnippet extends React.Component<
   }
 
   handleMouseEnter = () => {
-    this.setState({ showHeaderActions: true, showHoverAction: true });
+    this.setState({ showHeaderActions: true, hover: true });
   }
 
   handleMouseLeave = () => {
-    this.setState({ showHeaderActions: false, showHoverAction: false });
+    this.setState({ showHeaderActions: false, hover: false });
   }
 
   handleExpand = () => {
@@ -112,11 +104,9 @@ class CodeSnippet extends React.Component<
   }
 
   render() {
-    const { title, mode: language, mimeType } = this.props.postItem;
-    const body = getCodeString(15);
+    const { title, body = '', mode: language, mimeType } = this.props.postItem;
     const lineNumber = this.calcTotalLines(body);
-    const showHoverAction =
-      lineNumber > DEFAULT_LINE_LIMIT && this.state.showHoverAction;
+    const showHoverAction = lineNumber > DEFAULT_LINE_LIMIT && this.state.hover;
     const showDownloadButton = lineNumber > MAX_EDITOR_LINES;
     const restLines = lineNumber - MAX_EDITOR_LINES;
 
@@ -147,6 +137,7 @@ class CodeSnippet extends React.Component<
             maxLine={MAX_EDITOR_LINES}
             collapseTo={COLLAPSE_TO}
             defaultLineLimit={DEFAULT_LINE_LIMIT}
+            shouldCollapse={lineNumber > DEFAULT_LINE_LIMIT}
             isCollapse={this.state.isCollapse}
             language={language}
             codeMirrorOption={{
