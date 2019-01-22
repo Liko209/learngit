@@ -82,13 +82,18 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const { t } = this.props;
+    const { t, groupName } = this.props;
     portalManager.dismiss();
     Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'leaveTeamConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'leaveTeamOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'leaveTeamCancelButton' },
       size: 'small',
       okType: 'negative',
       title: t('leaveTeamConfirmTitle'),
-      content: t('leaveTeamConfirmContent'),
+      content: t('leaveTeamConfirmContent', {
+        teamName: groupName,
+      }),
       okText: toTitleCase(t('leaveTeamConfirmOk')),
       cancelText: toTitleCase(t('cancel')),
       onOK: this.leaveTeamOKButtonHandler,
@@ -164,6 +169,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     return (
       <ButtonList>
         <ButtonListItem
+          data-test-automation-id="leaveTeamButton"
           color="semantic.negative"
           onClick={this.handleLeaveTeamClick}
           hide={isAdmin}

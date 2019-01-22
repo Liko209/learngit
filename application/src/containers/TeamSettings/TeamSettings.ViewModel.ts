@@ -49,16 +49,21 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @computed
+  get groupName() {
+    return this._group.displayName;
+  }
+
+  @computed
   get isAdmin() {
     return this._group.isAdmin;
   }
 
-  leaveTeam = () => {
+  leaveTeam = async () => {
     const groupService = new GroupService();
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     try {
-      groupService.leaveTeam(userId, this.id);
+      await groupService.leaveTeam(userId, this.id);
     } catch (e) {
       this.onLeaveTeamError(e);
     }

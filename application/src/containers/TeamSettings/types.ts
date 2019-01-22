@@ -16,6 +16,7 @@ type ViewProps = {
   initialData: TeamSettingTypes;
   id: number;
   isAdmin: boolean;
+  groupName: string;
   save: (params: SaveParams) => boolean;
   nameErrorMsg?: string;
   leaveTeam: () => void;
