@@ -20,8 +20,8 @@ const StyledWrapper = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiItemConjunctionText = (props: Props) => (
-  <StyledWrapper>{props.description}</StyledWrapper>
+const JuiItemConjunctionText = ({ description, ...rest }: Props) => (
+  <StyledWrapper {...rest}>{description}</StyledWrapper>
 );
 
 JuiItemConjunctionText.displayName = 'JuiItemConjunctionText';
