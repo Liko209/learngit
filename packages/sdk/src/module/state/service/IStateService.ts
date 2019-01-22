@@ -4,9 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GroupState, MyState } from '../entity';
+import { GroupState, MyState, State } from '../entity';
+import { Group } from '../../group/entity';
+import { Raw } from '../../../framework/model';
+
 interface IStateService {
-  updateReadStatus(groupId: number, readStatus: boolean): Promise<void>;
+  updateReadStatus(groupId: number, isUnread: boolean): Promise<void>;
 
   updateLastGroup(groupId: number): Promise<void>;
 
@@ -16,15 +19,18 @@ interface IStateService {
 
   getMyState(): Promise<MyState | null>;
 
-  getMyStateId(): Promise<number>;
+  getMyStateId(): number;
 
-  handleState(): Promise<void>;
+  handleState(states: Raw<State>[]): Promise<void>;
 
-  handlePartialState(): Promise<void>;
+  handlePartialGroup(groups: Partial<Group>[]): Promise<void>;
 
-  handlePartialGroup(): Promise<void>;
+  handleGroupChanges(groups?: Group[]): Promise<void>;
 
-  handleGroup(): Promise<void>;
+  getUmiByIds(
+    ids: number[],
+    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
+  ): Promise<void>;
 }
 
 export { IStateService };

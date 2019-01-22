@@ -1,5 +1,6 @@
 import { service } from 'sdk';
 import { ItemService } from 'sdk/module/item';
+import { StateService } from 'sdk/module/state';
 import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 
@@ -10,7 +11,6 @@ const {
   GroupConfigService,
   PostService,
   PresenceService,
-  StateService,
   ProfileService,
   ENTITY,
 } = service;

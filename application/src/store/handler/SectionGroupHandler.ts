@@ -28,8 +28,9 @@ import history from '@/history';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
+import { StateService } from 'sdk/module/state';
 
-const { GroupService, StateService, ProfileService } = service;
+const { GroupService, ProfileService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
@@ -67,7 +68,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 }
 
 class SectionGroupHandler extends BaseNotificationSubscribable {
-  private _stateService: service.StateService = StateService.getInstance();
+  private _stateService: StateService = StateService.getInstance();
 
   private _handlersMap: {} = {};
   private _idSet: Set<number>;
@@ -482,7 +483,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     originalIds: number[],
     limit: number,
   ) {
-    const stateService = StateService.getInstance<service.StateService>();
+    const stateService = StateService.getInstance<StateService>();
     const states =
       (await stateService.getGroupStatesFromLocalWithUnread(originalIds)) || [];
     const ids = this.getRemovedIds(

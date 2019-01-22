@@ -3,7 +3,8 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService, StateService } from 'sdk/service';
+import { PostService } from 'sdk/service';
+import { StateService } from 'sdk/module/state';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import { StreamItemType } from '../types';
@@ -194,13 +195,13 @@ describe('StreamViewModel', () => {
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
       const stateService = new StateService();
-      const spy = jest.spyOn(stateService, 'markAsRead');
+      const spy = jest.spyOn(stateService, 'updateReadStatus');
       StateService.getInstance = jest.fn().mockReturnValue(stateService);
       const groupId = 123123;
       const vm = setup({ groupId });
       vm.markAsRead();
 
-      expect(spy).toBeCalledWith(groupId);
+      expect(spy).toBeCalledWith(groupId, false);
 
       spy.mockRestore();
     });

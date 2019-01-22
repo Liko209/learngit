@@ -5,28 +5,30 @@
  */
 
 import { Api } from '../../../api';
-import { GroupState } from '../entity/State';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IControllerBuilder } from '../../../framework/controller/interface/IControllerBuilder';
+import {
+  buildPartialModifyController,
+  buildRequestController,
+} from '../../../framework/controller';
 import { StateActionController } from './implementation/StateActionController';
 import { StateDataHandleController } from './implementation/StateDataHandleController';
 import { StateFetchDataController } from './implementation/StateFetchDataController';
+import { GroupState, State } from '../entity';
 
 class StateController {
   private _stateActionController: StateActionController;
   private _stateDataHandleController: StateDataHandleController;
   private _stateFetchDataController: StateFetchDataController;
   constructor(
-    private _controllerBuilder: IControllerBuilder<GroupState>,
-    private _entitySourceController: IEntitySourceController,
+    private _entitySourceController: IEntitySourceController<GroupState>,
   ) {}
 
   getStateActionController(): StateActionController {
     if (!this._stateActionController) {
-      const partialModifyController = this._controllerBuilder.buildPartialModifyController(
+      const partialModifyController = buildPartialModifyController<GroupState>(
         this._entitySourceController,
       );
-      const requestController = this._controllerBuilder.buildRequestController({
+      const requestController = buildRequestController<State>({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,
       });
@@ -34,6 +36,7 @@ class StateController {
         partialModifyController,
         requestController,
         this._entitySourceController,
+        this.getStateFetchDataController(),
       );
     }
     return this._stateActionController;
@@ -41,7 +44,10 @@ class StateController {
 
   getStateDataHandleController(): StateDataHandleController {
     if (!this._stateDataHandleController) {
-      this._stateDataHandleController = new StateDataHandleController();
+      this._stateDataHandleController = new StateDataHandleController(
+        this._entitySourceController,
+        this.getStateFetchDataController(),
+      );
     }
     return this._stateDataHandleController;
   }

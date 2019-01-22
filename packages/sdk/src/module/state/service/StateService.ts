@@ -7,51 +7,46 @@
 import { daoManager, GroupStateDao } from '../../../dao';
 import { EntityBaseService } from '../../../framework';
 import { IStateService } from './IStateService';
-import { GroupState, MyState } from '../entity';
-import { SOCKET } from '../../../service/eventKey';
+import { GroupState, MyState, State } from '../entity';
+import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { Group } from '../../group/entity';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
   static serviceName = 'StateService';
   private _stateController: StateController;
-  private _entitySourceController: IEntitySourceController;
   constructor() {
-    super();
+    super(true, daoManager.getDao(GroupStateDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
-        [SOCKET.GROUP]: this.handleGroup,
-        [SOCKET.PARTIAL_STATE]: this.handlePartialState,
+        [SOCKET.PARTIAL_STATE]: this.handleState,
         [SOCKET.PARTIAL_GROUP]: this.handlePartialGroup,
+        [SERVICE.GROUP_CURSOR]: this.handleGroupChanges,
       }),
     );
   }
 
-  private _getEntitySourceController() {
-    if (!this._entitySourceController) {
-      this._entitySourceController = this.getControllerBuilder().buildEntitySourceController(
-        daoManager.getDao(GroupStateDao),
-      );
-    }
-    return this._entitySourceController;
-  }
-
   protected getStateController(): StateController {
     if (!this._stateController) {
-      this._stateController = new StateController(
-        this.getControllerBuilder(),
-        this._getEntitySourceController(),
-      );
+      this._stateController = new StateController(this.getEntitySource());
     }
     return this._stateController;
   }
 
-  async updateReadStatus(groupId: number, readStatus: boolean): Promise<void> {}
+  async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
+    await this.getStateController()
+      .getStateActionController()
+      .updateReadStatus(groupId, isUnread);
+  }
 
-  async updateLastGroup(groupId: number): Promise<void> {}
+  async updateLastGroup(groupId: number): Promise<void> {
+    await this.getStateController()
+      .getStateActionController()
+      .updateLastGroup(groupId);
+  }
 
   async getAllGroupStatesFromLocal(ids: number[]): Promise<GroupState[]> {
     return await this.getStateController()
@@ -73,20 +68,37 @@ class StateService extends EntityBaseService<GroupState>
       .getMyState();
   }
 
-  async getMyStateId(): Promise<number> {
-    return await this.getStateController()
+  getMyStateId(): number {
+    return this.getStateController()
       .getStateFetchDataController()
       .getMyStateId();
   }
 
-  async handleState(): Promise<void> {}
+  handleState = async (states: Partial<State>[]): Promise<void> => {
+    await this.getStateController()
+      .getStateDataHandleController()
+      .handleState(states);
+  }
 
-  async handlePartialState(): Promise<void> {}
+  handlePartialGroup = async (groups: Partial<Group>[]): Promise<void> => {
+    await this.getStateController()
+      .getStateDataHandleController()
+      .handlePartialGroup(groups);
+  }
 
-  async handlePartialGroup(): Promise<void> {}
+  handleGroupChanges = async (groups?: Group[]): Promise<void> => {
+    await this.getStateController()
+      .getStateDataHandleController()
+      .handleGroupChanges(groups);
+  }
 
-  async handleGroup(): Promise<void> {
-    // favorite member deactivated
+  async getUmiByIds(
+    ids: number[],
+    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
+  ): Promise<void> {
+    await this.getStateController()
+      .getStateFetchDataController()
+      .getUmiByIds(ids, updateUmi);
   }
 }
 

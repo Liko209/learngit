@@ -30,3 +30,9 @@ export type GroupState = {
   group_post_cursor?: number;
   group_post_drp_cursor?: number;
 };
+
+export type TransformedState = {
+  groupStates: GroupState[];
+  myState?: State;
+  isSelf: boolean;
+};

@@ -6,8 +6,9 @@
 
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
-import { PostService, StateService, ENTITY } from 'sdk/service';
+import { PostService, ENTITY } from 'sdk/service';
 import { Post } from 'sdk/module/post/entity';
+import { StateService } from 'sdk/module/state';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
@@ -214,7 +215,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    this._stateService.markAsRead(this.groupId);
+    this._stateService.updateReadStatus(this.groupId, false);
   }
 
   enableNewMessageSeparatorHandler = () => {

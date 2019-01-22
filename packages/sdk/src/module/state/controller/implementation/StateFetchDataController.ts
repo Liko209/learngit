@@ -4,8 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import _ from 'lodash';
 import { daoManager, StateDao, ConfigDao, MY_STATE_ID } from '../../../../dao';
 import { GroupState, MyState } from '../../entity/State';
+import { GroupService } from '../../../group';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 
 class StateFetchDataController {
@@ -31,11 +33,35 @@ class StateFetchDataController {
     return await daoManager.getDao(StateDao).getFirst();
   }
 
-  async getMyStateId(): Promise<number> {
+  getMyStateId(): number {
     if (!this._myStateId || this._myStateId <= 0) {
-      this._myStateId = await daoManager.getKVDao(ConfigDao).get(MY_STATE_ID);
+      this._myStateId = daoManager.getKVDao(ConfigDao).get(MY_STATE_ID);
     }
     return this._myStateId;
+  }
+
+  async getUmiByIds(
+    ids: number[],
+    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
+  ): Promise<void> {
+    const groupStates = await this._entitySourceController.batchGet(ids);
+    const important = _.some(groupStates, (groupState: GroupState) => {
+      return !!groupState.unread_mentions_count;
+    });
+    const groupService = GroupService.getInstance<GroupService>();
+    const unreadCounts = new Map<number, number>();
+    await Promise.all(
+      groupStates.map(async (groupState: GroupState) => {
+        const group = await groupService.getById(groupState.id);
+        if (!group) {
+          return;
+        }
+        unreadCounts[groupState.id] = group.is_team
+          ? groupState.unread_mentions_count || 0
+          : groupState.unread_count || 0;
+      }),
+    );
+    updateUmi(unreadCounts, important);
   }
 }
 
