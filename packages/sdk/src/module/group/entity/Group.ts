@@ -51,7 +51,6 @@ type GroupCommon = {
   permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
-  __trigger_ids?: number[];
   deactivated_post_cursor?: number;
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
@@ -65,4 +64,11 @@ type Group = ExtendedBaseModel & {
   members: number[];
 } & GroupCommon;
 
-export { GroupQueryType, FEATURE_STATUS, FEATURE_TYPE, TeamPermission, Group, GroupCommon };
+export {
+  GroupQueryType,
+  FEATURE_STATUS,
+  FEATURE_TYPE,
+  TeamPermission,
+  Group,
+  GroupCommon,
+};

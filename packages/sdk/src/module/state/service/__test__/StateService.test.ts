@@ -109,7 +109,10 @@ describe('StateService', () => {
   describe('getUmiByIds()', () => {
     it('should call with correct params', async () => {
       const ids: number[] = [5683];
-      const updateUmi = (unreadCounts: number[], important: boolean) => {};
+      const updateUmi = (
+        unreadCounts: Map<number, number>,
+        important: boolean,
+      ) => {};
       await stateService.getUmiByIds(ids, updateUmi);
       expect(mockGetUmiByIds).toBeCalledWith(ids, updateUmi);
     });

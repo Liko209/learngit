@@ -11,7 +11,6 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  __trigger_ids?: number[];
   last_group_id: number;
   at_mentioning_post_ids?: number[];
 };
