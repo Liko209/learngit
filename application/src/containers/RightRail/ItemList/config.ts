@@ -34,8 +34,10 @@ type TabConfig = {
   item: ComponentType;
   subheader: string;
   empty: EmptyConfig;
-  sortKey?: ITEM_SORT_KEYS;
-  desc?: boolean;
+  sort?: {
+    sortKey?: ITEM_SORT_KEYS;
+    desc?: boolean;
+  };
   offlinePrompt: string;
 };
 
@@ -62,7 +64,9 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noFileSubText',
       image: FilesEmptyImage,
     },
-    desc: true,
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorFilesPrompt',
   },
   {
@@ -116,7 +120,9 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
-    sortKey: ITEM_SORT_KEYS.START_TIME,
+    sort: {
+      sortKey: ITEM_SORT_KEYS.START_TIME,
+    },
     item: EventItem,
     subheader: 'eventListSubheader',
     empty: {

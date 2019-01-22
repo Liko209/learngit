@@ -4,13 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { ITEM_SORT_KEYS } from 'sdk/module/item';
 
 type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
-  sortKey?: ITEM_SORT_KEYS;
-  desc?: boolean;
 };
 
 type ViewProps = {
