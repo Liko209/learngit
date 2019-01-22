@@ -88,17 +88,16 @@ export class RightRail extends BaseWebComponent {
     return this.getComponent(FilesTab);
   }
 
-<<<<<<< HEAD
   get eventsTab() {
     return this.getComponent(EventsTab);
-=======
+  }
+
   get tasksTab() {
     return this.getComponent(TasksTab);
   }
 
   get linkTab() {
     return this.getComponent(LinksTab);
->>>>>>> 6d03c1adc7823a0ba40461f26346c09a9118b203
   }
 }
 
