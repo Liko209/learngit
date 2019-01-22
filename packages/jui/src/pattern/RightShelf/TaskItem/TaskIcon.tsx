@@ -53,7 +53,7 @@ const WrapperTaskIcon = ({ iconColor, ...rest }: TaskIconProps) => (
 const TaskIcon = styled<TaskIconProps>(WrapperTaskIcon)`
   && {
     font-size: ${spacing(5)};
-    color: ${({ iconColor }) => getAccentColor(iconColor)};
+    color: ${({ iconColor }) => getAccentColor(iconColor, grey('500'))};
   }
 `;
 

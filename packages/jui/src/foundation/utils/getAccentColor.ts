@@ -8,7 +8,7 @@ import { grey, palette } from './styles';
 
 const getAccentColor = (
   customColor?: [keyof Palette, string],
-  defaultColor?: string,
+  defaultColor?: any,
 ) => {
   return customColor
     ? palette(customColor[0], customColor[1])

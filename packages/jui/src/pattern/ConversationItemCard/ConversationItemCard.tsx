@@ -8,17 +8,8 @@ import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
-
-const itemTitleColor = {
-  black: 'common.black',
-  red: 'accent.tomato',
-  orange: 'secondary.main',
-  yellow: 'accent.lemon',
-  green: 'accent.olive',
-  blue: 'primary.main',
-  indigo: 'accent.cateye',
-  violet: 'accent.grass',
-};
+import { Palette } from 'jui/foundation/theme/theme';
+import { getAccentColor } from 'jui/foundation/utils';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
@@ -36,18 +27,17 @@ const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
   text-decoration: ${({ complete }) => (complete ? 'line-through' : '')};
 `;
 
-const ItemCardHeader = styled.div`
+const ItemCardHeader = styled<
+  {
+    titleColor?: [keyof Palette, string];
+  },
+  'div'
+>('div')`
   padding: 0;
   margin: ${spacing(0, 0, 0, -6)};
   display: flex;
   ${typography('body1')};
-  color: ${({ color }) => {
-    const itemTitleColorArr = itemTitleColor[`${color}`]
-      ? itemTitleColor[`${color}`].split('.')
-      : ['primary', 'main'];
-    return palette(itemTitleColorArr[0], itemTitleColorArr[1]);
-  }}
-
+  color: ${({ titleColor }) => getAccentColor(titleColor)};
   word-break: break-word;
   svg {
     font-size: ${spacing(5)};
@@ -75,7 +65,7 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 type JuiConversationItemCardProps = {
   title?: string | JSX.Element;
   Icon: JSX.Element | string;
-  titleColor?: string;
+  titleColor?: [keyof Palette, string];
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children?: React.ReactNode;
   Footer?: JSX.Element | null;
@@ -105,7 +95,7 @@ class JuiConversationItemCard extends React.Component<
     return (
       <ItemCardWrapper className="conversation-item-cards">
         <ItemCardContent>
-          <ItemCardHeader onClick={this.titleHandle} color={titleColor}>
+          <ItemCardHeader onClick={this.titleHandle} titleColor={titleColor}>
             {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
             {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
           </ItemCardHeader>
