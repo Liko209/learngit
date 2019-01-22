@@ -37,6 +37,7 @@ class Event extends React.Component<Props, {}> {
       repeatEnding,
       repeatEndingOn,
     } = event;
+    console.log(event, start, end, '----nello');
     const time = allDay
       ? getDurationDate(start, end)
       : getDurationTime(start, end);

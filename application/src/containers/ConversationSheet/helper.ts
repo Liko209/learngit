@@ -15,18 +15,25 @@ import {
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = dateFormatter.localTime(moment(timestamp));
   const date = recentlyTwoDayAndOther(timestamp);
-
-  return `${date} ${t('at')} ${getAMOrPM}`;
+  return `${date} ${date ? t('at') : ''} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
   const startTime = getDateAndTime(startTimestamp);
   let endTime = getDateAndTime(endTimestamp);
-  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
-
-  if (isToday) {
+  const isSameDay = startTime.split(' ')[0] === endTime.split(' ')[0];
+  if (isSameDay) {
     const endTimeArr = endTime.split(' ');
-    endTime = endTime.replace(`${endTimeArr[0]} ${endTimeArr[1]} `, '');
+    if (/today/i.test(endTimeArr[0])) {
+      // ["Today", "at", "2:01", "PM"]
+      endTime = endTime.replace(`${endTimeArr[0]} ${endTimeArr[1]} `, '');
+    } else {
+      // ["Thu,", "1/24/2019", "at", "2:30", "PM"]
+      endTime = endTime.replace(
+        `${endTimeArr[0]} ${endTimeArr[1]} ${endTimeArr[2]} `,
+        '',
+      );
+    }
   }
   return `${startTime} - ${endTime}`;
 }
