@@ -32,7 +32,7 @@ const props = {
 
 let vm: FileViewModel;
 
-describe('ImageItemViewModel', () => {
+describe('FileViewModel', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockImplementation(
       (name, id) => mappingEntity[name],
