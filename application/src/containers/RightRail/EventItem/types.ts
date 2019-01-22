@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import EventItemModel from '@/store/models/EventItem';
+import { Palette } from 'jui/foundation/theme/theme';
 
 type Props = {
   id: number;
@@ -14,6 +15,7 @@ type ViewProps = {
   startTime: string;
   event: EventItemModel;
   isRepeat: boolean;
+  color: [keyof Palette, string];
 };
 
 export { Props, ViewProps };

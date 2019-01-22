@@ -8,18 +8,23 @@ import MuiListItemText, {
   ListItemTextProps as MuiListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import styled from '../../foundation/styled-components';
-import { typography, ellipsis, grey } from '../../foundation/utils';
+import {
+  typography,
+  ellipsis,
+  grey,
+  getAccentColor,
+} from '../../foundation/utils';
+import { Palette } from '../../foundation/theme/theme';
 
 type JuiListItemTextProps = MuiListItemTextProps & {
-  primaryColor?: string;
+  primaryColor?: [keyof Palette, string];
 };
 
 const StyledListItemText = styled<JuiListItemTextProps>(MuiListItemText)`
   && {
     padding: 0;
     .list-item-primary {
-      color: ${({ primaryColor }) =>
-        primaryColor ? primaryColor : grey('900')};
+      color: ${({ primaryColor }) => getAccentColor(primaryColor)};
       ${typography('body1')};
       ${ellipsis()};
     }

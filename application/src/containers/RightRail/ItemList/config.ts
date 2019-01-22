@@ -9,6 +9,7 @@ import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
 import { TaskItem } from '../TaskItem';
+import { EventItem } from '../EventItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -116,8 +117,8 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
     sortKey: ITEM_SORT_KEYS.START_TIME,
-    item: FileItem,
-    subheader: '',
+    item: EventItem,
+    subheader: 'eventListSubheader',
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',

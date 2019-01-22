@@ -47,7 +47,7 @@ test(formalName('Check the create event and display on the right rail', ['Shinin
   })
   // step 2 create a event
   await h(t).withLog('Then User create a event', async () => {
-    const data = await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
+    await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
     await t.expect(eventsTab.nthItem(0).withText(eventTitle).exists).ok();
   });
 });

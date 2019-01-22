@@ -11,7 +11,14 @@ import {
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
-import { width, height, grey, spacing } from '../../../foundation/utils';
+import {
+  width,
+  height,
+  grey,
+  spacing,
+  getAccentColor,
+} from '../../../foundation/utils';
+import { Palette } from '../../../foundation/theme/theme';
 
 enum TASK_TYPE {
   task_incomplete = 'task_incomplete',
@@ -30,7 +37,14 @@ const TaskIconWrapper = styled.div`
   }
 `;
 
-type TaskIconProps = JuiIconographyProps & { iconColor?: string };
+type TaskIconProps = JuiIconographyProps & {
+  iconColor?: [keyof Palette, string];
+};
+
+type Props = {
+  complete: boolean;
+  iconColor?: [keyof Palette, string];
+};
 
 const WrapperTaskIcon = ({ iconColor, ...rest }: TaskIconProps) => (
   <JuiIconography {...rest} />
@@ -39,14 +53,9 @@ const WrapperTaskIcon = ({ iconColor, ...rest }: TaskIconProps) => (
 const TaskIcon = styled<TaskIconProps>(WrapperTaskIcon)`
   && {
     font-size: ${spacing(5)};
-    color: ${({ iconColor }) => (iconColor ? iconColor : grey('500'))};
+    color: ${({ iconColor }) => getAccentColor(iconColor)};
   }
 `;
-
-type Props = {
-  complete: boolean;
-  iconColor?: string;
-};
 
 const JuiTaskIcon = React.memo((props: Props) => {
   const { complete, iconColor } = props;

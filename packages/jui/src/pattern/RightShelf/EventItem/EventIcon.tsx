@@ -10,13 +10,20 @@ import {
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
-import { spacing, grey } from '../../../foundation/utils';
+import { spacing, getAccentColor } from '../../../foundation/utils';
+import { Palette } from '../../../foundation/theme/theme';
 
 enum EVENT_ICON_TYPE {
   event = 'event',
 }
 
-type EventIconProps = JuiIconographyProps & { iconColor?: string };
+type EventIconProps = JuiIconographyProps & {
+  iconColor?: [keyof Palette, string];
+};
+
+type Props = {
+  iconColor?: [keyof Palette, string];
+};
 
 const WrapperEventIcon = ({ iconColor, ...rest }: EventIconProps) => (
   <JuiIconography {...rest} />
@@ -25,13 +32,9 @@ const WrapperEventIcon = ({ iconColor, ...rest }: EventIconProps) => (
 const EventIcon = styled<EventIconProps>(WrapperEventIcon)`
   && {
     font-size: ${spacing(5)};
-    color: ${({ iconColor }) => (iconColor ? iconColor : grey('500'))};
+    color: ${({ iconColor }) => getAccentColor(iconColor)};
   }
 `;
-
-type Props = {
-  iconColor?: string;
-};
 
 const JuiEventIcon = (props: Props) => {
   const { iconColor } = props;
