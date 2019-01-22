@@ -5,7 +5,8 @@
  */
 
 enum UserPermissionType {
-  JUPITER_RIGHT_RAIL = 'RIGHT_RAIL',
+  JUPITER_CREATE_TEAM = 'JUPITER_CREATE_TEAM',
+  JUPITER_SEND_NEW_MESSAGE = 'JUPITER_SEND_NEW_MESSAGE',
 }
 
 export default UserPermissionType;

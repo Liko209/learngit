@@ -8,6 +8,7 @@ import { IPermissionService } from './IPermissionService';
 import { EntityBaseService } from '../../../framework';
 import { PermissionController } from '../controller/PermissionController';
 import UserPermissionType from '../types';
+import { UserConfig } from '../../../service/account';
 
 type UserPermission = {
   id: number;
@@ -22,6 +23,11 @@ class PermissionService extends EntityBaseService<UserPermission>
   constructor() {
     super(false);
     this.permissionController = new PermissionController();
+  }
+
+  async getUserPermission() {
+    const id = UserConfig.getCurrentUserId();
+    return this.getById(id);
   }
 
   async hasPermission(type: UserPermissionType) {

@@ -8,17 +8,15 @@ import UserPermissionType from '../types';
 import SplitIODefaultPermissions from './splitIO/SplitIODefaultPermissions';
 import { notificationCenter, ENTITY } from '../../../service';
 import { UserConfig } from '../../../service/account';
-type UserPermission = {
-  id: number;
-  permissions: Object;
-};
+import { UserPermission } from '../entity';
+import { mainLogger } from 'foundation/src';
 class PermissionController {
   private splitIOController: SplitIOController;
   constructor() {
     this._initControllers();
   }
 
-  hasPermission(type: UserPermissionType): Promise<boolean> {
+  async hasPermission(type: UserPermissionType): Promise<boolean> {
     /**
      * 1. get from beta
      * 2. get frm rc
@@ -26,7 +24,8 @@ class PermissionController {
      * result = 1 & 2 & 3;
      */
     // TODO: beta / RC
-    return this.splitIOController.hasPermission(type);
+    const result = await this.splitIOController.hasPermission(type);
+    return result;
   }
 
   async getById(id: number): Promise<UserPermission> {
@@ -50,8 +49,8 @@ class PermissionController {
   private async _refreshPermissions() {
     const permissions = await this._getAllPermissions();
     const id = UserConfig.getCurrentUserId();
-    console.log('---_refreshPermissions-------', permissions);
-    notificationCenter.emitEntityUpdate(ENTITY.COMPANY, [
+    mainLogger.log(`user:${id}, refreshPermissions:${permissions}`);
+    notificationCenter.emitEntityUpdate(ENTITY.USER_PERMISSION, [
       {
         id,
         permissions,

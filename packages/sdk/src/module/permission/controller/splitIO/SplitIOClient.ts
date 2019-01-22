@@ -11,7 +11,7 @@ type SplitIOClientParams = {
   userId: string;
   attributes: Object;
   permissions: string[];
-  splitIOReady: (isReady: boolean) => void;
+  splitIOReady: () => void;
   splitIOUpdate: () => void;
 };
 
@@ -56,6 +56,10 @@ class SplitIOClient {
   async hasPermission(type: UserPermissionType): Promise<boolean> {
     const result = await this.client.getTreatments(this.featureName);
     return result[type] === 'on';
+  }
+
+  shutdown() {
+    this.client.destroy();
   }
 }
 
