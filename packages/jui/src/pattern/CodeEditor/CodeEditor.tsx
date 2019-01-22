@@ -109,6 +109,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     preserveScrollPosition: false,
   };
 
+  static loadedMode = new Set();
+
   static codeMirrorOption: {} = {
     view: {
       autofocus: false,
@@ -149,38 +151,57 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
   }
 
   shouldComponentUpdate(nextProps: CodeEditorProp) {
-    if (
-      this.codeMirror &&
-      nextProps.value !== undefined &&
-      nextProps.value !== this.props.value &&
-      normalizeLineEndings(this.codeMirror.getValue()) !==
-        normalizeLineEndings(nextProps.value)
-    ) {
-      const prevScrollPosition = this.codeMirror.getScrollInfo();
-      this.codeMirror.setValue(nextProps.value);
-      this.codeMirror.scrollTo(prevScrollPosition.left, prevScrollPosition.top);
-    }
-    if (typeof nextProps.codeMirrorOption === 'object') {
-      for (const optionName in nextProps.codeMirrorOption) {
-        if (
-          nextProps.codeMirrorOption.hasOwnProperty(optionName) &&
-          nextProps.codeMirrorOption[optionName] !== undefined
-        ) {
-          this.setOptionIfChanged(
-            optionName,
-            nextProps.codeMirrorOption[optionName],
-          );
+    if (!isEqual(nextProps, this.props)) {
+      if (
+        this.codeMirror &&
+        nextProps.value !== undefined &&
+        nextProps.value !== this.props.value &&
+        normalizeLineEndings(this.codeMirror.getValue()) !==
+          normalizeLineEndings(nextProps.value)
+      ) {
+        const prevScrollPosition = this.codeMirror.getScrollInfo();
+        this.codeMirror.setValue(nextProps.value);
+        this.codeMirror.scrollTo(
+          prevScrollPosition.left,
+          prevScrollPosition.top,
+        );
+      }
+      if (typeof nextProps.codeMirrorOption === 'object') {
+        for (const optionName in nextProps.codeMirrorOption) {
+          if (
+            nextProps.codeMirrorOption.hasOwnProperty(optionName) &&
+            nextProps.codeMirrorOption[optionName] !== undefined
+          ) {
+            this.setOptionIfChanged(
+              optionName,
+              nextProps.codeMirrorOption[optionName],
+            );
+          }
         }
       }
-    }
 
-    if (this.props.language !== nextProps.language) {
-      if (nextProps.language !== 'auto') {
+      if (
+        nextProps.language &&
+        this.props.language !== nextProps.language &&
+        nextProps.language !== 'auto'
+      ) {
         const modeName = nextProps.language;
-        require(`codemirror/mode/${modeName}/${modeName}.js`);
+        if (!CodeEditor.loadedMode.has(modeName)) {
+          CodeEditor.loadedMode.add(modeName);
+          console.log('-------- [CodeEditor Log] --------');
+          console.log(modeName);
+          console.log('---------------- [Log End] ----------------');
+          require(`codemirror/mode/${modeName}/${modeName}`);
+          this.codeMirror.setOption('mode', this.props.codeMirrorOption.mode);
+          setTimeout(() => {
+            this.codeMirror.refresh();
+            this.codeMirror.setValue(this.props.value);
+          },         2000);
+        }
       }
+      return true;
     }
-    return !isEqual(nextProps, this.props);
+    return false;
   }
 
   componentWillUnmount() {
@@ -215,8 +236,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     const editorPadding = 4;
     const lineHeight = 20;
     return shouldCollapse && isCollapse
-      ? collapseTo * lineHeight + editorPadding
-      : maxLine * lineHeight + editorPadding;
+      ? collapseTo * lineHeight + editorPadding * 2
+      : maxLine * lineHeight + editorPadding * 2;
   }
 
   render() {
