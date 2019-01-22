@@ -13,7 +13,7 @@ import {
 import { JuiIconButton } from 'jui/components/Buttons';
 
 type Props = {
-  url: any;
+  url: string;
 };
 
 const Download = React.memo(({ url }: Props) => {
