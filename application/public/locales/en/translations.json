@@ -269,5 +269,9 @@
   "Create Team Error": "We are having trouble creating this team. Please try again later.",
   "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
   "newMessageTipLink": "create a Team instead.",
-  "InvalidEmail": "Invalid Email"
+  "InvalidEmail": "Invalid Email",
+  "leaveTeam": "Leave team",
+  "leaveTeamConfirmTitle": "Leave team",
+  "leaveTeamConfirmContent": "Once you leave {{teamName}}, you will no longer have access to the content.",
+  "leaveTeamConfirmOk": "leave"
 }

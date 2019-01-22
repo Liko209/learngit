@@ -15,6 +15,7 @@ type ViewProps = {
   isAdmin: boolean;
   save: (params: TeamSettingTypes) => boolean;
   nameErrorMsg?: string;
+  leaveTeam: () => void;
 };
 
 export { ViewProps, TeamSettingTypes };

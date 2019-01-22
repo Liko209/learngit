@@ -7,7 +7,7 @@ export const ERROR_CONDITIONS: {
 } = {
   NOT_NETWORK: {
     type: ERROR_TYPES.NETWORK,
-    codes: [ERROR_CODES_NETWORK.NOT_NETWORK, ERROR_CODES_NETWORK.NETWORK_ERROR],
+    codes: [ERROR_CODES_NETWORK.NOT_NETWORK],
   },
   NOT_AUTHORIZED: {
     type: ERROR_TYPES.SERVER,
@@ -21,10 +21,7 @@ export const ERROR_CONDITIONS: {
     {
       type: ERROR_TYPES.NETWORK,
       codes: ['*'],
-      excludeCodes: [
-        ERROR_CODES_NETWORK.NOT_NETWORK,
-        ERROR_CODES_NETWORK.NETWORK_ERROR,
-      ],
+      excludeCodes: [ERROR_CODES_NETWORK.NOT_NETWORK],
     },
   ],
 };
