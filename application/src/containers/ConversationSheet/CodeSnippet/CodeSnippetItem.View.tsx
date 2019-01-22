@@ -16,6 +16,14 @@ const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
 const MAX_EDITOR_LINES = 200;
 
+function getCodeString(lineNumber: number) {
+  let code = '';
+  for (let i = 0; i !== lineNumber - 1; i++) {
+    code += `code${i}\n`;
+  }
+  return code;
+}
+
 class CodeSnippet extends React.Component<
   WithNamespaces & CodeSnippetViewProps
 > {
@@ -104,7 +112,8 @@ class CodeSnippet extends React.Component<
   }
 
   render() {
-    const { title, body = '', mode: language, mimeType } = this.props.postItem;
+    const { title, mode: language, mimeType } = this.props.postItem;
+    const body = getCodeString(15);
     const lineNumber = this.calcTotalLines(body);
     const showHoverAction =
       lineNumber > DEFAULT_LINE_LIMIT && this.state.showHoverAction;
