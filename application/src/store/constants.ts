@@ -11,6 +11,7 @@ enum ENTITY_NAME {
   'LINK_ITEM' = 'linkItem',
   'NOTE_ITEM' = 'noteItem',
   'CODE_ITEM' = 'codeItem',
+  'CONFERENCE_ITEM' = 'conferenceItem',
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',

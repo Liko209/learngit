@@ -192,6 +192,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
+  dtmf(digits: string) {
+    if (this._session) {
+      this._session.dtmf(digits);
+    }
+  }
+
   setSession(session: any) {
     if (session) {
       this._session = session;

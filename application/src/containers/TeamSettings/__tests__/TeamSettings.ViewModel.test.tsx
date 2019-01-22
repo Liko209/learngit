@@ -7,6 +7,10 @@ import { TeamSettingsViewModel } from '../TeamSettings.ViewModel';
 import { GroupService } from 'sdk/module/group';
 import { errorHelper } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
@@ -28,10 +32,14 @@ describe('TeamSettingsViewModel', () => {
       const result = await vm.save({
         name: 'hello  ',
         description: '  Dolor nostrud laboris veniam et duis. ',
+        allowMemberAddMember: true,
       });
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+        },
       });
       expect(result).toBe(true);
     });
@@ -49,17 +57,21 @@ describe('TeamSettingsViewModel', () => {
       const result = await vm.save({
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis. ',
+        allowMemberAddMember: true,
       });
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+        },
       });
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
         message: 'SorryWeWereNotAbleToSaveTheUpdate',
-        messageAlign: 'left',
-        type: 'error',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
       });
       expect(result).toBe(false);
     });
@@ -75,17 +87,21 @@ describe('TeamSettingsViewModel', () => {
       const result = await vm.save({
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis. ',
+        allowMemberAddMember: true,
       });
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+        },
       });
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
         message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
-        messageAlign: 'left',
-        type: 'error',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
       });
       expect(result).toBe(false);
     });

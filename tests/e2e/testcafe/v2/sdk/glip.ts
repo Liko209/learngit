@@ -649,4 +649,23 @@ export class GlipSdk {
     }
     return await this.createEvent(data);
   }
+
+  /* audio conference */
+  // need sign on status???
+  createAudioConference(data: object) {
+    const uri = `api/conference`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async createSimpleAudioConference(groupIds: string[] | string, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    const data = _.assign({
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createAudioConference(data);
+  }
 }
