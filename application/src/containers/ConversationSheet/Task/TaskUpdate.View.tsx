@@ -41,8 +41,8 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   }
 
   render() {
-    const { task, activityData } = this.props;
-    const { color, text, complete } = task;
+    const { task, activityData, color } = this.props;
+    const { text, complete } = task;
     const { value, key, old_value } = activityData;
     return (
       <TaskUpdateViewCard

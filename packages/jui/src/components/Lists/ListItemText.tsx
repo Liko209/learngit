@@ -20,7 +20,12 @@ type JuiListItemTextProps = MuiListItemTextProps & {
   primaryColor?: [keyof Palette, string];
 };
 
-const StyledListItemText = styled<JuiListItemTextProps>(MuiListItemText)`
+const WrappedListItemText = ({
+  primaryColor,
+  ...rest
+}: JuiListItemTextProps) => <MuiListItemText {...rest} />;
+
+const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
   && {
     padding: 0;
     .list-item-primary {
