@@ -9,7 +9,7 @@ import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCLogger } from '../utils/IRTCLogger';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { rtcRestApiManager } from '../utils/RTCRestApiManager';
-import { ITelephonyNetworkDelegate } from 'foundation';
+import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation';
 
 class RTCEngine {
   private static instance: RTCEngine;
@@ -34,6 +34,8 @@ class RTCEngine {
   public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
     rtcRestApiManager.setNetworkDelegate(delegate);
   }
+
+  public setTelephonyDaoDelegate(delegate: ITelephonyDaoDelegate): void {}
 }
 
 export { RTCEngine };

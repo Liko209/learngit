@@ -51,4 +51,9 @@ export type GroupConfig = {
   is_newest_saved?: boolean;
   draft?: string;
   send_failure_post_ids?: number[];
+  last_index_of_files?: number;
+  last_index_of_tasks?: number;
+  last_index_of_events?: number;
+  last_index_of_notes?: number;
+  last_index_of_links?: number;
 };
