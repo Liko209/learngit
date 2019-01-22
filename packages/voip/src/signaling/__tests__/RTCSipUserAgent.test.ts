@@ -5,6 +5,7 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCSipUserAgent } from '../RTCSipUserAgent';
+import { RTCCallOptions } from '../../api/types';
 const WebPhone = require('ringcentral-web-phone');
 
 const mockInvite = jest.fn();
@@ -86,6 +87,7 @@ describe('RTCSipUserAgent', async () => {
 
     it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall', async () => {
       setupMakeCall();
+      const options: RTCCallOptions = {};
       userAgent.makeCall(phoneNumber, {});
       expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, {
         homeCountryId: '1',
@@ -96,12 +98,13 @@ describe('RTCSipUserAgent', async () => {
 
     it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall', async () => {
       setupMakeCall();
-      userAgent.makeCall(phoneNumber, { homeCountryId: '100' });
+      const options: RTCCallOptions = { homeCountryId: '100' };
+      userAgent.makeCall(phoneNumber, options);
       expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, {
         homeCountryId: '100',
       });
       expect(mockInvite.mock.calls[0][0]).toEqual(phoneNumber);
-      expect(mockInvite.mock.calls[0][1]).toEqual({ homeCountryId: '100' });
+      expect(mockInvite.mock.calls[0][1]).toEqual(options);
     });
   });
 });
