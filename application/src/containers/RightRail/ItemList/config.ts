@@ -9,6 +9,7 @@ import { FileItem } from '../FileItem';
 import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
+import { TaskItem } from '../TaskItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -81,8 +82,8 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'tasks',
     type: RIGHT_RAIL_ITEM_TYPE.TASKS,
-    item: FileItem,
-    subheader: '',
+    item: TaskItem,
+    subheader: 'taskListSubheader',
     empty: {
       text: 'noTasksYet',
       content: 'noTaskSubText',

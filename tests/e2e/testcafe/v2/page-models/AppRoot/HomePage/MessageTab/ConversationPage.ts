@@ -59,6 +59,7 @@ class BaseConversationPage extends BaseWebComponent {
   get headerStatus() {
     return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
   }
+  
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
@@ -347,6 +348,10 @@ export class PostItem extends BaseWebComponent {
 
   get mentions() {
     return this.text.find('.at_mention_compose');
+  }
+
+  async clickNthMentions(n = 0) {
+    return this.t.click(this.mentions.nth(n));
   }
 
   getMentionByName(name: string) {

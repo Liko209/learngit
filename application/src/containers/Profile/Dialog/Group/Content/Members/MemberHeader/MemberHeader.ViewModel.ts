@@ -15,5 +15,10 @@ class MemberHeaderViewModel extends ProfileDialogGroupViewModel
   get hasShadow() {
     return getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW);
   }
+
+  @computed
+  get isCurrentUserHasPermissionAddTeam() {
+    return this.group.isCurrentUserHasPermissionAddTeam;
+  }
 }
 export { MemberHeaderViewModel };
