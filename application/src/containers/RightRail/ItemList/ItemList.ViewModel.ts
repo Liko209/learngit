@@ -107,6 +107,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this._groupId,
       () => {
+        this._loadStatus.firstLoaded = false;
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
@@ -220,6 +221,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         fullWidth: false,
         dismissible: false,
       });
+      Object.assign(this._loadStatus, { loadError: true, loading: false });
       return;
     }
 

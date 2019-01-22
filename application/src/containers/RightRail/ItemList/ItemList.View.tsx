@@ -84,8 +84,6 @@ class ItemListView extends React.Component<ViewProps & Props>
     return <JuiRightRailLoadingMore />;
   }
 
-  onScroll = () => {};
-
   private _handleRetry = async () => {
     return await this.loadMore(0, 0);
   }
@@ -101,10 +99,10 @@ class ItemListView extends React.Component<ViewProps & Props>
             {t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
-        {firstLoaded && (
+        {firstLoaded && !loadError && (
           <JuiVirtualList dataSource={this} threshold={1} isLoading={loading} />
         )}
-        {!firstLoaded && this.firstLoader()}
+        {loading && !firstLoaded && !loadError && this.firstLoader()}
         {loadError && (
           <JuiRightRailContentLoadError
             tip={t(tryAgainPrompt)}
