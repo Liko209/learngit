@@ -68,6 +68,7 @@ type StreamViewProps = {
   historyUnreadCount: number;
   historyReadThrough: number;
   firstHistoryUnreadPostId?: number;
+  loadInitialPostsError?: Error;
   loading?: boolean;
 };
 

@@ -38,12 +38,12 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 import { Notification } from '@/containers/Notification';
-import { generalErrorHandler } from '@/utils/error';
 import { mainLogger } from 'sdk';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { generalErrorHandler } from '@/utils/error';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -58,14 +58,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
   private _initialized = false;
-  @observable
-  private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
 
-  @observable
-  private _historyHandler: HistoryHandler;
+  jumpToPostId: number;
 
-  @observable
-  private _transformHandler: PostTransformHandler;
+  @observable private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
+  @observable private _historyHandler: HistoryHandler;
+  @observable private _transformHandler: PostTransformHandler;
+
+  @observable loadInitialPostsError: Error | null = null;
+  @observable groupId: number;
+  @observable postIds: number[] = [];
+  @observable items: StreamItem[] = [];
 
   @computed
   get hasHistoryUnread() {
@@ -104,16 +107,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   clearHistoryUnread = () => {
     this._historyHandler.clear();
   }
-
-  @observable
-  groupId: number;
-  @observable
-  postIds: number[] = [];
-
-  jumpToPostId: number;
-
-  @observable
-  items: StreamItem[] = [];
 
   @computed
   private get _groupState() {
@@ -168,31 +161,48 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     );
   }
 
-  @loading
-  async loadInitialPosts() {
-    if (this.jumpToPostId) {
-      await this._loadSiblingPosts(this.jumpToPostId);
-    } else {
-      await this._loadPosts(QUERY_DIRECTION.OLDER);
-    }
-  }
-
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
+  }
+
+  @loading
+  async loadInitialPosts() {
+    this.loadInitialPostsError = null;
+    try {
+      if (this.jumpToPostId) {
+        await this._loadSiblingPosts(this.jumpToPostId);
+      } else {
+        await this._loadPosts(QUERY_DIRECTION.OLDER);
+      }
+    } catch (err) {
+      this._handleLoadInitialPostsError(err);
+    }
   }
 
   @onScrollToTop
   @loadingTop
   @action
   async loadPrevPosts() {
-    return this._loadPosts(QUERY_DIRECTION.OLDER);
+    try {
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      return posts;
+    } catch (err) {
+      this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
+      return;
+    }
   }
 
   @onScrollToBottom
   @loadingBottom
   @action
   async loadNextPosts() {
-    return this._loadPosts(QUERY_DIRECTION.NEWER);
+    try {
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      return posts;
+    } catch (err) {
+      this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
+      return;
+    }
   }
 
   @onScroll
@@ -278,35 +288,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.groupId = groupId;
     const postDataProvider: IFetchSortableDataProvider<Post> = {
       fetchData: async (direction, pageSize, anchor) => {
-        try {
-          const postService: PostService = PostService.getInstance();
-          const { posts, hasMore, items } = await postService.getPostsByGroupId(
-            {
-              direction,
-              groupId,
-              postId: anchor && anchor.id,
-              limit: pageSize,
-            },
-          );
-          storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
-          storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
-          return { hasMore, data: posts };
-        } catch (err) {
-          if (errorHelper.isBackEndError(err)) {
-            Notification.flashToast({
-              message: `SorryWeWereNotAbleToLoad${
-                direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
-              }Messages`,
-              type: ToastType.ERROR,
-              messageAlign: ToastMessageAlign.LEFT,
-              fullWidth: false,
-              dismissible: false,
-            });
-          } else {
-            generalErrorHandler(err);
-          }
-          return { data: [], hasMore: true };
-        }
+        const postService: PostService = PostService.getInstance();
+        const { posts, hasMore, items } = await postService.getPostsByGroupId({
+          direction,
+          groupId,
+          postId: anchor && anchor.id,
+          limit: pageSize,
+        });
+        storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+        storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
+        return { hasMore, data: posts };
       },
     };
 
@@ -346,6 +337,37 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     );
 
     this._initialized = false;
+  }
+
+  private _canHandleError(err: Error) {
+    return (
+      errorHelper.isBackEndError(err) ||
+      errorHelper.isNetworkConnectionError(err)
+    );
+  }
+
+  private _handleLoadInitialPostsError(err: Error) {
+    if (this._canHandleError(err)) {
+      this.loadInitialPostsError = err;
+    } else {
+      generalErrorHandler(err);
+    }
+  }
+
+  private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
+    if (this._canHandleError(err)) {
+      Notification.flashToast({
+        message: `SorryWeWereNotAbleToLoad${
+          direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
+        }Messages`,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    } else {
+      generalErrorHandler(err);
+    }
   }
 }
 
