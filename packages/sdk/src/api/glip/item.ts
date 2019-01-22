@@ -118,6 +118,14 @@ class ItemAPI extends Api {
     return this.glipNetworkClient.get<Raw<ItemFile>>(getItemServerUrl(id));
   }
 
+  static getItems(typeId: number, groupId: number, newerThan: number) {
+    return this.glipNetworkClient.get<Raw<Item>[]>('/items', {
+      type_id: typeId,
+      group_ids: [groupId],
+      newer_than: newerThan,
+    });
+  }
+
   static requestRightRailItems(groupId: number) {
     return this.glipNetworkClient.get<IRightRailItemModel>(
       '/web_client_right_rail_items',
