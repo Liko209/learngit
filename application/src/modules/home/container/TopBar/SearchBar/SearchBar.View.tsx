@@ -3,7 +3,7 @@
  * @Date: 2018-11-23 16:26:44
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { MouseEvent, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { debounce } from 'lodash';
@@ -328,9 +328,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     clearTimeout(this.timer);
   }
 
-  mouseAddHighlight = (sectionIndex: number, cellIndex: number) => (
-    e: MouseEvent<HTMLLIElement>,
-  ) => {
+  mouseAddHighlight = (sectionIndex: number, cellIndex: number) => () => {
     this._setSelectIndex(sectionIndex, cellIndex);
   }
 
