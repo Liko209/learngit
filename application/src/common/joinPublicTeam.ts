@@ -22,7 +22,7 @@ const joinHander = async (conversationId: number) => {
     await nGroupService.joinTeam(useId, conversationId);
   } catch (error) {
     const e = error;
-    if (errorHelper.isNotAuthorizedError(e)) {
+    if (errorHelper.isAuthenticationError(e)) {
       Notification.flashToast({
         message: 'JoinTeamNotAuthorizedError',
         type: 'error',
