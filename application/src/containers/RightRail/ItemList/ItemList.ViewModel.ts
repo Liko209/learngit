@@ -243,6 +243,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return this._loadStatus;
   }
 
+  dispose() {
+    this._sortableDataHandler.dispose();
+  }
+
   @computed
   get ids() {
     return this._sortableDataHandler.sortableListStore.getIds();
