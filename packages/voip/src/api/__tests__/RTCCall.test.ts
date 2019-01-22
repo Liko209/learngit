@@ -9,7 +9,7 @@ import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
-import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../types';
+import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 
 describe('RTC call', () => {
@@ -1696,6 +1696,30 @@ describe('RTC call', () => {
       session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+  });
+
+  describe('new call with options', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup(options: RTCCallOptions) {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account, options);
+      session = new MockSession();
+      call.setCallSession(session);
+    }
+
+    it('should call createOutingCallSession with options when new Call with options param. [JPT-820]', done => {
+      const options: RTCCallOptions = { anonymous: true };
+      setup(options);
+      jest.spyOn(call, '_onCreateOutingCallSession');
+      call.onAccountReady();
+      setImmediate(() => {
+        expect(call._options).toEqual(options);
+        expect(call._onCreateOutingCallSession).toBeCalled();
         done();
       });
     });

@@ -11,6 +11,7 @@ import { RTCCallFsm } from '../call/RTCCallFsm';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
+  RTCCallOptions,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
@@ -33,6 +34,8 @@ class RTCCall {
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
+  private _options: RTCCallOptions = {};
+  private _isAnonymous: boolean = false;
 
   constructor(
     isIncoming: boolean,
@@ -40,10 +43,17 @@ class RTCCall {
     session: any,
     account: IRTCAccount,
     delegate: IRTCCallDelegate | null,
+    options?: RTCCallOptions,
   ) {
     this._account = account;
     if (delegate != null) {
       this._delegate = delegate;
+    }
+    if (options) {
+      if (options.anonymous) {
+        this._isAnonymous = true;
+      }
+      this._options = options;
     }
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
@@ -58,6 +68,10 @@ class RTCCall {
       this._startOutCallFSM();
     }
     this._prepare();
+  }
+
+  getAnonymous() {
+    return this._isAnonymous;
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -393,6 +407,7 @@ class RTCCall {
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,
+      this._options,
     );
     this.setCallSession(session);
   }

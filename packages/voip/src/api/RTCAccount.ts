@@ -44,7 +44,6 @@ class RTCAccount implements IRTCAccount {
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
-  private _isAnonymous: boolean = false;
 
   constructor(listener: IRTCAccountDelegate) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
@@ -72,6 +71,7 @@ class RTCAccount implements IRTCAccount {
   public makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
+    options?: RTCCallOptions,
   ): RTCCall | null {
     if (toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
@@ -81,7 +81,7 @@ class RTCAccount implements IRTCAccount {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
       return null;
     }
-    const call = new RTCCall(false, toNumber, null, this, delegate);
+    const call = new RTCCall(false, toNumber, null, this, delegate, options);
     this._callManager.addCall(call);
     return call;
   }
@@ -89,9 +89,17 @@ class RTCAccount implements IRTCAccount {
   public makeAnonymousCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
+    options?: RTCCallOptions,
   ): RTCCall | null {
-    this._isAnonymous = true;
-    return this.makeCall(toNumber, delegate);
+    let optionsWithAnonymous: RTCCallOptions;
+    if (options) {
+      options.anonymous = true;
+      optionsWithAnonymous = options;
+    } else {
+      optionsWithAnonymous = { anonymous: true };
+    }
+    rtcLogger.error(LOG_TAG, 'make anonymous call');
+    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
@@ -110,11 +118,8 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.getCallByUuid(uuid);
   }
 
-  createOutgoingCallSession(toNum: string): any {
-    const AnonymousOptions: RTCCallOptions = { anonymous: true };
-    return this._isAnonymous
-      ? this._regManager.createOutgoingCallSession(toNum, AnonymousOptions)
-      : this._regManager.createOutgoingCallSession(toNum, {});
+  createOutgoingCallSession(toNum: string, options: RTCCallOptions): any {
+    return this._regManager.createOutgoingCallSession(toNum, options);
   }
 
   removeCallFromCallManager(uuid: string): void {
