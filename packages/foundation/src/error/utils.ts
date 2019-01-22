@@ -5,11 +5,25 @@
  */
 import { JError } from './JError';
 import { ErrorCondition } from './types';
-export function errorConditionSelector(error: JError, conditions: ErrorCondition | ErrorCondition[]) {
+export function errorConditionSelector(
+  error: JError,
+  conditions: ErrorCondition | ErrorCondition[],
+) {
   if (Array.isArray(conditions)) {
-    return conditions.some(condition => stringMatch(condition.type, error.type) && condition.codes.some(code => stringMatch(code, error.code)));
+    return conditions.some(condition =>
+      isErrorMatchCondition(error, condition),
+    );
   }
-  return stringMatch(conditions.type, error.type) && conditions.codes.some(code => stringMatch(code, error.code));
+  return isErrorMatchCondition(error, conditions);
+}
+
+function isErrorMatchCondition(error: JError, condition: ErrorCondition) {
+  const excludes = condition.excludeCodes || [];
+  return (
+    stringMatch(condition.type, error.type) &&
+    !excludes.some(code => stringMatch(code, error.code)) &&
+    condition.codes.some(code => stringMatch(code, error.code))
+  );
 }
 
 export function stringMatch(src: string, target: string): boolean {

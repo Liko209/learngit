@@ -17,14 +17,15 @@ import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
-import { EPERM } from 'constants';
 import { TypeDictionary } from '../../../../utils';
+import { ItemSyncController } from '../../controller/ItemSyncController';
 
 jest.mock('../../../../service/utils', () => ({
   baseHandleData: jest.fn(),
   transform: jest.fn(),
 }));
 
+jest.mock('../../controller/ItemSyncController');
 jest.mock('../../../../service/utils');
 jest.mock('../../controller/ItemActionController');
 jest.mock('../../../../dao');
@@ -38,6 +39,7 @@ describe('ItemService', () => {
   let itemServiceController: ItemServiceController;
   let fileItemService: FileItemService;
   let itemActionController: ItemActionController;
+  const itemSyncController = new ItemSyncController(null);
 
   function setup() {
     itemService = new ItemService();
@@ -46,6 +48,21 @@ describe('ItemService', () => {
     itemActionController = new ItemActionController(
       undefined as IPartialModifyController<Item>,
     );
+
+    Object.assign(itemService, {
+      _itemServiceController: itemServiceController,
+    });
+
+    Object.defineProperties(itemServiceController, {
+      itemActionController: {
+        get: jest.fn(() => itemActionController),
+        configurable: true,
+      },
+      itemSyncController: {
+        get: jest.fn(() => itemSyncController),
+        configurable: true,
+      },
+    });
   }
 
   function clearMocks() {
@@ -57,6 +74,18 @@ describe('ItemService', () => {
   beforeEach(() => {
     clearMocks();
     setup();
+  });
+
+  describe('itemSyncController', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+    it('requestSyncGroupItems', async () => {
+      const groupId = 11;
+      itemService.requestSyncGroupItems(groupId);
+      expect(itemSyncController.requestSyncGroupItems).toBeCalledWith(groupId);
+    });
   });
 
   describe('fileItemService', () => {
@@ -81,6 +110,16 @@ describe('ItemService', () => {
         .mockImplementation(() => {
           return fileItemService;
         });
+    });
+
+    describe('getThumbsUrlWithSize', () => {
+      it('should call file item service with correct parameter', async () => {
+        expect.assertions(2);
+        fileItemService.getThumbsUrlWithSize = jest.fn().mockResolvedValue('a');
+        const res = await itemService.getThumbsUrlWithSize(1, 2, 3);
+        expect(fileItemService.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
+        expect(res).toBe('a');
+      });
     });
 
     describe('sendItemFile()', () => {
@@ -371,14 +410,6 @@ describe('ItemService', () => {
     beforeEach(() => {
       clearMocks();
       setup();
-
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      Object.defineProperty(itemServiceController, 'itemActionController', {
-        get: jest.fn(() => itemActionController),
-      });
     });
 
     it('should controller with correct parameter', async () => {
@@ -395,8 +426,6 @@ describe('ItemService', () => {
     };
 
     beforeEach(() => {
-      clearMocks();
-      setup();
       ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue(
         new ApiResultOk(
           {
@@ -408,10 +437,6 @@ describe('ItemService', () => {
       );
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
       itemService.handleIncomingData = jest.fn();
-    });
-
-    afterAll(() => {
-      jest.clearAllMocks();
     });
 
     it('should call related api', () => {

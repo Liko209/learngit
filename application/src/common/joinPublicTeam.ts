@@ -14,6 +14,10 @@ import { Notification } from '@/containers/Notification';
 import GroupModel from '@/store/models/Group';
 import { SortableModel } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
 
 const joinHander = async (conversationId: number) => {
   const nGroupService = new NGroupService();
@@ -22,11 +26,11 @@ const joinHander = async (conversationId: number) => {
     await nGroupService.joinTeam(useId, conversationId);
   } catch (error) {
     const e = error;
-    if (errorHelper.isNotAuthorizedError(e)) {
+    if (errorHelper.isAuthenticationError(e)) {
       Notification.flashToast({
         message: 'JoinTeamNotAuthorizedError',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

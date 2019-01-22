@@ -30,6 +30,8 @@ const JuiProfileDialogContentMemberHeader = styled('div')`
   flex-basis: ${height(12.5)};
   flex-shrink: 0;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
   &.shadow {
     box-shadow: ${({ theme }) => theme.boxShadow.val3};
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};

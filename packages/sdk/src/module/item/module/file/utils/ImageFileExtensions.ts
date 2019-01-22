@@ -1,4 +1,26 @@
-const ImageFileExtensions = [
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-16 17:02:47
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+const GifFileExtensions = new Set(['gif', 'giphy']);
+
+const SupportPreviewImageExtensions = new Set([
+  'jpg',
+  'png',
+  'jpeg',
+  'bmp',
+  'tif',
+  'tiff',
+  'heic',
+  'giphy',
+  'gif',
+]);
+
+const ResizableExtensions = new Set(['bmp', 'jpg', 'jpeg', 'png']);
+
+const ImageFileExtensions = new Set([
   'ase',
   'art',
   'bmp',
@@ -13,7 +35,6 @@ const ImageFileExtensions = [
   'djvu',
   'egt',
   'exif',
-  'gif',
   'gpl',
   'grf',
   'icns',
@@ -119,6 +140,13 @@ const ImageFileExtensions = [
   'ras',
   'sun',
   'tga',
-];
+  'ps',
+  'etc',
+]);
 
-export { ImageFileExtensions };
+export {
+  ImageFileExtensions,
+  GifFileExtensions,
+  ResizableExtensions,
+  SupportPreviewImageExtensions,
+};

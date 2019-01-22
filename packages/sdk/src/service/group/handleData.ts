@@ -87,7 +87,7 @@ async function calculateDeltaData(
     if (add) {
       for (const key in add) {
         if (add.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
-          result[key] = _.concat([], originData[key], add[key]);
+          result[key] = _.uniq(_.concat([], originData[key], add[key]));
         } else {
           // No a regular delta message if the add field is not existed
           // Force end the calculation and return

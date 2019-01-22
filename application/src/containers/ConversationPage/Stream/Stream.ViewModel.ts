@@ -14,7 +14,6 @@ import { Group } from 'sdk/module/group/entity';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { errorHelper } from 'sdk/error';
-
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -45,6 +44,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ItemService } from 'sdk/module/item';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -58,6 +58,7 @@ const transformFunc = (dataModel: Post) => ({
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
+  private _itemService: ItemService = ItemService.getInstance();
   private _initialized = false;
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -167,6 +168,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     PerformanceTracerHolder.getPerformanceTracer().end(
       PERFORMANCE_KEYS.SWITCH_CONVERSATION,
     );
+    this._syncGroupItems();
   }
 
   @loading
@@ -212,6 +214,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     } else {
       this._newMessageSeparatorHandler.enable();
     }
+  }
+
+  private _syncGroupItems() {
+    this._itemService.requestSyncGroupItems(this.groupId);
   }
 
   markAsRead() {

@@ -64,6 +64,13 @@ type Group = ExtendedBaseModel & {
   members: number[];
 } & GroupCommon;
 
+type TeamPermissionParams = {
+  members: number[];
+  is_team?: boolean;
+  guest_user_company_ids?: number[];
+  permissions?: TeamPermission;
+};
+
 export {
   GroupQueryType,
   FEATURE_STATUS,
@@ -71,4 +78,5 @@ export {
   TeamPermission,
   Group,
   GroupCommon,
+  TeamPermissionParams,
 };

@@ -8,4 +8,5 @@ import { Item } from '../../base/entity';
 
 export type FileItem = Item & {
   name: string;
+  source?: string;
 };

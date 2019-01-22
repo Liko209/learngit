@@ -6,6 +6,24 @@ export class RightRail extends BaseWebComponent {
     return this.getSelectorByAutomationId('rightRail');
   }
 
+  get expandStatusButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('chevron_right').parent('button[aria-label="Hide details"]');
+  }
+
+  get foldStatusButton() {
+    this.warnFlakySelector();
+    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]');
+  }
+
+  async expand() {
+    await this.t.click(this.foldStatusButton);
+  }
+
+  async fold() {
+    await this.t.click(this.expandStatusButton);
+  }
+
   get tabList() {
     return this.self.find('[role="tablist"]')
   }
@@ -70,6 +88,10 @@ export class RightRail extends BaseWebComponent {
     return this.getComponent(FilesTab);
   }
 
+  get tasksTab() {
+    return this.getComponent(TasksTab);
+  }
+
   get linkTab() {
     return this.getComponent(LinksTab);
   }
@@ -117,7 +139,6 @@ class FilesTab extends BaseWebComponent {
   }
 
 }
-
 class ImagesTab extends BaseWebComponent {
   // this is a temp. selector
   get self() {
@@ -146,7 +167,6 @@ class ImagesTab extends BaseWebComponent {
   }
 
 }
-
 
 class ImageAndFileItem extends BaseWebComponent {
   get name() {
@@ -206,5 +226,35 @@ class LinksTab extends BaseWebComponent {
     await this.t.expect(this.items.count).eql(n);
   }
 
+}
+
+class TasksTab extends BaseWebComponent {
+
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get subTitle() {
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Tasks/);
+  }
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
+  }
+
+  async waitUntilImagesItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-task-item');
+  }
+
+  nthItem(n: number) {
+    return this.items.nth(n).find('.list-item-primary');
+  }
 
 }
+
+

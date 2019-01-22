@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Group } from '../entity';
 import _ from 'lodash';
+import { Group } from '../entity';
 import { TeamActionController } from './TeamActionController';
 import { TeamPermissionController } from './TeamPermissionController';
 import { buildPartialModifyController } from '../../../framework/controller';
@@ -25,6 +25,8 @@ class TeamController {
 
       this._actionController = new TeamActionController(
         partialModifyController,
+        this.entitySourceController,
+        this.getTeamPermissionController(),
       );
     }
     return this._actionController;

@@ -101,8 +101,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     return this._instance;
   }
 
-  onReady(handler: () => any) {
-    this._dataLoader = this._dataLoader.then(handler);
+  onReady(handler: (list: Set<number>) => any) {
+    this._dataLoader = this._dataLoader.then(() => handler(this._idSet));
   }
 
   private _updateHiddenGroupIds() {
@@ -269,9 +269,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     ) {
       return;
     }
+
     const unreadIds: number[] = [];
     const withoutUnreadIds: number[] = [];
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+
     payload.body.entities.forEach((state: GroupState) => {
       const hasUnread =
         state.marked_as_unread ||
@@ -283,6 +285,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         withoutUnreadIds.push(state.id);
       }
     });
+
     this._handleWithUnread(unreadIds);
     this._handleWithoutUnread(withoutUnreadIds);
   }
@@ -386,6 +389,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const performanceKey = this._getPerformanceKey(sectionType);
       PerformanceTracerHolder.getPerformanceTracer().start(performanceKey);
       await this._handlersMap[sectionType].fetchData(direction);
+
       const ids = this._handlersMap[sectionType].sortableListStore.getIds();
       this._updateIdSet(EVENT_TYPES.UPDATE, ids);
       PerformanceTracerHolder.getPerformanceTracer().end(performanceKey);

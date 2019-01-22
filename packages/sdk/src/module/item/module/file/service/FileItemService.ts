@@ -31,6 +31,10 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
     return this.fileItemController.fileUploadController;
   }
 
+  protected get fileActionController() {
+    return this.fileItemController.fileActionController;
+  }
+
   async sendItemFile(
     groupId: number,
     file: File,
@@ -105,6 +109,14 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
       name: file.name,
       type: file.type,
     } as SanitizedFileItem;
+  }
+
+  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+    return await this.fileActionController.getThumbsUrlWithSize(
+      itemId,
+      width,
+      height,
+    );
   }
 }
 
