@@ -15,7 +15,7 @@ import {
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = dateFormatter.localTime(moment(timestamp));
   const date = recentlyTwoDayAndOther(timestamp);
-  return `${date} ${date ? t('at') : ''} ${getAMOrPM}`;
+  return `${date} ${t('at')} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
