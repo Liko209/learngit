@@ -78,7 +78,7 @@ describe('TeamSettingsView', () => {
     it('The Leave Team dialog display correctly after clicking leave team button [JPT-934]', (done: jest.DoneCallback) => {
       jest.spyOn(Dialog, 'confirm');
       const props: any = {
-        t: (s: string, options) => {
+        t: (s: string, options: object) => {
           if (!options) {
             return s;
           }

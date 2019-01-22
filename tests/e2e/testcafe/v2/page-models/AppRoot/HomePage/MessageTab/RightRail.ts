@@ -225,6 +225,7 @@ class LinksTab extends BaseWebComponent {
   async linksCountsShouldBe(n: number) {
     await this.t.expect(this.items.count).eql(n);
   }
+
 }
 
 class TasksTab extends BaseWebComponent {
