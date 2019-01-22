@@ -12,9 +12,7 @@ const ERROR_TYPES = {
 type ErrorCondition = {
   type: string;
   codes: string[];
+  excludeCodes?: string[];
 };
 
-export {
-  ERROR_TYPES,
-  ErrorCondition,
-};
+export { ERROR_TYPES, ErrorCondition };

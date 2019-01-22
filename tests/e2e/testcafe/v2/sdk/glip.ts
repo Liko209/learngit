@@ -171,6 +171,10 @@ export class GlipSdk {
     });
   }
 
+  async getPersonPartialData(keyword: string, rcId?: string) {
+    return await this.getPerson(rcId).then(res => res.data[keyword]);
+  }
+
 
   /* team */
   getTeams() {

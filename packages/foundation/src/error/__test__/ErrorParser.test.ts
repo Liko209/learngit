@@ -8,15 +8,12 @@ import { IErrorParser } from '../IErrorParser';
 import { JError } from '../JError';
 
 class MockParser implements IErrorParser {
-
-  constructor(public name: string) {
-  }
+  constructor(public name: string) {}
   getName = () => this.name;
   parse = jest.fn().mockReturnValue(null);
 }
 
 describe('ErrorParser', () => {
-
   describe('register()', () => {
     it('should register work', async () => {
       const errorParser = new ErrorParser();
@@ -47,7 +44,6 @@ describe('ErrorParser', () => {
 
   describe('parse()', () => {
     it('should parse by all parser', () => {
-
       const errorParser = new ErrorParser();
       const parser1 = new MockParser('1');
       const parser2 = new MockParser('2');
@@ -62,7 +58,6 @@ describe('ErrorParser', () => {
       expect(parser3.parse).toBeCalledWith(error);
     });
     it('should stop parse when one parser return', () => {
-
       const errorParser = new ErrorParser();
       const parser1 = new MockParser('1');
       const parser2 = new MockParser('2');
