@@ -19,21 +19,15 @@ function getDateAndTime(timestamp: number) {
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
+  const startDate = moment(startTimestamp).format('l');
+  const endDate = moment(endTimestamp).format('l');
   const startTime = getDateAndTime(startTimestamp);
-  let endTime = getDateAndTime(endTimestamp);
-  const isSameDay = startTime.split(' ')[0] === endTime.split(' ')[0];
+  const endTime = getDateAndTime(endTimestamp);
+
+  const isSameDay = moment(startDate).isSame(endDate, 'day');
+
   if (isSameDay) {
-    const endTimeArr = endTime.split(' ');
-    if (/today/i.test(endTimeArr[0])) {
-      // ["Today", "at", "2:01", "PM"]
-      endTime = endTime.replace(`${endTimeArr[0]} ${endTimeArr[1]} `, '');
-    } else {
-      // ["Thu,", "1/24/2019", "at", "2:30", "PM"]
-      endTime = endTime.replace(
-        `${endTimeArr[0]} ${endTimeArr[1]} ${endTimeArr[2]} `,
-        '',
-      );
-    }
+    return `${startTime} - ${dateFormatter.localTime(moment(endTimestamp))}`;
   }
   return `${startTime} - ${endTime}`;
 }
