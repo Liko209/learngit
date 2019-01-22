@@ -84,8 +84,12 @@ storiesOf('Pattern/ConversationItemCard', module)
               title="haah"
               contentHasPadding={false}
               headerActions={[
-                { iconName: 'refresh', handler: () => {} },
-                { iconName: 'phone', handler: () => {} },
+                { iconName: 'copy', handler: () => {}, tooltip: 'copy' },
+                {
+                  iconName: 'download',
+                  handler: () => {},
+                  tooltip: 'download',
+                },
               ]}
               showHeaderActions={true}
             >
