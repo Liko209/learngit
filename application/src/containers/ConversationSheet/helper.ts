@@ -19,12 +19,10 @@ function getDateAndTime(timestamp: number) {
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
-  const startDate = moment(startTimestamp).format('l');
-  const endDate = moment(endTimestamp).format('l');
   const startTime = getDateAndTime(startTimestamp);
   const endTime = getDateAndTime(endTimestamp);
 
-  const isSameDay = moment(startDate).isSame(endDate, 'day');
+  const isSameDay = moment(startTimestamp).isSame(endTimestamp, 'day');
 
   if (isSameDay) {
     return `${startTime} - ${dateFormatter.localTime(moment(endTimestamp))}`;
