@@ -8,6 +8,8 @@ import { shallow } from 'enzyme';
 import { TeamSettingsComponent } from '../TeamSettings.View';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
+import { Dialog } from '@/containers/Dialog';
+import { JuiTeamSettingButtonListItem as ButtonListItem } from 'jui/pattern/TeamSetting';
 
 describe('TeamSettingsView', () => {
   describe('render()', () => {
@@ -68,6 +70,45 @@ describe('TeamSettingsView', () => {
           .props(),
       ).toMatchObject({
         value: 'SOME INITIAL DESC....',
+      });
+    });
+  });
+
+  describe('Confirm dialog', () => {
+    it('The Leave Team dialog display correctly after clicking leave team button [JPT-934]', (done: jest.DoneCallback) => {
+      jest.spyOn(Dialog, 'confirm');
+      const props: any = {
+        t: (s: string, options) => {
+          if (!options) {
+            return s;
+          }
+          return `${s} ${JSON.stringify(options)}`;
+        },
+        initialData: {
+          name: '',
+          description: '',
+        },
+        id: 123,
+        isAdmin: false,
+        save: () => {},
+        leaveTeam: () => {},
+        groupName: 'my team',
+      };
+      const result = shallow(<TeamSettingsComponent {...props} />);
+      const leaveTeamButton = result
+        .find(ButtonListItem)
+        .filterWhere(wrapper => wrapper.text() === 'leaveTeam');
+      expect(leaveTeamButton.text()).toEqual('leaveTeam');
+      expect(leaveTeamButton.simulate('click'));
+      setTimeout(() => {
+        expect(Dialog.confirm).toHaveBeenCalledWith(
+          expect.objectContaining({
+            content: 'leaveTeamConfirmContent {"teamName":"my team"}',
+            okText: 'Leaveteamconfirmok',
+            cancelText: 'Cancel',
+          }),
+        );
+        done();
       });
     });
   });
