@@ -2,7 +2,7 @@ import { service } from 'sdk';
 import { ItemService } from 'sdk/module/item';
 import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
-import { PermissionService } from 'sdk/src/module/permission';
+import { PermissionService } from 'sdk/module/permission';
 
 const {
   PersonService,
