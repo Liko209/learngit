@@ -1751,7 +1751,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should trigger dtmf function when call dtmf and call is in holding state.', done => {
+    it('should trigger dtmf function when call dtmf and call is in holding state. [JPT-989]', done => {
       setup();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
@@ -1764,7 +1764,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should trigger dtmf function when call dtmf and call is in holded state.', done => {
+    it('should trigger dtmf function when call dtmf and call is in holded state. [JPT-990]', done => {
       setup();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
@@ -1781,7 +1781,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should trigger dtmf function when call dtmf and call is in unholding state.', done => {
+    it('should trigger dtmf function when call dtmf and call is in unholding state. [JPT-991]', done => {
       setup();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
