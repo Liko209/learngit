@@ -10,6 +10,7 @@ import { Header, joinTeamDialog } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSetting';
+import { LeaveTeamDialog } from './LeaveTeamDialog';
 
 
 export class HomePage extends BaseWebComponent {
@@ -85,5 +86,9 @@ export class HomePage extends BaseWebComponent {
 
   get joinTeamDialog() {
     return this.getComponent(joinTeamDialog);
+  }
+
+  get leaveTeamDialog() {
+    return this.getComponent(LeaveTeamDialog);
   }
 }

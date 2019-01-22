@@ -92,6 +92,10 @@ export abstract class BaseWebComponent {
     }
   }
 
+  button(name: string){
+   return this.self.find('button').withText(name);
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
