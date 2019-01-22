@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiListItemText,
   JuiListItemWithHover,
@@ -16,6 +17,7 @@ import { FileItemViewProps } from './types';
 import { Download } from '../Download.View';
 import { SecondaryText } from '../SecondaryText.View';
 
+@observer
 class FileItemView extends Component<FileItemViewProps> {
   private _renderItem = (hover: boolean) => {
     const { file, fileTypeOrUrl, personName, createdTime } = this.props;

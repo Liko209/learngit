@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiListItemText,
   JuiListItem,
@@ -15,6 +16,7 @@ import { LinkItemViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { SecondaryText } from '../SecondaryText.View';
 
+@observer
 class LinkItemView extends Component<LinkItemViewProps> {
   private _openLink = () => {
     const { url } = this.props;

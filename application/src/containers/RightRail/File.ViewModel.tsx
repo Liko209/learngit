@@ -13,17 +13,18 @@ import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
-import { FileViewProps } from './File.types';
+import { FileProps, FileViewProps } from './File.types';
 
-class FileViewModel extends AbstractViewModel<FileViewProps> {
+class FileViewModel extends AbstractViewModel<FileProps>
+  implements FileViewProps {
   @computed
-  get id() {
+  private get _id() {
     return this.props.id;
   }
 
   @computed
   get file() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this.id);
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
   }
 
   @computed

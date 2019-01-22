@@ -10,7 +10,7 @@ type FileProps = {
   id: number;
 };
 
-type FileViewProps = FileProps & {
+type FileViewProps = {
   file: FileItemModel;
   personName: string;
   createdTime: string;

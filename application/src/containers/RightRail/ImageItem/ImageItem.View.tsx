@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiListItemText,
   JuiListItemWithHover,
@@ -17,6 +18,7 @@ import { ImageItemViewProps } from './types';
 import { Download } from '../Download.View';
 import { SecondaryText } from '../SecondaryText.View';
 
+@observer
 class ImageItemView extends Component<ImageItemViewProps> {
   private _renderItem = (hover: boolean) => {
     const { file, url, personName, createdTime } = this.props;
