@@ -33,6 +33,8 @@ class RTCCall {
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
+  private _hangupInvalidCallInterval: number = 10;
+  private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
 
   constructor(
     isIncoming: boolean,
@@ -54,12 +56,18 @@ class RTCCall {
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
       this.setCallSession(session);
     } else {
+      this._addHangupTimer();
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
     this._prepare();
   }
 
+  private _addHangupTimer(): void {
+    this._hangupInvalidCallTimer = setTimeout(() => {
+      this.hangup();
+    },                                        this._hangupInvalidCallInterval * 1000);
+  }
   setCallDelegate(delegate: IRTCCallDelegate) {
     this._delegate = delegate;
   }
@@ -170,6 +178,9 @@ class RTCCall {
     });
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
+    });
+    this._callSession.on(CALL_SESSION_STATE.PROGRESS, () => {
+      this._onSessionProgress();
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -327,6 +338,12 @@ class RTCCall {
 
   private _onSessionError() {
     this._fsm.sessionError();
+  }
+
+  private _onSessionProgress() {
+    if (this._hangupInvalidCallTimer) {
+      clearTimeout(this._hangupInvalidCallTimer);
+    }
   }
   // fsm listener
   private _onAnswerAction() {

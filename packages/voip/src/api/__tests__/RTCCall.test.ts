@@ -1700,4 +1700,48 @@ describe('RTC call', () => {
       });
     });
   });
+
+  describe('setHangupTimeout', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+    }
+
+    it('should set timer when create outgoing call', () => {
+      setup();
+      expect(call._hangupInvalidCallTimer).not.toEqual(null);
+    });
+
+    it('should clear timer when session emit progress event', done => {
+      setup();
+      jest.spyOn(call, '_onSessionProgress');
+      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS);
+      setImmediate(() => {
+        expect(call._onSessionProgress).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('should not set timer when get incoming call', () => {
+      account = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, account, account);
+      expect(call._hangupInvalidCallTimer).toEqual(null);
+    });
+
+    it('should clear timer when session emit progress event', async () => {
+      jest.useFakeTimers();
+      setup();
+      const interval = 10;
+      jest.spyOn(call, 'hangup');
+      jest.advanceTimersByTime(interval * 1000);
+      await setImmediate(() => {});
+      expect(call.hangup).toBeCalled();
+    });
+  });
 });
