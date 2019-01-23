@@ -70,21 +70,14 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     }
     let url: string | null = null;
     const { headshotVersion, headshot } = this._person;
-    if (headshotVersion) {
-      const personService = PersonService.getInstance<PersonService>();
-      url = personService.getHeadShot(this.props.uid, headshotVersion, 150);
-    } else if (headshot) {
-      if (typeof headshot === 'string') {
-        url = headshot;
-      }
-      if (headshot.url) {
-        url = headshot.url;
-      } else if (headshot.thumbs) {
-        const keys = Object.keys(headshot.thumbs);
-        const str = keys.find(url => url.includes('size=150'));
-        url = str && headshot.thumbs[str];
-      }
-    }
+    const personService = PersonService.getInstance<PersonService>();
+    url = personService.getHeadShotWithSize(
+      this.props.uid,
+      headshotVersion,
+      headshot,
+      150,
+    );
+
     return url;
   }
   @computed

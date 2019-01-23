@@ -29,9 +29,13 @@ export type Person = ExtendedBaseModel & {
   first_name?: string;
   last_name?: string;
   display_name?: string;
-  headshot?: {
-    url: string;
-  };
+  headshot?:
+    | string
+    | {
+      url: string;
+      stored_file_id?: string;
+      thumbs?: { key: string; value: string }[];
+    };
   headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;

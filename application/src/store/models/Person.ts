@@ -23,9 +23,13 @@ export default class PersonModel extends Base<Person> {
   @observable
   lastName: string;
   @observable
-  headshot?: {
-    url: string;
-  };
+  headshot?:
+    | string
+    | {
+      url: string;
+      stored_file_id?: string;
+      thumbs?: { key: string; value: string | number }[];
+    };
   @observable
   headshotVersion?: string;
   @observable
