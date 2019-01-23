@@ -46,6 +46,7 @@ def runOnSeleniumGrid(
 
     String siteUrl,
     String siteEnv,
+    String platformCredentialId,
 
     String[] browsers,
     String seleniumServer,
@@ -64,7 +65,7 @@ def runOnSeleniumGrid(
         // global env
         env.TZ='UTC-8'
 
-        sh 'env'
+        sh 'env'  // for debug
 
         // stage 1: checkout stage
         checkoutStage('selenium-grid', gitUrl, gitBranch, gitCredentialId)
@@ -92,7 +93,7 @@ def runOnSeleniumGrid(
             Map tasks = [:]
             // split tasks by browsers level
             browsers.each { browser ->
-                parallelTasks[browser] = {
+                tasks[browser] = {
                     condStage(name: "selenium-grid: e2e ${browser}") {
                         // the reason we split fixtures into small chunk is there is a chance that browser connection is lost during execution
                         // in order to reduce the effect of this cases
@@ -108,15 +109,18 @@ def runOnSeleniumGrid(
                                 "DEBUG_MODE=false",
                                 "SCREENSHOT_WEBP_QUALITY=80",
                             ]) {
-                                // print env for debug
-                                sh 'env'
-                                // retry until success if the error is cause by lost connection
-                                for (int i = 0; i < maxRetry; i++) {
-                                    Integer status = sh(returnStatus: true, script: 'npm run e2e')
-                                    echo "exit code is ${status}"
-                                    if (! (status in [1, 7]))  // status code of lost connection
-                                        break
-                                    sleep 60 // retry after 1 min
+                                sh 'env'  // for debug
+                                withCredentials([usernamePassword(
+                                    credentialsId: platformCredentialId,
+                                    usernameVariable: 'RC_PLATFORM_APP_KEY',
+                                    passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
+                                    for (int i = 0; i < maxRetry; i++) {
+                                        Integer status = sh(returnStatus: true, script: 'npm run e2e')
+                                        echo "exit code is ${status}"
+                                        if (status in [0, 3])  // normal exit
+                                            break
+                                        sleep 60 // retry after 1 min
+                                    }
                                 }
                             }
                         }
@@ -127,16 +131,13 @@ def runOnSeleniumGrid(
         }}
         // post execution: archive report
         // fixme: following code is not portable because allure and java should pre-install on the node
-        allure(
-            commandline: 'allure-2.7',
-            includeProperties: false,
-            results: [[ path: 'tests/e2e/testcafe/allure/allure-results' ]]
-        )
+        // allure(
+        //     commandline: 'allure-2.7',
+        //     includeProperties: false,
+        //     results: [[ path: 'tests/e2e/testcafe/allure/allure-results' ]]
+        // )
     }
 }
-
-//
-
 
 // start to build
 
@@ -151,6 +152,7 @@ String gitCredentialId = params.GIT_CREDENTIAL
 
 String siteUrl = params.SITE_URL
 String siteEnv = params.SITE_ENV
+String platformCredentialId = params.PLATFORM_CREDENTIAL
 
 
 String[] browsers = params.BROWSERS.split('\n').collect{ it.trim() }
@@ -159,12 +161,12 @@ String seleniumServer = params.SELENIUM_SERVER
 
 // todo: fixtures, tags should also be configurable
 
-Map tasks = [
+parallel([
     'selenium-grid': {
         runOnSeleniumGrid(
             seleniumNode,
             gitUrl, gitBranch, gitCredentialId,
-            siteUrl, siteEnv,
+            siteUrl, siteEnv, platformCredentialId,
             seleniumBrowsers, seleniumServer,
             2, 2, 5)
     },
@@ -176,6 +178,4 @@ Map tasks = [
     'electron-win': {
 
     },
-]
-
-parallel(tasks)
+])
