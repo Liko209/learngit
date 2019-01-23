@@ -22,11 +22,11 @@ class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost } = this.props;
     Dialog.confirm({
-      title: t('deleteMessageTitle'),
-      content: t('deleteMessageContent'),
+      title: t('deletePostTitle'),
+      content: t('deletePostContent'),
       okText: t('delete'),
       okType: 'negative',
-      cancelText: t('deletePostCancel'),
+      cancelText: t('Cancel'),
       async onOK() {
         try {
           await deletePost();
