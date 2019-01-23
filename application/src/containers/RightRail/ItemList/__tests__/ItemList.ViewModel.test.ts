@@ -22,7 +22,7 @@ describe('ItemListViewModel', () => {
   });
 
   describe('fetchNextPageItems()', () => {
-    it('Should be call sortableDataHandler fetchData', () => {
+    it('Should be call sortableDataHandler fetchData', async () => {
       const _sortableDataHandler = {
         sortableListStore: {
           getIds: jest.fn().mockReturnValue([1, 2]),
@@ -39,7 +39,7 @@ describe('ItemListViewModel', () => {
         _sortKey: 'time',
         _desc: false,
       });
-      ViewModel.fetchNextPageItems();
+      await ViewModel.fetchNextPageItems();
       expect(_sortableDataHandler.fetchData).toHaveBeenCalled();
     });
   });
