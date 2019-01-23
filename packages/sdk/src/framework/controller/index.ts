@@ -41,10 +41,10 @@ export function buildRequestController<
   basePath: string;
   networkClient: NetworkClient;
 }): IRequestController<T> {
-  const request: IRequestController<T> = new RequestController<T>(
+  const requestController: IRequestController<T> = new RequestController<T>(
     networkConfig,
   );
-  return request;
+  return requestController;
 }
 
 export function buildEntityCacheController<T extends IdModel = IdModel>() {

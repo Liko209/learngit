@@ -9,7 +9,6 @@ import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
-import { id } from 'inversify';
 import { errorHelper } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
@@ -20,11 +19,16 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
+import { NewPostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
+
+const postService = {
+  getPostsByGroupId: jest.fn(),
+};
 
 function setup(obj?: any) {
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
@@ -32,8 +36,7 @@ function setup(obj?: any) {
   return vm;
 }
 
-describe.skip('StreamViewModel', () => {
-  let postService: PostService;
+describe('StreamViewModel', () => {
   let itemService: ItemService;
   const streamController = {
     dispose: jest.fn(),
@@ -44,8 +47,7 @@ describe.skip('StreamViewModel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     itemService = new ItemService();
-    postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
@@ -57,11 +59,11 @@ describe.skip('StreamViewModel', () => {
       return vm;
     }
 
-    it.skip('should load posts and update itemStore when fetch initial post', async () => {
+    it('should load posts and update itemStore when fetch initial post', async () => {
       const vm = setup({
         props: { groupId: 1 },
       });
-      (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
+      postService.getPostsByGroupId.mockResolvedValue({
         posts: [
           { id: 1, item_ids: [], created_at: 10000 },
           { id: 2, item_ids: [], created_at: 10001 },
@@ -448,15 +450,13 @@ describe.skip('StreamViewModel', () => {
   });
 });
 
-describe.skip('fetchData()', () => {
+describe('fetchData()', () => {
   function setup() {
     const vm = new StreamViewModel({ groupId: 1 });
     return vm;
   }
   let vm;
-  let postService;
   beforeEach(() => {
-    postService = new PostService();
     PostService.getInstance = jest.fn().mockReturnValue(postService);
     vm = setup();
   });

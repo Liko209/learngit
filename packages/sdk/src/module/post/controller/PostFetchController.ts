@@ -54,14 +54,12 @@ class PostFetchController {
       hasMore: true,
     };
 
-    // Step 1
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
       TAG,
       `getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
     );
 
-    // Step 2
     if (shouldSaveToDb) {
       result = await this._getPostsFromDb({
         groupId,
@@ -71,7 +69,6 @@ class PostFetchController {
       });
     }
 
-    // Step 3
     if (result.posts.length < limit) {
       const shouldFetch = await this._shouldFetchFromServer(direction, groupId);
       if (!shouldSaveToDb || shouldFetch) {
@@ -89,7 +86,6 @@ class PostFetchController {
           limit,
           postId: validAnchorPostId ? validAnchorPostId : postId,
         });
-
         if (serverResult) {
           const updateResult = (posts: Post[], items: Item[]) => {
             result.posts.push(...posts);
@@ -184,9 +180,8 @@ class PostFetchController {
     groupId: number,
   ) {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    return direction === QUERY_DIRECTION.OLDER
-      ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
-      : true;
+    const hasMore = await groupConfigDao.hasMoreRemotePost(groupId, direction);
+    return direction === QUERY_DIRECTION.OLDER ? hasMore : true;
   }
 
   private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {

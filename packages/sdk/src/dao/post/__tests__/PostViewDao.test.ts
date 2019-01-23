@@ -71,8 +71,6 @@ describe('PostViewDao', () => {
 
   describe('queryPostsByGroupId()', () => {
     beforeAll(async () => {
-      // await postViewDao.clear();
-      // await postViewDao.bulkPut(postViews);
       await postDao.clear();
       await postDao.bulkPut(posts);
     });

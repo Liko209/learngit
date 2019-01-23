@@ -7,8 +7,6 @@
 import { IdModel } from '../../model';
 
 interface IRequestController<T extends IdModel = IdModel> {
-  getViaParams(params: Object): Promise<T[] | null>;
-
   get(id: number): Promise<T | null>;
 
   put(data: Partial<T>): Promise<T>;

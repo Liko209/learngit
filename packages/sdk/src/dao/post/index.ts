@@ -62,22 +62,6 @@ class PostDao extends BaseDao<Post> {
       direction,
       limit,
     );
-    // let anchorPost;
-    // let query = this.createQuery();
-    // query = query
-    //   .orderBy('created_at', direction === QUERY_DIRECTION.OLDER)
-    //   .equal('group_id', groupId);
-    // if (anchorPostId) {
-    //   anchorPost = await this.get(anchorPostId);
-    //   if (!anchorPost) {
-    //     return [];
-    //   }
-    //   const rangeMethod =
-    //     direction === QUERY_DIRECTION.OLDER ? 'lessThan' : 'greaterThan';
-    //   query = query[rangeMethod]('created_at', anchorPost.created_at);
-    // }
-    // const result = await query.limit(limit).toArray();
-    // return result;
   }
 
   queryLastPostByGroupId(groupId: number): Promise<Post | null> {

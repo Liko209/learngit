@@ -76,7 +76,7 @@ describe('PostFetchController()', () => {
     clearMocks();
   });
 
-  describe.skip('getPostsByGroupId()', () => {
+  describe('getPostsByGroupId()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -108,11 +108,12 @@ describe('PostFetchController()', () => {
         status: 200,
         headers: {},
       } as BaseResponse);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
 
-      const result = await await postFetchController.getPostsByGroupId({
+      const result = await postFetchController.getPostsByGroupId({
         groupId: 1,
         limit: 20,
       });
@@ -136,6 +137,7 @@ describe('PostFetchController()', () => {
         status: 200,
         headers: {},
       } as BaseResponse);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
@@ -143,7 +145,7 @@ describe('PostFetchController()', () => {
         .fn()
         .mockResolvedValueOnce(data.items);
 
-      const result = await await postFetchController.getPostsByGroupId({
+      const result = await postFetchController.getPostsByGroupId({
         groupId: 1,
         limit: 20,
       });
@@ -160,6 +162,7 @@ describe('PostFetchController()', () => {
       const mockPosts = [];
       const mockItems = [];
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       PostAPI.requestPosts.mockResolvedValueOnce(
