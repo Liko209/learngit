@@ -15,16 +15,8 @@ import {
   JuiButtonBarProps,
 } from '../../components/Buttons/ButtonBar';
 
-const itemTitleColor = {
-  black: 'common.black',
-  red: 'accent.tomato',
-  orange: 'secondary.main',
-  yellow: 'accent.lemon',
-  green: 'accent.olive',
-  blue: 'primary.main',
-  indigo: 'accent.cateye',
-  violet: 'accent.grass',
-};
+import { Palette } from '../../foundation/theme/theme';
+import { getAccentColor } from '../../foundation/utils';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
@@ -64,19 +56,15 @@ function calcActionBarWith(buttonNumber: number) {
   );
 }
 
-const ItemCardHeader = styled.div<{ buttonNumber: number }>`
+const ItemCardHeader = styled.div<{
+  buttonNumber: number;
+  titleColor?: [keyof Palette, string];
+}>`
   position: relative;
   padding: ${spacing(4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
-  display: flex
-  ${typography('body1')};
-  color: ${({ color }) => {
-    const itemTitleColorArr = itemTitleColor[`${color}`]
-      ? itemTitleColor[`${color}`].split('.')
-      : ['primary', 'main'];
-    return palette(itemTitleColorArr[0], itemTitleColorArr[1]);
-  }}
-
+  display: flex ${typography('body1')};
+  color: ${({ titleColor }) => getAccentColor(titleColor)};
   word-break: break-word;
   svg {
     font-size: ${spacing(5)};
@@ -115,7 +103,7 @@ const ItemCardFooter = styled<{ footerPadding: boolean }, 'footer'>('footer')`
 type JuiConversationItemCardProps = {
   title?: string | JSX.Element;
   Icon: JSX.Element | string;
-  titleColor?: string;
+  titleColor?: [keyof Palette, string];
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children?: React.ReactNode;
   contentHasPadding?: boolean;
@@ -153,7 +141,7 @@ class JuiConversationItemCard extends React.Component<
       <ItemCardWrapper className="conversation-item-cards" {...rest}>
         <ItemCardHeader
           onClick={this.titleHandle}
-          color={titleColor}
+          titleColor={titleColor}
           buttonNumber={headerActions ? headerActions.length : 0}
         >
           {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}

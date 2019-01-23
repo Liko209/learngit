@@ -23,10 +23,9 @@ type Props = WithNamespaces & EventViewProps;
 
 class Event extends React.Component<Props, {}> {
   render() {
-    const { event, t } = this.props;
+    const { event, t, color } = this.props;
     const {
       location,
-      color,
       text,
       description,
       start,

@@ -5,78 +5,52 @@
  */
 
 import React, { Component } from 'react';
-import { t } from 'i18next';
+import { observer } from 'mobx-react';
 import {
   JuiListItemText,
-  JuiListItem,
+  JuiListItemWithHover,
   JuiListItemIcon,
-  JuiListItemSecondaryAction,
-  JuiListItemSecondaryText,
-  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
-import { JuiIconButton } from 'jui/components/Buttons';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
-import { FileItemProps } from './types';
+import { FileItemViewProps } from './types';
+import { Download } from '../Download.View';
+import { SecondaryText } from '../SecondaryText.View';
 
-class FileItemView extends Component<FileItemProps> {
-  state = {
-    isHover: false,
-  };
-  handleMouseEnter = () => {
-    this.setState({ isHover: true });
-  }
-  handleMouseLeave = () => {
-    this.setState({ isHover: false });
-  }
-  render() {
+@observer
+class FileItemView extends Component<FileItemViewProps> {
+  private _renderItem = (hover: boolean) => {
     const {
-      disabled,
       file,
       fileTypeOrUrl,
       personName,
       createdTime,
+      downloadUrl,
     } = this.props;
     const fileInfo = file || {};
-    const { name, downloadUrl } = fileInfo;
-    const { isHover } = this.state;
+    const { name } = fileInfo;
 
     return (
-      <JuiListItem
-        data-test-automation-id="rightRail-file-item"
-        disabled={disabled}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-      >
+      <>
         <JuiListItemIcon>
           <JuiThumbnail iconType={fileTypeOrUrl.icon} url={fileTypeOrUrl.url} />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
           secondary={
-            <JuiListItemSecondaryText>
-              <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
-              &nbsp;·&nbsp;
-              <JuiListItemSecondarySpan text={createdTime} />
-            </JuiListItemSecondaryText>
-          }
+            <SecondaryText personName={personName} createdTime={createdTime} />}
         />
-        {isHover && (
-          <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton
-                component="a"
-                download={true}
-                href={downloadUrl}
-                variant="plain"
-                tooltipTitle={t('download')}
-              >
-                download
-              </JuiIconButton>
-            </JuiListItemIcon>
-          </JuiListItemSecondaryAction>
-        )}
-      </JuiListItem>
+        {hover && <Download url={downloadUrl} />}
+      </>
+    );
+  }
+
+  render() {
+    return (
+      <JuiListItemWithHover
+        render={this._renderItem}
+        data-test-automation-id="rightRail-file-item"
+      />
     );
   }
 }

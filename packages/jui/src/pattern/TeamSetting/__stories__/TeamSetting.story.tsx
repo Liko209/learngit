@@ -87,7 +87,7 @@ storiesOf('Pattern/SettingDialogs', module)
             Allow team members to
           </JuiTeamSettingSubSectionTitle>
           <JuiTeamSettingSubSectionList>
-            <JuiTeamSettingSubSectionListItem label="Add team members (Guest not allowed to add)">
+            <JuiTeamSettingSubSectionListItem label="Add team members">
               <JuiToggleButton onChange={action('on allowMemberAdd change')} />
             </JuiTeamSettingSubSectionListItem>
           </JuiTeamSettingSubSectionList>

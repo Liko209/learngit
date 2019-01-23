@@ -39,7 +39,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     const id = ids[index];
     if (id) {
       return (
-        <div key={index} style={style}>
+        <div key={id} style={style}>
           <Component id={id} />
         </div>
       );

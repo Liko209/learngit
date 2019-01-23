@@ -33,6 +33,7 @@ import { Dialog } from '@/containers/Dialog';
 type State = {
   name: string;
   description: string;
+  allowMemberAddMember: boolean;
 };
 
 type TeamSettingsProps = WithNamespaces & ViewProps;
@@ -47,6 +48,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     this.state = {
       name: props.initialData.name,
       description: props.initialData.description,
+      allowMemberAddMember: props.initialData.allowMemberAddMember,
     };
   }
 
@@ -60,10 +62,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   handleClose = () => portalManager.dismiss();
   handleOk = async () => {
-    const shouldClose = await this.props.save({
-      name: this.state.name,
-      description: this.state.description,
-    });
+    const shouldClose = await this.props.save(this.state);
     if (shouldClose) {
       portalManager.dismiss();
     }
@@ -81,24 +80,37 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
+  handleAllowMemberAddMemberChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    this.setState({
+      allowMemberAddMember: checked,
+    });
+  }
+
   handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const { leaveTeam, t } = this.props;
+    const { t, groupName } = this.props;
     portalManager.dismiss();
     Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'leaveTeamConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'leaveTeamOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'leaveTeamCancelButton' },
       size: 'small',
       okType: 'negative',
       title: t('leaveTeamConfirmTitle'),
-      content: t('leaveTeamConfirmContent'),
+      content: t('leaveTeamConfirmContent', {
+        teamName: groupName,
+      }),
       okText: toTitleCase(t('leaveTeamConfirmOk')),
       cancelText: toTitleCase(t('cancel')),
-      async onOK() {
-        try {
-          await leaveTeam();
-        } catch (e) {
-          // TODO: Error handling
-        }
-      },
+      onOK: this.leaveTeamOKButtonHandler,
     });
+  }
+
+  leaveTeamOKButtonHandler = async () => {
+    portalManager.dismiss();
+    this.props.leaveTeam();
   }
 
   renderEditSection() {
@@ -151,9 +163,13 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
               data-test-automation-id="memberPermissionItem"
               label={t('addTeamMembers')}
             >
-              <JuiToggleButton data-test-automation-id="allowAddTeamMemberToggle" />
+              <JuiToggleButton
+                data-test-automation-id="allowAddTeamMemberToggle"
+                checked={this.state.allowMemberAddMember}
+                onChange={this.handleAllowMemberAddMemberChange}
+              />
             </SubSectionListItem>
-            {/* <JuiDivider /> */}
+            <JuiDivider />
           </SubSectionList>
         </SubSection>
       </>
@@ -165,6 +181,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     return (
       <ButtonList>
         <ButtonListItem
+          data-test-automation-id="leaveTeamButton"
           color="semantic.negative"
           onClick={this.handleLeaveTeamClick}
           hide={isAdmin}

@@ -44,8 +44,15 @@ class EventUpdate extends React.Component<Props> {
   private _getLocation = (value: any) => value.location;
 
   render() {
-    const { event, activityData, oldTimeText, newTimeText, t } = this.props;
-    const { color, text } = event;
+    const {
+      event,
+      activityData,
+      oldTimeText,
+      newTimeText,
+      color,
+      t,
+    } = this.props;
+    const { text } = event;
     const { old_values, new_values } = activityData;
 
     const oldTime = this._getDurationTime(old_values);

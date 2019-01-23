@@ -281,11 +281,12 @@ describe('FetchSortableDataListHandler', () => {
       },
     ],
     [
-      'when insert item between 3 and 5',
+      'when update 5 between 3 and 5',
       {
         originalItems: [buildItem(3), buildItem(5)],
         payload: buildPayload(EVENT_TYPES.UPDATE, [{ id: 5, value: 2 }]),
         expectedOrder: [5, 3],
+        callbackMuted: true,
         expectedCallbackResponse: {
           updated: [
             {
@@ -314,6 +315,7 @@ describe('FetchSortableDataListHandler', () => {
         originalItems: [buildItem(3), buildItem(5)],
         payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(1)]),
         expectedOrder: [3, 5],
+        callbackMuted: true,
         expectedCallbackResponse: {
           added: [],
         },
@@ -330,6 +332,7 @@ describe('FetchSortableDataListHandler', () => {
           buildItem(4),
         ],
         payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
+        callbackMuted: true,
         expectedOrder: [1, 2, 3, 4, 5],
         expectedCallbackResponse: {
           added: [],
@@ -438,7 +441,13 @@ describe('FetchSortableDataListHandler', () => {
     'onDataChange()',
     (
       when: string,
-      { originalItems, payload, expectedOrder, expectedCallbackResponse }: any,
+      {
+        originalItems,
+        payload,
+        expectedOrder,
+        expectedCallbackResponse,
+        callbackMuted,
+      }: any,
     ) => {
       it(`should have correct order ${when}`, () => {
         const { fetchSortableDataHandler: fetchSortableDataHandler2 } = setup({
@@ -458,9 +467,11 @@ describe('FetchSortableDataListHandler', () => {
         });
         const dataChangeCallback = jest.fn();
         fetchSortableDataHandler.setUpDataChangeCallback(dataChangeCallback);
-
         fetchSortableDataHandler.onDataChanged(payload);
-
+        if (callbackMuted) {
+          return expect(dataChangeCallback).not.toHaveBeenCalled();
+        }
+        expect(dataChangeCallback).toHaveBeenCalled();
         expect(dataChangeCallback).toHaveBeenCalledWith(
           expect.objectContaining(expectedCallbackResponse),
         );

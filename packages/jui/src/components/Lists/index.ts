@@ -5,6 +5,7 @@
  */
 export * from './List';
 export * from './ListItem';
+export * from './ListItemWithHover';
 export * from './ListItemAvatar';
 export * from './ListItemIcon';
 export * from './ListItemSecondaryAction';

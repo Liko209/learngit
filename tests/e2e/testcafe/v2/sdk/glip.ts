@@ -629,11 +629,13 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, options?: object) {
+  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       text: title,
-      group_ids: groupIds
+      group_ids: groupIds,
+      start: start || new Date().getTime() + 1800000, // start time after 30 minutes from now
+      end: end || new Date().getTime() + 3600000 // end time after 60 minutes from now
     },
       options
     )
@@ -672,4 +674,22 @@ export class GlipSdk {
     return await this.createCodeSnippet(data);
   }
 
+  /* audio conference */
+  // need sign on status???
+  createAudioConference(data: object) {
+    const uri = `api/conference`;
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async createSimpleAudioConference(groupIds: string[] | string, options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    const data = _.assign({
+      group_ids: groupIds
+    },
+      options
+    )
+    return await this.createAudioConference(data);
+  }
 }
