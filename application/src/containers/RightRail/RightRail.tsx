@@ -57,6 +57,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
 
 @observer
 class RightRailComponent extends React.Component<Props> {
+  state = { tabIndex: 0 };
   private _renderHeader = () => {
     const { t } = this.props;
     return (
@@ -68,12 +69,23 @@ class RightRailComponent extends React.Component<Props> {
     );
   }
 
+  private _handleTabChanged = (index: number) => {
+    this.setState({ tabIndex: index });
+  }
+
   private _renderTabs = () => {
     const { t, id } = this.props;
+    const { tabIndex } = this.state;
+    console.log(75555, tabIndex);
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
-          <JuiTabs defaultActiveIndex={0} tag="right-shelf" width={width}>
+          <JuiTabs
+            defaultActiveIndex={0}
+            tag="right-shelf"
+            width={width}
+            onChangeTab={this._handleTabChanged}
+          >
             {TAB_CONFIG.map(
               (
                 {
@@ -90,7 +102,11 @@ class RightRailComponent extends React.Component<Props> {
                   title={t(title)}
                   automationId={`right-shelf-${title}`}
                 >
-                  <ItemList type={type} groupId={id} />
+                  <ItemList
+                    type={type}
+                    groupId={id}
+                    active={tabIndex === index}
+                  />
                 </JuiTab>
               ),
             )}

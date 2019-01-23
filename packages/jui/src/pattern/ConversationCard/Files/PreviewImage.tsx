@@ -27,6 +27,7 @@ type JuiPreviewImageProps = {
 
 class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
+  private _mounted: boolean;
   private _imageInfo: ThumbnailInfo = {
     width: 0,
     height: 0,
@@ -57,7 +58,16 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     } else {
       this._imageInfo = getThumbnailSize(width, height);
     }
-    this.forceUpdate();
+    if (this._mounted) {
+      this.forceUpdate();
+    }
+  }
+
+  componentDidMount() {
+    this._mounted = true;
+  }
+  componentWillUnmount() {
+    this._mounted = false;
   }
   render() {
     const { Actions, fileName, forceSize } = this.props;

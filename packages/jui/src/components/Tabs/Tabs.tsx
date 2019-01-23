@@ -36,6 +36,7 @@ type Props = {
   tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
+  onChangeTab?: (index: number) => void;
 };
 
 const CLASSES = {
@@ -87,6 +88,8 @@ class JuiTabs extends PureComponent<Props, States> {
     if (indexSelected > Children.count(props.children) - 1) {
       indexSelected = 0;
     }
+    const { onChangeTab } = props;
+    onChangeTab && onChangeTab(indexSelected);
     this.state = {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
@@ -182,6 +185,8 @@ class JuiTabs extends PureComponent<Props, States> {
       return;
     }
     this._setSelectedTabIndex(indexSelected);
+    const { onChangeTab } = this.props;
+    onChangeTab && onChangeTab(indexSelected);
   }
 
   private _showMenuList = () => {
