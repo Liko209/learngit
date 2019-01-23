@@ -85,7 +85,7 @@ const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => {
 const Tip = styled(JuiTypography)`
   ${typography('body1')};
   text-align: center;
-  color: ${grey('900dark')};
+  color: ${grey('900')};
 `;
 
 const JuiRightRailContentLoadError = (
