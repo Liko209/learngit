@@ -13,6 +13,8 @@ import {
   RTC_CALL_ACTION,
   RTCCallOptions,
 } from '../types';
+
+import { kRTCAnonymous } from '../../account/constants';
 import { REGISTRATION_FSM_STATE } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { rtcNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
@@ -202,8 +204,6 @@ describe('RTCAccount', async () => {
   });
 
   describe('makeAnonymousCall()', () => {
-    const ANONYMOUS = 'anonymous';
-
     it('Should call createOutgoingCallSession api with options include anonymous when have been called without options param [JTP-976]', done => {
       setupAccount();
       const listener = new MockCallListener();
@@ -213,7 +213,7 @@ describe('RTCAccount', async () => {
       call.onAccountReady();
       setImmediate(() => {
         expect(account.createOutgoingCallSession).toHaveBeenCalledWith('123', {
-          fromNumber: ANONYMOUS,
+          fromNumber: kRTCAnonymous,
         });
         expect(isAnonymous).toBeTruthy();
         done();
@@ -230,7 +230,7 @@ describe('RTCAccount', async () => {
       call.onAccountReady();
       setImmediate(() => {
         expect(account.createOutgoingCallSession).toHaveBeenCalledWith('123', {
-          fromNumber: ANONYMOUS,
+          fromNumber: kRTCAnonymous,
         });
         expect(isAnonymous).toBeTruthy();
         done();

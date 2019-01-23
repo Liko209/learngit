@@ -8,6 +8,8 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
+import { kRTCAnonymous } from '../account/constants';
+
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
   REGISTRATION_EVENT,
@@ -36,7 +38,6 @@ const options = {
 };
 
 const LOG_TAG = 'RTCAccount';
-const ANONYMOUS = 'anonymous';
 
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
@@ -94,10 +95,10 @@ class RTCAccount implements IRTCAccount {
   ): RTCCall | null {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
-      options.fromNumber = ANONYMOUS;
       optionsWithAnonymous = options;
+      optionsWithAnonymous.fromNumber = kRTCAnonymous;
     } else {
-      optionsWithAnonymous = { fromNumber: ANONYMOUS };
+      optionsWithAnonymous = { fromNumber: kRTCAnonymous };
     }
     rtcLogger.error(LOG_TAG, 'make anonymous call');
     return this.makeCall(toNumber, delegate, optionsWithAnonymous);

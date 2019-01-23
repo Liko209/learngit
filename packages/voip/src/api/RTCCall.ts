@@ -8,6 +8,7 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
+import { kRTCAnonymous } from '../account/constants';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
@@ -51,7 +52,7 @@ class RTCCall {
     }
     if (options) {
       this._options = options;
-      if (this._options.fromNumber === 'anonymous') {
+      if (this._options.fromNumber === kRTCAnonymous) {
         this._isAnonymous = true;
       }
     }
