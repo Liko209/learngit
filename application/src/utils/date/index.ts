@@ -172,8 +172,13 @@ const postTimestamp = buildFormatter([
     formatter: dateFormatter.dateAndTime,
   },
 ]);
-
+function getDateTimeStamp(timestamp: number) {
+  return moment(timestamp)
+    .startOf('day')
+    .valueOf();
+}
 export {
+  getDateTimeStamp,
   getDateMessage,
   recentlyTwoDayAndOther,
   dividerTimestamp,
