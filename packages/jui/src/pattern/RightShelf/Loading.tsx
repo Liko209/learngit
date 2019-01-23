@@ -8,14 +8,14 @@ import { withTheme } from 'styled-components';
 import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
-import { palette, height } from '../../foundation/utils';
+import { palette, height, typography, grey } from '../../foundation/utils';
 import {
   LoadingWrapper,
   Loading,
   Progress,
-  Tip,
   TipLink,
 } from '../ConversationLoading';
+import { JuiTypography } from '../../foundation/Typography';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -81,6 +81,12 @@ const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => {
     </LoadingWrapper>
   );
 };
+
+const Tip = styled(JuiTypography)`
+  ${typography('body1')};
+  text-align: center;
+  color: ${grey('900dark')};
+`;
 
 const JuiRightRailContentLoadError = (
   props: JuiRightRailContentLoadingProps,
