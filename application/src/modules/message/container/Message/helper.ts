@@ -106,9 +106,9 @@ export class MessageRouterChangeHelper {
 
   static handleSourceOfRouter(id: number) {
     const handler = SectionGroupHandler.getInstance();
-    handler.onReady((conversationList: Set<number>) => {
+    handler.onReady((conversationList: number[]) => {
       GroupHandler.ensureGroupOpened(id);
-      if (conversationList.has(id)) {
+      if (conversationList.includes(id)) {
         return;
       }
       GroupHandler.accessGroup(id);

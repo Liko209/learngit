@@ -52,7 +52,7 @@ function resetMockedServices() {
     set: jest.fn(),
   };
   mockedSectionHandler = {
-    list: new Set([110]),
+    list: [110],
     onReady: (callback: Function) => callback(mockedSectionHandler.list),
   };
 }
