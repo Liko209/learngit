@@ -117,7 +117,7 @@ def runOnSeleniumGrid(
                                     for (int i = 0; i < maxRetry; i++) {
                                         Integer status = sh(returnStatus: true, script: 'npm run e2e')
                                         echo "exit code is ${status}"
-                                        if (status in [0, 3])  // normal exit
+                                        if (status in [0, 1, 3])  // normal exit
                                             break
                                         sleep 60 // retry after 1 min
                                     }
