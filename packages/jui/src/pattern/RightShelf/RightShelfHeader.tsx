@@ -35,8 +35,9 @@ const JuiRightShelfHeaderIcon = styled('div')`
   position: absolute;
   top: ${spacing(1)};
   right: 0;
-  /* conversation header z-index is appBar */
-  z-index: ${({ theme }) => theme.zIndex.appBar};
+  /* ConversationHeader z-index is appBar */
+  /* RightShelf fixed z-index is appBar + 1 */
+  z-index: ${({ theme }) => theme.zIndex.appBar + 2};
 `;
 
 export {
