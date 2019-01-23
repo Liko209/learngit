@@ -13,6 +13,7 @@ import { BaseDao } from '../../../../dao';
 import { ControllerUtils } from '../../../../framework/controller/ControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import PreInsertIdController from './PreInsertIdController';
+
 class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
   implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
@@ -24,33 +25,62 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     this._preInsertIdController = new PreInsertIdController(dao.modelName);
   }
 
-  async preInsert(entity: T): Promise<void> {
-    this.progressService.addProgress(entity.id, {
-      id: entity.id,
-      status: PROGRESS_STATUS.INPROGRESS,
-    });
-
-    const key: string = this.getEntityNotificationKey();
-    key.length && notificationCenter.emitEntityUpdate(key, [entity]);
+  async insert(entity: T): Promise<void> {
+    this.updateStatus(entity, PROGRESS_STATUS.INPROGRESS);
     this.dao && (await this.dao.bulkPut([entity]));
-    this._preInsertIdController.insertId(entity.version);
+    this._preInsertIdController.insert(entity.version);
   }
 
-  async incomesStatusChange(entity: T, shouldDelete: boolean): Promise<void> {
-    if (shouldDelete) {
-      this.progressService.deleteProgress(entity.id);
-      notificationCenter.emitEntityDelete(this.getEntityNotificationKey(), [
-        entity.id,
-      ]);
-      if (this.dao) {
-        await this.dao.delete(entity.id);
+  async delete(entity: T): Promise<void> {
+    this.updateStatus(entity, PROGRESS_STATUS.SUCCESS);
+    await this.dao.delete(entity.id);
+    this._preInsertIdController.delete(entity.version);
+  }
+
+  updateStatus(entity: T, status: PROGRESS_STATUS): void {
+    switch (status) {
+      case PROGRESS_STATUS.INPROGRESS:
+        this.progressService.addProgress(entity.id, {
+          id: entity.id,
+          status: PROGRESS_STATUS.INPROGRESS,
+        });
+
+        const key: string = this.getEntityNotificationKey();
+        key.length && notificationCenter.emitEntityUpdate(key, [entity]);
+        break;
+
+      case PROGRESS_STATUS.FAIL:
+        this.progressService.updateProgress(entity.id, {
+          id: entity.id,
+          status: PROGRESS_STATUS.FAIL,
+        });
+        break;
+
+      case PROGRESS_STATUS.SUCCESS:
+      case PROGRESS_STATUS.CANCELED:
+        this.progressService.deleteProgress(entity.id);
+        notificationCenter.emitEntityDelete(this.getEntityNotificationKey(), [
+          entity.id,
+        ]);
+        break;
+    }
+  }
+
+  async bulkDelete(entities: T[]): Promise<void> {
+    if (!entities || !entities.length) {
+      return;
+    }
+    const entityMap: Map<number, number> = new Map();
+    entities.map(async (entity: T) => {
+      if (this.isInPreInsert(entity.version)) {
+        entityMap.set(entity.id, entity.version);
+        this.updateStatus(entity, PROGRESS_STATUS.SUCCESS);
       }
-      this._preInsertIdController.deleteId(entity.version);
-    } else {
-      this.progressService.updateProgress(entity.id, {
-        id: entity.id,
-        status: PROGRESS_STATUS.FAIL,
-      });
+    });
+
+    if (entityMap.size) {
+      await this.dao.bulkDelete([...entityMap.keys()]);
+      this._preInsertIdController.bulkDelete([...entityMap.values()]);
     }
   }
 

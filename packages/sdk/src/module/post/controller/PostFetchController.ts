@@ -1,48 +1,52 @@
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
-import { Post, IPostQuery, IPostResult } from '../entity';
-import { Raw } from '../../../framework/model';
-import { QUERY_DIRECTION } from '../../../dao/constants';
-import { daoManager, PostDao, GroupConfigDao } from '../../../dao';
-import { mainLogger } from 'foundation';
-import { ItemService } from '../../item/service/ItemService';
-import { transform } from '../../../service/utils';
-import { Item } from '../../item/entity';
-import _ from 'lodash';
-
 /*
  * @Author: kasni.huang (kasni.huang@ringcentral.com)
  * @Date: 2019-01-17 15:30:09
  * Copyright © RingCentral. All rights reserved.
  */
+
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
+import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
+import { QUERY_DIRECTION } from '../../../dao/constants';
+import { daoManager, GroupConfigDao, PostDao } from '../../../dao';
+import { mainLogger } from 'foundation';
+import { ItemService } from '../../item';
+import { Item } from '../../item/entity';
+import { DataHandleController } from './DataHandleController';
+import PostAPI from '../../../api/glip/post';
+import _ from 'lodash';
+
 const DEFAULT_PAGE_SIZE = 20;
 const TAG = 'PostFetchController';
 
-type IRawPostResult = {
-  posts: Raw<Post>[];
-  items: Raw<Item>[];
-  hasMore: boolean;
-};
-
 class PostFetchController {
-  constructor(
-    public requestController: IRequestController<Post>,
-    public sourceEntityController: IEntitySourceController<Post>,
-    public preInsertController: IPreInsertController,
-  ) {}
+  private _dataHandleController: DataHandleController;
 
+  constructor(
+    public preInsertController: IPreInsertController,
+    public entitySourceController: IEntitySourceController<Post>,
+  ) {
+    this._dataHandleController = new DataHandleController(
+      preInsertController,
+      entitySourceController,
+    );
+  }
+
+  /** 1, Check does postId is 0 or post id is in db
+   *  1) PostId is 0, means open conversation from group | contact | profile,
+   *     should save fetch results from server to db
+   *  2) PostId is not 0, means open conversation from @Mentions | Bookmarks,
+   *     If postId in db, should save fetch results from server to db
+   *  2, Fetch from local db if should save to db
+   *  3, Check the fetched result from local has exceed limit, if not, check has more in server
+   *  4, Find the valid anchor post id
+   */
   async getPostsByGroupId({
     groupId,
     postId = 0,
     limit = DEFAULT_PAGE_SIZE,
     direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
-    const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
-    mainLogger.info(
-      TAG,
-      `getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
-    );
     let result: IPostResult = {
       limit,
       posts: [],
@@ -50,7 +54,14 @@ class PostFetchController {
       hasMore: true,
     };
 
-    // fetch from local db firstly
+    // Step 1
+    const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
+    mainLogger.info(
+      TAG,
+      `getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
+    );
+
+    // Step 2
     if (shouldSaveToDb) {
       result = await this._getPostsFromDb({
         groupId,
@@ -60,67 +71,84 @@ class PostFetchController {
       });
     }
 
+    // Step 3
     if (result.posts.length < limit) {
-      const groupConfigDao = daoManager.getDao(GroupConfigDao);
-      const shouldGetMoreFromServer =
-        shouldSaveToDb && direction === QUERY_DIRECTION.OLDER
-          ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
-          : true;
-      if (shouldGetMoreFromServer) {
-        // Get more posts from server
+      const shouldFetch = this._shouldFetchFromServer(direction, groupId);
+      if (!shouldSaveToDb || shouldFetch) {
         mainLogger.debug(
           TAG,
           'getPostsByGroupId() db is not exceed limit, request from server',
         );
-        do {
-          const validAnchorPost = _.findLast(
-            result.posts,
-            (p: Post) => p.id > 0,
-          ); // TODO to check the order for newer/older
-          const validAnchorPostId = validAnchorPost
-            ? validAnchorPost.id
-            : postId;
-          const serverResult = await this.fetchPaginationPosts({
-            groupId,
-            direction,
-            limit,
-            postId: validAnchorPostId,
-          });
-          // Just the get posts request is failed will break this loop
-          if (!serverResult) {
-            break;
-          }
-          const transformedData = ([] as Raw<Post>[])
-            .concat(serverResult.posts)
-            .map((item: Raw<Post>) => transform<Post>(item));
-          if (shouldSaveToDb) {
-            await this._handlePreInsertPosts(transformedData);
-          }
-          const posts: Post[] =
-            (await baseHandleData(transformedData, shouldSaveToDb)) || [];
-          const items = (await itemHandleData(serverResult.items)) || [];
+        const validAnchorPostId = this._findValidAnchorPostId(
+          direction,
+          result.posts,
+        );
+        const serverResult = await this.fetchPaginationPosts({
+          groupId,
+          direction,
+          limit,
+          postId: validAnchorPostId ? validAnchorPostId : postId,
+        });
 
-          result.posts.push(posts);
-          result.items.push(items);
-          result.hasMore = serverResult.hasMore;
+        if (serverResult) {
+          const updateResult = (posts: Post[], items: Item[]) => {
+            result.posts.push(...posts);
+            result.items.push(...items);
+            result.hasMore = serverResult.hasMore;
+            if (shouldSaveToDb) {
+              this._updateHasMore(groupId, direction, serverResult.hasMore);
+            }
+          };
 
-          if (shouldSaveToDb) {
-            await groupConfigDao.update({
-              id: groupId,
-              [`has_more_${direction}`]: serverResult.hasMore,
-            });
-          }
-        } while (false);
+          await this._dataHandleController.handleFetchedPosts(
+            serverResult,
+            shouldSaveToDb,
+            updateResult,
+          );
+        }
       } else {
-        result.hasMore = false;
+        result.hasMore = shouldFetch;
       }
     }
     result.limit = limit;
     return result;
   }
 
+  async fetchPaginationPosts({
+    groupId,
+    postId,
+    limit,
+    direction,
+  }: IPostQuery): Promise<IRawPostResult | null> {
+    const result: IRawPostResult = {
+      posts: [],
+      items: [],
+      hasMore: false,
+    };
+
+    const params: any = {
+      limit,
+      direction,
+      group_id: groupId,
+    };
+    if (postId) {
+      params.post_id = postId;
+    }
+    const requestResult = await PostAPI.requestPosts(params);
+    if (requestResult.isOk()) {
+      const data = requestResult.data;
+      if (data) {
+        result.posts = data.posts;
+        result.items = data.items;
+        result.hasMore = result.posts.length === limit;
+      }
+      return result;
+    }
+    return null;
+  }
+
   private async _isPostInDb(postId: number): Promise<boolean> {
-    const post = await this.sourceEntityController.getEntityLocally(postId);
+    const post = await this.entitySourceController.getEntityLocally(postId);
     return post ? true : false;
   }
 
@@ -147,58 +175,41 @@ class PostFetchController {
     return result;
   }
 
-  async fetchPaginationPosts({
-    groupId,
-    postId,
-    limit,
-    direction,
-  }: IPostQuery): Promise<IRawPostResult | null> {
-    const result: IRawPostResult = {
-      posts: [],
-      items: [],
-      hasMore: false,
-    };
-
-    // if (await !GroupService.getInstance().hasPostsInGroup(groupId)) {
-    //   return result;
-    // }
-
-    const params: any = {
-      limit,
-      direction,
-      group_id: groupId,
-    };
-    if (postId) {
-      params.post_id = postId;
-    }
-    const requestResult = await PostAPI.requestPosts(params);
-    if (requestResult.isOk()) {
-      const data = requestResult.data;
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        result.hasMore = result.posts.length === limit;
-      }
-      return result;
-    }
-    return null;
+  /**
+   * If direction === QUERY_DIRECTION.OLDER, should check has more.
+   * If direction === QUERY_DIRECTION.NEWER, return true
+   */
+  private async _shouldFetchFromServer(
+    direction: QUERY_DIRECTION,
+    groupId: number,
+  ) {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    return direction === QUERY_DIRECTION.OLDER
+      ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
+      : true;
   }
 
-  private async _handlePreInsertPosts(posts: Post[]) {
-    if (!posts || !posts.length) {
-      return [];
+  private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {
+    if (posts && posts.length) {
+      const validAnchorPost =
+        direction === QUERY_DIRECTION.OLDER
+          ? _.findLast(posts, (p: Post) => p.id > 0)
+          : _.find(posts, (p: Post) => p.id > 0);
+      return validAnchorPost ? validAnchorPost.id : 0;
     }
-    const ids = posts
-      .filter((post: Post) => {
-        return this._postStatusHandler.isInPreInsert(post.id);
-      })
-      .map((post: Post) => post.id);
+    return 0;
+  }
 
-    if (ids.length) {
-      const postDao = daoManager.getDao(PostDao);
-      await postDao.bulkDelete(ids);
-    }
-    return ids;
+  private _updateHasMore(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+    hasMore: boolean,
+  ) {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.update({
+      id: groupId,
+      [`has_more_${direction}`]: hasMore,
+    });
   }
 }
 

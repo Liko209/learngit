@@ -18,11 +18,12 @@ import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
 import { ProgressService } from '../../progress';
 import { PostFetchController } from './PostFetchController';
+import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 
 class PostController {
   private _actionController: PostActionController;
   private _sendController: SendPostController;
-  private _preInsertController: PreInsertController;
+  private _preInsertController: IPreInsertController;
   private _fetchController: PostFetchController;
 
   constructor() {}
@@ -67,8 +68,19 @@ class PostController {
 
   getPostFetchController() {
     if (!this._fetchController) {
-      this._fetchController = new PostFetchController();
+      const persistentController = buildEntityPersistentController<Post>(
+        daoManager.getDao(PostDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
+      );
+
+      this._fetchController = new PostFetchController(
+        this._getPreInsertController(),
+        entitySourceController,
+      );
     }
+    return this._fetchController;
   }
 
   private _getPreInsertController() {

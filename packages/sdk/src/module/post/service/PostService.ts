@@ -5,9 +5,9 @@
  */
 
 import { PostController } from '../controller/PostController';
-import { Post } from '../entity';
+import { Post, IPostQuery, IPostResult } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 
@@ -60,6 +60,17 @@ class NewPostService extends EntityBaseService<Post> {
     return this.getPostController()
       .getSendPostController()
       .reSendPost(postId);
+  }
+
+  async getPostsByGroupId({
+    groupId,
+    postId = 0,
+    limit = 20,
+    direction = QUERY_DIRECTION.OLDER,
+  }: IPostQuery): Promise<IPostResult> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getPostsByGroupId({ groupId, postId, limit, direction });
   }
 }
 

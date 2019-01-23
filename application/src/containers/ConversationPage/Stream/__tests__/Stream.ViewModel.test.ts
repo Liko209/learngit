@@ -57,7 +57,7 @@ describe('StreamViewModel', () => {
       return vm;
     }
 
-    it('should load posts and update itemStore when fetch initial post', async () => {
+    it.skip('should load posts and update itemStore when fetch initial post', async () => {
       const vm = setup({
         props: { groupId: 1 },
       });

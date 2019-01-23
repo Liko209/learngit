@@ -22,6 +22,7 @@ import { IPreInsertController } from '../../../common/controller/interface/IPreI
 import { Raw } from '../../../../framework/model';
 import { UserConfig } from '../../../../service/account';
 import { PostControllerUtils } from './PostControllerUtils';
+import { PROGRESS_STATUS } from '../../../progress';
 
 type PostData = {
   id: number;
@@ -82,7 +83,7 @@ class SendPostController implements ISendPostController {
       this._cleanUploadingFiles(post.group_id, post.item_ids);
     }
 
-    await this.preInsertController.preInsert(post);
+    await this.preInsertController.insert(post);
 
     const sendPostAfterItemsReady = (result: PostItemsReadyCallbackType) => {
       Object.keys(result.obj).forEach((key: string) => {
@@ -171,14 +172,14 @@ class SendPostController implements ISendPostController {
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.incomesStatusChange(originalPost, true);
+    await this.preInsertController.delete(originalPost);
 
     await dao.put(post);
     return result;
   }
 
   async handleSendPostFail(originalPost: Post, groupId: number) {
-    this.preInsertController.incomesStatusChange(originalPost, false);
+    this.preInsertController.updateStatus(originalPost, PROGRESS_STATUS.FAIL);
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     await groupConfigService.addPostId(groupId, originalPost.id);
     return [];

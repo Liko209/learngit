@@ -65,13 +65,14 @@ describe('PostViewDao', () => {
   beforeAll(() => {
     const { database } = setup();
     postViewDao = new PostViewDao(database);
+    jest.spyOn(daoManager, 'getDao').mockReturnValue(postViewDao);
     postDao = new PostDao(database);
   });
 
   describe('queryPostsByGroupId()', () => {
     beforeAll(async () => {
-      await postViewDao.clear();
-      await postViewDao.bulkPut(postViews);
+      // await postViewDao.clear();
+      // await postViewDao.bulkPut(postViews);
       await postDao.clear();
       await postDao.bulkPut(posts);
     });

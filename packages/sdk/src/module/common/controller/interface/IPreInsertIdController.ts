@@ -5,8 +5,9 @@
  */
 interface IPreInsertIdController {
   isInPreInsert(version: number): boolean;
-  insertId(version: number): Promise<void>;
-  deleteId(version: number): Promise<void>;
+  insert(version: number): Promise<void>;
+  delete(version: number): Promise<void>;
+  bulkDelete(versions: number[]): Promise<void>;
   getAll(): {
     [version: number]: number;
   };

@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { daoManager, PostDao, GroupConfigDao, PostViewDao } from '../../dao';
+import { daoManager, PostDao, GroupConfigDao } from '../../dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -78,8 +78,8 @@ class PostService extends BaseService<Post> {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
-    const postViewDao = daoManager.getDao(PostViewDao);
-    const posts: Post[] = await postViewDao.queryPostsByGroupId(
+    const postDao = daoManager.getDao(PostDao);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
       postId,
       direction,
@@ -401,12 +401,6 @@ class PostService extends BaseService<Post> {
     });
     const postDao = daoManager.getDao(PostDao);
     await postDao.put(buildPost);
-    const postViewDao = daoManager.getDao(PostViewDao);
-    await postViewDao.put({
-      id: buildPost.id,
-      group_id: buildPost.group_id,
-      created_at: buildPost.created_at,
-    });
     notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
   }
 
@@ -442,7 +436,6 @@ class PostService extends BaseService<Post> {
 
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const postDao = daoManager.getDao(PostDao);
-    const postViewDao = daoManager.getDao(PostViewDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -458,12 +451,6 @@ class PostService extends BaseService<Post> {
     }
     await postDao.delete(preInsertId);
     await postDao.put(post);
-    await postViewDao.delete(preInsertId);
-    await postViewDao.put({
-      id: post.id,
-      group_id: post.group_id,
-      created_at: post.created_at,
-    });
     return result;
   }
 
@@ -532,13 +519,11 @@ class PostService extends BaseService<Post> {
 
   async deletePost(id: number): Promise<boolean> {
     const postDao = daoManager.getDao(PostDao);
-    const postViewDao = daoManager.getDao(PostViewDao);
     const post = (await postDao.get(id)) as Post;
 
     if (id < 0) {
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
-      postViewDao.delete(id);
 
       const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
       const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -727,8 +712,6 @@ class PostService extends BaseService<Post> {
     const posts = _.union(...postsMap);
     const ids = posts.map(post => post.id);
     await dao.bulkDelete(ids);
-    const postViewDao = daoManager.getDao(PostViewDao);
-    await postViewDao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);
     }

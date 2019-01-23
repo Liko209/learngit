@@ -37,8 +37,14 @@ export function buildEntitySourceController<T extends IdModel = IdModel>(
 
 export function buildRequestController<
   T extends IdModel = IdModel
->(networkConfig: { basePath: string; networkClient: NetworkClient }) {
-  return new RequestController<T>(networkConfig);
+>(networkConfig: {
+  basePath: string;
+  networkClient: NetworkClient;
+}): IRequestController<T> {
+  const request: IRequestController<T> = new RequestController<T>(
+    networkConfig,
+  );
+  return request;
 }
 
 export function buildEntityCacheController<T extends IdModel = IdModel>() {

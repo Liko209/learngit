@@ -15,7 +15,7 @@ class RequestController<T extends IdModel = IdModel>
   implements IRequestController<T> {
   constructor(
     public networkConfig: { basePath: string; networkClient: NetworkClient },
-  ) { }
+  ) {}
 
   async get(id: number): Promise<T | null> {
     if (id <= 0) {
@@ -31,6 +31,15 @@ class RequestController<T extends IdModel = IdModel>
       .concat(resultData)
       .map((item: Raw<T>) => transform(item));
     return arr.length > 0 ? arr[0] : null;
+  }
+
+  async getViaParams(params = {}): Promise<T[] | null> {
+    const result: ApiResult<any> = await this._getViaParams(params);
+    const resultData = result.expect('request can not get the entity');
+    const arr: T[] = []
+      .concat(resultData)
+      .map((item: Raw<T>) => transform(item));
+    return arr;
   }
 
   async put(data: Partial<T>) {
@@ -59,6 +68,13 @@ class RequestController<T extends IdModel = IdModel>
   private async _get(id: number) {
     return this.networkConfig.networkClient.get<Raw<T>>(
       `${this.networkConfig.basePath}/${id}`,
+    );
+  }
+
+  private async _getViaParams(params = {}) {
+    return this.networkConfig.networkClient.get<T>(
+      `${this.networkConfig.basePath}`,
+      params,
     );
   }
 

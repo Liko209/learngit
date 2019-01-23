@@ -6,7 +6,7 @@
 
 import { ExtendedBaseModel } from '../../models';
 import { PostItemData } from './PostItemData';
-import { IdModel } from '../../../framework/model';
+import { IdModel, Raw } from '../../../framework/model';
 import { Item } from '../../item/entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 
@@ -48,4 +48,15 @@ export type IPostResult = {
   items: Item[];
   hasMore: boolean;
   limit?: number;
+};
+
+export type IPostsModel = {
+  posts: Raw<Post>[];
+  items: Raw<Item>[];
+};
+
+export type IRawPostResult = {
+  posts: Raw<Post>[];
+  items: Raw<Item>[];
+  hasMore: boolean;
 };

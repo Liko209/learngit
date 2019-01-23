@@ -12,6 +12,7 @@ import { IFetchSortableDataProvider } from './../../../store/base/fetch/FetchSor
 import _ from 'lodash';
 import { computed, action } from 'mobx';
 import { PostService, StateService, ENTITY } from 'sdk/service';
+import { NewPostService } from 'sdk/module/post';
 import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
