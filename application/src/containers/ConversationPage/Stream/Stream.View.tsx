@@ -150,7 +150,7 @@ class StreamViewComponent extends Component<Props> {
       return;
     }
     const { hasMoreDown } = this.props;
-    if (this._isAtBottom && !hasMoreDown) {
+    if (this.props.atBottom() && !hasMoreDown) {
       return this.scrollToBottom();
     }
     return;
