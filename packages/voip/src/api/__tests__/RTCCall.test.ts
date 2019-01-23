@@ -1719,12 +1719,22 @@ describe('RTC call', () => {
       expect(call._hangupInvalidCallTimer).not.toEqual(null);
     });
 
-    it('should clear timer when session receive 183 event [JPT-987]', done => {
+    it('should clear timer when session receive response 183 event [JPT-987]', done => {
       setup();
-      jest.spyOn(call, '_onSessionProgress');
+      expect(call._hangupInvalidCallTimer).not.toBeNull();
       session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { status_code: 183 });
       setImmediate(() => {
-        expect(call._onSessionProgress).toHaveBeenCalled();
+        expect(call._hangupInvalidCallTimer).toBeNull();
+        done();
+      });
+    });
+
+    it('should not clear timer when session receive response is not 183 event', done => {
+      setup();
+      expect(call._hangupInvalidCallTimer).not.toBeNull();
+      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { status_code: 100 });
+      setImmediate(() => {
+        expect(call._hangupInvalidCallTimer).not.toBeNull();
         done();
       });
     });
