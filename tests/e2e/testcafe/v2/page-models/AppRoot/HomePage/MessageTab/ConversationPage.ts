@@ -427,7 +427,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get headerNotification() {
-    return this.self.find('[data="cardHeaderNotification"]');
+    return this.self.find('[data-Name="cardHeaderNotification"]');
   }
 
   get fileNotification() {
@@ -488,4 +488,60 @@ export class PostItem extends BaseWebComponent {
     await displayJumpButton();
     await this.t.click(this.jumpToConversationButton);
   }
+
+  // audio conference
+  get AudioConferenceHeaderNotification() {
+    return this.headerNotification.withText('started an audio conference');
+  }
+
+  get audioConference() {
+    return this.getComponent(AudioConference, this.self);
+  }
+
 }
+
+class AudioConference extends BaseWebComponent {
+  get container() {
+    return this.self.find('.conversation-item-cards');
+  }
+
+  get icon() {
+    return this.getSelectorByIcon('conference');
+  }
+
+  get title() {
+    this.warnFlakySelector();
+    return this.icon.parent('div').find('span').withText('Audio Conference');
+  }
+
+  get dialInNumber() {
+    return this.self.find('div').withText('Dial-in Number');
+  }
+
+  get phoneNumber() {
+    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self.find('a'));
+  }
+
+  get globalNumber() {
+    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self.find('a'));
+  }
+
+  // only host can see
+  get hostAccess() {
+    return this.self.find('div').withText('Host Access');
+  }
+
+  // only host can see
+  get hostCode() {
+    return this.getSelectorByAutomationId('conferenceHostCode', this.self);
+  }
+  
+  get participantAccess() {
+    return this.self.find('div').withText('Participant Access');
+  }
+
+  get participantCode() {
+    return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
+  } 
+}
+

@@ -17,7 +17,9 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ItemService } from 'sdk/module/item';
 
+jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
@@ -30,12 +32,14 @@ function setup(obj?: any) {
 
 describe('StreamViewModel', () => {
   let postService: PostService;
-
+  let itemService: ItemService;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+    itemService = new ItemService();
     postService = new PostService();
     PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -125,6 +129,15 @@ describe('StreamViewModel', () => {
       jest.spyOn(vm, 'dispose');
       vm.onReceiveProps({ groupId: 1 } as any);
       expect(vm.dispose).not.toHaveBeenCalled();
+    });
+
+    it('should sync group items when onReceiveProps', () => {
+      const vm = setup({
+        groupId: 1,
+      });
+      jest.spyOn(vm, 'dispose');
+      vm.onReceiveProps({ groupId: 2 } as any);
+      expect(itemService.requestSyncGroupItems).toBeCalled();
     });
   });
 
@@ -266,7 +279,6 @@ describe('StreamViewModel', () => {
       );
       expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
-
       spy.mockRestore();
     });
 

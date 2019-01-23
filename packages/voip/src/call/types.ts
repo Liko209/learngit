@@ -36,6 +36,7 @@ enum CALL_FSM_NOTIFY {
   HOLD_ACTION = 'holdAction',
   UNHOLD_ACTION = 'unholdAction',
   PARK_ACTION = 'parkAction',
+  DTMF_ACTION = 'dtmfAction',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };
