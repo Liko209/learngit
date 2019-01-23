@@ -36,8 +36,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.FAILED, () => {
       this._onSessionError();
     });
-    this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, () => {
-      this._onSessionProgress();
+    this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
+      this._onSessionProgress(response);
     });
   }
 
@@ -53,8 +53,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.ERROR);
   }
 
-  private _onSessionProgress() {
-    this.emit(CALL_SESSION_STATE.PROGRESS);
+  private _onSessionProgress(response: any) {
+    this.emit(CALL_SESSION_STATE.PROGRESS, response);
   }
 
   hangup() {

@@ -187,8 +187,8 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
     });
-    this._callSession.on(CALL_SESSION_STATE.PROGRESS, () => {
-      this._onSessionProgress();
+    this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
+      this._onSessionProgress(response);
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -351,8 +351,8 @@ class RTCCall {
     this._fsm.sessionError();
   }
 
-  private _onSessionProgress() {
-    if (this._hangupInvalidCallTimer) {
+  private _onSessionProgress(response: any) {
+    if (response.status_code === 183 && this._hangupInvalidCallTimer) {
       clearTimeout(this._hangupInvalidCallTimer);
     }
   }

@@ -56,8 +56,8 @@ describe('RTC call', () => {
     unhold = jest.fn();
     dtmf = jest.fn();
 
-    mockSignal(signal: string): void {
-      this.emit(signal);
+    mockSignal(signal: string, response?: any): void {
+      this.emit(signal, response);
     }
     terminate() {}
     accept() {}
@@ -1719,10 +1719,10 @@ describe('RTC call', () => {
       expect(call._hangupInvalidCallTimer).not.toEqual(null);
     });
 
-    it('should clear timer when session emit progress event [JPT-987]', done => {
+    it('should clear timer when session receive 183 event [JPT-987]', done => {
       setup();
       jest.spyOn(call, '_onSessionProgress');
-      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS);
+      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { status_code: 183 });
       setImmediate(() => {
         expect(call._onSessionProgress).toHaveBeenCalled();
         done();
