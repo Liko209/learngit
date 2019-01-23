@@ -64,16 +64,24 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
-  get favIcon() {
-    return this.getSelectorByAutomationId('favorite-icon');
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
 
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.favoriteButton);
+  }
+  
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
 
-  async clickFavIcon() {
-    await this.t.click(this.favIcon);
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
   }
 
   nthPostItem(nth: number) {
