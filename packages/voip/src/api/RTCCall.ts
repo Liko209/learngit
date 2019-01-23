@@ -8,6 +8,8 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
+import { kRTCHangupInvalidCallInterval } from '../account/constants';
+
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
@@ -33,7 +35,6 @@ class RTCCall {
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
-  private _hangupInvalidCallInterval: number = 10;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
 
   constructor(
@@ -66,7 +67,7 @@ class RTCCall {
   private _addHangupTimer(): void {
     this._hangupInvalidCallTimer = setTimeout(() => {
       this.hangup();
-    },                                        this._hangupInvalidCallInterval * 1000);
+    },                                        kRTCHangupInvalidCallInterval * 1000);
   }
   setCallDelegate(delegate: IRTCCallDelegate) {
     this._delegate = delegate;

@@ -11,6 +11,7 @@ import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_STATE, RTC_CALL_ACTION } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
@@ -1712,12 +1713,12 @@ describe('RTC call', () => {
       call.setCallSession(session);
     }
 
-    it('should set timer when create outgoing call', () => {
+    it('should set timer when create outgoing call [JPT-985]', () => {
       setup();
       expect(call._hangupInvalidCallTimer).not.toEqual(null);
     });
 
-    it('should clear timer when session emit progress event', done => {
+    it('should clear timer when session emit progress event [JPT-987]', done => {
       setup();
       jest.spyOn(call, '_onSessionProgress');
       session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS);
@@ -1727,19 +1728,18 @@ describe('RTC call', () => {
       });
     });
 
-    it('should not set timer when get incoming call', () => {
+    it('should not set timer when get incoming call [JPT-986]', () => {
       account = new VirturlAccountAndCallObserver();
       session = new MockSession();
       call = new RTCCall(true, '123', session, account, account);
       expect(call._hangupInvalidCallTimer).toEqual(null);
     });
 
-    it('should clear timer when session emit progress event', async () => {
+    it('should clear timer when session emit progress event [JPT-988]', async () => {
       jest.useFakeTimers();
       setup();
-      const interval = 10;
       jest.spyOn(call, 'hangup');
-      jest.advanceTimersByTime(interval * 1000);
+      jest.advanceTimersByTime(kRTCHangupInvalidCallInterval * 1000);
       await setImmediate(() => {});
       expect(call.hangup).toBeCalled();
     });
