@@ -35,7 +35,6 @@ class RTCCall {
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
   private _options: RTCCallOptions = {};
-  private _isAnonymous: boolean = false;
 
   constructor(
     isIncoming: boolean,
@@ -50,9 +49,6 @@ class RTCCall {
       this._delegate = delegate;
     }
     if (options) {
-      if (options.anonymous) {
-        this._isAnonymous = true;
-      }
       this._options = options;
     }
     this._isIncomingCall = isIncoming;
@@ -68,10 +64,6 @@ class RTCCall {
       this._startOutCallFSM();
     }
     this._prepare();
-  }
-
-  getAnonymous() {
-    return this._isAnonymous;
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
