@@ -94,13 +94,13 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get config() {
-    return TAB_CONFIG.find(item => item.type === this.type);
+    return TAB_CONFIG.find(item => item.type === this.type)!;
   }
 
   @computed
   get sort() {
     return (
-      (this.config && this.config.sort) || {
+      this.config.sort || {
         sortKey: ITEM_SORT_KEYS.CREATE_TIME,
         desc: false,
       }
@@ -112,7 +112,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this.props.groupId,
       () => {
-        const { sortKey, desc } = this.sort;
+        const {
+          sortKey = ITEM_SORT_KEYS.CREATE_TIME,
+          desc = false,
+        } = this.sort;
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
