@@ -7,8 +7,6 @@ import { FileType } from '../../../../store/models/FileItem';
 import { getEntity } from '../../../../store/utils';
 import { getFileType } from '../../../../common/getFileType';
 import { ImageItemViewModel } from '../ImageItem.ViewModel';
-import { dateFormatter } from '../../../../utils/date';
-import { ENTITY_NAME } from '../../../../store';
 
 jest.mock('../../../../store/utils');
 jest.mock('../../../../common/getFileType');
@@ -19,15 +17,6 @@ const mockFile = {
   name: '',
 };
 
-const mockPerson = {
-  userDisplayName: 'name',
-};
-
-const mappingEntity = {
-  [ENTITY_NAME.FILE_ITEM]: mockFile,
-  [ENTITY_NAME.PERSON]: mockPerson,
-};
-
 const props = {
   id: 1,
 };
@@ -36,37 +25,12 @@ let vm: ImageItemViewModel;
 
 describe('ImageItemViewModel', () => {
   beforeAll(() => {
-    (getEntity as jest.Mock).mockImplementation(
-      (name, id) => mappingEntity[name],
-    );
+    (getEntity as jest.Mock).mockReturnValue(mockFile);
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
     vm = new ImageItemViewModel(props);
-  });
-
-  describe('file', () => {
-    it('should be a file item entity when props incoming id', () => {
-      expect(vm.file).toEqual(mockFile);
-    });
-  });
-
-  describe('personName', () => {
-    it('should be a person name string when invoke person entity [JPT-965]', () => {
-      expect(vm.personName).toEqual(mockPerson.userDisplayName);
-    });
-
-    it('should be a new person name string when change person name [JPT-965]', () => {
-      mockPerson.userDisplayName = 'new name';
-      expect(vm.personName).toEqual(mockPerson.userDisplayName);
-    });
-  });
-
-  describe('createdTime', () => {
-    it('should be a date string when incoming timestamp [JPT-965]', () => {
-      expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
-    });
   });
 
   describe('url', () => {

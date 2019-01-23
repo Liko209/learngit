@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiRightShelf,
@@ -54,6 +55,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   }
 }
 
+@observer
 class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;

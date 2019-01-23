@@ -10,6 +10,7 @@ const name2icon = {
   tasks: 'task',
   notes: 'note',
   files: 'copy',
+  conference: 'conference',
   settings: 'settings',
   lock_open: 'unlock',
   lock: 'lock',

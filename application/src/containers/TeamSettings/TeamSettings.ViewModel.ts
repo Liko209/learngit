@@ -10,7 +10,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
-import { SaveParams } from './types';
+import { TeamSettingTypes } from './types';
 import { GroupService } from 'sdk/module/group';
 import {
   ErrorParserHolder,
@@ -30,6 +30,15 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   nameErrorMsg?: string = '';
 
   @computed
+  get allowMemberAddMember() {
+    const groupService = new GroupService();
+    const permissionFlags = groupService.getTeamUserPermissionFlags(
+      this._group.permissions || {},
+    );
+    return !!permissionFlags.TEAM_ADD_MEMBER;
+  }
+
+  @computed
   get id() {
     return this.props.id;
   }
@@ -39,6 +48,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     return {
       name: this._group.displayName,
       description: this._group.description,
+      allowMemberAddMember: this.allowMemberAddMember,
     };
   }
 
@@ -57,7 +67,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     this.nameErrorMsg = msg;
   }
 
-  save = async (params: SaveParams) => {
+  save = async (params: TeamSettingTypes) => {
     const name = params.name.trim();
     const description = params.description.trim();
     const groupService = new GroupService();
@@ -66,6 +76,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       await groupService.updateTeamSetting(this.id, {
         name,
         description,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: params.allowMemberAddMember,
+        },
       });
       return true;
     } catch (error) {

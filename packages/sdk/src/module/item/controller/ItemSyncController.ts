@@ -64,7 +64,6 @@ class ItemSyncController {
       await this._updateGroupItemNewerThan(groupId, typeId);
       await this._itemService.getItemDataHandler()(response.data);
     } else {
-      debugger;
       mainLogger.info(
         `failed to request type:${typeId} of group($groupId), response: ${response}`,
       );
