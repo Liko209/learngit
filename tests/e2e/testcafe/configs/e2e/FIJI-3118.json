@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/MarkPrivateOrProtected.ts",
+      "/fixtures/ConversationList/MarkFavoriteOrUnfavorite.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
