@@ -39,6 +39,7 @@ describe('ItemListViewModel', () => {
         _sortKey: 'time',
         _desc: false,
       });
+      ViewModel.loadStatus.loading = false;
       await ViewModel.fetchNextPageItems();
       expect(_sortableDataHandler.fetchData).toHaveBeenCalled();
     });
