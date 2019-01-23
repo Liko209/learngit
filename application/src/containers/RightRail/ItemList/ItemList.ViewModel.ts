@@ -233,8 +233,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
       return result;
     } catch (e) {
-      //
-      this._loadStatus.loadError = true;
+      Object.assign(this._loadStatus, { loadError: true, loading: false });
     }
   }
 
