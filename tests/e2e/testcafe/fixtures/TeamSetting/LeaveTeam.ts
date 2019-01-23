@@ -29,8 +29,10 @@ test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JP
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
+  const roleAdmin = await h(t).userRole(adminUser);
+
   let teamId;
-  await h(t).withLog(`Given I am member of new team`, async () => {
+  await h(t).withLog(`Given I have one new team`, async () => {
     teamId = await h(t).platform(adminUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
@@ -38,7 +40,7 @@ test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JP
     });
   });
 
-  await h(t).withLog(`And I login Jupiter with ${memberUser.company.number}#${memberUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, memberUser);
     await app.homePage.ensureLoaded();
   });
@@ -82,14 +84,39 @@ test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JP
     await t.expect(profileDialog.memberNames.withText(memberUserName).exists).ok();
   });
 
-  await h(t).withLog(`When I open Leave Team confirmation again and click "Leave" button`, async () => {
+  await h(t).withLog(`When I open Leave Team confirmation again`, async () => {
     await profileDialog.clickSetting();
     await teamSettingDialog.clickLeaveTeamButton();
-    await leaveTeamDialog.leave()
+  })
+
+  await h(t).withLog(`Then the confirmation is displayed and teamSettingDialog is closed`, async () => {
+    await t.expect(teamSettingDialog.exists).notOk();
+    await leaveTeamDialog.shouldBePopup();
+  });
+
+  await h(t).withLog(`When I click "Leave" button`, async () => {
+    await leaveTeamDialog.leave();
   });
 
   await h(t).withLog(`Then the confirmation dismiss`, async () => {
     await t.expect(leaveTeamDialog.exists).notOk();
+  });
+
+  await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+  });
+
+  await h(t).withLog(`When I login Jupiter with team admin: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+    await t.useRole(roleAdmin);
+  });
+
+  await h(t).withLog(`And I open profile dialog of the team`, async () => {
+    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+  });
+
+  await h(t).withLog(`Then the team member ${memberUserName} leave the team`, async () => {
+    await t.expect(profileDialog.memberNames.withText(memberUserName).exists).notOk();
   });
 
 });
@@ -103,7 +130,6 @@ test(formalName(`The team information is updated when the member is left`, ['P1'
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
-  const memberUserName = await h(t).glip(adminUser).getPersonPartialData('display_name', loginUser.rcId);
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
@@ -147,7 +173,7 @@ test(formalName(`The team information is updated when the member is left`, ['P1'
   await h(t).withLog(`Then the loginUser is not in the member list`, async () => {
     const personId = await h(t).glip(adminUser).toPersonId(loginUser.rcId);
     assert.ok(!_.includes(members, personId), `Login User should no be in team members list`);
-  }); 
+  });
 
   await h(t).withLog(`When team member send a message on the team`, async () => {
     await h(t).platform(adminUser).sendTextPost("leave team should not receive", teamId);
