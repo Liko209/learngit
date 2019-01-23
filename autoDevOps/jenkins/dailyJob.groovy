@@ -117,7 +117,7 @@ def runOnSeleniumGrid(
                                     for (int i = 0; i < maxRetry; i++) {
                                         Integer status = sh(returnStatus: true, script: 'npm run e2e')
                                         echo "exit code is ${status}"
-                                        if (status in [0, 1, 3])  // normal exit
+                                        if (status in [0, 3])  // normal exit
                                             break
                                         sleep 60 // retry after 1 min
                                     }
@@ -129,12 +129,6 @@ def runOnSeleniumGrid(
             }
             parallel tasks
         }}
-        // post execution
-        // for me I don't think we need allure report, which needs install jvm and commandline tool, since we already use beat dashboard
-        // and we don't need to send a email to glip channel, since we need to analysis the
-
-
-
     }
 }
 
@@ -167,7 +161,7 @@ parallel([
             gitUrl, gitBranch, gitCredentialId,
             siteUrl, siteEnv, platformCredentialId,
             seleniumBrowsers, seleniumServer,
-            2, 2, 5)
+            1, 2, 5)
     },
 
     'electron-mac': {
