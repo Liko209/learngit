@@ -85,5 +85,16 @@ describe('Conversation sheet helpers', () => {
       const result = getDurationTime(DATE_2019_1_5, DATE_2019_1_4);
       expect(result).toBe('Sat, 1/5/2019 at 9:21 AM - today at 9:21 AM');
     });
+
+    it('should be Thu, 1/24/2019 at 2:00 PM - 2:30 PM when event has same day but not today', () => {
+      global.Date.now = jest.fn(() => DATE_2019_1_4);
+      const Thu_1_24_2019_2_00PM = 1548309600000; // Thu, 1/24/2019 at 2:00 PM
+      const Thu_1_24_2019_2_30PM = 1548311400000; // Thu, 1/24/2019 at 2:30 PM
+      const result = getDurationTime(
+        Thu_1_24_2019_2_00PM,
+        Thu_1_24_2019_2_30PM,
+      );
+      expect(result).toBe('Thu, 1/24/2019 at 2:00 PM - 2:30 PM');
+    });
   });
 });
