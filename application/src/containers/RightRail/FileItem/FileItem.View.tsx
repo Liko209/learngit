@@ -14,8 +14,8 @@ import {
 import { Thumbnail } from '@/containers/Thumbnail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { FileItemViewProps } from './types';
-import { Download } from '../Download.View';
-import { SecondaryText } from '../SecondaryText.View';
+import { Download } from '../common/Download.View';
+import { SecondaryText } from '../common/SecondaryText.View';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {

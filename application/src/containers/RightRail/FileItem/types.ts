@@ -3,15 +3,10 @@
  * @Date: 2019-01-08 14:28:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileProps, FileViewProps } from '../File.types';
+import { FileProps, FileViewProps } from '../common/File/File.types';
 
 type FileItemProps = FileProps;
 
-type FileItemViewProps = {
-  fileTypeOrUrl: {
-    icon: string;
-    url: string;
-  };
-} & FileViewProps;
+type FileItemViewProps = FileViewProps;
 
 export { FileItemProps, FileItemViewProps };
