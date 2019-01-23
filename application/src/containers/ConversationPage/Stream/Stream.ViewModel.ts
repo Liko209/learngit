@@ -242,6 +242,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
   dispose() {
     super.dispose();
+    this.streamController.dispose();
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);

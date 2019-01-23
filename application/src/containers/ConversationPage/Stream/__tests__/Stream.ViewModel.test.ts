@@ -19,6 +19,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
+import * as SCM from '../StreamController';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
@@ -26,7 +27,7 @@ jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
-  const vm = new StreamViewModel({ groupId: 1 });
+  const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
   Object.assign(vm, obj);
   return vm;
 }
@@ -34,6 +35,12 @@ function setup(obj?: any) {
 describe('StreamViewModel', () => {
   let postService: PostService;
   let itemService: ItemService;
+  const streamController = {
+    dispose: jest.fn(),
+    hasMore: jest.fn(),
+    enableNewMessageSep: jest.fn(),
+    disableNewMessageSep: jest.fn(),
+  };
   beforeEach(() => {
     jest.clearAllMocks();
     itemService = new ItemService();
@@ -79,12 +86,7 @@ describe('StreamViewModel', () => {
   describe('loadPostUntilFirstUnread()', () => {
     function setupLoadPostUntilFirstUnread(obj: any) {
       const vm = setup({
-        _newMessageSeparatorHandler: {
-          enable: jest.fn(),
-        },
-        streamController: {
-          hasMore: jest.fn(),
-        },
+        streamController,
         _historyHandler: {
           getDistanceToFirstUnread: jest
             .fn()
@@ -104,9 +106,7 @@ describe('StreamViewModel', () => {
       const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
         distanceToFirstUnread: 5,
       });
-
       await vm.loadPostUntilFirstUnread();
-
       expect(loadPosts).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER, 6);
     });
 
@@ -121,24 +121,24 @@ describe('StreamViewModel', () => {
     });
   });
 
-
   describe('dispose()', () => {
-    it('should dispose streamListHandler', () => {
-      const streamListHandler = { dispose: jest.fn() };
-      const vm = setup({ streamListHandler });
+    it('should dispose streamController', () => {
+      const vm = setup({ streamController: { dispose: jest.fn() } });
       vm.dispose();
-
-      expect(streamListHandler.dispose).toHaveBeenCalled();
+      expect(vm.streamController.dispose).toHaveBeenCalled();
     });
   });
 
   describe('notEmpty', () => {
     function setup(props: { hasMoreUp: boolean; id?: number }) {
-      const vm = new StreamViewModel({ groupId: 1 });
-      vm.orderListHandler.setHasMore(props.hasMoreUp, QUERY_DIRECTION.OLDER);
-      if (props.id) {
-        vm.streamListHandler.replaceAll([{ id: props.id, value: [props.id] }]);
-      }
+      const vm = new StreamViewModel({
+        groupId: 1,
+      });
+      vm.streamController = {
+        hasMoreUp: props.hasMoreUp,
+        items: props.id ? [{ id: props.id, value: [props.id] }] : [],
+      };
+
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
@@ -174,11 +174,10 @@ describe('StreamViewModel', () => {
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
         _historyHandler: { update: mockUpdate },
+        streamController: {},
       });
 
-      vm.orderListHandler.sortableListStore.replaceAll(
-        postIds.map(i => ({ id: i })),
-      );
+      vm.streamController.postIds = postIds;
       Object.defineProperty(vm, '_groupState', {
         value: groupState,
       });
@@ -207,7 +206,9 @@ describe('StreamViewModel', () => {
   describe('enableNewMessageSeparatorHandler()', () => {
     it('should enable newMessageSeparatorHandler', () => {
       const mockEnable = jest.fn();
-      const vm = setup({ _newMessageSeparatorHandler: { enable: mockEnable } });
+      const vm = setup({
+        streamController: { enableNewMessageSep: mockEnable },
+      });
       vm.enableNewMessageSeparatorHandler();
 
       expect(mockEnable).toBeCalledTimes(1);
@@ -218,7 +219,7 @@ describe('StreamViewModel', () => {
     it('should disable newMessageSeparatorHandler', () => {
       const mockDisable = jest.fn();
       const vm = setup({
-        _newMessageSeparatorHandler: { disable: mockDisable },
+        streamController: { disableNewMessageSep: mockDisable },
       });
 
       vm.disableNewMessageSeparatorHandler();
@@ -232,12 +233,10 @@ describe('StreamViewModel', () => {
       const autorun = jest.fn();
       const globalStore = { set: jest.fn(), get: jest.fn() };
       const dispose = jest.fn();
-
       const oldValue = {
         jumpToPostId: 121244,
         groupId: 123123123,
         _historyHandler: {},
-        _newMessageSeparatorHandler: {},
         streamController: { dispose },
         _initialized: true,
       };
@@ -264,20 +263,6 @@ describe('StreamViewModel', () => {
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();
     });
-
-    it('should reset property', () => {
-      const { vm, oldValue } = localSetup();
-      const groupId = 235;
-
-      expect(vm.jumpToPostId).toBe(oldValue.jumpToPostId);
-      expect(vm.groupId).toBe(oldValue.groupId);
-      expect(vm._initialized).toBe(true);
-      vm.initialize(groupId);
-      expect(vm.groupId).toBe(groupId);
-      expect(vm.jumpToPostId).not.toBe(oldValue.jumpToPostId);
-      expect(vm._historyHandler).not.toBe(oldValue._historyHandler);
-      expect(vm._initialized).toBe(false);
-    });
   });
 
   describe('loadPrevPosts()', () => {
@@ -285,7 +270,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        orderListHandler: {
+        streamController: {
           hasMore,
           fetchData,
         },
@@ -302,7 +287,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        orderListHandler: {
+        streamController: {
           hasMore,
           fetchData,
         },
@@ -319,7 +304,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        orderListHandler: {
+        streamController: {
           hasMore,
           fetchData,
         },
@@ -337,7 +322,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        orderListHandler: {
+        streamController: {
           hasMore,
           fetchData,
         },
@@ -350,7 +335,7 @@ describe('StreamViewModel', () => {
   });
 
   describe('handleNewMessageSeparatorState()', () => {
-    let _newMessageSeparatorHandler: any;
+    let streamController: any;
     const globalStore = {
       set: jest.fn(),
       get: jest.fn().mockReturnValue(1),
@@ -379,12 +364,14 @@ describe('StreamViewModel', () => {
     }
 
     function localSetup(args: object, initialized: boolean = true) {
-      _newMessageSeparatorHandler = {
-        disable: jest.fn(),
-        enable: jest.fn(),
+      jest.spyOn(SCM, 'StreamController').mockImplementation();
+      streamController = {
+        disableNewMessageSep: jest.fn(),
+        enableNewMessageSep: jest.fn(),
+        dispose: jest.fn(),
       };
       const vm = setup({
-        _newMessageSeparatorHandler,
+        streamController,
         _initialized: initialized,
         ...args,
       });
@@ -402,7 +389,7 @@ describe('StreamViewModel', () => {
           GLOBAL_KEYS.SHOULD_SHOW_UMI,
           false,
         );
-        expect(_newMessageSeparatorHandler.disable).toBeCalled();
+        expect(streamController.disableNewMessageSep).toBeCalled();
       }
 
       function showUMIAndEnableMessageHandler() {
@@ -410,10 +397,10 @@ describe('StreamViewModel', () => {
           GLOBAL_KEYS.SHOULD_SHOW_UMI,
           true,
         );
-        expect(_newMessageSeparatorHandler.enable).toBeCalled();
+        expect(streamController.enableNewMessageSep).toBeCalled();
       }
 
-      it('should disable _newMessageSeparatorHandler when at bottom and document has focus', () => {
+      it('should disable newMessageSeparatorHandler when at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({});
@@ -421,7 +408,7 @@ describe('StreamViewModel', () => {
         hideUMIAndDisableMessageHandler();
       });
 
-      it('should enable _newMessageSeparatorHandler when at bottom and document without focus', () => {
+      it('should enable newMessageSeparatorHandler when at bottom and document without focus', () => {
         mockStoreManager();
         mockDocumentFocus(false);
         const vm = localSetup({});
@@ -429,7 +416,7 @@ describe('StreamViewModel', () => {
         showUMIAndEnableMessageHandler();
       });
 
-      it('should enable _newMessageSeparatorHandler when not at bottom and document has focus', () => {
+      it('should enable newMessageSeparatorHandler when not at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({});
@@ -437,24 +424,23 @@ describe('StreamViewModel', () => {
         showUMIAndEnableMessageHandler();
       });
 
-      it('should enable _newMessageSeparatorHandler when not at bottom and document without focus', () => {
+      it('should enable newMessageSeparatorHandler when not at bottom and document without focus', () => {
         mockStoreManager();
         mockDocumentFocus(false);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(notAtBottomEvent);
-
         showUMIAndEnableMessageHandler();
       });
     });
 
     describe('when viewModel is not initialized', () => {
-      it('should enable _newMessageSeparatorHandler when at bottom and document has focus', () => {
+      it('should enable newMessageSeparatorHandler when at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({}, false);
         vm.handleNewMessageSeparatorState(atBottomEvent);
 
-        expect(_newMessageSeparatorHandler.enable).toBeCalled();
+        expect(streamController.enableNewMessageSep).toBeCalled();
       });
     });
 
