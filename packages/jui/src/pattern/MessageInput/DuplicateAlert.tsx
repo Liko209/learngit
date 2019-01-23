@@ -53,7 +53,7 @@ const Item = styled.li`
   &:not(:last-child) {
     margin: 0 0 ${spacing(2)} 0;
   }
-  ${ellipsis};
+  ${ellipsis()};
 `;
 
 const JuiDuplicateAlert: React.SFC<Props> = (props: Props) => {
