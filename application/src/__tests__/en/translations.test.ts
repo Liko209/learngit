@@ -379,6 +379,10 @@ describe('i18next-en', () => {
   expect(i18next.t('newMessageTipLink')).toEqual('create a Team instead.');
   expect(i18next.t('InvalidEmail')).toEqual('Invalid Email');
 
+  expect(i18next.t('collapseLine')).toEqual('Collapse');
+  expect(i18next.t('expandLine', { lineNumber: 3 })).toEqual(
+    'Expand (3 lines)',
+  );
   const restLines = 1;
   expect(i18next.t('DownloadToSeeTheRestLine', { restLines })).toEqual(
     `Download to see the rest ${restLines} line`,

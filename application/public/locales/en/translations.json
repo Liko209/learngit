@@ -274,6 +274,8 @@
   "newMessageTipLink": "create a Team instead.",
   "InvalidEmail": "Invalid Email",
   "DownloadToSeeTheRestLine": "Download to see the rest {{restLines}} $t(line, {'count':{{restLines}} })",
+  "expandLine": "Expand ({{lineNumber}} lines)",
+  "collapseLine": "Collapse",
   "leaveTeam": "Leave team",
   "leaveTeamConfirmTitle": "Leave team",
   "leaveTeamConfirmContent": "Once you leave {{teamName}}, you will no longer have access to the content.",

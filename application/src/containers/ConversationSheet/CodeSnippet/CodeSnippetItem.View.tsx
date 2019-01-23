@@ -56,6 +56,7 @@ class CodeSnippet extends React.Component<
   _getHoverActions = (
     collapsed: boolean,
     showDownload: boolean,
+    lineNumber: number,
     restLines: number,
   ) => {
     const { t } = this.props;
@@ -63,12 +64,12 @@ class CodeSnippet extends React.Component<
 
     if (collapsed) {
       actions.push({
-        text: t('expand'),
+        text: t('expandLine', { lineNumber }),
         handler: this.handleExpand,
       });
     } else {
       actions.push({
-        text: t('collapse'),
+        text: t('collapseLine'),
         handler: this.handleCollapse,
       });
     }
@@ -126,6 +127,7 @@ class CodeSnippet extends React.Component<
               ? this._getHoverActions(
                   this.state.isCollapse,
                   showDownloadButton,
+                  lineNumber,
                   restLines,
                 )
               : []
