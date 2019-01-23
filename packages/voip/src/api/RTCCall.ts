@@ -216,6 +216,10 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      if (this._hangupInvalidCallTimer) {
+        clearTimeout(this._hangupInvalidCallTimer);
+        this._hangupInvalidCallTimer = null;
+      }
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -354,6 +358,7 @@ class RTCCall {
   private _onSessionProgress(response: any) {
     if (response.status_code === 183 && this._hangupInvalidCallTimer) {
       clearTimeout(this._hangupInvalidCallTimer);
+      this._hangupInvalidCallTimer = null;
     }
   }
   // fsm listener

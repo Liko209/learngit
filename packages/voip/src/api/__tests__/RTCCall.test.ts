@@ -1729,6 +1729,18 @@ describe('RTC call', () => {
       });
     });
 
+    it('should clear timer when enter connected state', done => {
+      setup();
+      expect(call._hangupInvalidCallTimer).not.toBeNull();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(call._hangupInvalidCallTimer).toBeNull();
+        done();
+      });
+    });
+
     it('should not set timer when get incoming call [JPT-986]', () => {
       account = new VirturlAccountAndCallObserver();
       session = new MockSession();
