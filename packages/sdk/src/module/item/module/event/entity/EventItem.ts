@@ -11,6 +11,7 @@ export type EventItem = Item & {
   description: string;
   start: number;
   end: number;
+  effective_end: number;
   location: string;
   repeat: string;
   repeat_ending: string;

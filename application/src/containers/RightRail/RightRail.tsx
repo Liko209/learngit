@@ -76,7 +76,13 @@ class RightRailComponent extends React.Component<Props> {
           <JuiTabs defaultActiveIndex={0} tag="right-shelf" width={width}>
             {TAB_CONFIG.map(
               (
-                { title, type }: { title: string; type: RIGHT_RAIL_ITEM_TYPE },
+                {
+                  title,
+                  type,
+                }: {
+                  title: string;
+                  type: RIGHT_RAIL_ITEM_TYPE;
+                },
                 index: number,
               ) => (
                 <JuiTab

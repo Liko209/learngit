@@ -21,8 +21,8 @@ import { SecondaryText } from '../SecondaryText.View';
 @observer
 class ImageItemView extends Component<ImageItemViewProps> {
   private _renderItem = (hover: boolean) => {
-    const { file, url, personName, createdTime } = this.props;
-    const { name, downloadUrl } = file;
+    const { file, url, personName, createdTime, downloadUrl } = this.props;
+    const { name } = file;
     return (
       <>
         <JuiListItemIcon>

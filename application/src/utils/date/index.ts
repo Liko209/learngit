@@ -70,6 +70,9 @@ const dateFormatter = {
   date: (timestamp: number) => {
     return moment(timestamp).format('l');
   },
+  dateAndTimeWithoutWeekday: (m: Moment) => {
+    return `${m.format('l')} ${dateFormatter.localTime(m)}`;
+  },
 };
 
 const condition = {
