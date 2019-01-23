@@ -1729,7 +1729,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should clear timer when enter connected state', done => {
+    it('should clear timer when enter connected state [JPT-994]', done => {
       setup();
       expect(call._hangupInvalidCallTimer).not.toBeNull();
       call.onAccountReady();
