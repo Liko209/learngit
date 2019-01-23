@@ -10,6 +10,7 @@ import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
 import { TaskItem } from '../TaskItem';
+import { EventItem } from '../EventItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -20,6 +21,7 @@ import NotesEmptyImage from '../images/Notes.svg';
 import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
+import { ITEM_SORT_KEYS } from 'sdk/module/item';
 
 const ITEM_HEIGHT = 52;
 
@@ -35,6 +37,10 @@ type TabConfig = {
   item: ComponentType;
   subheader: string;
   empty: EmptyConfig;
+  sort?: {
+    sortKey?: ITEM_SORT_KEYS;
+    desc?: boolean;
+  };
   offlinePrompt: string;
   tryAgainPrompt: string;
 };
@@ -62,6 +68,9 @@ const TAB_CONFIG: TabConfig[] = [
       text: 'noFilesSharedYet',
       content: 'noFileSubText',
       image: FilesEmptyImage,
+    },
+    sort: {
+      desc: true,
     },
     offlinePrompt: 'networkErrorFilesPrompt',
     tryAgainPrompt: 'tryAgainFilesPrompt',
@@ -121,8 +130,11 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
-    item: FileItem,
-    subheader: '',
+    sort: {
+      sortKey: ITEM_SORT_KEYS.START_TIME,
+    },
+    item: EventItem,
+    subheader: 'eventListSubheader',
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',

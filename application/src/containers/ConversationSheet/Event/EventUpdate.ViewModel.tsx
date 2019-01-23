@@ -13,6 +13,7 @@ import { ENTITY_NAME } from '@/store';
 import { EventUpdateViewProps, EventUpdateProps } from './types';
 import EventItemModel from '@/store/models/EventItem';
 import { getDurationTimeText } from '../helper';
+import { accentColor } from '@/common/AccentColor';
 
 class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   implements EventUpdateViewProps {
@@ -34,6 +35,11 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   @computed
   get event() {
     return getEntity<Item, EventItemModel>(ENTITY_NAME.EVENT_ITEM, this._id);
+  }
+
+  @computed
+  get color() {
+    return accentColor[this.event.color];
   }
 
   @computed

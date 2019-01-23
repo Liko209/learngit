@@ -28,6 +28,11 @@ class FileViewModel extends AbstractViewModel<FileProps>
   }
 
   @computed
+  get downloadUrl() {
+    return this.file.downloadUrl;
+  }
+
+  @computed
   get _person(): any {
     const { creatorId } = this.file;
     if (creatorId) {

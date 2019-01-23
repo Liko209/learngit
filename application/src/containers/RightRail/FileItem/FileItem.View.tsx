@@ -20,9 +20,15 @@ import { SecondaryText } from '../SecondaryText.View';
 @observer
 class FileItemView extends Component<FileItemViewProps> {
   private _renderItem = (hover: boolean) => {
-    const { file, fileTypeOrUrl, personName, createdTime } = this.props;
+    const {
+      file,
+      fileTypeOrUrl,
+      personName,
+      createdTime,
+      downloadUrl,
+    } = this.props;
     const fileInfo = file || {};
-    const { name, downloadUrl } = fileInfo;
+    const { name } = fileInfo;
 
     return (
       <>

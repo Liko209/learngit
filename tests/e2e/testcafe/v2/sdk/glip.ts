@@ -629,11 +629,13 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, options?: object) {
+  async createSimpleEvent(groupIds: string[] | string, title: string, rcIds?, start?: number, end?: number, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       text: title,
-      group_ids: groupIds
+      group_ids: groupIds,
+      start: start || new Date().getTime() + 1800000, // start time after 30 minutes from now
+      end: end || new Date().getTime() + 3600000 // end time after 60 minutes from now
     },
       options
     )

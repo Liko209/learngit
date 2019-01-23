@@ -64,10 +64,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   totalCount: number = 0;
   @observable
-  private _sortKey: ITEM_SORT_KEYS = ITEM_SORT_KEYS.CREATE_TIME;
-  @observable
-  private _desc: boolean = true;
-  @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @computed
   private get _groupId() {
@@ -94,11 +90,23 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return ItemUtils.fileFilter(this._groupId, true);
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
         return ItemUtils.fileFilter(this._groupId, false);
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+        return ItemUtils.eventFilter(this._groupId);
       case RIGHT_RAIL_ITEM_TYPE.TASKS:
         return ItemUtils.taskFilter(this._groupId, false);
       default:
         return undefined;
     }
+  }
+
+  @computed
+  get sort() {
+    return (
+      this.tabConfig.sort || {
+        sortKey: ITEM_SORT_KEYS.CREATE_TIME,
+        desc: false,
+      }
+    );
   }
 
   constructor(props: Props) {
@@ -108,12 +116,16 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       () => this._groupId,
       () => {
         this._loadStatus.firstLoaded = false;
+        const {
+          sortKey = ITEM_SORT_KEYS.CREATE_TIME,
+          desc = false,
+        } = this.sort;
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
             this._typeId,
-            this._sortKey,
-            this._desc,
+            sortKey,
+            desc,
           );
         this.loadTotalCount();
         this.forceReload();
@@ -124,12 +136,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   async loadTotalCount() {
-    // To Do in  https://jira.ringcentral.com/browse/FIJI-1416
-    if (this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS) {
-      this.totalCount = 0;
-      return;
-    }
-
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
@@ -183,6 +189,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
     });
+    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
@@ -190,6 +197,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     switch (this.type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
       case RIGHT_RAIL_ITEM_TYPE.TASKS:
         isValidItem =
           isValidItem &&

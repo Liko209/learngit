@@ -18,6 +18,7 @@ enum ENTITY_NAME {
   'PROFILE' = 'profile',
   'GLOBAL' = 'global',
   'PROGRESS' = 'progress',
+  'USER_PERMISSION' = 'userPermission',
 }
 
 enum HANDLER_TYPE {

@@ -14,6 +14,7 @@ type FileViewProps = {
   file: FileItemModel;
   personName: string;
   createdTime: string;
+  downloadUrl: string;
 };
 
 export { FileProps, FileViewProps };
