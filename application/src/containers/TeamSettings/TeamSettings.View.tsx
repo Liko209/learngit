@@ -33,6 +33,7 @@ import { Dialog } from '@/containers/Dialog';
 type State = {
   name: string;
   description: string;
+  allowMemberAddMember: boolean;
 };
 
 type TeamSettingsProps = WithNamespaces & ViewProps;
@@ -47,6 +48,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     this.state = {
       name: props.initialData.name,
       description: props.initialData.description,
+      allowMemberAddMember: props.initialData.allowMemberAddMember,
     };
   }
 
@@ -60,10 +62,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   handleClose = () => portalManager.dismiss();
   handleOk = async () => {
-    const shouldClose = await this.props.save({
-      name: this.state.name,
-      description: this.state.description,
-    });
+    const shouldClose = await this.props.save(this.state);
     if (shouldClose) {
       portalManager.dismiss();
     }
@@ -78,6 +77,15 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       description: e.target.value,
+    });
+  }
+
+  handleAllowMemberAddMemberChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    this.setState({
+      allowMemberAddMember: checked,
     });
   }
 
@@ -151,9 +159,13 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
               data-test-automation-id="memberPermissionItem"
               label={t('addTeamMembers')}
             >
-              <JuiToggleButton data-test-automation-id="allowAddTeamMemberToggle" />
+              <JuiToggleButton
+                data-test-automation-id="allowAddTeamMemberToggle"
+                checked={this.state.allowMemberAddMember}
+                onChange={this.handleAllowMemberAddMemberChange}
+              />
             </SubSectionListItem>
-            {/* <JuiDivider /> */}
+            <JuiDivider />
           </SubSectionList>
         </SubSection>
       </>

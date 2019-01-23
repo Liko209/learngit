@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type SaveParams = {
-  name: string;
-  description: string;
-};
 type TeamSettingTypes = {
   name: string;
   description: string;
+  allowMemberAddMember: boolean;
 };
 type ViewProps = {
   initialData: TeamSettingTypes;
   id: number;
   isAdmin: boolean;
-  save: (params: SaveParams) => boolean;
+  save: (params: TeamSettingTypes) => boolean;
   nameErrorMsg?: string;
   leaveTeam: () => void;
 };
 
-export { ViewProps, SaveParams };
+export { ViewProps, TeamSettingTypes };
