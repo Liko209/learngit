@@ -96,6 +96,8 @@
   "markUnFavoriteServerErrorContent": "We weren't able to remove this conversation from favorites. Try again.",
   "markPublicServerErrorContent": "We weren't able to public this conversation. Try again.",
   "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again.",
+  "leaveTeamServerErrorContent": "Sorry, we weren't able to let you leave the team. Try again.",
+  "leaveTeamNetworkErrorContent": "Sorry, we weren't able to let you leave the team.",
   "suggested people": "suggested people",
   "team members": "team members",
   "search": "Search",
