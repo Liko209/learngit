@@ -16,6 +16,7 @@ import { EventItem } from '../module/event/entity';
 import { FileItem } from '../module/file/entity';
 import { NoteItem } from '../module/note/entity';
 import { LinkItem } from '../module/link/entity';
+export * from '../module/conference/entity';
 
 type ItemFile = FileItem;
 

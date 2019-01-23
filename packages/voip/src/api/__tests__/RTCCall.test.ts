@@ -11,6 +11,7 @@ import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
@@ -53,9 +54,10 @@ describe('RTC call', () => {
 
     hold = jest.fn();
     unhold = jest.fn();
+    dtmf = jest.fn();
 
-    mockSignal(signal: string): void {
-      this.emit(signal);
+    mockSignal(signal: string, response?: any): void {
+      this.emit(signal, response);
     }
     terminate() {}
     accept() {}
@@ -1711,7 +1713,6 @@ describe('RTC call', () => {
       session = new MockSession();
       call.setCallSession(session);
     }
-
     it('should call createOutingCallSession with options when new Call with options param. [JPT-820]', done => {
       const options: RTCCallOptions = { anonymous: true };
       setup(options);
@@ -1720,6 +1721,180 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call._options).toEqual(options);
         expect(call._onCreateOutingCallSession).toBeCalled();
+        done();
+      });
+    });
+  });
+
+  describe('setHangupTimeout', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+    }
+
+    it('should set timer when create outgoing call [JPT-985]', () => {
+      setup();
+      expect(call._hangupInvalidCallTimer).not.toEqual(null);
+    });
+
+    it('should clear timer when session receive 183 event [JPT-987]', done => {
+      setup();
+      jest.spyOn(call, '_onSessionProgress');
+      session.mockSignal(WEBPHONE_SESSION_STATE.PROGRESS, { status_code: 183 });
+      setImmediate(() => {
+        expect(call._onSessionProgress).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('should not set timer when get incoming call [JPT-986]', () => {
+      account = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, account, account);
+      expect(call._hangupInvalidCallTimer).toEqual(null);
+    });
+
+    it('should clear timer when session emit progress event [JPT-988]', async () => {
+      jest.useFakeTimers();
+      setup();
+      jest.spyOn(call, 'hangup');
+      jest.advanceTimersByTime(kRTCHangupInvalidCallInterval * 1000);
+      await setImmediate(() => {});
+      expect(call.hangup).toBeCalled();
+    });
+  });
+
+  describe('DTMF', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+    }
+
+    it('should trigger dtmf function when call dtmf and call is in connected state. [JPT-859]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in connecting state. [JPT-860]', done => {
+      setup();
+      call.onAccountReady();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connecting');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in answering state. [JPT-861]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.answer();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('answering');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in holding state. [JPT-989]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holding');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in holded state. [JPT-990]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('holded');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should trigger dtmf function when call dtmf and call is in unholding state. [JPT-991]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      call.hold();
+      call._callSession.emit(
+        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+        RTC_CALL_ACTION.HOLD,
+      );
+      call.unhold();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('unholding');
+        expect(session.dtmf).toBeCalled();
+        done();
+      });
+    });
+
+    it('should not trigger dtmf function when call dtmf in idle state. [JPT-862]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('idle');
+        expect(session.dtmf).toBeCalledTimes(0);
+        done();
+      });
+    });
+
+    it('should not trigger dtmf function when call dtmf in pending state. [JPT-863]', done => {
+      setup();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('pending');
+        expect(session.dtmf).toBeCalledTimes(0);
+        done();
+      });
+    });
+
+    it('should not trigger dtmf function when call dtmf in disconnected state. [JPT-864]', done => {
+      setup();
+      call.hangup();
+      call.dtmf('1');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        expect(session.dtmf).toBeCalledTimes(0);
         done();
       });
     });

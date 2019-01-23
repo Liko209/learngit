@@ -8,7 +8,11 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
-import { kRTCAnonymous } from '../account/constants';
+import {
+  kRTCAnonymous,
+  kRTCHangupInvalidCallInterval,
+} from '../account/constants';
+
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
@@ -37,6 +41,7 @@ class RTCCall {
   private _isMute: boolean = false;
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
+  private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
 
   constructor(
     isIncoming: boolean,
@@ -65,6 +70,7 @@ class RTCCall {
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
       this.setCallSession(session);
     } else {
+      this._addHangupTimer();
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
@@ -73,6 +79,12 @@ class RTCCall {
 
   isAnonymous() {
     return this._isAnonymous;
+  }
+
+  private _addHangupTimer(): void {
+    this._hangupInvalidCallTimer = setTimeout(() => {
+      this.hangup();
+    },                                        kRTCHangupInvalidCallInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -159,6 +171,13 @@ class RTCCall {
     this._fsm.transfer(target);
   }
 
+  dtmf(digits: string): void {
+    if (digits.length === 0) {
+      return;
+    }
+    this._fsm.dtmf(digits);
+  }
+
   onAccountReady(): void {
     this._fsm.accountReady();
   }
@@ -185,6 +204,9 @@ class RTCCall {
     });
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
+    });
+    this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
+      this._onSessionProgress(response);
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -246,6 +268,9 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.UNMUTE_ACTION, () => {
       this._onUnmuteAction();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.DTMF_ACTION, (digits: string) => {
+      this._onDtmfAction(digits);
     });
     this._fsm.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
@@ -343,6 +368,12 @@ class RTCCall {
   private _onSessionError() {
     this._fsm.sessionError();
   }
+
+  private _onSessionProgress(response: any) {
+    if (response.status_code === 183 && this._hangupInvalidCallTimer) {
+      clearTimeout(this._hangupInvalidCallTimer);
+    }
+  }
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();
@@ -405,6 +436,11 @@ class RTCCall {
   private _onUnmuteAction() {
     this._callSession.unmute();
   }
+
+  private _onDtmfAction(digits: string) {
+    this._callSession.dtmf(digits);
+  }
+
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,

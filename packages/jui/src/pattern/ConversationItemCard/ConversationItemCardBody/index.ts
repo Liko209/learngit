@@ -11,5 +11,8 @@ export * from './TaskSection';
 export * from './TaskNotes';
 export * from './TaskAvatarNames';
 export * from './TaskContent';
+export * from './ItemContent';
+export * from './ItemTextValue';
+export * from './ItemConjunctionText';
 export * from './AvatarName';
 export * from './TimeMessage';

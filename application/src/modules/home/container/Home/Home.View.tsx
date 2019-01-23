@@ -25,15 +25,17 @@ class HomeView extends Component<HomeViewProps> {
 
   render() {
     return (
-      <Wrapper>
-        <TopBar />
-        <Bottom>
-          <ToastWrapper />
-          <LeftNav />
-          <HomeRouter />
-          <DialogPortal />
-        </Bottom>
-      </Wrapper>
+      <>
+        <ToastWrapper />
+        <Wrapper>
+          <TopBar />
+          <Bottom id="app-main-section">
+            <LeftNav />
+            <HomeRouter />
+            <DialogPortal />
+          </Bottom>
+        </Wrapper>
+      </>
     );
   }
 }
