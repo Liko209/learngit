@@ -11,6 +11,8 @@ import { daoManager, DeactivatedDao } from '../../../../../dao';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { State, GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
+import { TASK_DATA_TYPE } from '../../../constants';
+import { dataHandleTask } from '../../../types';
 
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
@@ -34,48 +36,97 @@ describe('StateDataHandleController', () => {
     );
   });
 
-  describe('handleState', () => {
-    it('should do nothing when states.length === 0', async () => {
-      const states: Partial<State>[] = [];
-      stateDataHandleController['_transformStateData'] = jest.fn();
-      stateDataHandleController['_handleTransformedState'] = jest.fn();
+  describe('handleState()', () => {
+    it('should start handle task when array only has one task', async () => {
+      const states: Partial<State>[] = [{ id: 123 }];
+      stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleState(states);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
+        type: TASK_DATA_TYPE.STATE,
+        data: states,
+      });
+    });
+
+    it('should only add task to array when array has more than one task', async () => {
+      const states: Partial<State>[] = [{ id: 123 }];
+      stateDataHandleController['_taskArray'] = [
+        { type: TASK_DATA_TYPE.STATE, data: states },
+      ];
+      stateDataHandleController['_startDataHandleTask'] = jest.fn();
+      await stateDataHandleController.handleState(states);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
+        0,
+      );
+    });
+  });
+
+  describe('handlePartialGroup()', () => {
+    it('should start handle task when array only has one task', async () => {
+      const groups: Partial<Group>[] = [{ id: 123 }];
+      stateDataHandleController['_startDataHandleTask'] = jest.fn();
+      await stateDataHandleController.handlePartialGroup(groups);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
+        type: TASK_DATA_TYPE.GROUP,
+        data: groups,
+      });
+    });
+
+    it('should only add task to array when array has more than one task', async () => {
+      const groups: Partial<Group>[] = [{ id: 123 }];
+      stateDataHandleController['_taskArray'] = [
+        { type: TASK_DATA_TYPE.GROUP, data: groups },
+      ];
+      stateDataHandleController['_startDataHandleTask'] = jest.fn();
+      await stateDataHandleController.handlePartialGroup(groups);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
+        0,
+      );
+    });
+  });
+
+  describe('_startDataHandleTask', () => {
+    it('should handle state task and stop the queue', async () => {
+      const task: dataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
+      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController['_transformGroupData'] = jest.fn();
+      stateDataHandleController['_generateUpdatedState'] = jest.fn();
+      stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+
+      await stateDataHandleController['_startDataHandleTask'](task);
+      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
+        task.data,
+      );
+      expect(stateDataHandleController['_transformGroupData']).toBeCalledTimes(
+        0,
+      );
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toBeCalledTimes(1);
+      expect(
+        stateDataHandleController['_updateEntitiesAndDoNotification'],
+      ).toBeCalledTimes(1);
+    });
+
+    it('should handle group task and stop the queue', async () => {
+      const task: dataHandleTask = { type: TASK_DATA_TYPE.GROUP, data: [] };
+      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController['_transformGroupData'] = jest.fn();
+      stateDataHandleController['_generateUpdatedState'] = jest.fn();
+      stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+
+      await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
         0,
       );
-      expect(
-        stateDataHandleController['_handleTransformedState'],
-      ).toBeCalledTimes(0);
-    });
-  });
-
-  describe('handlePartialGroup', () => {
-    it('should do nothing when states.length === 0', async () => {
-      const groups: Partial<Group>[] = [];
-      stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_handleTransformedState'] = jest.fn();
-      await stateDataHandleController.handlePartialGroup(groups);
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledTimes(
-        0,
+      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
+        task.data,
       );
       expect(
-        stateDataHandleController['_handleTransformedState'],
-      ).toBeCalledTimes(0);
-    });
-  });
-
-  describe('handleGroupChanges', () => {
-    it('should do nothing when groups.length === 0', async () => {
-      const groups: Group[] = [];
-      stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_handleTransformedState'] = jest.fn();
-      await stateDataHandleController.handleGroupChanges(groups);
-      expect(stateDataHandleController['_transformGroupData']).toBeCalledTimes(
-        0,
-      );
+        stateDataHandleController['_generateUpdatedState'],
+      ).toBeCalledTimes(1);
       expect(
-        stateDataHandleController['_handleTransformedState'],
-      ).toBeCalledTimes(0);
+        stateDataHandleController['_updateEntitiesAndDoNotification'],
+      ).toBeCalledTimes(1);
     });
   });
 

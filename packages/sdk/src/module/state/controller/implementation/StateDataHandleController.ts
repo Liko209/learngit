@@ -16,16 +16,26 @@ import {
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
+import { TASK_DATA_TYPE } from '../../constants';
+import {
+  stateHandleTask,
+  groupHandleTask,
+  dataHandleTask,
+  dataHandleTaskArray,
+} from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
 import { mainLogger } from 'foundation';
 
 class StateDataHandleController {
+  private _taskArray: dataHandleTaskArray;
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
-  ) {}
+  ) {
+    this._taskArray = [];
+  }
 
   async handleState(states: Partial<State>[]): Promise<void> {
     if (states.length === 0) {
@@ -34,8 +44,14 @@ class StateDataHandleController {
       );
       return;
     }
-    const transformedState = this._transformStateData(states);
-    await this._handleTransformedState(transformedState);
+    const stateTask: stateHandleTask = {
+      type: TASK_DATA_TYPE.STATE,
+      data: states,
+    };
+    this._taskArray.push(stateTask);
+    if (this._taskArray.length === 1) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
   }
 
   async handlePartialGroup(groups: Partial<Group>[]): Promise<void> {
@@ -45,8 +61,14 @@ class StateDataHandleController {
       );
       return;
     }
-    const transformedState = this._transformGroupData(groups);
-    await this._handleTransformedState(transformedState);
+    const groupTask: groupHandleTask = {
+      type: TASK_DATA_TYPE.GROUP,
+      data: groups,
+    };
+    this._taskArray.push(groupTask);
+    if (this._taskArray.length === 1) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
   }
 
   async handleGroupChanges(groups?: Group[]): Promise<void> {
@@ -56,15 +78,29 @@ class StateDataHandleController {
       );
       return;
     }
-    const transformedState = this._transformGroupData(groups);
-    await this._handleTransformedState(transformedState);
+    const groupTask: groupHandleTask = {
+      type: TASK_DATA_TYPE.GROUP,
+      data: groups,
+    };
+    this._taskArray.push(groupTask);
+    if (this._taskArray.length === 1) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
   }
 
-  private async _handleTransformedState(
-    transformedState: TransformedState,
-  ): Promise<void> {
+  private async _startDataHandleTask(task: dataHandleTask): Promise<void> {
+    let transformedState: TransformedState;
+    if (task.type === TASK_DATA_TYPE.STATE) {
+      transformedState = this._transformStateData(task.data);
+    } else {
+      transformedState = this._transformGroupData(task.data);
+    }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
+    this._taskArray.shift();
+    if (this._taskArray.length > 0) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
   }
 
   private _transformGroupData(groups: Partial<Group>[]): TransformedState {

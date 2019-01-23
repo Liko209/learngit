@@ -28,7 +28,7 @@ import { ItemService } from '../../module/item';
 import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 
-const dispatchIncomingData = (data: IndexDataModel) => {
+const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
     user_id: userId,
     company_id: companyId,
@@ -54,25 +54,22 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   if (profile && Object.keys(profile).length > 0) {
     transProfile = profile;
   }
-
-  return Promise.all([
-    accountHandleData({
-      userId,
-      companyId,
-      clientConfig,
-      profileId: profile ? profile._id : undefined,
-    }), // eslint-disable-line no-underscore-dangle, no-undefined
-    companyHandleData(companies),
-    (ItemService.getInstance() as ItemService).handleIncomingData(items),
-    presenceHandleData(presences),
-    (StateService.getInstance() as StateService).handleState(arrState),
-    // featureFlag.handleData(clientConfig),
-  ])
-    .then(() => profileHandleData(transProfile))
-    .then(() => personHandleData(people))
-    .then(() => groupHandleData(groups))
-    .then(() => groupHandleData(teams))
-    .then(() => postHandleData(posts, maxPostsExceeded));
+  await accountHandleData({
+    userId,
+    companyId,
+    clientConfig,
+    profileId: profile ? profile._id : undefined,
+  }); // eslint-disable-line no-underscore-dangle, no-undefined
+  await (StateService.getInstance() as StateService).handleState(arrState);
+  // featureFlag.handleData(clientConfig),
+  await companyHandleData(companies);
+  await personHandleData(people);
+  await groupHandleData(groups);
+  await groupHandleData(teams);
+  await postHandleData(posts, maxPostsExceeded);
+  await presenceHandleData(presences);
+  await profileHandleData(transProfile);
+  await (ItemService.getInstance() as ItemService).handleIncomingData(items);
 };
 
 const handleData = async (

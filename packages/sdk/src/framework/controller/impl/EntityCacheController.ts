@@ -88,6 +88,7 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async bulkUpdate(array: Partial<T>[]): Promise<void> {
+    console.error('bulkUpdate', array);
     array.forEach(async (item: Partial<T>) => {
       await this.update(item);
     });
@@ -98,6 +99,7 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async batchGet(ids: number[]): Promise<T[]> {
+    console.error('batchGet', ids);
     const entities: T[] = [];
     ids.forEach(async (id: number) => {
       const entity = await this.get(id);
