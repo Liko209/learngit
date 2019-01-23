@@ -29,6 +29,12 @@ import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
 import { TAB_CONFIG } from './config';
 
+async function delay(interval: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => window.requestAnimationFrame(() => resolve()), interval);
+  });
+}
+
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
     private _groupId: number,
@@ -217,7 +223,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     await this.fetchNextPageItems();
   }
 
-  @action
+  @action.bound
   fetchNextPageItems = async () => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
@@ -235,6 +241,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
     try {
       this._loadStatus.loading = true;
+      await delay(150);
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
