@@ -36,6 +36,7 @@ const options = {
 };
 
 const LOG_TAG = 'RTCAccount';
+const ANONYMOUS = 'anonymous';
 
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
@@ -93,10 +94,10 @@ class RTCAccount implements IRTCAccount {
   ): RTCCall | null {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
-      options.anonymous = true;
+      options.fromNumber = ANONYMOUS;
       optionsWithAnonymous = options;
     } else {
-      optionsWithAnonymous = { anonymous: true };
+      optionsWithAnonymous = { fromNumber: ANONYMOUS };
     }
     rtcLogger.error(LOG_TAG, 'make anonymous call');
     return this.makeCall(toNumber, delegate, optionsWithAnonymous);

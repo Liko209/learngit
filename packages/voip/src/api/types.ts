@@ -22,7 +22,6 @@ type RTCCallInfo = {
 type RTCCallOptions = {
   fromNumber?: string;
   homeCountryId?: string;
-  anonymous?: boolean;
 };
 
 type RTCCallActionSuccessOptions = {

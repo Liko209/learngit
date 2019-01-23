@@ -202,7 +202,9 @@ describe('RTCAccount', async () => {
   });
 
   describe('makeAnonymousCall()', () => {
-    it('Should call createOutgoingCallSession api with options include anonymous is true when have been called without options param', done => {
+    const ANONYMOUS = 'anonymous';
+
+    it('Should call createOutgoingCallSession api with options with anonymous when have been called without options param', done => {
       setupAccount();
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
@@ -210,13 +212,13 @@ describe('RTCAccount', async () => {
       call.onAccountReady();
       setImmediate(() => {
         expect(account.createOutgoingCallSession).toHaveBeenCalledWith('123', {
-          anonymous: true,
+          fromNumber: ANONYMOUS,
         });
         done();
       });
     });
 
-    it('Should call createOutgoingCallSession api with options include anonymous is true when have been called with options param', done => {
+    it('Should call createOutgoingCallSession api with options with anonymous when have been called with options param', done => {
       setupAccount();
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
@@ -225,8 +227,7 @@ describe('RTCAccount', async () => {
       call.onAccountReady();
       setImmediate(() => {
         expect(account.createOutgoingCallSession).toHaveBeenCalledWith('123', {
-          anonymous: true,
-          fromNumber: '234',
+          fromNumber: ANONYMOUS,
         });
         done();
       });
