@@ -129,13 +129,12 @@ def runOnSeleniumGrid(
             }
             parallel tasks
         }}
-        // post execution: archive report
-        // fixme: following code is not portable because allure and java should pre-install on the node
-        // allure(
-        //     commandline: 'allure-2.7',
-        //     includeProperties: false,
-        //     results: [[ path: 'tests/e2e/testcafe/allure/allure-results' ]]
-        // )
+        // post execution
+        // for me I don't think we need allure report, which needs install jvm and commandline tool, since we already use beat dashboard
+        // and we don't need to send a email to glip channel, since we need to analysis the
+
+
+
     }
 }
 
