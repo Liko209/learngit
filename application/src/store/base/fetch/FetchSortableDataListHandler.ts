@@ -106,7 +106,7 @@ export class FetchSortableDataListHandler<
     let originalSortableIds: number[] = [];
 
     if (this._dataChangeCallBack) {
-      originalSortableIds = this.sortableListStore.getIds();
+      originalSortableIds = this.sortableListStore.getIds;
     }
 
     const deletedSortableModelIds = Array.from(payload.body.ids);
@@ -136,7 +136,7 @@ export class FetchSortableDataListHandler<
     const entities = payload.body.entities;
     const keys = Array.from(payload.body.ids);
 
-    const existKeys = this.sortableListStore.getIds();
+    const existKeys = this.sortableListStore.getIds;
     let matchedKeys: number[] = _.intersection(keys, existKeys);
     const matchedSortableModels: ISortableModel<T>[] = [];
     const matchedEntities: T[] = [];
@@ -213,7 +213,7 @@ export class FetchSortableDataListHandler<
       }
 
       if (updatedSortableModels.length) {
-        const storeIds = this.sortableListStore.getIds();
+        const storeIds = this.sortableListStore.getIds;
         updatedSortableItems = updatedSortableModels.map(
           (item: ISortableModel) => {
             return {

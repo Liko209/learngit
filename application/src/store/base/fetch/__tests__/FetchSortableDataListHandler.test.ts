@@ -330,7 +330,7 @@ describe('FetchSortableDataListHandler', () => {
           buildItem(4),
         ],
         payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
-        expectedOrder: [1, 2, 3, 4, 5],
+        expectedOrder: [5, 1, 2, 3, 4],
         expectedCallbackResponse: {
           added: [],
         },
@@ -565,14 +565,14 @@ describe('FetchSortableDataListHandler', () => {
       };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
 
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);
 
       newGroup = { ...group, id: 789, most_recent_post_created_at: 1002 };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);

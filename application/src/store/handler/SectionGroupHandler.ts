@@ -78,6 +78,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   @observable
   private _lastGroupId: number = 0;
   private _dataLoader: Promise<any>;
+  private _initFavorites = false;
   constructor() {
     super();
     this._dataLoader = this._initHandlerMap();
@@ -159,6 +160,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         ENTITY_NAME.PROFILE,
         'favoriteGroupIds',
       ) || [];
+    if (this._oldFavGroupIds.toString() === newFavIds.toString()) {
+      return;
+    }
+    if (!this._initFavorites) {
+      this._oldFavGroupIds = newFavIds;
+      this._initFavorites = true;
+      return;
+    }
     if (this._oldFavGroupIds.toString() !== newFavIds.toString()) {
       const more = _.difference(this._oldFavGroupIds, newFavIds); // less fav more groups
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
@@ -223,70 +232,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         });
       },
     );
-    this.subscribeNotification(
-      ENTITY.GROUP_STATE,
-      (payload: NotificationEntityPayload<GroupState>) => {
-        this._handleIncomesGroupState(payload);
-      },
-    );
-  }
-
-  private async _handleWithUnread(ids: number[]) {
-    const diff = _.difference(ids, [...this._idSet]);
-    if (diff.length) {
-      await this._changeGroupsInGroupSections(diff, true);
-      this._updateIdSet(EVENT_TYPES.UPDATE, diff);
-    }
-  }
-
-  private async _handleWithoutUnread(ids: number[]) {
-    const diff = _.intersection(ids, [...this._idSet]);
-    if (!diff.length) {
-      return;
-    }
-    const profileService = ProfileService.getInstance<service.ProfileService>();
-    const limit = await profileService.getMaxLeftRailGroup();
-    const idsShouldBeRemoved: number[] = [];
-    const directIds = this.getGroupIds(SECTION_TYPE.DIRECT_MESSAGE);
-    const teamIds = this.getGroupIds(SECTION_TYPE.TEAM);
-    diff.forEach((id: number) => {
-      if (directIds.indexOf(id) >= limit || teamIds.indexOf(id) >= limit) {
-        idsShouldBeRemoved.push(id);
-      }
-    });
-    this._removeByIds(SECTION_TYPE.DIRECT_MESSAGE, idsShouldBeRemoved);
-    this._removeByIds(SECTION_TYPE.TEAM, idsShouldBeRemoved);
-  }
-
-  private async _handleIncomesGroupState(
-    payload: NotificationEntityPayload<GroupState>,
-  ) {
-    if (
-      payload.type !== EVENT_TYPES.UPDATE ||
-      !payload.body.entities ||
-      this._idSet.size === 0
-    ) {
-      return;
-    }
-
-    const unreadIds: number[] = [];
-    const withoutUnreadIds: number[] = [];
-    const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-
-    payload.body.entities.forEach((state: GroupState) => {
-      const hasUnread =
-        state.marked_as_unread ||
-        state.unread_count ||
-        state.unread_mentions_count;
-      if (hasUnread) {
-        unreadIds.push(state.id);
-      } else if (currentId !== state.id) {
-        withoutUnreadIds.push(state.id);
-      }
-    });
-
-    this._handleWithUnread(unreadIds);
-    this._handleWithoutUnread(withoutUnreadIds);
   }
 
   private _updateUrl(type: EVENT_TYPES, ids: number[]) {
@@ -388,8 +333,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const performanceKey = this._getPerformanceKey(sectionType);
       PerformanceTracerHolder.getPerformanceTracer().start(performanceKey);
       await this._handlersMap[sectionType].fetchData(direction);
-
-      const ids = this._handlersMap[sectionType].sortableListStore.getIds();
+      const ids = this._handlersMap[sectionType].sortableListStore.getIds;
       this._updateIdSet(EVENT_TYPES.UPDATE, ids);
       PerformanceTracerHolder.getPerformanceTracer().end(performanceKey);
     }
@@ -531,7 +475,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   getGroupIds(type: SECTION_TYPE) {
     const ids = this._handlersMap[type]
-      ? this._handlersMap[type].sortableListStore.getIds()
+      ? this._handlersMap[type].sortableListStore.getIds
       : [];
     return ids;
   }

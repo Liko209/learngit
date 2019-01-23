@@ -3,20 +3,19 @@
  * @Date: 2018-09-17 14:00:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { createAtom, IAtom, observable, action } from 'mobx';
-import _, { ListIteratee } from 'lodash';
+import { observable, action, IObservableArray } from 'mobx';
+import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 
 export class ListStore<T> extends BaseNotificationSubscribe {
-  _items: T[] = [];
+  _items: IObservableArray<T> = observable([], { deep: false });
 
   @observable
   _hasMoreUp: boolean = false;
   @observable
   _hasMoreDown: boolean = false;
 
-  _atom: IAtom = createAtom(`list: ${Math.random()}`);
-
+  @action
   append(newItems: T[], inFront: boolean = false) {
     if (newItems.length <= 0) {
       return;
@@ -27,63 +26,50 @@ export class ListStore<T> extends BaseNotificationSubscribe {
     } else {
       this._items.push(...newItems);
     }
-
-    this._atom.reportChanged();
   }
 
+  @action
   replaceAt(index: number, newItem: T) {
     this._items[index] = newItem;
-    return this._atom.reportChanged();
   }
 
+  @action
   replaceAll(newItems: T[]) {
-    this._items = newItems;
-    this._atom.reportChanged();
+    newItems.length && this._items.replace(newItems);
   }
 
+  @action
   remove(element: T) {
     const index = _(this._items).indexOf(element);
     this.removeAt(index);
   }
 
+  @action
   removeAt(index: number) {
     if (index !== -1) {
       this._items.splice(index, 1);
-      this._atom.reportChanged();
     }
   }
 
-  delete(predicate?: ListIteratee<T>) {
-    _(this._items)
-      .remove(predicate)
-      .value();
-    this._atom.reportChanged();
-  }
-
+  @action
   clear() {
-    this._items = [];
-    this._atom.reportChanged();
+    this._items.clear();
   }
 
   get items() {
-    this._atom.reportObserved();
     return this._items;
   }
 
   get size() {
-    return _(this._items).size();
+    return this._items.length;
   }
 
   first() {
-    const item = _(this._items).first();
-    this._atom.reportObserved();
-    return item;
+    return this._items[0];
   }
 
   last() {
-    const item = _(this._items).last();
-    this._atom.reportObserved();
-    return item;
+    return this._items[this.size - 1];
   }
 
   dump(...args: any[]) {

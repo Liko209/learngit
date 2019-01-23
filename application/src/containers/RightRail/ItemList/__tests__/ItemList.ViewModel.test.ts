@@ -41,9 +41,12 @@ describe('ItemListViewModel', () => {
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
       });
+      const sortableListStore = {};
       let _sortableDataHandler = {
         sortableListStore: {
-          getIds: jest.fn().mockReturnValue([1, 2]),
+          get getIds() {
+            return jest.fn().mockReturnValue([1, 2])();
+          },
         },
       };
 
@@ -57,7 +60,9 @@ describe('ItemListViewModel', () => {
 
       _sortableDataHandler = {
         sortableListStore: {
-          getIds: jest.fn().mockReturnValue([1, 2, 3]),
+          get getIds() {
+            return jest.fn().mockReturnValue([1, 2, 3])();
+          },
         },
       };
 
@@ -74,7 +79,9 @@ describe('ItemListViewModel', () => {
       });
       let _sortableDataHandler = {
         sortableListStore: {
-          getIds: jest.fn().mockReturnValue([1, 2]),
+          get getIds() {
+            return jest.fn().mockReturnValue([1, 2])();
+          },
         },
       };
 
@@ -87,7 +94,9 @@ describe('ItemListViewModel', () => {
 
       _sortableDataHandler = {
         sortableListStore: {
-          getIds: jest.fn().mockReturnValue([1]),
+          get getIds() {
+            return jest.fn().mockReturnValue([1])();
+          },
         },
       };
 

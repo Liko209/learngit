@@ -32,13 +32,13 @@ class PostTransformHandler extends TransformHandler<StreamItem, Post> {
 
   @computed
   get postIds() {
-    return this.orderListStore.getIds();
+    return this.orderListStore.getIds;
   }
 
   @computed
   get items(): StreamItem[] {
     return PostTransformHandler.toStreamItems(
-      this.orderListStore.getIds(),
+      this.orderListStore.getIds,
       this.separatorMap,
     );
   }
