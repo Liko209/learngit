@@ -8,9 +8,11 @@ import { ProfileDialogGroupViewProps } from '../../../types';
 
 type MemberHeaderProps = {
   id: number;
+  AddTeamMembers: (e: React.MouseEvent<HTMLElement>) => void;
 };
 
 type MemberHeaderViewProps = ProfileDialogGroupViewProps & {
   hasShadow: boolean;
+  isCurrentUserHasPermissionAddTeam: boolean;
 };
 export { MemberHeaderProps, MemberHeaderViewProps };

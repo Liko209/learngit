@@ -10,6 +10,7 @@ const name2icon = {
   tasks: 'task',
   notes: 'note',
   files: 'copy',
+  conference: 'conference',
   settings: 'settings',
   lock_open: 'unlock',
   lock: 'lock',
@@ -55,9 +56,10 @@ const name2icon = {
   location: 'location',
   link: 'webpage',
   send_failure: 'refresh',
-  image_preview: 'imagepreview',
-  add_member: 'addmember',
-  add_team: 'addteam',
+  task_incomplete: 'task_incomplete',
+  image_preview: 'image-preview',
+  add_member: 'add-member',
+  add_team: 'add-team',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

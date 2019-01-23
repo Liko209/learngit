@@ -26,6 +26,7 @@ const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_EVENT, 'event'],
   [TypeDictionary.TYPE_ID_LINK, 'link'],
   [TypeDictionary.TYPE_ID_CODE, 'code'],
+  [TypeDictionary.TYPE_ID_CONFERENCE, 'conference'],
 ]);
 class ItemActionController {
   constructor(

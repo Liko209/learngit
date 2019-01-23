@@ -27,9 +27,9 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_TASK]: 'item',
   [TypeDictionary.TYPE_ID_FILE]: 'item',
   [TypeDictionary.TYPE_ID_PLUGIN]: 'item',
-  [TypeDictionary.TYPE_ID_TASK]: 'item',
   [TypeDictionary.TYPE_ID_EVENT]: 'item',
   [TypeDictionary.TYPE_ID_LINK]: 'item',
+  [TypeDictionary.TYPE_ID_CONFERENCE]: 'item',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
   [TypeDictionary.TYPE_ID_PAGE]: 'item',
 };

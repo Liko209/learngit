@@ -39,6 +39,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     );
   }
 
+  getItemDataHandler(): (items: Raw<Item>[]) => void {
+    return this.handleIncomingData;
+  }
+
   handleIncomingData = async (items: Raw<Item>[]) => {
     if (items.length === 0) {
       return;
@@ -225,6 +229,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   async handleSanitizedItems(items: Item[]) {
     return await this.itemServiceController.handleSanitizedItems(items);
+  }
+
+  async requestSyncGroupItems(groupId: number) {
+    await this.itemServiceController.itemSyncController.requestSyncGroupItems(
+      groupId,
+    );
   }
 
   async getThumbsUrlWithSize(itemId: number, width: number, height: number) {

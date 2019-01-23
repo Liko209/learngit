@@ -5,54 +5,26 @@
  */
 
 import React, { Component } from 'react';
-import { t } from 'i18next';
+import { observer } from 'mobx-react';
 import {
   JuiListItemText,
-  JuiListItem,
+  JuiListItemWithHover,
   JuiListItemIcon,
-  JuiListItemSecondaryAction,
-  JuiListItemSecondaryText,
-  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { JuiIconButton } from 'jui/components/Buttons';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
-import { ImageItemProps } from './types';
+import { ImageItemViewProps } from './types';
+import { Download } from '../Download.View';
+import { SecondaryText } from '../SecondaryText.View';
 
-class ImageItemView extends Component<ImageItemProps> {
-  state = {
-    isHover: false,
-  };
-  handleMouseEnter = () => {
-    this.setState({ isHover: true });
-  }
-  handleMouseLeave = () => {
-    this.setState({ isHover: false });
-  }
-
-  private _renderSecondaryText = () => {
-    const { personName, createdTime } = this.props;
-    return (
-      <JuiListItemSecondaryText>
-        <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
-        &nbsp;·&nbsp;
-        <JuiListItemSecondarySpan text={createdTime} />
-      </JuiListItemSecondaryText>
-    );
-  }
-
-  render() {
-    const { file, url } = this.props;
+@observer
+class ImageItemView extends Component<ImageItemViewProps> {
+  private _renderItem = (hover: boolean) => {
+    const { file, url, personName, createdTime } = this.props;
     const { name, downloadUrl } = file;
-    const { isHover } = this.state;
-
     return (
-      <JuiListItem
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        data-test-automation-id="rightRail-image-item"
-      >
+      <>
         <JuiListItemIcon>
           {url ? (
             <JuiThumbnail url={url} />
@@ -62,24 +34,20 @@ class ImageItemView extends Component<ImageItemProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
-          secondary={this._renderSecondaryText()}
+          secondary={
+            <SecondaryText personName={personName} createdTime={createdTime} />}
         />
-        {isHover && (
-          <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton
-                component="a"
-                download={true}
-                href={downloadUrl}
-                variant="plain"
-                tooltipTitle={t('download')}
-              >
-                download
-              </JuiIconButton>
-            </JuiListItemIcon>
-          </JuiListItemSecondaryAction>
-        )}
-      </JuiListItem>
+        {hover && <Download url={downloadUrl} />}
+      </>
+    );
+  }
+
+  render() {
+    return (
+      <JuiListItemWithHover
+        render={this._renderItem}
+        data-test-automation-id="rightRail-image-item"
+      />
     );
   }
 }
