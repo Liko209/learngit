@@ -36,7 +36,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
 
   private _getIconKey = () => {
     const { isOpen } = this.props;
-    return isOpen ? 'chevron_right' : 'chevron_left';
+    return isOpen ? 'double_chevron_right' : 'double_chevron_left';
   }
 
   render() {

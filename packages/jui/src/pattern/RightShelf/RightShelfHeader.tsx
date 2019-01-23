@@ -35,7 +35,7 @@ const JuiRightShelfHeaderIcon = styled('div')`
   position: absolute;
   top: ${spacing(1)};
   right: 0;
-  z-index: ${({ theme }) => theme.zIndex.dragging};
+  z-index: ${({ theme }) => theme.zIndex.moreMenu};
 `;
 
 export {
