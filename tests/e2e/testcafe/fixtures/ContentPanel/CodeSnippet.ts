@@ -11,7 +11,6 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
 import { v4 as uuid } from 'uuid';
-import { timeout } from 'q';
 
 function getCodeString(lineNumber: number) {
   let code = '';
@@ -25,6 +24,8 @@ async function snippetHeightCorrect(snippet, lineNumber){
   const padding = 4;
   const wrapperHeight = await snippet.body.find('*[data-test-automation-id="codeSnippetBody"]').offsetHeight
   const lineHeight = await snippet.body.find('.CodeMirror-line').offsetHeight
+  console.log(wrapperHeight, lineHeight);
+
   return wrapperHeight === lineHeight * lineNumber + 2 * padding;
 }
 
@@ -33,7 +34,7 @@ fixture('ContentPanel/CodeSnippet')
   .afterEach(teardownCase());
 
 
-test.only(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -56,7 +57,7 @@ test.only(formalName('Display the default mode of code snippet', ['JPT-950', 'P1
     });
   });
 
-  await h(t).withLog(`And I sent two code snippet with ${lineNumber1} lines in the conversation`, async () => {
+  await h(t).withLog(`And I sent one code snippet with ${lineNumber1} lines in the conversation`, async () => {
     await h(t).glip(loginUser).createSimpleCodeSnippet(conversation, codeSnippet1.body, codeSnippet1.title)
   });
 
@@ -79,17 +80,13 @@ test.only(formalName('Display the default mode of code snippet', ['JPT-950', 'P1
     await t.expect(await snippetHeightCorrect(snippet1, lineNumber1)).ok();
   });
 
-  await h(t).withLog('When I hover on code snippet 2', async () => {
+  await h(t).withLog('When I hover on code snippet', async () => {
     await t.hover(snippet1.body);
   })
 
-  await h(t).withLog('Then I should see download and copy button on snippet 2', async () => {
+  await h(t).withLog('Then I should see download and copy button on snippet header', async () => {
     await t.expect(snippet1.body.find('.icon.copy').exists).ok();
     await t.expect(snippet1.body.find('.icon.download').exists).ok();
-  })
-
-  await h(t).withLog('And I should see hoverbutton expand ', async () => {
-    await t.expect(snippet1.body.find('span').withText('Expand').exists).ok();
   })
 })
 
@@ -136,16 +133,18 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
   const snippet = conversationPage.nthPostItem(-1);
 
   await h(t).withLog(`Then I should see expand button with total line of ${snippetLineNumber}`, async () => {
-    await t.expect(snippet.body.find('span').withText(`Expand (${snippetLineNumber} lines)`))
+    await t.expect(snippet.body.find('span').withText(`Expand (${snippetLineNumber} lines)`)).ok();
   })
 
   await h(t).withLog('When I click expand button', async () => {
-    await t.wait(1e3).hover(snippet.body);
+    await t.wait(2e3)
+    await t.hover(snippet.body);
     await t.click(snippet.body.find('span').withText('Expand'))
   })
 
   await h(t).withLog('Then the code snippet should expand ', async () => {
-    await t.expect(snippetHeightCorrect(snippet, snippetLineNumber)).ok();
+    await t.wait(2e3)
+    await t.expect(await snippetHeightCorrect(snippet, snippetLineNumber)).ok();
   })
 
   await h(t).withLog('When I click collapse button', async () => {
@@ -155,7 +154,7 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
 
   await h(t).withLog('Then the code snippet should collapse to show 10 lines', async () => {
     await t.wait(1e3)
-    await t.expect(snippetHeightCorrect(snippet, 10)).ok();
+    await t.expect(await snippetHeightCorrect(snippet, 10)).ok();
   })
 })
 
@@ -212,7 +211,7 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
   })
 
   await h(t).withLog(`And I should see a "download to see the rest ${lineNumber} lines" button`, async () => {
-    await t.expect(snippet.body.find('span').withText(`Download to see the rest ${lineNumber} lines`).exists).ok()
+    await t.expect(snippet.body.find('span').withText(`Download to see the rest ${lineNumber-200} lines`).exists).ok()
   })
 
   await h(t).withLog('When I click collapse button', async () => {
@@ -226,7 +225,6 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
   })
 })
 
-// case complete but can't run success, might be network issue
 test.skip(formalName('This change of code snippet should be synced to backend and all clients', ['JPT-958', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
