@@ -8,8 +8,8 @@ import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 import { JuiCardContent, JuiCard } from '../../components/Cards';
 import { spacing, typography, palette } from '../../foundation/utils/styles';
-import { Palette } from 'jui/foundation/theme/theme';
-import { getAccentColor } from 'jui/foundation/utils';
+import { Palette } from '../../foundation/theme/theme';
+import { getAccentColor } from '../../foundation/utils';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
