@@ -76,7 +76,7 @@ describe('PostFetchController()', () => {
     clearMocks();
   });
 
-  describe('getPostsByGroupId()', () => {
+  describe.skip('getPostsByGroupId()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
