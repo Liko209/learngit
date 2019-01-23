@@ -44,7 +44,7 @@ describe('ItemListViewModel', () => {
   });
 
   describe('get ids', () => {
-    it('Should be add id if getIds change [JPT-850]', () => {
+    it('Should be add id if getIds change [JPT-850, JPT-843]', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
@@ -75,7 +75,7 @@ describe('ItemListViewModel', () => {
       expect(ViewModel.ids).toEqual([1, 2, 3]);
     });
 
-    it('Should be remove id if getIds change [JPT-851]', () => {
+    it('Should be remove id if getIds change [JPT-851, JPT-844]', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
@@ -107,7 +107,7 @@ describe('ItemListViewModel', () => {
   });
 
   describe('loadTotalCount()', () => {
-    it('Check the sum of events when add/deleted event [JPT-983][JPT-984]', async () => {
+    it('Check the sum of events when add/deleted event [JPT-983, JPT-984]', async () => {
       jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(1);
       ViewModel = new ItemListViewModel({
         groupId: 1,
