@@ -32,19 +32,16 @@ abstract class TransformHandler<T, K extends IdModel> {
   }
 
   private _modificationHandler = (delta: TDelta) => {
-    const { deleted, added, direction } = delta;
+    const { deleted, added } = delta;
     if (deleted.length) {
       this.onDeleted(deleted);
     }
     if (added.length) {
-      this.onAdded(direction, added);
+      this.onAdded(added);
     }
   }
 
-  abstract onAdded(
-    direction: QUERY_DIRECTION,
-    addedItems: ISortableModel[],
-  ): any;
+  abstract onAdded(addedItems: ISortableModel[]): any;
 
   abstract onDeleted(deletedItems: number[]): any;
 

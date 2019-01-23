@@ -27,8 +27,8 @@ const transformFunc = <T extends { id: number }>(dataModel: T) => ({
 });
 
 export class StreamController {
-  private orderListHandler: FetchSortableDataListHandler<Post>;
-  private streamListHandler: FetchSortableDataListHandler<StreamItem>;
+  private _orderListHandler: FetchSortableDataListHandler<Post>;
+  private _streamListHandler: FetchSortableDataListHandler<StreamItem>;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;
 
@@ -39,7 +39,7 @@ export class StreamController {
 
   @computed
   get postIds() {
-    return this.orderListHandler.sortableListStore.getIds();
+    return this._orderListHandler.sortableListStore.getIds();
   }
 
   @computed
@@ -57,12 +57,12 @@ export class StreamController {
 
   @computed
   get hasMoreUp() {
-    return this.orderListHandler.hasMore(QUERY_DIRECTION.OLDER);
+    return this._orderListHandler.hasMore(QUERY_DIRECTION.OLDER);
   }
 
   @computed
   get hasMoreDown() {
-    return this.orderListHandler.hasMore(QUERY_DIRECTION.NEWER);
+    return this._orderListHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
   constructor(
@@ -71,13 +71,13 @@ export class StreamController {
     postDataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,
   ) {
-    this.orderListHandler = new FetchSortableDataListHandler(
+    this._orderListHandler = new FetchSortableDataListHandler(
       postDataProvider,
       options,
     );
-    this.orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
+    this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
-    this.streamListHandler = new FetchSortableDataListHandler<StreamItem>(
+    this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
       undefined,
       {
         transformFunc,
@@ -95,18 +95,18 @@ export class StreamController {
 
   @computed
   get items() {
-    return _(this.streamListHandler.sortableListStore.items)
+    return _(this._streamListHandler.sortableListStore.items)
       .map('data')
       .compact()
       .value();
   }
 
   dispose() {
-    if (this.orderListHandler) {
-      this.orderListHandler.dispose();
+    if (this._orderListHandler) {
+      this._orderListHandler.dispose();
     }
-    if (this.streamListHandler) {
-      this.streamListHandler.dispose();
+    if (this._streamListHandler) {
+      this._streamListHandler.dispose();
     }
   }
 
@@ -114,7 +114,7 @@ export class StreamController {
   handlePostsChanged = (delta: TDeltaWithData) => {
     const { streamItems } = this._assemblyLine.process(
       delta,
-      this.orderListHandler.listStore.items,
+      this._orderListHandler.listStore.items,
       this.hasMoreUp,
       this.items,
       this._readThrough,
@@ -124,7 +124,7 @@ export class StreamController {
       if (last && last.type !== StreamItemType.POST) {
         streamItems.pop();
       }
-      this.streamListHandler.replaceAll(streamItems);
+      this._streamListHandler.replaceAll(streamItems);
     }
   }
 
@@ -135,12 +135,12 @@ export class StreamController {
     this._newMessageSeparatorHandler.enable();
   }
   replacePostList(posts: Post[]) {
-    this.orderListHandler.replaceAll(posts);
+    this._orderListHandler.replaceAll(posts);
   }
   hasMore(direction: QUERY_DIRECTION) {
-    return this.orderListHandler.hasMore(direction);
+    return this._orderListHandler.hasMore(direction);
   }
   fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
-    return this.orderListHandler.fetchData(direction, pageSize);
+    return this._orderListHandler.fetchData(direction, pageSize);
   }
 }

@@ -12,7 +12,8 @@ import _ from 'lodash';
 import { Post } from 'sdk/module/post/entity';
 import { Assembler } from './Assembler';
 import { StreamItemType, StreamItem } from '../../types';
-import { getDateTimeStamp } from './helper';
+import { getDateTimeStamp } from '@/utils/date';
+
 export class DateSeparator extends Assembler {
   onAdd: AssemblerAddFunc = ({ added, postList, streamItemList, ...rest }) => {
     const criteria = (post: Post) => getDateTimeStamp(post.created_at);

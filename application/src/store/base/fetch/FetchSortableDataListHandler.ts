@@ -97,7 +97,6 @@ export class FetchSortableDataListHandler<
       this.handlePageData(sortableResult);
       this._dataChangeCallBack &&
         this._dataChangeCallBack({
-          direction,
           added: sortableResult,
           deleted: [],
         });
@@ -119,7 +118,6 @@ export class FetchSortableDataListHandler<
       this._dataChangeCallBack({
         deleted: _.intersection(originalSortableIds, payload.body.ids),
         added: [],
-        direction: QUERY_DIRECTION.NEWER,
       });
     }
   }
@@ -211,7 +209,6 @@ export class FetchSortableDataListHandler<
         this._dataChangeCallBack({
           deleted: deletedSortableModelIds,
           added: addedSortableModels,
-          direction: QUERY_DIRECTION.NEWER,
         });
     }
   }
