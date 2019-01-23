@@ -85,10 +85,10 @@ describe('RTCSipUserAgent', async () => {
       jest.spyOn(userAgent, 'makeCall');
     }
 
-    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall', async () => {
+    it('Should call the invite function of WebPhone with default homeCountryId when UserAgent makeCall [JPT-973] [JPT-975]', async () => {
       setupMakeCall();
       const options: RTCCallOptions = {};
-      userAgent.makeCall(phoneNumber, {});
+      userAgent.makeCall(phoneNumber, options);
       expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, {
         homeCountryId: '1',
       });
@@ -96,7 +96,7 @@ describe('RTCSipUserAgent', async () => {
       expect(mockInvite.mock.calls[0][1]).toEqual({ homeCountryId: '1' });
     });
 
-    it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall', async () => {
+    it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall [JPT-972]', async () => {
       setupMakeCall();
       const options: RTCCallOptions = { homeCountryId: '100' };
       userAgent.makeCall(phoneNumber, options);
@@ -105,6 +105,21 @@ describe('RTCSipUserAgent', async () => {
       });
       expect(mockInvite.mock.calls[0][0]).toEqual(phoneNumber);
       expect(mockInvite.mock.calls[0][1]).toEqual(options);
+    });
+
+    it('Should call the invite function of WebPhone with homeCountryId param when UserAgent makeCall [JPT-974]', async () => {
+      setupMakeCall();
+      const options: RTCCallOptions = { fromNumber: '100' };
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent.makeCall).toHaveBeenCalledWith(phoneNumber, {
+        fromNumber: '100',
+        homeCountryId: '1',
+      });
+      expect(mockInvite.mock.calls[0][0]).toEqual(phoneNumber);
+      expect(mockInvite.mock.calls[0][1]).toEqual({
+        fromNumber: '100',
+        homeCountryId: '1',
+      });
     });
   });
 });
