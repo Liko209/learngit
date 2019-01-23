@@ -66,8 +66,12 @@
     "elementOnRipple": 2,
     "loading": 1000,
     "dragging": 2000,
+    "moreMenu": 999,
     "toast": 3000,
-    "floatButton": 10
+    "memberListHeader": 100,
+    "floatButton": 10,
+    "makeZIndexStackingContext": 1,
+    "codeEditor": 0
   },
   "size": {
     "width": 4,

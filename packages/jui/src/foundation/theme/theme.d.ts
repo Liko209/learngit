@@ -99,6 +99,7 @@ type Theme = {
     memberListHeader: number;
     toast: number;
     floatButton: number;
+    codeEditor: number;
   };
   size: {
     width: number;

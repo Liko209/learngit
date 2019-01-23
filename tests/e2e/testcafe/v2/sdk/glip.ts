@@ -652,6 +652,35 @@ export class GlipSdk {
     return await this.createEvent(data);
   }
 
+  /* code snippet */
+  createCodeSnippet(data: object) {
+    const uri = `api/code`
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    })
+  }
+
+  updateCodeSnippet(id, data) {
+    const uri = `api/code/${id}`
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string,  options?: object) {
+    if (typeof groupIds == "string") { groupIds = [groupIds] };
+    const data = _.assign({
+      title: title || 'untitled',
+      body: body,
+      group_ids: groupIds,
+      mode: 'xml',
+    },
+      options
+    )
+
+    return await this.createCodeSnippet(data);
+  }
+
   /* audio conference */
   // need sign on status???
   createAudioConference(data: object) {
