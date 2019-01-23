@@ -24,8 +24,6 @@ async function snippetHeightCorrect(snippet, lineNumber){
   const padding = 4;
   const wrapperHeight = await snippet.body.find('*[data-test-automation-id="codeSnippetBody"]').offsetHeight
   const lineHeight = await snippet.body.find('.CodeMirror-line').offsetHeight
-  console.log(wrapperHeight, lineHeight);
-
   return wrapperHeight === lineHeight * lineNumber + 2 * padding;
 }
 
