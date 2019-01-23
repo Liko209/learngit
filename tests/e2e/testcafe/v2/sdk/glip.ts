@@ -660,6 +660,13 @@ export class GlipSdk {
     })
   }
 
+  updateCodeSnippet(id, data) {
+    const uri = `api/code/${id}`
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
   async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string,  options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({

@@ -153,6 +153,7 @@ class JuiConversationItemCard extends React.Component<
                   key={headerAction.iconName}
                   onClick={headerAction.handler}
                   tooltipTitle={headerAction.tooltip}
+                  date-test-automation-id={headerAction.iconName}
                 >
                   {headerAction.iconName}
                 </JuiIconButton>
