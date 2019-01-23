@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ItemUtils } from './utils';
 import { ItemService } from './service';
 import { ITEM_SORT_KEYS } from './constants';
-export { ItemService, ITEM_SORT_KEYS };
+import { ItemQueryOptions } from './types';
+export { ItemService, ITEM_SORT_KEYS, ItemQueryOptions, ItemUtils };

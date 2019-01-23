@@ -20,6 +20,7 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
+import { ItemQueryOptions, ItemFilterFunction } from '../types';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';
@@ -27,14 +28,19 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
   constructor() {
-    super();
-
-    this.setEntitySource(this._buildEntitySourceController());
+    super(false, daoManager.getDao(ItemDao), {
+      basePath: '/item',
+      networkClient: Api.glipNetworkClient,
+    });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.ITEM]: this.handleIncomingData,
       }),
     );
+  }
+
+  getItemDataHandler(): (items: Raw<Item>[]) => void {
+    return this.handleIncomingData;
   }
 
   handleIncomingData = async (items: Raw<Item>[]) => {
@@ -51,50 +57,30 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     });
   }
 
-  private _buildEntitySourceController() {
-    const requestController = this.getControllerBuilder().buildRequestController(
-      {
-        basePath: '/item',
-        networkClient: Api.glipNetworkClient,
-      },
-    );
-
-    return this.getControllerBuilder().buildEntitySourceController(
-      daoManager.getDao(ItemDao),
-      requestController,
-    );
-  }
-
   protected get itemServiceController() {
     if (!this._itemServiceController) {
       this._itemServiceController = new ItemServiceController(
         this,
-        this.getControllerBuilder(),
+        this.getEntitySource(),
       );
     }
     return this._itemServiceController;
   }
 
-  async getGroupItemsCount(groupId: number, typeId: number) {
-    return this.itemServiceController.getGroupItemsCount(groupId, typeId);
+  async getGroupItemsCount(
+    groupId: number,
+    typeId: number,
+    filterFunc?: ItemFilterFunction,
+  ) {
+    return this.itemServiceController.getGroupItemsCount(
+      groupId,
+      typeId,
+      filterFunc,
+    );
   }
 
-  async getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ) {
-    return this.itemServiceController.getItems(
-      typeId,
-      groupId,
-      limit,
-      offsetItemId,
-      sortKey,
-      desc,
-    );
+  async getItems(options: ItemQueryOptions) {
+    return this.itemServiceController.getItems(options);
   }
 
   async createItem(item: Item) {
@@ -243,6 +229,16 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   async handleSanitizedItems(items: Item[]) {
     return await this.itemServiceController.handleSanitizedItems(items);
+  }
+
+  async requestSyncGroupItems(groupId: number) {
+    await this.itemServiceController.itemSyncController.requestSyncGroupItems(
+      groupId,
+    );
+  }
+
+  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+    return this.fileService.getThumbsUrlWithSize(itemId, width, height);
   }
 }
 

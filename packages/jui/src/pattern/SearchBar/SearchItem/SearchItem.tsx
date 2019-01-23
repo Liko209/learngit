@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { ReactNode } from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import MuiLock from '@material-ui/icons/Lock';
 import { JuiSearchItemValue } from '../';
 import styled from '../../../foundation/styled-components';
@@ -27,13 +27,16 @@ const SearchItemWrapper = styled(MenuItem)`
   && {
     height: ${height(6)};
     padding: ${spacing(1, 4)};
-    &.hover,
     &:hover {
+      background: none;
+    }
+    &.hover {
       background: ${grey('500', 1)};
       ${SearchItemActions} {
         display: block;
       }
     }
+
     &:active {
       background: ${primary('main', 1)};
     }
@@ -76,8 +79,8 @@ type JuiSearchItemProps = {
   Actions?: ReactNode;
   isJoined?: boolean;
   isPrivate?: boolean;
-  onClick: (event: React.MouseEvent<HTMLElement>) => void;
-};
+  hovered?: boolean;
+} & MenuItemProps;
 
 const JuiSearchItem = (props: JuiSearchItemProps) => {
   const {
@@ -87,16 +90,12 @@ const JuiSearchItem = (props: JuiSearchItemProps) => {
     terms,
     isPrivate,
     isJoined,
-    onClick,
+    hovered,
     ...rest
   } = props;
+  const className = hovered ? 'search-items hover' : 'search-items';
   return (
-    <SearchItemWrapper
-      onClick={onClick}
-      className="search-items"
-      disableRipple={true}
-      {...rest}
-    >
+    <SearchItemWrapper className={className} disableRipple={true} {...rest}>
       <SearchItemAvatar data-test-automation-id="search-item-avatar">
         {Avatar}
       </SearchItemAvatar>

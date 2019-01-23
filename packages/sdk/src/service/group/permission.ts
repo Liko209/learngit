@@ -38,7 +38,7 @@ export default class Permission {
   }
 
   isPublic() {
-    return this.group.is_public;
+    return this.group.privacy === 'protected';
   }
 
   isGuest() {

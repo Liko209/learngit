@@ -207,16 +207,6 @@ describe('LokiCollection', () => {
     it('should return total number of data in db', async () => {
       expect(await lokiCollection.count()).toEqual(4);
     });
-
-    // Skipped because this case crash the whole test
-    // it.skip('should return number of matched data in db when using parallel', async () => {
-    //   expect(
-    //     await lokiCollection.count({
-    //       criteria: [{ key: 'id', name: 'equal', value: 1 }],
-    //       parallel: [{ criteria: [{ key: 'id', name: 'equal', value: 2 }] }],
-    //     }),
-    //   ).toEqual(2);
-    // });
   });
 
   describe('first()', () => {

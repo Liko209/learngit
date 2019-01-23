@@ -42,10 +42,9 @@ test(formalName('Jump to post position when click button or clickable area of po
         type: 'PrivateChat',
         members: [loginUser.rcId, otherUser.rcId],
       });
-
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [pvChatId, teamId]);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
+      await h(t).glip(loginUser).resetProfile();
+
 
       await h(t).platform(otherUser).init();
       bookmarksPostTeamId = await h(t).platform(otherUser).sentAndGetTextPostId(
@@ -140,8 +139,6 @@ test(formalName('Jump to post position when click button or clickable area of po
       });
 
       await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, [teamId]);
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
 
       await h(t).platform(otherUser).init();
 
@@ -204,9 +201,9 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     const loginUser = users[7];
     const otherUser =users[5];
     await h(t).resetGlipAccount(loginUser);
+    await h(t).glip(loginUser).init();
 
     const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-    // const postListPage = app.homePage.messageTab.postListPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
     const bookmarkPage = app.homePage.messageTab.bookmarkPage;
     const dmSection = app.homePage.messageTab.directMessagesSection;
@@ -218,8 +215,6 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
       groupId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'Group', members: [loginUser.rcId, users[5].rcId],
       });
-      await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     });
 
     let bookmarkPostId;
@@ -260,7 +255,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then the UMI should exist', async () => {
       await directMessagesSection.fold();
-      await directMessagesSection.expectHeaderUmi(1);
+      await directMessagesSection.headerUmi.shouldBeNumber(1);
     })
 
     await h(t).withLog('When I click the post and jump to the conversation', async () => {
@@ -268,7 +263,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     });
 
     await h(t).withLog('And the UMI should dismiss', async () => {
-      await directMessagesSection.expectHeaderUmi(0);
+      await directMessagesSection.headerUmi.shouldBeNumber(0);
     }, true);
 
     await h(t).withLog('Then I nagivate away from conversation and refresh browser', async () => {
@@ -280,7 +275,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then the UMI count should still no UMI', async () => {
       await directMessagesSection.fold();
-      await directMessagesSection.expectHeaderUmi(0);
+      await directMessagesSection.headerUmi.shouldBeNumber(0);
     }, true);
   });
 
@@ -309,7 +304,6 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     groupId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'Group', members: [loginUser.rcId, users[5].rcId],
     });
-    await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
     bookmarkPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `I'm Bookmarks, ![:Person](${loginUser.rcId})`,
       groupId,
@@ -340,12 +334,12 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   await h(t).withLog('When I enter Bookmark page and find the Bookmark posts', async () => {
     await bookmarksEntry.enter();
     await bookmarkPage.waitUntilPostsBeLoaded();
-    await dmSection.expectHeaderUmi(0);
+    await dmSection.headerUmi.shouldBeNumber(0);
   });
 
   await h(t).withLog('And I jump to conversation from Bookmarks page should no UMI', async () => {
     await bookmarkPage.postItemById(bookmarkPostId).jumpToConversationByClickPost();
-    await dmSection.expectHeaderUmi(0);
+    await dmSection.headerUmi.shouldBeNumber(0);
   }, true);
 
   await h(t).withLog('Then I received new AtMention post should 1 UMI', async () => {
@@ -354,17 +348,17 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
       groupId,
     );
     await dmSection.fold();
-    await dmSection.expectHeaderUmi(1);
+    await dmSection.headerUmi.shouldBeNumber(1);
   });
 
   await h(t).withLog('And I scroll to middle should still 1 UMI', async () => {
     await conversationPage.scrollToMiddle();
-    await dmSection.expectHeaderUmi(1);
+    await dmSection.headerUmi.shouldBeNumber(1);
   }, true);
 
   await h(t).withLog('When I scroll to conversation bottom should remove UMI', async () => {
     await conversationPage.scrollToBottom();
-    await dmSection.expectHeaderUmi(0);
+    await dmSection.headerUmi.shouldBeNumber(0);
   });
 });
 
@@ -391,7 +385,6 @@ test(formalName('Bookmark/Remove Bookmark a message in a conversation',['P2','JP
     group = await h(t).platform(user).createGroup({
       type: 'Group', members: [user.rcId, users[5].rcId],
     });
-    await h(t).glip(user).showGroups(user.rcId, group.data.id);
   });
 
   let bookmarkPost;

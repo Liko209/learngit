@@ -7,12 +7,13 @@
 import { Progress } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ProgressCacheController } from '../controller/ProgressCacheController';
-
-class ProgressService extends EntityBaseService<Progress> {
+import { IProgressService } from './IProgressService';
+class ProgressService extends EntityBaseService<Progress>
+  implements IProgressService {
   static serviceName = 'ProgressService';
   private _progressCacheController: ProgressCacheController;
   constructor() {
-    super();
+    super(false);
   }
 
   protected get progressCacheController() {
@@ -34,7 +35,7 @@ class ProgressService extends EntityBaseService<Progress> {
     this.progressCacheController.deleteProgress(id);
   }
 
-  getById(id: number) {
+  getByIdSync(id: number) {
     return this.progressCacheController.getProgress(id);
   }
 }

@@ -4,7 +4,8 @@ import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
-
+import { RightRail } from './RightRail';
+import { LeftRail} from './LeftRail';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -103,31 +104,6 @@ class MenuItem extends Entry {
   }
 }
 
-class ActionBarMoreMenu extends BaseWebComponent {
-  get self() {
-    return this.getSelector('*[role="document"]');
-  }
-
-  private getEntry(name: string) {
-    this.warnFlakySelector();
-    return this.getComponent(Entry, this.self.find('li').withText(name));
-  }
-
-  get quoteItem() {
-    return this.getEntry('feedback');
-  }
-
-  get deletePost() {
-    return this.self.find('span').withText('delete').parent();
-  }
-
-  get eidtPost() {
-    return this.self.find('span').withText('edit').parent();
-  }
-
-
-}
-
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
     this.warnFlakySelector();
@@ -162,26 +138,24 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.expect(this.isVisible).notOk();
   }
 
-  async getUmi() {
-    const umi = this.self.find('.umi');
-    if (await umi.exists == false) {
-      return 0;
-    }
-    const text = await umi.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    if (text == '99+') {
-      return 100;
-    }
-    return Number(text);
+  get umi() {
+    return this.getComponent(Umi, this.self.find(".umi"));
   }
 
-  async expectUmi(n: number, maxRetry = 5, interval = 5e3) {
+  async shouldBeUmiStyle() {
     await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
+      const textStyle = await this.self.find('p').style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
+    });
+  }
+
+  async shouldBeNormalStyle() {
+    await H.retryUntilPass(async () => {
+      const textStyle = await this.self.find('p').style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
+    });
   }
 
   async openMoreMenu() {
@@ -215,28 +189,6 @@ class ConversationListSection extends BaseWebComponent {
 
   get header() {
     return this.self.find('.conversation-list-section-header');
-  }
-
-  async getUmi() {
-    const umi = this.header.find('.umi');
-    if (!await umi.exists) {
-      return 0;
-    }
-    const text = await umi.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    if (text == '99+') {
-      return 100;
-    }
-    return Number(text);
-  }
-
-  async expectHeaderUmi(n: number, maxRetry = 5, interval = 5e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
   }
 
   get collapse() {
@@ -278,6 +230,10 @@ class ConversationListSection extends BaseWebComponent {
 
   async fold() {
     await this.toggle(false);
+  }
+
+  get headerUmi() {
+    return this.getComponent(Umi, this.header.find(".umi"));
   }
 }
 
@@ -401,11 +357,8 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(ActionBarDeletePostModal);
   }
 
-  // get profileModal() {
-  //   return this.getComponent(ProfileModal);
-  // }
 
-  get conversationListSections() {
+  get sections() {
     return this.getSelector('.conversation-list-section');
   }
 
@@ -418,5 +371,43 @@ export class MessageTab extends BaseWebComponent {
     const url = await h(this.t).href;
     const result = /messages\/(\d+)/.test(url);
     assert(result, `invalid url: ${url}`);
+  }
+
+  get leftRail() {
+    return this.getComponent(LeftRail);
+  }
+
+  get rightRail() {
+    return this.getComponent(RightRail);
+  }
+
+}
+
+class Umi extends BaseWebComponent {
+  async count() {
+    return await this.getNumber(this.self);
+  }
+
+  async shouldBeNumber(n: number, maxRetry = 5, interval = 5e3) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.count();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
+  }
+
+  async shouldBeAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
+    });
+  }
+
+  async shouldBeNotAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(158, 158, 158)', `${umiBgColor} not eql specify: rgb(158, 158, 158)`)
+    });
   }
 }

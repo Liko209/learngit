@@ -4,17 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { NoteItemController } from '../controller/NoteItemController';
-import { EntityBaseService } from '../../../../../framework/service';
-import { Item } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
+import { NoteItem, SanitizedNoteItem } from '../entity';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { NoteItemDao } from '../dao/NoteItemDao';
+import { daoManager } from '../../../../../dao';
 
-class NoteItemService extends EntityBaseService implements ISubItemService {
+class NoteItemService extends BaseSubItemService<NoteItem, SanitizedNoteItem> {
   private _noteItemController: NoteItemController;
 
   constructor(itemService: IItemService) {
-    super();
+    super(daoManager.getDao<NoteItemDao>(NoteItemDao));
   }
 
   protected get noteItemController() {
@@ -22,26 +23,6 @@ class NoteItemService extends EntityBaseService implements ISubItemService {
       this._noteItemController = new NoteItemController();
     }
     return this._noteItemController;
-  }
-
-  updateItem(item: Item) {}
-
-  createItem(item: Item) {}
-
-  deleteItem(itemId: number) {}
-
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
-    return Promise.resolve([]);
-  }
-
-  async getSubItemsCount(groupId: number) {
-    return 0;
   }
 }
 

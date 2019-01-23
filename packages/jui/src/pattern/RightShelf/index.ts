@@ -6,3 +6,5 @@
 
 export * from './RightShelf';
 export * from './RightShelfHeader';
+export * from './Loading';
+export * from './icon';

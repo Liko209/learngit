@@ -7,19 +7,23 @@
 import { ISubItemService } from '../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../config';
 import { ItemActionController } from './ItemActionController';
-import { ControllerBuilder } from '../../../framework/controller/impl/ControllerBuilder';
+import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
-import { Api } from '../../../api';
 import { daoManager, ItemDao } from '../../../dao';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
+import { ItemQueryOptions, ItemFilterFunction } from '../types';
+import { ItemSyncController } from './ItemSyncController';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class ItemServiceController {
   private _subItemServices: Map<number, ISubItemService>;
   private _itemActionController: ItemActionController;
+  private _itemSyncController: ItemSyncController;
+
   constructor(
-    _itemService: IItemService,
-    private _controllerBuilder: ControllerBuilder<Item>,
+    private _itemService: IItemService,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {
     this._subItemServices = SubItemServiceRegister.buildSubItemServices(
       _itemService,
@@ -30,20 +34,18 @@ class ItemServiceController {
     return this._subItemServices.get(typeId) as ISubItemService;
   }
 
+  get itemSyncController() {
+    if (!this._itemSyncController) {
+      this._itemSyncController = new ItemSyncController(this._itemService);
+    }
+
+    return this._itemSyncController;
+  }
+
   get itemActionController() {
     if (!this._itemActionController) {
-      const requestController = this._controllerBuilder.buildRequestController({
-        basePath: '/item',
-        networkClient: Api.glipNetworkClient,
-      });
-
-      const entitySourceController = this._controllerBuilder.buildEntitySourceController(
-        daoManager.getDao(ItemDao),
-        requestController,
-      );
-
-      const partialModifyController = this._controllerBuilder.buildPartialModifyController(
-        entitySourceController,
+      const partialModifyController = buildPartialModifyController<Item>(
+        this._entitySourceController,
       );
 
       this._itemActionController = new ItemActionController(
@@ -53,33 +55,24 @@ class ItemServiceController {
     return this._itemActionController;
   }
 
-  async getGroupItemsCount(groupId: number, typeId: number) {
+  async getGroupItemsCount(
+    groupId: number,
+    typeId: number,
+    filterFunc?: ItemFilterFunction,
+  ) {
     let totalCount = 0;
     const subItemService = this.getSubItemService(typeId);
     if (subItemService) {
-      totalCount = await subItemService.getSubItemsCount(groupId);
+      totalCount = await subItemService.getSubItemsCount(groupId, filterFunc);
     }
     return totalCount;
   }
 
-  async getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ) {
+  async getItems(options: ItemQueryOptions) {
     let ids: number[] = [];
-    const subItemService = this.getSubItemService(typeId);
+    const subItemService = this.getSubItemService(options.typeId);
     if (subItemService) {
-      ids = await subItemService.getSortedIds(
-        groupId,
-        limit,
-        offsetItemId,
-        sortKey,
-        desc,
-      );
+      ids = await subItemService.getSortedIds(options);
     }
     const itemDao = daoManager.getDao(ItemDao);
     const items = await itemDao.getItemsByIds(ids);
@@ -98,7 +91,7 @@ class ItemServiceController {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
 
-    item.id > 0 &&
+    this._shouldSaveSanitizedItem(item) &&
       (await this._getSubItemServiceByITemId(item.id).createItem(item));
   }
 
@@ -106,7 +99,7 @@ class ItemServiceController {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
 
-    item.id > 0 &&
+    this._shouldSaveSanitizedItem(item) &&
       (await this._getSubItemServiceByITemId(item.id).updateItem(item));
   }
 
@@ -125,18 +118,11 @@ class ItemServiceController {
   async handleSanitizedItems(incomingItems: Item[]) {
     const typeItemsMap: Map<number, Item[]> = new Map();
     incomingItems.forEach((item: Item) => {
-      const type = GlipTypeUtil.extractTypeId(item.id);
-      switch (type) {
-        case TypeDictionary.TYPE_ID_FILE:
-          typeItemsMap.has(TypeDictionary.TYPE_ID_FILE)
-            ? (typeItemsMap.get(TypeDictionary.TYPE_ID_FILE) as Item[]).push(
-                item,
-              )
-            : typeItemsMap.set(TypeDictionary.TYPE_ID_FILE, [item]);
-          break;
-        default:
-          break;
-      }
+      this._saveItemsToTypeIdMap(
+        GlipTypeUtil.extractTypeId(item.id),
+        typeItemsMap,
+        item,
+      );
     });
 
     typeItemsMap.forEach(
@@ -146,8 +132,21 @@ class ItemServiceController {
     );
   }
 
+  private _saveItemsToTypeIdMap(
+    typeId: number,
+    typeItemsMap: Map<number, Item[]>,
+    item: Item,
+  ) {
+    typeItemsMap.has(typeId)
+      ? (typeItemsMap.get(typeId) as Item[]).push(item)
+      : typeItemsMap.set(typeId, [item]);
+  }
+
   private async _updateSanitizedItems(typeId: number, items: Item[]) {
     const subItemService = this.getSubItemService(typeId);
+    if (!subItemService) {
+      return;
+    }
     const deactivatedItems = items.filter(item => item.deactivated);
     deactivatedItems.forEach((item: Item) => {
       subItemService.deleteItem(item.id);
@@ -157,6 +156,10 @@ class ItemServiceController {
     normalData.forEach((item: Item) => {
       subItemService.createItem(item);
     });
+  }
+
+  private _shouldSaveSanitizedItem(item: Item) {
+    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
   }
 }
 

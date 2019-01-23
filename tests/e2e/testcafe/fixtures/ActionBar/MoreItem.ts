@@ -16,6 +16,7 @@ test(formalName('Jump to post position when click button or clickable area of po
   const user = users[4];
   await h(t).platform(user).init();
   await h(t).glip(user).init();
+  await h(t).glip(user).resetProfile();
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const teamsSection = app.homePage.messageTab.teamsSection;
@@ -33,9 +34,7 @@ test(formalName('Jump to post position when click button or clickable area of po
       type: 'Team',
       members: [user.rcId, users[5].rcId, users[6].rcId],
     });
-
     postId = await h(t).platform(user).sentAndGetTextPostId(originalText, teamId);
-    await h(t).glip(user).showGroups(user.rcId, teamId);
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {

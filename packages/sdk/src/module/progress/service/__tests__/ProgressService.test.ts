@@ -5,6 +5,8 @@
  */
 import { ProgressService } from '../ProgressService';
 import { ProgressCacheController } from '../../controller/ProgressCacheController';
+import { DeactivatedDao, daoManager } from '../../../../dao';
+import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 
 jest.mock('../../controller/ProgressCacheController');
 
@@ -17,7 +19,14 @@ describe('ProgressService', () => {
     jest.restoreAllMocks();
   }
 
+  let deactivatedDao: DeactivatedDao = null;
+
   function setup() {
+    deactivatedDao = new DeactivatedDao(new TestDatabase());
+    jest.spyOn(daoManager, 'getDao').mockImplementation(() => {
+      return deactivatedDao;
+    });
+
     progressService = new ProgressService();
     progressCacheController = new ProgressCacheController();
     Object.assign(progressService, {
@@ -63,7 +72,7 @@ describe('ProgressService', () => {
 
     describe('getById()', () => {
       it('should call getProgress api in ProgressCacheController', () => {
-        progressService.getById(-1);
+        progressService.getByIdSync(-1);
         expect(progressCacheController.getProgress).toBeCalledWith(-1);
       });
     });

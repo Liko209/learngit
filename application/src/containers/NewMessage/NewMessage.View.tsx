@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { t } from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -18,12 +18,14 @@ import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type State = {
   message: string;
 };
-
-type NewMessageProps = WithNamespaces & ViewProps;
 
 const StyledSnackbarsContent = styled<any>(JuiSnackbarContent)`
   && {
@@ -38,8 +40,8 @@ const StyledTextWithLink = styled.div`
 `;
 
 @observer
-class NewMessage extends React.Component<NewMessageProps, State> {
-  constructor(props: NewMessageProps) {
+class NewMessage extends React.Component<ViewProps, State> {
+  constructor(props: ViewProps) {
     super(props);
     this.state = {
       message: '',
@@ -68,8 +70,8 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const message = 'SorryWeWereNotAbleToSendTheMessage';
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
@@ -77,7 +79,6 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 
   render() {
     const {
-      t,
       emailError,
       emailErrorMsg,
       disabledOkBtn,
@@ -139,7 +140,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
   }
 }
 
-const NewMessageView = translate('team')(withRouter(NewMessage));
+const NewMessageView = withRouter(NewMessage);
 const NewMessageComponent = NewMessage;
 
 export { NewMessageView, NewMessageComponent };

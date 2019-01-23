@@ -5,13 +5,13 @@
  */
 import React from 'react';
 import MuiListItem from '@material-ui/core/ListItem';
+import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
 import {
   JuiTypography,
   JuiTypographyProps,
 } from '../../../foundation/Typography';
-import { JuiListItemText } from '../../../components/Lists';
 import { JuiCardMedia, JuiCard } from '../../../components/Cards';
 import styled from '../../../foundation/styled-components';
 import {
@@ -61,7 +61,7 @@ const FileIcon = styled<FileIconProps, 'div'>('div')`
   margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
 `;
 
-const FileInfo = styled(JuiListItemText)`
+const FileInfo = styled(MuiListItemText)`
   && {
     display: flex;
     flex-direction: column;
@@ -134,18 +134,17 @@ const CardFileActions = styled(MuiCardActions)`
 `;
 
 type ImageCardProps = {
-  ratio: number;
+  width: number;
+  height: number;
 };
 
-const WrapperImageCard = ({ ratio, ...rest }: ImageCardProps) => (
+const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => (
   <JuiCard {...rest} />
 );
 
-type ImageFileInfoProps = {
-  ratio: number;
-} & JuiTypographyProps;
+type ImageFileInfoProps = ImageCardProps & JuiTypographyProps;
 
-const WrapperImageFileInfo = ({ ratio, ...rest }: ImageCardProps) => (
+const WrapperImageFileInfo = ({ width, height, ...rest }: ImageCardProps) => (
   <CardFileInfo {...rest} />
 );
 
@@ -163,7 +162,7 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   & > b {
     font-weight: 400;
     color: ${palette('grey', '700')};
-    width: ${({ ratio }) => (ratio >= 1 ? width(49) : width(82))};
+    width: ${props => width(props.width / 4)};
   }
 `;
 
@@ -171,8 +170,8 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   && {
     display: inline-block;
     margin: ${spacing(0, 3, 3, 0)};
-    width: ${({ ratio }) => (ratio >= 1 ? width(40) : width(70))};
-    height: ${({ ratio }) => (ratio >= 1 ? height(40) : height(50))};
+    width: ${props => width(props.width / 4)};
+    height: ${props => height(props.height / 4)};
     position: relative;
     border-radius: 0;
     box-shadow: none;

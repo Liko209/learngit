@@ -81,6 +81,18 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
+  [ENTITY_NAME.CODE_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
+  [ENTITY_NAME.CONFERENCE_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),
@@ -101,7 +113,12 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PROGRESS]: {
     event: [ENTITY.PROGRESS],
-    service: () => ProgressService.getInstance(),
+    service: (id: number) => {
+      return {
+        getById: (id: number) =>
+          (<ProgressService>ProgressService.getInstance()).getByIdSync(id),
+      };
+    },
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
@@ -128,8 +145,6 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.IS_LEFT_NAV_OPEN]: false,
   [GLOBAL_KEYS.NETWORK]: 'online',
   [GLOBAL_KEYS.WINDOW_FOCUS]: true,
-  [GLOBAL_KEYS.APP_SHOW_GLOBAL_LOADING]: false,
-  [GLOBAL_KEYS.APP_UMI]: 0,
   [GLOBAL_KEYS.GROUP_QUERY_TYPE_FAVORITE_IDS]: [] as number[],
   [GLOBAL_KEYS.GROUP_QUERY_TYPE_GROUP_IDS]: [] as number[],
   [GLOBAL_KEYS.GROUP_QUERY_TYPE_TEAM_IDS]: [] as number[],

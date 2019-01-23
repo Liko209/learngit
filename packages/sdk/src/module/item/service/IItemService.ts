@@ -7,16 +7,11 @@
 import { Post } from '../../post/entity';
 import { Item, ItemFile } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
+import { ItemQueryOptions, ItemFilterFunction } from '../types';
+import { Raw } from '../../../framework/model';
 
 interface IItemService {
-  getItems(
-    typeId: number,
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<Item[]>;
+  getItems(options: ItemQueryOptions): Promise<Item[]>;
 
   handleSanitizedItems(items: Item[]): void;
 
@@ -66,6 +61,20 @@ interface IItemService {
 
   doNotRenderItem(id: number, type: string): Promise<void>;
 
-  getGroupItemsCount(groupId: number, typeId: number): Promise<number>;
+  getGroupItemsCount(
+    groupId: number,
+    typeId: number,
+    filterFunc?: ItemFilterFunction,
+  ): Promise<number>;
+
+  getItemDataHandler(): (items: Raw<Item>[]) => void;
+
+  requestSyncGroupItems(groupId: number): Promise<void>;
+
+  getThumbsUrlWithSize(
+    itemId: number,
+    width: number,
+    height: number,
+  ): Promise<string>;
 }
 export { IItemService };

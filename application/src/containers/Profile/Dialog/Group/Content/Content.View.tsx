@@ -17,45 +17,42 @@ import {
   JuiProfileDialogContentSummaryName as Name,
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
-  JuiProfileDialogContentSummaryButton,
   JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
-import { Message } from '@/containers/common/Message';
-import { JuiIconography } from 'jui/foundation/Iconography';
+import { goToConversation } from '@/common/goToConversation';
 import { MemberHeader, MemberList } from './Members';
-import { TypeDictionary } from 'sdk/utils';
+import { AddMembers } from './AddMembers';
+import { Dialog } from '@/containers/Dialog';
+import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
+import { renderButton } from './common/button';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupContentViewProps
 > {
-  getAriaLabelKey = () => {
-    const { typeId } = this.props;
-    const mapping = {
-      [TypeDictionary.TYPE_ID_TEAM]: 'ariaGoToTeam',
-      [TypeDictionary.TYPE_ID_GROUP]: 'ariaGoToGroup',
-    };
-    return mapping[typeId];
+  joinTeamAfterClick = () => {
+    const handerJoinTeam = joinTeam(this.props.group);
+    portalManager.dismiss();
+    handerJoinTeam();
   }
 
-  renderMessage = () => {
-    const { t, group } = this.props;
-    return (
-      <JuiProfileDialogContentSummaryButton
-        tabIndex={0}
-        aria-label={t(this.getAriaLabelKey(), { name: group.displayName })}
-      >
-        <JuiIconography fontSize="small">chat_bubble</JuiIconography>
-        {t('message')}
-      </JuiProfileDialogContentSummaryButton>
-    );
+  messageAfterClick = async () => {
+    const { id } = this.props;
+    await goToConversation({ id });
+    portalManager.dismiss();
   }
 
-  messageAfterClick = () => portalManager.dismiss();
+  addTeamMembers = () => {
+    const { group } = this.props;
+    portalManager.dismiss();
+    Dialog.simple(<AddMembers group={group} />, {
+      size: 'medium',
+    });
+  }
 
   render() {
-    const { id, group, showMessage } = this.props;
+    const { id, group, showMessage, showJoinTeam } = this.props;
     return (
       <>
         <Summary data-test-automation-id="profileDialogSummary">
@@ -77,19 +74,28 @@ class ProfileDialogGroupContentViewComponent extends Component<
               {group.description}
             </Description>
             <Buttons>
-              {showMessage && (
-                <Message
-                  id={id}
-                  afterClick={this.messageAfterClick}
-                  render={this.renderMessage}
-                />
-              )}
+              {showMessage &&
+                renderButton(
+                  'chat_bubble',
+                  'message',
+                  ['ariaGoToTeam', 'ariaGoToGroup'],
+                  this.props,
+                  this.messageAfterClick,
+                )}
+              {showJoinTeam &&
+                renderButton(
+                  'add_member',
+                  'joinTeam',
+                  ['ariaJoinTeam', 'ariaJoinTeam'],
+                  this.props,
+                  this.joinTeamAfterClick,
+                )}
             </Buttons>
           </Right>
         </Summary>
         <JuiDivider />
         <Members>
-          <MemberHeader id={id} />
+          <MemberHeader id={id} AddTeamMembers={this.addTeamMembers} />
           <MemberList id={id} />
         </Members>
       </>

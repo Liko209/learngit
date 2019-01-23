@@ -3,7 +3,7 @@ import 'testcafe';
 import { Selector } from 'testcafe';
 
 import { IUser } from '../models'
-import { h } from '../helpers'
+import { h, H } from '../helpers'
 import * as assert from 'assert';
 import { getLogger } from 'log4js';
 
@@ -31,6 +31,10 @@ export abstract class BaseWebComponent {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // sandbox and helper
+  async clickAndTypeText(selector: Selector, text: string, options?: TypeActionOptions) {
+    return await this.t.click(selector).typeText(selector, text, options)
+  }
 
   // delegate testcafe method
   get exists() {
@@ -92,6 +96,22 @@ export abstract class BaseWebComponent {
   warnFlakySelector() {
     const stack = (new Error()).stack;
     logger.warn(`a flaky selector is found ${stack.split('\n')[2].trim()}`);
+  }
+
+
+  // Some specific scenarios
+  async getNumber(sel: Selector) {
+    if (await sel.exists == false) {
+      return 0;
+    }
+    const text = await sel.innerText;
+    if (_.isEmpty(text)) {
+      return 0;
+    }
+    if (text == '99+') {
+      return 100;
+    }
+    return Number(text);
   }
 
 }

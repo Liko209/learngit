@@ -12,8 +12,7 @@ import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { JNetworkError } from 'sdk/error';
-
+import { errorHelper } from 'sdk/error';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -37,6 +36,14 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
+import { Notification } from '@/containers/Notification';
+import { generalErrorHandler } from '@/utils/error';
+import { mainLogger } from 'sdk';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { ItemService } from 'sdk/module/item';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -50,6 +57,7 @@ const transformFunc = (dataModel: Post) => ({
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
+  private _itemService: ItemService = ItemService.getInstance();
   private _initialized = false;
   @observable
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -159,6 +167,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     PerformanceTracerHolder.getPerformanceTracer().end(
       PERFORMANCE_KEYS.SWITCH_CONVERSATION,
     );
+    this._syncGroupItems();
   }
 
   @loading
@@ -206,6 +215,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
+  private _syncGroupItems() {
+    this._itemService.requestSyncGroupItems(this.groupId);
+  }
+
   markAsRead() {
     this._stateService.markAsRead(this.groupId);
   }
@@ -248,6 +261,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ]);
     } else {
       // TODO error handing
+      mainLogger.error('Anchor post does not exist');
     }
   }
 
@@ -284,8 +298,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
           return { hasMore, data: posts };
         } catch (err) {
-          if (err instanceof JNetworkError) {
-            // TODO error handle
+          if (errorHelper.isBackEndError(err)) {
+            Notification.flashToast({
+              message: `SorryWeWereNotAbleToLoad${
+                direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
+              }Messages`,
+              type: ToastType.ERROR,
+              messageAlign: ToastMessageAlign.LEFT,
+              fullWidth: false,
+              dismissible: false,
+            });
+          } else {
+            generalErrorHandler(err);
           }
           return { data: [], hasMore: true };
         }
