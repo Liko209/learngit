@@ -55,6 +55,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get historyReadThrough() {
+    return this._historyHandler.readThrough;
+  }
+
+  @computed
   get historyUnreadCount() {
     return this._historyHandler.unreadCount;
   }
