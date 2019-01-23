@@ -40,5 +40,35 @@ describe('TeamSettingsView', () => {
         inputProps: { maxLength: 1000 },
       });
     });
+
+    it('should display original name and description of team when first open setting [JPT-892]', () => {
+      const props: any = {
+        t: (s: string) => s,
+        initialData: {
+          name: 'INITIAL NAME',
+          description: 'SOME INITIAL DESC....',
+        },
+        id: 123,
+        isAdmin: true,
+        save: () => {},
+      };
+      const result = shallow(<TeamSettingsComponent {...props} />);
+      expect(
+        result
+          .find(JuiTextField)
+          .at(0)
+          .props(),
+      ).toMatchObject({
+        value: 'INITIAL NAME',
+      });
+      expect(
+        result
+          .find(JuiTextarea)
+          .at(0)
+          .props(),
+      ).toMatchObject({
+        value: 'SOME INITIAL DESC....',
+      });
+    });
   });
 });

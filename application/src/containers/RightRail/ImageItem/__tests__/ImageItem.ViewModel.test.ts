@@ -5,8 +5,6 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { ImageItemViewModel } from '../ImageItem.ViewModel';
-import { dateFormatter } from '../../../../utils/date';
-import { ENTITY_NAME } from '../../../../store';
 
 jest.mock('../../../../store/utils');
 
@@ -14,15 +12,6 @@ const mockFile = {
   createdAt: 1547086968632,
   creatorId: 123,
   name: '',
-};
-
-const mockPerson = {
-  userDisplayName: 'name',
-};
-
-const mappingEntity = {
-  [ENTITY_NAME.FILE_ITEM]: mockFile,
-  [ENTITY_NAME.PERSON]: mockPerson,
 };
 
 const props = {
@@ -33,9 +22,7 @@ let vm: ImageItemViewModel;
 
 describe('ImageItemViewModel', () => {
   beforeAll(() => {
-    (getEntity as jest.Mock).mockImplementation(
-      (name, id) => mappingEntity[name],
-    );
+    (getEntity as jest.Mock).mockReturnValue(mockFile);
   });
 
   beforeEach(() => {
@@ -43,26 +30,15 @@ describe('ImageItemViewModel', () => {
     vm = new ImageItemViewModel(props);
   });
 
-  describe('file', () => {
-    it('should be a file item entity when props incoming id', () => {
-      expect(vm.file).toEqual(mockFile);
-    });
-  });
+  describe('url', () => {
+    const previewUrl = 'IMAGE_URL';
 
-  describe('personName', () => {
-    it('should be a person name string when invoke person entity [JPT-965]', () => {
-      expect(vm.personName).toEqual(mockPerson.userDisplayName);
-    });
-
-    it('should be a new person name string when change person name [JPT-965]', () => {
-      mockPerson.userDisplayName = 'new name';
-      expect(vm.personName).toEqual(mockPerson.userDisplayName);
-    });
-  });
-
-  describe('createdTime', () => {
-    it('should be a date string when incoming timestamp [JPT-965]', () => {
-      expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
+    it('should be a string when item is image type [JPT-965]', () => {
+      (getFileType as jest.Mock).mockReturnValue({
+        previewUrl,
+        type: FileType.image,
+      });
+      expect(vm.url).toEqual(previewUrl);
     });
   });
 });

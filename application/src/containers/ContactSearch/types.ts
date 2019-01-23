@@ -17,6 +17,7 @@ type ContactSearchProps = {
   helperText: string;
   errorEmail?: string;
   isExcludeMe?: boolean;
+  hasMembers?: number[];
 };
 
 type ViewProps = {

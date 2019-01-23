@@ -4,41 +4,119 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TeamActionController } from '../TeamActionController';
+import _ from 'lodash';
+import { NetworkManager, OAuthTokenManager } from 'foundation';
+import { Api } from '../../../../api';
+import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { Group } from '../../entity/Group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { groupFactory } from './factory';
+import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 import {
   buildRequestController,
   buildPartialModifyController,
 } from '../../../../framework/controller';
-import { Api } from '../../../../api';
-import { NetworkManager, OAuthTokenManager } from 'foundation/src';
 import { Raw } from '../../../../framework/model';
+import { PERMISSION_ENUM } from '../../../../service';
+import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
+import { Group } from '../../entity/Group';
+import { TeamActionController } from '../TeamActionController';
+import { TeamPermissionController } from '../TeamPermissionController';
+import { groupFactory } from './factory';
+jest.mock('../../../../api');
+const delegate = (
+  getObject: Function,
+  methodName: string,
+  isAsync: boolean = true,
+) => {
+  return isAsync
+    ? jest.fn().mockImplementation(async (...args) => {
+      const object = getObject();
+      return await object[methodName].call(object, ...args);
+    })
+    : jest.fn().mockImplementation((...args) => {
+      const object = getObject();
+      return object[methodName].call(object, ...args);
+    });
+};
+
+class TestEntitySourceController implements IEntitySourceController<Group> {
+  get = jest.fn().mockImplementation(async (id: number) => {
+    return groupFactory.build({
+      id,
+    });
+  });
+
+  getEntityLocally = jest.fn();
+
+  getEntitiesLocally = jest.fn();
+
+  getEntityNotificationKey = jest.fn().mockReturnValue([]);
+
+  put = jest.fn();
+
+  bulkPut = jest.fn();
+
+  clear = jest.fn();
+
+  delete = jest.fn();
+
+  bulkDelete = jest.fn();
+
+  update = jest.fn();
+
+  bulkUpdate = jest.fn();
+
+  batchGet = jest.fn().mockResolvedValue([]);
+}
 
 jest.mock('../../../../framework/controller');
 
 class TestPartialModifyController implements IPartialModifyController<Group> {
-  updatePartially = jest.fn(
-    (
-      entityId: number,
-      preHandlePartialEntity: (
-        partialEntity: Partial<Raw<Group>>,
-        originalEntity: Group,
-      ) => Partial<Raw<Group>>,
-      doUpdateEntity: (updatedEntity: Group) => Promise<Group>,
-    ) => {
-      const originalEntity: Group = groupFactory.build({
-        is_team: true,
-        members: [5683, 55668833, 540524],
-      });
-      const partialEntity: any = {};
-      return preHandlePartialEntity(partialEntity, originalEntity);
-    },
+  public partialModifyController: IPartialModifyController<Group>;
+  constructor(public entitySourceController: IEntitySourceController<Group>) {
+    this.partialModifyController = new PartialModifyController(
+      entitySourceController,
+    );
+  }
+  updatePartially = jest
+    .fn()
+    .mockImplementation(
+      async (
+        entityId: number,
+        preHandlePartialEntity: (
+          partialEntity: Partial<Raw<Group>>,
+          originalEntity: Group,
+        ) => Partial<Raw<Group>>,
+        doUpdateEntity: (updatedEntity: Group) => Promise<Group>,
+      ) => {
+        const originalEntity: Group = await this.entitySourceController.get(
+          entityId,
+        );
+        let partialEntity: Partial<Group> = {
+          id: entityId,
+          _id: entityId,
+        };
+        partialEntity = preHandlePartialEntity
+          ? preHandlePartialEntity(partialEntity, originalEntity)
+          : partialEntity;
+        const mergeEntity = this.partialModifyController.getMergedEntity(
+          partialEntity,
+          originalEntity,
+        );
+        doUpdateEntity && (await doUpdateEntity(mergeEntity));
+        return mergeEntity;
+      },
+    );
+  getMergedEntity = delegate(
+    () => this.partialModifyController,
+    'getMergedEntity',
+    false,
   );
-  getMergedEntity = jest.fn();
-  getRollbackPartialEntity = jest.fn();
+  getRollbackPartialEntity = delegate(
+    () => this.partialModifyController,
+    'getRollbackPartialEntity',
+    false,
+  );
 }
 
 class TestRequestController implements IRequestController<Group> {
@@ -48,11 +126,18 @@ class TestRequestController implements IRequestController<Group> {
 }
 
 describe('TeamController', () => {
+  let testEntitySourceController: IEntitySourceController<Group>;
   let teamActionController: TeamActionController;
-  let testPartialModifyController: TestPartialModifyController;
+  let testPartialModifyController: IPartialModifyController<Group>;
   let testRequestController: TestRequestController;
   beforeEach(() => {
-    testPartialModifyController = new TestPartialModifyController();
+    testEntitySourceController = new TestEntitySourceController();
+    testPartialModifyController = new TestPartialModifyController(
+      testEntitySourceController,
+    );
+    testPartialModifyController = new TestPartialModifyController(
+      testEntitySourceController,
+    );
     testRequestController = new TestRequestController();
 
     buildRequestController.mockImplementation(() => {
@@ -65,6 +150,8 @@ describe('TeamController', () => {
 
     teamActionController = new TeamActionController(
       testPartialModifyController,
+      testEntitySourceController,
+      new TeamPermissionController(),
     );
   });
 
@@ -116,37 +203,77 @@ describe('TeamController', () => {
     it('should call partial modify controller. [JPT-719]', async () => {
       await teamActionController.joinTeam(123, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testPartialModifyController.updatePartially).toReturnWith({
-        members: [5683, 55668833, 540524, 123],
+      expect(testRequestController.put).toBeCalledWith({
+        id: 2,
+        members: [123],
       });
     });
   });
 
   describe('leaveTeam()', () => {
     it('should call partial modify controller.', async () => {
+      const mockGroup = groupFactory.build({
+        id: 2,
+        members: [55668833, 540524, 5683],
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockGroup,
+      );
       await teamActionController.leaveTeam(5683, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testPartialModifyController.updatePartially).toReturnWith({
-        members: [55668833, 540524],
+      expect(testRequestController.put).toBeCalledWith({
+        id: 2,
+        members: [5683],
       });
     });
   });
 
   describe('addTeamMembers()', () => {
     it('should call partial modify controller.', async () => {
-      await teamActionController.addTeamMembers([123, 456], 2);
+      const mockGroup = groupFactory.build({
+        id: 2,
+        is_team: true,
+        members: [5683, 55668833, 540524],
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockGroup,
+      );
+      const result = await teamActionController.addTeamMembers([123, 456], 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testPartialModifyController.updatePartially).toReturnWith({
+      expect(result).toEqual({
+        ...mockGroup,
+        _id: 2,
         members: [5683, 55668833, 540524, 123, 456],
+      });
+      expect(testRequestController.put).toBeCalledWith({
+        id: 2,
+        members: [123, 456],
       });
     });
   });
 
   describe('removeTeamMembers()', () => {
     it('should call partial modify controller.', async () => {
-      await teamActionController.removeTeamMembers([540524, 5683], 2);
+      const mockGroup = groupFactory.build({
+        id: 2,
+        is_team: true,
+        members: [5683, 55668833, 540524],
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockGroup,
+      );
+      const result = await teamActionController.removeTeamMembers(
+        [540524, 5683],
+        2,
+      );
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testPartialModifyController.updatePartially).toReturnWith({
+      expect(testRequestController.put).toBeCalledWith({
+        id: 2,
+        members: [540524, 5683],
+      });
+      expect(result).toEqual({
+        ...mockGroup,
+        _id: 2,
         members: [55668833],
       });
     });
@@ -165,6 +292,85 @@ describe('TeamController', () => {
         id: 2,
         members: [123],
       });
+    });
+  });
+
+  describe('updateTeamSetting()', () => {
+    it('should call requestController.put with correct team info.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [1],
+            level: DEFAULT_ADMIN_PERMISSION_LEVEL,
+          },
+          user: {
+            uids: [2],
+            level: PERMISSION_ENUM.TEAM_POST,
+          },
+        },
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await teamActionController.updateTeamSetting(mockTeam.id, {
+        name: 'team name',
+        description: 'team desc',
+        isPublic: true,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+        },
+      });
+      expect(testRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          _id: mockTeam.id,
+          set_abbreviation: 'team name',
+          description: 'team desc',
+          privacy: 'protected',
+          permissions: {
+            user: {
+              level:
+                mockTeam.permissions.user.level |
+                PERMISSION_ENUM.TEAM_ADD_MEMBER,
+            },
+          },
+        }),
+      );
+    });
+    it('should call requestController.put when permissions change', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [1],
+            level: DEFAULT_ADMIN_PERMISSION_LEVEL,
+          },
+          user: {
+            uids: [2],
+            level: PERMISSION_ENUM.TEAM_POST,
+          },
+        },
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await teamActionController.updateTeamSetting(mockTeam.id, {
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+        },
+      });
+      expect(testRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          _id: mockTeam.id,
+          permissions: {
+            user: {
+              level:
+                mockTeam.permissions.user.level |
+                PERMISSION_ENUM.TEAM_ADD_MEMBER,
+            },
+          },
+        }),
+      );
     });
   });
 });

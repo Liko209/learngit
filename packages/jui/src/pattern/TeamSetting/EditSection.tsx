@@ -8,6 +8,7 @@ import { spacing } from '../../foundation/utils';
 
 const JuiTeamSettingEditSection = styled.div`
   display: flex;
+  padding: ${spacing(0, 6, 4)};
 `;
 
 const JuiTeamSettingEditSectionLeft = styled.div`

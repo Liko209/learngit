@@ -27,7 +27,7 @@ import {
 import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
-import { TAB_CONFIG, TabConfig } from './config';
+import { TAB_CONFIG } from './config';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -62,10 +62,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   totalCount: number = 0;
   @observable
-  private _sortKey: ITEM_SORT_KEYS = ITEM_SORT_KEYS.CREATE_TIME;
-  @observable
-  private _desc: boolean = true;
-  @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @computed
   private get _groupId() {
@@ -87,9 +83,28 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return ItemUtils.fileFilter(this._groupId, true);
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
         return ItemUtils.fileFilter(this._groupId, false);
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+        return ItemUtils.eventFilter(this._groupId);
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
+        return ItemUtils.taskFilter(this._groupId, false);
       default:
         return undefined;
     }
+  }
+
+  @computed
+  get config() {
+    return TAB_CONFIG.find(item => item.type === this.type)!;
+  }
+
+  @computed
+  get sort() {
+    return (
+      this.config.sort || {
+        sortKey: ITEM_SORT_KEYS.CREATE_TIME,
+        desc: false,
+      }
+    );
   }
 
   constructor(props: Props) {
@@ -97,12 +112,16 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this.props.groupId,
       () => {
+        const {
+          sortKey = ITEM_SORT_KEYS.CREATE_TIME,
+          desc = false,
+        } = this.sort;
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
             this._typeId,
-            this._sortKey,
-            this._desc,
+            sortKey,
+            desc,
           );
         this.loadTotalCount();
       },
@@ -117,15 +136,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   async loadTotalCount() {
-    // To Do in  https://jira.ringcentral.com/browse/FIJI-1416
-    if (
-      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS
-    ) {
-      this.totalCount = 0;
-      return;
-    }
-
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
@@ -179,22 +189,24 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
     });
+    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
-    let isValidItem =
-      item.id > 0 &&
-      !item.deactivated &&
-      GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
-      item.group_ids.includes(this._groupId) &&
-      item.post_ids.length > 0;
+    let isValidItem = !item.deactivated && item.post_ids.length > 0;
     switch (this.type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
         isValidItem =
           isValidItem &&
           (this._getFilterFunc() as (valid: Item) => boolean)(item);
       default:
+        isValidItem =
+          isValidItem &&
+          GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
+          ItemUtils.isValidItem(this._groupId, item);
     }
     return isValidItem;
   }
@@ -203,11 +215,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   fetchNextPageItems = () => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
-      const config: TabConfig = TAB_CONFIG.find(
-        looper => looper.type === this.props.type,
-      )!;
       Notification.flashToast({
-        message: t(config.offlinePrompt),
+        message: t(this.config.offlinePrompt),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,

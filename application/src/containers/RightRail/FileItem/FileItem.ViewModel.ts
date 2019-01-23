@@ -4,47 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { AbstractViewModel } from '@/base';
-import { Item } from 'sdk/module/item/entity';
-import FileItemModel from '@/store/models/FileItem';
-import { ENTITY_NAME } from '@/store';
-import { getEntity } from '@/store/utils';
-import PersonModel from '@/store/models/Person';
-import { Person } from 'sdk/module/person/entity';
-import { dateFormatter } from '@/utils/date';
-import { FilesProps } from './types';
-class FileItemViewModel extends AbstractViewModel<FilesProps> {
-  @computed
-  get id() {
-    return this.props.id;
-  }
+import FileItemModel, { FileType } from '@/store/models/FileItem';
+import { getFileType } from '@/common/getFileType';
+import { FileItemViewProps } from './types';
+import { FileViewModel } from '../File.ViewModel';
 
+class FileItemViewModel extends FileViewModel implements FileItemViewProps {
   @computed
-  get file() {
-    const id = this.id;
-
-    return id
-      ? getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this.id)
-      : null;
-  }
-
-  @computed
-  get personName() {
-    if (this.file) {
-      const { creatorId } = this.file;
-      return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId)
-        .userDisplayName;
+  get fileTypeOrUrl() {
+    const thumb = {
+      icon: '',
+      url: '',
+    };
+    const { type } = this.file;
+    if (type) {
+      const { isImage, previewUrl } = this._isImage(this.file);
+      if (isImage) {
+        thumb.url = previewUrl;
+        return thumb;
+      }
+      thumb.icon = (type && type.split('/').pop()) || '';
     }
-    return '';
+    return thumb;
   }
 
-  @computed
-  get createdTime() {
-    if (this.file) {
-      const { createdAt } = this.file;
-      return dateFormatter.date(createdAt);
-    }
-    return '';
+  private _isImage(fileItem: FileItemModel) {
+    const { type, previewUrl } = getFileType(fileItem);
+    return {
+      previewUrl,
+      isImage: type === FileType.image,
+    };
   }
 }
 

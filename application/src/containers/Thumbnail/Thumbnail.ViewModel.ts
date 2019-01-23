@@ -51,7 +51,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       url: '',
     };
 
-    if (this.file) {
+    if (this.file && this.file.type) {
       const { type } = this.file;
       // const { previewUrl } = this.isImage(this.file);
       if (FileItemUtils.isSupportPreview(this.file)) {
