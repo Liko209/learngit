@@ -250,7 +250,10 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     );
     return (
       <>
-        <StyledEditorWrapper maxHeight={height}>
+        <StyledEditorWrapper
+          maxHeight={height}
+          data-test-automation-id="codeSnippetBody"
+        >
           <textarea
             ref={this.textareaNode}
             defaultValue={this.props.value}
