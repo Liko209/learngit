@@ -67,6 +67,10 @@ const schema: ISchema = {
       eventItem: gen('id', ['*group_ids']),
       linkItem: gen('id', ['*group_ids']),
     },
+    11: { postView: gen('id', ['group_id', 'created_at']) },
+    12: {
+      conferenceItem: gen('id', ['*group_ids']),
+    },
   },
 };
 

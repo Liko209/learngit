@@ -42,9 +42,11 @@ const dao = {
   get: jest.fn(),
   getAll: jest.fn().mockReturnValue([{ id: 1 }]),
   bulkDelete: jest.fn(),
+  bulkPut: jest.fn(),
   createQuery: jest.fn(),
   queryOldestPostByGroupId: jest.fn(),
   queryLastPostByGroupId: jest.fn(),
+  savePostView: jest.fn(),
 };
 beforeAll(() => {
   jest.spyOn(daoManager, 'getStorageQuotaOccupation').mockReturnValue(0.5);

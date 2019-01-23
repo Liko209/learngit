@@ -16,7 +16,7 @@ import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import storeManager, { ENTITY_NAME } from '@/store';
-
+import { errorHelper } from 'sdk/error';
 import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
@@ -35,15 +35,16 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
 import { StreamController } from './StreamController';
-import { errorHelper } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 
+import { ItemService } from 'sdk/module/item';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
+  private _itemService: ItemService = ItemService.getInstance();
   private _initialized = false;
   private streamController: StreamController;
   private _historyHandler: HistoryHandler;
@@ -176,6 +177,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ENTITY_NAME.GROUP_STATE,
       this.props.groupId,
     );
+    this._syncGroupItems();
   }
 
   @loading
@@ -221,6 +223,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     } else {
       this.streamController.enableNewMessageSep();
     }
+  }
+
+  private _syncGroupItems() {
+    this._itemService.requestSyncGroupItems(this.props.groupId);
   }
 
   markAsRead() {

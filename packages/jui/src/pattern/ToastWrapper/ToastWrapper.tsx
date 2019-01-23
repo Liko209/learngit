@@ -5,42 +5,29 @@
  */
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
-import { spacing, width } from '../../foundation/utils';
+import { spacing } from '../../foundation/utils';
 import { JuiSnackbar } from '../../components/Snackbars';
 
 type JuiToastWrapperProps = {
   className?: string;
+  paddingTop?: number;
   children?: React.ReactNode[] | React.ReactNode;
 };
 
-const Outer = styled<JuiToastWrapperProps, 'div'>('div')`
-  position: absolute;
-  top: 0;
+const JuiToastWrapper = styled<JuiToastWrapperProps, 'div'>('div')`
+  position: fixed;
+  top: ${({ paddingTop }) => spacing(paddingTop ? paddingTop / 4 : 16)};
+  padding-left: ${spacing(6)};
+  padding-right: ${spacing(6)};
   left: 0;
-  width: 100%;
-  height: 0;
-  padding: ${spacing(0, 6)};
+  right: 0;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   z-index: ${({ theme }) => theme.zIndex.toast};
-`;
-
-const Inner = styled<JuiToastWrapperProps, 'div'>('div')`
-  display: inline-block;
-  width: 100%;
-  max-width: ${width(160)};
   ${JuiSnackbar} + ${JuiSnackbar} {
-    margin-top: ${spacing(3)};
-  }
+     margin-top: ${spacing(3)};
+   }
 `;
-
-const JuiToastWrapper = (props: JuiToastWrapperProps) => (
-  <Outer>
-    <Inner {...props} />
-  </Outer>
-);
 
 export { JuiToastWrapper, JuiToastWrapperProps };
 export default JuiToastWrapper;

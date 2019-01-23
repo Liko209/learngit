@@ -27,6 +27,14 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
     return (this.table.schema.primKey.keyPath as string) || '';
   }
 
+  primaryKeys(query?: IQuery<T>): Promise<number[]> {
+    const cols: Dexie.Collection<T, number>[] = execQuery(this.table, query);
+    if (cols.length === 1) {
+      return cols[0].primaryKeys();
+    }
+    return Promise.resolve([]);
+  }
+
   async put(item: T): Promise<void> {
     await this.table.put(item);
   }

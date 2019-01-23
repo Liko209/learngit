@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { createAtom, IAtom, action } from 'mobx';
+import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
 import { service } from 'sdk';
 import { BaseService } from 'sdk/service';
 import { IdModel, Raw } from 'sdk/framework/model';
@@ -17,8 +17,8 @@ export default class MultiEntityMapStore<
   T extends IdModel,
   K extends Entity
 > extends BaseStore {
+  @observable.shallow
   private _data: { [id: number]: K } = {};
-  private _atom: { [id: number]: IAtom } = {};
   private _usedIds: Set<number> = new Set();
 
   private _getService: Function | [Function, string];
@@ -84,9 +84,8 @@ export default class MultiEntityMapStore<
     const model = this.createModel(data);
     const { id } = model;
 
-    this._createAtom(id);
     this._data[id] = model;
-    this._atom[id].reportChanged();
+    this._registerHook(id);
   }
 
   @action
@@ -130,11 +129,12 @@ export default class MultiEntityMapStore<
   }
 
   remove(id: number) {
-    const model = this._data[id];
-    if (model) {
-      delete this._data[id];
-      delete this._atom[id];
-    }
+    setTimeout(() => {
+      const model = this._data[id];
+      if (model) {
+        delete this._data[id];
+      }
+    },         0);
   }
 
   batchRemove(ids: number[]) {
@@ -168,7 +168,6 @@ export default class MultiEntityMapStore<
       }
     }
 
-    this._atom[id].reportObserved();
     return model;
   }
 
@@ -240,13 +239,9 @@ export default class MultiEntityMapStore<
     });
   }
 
-  private _createAtom(id: number) {
-    let atom = this._atom[id];
-    if (!atom) {
-      const name = `${this.name}:${id}`;
-      atom = createAtom(name, this._addUsedIds(id), this._delUsedIds(id));
-      this._atom[id] = atom;
-    }
+  private _registerHook(id: number) {
+    onBecomeObserved(this._data, `${id}`, this._addUsedIds(id));
+    onBecomeUnobserved(this._data, `${id}`, this._delUsedIds(id));
   }
 
   private _addUsedIds(id: number) {

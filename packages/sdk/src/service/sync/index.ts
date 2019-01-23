@@ -11,8 +11,14 @@ import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import GroupDao from '../../dao/group';
 import PersonDao from '../../dao/person';
-import PostDao from '../../dao/post';
+import PostDao, { PostViewDao } from '../../dao/post';
 import ItemDao from '../../dao/item';
+import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';
+import { FileItemDao } from '../../module/item/module/file/dao/FileItemDao';
+import { NoteItemDao } from '../../module/item/module/note/dao/NoteItemDao';
+import { TaskItemDao } from '../../module/item/module/task/dao/TaskItemDao';
+import { LinkItemDao } from '../../module/item/module/link/dao/LinkItemDao';
+
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
 import {
   fetchIndexData,
@@ -141,10 +147,27 @@ export default class SyncService extends BaseService {
     await itemDao.clear();
     const postDao = daoManager.getDao(PostDao);
     await postDao.clear();
+    const postViewDao = daoManager.getDao(PostViewDao);
+    await postViewDao.clear();
     const groupDao = daoManager.getDao(GroupDao);
     await groupDao.clear();
     const personDao = daoManager.getDao(PersonDao);
     await personDao.clear();
+
+    const eventItemDao = daoManager.getDao(EventItemDao);
+    await eventItemDao.clear();
+
+    const fileItemDao = daoManager.getDao(FileItemDao);
+    await fileItemDao.clear();
+
+    const noteItemDao = daoManager.getDao(NoteItemDao);
+    await noteItemDao.clear();
+
+    const taskItemDao = daoManager.getDao(TaskItemDao);
+    await taskItemDao.clear();
+
+    const linkItemDao = daoManager.getDao(LinkItemDao);
+    await linkItemDao.clear();
 
     await this._firstLogin();
   }

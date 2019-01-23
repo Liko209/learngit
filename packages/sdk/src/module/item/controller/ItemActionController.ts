@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { Item } from '../entity';
 import { Raw } from '../../../framework/model';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { ControllerBuilder } from '../../../framework/controller/impl/ControllerBuilder';
+import { buildRequestController } from '../../../framework/controller';
 import { Api } from '../../../api';
 import {
   GlipTypeUtil,
@@ -25,6 +25,8 @@ const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_PAGE, 'page'],
   [TypeDictionary.TYPE_ID_EVENT, 'event'],
   [TypeDictionary.TYPE_ID_LINK, 'link'],
+  [TypeDictionary.TYPE_ID_CODE, 'code'],
+  [TypeDictionary.TYPE_ID_CONFERENCE, 'conference'],
 ]);
 class ItemActionController {
   constructor(
@@ -54,8 +56,7 @@ class ItemActionController {
   }
 
   private _buildItemRequestController(path: string) {
-    const builder = ControllerBuilder.getControllerBuilder<Item>();
-    return builder.buildRequestController({
+    return buildRequestController<Item>({
       basePath: `/${path}`,
       networkClient: Api.glipNetworkClient,
     });

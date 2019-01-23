@@ -96,11 +96,11 @@ class DataHelper {
     return this.t.ctx.__rcData;
   }
 
-  private set originData(data: any) {
+  set originData(data: any) {
     this.t.ctx.__originData = data;
   }
 
-  private get originData(): any {
+  get originData(): any {
     return this.t.ctx.__originData;
   }
 

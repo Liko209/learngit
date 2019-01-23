@@ -18,7 +18,9 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ItemService } from 'sdk/module/item';
 
+jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
@@ -31,11 +33,13 @@ function setup(obj?: any) {
 
 describe('StreamViewModel', () => {
   let postService: PostService;
-
+  let itemService: ItemService;
   beforeEach(() => {
     jest.clearAllMocks();
+    itemService = new ItemService();
     postService = new PostService();
     PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -116,6 +120,7 @@ describe('StreamViewModel', () => {
       expect(loadPosts).not.toHaveBeenCalled();
     });
   });
+
 
   describe('dispose()', () => {
     it('should dispose streamListHandler', () => {
@@ -257,7 +262,6 @@ describe('StreamViewModel', () => {
       );
       expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
-
       spy.mockRestore();
     });
 
@@ -458,7 +462,7 @@ describe('StreamViewModel', () => {
   });
 });
 
-describe.only('fetchData()', () => {
+describe('fetchData()', () => {
   function setup() {
     const vm = new StreamViewModel({ groupId: 1 });
     return vm;

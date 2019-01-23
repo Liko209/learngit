@@ -7,7 +7,7 @@
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
-import { PostService } from 'sdk/service';
+import { NewPostService } from 'sdk/module/post';
 import { ItemService } from 'sdk/module/item';
 import { Post } from 'sdk/module/post/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
@@ -23,7 +23,7 @@ import {
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
-  private _postService: PostService = PostService.getInstance();
+  private _postService: NewPostService = NewPostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _timer: NodeJS.Timer;
   @observable

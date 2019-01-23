@@ -9,7 +9,7 @@ import {
   GlipTypeUtil,
   TypeDictionary,
 } from '../../../../utils/glip-type-dictionary';
-import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import { buildRequestController } from '../../../../framework/controller';
 import { ItemActionController } from '../ItemActionController';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 import { Item } from '../../entity';
@@ -17,7 +17,7 @@ import { RequestController } from '../../../../framework/controller/impl/Request
 import { Api } from '../../../../api';
 
 jest.mock('../../../../api');
-jest.mock('../../../../framework/controller/impl/ControllerBuilder');
+jest.mock('../../../../framework/controller');
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../service/IItemService');
@@ -32,7 +32,6 @@ describe('', () => {
   const itemService = {
     deleteItem: jest.fn(),
   };
-  const controllerBuilder = new ControllerBuilder<Item>();
   const requestController = new RequestController<Item>(null);
   const partialUpdateController = new PartialModifyController<Item>(null);
   const itemActionController = new ItemActionController(
@@ -42,12 +41,8 @@ describe('', () => {
 
   function setUp() {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
-    ControllerBuilder.getControllerBuilder = jest
-      .fn()
-      .mockReturnValue(controllerBuilder);
-    controllerBuilder.buildRequestController = jest
-      .fn()
-      .mockReturnValue(requestController);
+
+    buildRequestController.mockReturnValue(requestController);
   }
   beforeEach(() => {
     clearMocks();

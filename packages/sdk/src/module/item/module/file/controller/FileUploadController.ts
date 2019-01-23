@@ -9,7 +9,7 @@ import { mainLogger } from 'foundation';
 import { daoManager, ItemDao } from '../../../../../dao';
 import { Progress, PROGRESS_STATUS } from '../../../../progress';
 import { Raw } from '../../../../../framework/model';
-import { StoredFile, ItemFile } from '../../../entity';
+import { StoredFile, ItemFile, Item } from '../../../entity';
 import ItemAPI, { RequestHolder } from '../../../../../api/glip/item';
 import { AmazonFileUploadPolicyData } from '../../../../../api/glip/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
@@ -42,8 +42,8 @@ class FileUploadController {
   private _canceledUploadFileIds: Set<number> = new Set();
   constructor(
     private _itemService: IItemService,
-    private _partialModifyController: IPartialModifyController<ItemFile>,
-    private _fileRequestController: IRequestController<ItemFile>,
+    private _partialModifyController: IPartialModifyController<Item>,
+    private _fileRequestController: IRequestController<Item>,
   ) {}
 
   async sendItemFile(
@@ -395,10 +395,7 @@ class FileUploadController {
       newFormFile.append(val, storedPostForm[val]);
     });
 
-    newFormFile.append(
-      FILE_FORM_DATA_KEYS.CONTENT_TYPE,
-      this._getFileType(file),
-    );
+    newFormFile.append(FILE_FORM_DATA_KEYS.CONTENT_TYPE, file.type);
     newFormFile.append(FILE_FORM_DATA_KEYS.FILE, file);
     return newFormFile;
   }
@@ -508,9 +505,12 @@ class FileUploadController {
     try {
       let result: ItemFile | undefined = undefined;
       if (existItemFile) {
-        result = await this._updateItem(existItemFile, preInsertItem);
+        result = (await this._updateItem(
+          existItemFile,
+          preInsertItem,
+        )) as ItemFile;
       } else {
-        result = await this._newItem(groupId, preInsertItem);
+        result = (await this._newItem(groupId, preInsertItem)) as ItemFile;
       }
       this._handleItemUploadSuccess(preInsertItem, result);
     } catch (error) {
@@ -690,7 +690,9 @@ class FileUploadController {
       name: file.name,
       type_id: 10,
       type: this._getFileType(file),
-      versions: [{ download_url: '', size: file.size, url: '' }],
+      versions: [
+        { download_url: '', size: file.size, url: '', stored_file_id: 0 },
+      ],
       url: '',
     };
   }
@@ -765,20 +767,14 @@ class FileUploadController {
   }
 
   private _getFileType(file: File) {
-    if (file.type && file.type.length > 0) {
-      return file.type;
-    }
-    return this._extractFileType(file.name);
-  }
-
-  private _extractFileType(fileName: string) {
+    const fileName = file.name;
     let type: string = '';
     if (fileName) {
       const arr = fileName.split('/');
       if (arr && arr.length > 0) {
         const name = arr[arr.length - 1];
         const seArr = name.split('.');
-        type = seArr[seArr.length - 1];
+        type = seArr && seArr.length > 1 ? seArr[seArr.length - 1] : '';
       }
     }
     return type;

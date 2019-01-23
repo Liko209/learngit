@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiRightShelf,
@@ -14,8 +15,7 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { ItemList } from './ItemList';
-import { ITEM_LIST_TYPE } from './types';
+import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -55,6 +55,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   }
 }
 
+@observer
 class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;
@@ -72,13 +73,17 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
-          <JuiTabs defaultActiveIndex={0} tag="rightShelf" width={width}>
+          <JuiTabs defaultActiveIndex={0} tag="right-shelf" width={width}>
             {TAB_CONFIG.map(
               (
-                { title, type }: { title: string; type: ITEM_LIST_TYPE },
+                { title, type }: { title: string; type: RIGHT_RAIL_ITEM_TYPE },
                 index: number,
               ) => (
-                <JuiTab key={index} title={t(title)}>
+                <JuiTab
+                  key={index}
+                  title={t(title)}
+                  automationId={`right-shelf-${title}`}
+                >
                   <ItemList type={type} groupId={id} />
                 </JuiTab>
               ),

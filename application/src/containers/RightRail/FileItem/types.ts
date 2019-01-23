@@ -3,21 +3,15 @@
  * @Date: 2019-01-08 14:28:15
  * Copyright © RingCentral. All rights reserved.
  */
-import FileItemModel from '@/store/models/FileItem';
+import { FileProps, FileViewProps } from '../File.types';
 
-type FilesProps = {
-  id: number;
-};
+type FileItemProps = FileProps;
 
-type FileItemProps = {
-  file: FileItemModel;
-  subTitle: string;
+type FileItemViewProps = {
   fileTypeOrUrl: {
     icon: string;
     url: string;
   };
-  disabled?: boolean;
-  action?: () => void;
-};
+} & FileViewProps;
 
-export { FileItemProps, FilesProps };
+export { FileItemProps, FileItemViewProps };

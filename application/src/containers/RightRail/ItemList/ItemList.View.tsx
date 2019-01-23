@@ -6,28 +6,18 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
-import { ITEM_LIST_TYPE } from '../types';
 import { ViewProps, Props } from './types';
-import { FileItem } from '../FileItem';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { debounce } from 'lodash';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
 } from 'jui/pattern/VirtualList';
-import {
-  JuiConversationRightRailLoading,
-  JuiRightShelfContent,
-} from 'jui/pattern/RightShelf';
+
+import { JuiRightShelfContent } from 'jui/pattern/RightShelf';
+
 import { emptyView } from './Empty';
-
-const itemType = {
-  [ITEM_LIST_TYPE.FILE]: FileItem,
-};
-
-const subheaderType = {
-  [ITEM_LIST_TYPE.FILE]: 'fileListSubheader',
-};
+import { TAB_CONFIG, TabConfig } from './config';
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
@@ -44,13 +34,17 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   cellAtIndex = (index: number, style: React.CSSProperties) => {
     const { ids, type } = this.props;
-    const Component: any = itemType[type];
+    const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
+    const Component: any = config.item;
     const id = ids[index];
-    return (
-      <div key={index} style={style}>
-        {id ? <Component id={id} /> : <JuiConversationRightRailLoading />}
-      </div>
-    );
+    if (id) {
+      return (
+        <div key={id} style={style}>
+          <Component id={id} />
+        </div>
+      );
+    }
+    return null;
   }
 
   fixedCellHeight() {
@@ -74,11 +68,12 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   render() {
     const { type, totalCount } = this.props;
-    const subheaderText = subheaderType[type];
+    const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
+    const subheaderText = config.subheader;
     return (
       <JuiRightShelfContent>
         {totalCount > 0 && (
-          <JuiListSubheader>
+          <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
             {t(subheaderText)} ({totalCount})
           </JuiListSubheader>
         )}

@@ -134,18 +134,17 @@ const CardFileActions = styled(MuiCardActions)`
 `;
 
 type ImageCardProps = {
-  ratio: number;
+  width: number;
+  height: number;
 };
 
-const WrapperImageCard = ({ ratio, ...rest }: ImageCardProps) => (
+const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => (
   <JuiCard {...rest} />
 );
 
-type ImageFileInfoProps = {
-  ratio: number;
-} & JuiTypographyProps;
+type ImageFileInfoProps = ImageCardProps & JuiTypographyProps;
 
-const WrapperImageFileInfo = ({ ratio, ...rest }: ImageCardProps) => (
+const WrapperImageFileInfo = ({ width, height, ...rest }: ImageCardProps) => (
   <CardFileInfo {...rest} />
 );
 
@@ -163,7 +162,7 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   & > b {
     font-weight: 400;
     color: ${palette('grey', '700')};
-    width: ${({ ratio }) => (ratio >= 1 ? width(49) : width(82))};
+    width: ${props => width(props.width / 4)};
   }
 `;
 
@@ -171,8 +170,8 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   && {
     display: inline-block;
     margin: ${spacing(0, 3, 3, 0)};
-    width: ${({ ratio }) => (ratio >= 1 ? width(40) : width(70))};
-    height: ${({ ratio }) => (ratio >= 1 ? height(40) : height(50))};
+    width: ${props => width(props.width / 4)};
+    height: ${props => height(props.height / 4)};
     position: relative;
     border-radius: 0;
     box-shadow: none;

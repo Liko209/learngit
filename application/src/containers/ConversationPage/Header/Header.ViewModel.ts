@@ -16,7 +16,7 @@ import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
 import { t } from 'i18next';
 import _ from 'lodash';
-type HeaderAction = { name: string; iconName: string; tooltip: string };
+
 class HeaderViewModel extends AbstractViewModel {
   @observable
   private _id: number;
@@ -39,13 +39,6 @@ class HeaderViewModel extends AbstractViewModel {
       title += ` (${t('text')})`;
     }
     return title;
-  }
-
-  @computed
-  get actions() {
-    const actions: HeaderAction[] = [];
-    // hide not implemented button: audio conference, call, meeting, add member
-    return actions;
   }
 
   @computed

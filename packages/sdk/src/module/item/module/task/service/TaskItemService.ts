@@ -4,44 +4,35 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
 import { TaskItemController } from '../controller/TaskItemController';
-import { Item } from '../../../entity';
-import { EntityBaseService } from '../../../../../framework/service';
+import { TaskItem, SanitizedTaskItem } from '../entity';
 import { IItemService } from '../../../service/IItemService';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { TaskItemDao } from '../dao/TaskItemDao';
+import { daoManager } from '../../../../../dao';
 
-class TaskItemService extends EntityBaseService implements ISubItemService {
+class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
   private _taskItemController: TaskItemController;
 
   constructor(itemService: IItemService) {
-    super();
+    super(daoManager.getDao<TaskItemDao>(TaskItemDao));
   }
 
-  protected get fileItemController() {
+  protected get taskItemController() {
     if (!this._taskItemController) {
       this._taskItemController = new TaskItemController();
     }
     return this._taskItemController;
   }
 
-  updateItem(item: Item) {}
-
-  createItem(item: Item) {}
-
-  deleteItem(itemId: number) {}
-
-  getSortedIds(
-    groupId: number,
-    limit: number,
-    offsetItemId: number | undefined,
-    sortKey: string,
-    desc: boolean,
-  ): Promise<number[]> {
-    return Promise.resolve([]);
-  }
-
-  async getSubItemsCount(groupId: number) {
-    return 0;
+  toSanitizedItem(task: TaskItem) {
+    return {
+      ...super.toSanitizedItem(task),
+      complete: task.complete,
+      due: task.due,
+      assigned_to_ids: task.assigned_to_ids,
+      color: task.color,
+    } as SanitizedTaskItem;
   }
 }
 
