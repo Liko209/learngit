@@ -18,58 +18,6 @@ fixture('TeamSetting/LeaveTeam')
   .afterEach(teardownCase());
 
 
-test(formalName(`The Leave Team dialog display correctly after clicking 'Leave team' button`, ['P1', 'JPT-934', 'LeaveTeam', 'Potar.He']), async t => {
-  const app = new AppRoot(t);
-  const adminUser = h(t).rcData.mainCompany.users[4];
-  const memberUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(adminUser).init();
-
-  const teamName = uuid();
-  const confirmation = `Once you leave ${teamName}, you will no longer have access to the content.`;
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const profileDialog = app.homePage.profileDialog;
-
-  let teamId;
-  await h(t).withLog(`Given I am member of new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${memberUser.company.number}#${memberUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, memberUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog(`When I open team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-    await profileDialog.clickSetting();
-  });
-
-  const teamSettingDialog = app.homePage.teamSettingDialog;
-  await h(t).withLog(`Then "Leave Team" button should be showed`, async () => {
-    await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).ok();
-  });
-
-  await h(t).withLog(`When I click "Leave team" button`, async () => {
-    await teamSettingDialog.clickLeaveTeamButton();
-  });
-
-  await h(t).withLog(`Then the Setting dialog is closed `, async () => {
-    await t.expect(teamSettingDialog.exists).notOk();
-  });
-
-  const leaveTeamDialog = app.homePage.leaveTeamDialog
-  await h(t).withLog(`And there's confirmation displayed as ${confirmation}`, async () => {
-    await leaveTeamDialog.shouldBePopup();
-    await t.expect(leaveTeamDialog.confirmation.textContent).eql(confirmation);
-  });
-});
-
 test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JPT-935', 'LeaveTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
