@@ -59,7 +59,7 @@ class BaseConversationPage extends BaseWebComponent {
   get headerStatus() {
     return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
   }
-  
+
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
@@ -104,7 +104,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     await this.t.wait(1e3); // loading circle is invisible in first 1 second.
-    return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
+    return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
   }
 
   // todo: find a more reliable method
@@ -535,13 +535,13 @@ class AudioConference extends BaseWebComponent {
   get hostCode() {
     return this.getSelectorByAutomationId('conferenceHostCode', this.self);
   }
-  
+
   get participantAccess() {
     return this.self.find('div').withText('Participant Access');
   }
 
   get participantCode() {
     return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
-  } 
+  }
 }
 
