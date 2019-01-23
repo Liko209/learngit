@@ -11,8 +11,7 @@ import {
 import { IFetchSortableDataProvider } from './../../../store/base/fetch/FetchSortableDataListHandler';
 import _ from 'lodash';
 import { computed, action } from 'mobx';
-import { PostService, StateService, ENTITY } from 'sdk/service';
-import { NewPostService } from 'sdk/module/post';
+import { StateService, ENTITY } from 'sdk/service';
 import { Post } from 'sdk/module/post/entity';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
@@ -39,12 +38,13 @@ import { StreamController } from './StreamController';
 import { Notification } from '@/containers/Notification';
 
 import { ItemService } from 'sdk/module/item';
+import { NewPostService } from 'sdk/src/module/post';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: PostService = PostService.getInstance();
+  private _postService: NewPostService = NewPostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _initialized = false;
   private streamController: StreamController;
@@ -143,7 +143,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   postDataProvider: IFetchSortableDataProvider<Post> = {
     fetchData: async (direction, pageSize, anchor) => {
       try {
-        const postService: PostService = PostService.getInstance();
+        const postService: NewPostService = NewPostService.getInstance();
         const { posts, hasMore, items } = await postService.getPostsByGroupId({
           direction,
           groupId: this.props.groupId,

@@ -73,7 +73,7 @@ class PostFetchController {
 
     // Step 3
     if (result.posts.length < limit) {
-      const shouldFetch = this._shouldFetchFromServer(direction, groupId);
+      const shouldFetch = await this._shouldFetchFromServer(direction, groupId);
       if (!shouldSaveToDb || shouldFetch) {
         mainLogger.debug(
           TAG,
