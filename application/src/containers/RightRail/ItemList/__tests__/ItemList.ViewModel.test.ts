@@ -32,6 +32,7 @@ describe('ItemListViewModel', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+        active: true,
       });
       Object.assign(ViewModel, {
         _sortableDataHandler,
@@ -48,6 +49,7 @@ describe('ItemListViewModel', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        active: true,
       });
       let _sortableDataHandler = {
         sortableListStore: {
@@ -79,6 +81,7 @@ describe('ItemListViewModel', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        active: true,
       });
       let _sortableDataHandler = {
         sortableListStore: {
@@ -112,6 +115,7 @@ describe('ItemListViewModel', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
+        active: true,
       });
       const _getFilterFunc = () => {};
       Object.assign(ViewModel, {
@@ -135,6 +139,7 @@ describe('ItemListViewModel', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
+        active: true,
       });
       expect(ViewModel.sort.sortKey).toBe(ITEM_SORT_KEYS.START_TIME);
     });
@@ -142,6 +147,7 @@ describe('ItemListViewModel', () => {
       ViewModel = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
+        active: true,
       });
       expect(ViewModel.sort.sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
     });
