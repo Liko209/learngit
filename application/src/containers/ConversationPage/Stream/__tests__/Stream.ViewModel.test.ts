@@ -32,7 +32,7 @@ function setup(obj?: any) {
   return vm;
 }
 
-describe('StreamViewModel', () => {
+describe.skip('StreamViewModel', () => {
   let postService: PostService;
   let itemService: ItemService;
   const streamController = {
@@ -448,7 +448,7 @@ describe('StreamViewModel', () => {
   });
 });
 
-describe('fetchData()', () => {
+describe.skip('fetchData()', () => {
   function setup() {
     const vm = new StreamViewModel({ groupId: 1 });
     return vm;

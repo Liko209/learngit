@@ -12,7 +12,7 @@ jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao');
 
-describe('PreInsertController', () => {
+describe.skip('PreInsertController', () => {
   let preInsertController: PreInsertController;
   const progressService: ProgressService = new ProgressService();
   const dao = new PostDao(null);

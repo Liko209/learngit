@@ -38,7 +38,7 @@ import { StreamController } from './StreamController';
 import { Notification } from '@/containers/Notification';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/src/module/post';
+import { NewPostService } from 'sdk/module/post';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
