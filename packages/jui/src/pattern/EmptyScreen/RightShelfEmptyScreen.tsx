@@ -39,6 +39,8 @@ const Content = styled(EmptyScreen.Content)`
 const JuiFlexWrapper = styled.div`
   display: flex;
   justify-content: center;
+  overflow-y: auto;
+  height: 100%;
 `;
 
 const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
