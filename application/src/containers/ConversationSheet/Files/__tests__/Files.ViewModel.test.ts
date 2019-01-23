@@ -30,8 +30,7 @@ PostService.getInstance = jest.fn().mockReturnValue(postService);
 ItemService.getInstance = jest.fn().mockReturnValue({});
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
-const filesItemVM = new FilesViewModel();
-filesItemVM.props.ids = [1, 2, 3];
+const filesItemVM = new FilesViewModel({ ids: [1, 2, -3] });
 
 const mockItemValue = {
   name: 'filename',
@@ -54,7 +53,7 @@ describe('filesItemVM', () => {
     jest.resetAllMocks();
   });
   it('get _ids', () => {
-    expect(filesItemVM._ids).toEqual([1, 2, 3]);
+    expect(filesItemVM._ids).toEqual([1, 2, -3]);
   });
 
   it('get files', () => {

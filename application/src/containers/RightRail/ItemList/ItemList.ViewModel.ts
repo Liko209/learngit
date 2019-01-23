@@ -6,7 +6,7 @@
 
 import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps } from './types';
+import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { getGlobalValue } from '@/store/utils';
 import { t } from 'i18next';
@@ -60,6 +60,8 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 
 class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
+  private _loadStatus: LoadStatus;
+  @observable
   totalCount: number = 0;
   @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
@@ -70,6 +72,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get type() {
     return this.props.type;
+  }
+
+  @computed
+  get tabConfig() {
+    return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
   @computed
@@ -93,14 +100,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
-  get config() {
-    return TAB_CONFIG.find(item => item.type === this.type)!;
-  }
-
-  @computed
   get sort() {
     return (
-      this.config.sort || {
+      this.tabConfig.sort || {
         sortKey: ITEM_SORT_KEYS.CREATE_TIME,
         desc: false,
       }
@@ -109,9 +111,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor(props: Props) {
     super(props);
+    this._loadStatus = { ...InitLoadStatus };
     this.reaction(
-      () => this.props.groupId,
+      () => this._groupId,
       () => {
+        this._loadStatus.firstLoaded = false;
         const {
           sortKey = ITEM_SORT_KEYS.CREATE_TIME,
           desc = false,
@@ -124,15 +128,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
             desc,
           );
         this.loadTotalCount();
+        this.forceReload();
       },
       { fireImmediately: true },
     );
-    this.reaction(
-      () => this.ids,
-      () => {
-        this.loadTotalCount();
-      },
-    );
+    this.reaction(() => this.ids, () => this.loadTotalCount());
   }
 
   async loadTotalCount() {
@@ -212,19 +212,46 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @action
-  fetchNextPageItems = () => {
+  forceReload = async () => {
+    this._loadStatus.firstLoaded = false;
+    await this.fetchNextPageItems();
+  }
+
+  @action
+  fetchNextPageItems = async () => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
+      const { offlinePrompt } = this.tabConfig;
       Notification.flashToast({
-        message: t(this.config.offlinePrompt),
+        message: t(offlinePrompt),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });
+      Object.assign(this._loadStatus, { loadError: true, loading: false });
       return;
     }
-    return this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
+
+    try {
+      this._loadStatus.loading = true;
+      const result = await this._sortableDataHandler.fetchData(
+        QUERY_DIRECTION.NEWER,
+      );
+      Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
+      return result;
+    } catch (e) {
+      Object.assign(this._loadStatus, { loadError: true, loading: false });
+    }
+  }
+
+  @computed
+  get loadStatus() {
+    return this._loadStatus;
+  }
+
+  dispose() {
+    this._sortableDataHandler.dispose();
   }
 
   @computed

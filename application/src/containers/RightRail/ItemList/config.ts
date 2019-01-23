@@ -5,6 +5,7 @@
  */
 import { ComponentType } from 'react';
 import { FileItem } from '../FileItem';
+
 import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
@@ -21,6 +22,8 @@ import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ITEM_SORT_KEYS } from 'sdk/module/item';
+
+const ITEM_HEIGHT = 52;
 
 type EmptyConfig = {
   text: string;
@@ -39,6 +42,7 @@ type TabConfig = {
     desc?: boolean;
   };
   offlinePrompt: string;
+  tryAgainPrompt: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -53,6 +57,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: PinnedEmptyImage,
     },
     offlinePrompt: 'networkErrorPinnedPrompt',
+    tryAgainPrompt: 'tryAgainPinnedPrompt',
   },
   {
     title: 'files',
@@ -68,6 +73,7 @@ const TAB_CONFIG: TabConfig[] = [
       desc: true,
     },
     offlinePrompt: 'networkErrorFilesPrompt',
+    tryAgainPrompt: 'tryAgainFilesPrompt',
   },
   {
     title: 'images',
@@ -80,6 +86,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: ImagesEmptyImage,
     },
     offlinePrompt: 'networkErrorImagesPrompt',
+    tryAgainPrompt: 'tryAgainImagesPrompt',
   },
   {
     title: 'tasks',
@@ -92,6 +99,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: TasksEmptyImage,
     },
     offlinePrompt: 'networkErrorTasksPrompt',
+    tryAgainPrompt: 'tryAgainTasksPrompt',
   },
   {
     title: 'links',
@@ -104,6 +112,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: LinksEmptyImage,
     },
     offlinePrompt: 'networkErrorLinksPrompt',
+    tryAgainPrompt: 'tryAgainLinksPrompt',
   },
   {
     title: 'notes',
@@ -116,6 +125,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: NotesEmptyImage,
     },
     offlinePrompt: 'networkErrorNotesPrompt',
+    tryAgainPrompt: 'tryAgainNotesPrompt',
   },
   {
     title: 'events',
@@ -131,6 +141,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: EventsEmptyImage,
     },
     offlinePrompt: 'networkErrorEventsPrompt',
+    tryAgainPrompt: 'tryAgainEventsPrompt',
   },
   {
     title: 'integrations',
@@ -143,7 +154,8 @@ const TAB_CONFIG: TabConfig[] = [
       image: IntegrationsEmptyImage,
     },
     offlinePrompt: 'networkErrorIntegrationsPrompt',
+    tryAgainPrompt: 'tryAgainIntegrationsPrompt',
   },
 ];
 
-export { TAB_CONFIG, TabConfig, EmptyConfig };
+export { TAB_CONFIG, TabConfig, EmptyConfig, ITEM_HEIGHT };
