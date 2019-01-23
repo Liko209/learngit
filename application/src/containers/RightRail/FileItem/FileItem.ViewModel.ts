@@ -4,72 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { AbstractViewModel } from '@/base';
-import { Item } from 'sdk/module/item/entity';
 import FileItemModel, { FileType } from '@/store/models/FileItem';
-import { ENTITY_NAME } from '@/store';
-import { getEntity } from '@/store/utils';
-import PersonModel from '@/store/models/Person';
-import { Person } from 'sdk/module/person/entity';
-import { dateFormatter } from '@/utils/date';
 import { getFileType } from '@/common/getFileType';
-import { FilesProps } from './types';
-class FileItemViewModel extends AbstractViewModel<FilesProps> {
-  @computed
-  get _id() {
-    return this.props.id;
-  }
+import { FileItemViewProps } from './types';
+import { FileViewModel } from '../File.ViewModel';
 
-  @computed
-  get file() {
-    const id = this._id;
-    if (typeof id !== 'undefined') {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
-    }
-    return null;
-  }
-
-  @computed
-  get personName() {
-    if (this.file) {
-      const { creatorId } = this.file;
-      if (creatorId) {
-        return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId)
-          .userDisplayName;
-      }
-    }
-    return '';
-  }
-
-  @computed
-  get createdTime() {
-    if (this.file) {
-      const { createdAt } = this.file;
-      return dateFormatter.date(createdAt);
-    }
-    return '';
-  }
-
+class FileItemViewModel extends FileViewModel implements FileItemViewProps {
   @computed
   get fileTypeOrUrl() {
-    if (this.file) {
-      const { type } = this.file;
-      const { isImage, previewUrl } = this.isImage(this.file);
-      const thumb = {
-        icon: '',
-        url: '',
-      };
+    const thumb = {
+      icon: '',
+      url: '',
+    };
+    const { type } = this.file;
+    if (type) {
+      const { isImage, previewUrl } = this._isImage(this.file);
       if (isImage) {
         thumb.url = previewUrl;
         return thumb;
       }
       thumb.icon = (type && type.split('/').pop()) || '';
-      return thumb;
     }
-    return '';
+    return thumb;
   }
 
-  isImage(fileItem: FileItemModel) {
+  private _isImage(fileItem: FileItemModel) {
     const { type, previewUrl } = getFileType(fileItem);
     return {
       previewUrl,
