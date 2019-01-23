@@ -302,6 +302,8 @@ class StateDataHandleController {
 
           if (resultGroupState.unread_count > 0) {
             resultGroupState.marked_as_unread = true;
+          } else {
+            resultGroupState.marked_as_unread = false;
           }
           return resultGroupState;
         }),
