@@ -9,15 +9,21 @@ import MuiDialogContent, {
   DialogContentProps as MuiDialogContentProps,
 } from '@material-ui/core/DialogContent';
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils/styles';
+import { height } from '../../foundation/utils/styles';
 
 type JuiDialogContentWithFillProps = MuiDialogContentProps;
 
 const StyledDialogContent = styled(MuiDialogContent)`
   && {
-    padding: ${spacing(0, 0, 6, 0)};
+    padding: 0;
     display: flex;
     flex-direction: column;
+  }
+  &:after {
+    content: "";
+    height: ${height(6)};
+    display: block;
+    flex-shrink: 0;
   }
 `;
 

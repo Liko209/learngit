@@ -69,11 +69,9 @@ class TwoLineItem extends React.Component {
           </JuiListItemSecondaryAction>
         ) : (
           <JuiListItemSecondaryAction>
-            <JuiListItemIcon>
-              <JuiIconButton variant="plain" disabled={disabled}>
-                info
-              </JuiIconButton>
-            </JuiListItemIcon>
+            <JuiIconButton variant="plain" disabled={disabled}>
+              info
+            </JuiIconButton>
           </JuiListItemSecondaryAction>
         )}
       </JuiListItem>

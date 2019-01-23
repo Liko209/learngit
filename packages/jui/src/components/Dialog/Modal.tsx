@@ -33,9 +33,9 @@ type JuiModalProps = {
   okText?: string;
   okVariant?: JuiButtonProps['variant'];
   okType?: JuiButtonColor;
-  okBtnProps?: JuiButtonProps;
+  okBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelVariant?: JuiButtonProps['variant'];
-  cancelBtnProps?: JuiButtonProps;
+  cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void;
   onCancel?(event?: React.MouseEvent): void;

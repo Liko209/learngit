@@ -12,6 +12,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { TaskUpdateProps, TaskUpdateViewProps } from './types';
 import TaskItemModel from '@/store/models/TaskItem';
+import { accentColor } from '@/common/AccentColor';
 
 class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
   implements TaskUpdateViewProps {
@@ -33,6 +34,11 @@ class TaskUpdateViewModel extends StoreViewModel<TaskUpdateProps>
   @computed
   get task() {
     return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+  }
+
+  @computed
+  get color() {
+    return accentColor[this.task.color];
   }
 
   @computed
