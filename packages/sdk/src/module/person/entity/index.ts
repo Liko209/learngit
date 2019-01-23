@@ -4,6 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PhoneNumberModel, SanitizedExtensionModel, Person } from './Person';
+import {
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+  Person,
+  HeadShotModel,
+} from './Person';
 
-export { PhoneNumberModel, SanitizedExtensionModel, Person };
+export { PhoneNumberModel, SanitizedExtensionModel, Person, HeadShotModel };

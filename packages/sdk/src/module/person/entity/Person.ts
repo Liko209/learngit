@@ -17,6 +17,14 @@ export type SanitizedExtensionModel = {
   type: string;
 };
 
+export type HeadShotModel =
+  | string
+  | {
+    url: string;
+    stored_file_id?: string;
+    thumbs?: { key: string; value: string }[];
+  };
+
 export type Person = ExtendedBaseModel & {
   company_id: number;
   email: string;
@@ -29,13 +37,7 @@ export type Person = ExtendedBaseModel & {
   first_name?: string;
   last_name?: string;
   display_name?: string;
-  headshot?:
-    | string
-    | {
-      url: string;
-      stored_file_id?: string;
-      thumbs?: { key: string; value: string }[];
-    };
+  headshot?: HeadShotModel;
   headshot_version?: string;
   locked?: boolean;
   inviter_id?: number;

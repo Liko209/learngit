@@ -4,6 +4,7 @@ import { observable, computed } from 'mobx';
 import {
   Person,
   PhoneNumberModel,
+  HeadShotModel,
   SanitizedExtensionModel,
 } from 'sdk/module/person/entity';
 import Base from './Base';
@@ -23,13 +24,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   lastName: string;
   @observable
-  headshot?:
-    | string
-    | {
-      url: string;
-      stored_file_id?: string;
-      thumbs?: { key: string; value: string | number }[];
-    };
+  headshot?: HeadShotModel;
   @observable
   headshotVersion?: string;
   @observable
