@@ -34,7 +34,7 @@ class DataHandleController {
       await this.preInsertController.bulkDelete(transformedData);
     }
     const posts: Post[] =
-      (await this.handleAndFilterPosts(transformedData, shouldSaveToDb)) || [];
+      (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
     const items =
       (await (ItemService.getInstance() as ItemService).handleIncomingData(
         data.items,
@@ -42,7 +42,7 @@ class DataHandleController {
     await updateResult(posts, items);
   }
 
-  async handleAndFilterPosts(posts: Post[], save?: boolean): Promise<Post[]> {
+  async filterAndSavePosts(posts: Post[], save?: boolean): Promise<Post[]> {
     const groups = _.groupBy(posts, 'group_id');
     const postDao = daoManager.getDao(PostDao);
     const normalPosts = _.flatten(
@@ -61,11 +61,11 @@ class DataHandleController {
 
     // check if post's owner group exist in local or not
     // seems we only need check normal posts, don't need to check deactivated data
-    await this._ensurePostsGroup(normalPosts);
+    await this._ensureGroupExist(normalPosts);
     return posts;
   }
 
-  private async _ensurePostsGroup(posts: Post[]): Promise<void> {
+  private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
       posts.forEach(async (post: Post) => {
         const groupService: GroupService = GroupService.getInstance();

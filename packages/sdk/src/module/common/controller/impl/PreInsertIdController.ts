@@ -61,7 +61,7 @@ class PreInsertIdController implements IPreInsertIdController {
     this._syncDataDB();
   }
 
-  getAll() {
+  getAll(): number[] {
     return this._versions;
   }
 }

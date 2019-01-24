@@ -8,8 +8,6 @@ interface IPreInsertIdController {
   insert(version: number): Promise<void>;
   delete(version: number): Promise<void>;
   bulkDelete(versions: number[]): Promise<void>;
-  getAll(): {
-    [version: number]: number;
-  };
+  getAll(): number[];
 }
 export { IPreInsertIdController };
