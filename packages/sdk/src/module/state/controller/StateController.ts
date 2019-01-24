@@ -35,7 +35,6 @@ class StateController {
       this._stateActionController = new StateActionController(
         partialModifyController,
         requestController,
-        this._entitySourceController,
         this.getStateFetchDataController(),
       );
     }

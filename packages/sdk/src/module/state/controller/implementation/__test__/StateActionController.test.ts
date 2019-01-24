@@ -67,43 +67,14 @@ describe('StateActionController', () => {
     stateActionController = new StateActionController(
       mockPartialModifyController,
       mockRequestController,
-      mockEntitySourceController,
       mockStateFetchDataController,
     );
   });
 
   describe('updateReadStatus()', () => {
-    it('should do nothing when the readStatus is not changed', async () => {
-      const groupId: number = 55668833;
-      const isUnread: boolean = true;
-      mockEntitySourceController.get = jest.fn().mockReturnValue({
-        id: 55668833,
-        marked_as_unread: true,
-      });
-      stateActionController['_getLastPostOfGroup'] = jest.fn();
-      PostService.getInstance = jest.fn().mockReturnValue({
-        getNewestPostIdOfGroup: jest.fn(),
-      });
-      mockStateFetchDataController.getMyStateId = jest.fn();
-      stateActionController['_updateStateCursor'] = jest.fn();
-      await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(mockEntitySourceController.get).toBeCalledWith(groupId);
-      expect(stateActionController['_getLastPostOfGroup']).toBeCalledTimes(0);
-      expect(
-        PostService.getInstance<PostService>().getNewestPostIdOfGroup,
-      ).toBeCalledTimes(0);
-      expect(mockStateFetchDataController.getMyStateId).toBeCalledTimes(0);
-      expect(mockPartialModifyController.updatePartially).toBeCalledTimes(0);
-      expect(stateActionController['_updateStateCursor']).toBeCalledTimes(0);
-    });
-
     it('should mark as unread when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = true;
-      mockEntitySourceController.get = jest.fn().mockReturnValue({
-        id: 55668833,
-        marked_as_unread: false,
-      });
       stateActionController['_getLastPostOfGroup'] = jest
         .fn()
         .mockReturnValue(null);
@@ -113,11 +84,7 @@ describe('StateActionController', () => {
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
-      stateActionController['_updateStateCursor'] = jest
-        .fn()
-        .mockReturnValue(12);
       await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(mockEntitySourceController.get).toBeCalledWith(groupId);
       expect(stateActionController['_getLastPostOfGroup']).toBeCalledWith(
         groupId,
       );
@@ -130,18 +97,12 @@ describe('StateActionController', () => {
         mockPartialModifyController.updatePartially.mock.results[0].value,
       ).toEqual({
         unread_count: 1,
-        post_cursor: 11,
       });
-      expect(stateActionController['_updateStateCursor']).toBeCalled();
     });
 
     it('should mark as read when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = false;
-      mockEntitySourceController.get = jest.fn().mockReturnValue({
-        id: 55668833,
-        marked_as_unread: true,
-      });
       stateActionController['_getLastPostOfGroup'] = jest.fn().mockReturnValue({
         id: 123,
       });
@@ -151,11 +112,7 @@ describe('StateActionController', () => {
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
-      stateActionController['_updateStateCursor'] = jest
-        .fn()
-        .mockReturnValue(3);
       await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(mockEntitySourceController.get).toBeCalledWith(groupId);
       expect(stateActionController['_getLastPostOfGroup']).toBeCalledWith(
         groupId,
       );
@@ -171,11 +128,9 @@ describe('StateActionController', () => {
         last_read_through: 123,
         unread_count: 0,
         unread_mentions_count: 0,
-        post_cursor: 3,
         unread_deactivated_count: 0,
         marked_as_unread: false,
       });
-      expect(stateActionController['_updateStateCursor']).toBeCalled();
     });
   });
 
@@ -214,7 +169,6 @@ describe('StateActionController', () => {
         unread_deactivated_count: 1,
         read_through: 11223344,
         marked_as_unread: true,
-        post_cursor: 302,
       };
       expect(
         stateActionController['_buildUpdateReadStatusParams'](
@@ -228,7 +182,6 @@ describe('StateActionController', () => {
         'unread_deactivated_count:55668833': 1,
         'read_through:55668833': 11223344,
         'marked_as_unread:55668833': true,
-        'post_cursor:55668833': 302,
       });
     });
   });
