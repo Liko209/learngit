@@ -140,13 +140,13 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPostToServer(post: Post): Promise<PostData[]> {
-    const originalPost = _.cloneDeep(post);
-    delete post.id;
+    const sendPost = _.cloneDeep(post);
+    delete sendPost.id;
     try {
       const result = await this.postActionController.requestController.post(
-        post,
+        sendPost,
       );
-      return this.handleSendPostSuccess(result, originalPost);
+      return this.handleSendPostSuccess(result, post);
     } catch (e) {
       this.handleSendPostFail(post, post.group_id);
       throw ErrorParserHolder.getErrorParser().parse(e);
