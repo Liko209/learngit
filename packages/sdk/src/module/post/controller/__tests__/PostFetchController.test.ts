@@ -217,4 +217,79 @@ describe('PostFetchController()', () => {
       });
     });
   });
+
+  describe('fetchPaginationPosts()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    const data = {
+      posts: [{ _id: 1 }, { _id: 2 }],
+      items: [{ _id: 22 }, { _id: 22 }],
+    };
+
+    it('should return posts when postid is available', async () => {
+      const mockNormal = new ApiResultOk(data, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      PostAPI.requestPosts.mockResolvedValue(mockNormal);
+      const result = await postFetchController.fetchPaginationPosts({
+        groupId: 1,
+        postId: 11,
+        limit: 20,
+      });
+      expect(result).toEqual({
+        posts: data.posts,
+        items: data.items,
+        hasMore: false,
+      });
+    });
+
+    it('should return post when no postid is specific', async () => {
+      const mockNotPostId = new ApiResultOk(data, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
+      const result = await postFetchController.fetchPaginationPosts({
+        groupId: 1,
+        limit: 2,
+      });
+      expect(result).toEqual({
+        posts: data.posts,
+        items: data.items,
+        hasMore: true,
+      });
+    });
+
+    it('should return [] when no matched', async () => {
+      const mockNoMatch = new ApiResultOk({ posts: [], items: [] }, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      PostAPI.requestPosts.mockResolvedValue(mockNoMatch);
+      const result = await postFetchController.fetchPaginationPosts({
+        groupId: 1,
+        limit: 2,
+      });
+      expect(result).toEqual({
+        posts: [],
+        items: [],
+        hasMore: false,
+      });
+    });
+
+    it('should throw exception if failed to request', async () => {
+      PostAPI.requestPosts.mockRejectedValueOnce({});
+      await expect(
+        postFetchController.fetchPaginationPosts({
+          groupId: 1,
+          postId: 1,
+          limit: 1,
+        }),
+      ).rejects.toBeDefined();
+    });
+  });
 });
