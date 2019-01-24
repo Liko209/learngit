@@ -13,6 +13,7 @@ import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import {
   Person,
+  HeadShotModel,
   PhoneNumberModel,
   SanitizedExtensionModel,
 } from '../../module/person/entity';
@@ -119,7 +120,7 @@ class PersonService extends BaseService<Person> {
   }
 
   private _getHighestResolutionHeadshotUrlFromThumbs(
-    thumbs: any,
+    thumbs: { key: string; value: string }[],
     stored_file_id?: string,
   ): string {
     const keys = Object.keys(thumbs);
@@ -163,7 +164,7 @@ class PersonService extends BaseService<Person> {
   getHeadShotWithSize(
     uid: number,
     headshot_version: string,
-    headshot: any,
+    headshot: HeadShotModel,
     size: number,
   ) {
     let url: string | null = null;

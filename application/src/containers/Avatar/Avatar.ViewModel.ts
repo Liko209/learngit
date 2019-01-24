@@ -68,10 +68,9 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     if (!(this._person && this._person.hasHeadShot)) {
       return defaultAvatar;
     }
-    let url: string | null = null;
     const { headshotVersion, headshot } = this._person;
     const personService = PersonService.getInstance<PersonService>();
-    url = personService.getHeadShotWithSize(
+    const url = personService.getHeadShotWithSize(
       this.props.uid,
       headshotVersion,
       headshot,
