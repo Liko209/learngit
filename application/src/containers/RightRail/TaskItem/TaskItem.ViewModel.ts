@@ -13,6 +13,7 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
 import { TaskProps } from './types';
+import { accentColor } from '@/common/AccentColor';
 
 class TaskItemViewModel extends AbstractViewModel<TaskProps> {
   @computed
@@ -23,6 +24,11 @@ class TaskItemViewModel extends AbstractViewModel<TaskProps> {
   @computed
   get task() {
     return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+  }
+
+  @computed
+  get color() {
+    return accentColor[this.task.color];
   }
 
   @computed

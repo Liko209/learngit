@@ -70,6 +70,9 @@ const dateFormatter = {
   date: (timestamp: number) => {
     return moment(timestamp).format('l');
   },
+  dateAndTimeWithoutWeekday: (m: Moment) => {
+    return `${m.format('l')} ${dateFormatter.localTime(m)}`;
+  },
 };
 
 const condition = {
@@ -169,8 +172,13 @@ const postTimestamp = buildFormatter([
     formatter: dateFormatter.dateAndTime,
   },
 ]);
-
+function getDateTimeStamp(timestamp: number) {
+  return moment(timestamp)
+    .startOf('day')
+    .valueOf();
+}
 export {
+  getDateTimeStamp,
   getDateMessage,
   recentlyTwoDayAndOther,
   dividerTimestamp,

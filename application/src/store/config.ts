@@ -3,6 +3,7 @@ import { ItemService } from 'sdk/module/item';
 import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 import { PersonService } from 'sdk/module/person';
+import { PermissionService } from 'sdk/module/permission';
 const {
   CompanyService,
   GroupService,
@@ -86,6 +87,12 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
+  [ENTITY_NAME.CONFERENCE_ITEM]: {
+    event: [ENTITY.ITEM],
+    service: () => ItemService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),
@@ -126,6 +133,12 @@ const ENTITY_SETTING = {
     event: [ENTITY.GROUP_CONFIG],
     service: () => GroupConfigService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: 1000,
+  },
+  [ENTITY_NAME.USER_PERMISSION]: {
+    event: [ENTITY.USER_PERMISSION],
+    service: () => PermissionService.getInstance(),
+    type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: 1000,
   },
 };

@@ -8,7 +8,7 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get title() {
-    return this.self.find('h2');
+    return this.self.find('h2').withText('Add Team Members');
   }
 
   get memberInput() {
@@ -34,6 +34,19 @@ export class AddTeamMembers extends BaseWebComponent {
   get cancelButton() {
     return this.self.find('button').withText('Cancel');
   }
+
+  async add() {
+    await this.t.click(this.addButton);
+  }
+
+  async cancel() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async shouldBePopup() {
+    await this.t.expect(this.self.exists).ok();
+  }
+
 
 }
 

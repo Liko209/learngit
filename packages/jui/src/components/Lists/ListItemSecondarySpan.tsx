@@ -8,8 +8,9 @@ import styled from '../../foundation/styled-components';
 import { ellipsis } from '../../foundation/utils';
 
 type JuiListItemSecondarySpanProps = {
-  text: string;
+  text?: string;
   isEllipsis?: boolean;
+  children?: React.ReactNode;
 };
 
 const WrappedListItemSecondarySpan = ({
@@ -21,15 +22,18 @@ const WrappedListItemSecondarySpan = ({
 
 const StyledListItemSecondarySpan = styled(WrappedListItemSecondarySpan)`
   && {
-    ${({ isEllipsis }: { isEllipsis: boolean }) => isEllipsis && ellipsis()}
+    display: flex;
+    align-items: center;
+    ${({ isEllipsis }: { isEllipsis: boolean }) => isEllipsis && ellipsis()};
   }
 `;
 
 const JuiListItemSecondarySpan = (props: JuiListItemSecondarySpanProps) => {
-  const { text, isEllipsis } = props;
+  const { text, children, isEllipsis } = props;
   return (
     <StyledListItemSecondarySpan isEllipsis={isEllipsis || false}>
-      {text}
+      {text ? text : ''}
+      {children ? children : ''}
     </StyledListItemSecondarySpan>
   );
 };

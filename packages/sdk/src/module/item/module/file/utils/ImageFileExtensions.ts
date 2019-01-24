@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const GifFileExtensions = ['gif', 'giphy'];
+const GifFileExtensions = new Set(['gif', 'giphy']);
 
-const SupportPreviewImageExtensions = [
+const SupportPreviewImageExtensions = new Set([
   'jpg',
   'png',
   'jpeg',
@@ -16,11 +16,11 @@ const SupportPreviewImageExtensions = [
   'heic',
   'giphy',
   'gif',
-];
+]);
 
-const ResizableExtensions = ['bmp', 'jpg', 'jpeg', 'png'];
+const ResizableExtensions = new Set(['bmp', 'jpg', 'jpeg', 'png']);
 
-const ImageFileExtensions = [
+const ImageFileExtensions = new Set([
   'ase',
   'art',
   'bmp',
@@ -140,7 +140,9 @@ const ImageFileExtensions = [
   'ras',
   'sun',
   'tga',
-];
+  'ps',
+  'etc',
+]);
 
 export {
   ImageFileExtensions,

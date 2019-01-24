@@ -22,6 +22,7 @@ interface IRTCCallSession extends EventEmitter2 {
   sendToVoicemail(): void;
   hold(): void;
   unhold(): void;
+  dtmf(digits: string): void;
 }
 
 export { IRTCCallSession };

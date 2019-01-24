@@ -5,10 +5,12 @@
  */
 import { ComponentType } from 'react';
 import { FileItem } from '../FileItem';
+
 import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
 import { TaskItem } from '../TaskItem';
+import { EventItem } from '../EventItem';
 
 import FilesEmptyImage from '../images/Files.svg';
 import EventsEmptyImage from '../images/Events.svg';
@@ -19,6 +21,9 @@ import NotesEmptyImage from '../images/Notes.svg';
 import PinnedEmptyImage from '../images/Pinned.svg';
 import TasksEmptyImage from '../images/Tasks.svg';
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
+import { ITEM_SORT_KEYS } from 'sdk/module/item';
+
+const ITEM_HEIGHT = 52;
 
 type EmptyConfig = {
   text: string;
@@ -32,7 +37,12 @@ type TabConfig = {
   item: ComponentType;
   subheader: string;
   empty: EmptyConfig;
+  sort?: {
+    sortKey?: ITEM_SORT_KEYS;
+    desc?: boolean;
+  };
   offlinePrompt: string;
+  tryAgainPrompt: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -47,6 +57,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: PinnedEmptyImage,
     },
     offlinePrompt: 'networkErrorPinnedPrompt',
+    tryAgainPrompt: 'tryAgainPinnedPrompt',
   },
   {
     title: 'files',
@@ -58,7 +69,11 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noFileSubText',
       image: FilesEmptyImage,
     },
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorFilesPrompt',
+    tryAgainPrompt: 'tryAgainFilesPrompt',
   },
   {
     title: 'images',
@@ -70,7 +85,11 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noImageSubText',
       image: ImagesEmptyImage,
     },
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorImagesPrompt',
+    tryAgainPrompt: 'tryAgainImagesPrompt',
   },
   {
     title: 'tasks',
@@ -83,6 +102,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: TasksEmptyImage,
     },
     offlinePrompt: 'networkErrorTasksPrompt',
+    tryAgainPrompt: 'tryAgainTasksPrompt',
   },
   {
     title: 'links',
@@ -94,7 +114,11 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noLinkSubText',
       image: LinksEmptyImage,
     },
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorLinksPrompt',
+    tryAgainPrompt: 'tryAgainLinksPrompt',
   },
   {
     title: 'notes',
@@ -106,19 +130,27 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noNoteSubText',
       image: NotesEmptyImage,
     },
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorNotesPrompt',
+    tryAgainPrompt: 'tryAgainNotesPrompt',
   },
   {
     title: 'events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
-    item: FileItem,
-    subheader: '',
+    sort: {
+      sortKey: ITEM_SORT_KEYS.START_TIME,
+    },
+    item: EventItem,
+    subheader: 'eventListSubheader',
     empty: {
       text: 'noEventsCreatedYet',
       content: 'noEventSubText',
       image: EventsEmptyImage,
     },
     offlinePrompt: 'networkErrorEventsPrompt',
+    tryAgainPrompt: 'tryAgainEventsPrompt',
   },
   {
     title: 'integrations',
@@ -131,7 +163,8 @@ const TAB_CONFIG: TabConfig[] = [
       image: IntegrationsEmptyImage,
     },
     offlinePrompt: 'networkErrorIntegrationsPrompt',
+    tryAgainPrompt: 'tryAgainIntegrationsPrompt',
   },
 ];
 
-export { TAB_CONFIG, TabConfig, EmptyConfig };
+export { TAB_CONFIG, TabConfig, EmptyConfig, ITEM_HEIGHT };

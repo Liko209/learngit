@@ -67,13 +67,15 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
       query,
       this._isExcludeMe ? true : false,
     );
+    const { hasMembers } = this.props;
+    const existMembers = hasMembers
+      ? [...this.existMembers, ...hasMembers]
+      : this.existMembers;
 
     if (result) {
       const filterMembers = result.sortableModels.filter(
         (member: SortableModel<Person>) => {
-          return !this.existMembers.find(
-            existMember => existMember === member.id,
-          );
+          return !existMembers.find(existMember => existMember === member.id);
         },
       );
       return filterMembers;

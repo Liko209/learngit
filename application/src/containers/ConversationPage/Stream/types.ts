@@ -3,6 +3,7 @@
  * @Date: 2018-11-13 18:05:16
  * Copyright © RingCentral. All rights reserved.
  */
+import { TDelta, ISortableModel } from '../../../store/base/fetch/types';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -23,7 +24,6 @@ type NewSeparator = {
 
 enum StreamItemType {
   POST = 'POST',
-  GROUPED_POSTS = 'GROUPED_POSTS',
   DATE_SEPARATOR = 'DATE_SEPARATOR',
   NEW_MSG_SEPARATOR = 'NEW_MSG_SEPARATOR',
 }
@@ -35,8 +35,11 @@ type BaseElement = {
 };
 
 type StreamItem = {
+  id: number;
   type: StreamItemType;
-  value: any;
+  timeStart: number;
+  timeEnd?: number;
+  value?: number | number[];
   meta?: any;
 };
 
@@ -76,6 +79,11 @@ type StreamSnapshot = {
   atTop: boolean;
 };
 
+type TDeltaWithData = TDelta & {
+  added: (ISortableModel & { data: any })[];
+};
+type ISortableModelWithData = ISortableModel & { data: any };
+
 export {
   StreamSnapshot,
   StreamProps,
@@ -87,4 +95,6 @@ export {
   Separator,
   DateSeparator,
   NewSeparator,
+  TDeltaWithData,
+  ISortableModelWithData,
 };
