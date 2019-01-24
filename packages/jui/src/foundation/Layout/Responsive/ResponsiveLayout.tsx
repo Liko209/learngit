@@ -29,8 +29,18 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
     visual: {},
   };
 
-  componentDidUpdate(props: Props) {
-    if (props.children !== this.props.children && this.prevWidth !== 1) {
+  componentDidUpdate(prevProps: Props) {
+    const prevTags = React.Children.map(
+      prevProps.children,
+      // @ts-ignore
+      (child: React.ReactElement<any>) => child && child.type.tag,
+    );
+    const tags = React.Children.map(
+      this.props.children,
+      // @ts-ignore
+      (child: React.ReactElement<any>) => child && child.type.tag,
+    );
+    if (prevTags.toString() !== tags.toString()) {
       this.initWidthAndResponsiveInfo();
       this.init(this.prevWidth);
     }

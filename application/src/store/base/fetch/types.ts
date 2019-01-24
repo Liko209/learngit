@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SortableListStore } from './SortableListStore';
-import { QUERY_DIRECTION } from 'sdk/dao';
 
 export interface ISortableModel<T = any> {
   id: number;
@@ -29,10 +28,8 @@ export interface ISortFunc<T> {
 }
 
 export type TDelta = {
-  updated?: TUpdated;
   added: ISortableModel[];
   deleted: number[];
-  direction: QUERY_DIRECTION;
 };
 
 export type TChangeHandler<T> = (

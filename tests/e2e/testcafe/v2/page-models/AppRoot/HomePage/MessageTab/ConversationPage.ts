@@ -99,7 +99,7 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get loadingCircle() {
-    return this.self.find('circle');
+    return this.getSelectorByAutomationId('loading', this.self);
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {

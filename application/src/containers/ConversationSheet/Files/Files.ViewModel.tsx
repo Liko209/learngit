@@ -41,7 +41,10 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     super(props);
     this._itemService = ItemService.getInstance();
     this._postService = PostService.getInstance();
-    notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+    const { ids } = props;
+    if (ids.some(looper => looper < 0)) {
+      notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+    }
   }
 
   private _handleItemChanged = (

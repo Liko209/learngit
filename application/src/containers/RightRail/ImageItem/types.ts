@@ -4,12 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { FileProps, FileViewProps } from '../File.types';
+import { FileProps, FileViewProps } from '../common/File/File.types';
 
 type ImageItemProps = FileProps;
 
-type ImageItemViewProps = {
-  url: string;
-} & FileViewProps;
+type ImageItemViewProps = FileViewProps;
 
 export { ImageItemProps, ImageItemViewProps };

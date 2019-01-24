@@ -11,26 +11,21 @@ import {
   JuiListItemWithHover,
   JuiListItemIcon,
 } from 'jui/components/Lists';
-import { JuiThumbnail } from 'jui/components/Thumbnail';
-import { JuiIconography } from 'jui/foundation/Iconography';
+import { Thumbnail } from '@/containers/Thumbnail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps } from './types';
-import { Download } from '../Download.View';
-import { SecondaryText } from '../SecondaryText.View';
+import { Download } from '../common/Download.View';
+import { SecondaryText } from '../common/SecondaryText.View';
 
 @observer
 class ImageItemView extends Component<ImageItemViewProps> {
   private _renderItem = (hover: boolean) => {
-    const { file, url, personName, createdTime } = this.props;
-    const { name, downloadUrl } = file;
+    const { file, id, personName, createdTime, downloadUrl } = this.props;
+    const { name } = file;
     return (
       <>
         <JuiListItemIcon>
-          {url ? (
-            <JuiThumbnail url={url} />
-          ) : (
-            <JuiIconography fontSize="large">image_preview</JuiIconography>
-          )}
+          <Thumbnail id={id} />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}

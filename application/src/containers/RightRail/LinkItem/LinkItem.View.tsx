@@ -14,7 +14,7 @@ import {
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { LinkItemViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
-import { SecondaryText } from '../SecondaryText.View';
+import { SecondaryText } from '../common/SecondaryText.View';
 
 @observer
 class LinkItemView extends Component<LinkItemViewProps> {

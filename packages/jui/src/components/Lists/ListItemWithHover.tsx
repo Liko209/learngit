@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { Component } from 'react';
 import { JuiListItem, JuiListItemProps } from './ListItem';
 
 type Props = {
@@ -15,7 +15,7 @@ type States = {
   hover: boolean;
 };
 
-class JuiListItemWithHover extends React.PureComponent<Props, States> {
+class JuiListItemWithHover extends Component<Props, States> {
   constructor(props: Props) {
     super(props);
     this.state = { hover: false };
