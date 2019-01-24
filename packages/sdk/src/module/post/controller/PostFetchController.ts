@@ -180,8 +180,9 @@ class PostFetchController {
     groupId: number,
   ) {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    const hasMore = await groupConfigDao.hasMoreRemotePost(groupId, direction);
-    return direction === QUERY_DIRECTION.OLDER ? hasMore : true;
+    return direction === QUERY_DIRECTION.OLDER
+      ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
+      : true;
   }
 
   private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {

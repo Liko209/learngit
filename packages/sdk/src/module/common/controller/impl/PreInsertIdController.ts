@@ -5,11 +5,12 @@
  */
 
 import { daoManager, ConfigDao } from '../../../../dao';
-import { JSdkError } from '../../../../error';
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
+import { mainLogger } from 'foundation';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
+const TAG = 'PreInsertIdController';
 class PreInsertIdController implements IPreInsertIdController {
   private _versions: number[];
   private _modelName: string;
@@ -36,10 +37,7 @@ class PreInsertIdController implements IPreInsertIdController {
 
   async insert(version: number): Promise<void> {
     if (this.isInPreInsert(version)) {
-      throw new JSdkError(
-        'PreInsertIdController',
-        `Already has the version ${version}`,
-      );
+      mainLogger.info(TAG, 'insert() version already in preinsert array');
     }
     this._versions.push(version);
     this._syncDataDB();
