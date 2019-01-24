@@ -38,7 +38,7 @@ test(
     });
 
     await h(t).withLog('When I refresh browser', async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await leftPanel.ensureLoaded();
     });
 
@@ -55,7 +55,7 @@ test(
     });
 
     await h(t).withLog('When I refresh browser', async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await leftPanel.ensureLoaded();
     });
 
