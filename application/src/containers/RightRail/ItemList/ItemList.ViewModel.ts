@@ -15,6 +15,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { delay } from '@/utils/function';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
@@ -28,12 +29,6 @@ import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
 import { TAB_CONFIG } from './config';
-
-async function delay(interval: number) {
-  return new Promise((resolve: Function) => {
-    setTimeout(() => window.requestAnimationFrame(() => resolve()), interval);
-  });
-}
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
