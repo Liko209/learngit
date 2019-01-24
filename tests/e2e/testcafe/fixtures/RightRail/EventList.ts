@@ -48,6 +48,7 @@ test(formalName('Check the create event and display on the right rail', ['Shinin
   // step 2 create a event
   await h(t).withLog('Then User create a event', async () => {
     await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
+    await rightRail.eventsTab.waitUntilEventsItemExist();
     await t.expect(eventsTab.nthItem(0).withText(eventTitle).exists).ok();
   });
 });
@@ -87,6 +88,7 @@ test(formalName('Check the create event and update event', ['Shining', 'P2', 'JP
   await h(t).withLog('Then User create a event', async () => {
     const resp = await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
     eventId = resp.data._id;
+    await rightRail.eventsTab.waitUntilEventsItemExist();
     await t.expect(eventsTab.nthItem(0).withText(eventTitle).exists).ok();
   });
 
@@ -95,6 +97,7 @@ test(formalName('Check the create event and update event', ['Shining', 'P2', 'JP
     await h(t).glip(loginUser).updateEvent(eventId, {
       text: eventUpdateTitle,
     });
+    await rightRail.eventsTab.waitUntilEventsItemExist();
     await t.expect(eventsTab.nthItem(0).withText(eventUpdateTitle).exists).ok();
   })
 });
@@ -133,6 +136,7 @@ test(formalName('Check the create event and delete event', ['Shining', 'P2', 'JP
   await h(t).withLog('Then User create a event', async () => {
     const resp = await h(t).glip(loginUser).createSimpleEvent(teamId, eventTitle, loginUser.rcId);
     eventId = resp.data._id;
+    await rightRail.eventsTab.waitUntilEventsItemExist();
     await t.expect(eventsTab.nthItem(0).withText(eventTitle).exists).ok();
   });
 
@@ -141,6 +145,7 @@ test(formalName('Check the create event and delete event', ['Shining', 'P2', 'JP
     await h(t).glip(loginUser).updateEvent(eventId, {
       deactivated: true,
     });
+    await rightRail.eventsTab.waitUntilEventsItemExist();
     await t.expect(eventsTab.nthItem(0).withText(eventTitle).exists).notOk();
   })
 });

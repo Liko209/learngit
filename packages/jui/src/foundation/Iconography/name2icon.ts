@@ -47,6 +47,7 @@ const name2icon = {
   chat_bubble: 'chat',
   download: 'download',
   unfold_more: 'unfold_more',
+  unfold_less: 'unfold_less',
   mention: 'mention',
   quote: 'quote',
   edit: 'edit',
@@ -61,6 +62,9 @@ const name2icon = {
   image_preview: 'image-preview',
   add_member: 'add-member',
   add_team: 'add-team',
+  double_chevron_right: 'double-chevron_right',
+  double_chevron_left: 'double-chevron_left',
+  code: 'code-snippet',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

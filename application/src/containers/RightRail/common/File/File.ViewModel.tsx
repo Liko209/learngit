@@ -18,13 +18,13 @@ import { FileProps, FileViewProps } from './File.types';
 class FileViewModel extends AbstractViewModel<FileProps>
   implements FileViewProps {
   @computed
-  private get _id() {
+  get id() {
     return this.props.id;
   }
 
   @computed
   get file() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this.id);
   }
 
   @computed
