@@ -44,7 +44,7 @@ const Tip = styled(JuiTypography)`
   ${typography('body1')};
   color: ${grey('900')};
 `;
-JuiTipLink
+
 const TipLink = styled(JuiLink)`
   ${typography('body2')};
 `;
@@ -108,7 +108,7 @@ class JuiStreamLoading extends React.Component<
         {showTip && (
           <Tip>
             {tip}
-            {shJuiTipLink&& (JuiTipLink
+            {showLink && (
               <TipLink handleOnClick={this.onClick}>{linkText}</TipLink>
             )}
           </Tip>
@@ -117,5 +117,5 @@ class JuiStreamLoading extends React.Component<
     );
   }
 }
-JuiTipLink
+
 export { Loading, Progress, Tip, TipLink, JuiStreamLoading };
