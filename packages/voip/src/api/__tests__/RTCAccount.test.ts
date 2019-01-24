@@ -204,7 +204,7 @@ describe('RTCAccount', async () => {
   });
 
   describe('makeAnonymousCall()', () => {
-    it('Should call createOutgoingCallSession api with options include anonymous when have been called without options param [JTP-976]', done => {
+    it('Should call createOutgoingCallSession api with options include anonymous when have been called without options param [JPT-976]', done => {
       setupAccount();
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
@@ -220,7 +220,7 @@ describe('RTCAccount', async () => {
       });
     });
 
-    it('Should call createOutgoingCallSession api with options include anonymous when have been called with options param [JTP-976]', done => {
+    it('Should call createOutgoingCallSession api with options include anonymous when have been called with options param [JPT-976]', done => {
       setupAccount();
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
