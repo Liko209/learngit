@@ -96,7 +96,7 @@ class StoreManager {
           ENTITY_SETTING[entityStoreName],
         );
       }
-      // remotedev(store, { name: entityStoreName });
+      remotedev(store, { name: entityStoreName });
       this.injectStore(store);
     }
     return store;

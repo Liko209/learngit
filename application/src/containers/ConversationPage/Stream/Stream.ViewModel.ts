@@ -116,13 +116,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
-      ? undefined
-      : _.first(this.postIds);
-    return (
-      firstUnreadPostId ||
-      this._historyHandler.getFirstUnreadPostId(this.postIds)
-    );
+    return this._historyHandler.getFirstUnreadPostId(this.postIds);
   }
 
   constructor(props: StreamProps) {
