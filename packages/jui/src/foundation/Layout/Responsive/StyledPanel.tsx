@@ -24,7 +24,8 @@ const StyledPanel = styled('div')`
       position: absolute;
       top: 0;
       bottom: 0;
-      z-index: ${({ theme }: any) => theme.zIndex.modal};
+      /* ConversationHeader z-index is appBar */
+      z-index: ${({ theme }: any) => theme.zIndex.appBar + 1};
       left: ${props.position === 'left' ? 0 : 'auto'};
       right: ${props.position === 'right' ? 0 : 'auto'};
     `};
