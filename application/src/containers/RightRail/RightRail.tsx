@@ -36,7 +36,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
 
   private _getIconKey = () => {
     const { isOpen } = this.props;
-    return isOpen ? 'chevron_right' : 'chevron_left';
+    return isOpen ? 'double_chevron_right' : 'double_chevron_left';
   }
 
   render() {
@@ -73,7 +73,12 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (
-          <JuiTabs defaultActiveIndex={0} tag="right-shelf" width={width}>
+          <JuiTabs
+            defaultActiveIndex={0}
+            tag="right-shelf"
+            width={width}
+            moreText={t('more')}
+          >
             {TAB_CONFIG.map(
               (
                 {

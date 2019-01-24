@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './ConversationLoading';
-export * from './RightRailLoding';
+export * from './StreamLoading';
+export * from './RightRailLoading';
