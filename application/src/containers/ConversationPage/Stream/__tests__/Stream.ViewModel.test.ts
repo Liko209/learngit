@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../../../__tests__/types.d.ts" />
-import { PostService, StateService } from 'sdk/service';
+import { PostService, StateService, notificationCenter } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
@@ -29,6 +29,7 @@ jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
+  jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
   Object.assign(vm, obj);
   return vm;
@@ -268,6 +269,13 @@ describe('StreamViewModel', () => {
       expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();
+    });
+
+    // This should be removed in future since sync item mustn't be initiated in stream.
+    it('should sync group items when switch conversation', () => {
+      const { vm } = localSetup();
+      vm.initialize(12);
+      expect(itemService.requestSyncGroupItems).toBeCalled();
     });
   });
 
