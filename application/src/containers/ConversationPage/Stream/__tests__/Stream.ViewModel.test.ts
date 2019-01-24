@@ -21,6 +21,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
+import { StreamProps } from '../types';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
@@ -125,9 +126,9 @@ describe('StreamViewModel', () => {
 
   describe('dispose()', () => {
     it('should dispose streamController', () => {
-      const vm = setup({ streamController: { dispose: jest.fn() } });
+      const vm = setup({ _streamController: { dispose: jest.fn() } });
       vm.dispose();
-      expect(vm.streamController.dispose).toHaveBeenCalled();
+      expect(vm._streamController.dispose).toHaveBeenCalled();
     });
   });
 
@@ -135,11 +136,14 @@ describe('StreamViewModel', () => {
     function setup(props: { hasMoreUp: boolean; id?: number }) {
       const vm = new StreamViewModel({
         groupId: 1,
+      } as StreamProps);
+
+      Object.assign(vm, {
+        _streamController: {
+          hasMoreUp: props.hasMoreUp,
+          items: props.id ? [{ id: props.id, value: [props.id] }] : [],
+        },
       });
-      vm.streamController = {
-        hasMoreUp: props.hasMoreUp,
-        items: props.id ? [{ id: props.id, value: [props.id] }] : [],
-      };
 
       return vm;
     }
@@ -176,13 +180,13 @@ describe('StreamViewModel', () => {
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
         _historyHandler: { update: mockUpdate },
-        streamController: {},
+        _streamController: { postIds },
       });
 
-      vm.streamController.postIds = postIds;
       Object.defineProperty(vm, '_groupState', {
         value: groupState,
       });
+
       vm.updateHistoryHandler();
 
       expect(mockUpdate).toBeCalledTimes(1);
@@ -209,7 +213,7 @@ describe('StreamViewModel', () => {
     it('should enable newMessageSeparatorHandler', () => {
       const mockEnable = jest.fn();
       const vm = setup({
-        streamController: { enableNewMessageSep: mockEnable },
+        _streamController: { enableNewMessageSep: mockEnable },
       });
       vm.enableNewMessageSeparatorHandler();
 
@@ -221,7 +225,7 @@ describe('StreamViewModel', () => {
     it('should disable newMessageSeparatorHandler', () => {
       const mockDisable = jest.fn();
       const vm = setup({
-        streamController: { disableNewMessageSep: mockDisable },
+        _streamController: { disableNewMessageSep: mockDisable },
       });
 
       vm.disableNewMessageSeparatorHandler();
@@ -239,7 +243,7 @@ describe('StreamViewModel', () => {
         jumpToPostId: 121244,
         groupId: 123123123,
         _historyHandler: {},
-        streamController: { dispose },
+        _streamController: { dispose },
         _initialized: true,
       };
       const vm = setup({
@@ -272,7 +276,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -289,7 +293,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -313,7 +317,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => true);
 
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -338,7 +342,7 @@ describe('StreamViewModel', () => {
       jest.spyOn(errorUtil, 'generalErrorHandler');
 
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -355,7 +359,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -373,7 +377,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -397,7 +401,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn().mockReturnValue(true);
 
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -454,7 +458,7 @@ describe('StreamViewModel', () => {
         dispose: jest.fn(),
       };
       const vm = setup({
-        streamController,
+        _streamController: streamController,
         _initialized: initialized,
         ...args,
       });
