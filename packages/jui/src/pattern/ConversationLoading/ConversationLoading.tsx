@@ -59,11 +59,4 @@ class JuiConversationLoading extends React.Component<
   }
 }
 
-export {
-  JuiConversationLoading,
-  LoadingWrapper,
-  Loading,
-  Progress,
-  Tip,
-  TipLink,
-};
+export { JuiConversationLoading, LoadingWrapper };

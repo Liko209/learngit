@@ -117,4 +117,4 @@ class JuiStreamLoading extends React.Component<
   }
 }
 
-export { JuiStreamLoading };
+export { Loading, Progress, Tip, TipLink, JuiStreamLoading };
