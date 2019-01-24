@@ -27,7 +27,7 @@ class PersonService extends EntityBaseService<Person>
     });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PERSON]: this.incomingData,
+        [SOCKET.PERSON]: this.handleIncomingData,
       }),
     );
   }
@@ -41,10 +41,6 @@ class PersonService extends EntityBaseService<Person>
       );
     }
     return this._personController;
-  }
-
-  incomingData = async (persons: Raw<Person>[]): Promise<void> => {
-    await this.handleIncomingData(persons);
   }
 
   async handleIncomingData(persons: Raw<Person>[]): Promise<void> {
