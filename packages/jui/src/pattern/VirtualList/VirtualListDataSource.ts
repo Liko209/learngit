@@ -21,13 +21,17 @@ interface IVirtualListDataSource {
 
   overscanCount?: () => number;
 
-  // for infinite lad
+  // for loading data
   loadMore?: (startIndex: number, endIndex: number) => Promise<any>;
 
   isRowLoaded?: (params: number) => boolean;
 
   // empty content
   renderEmptyContent?: () => JSX.Element;
+
+  onScroll?: (event: any) => void;
+
+  moreLoader?: () => JSX.Element;
 }
 
 export { IVirtualListDataSource };
