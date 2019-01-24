@@ -37,7 +37,7 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
   .labelContainer {
     padding-left: ${spacing(2)};
     padding-right: ${spacing(2)};
-    ${ellipsis}
+    ${ellipsis()}
     width: 100%;
     box-sizing: border-box;
   }

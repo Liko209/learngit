@@ -3,15 +3,13 @@
  * @Date: 2019-01-10 10:29:06
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileType } from '../../../../store/models/FileItem';
-import { getEntity } from '../../../../store/utils';
-import { getFileType } from '../../../../common/getFileType';
-import { ImageItemViewModel } from '../ImageItem.ViewModel';
-import { dateFormatter } from '../../../../utils/date';
-import { ENTITY_NAME } from '../../../../store';
 
-jest.mock('../../../../store/utils');
-jest.mock('../../../../common/getFileType');
+import { getEntity } from '../../../../../store/utils';
+import { FileViewModel } from '../File.ViewModel';
+import { dateFormatter } from '../../../../../utils/date';
+import { ENTITY_NAME } from '../../../../../store';
+
+jest.mock('../../../../../store/utils');
 
 const mockFile = {
   createdAt: 1547086968632,
@@ -32,9 +30,9 @@ const props = {
   id: 1,
 };
 
-let vm: ImageItemViewModel;
+let vm: FileViewModel;
 
-describe('ImageItemViewModel', () => {
+describe('FileViewModel', () => {
   beforeAll(() => {
     (getEntity as jest.Mock).mockImplementation(
       (name, id) => mappingEntity[name],
@@ -43,11 +41,16 @@ describe('ImageItemViewModel', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    vm = new ImageItemViewModel(props);
+    vm = new FileViewModel(props);
   });
 
   describe('file', () => {
     it('should be a file item entity when props incoming id', () => {
+      expect(vm.file).toEqual(mockFile);
+    });
+
+    it('should be a new file item entity when change file name', () => {
+      mockFile.name = 'new file name';
       expect(vm.file).toEqual(mockFile);
     });
   });
@@ -58,7 +61,7 @@ describe('ImageItemViewModel', () => {
     });
 
     it('should be a new person name string when change person name [JPT-965]', () => {
-      mockPerson.userDisplayName = 'new name';
+      mockPerson.userDisplayName = 'new person name';
       expect(vm.personName).toEqual(mockPerson.userDisplayName);
     });
   });
@@ -66,18 +69,6 @@ describe('ImageItemViewModel', () => {
   describe('createdTime', () => {
     it('should be a date string when incoming timestamp [JPT-965]', () => {
       expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
-    });
-  });
-
-  describe('url', () => {
-    const previewUrl = 'IMAGE_URL';
-
-    it('should be a string when item is image type [JPT-965]', () => {
-      (getFileType as jest.Mock).mockReturnValue({
-        previewUrl,
-        type: FileType.image,
-      });
-      expect(vm.url).toEqual(previewUrl);
     });
   });
 });

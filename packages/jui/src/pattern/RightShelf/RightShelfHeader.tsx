@@ -29,13 +29,15 @@ const JuiRightShelfHeader = styled('div')`
 const JuiRightShelfHeaderText = styled('div')`
   flex: 1;
   max-width: 80%;
-  ${ellipsis}
+  ${ellipsis()}
 `;
 const JuiRightShelfHeaderIcon = styled('div')`
   position: absolute;
   top: ${spacing(1)};
   right: 0;
-  z-index: ${({ theme }) => theme.zIndex.dragging};
+  /* ConversationHeader z-index is appBar */
+  /* RightShelf fixed z-index is appBar + 1 */
+  z-index: ${({ theme }) => theme.zIndex.appBar + 2};
 `;
 
 export {

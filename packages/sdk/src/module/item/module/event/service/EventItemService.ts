@@ -16,6 +16,15 @@ class EventItemService extends BaseSubItemService<
   constructor(itemService: IItemService) {
     super(daoManager.getDao<EventItemDao>(EventItemDao));
   }
+
+  toSanitizedItem(event: EventItem) {
+    return {
+      ...super.toSanitizedItem(event),
+      start: event.start,
+      end: event.end,
+      effective_end: event.effective_end,
+    } as SanitizedEventItem;
+  }
 }
 
 export { EventItemService };

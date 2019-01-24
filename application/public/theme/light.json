@@ -42,11 +42,13 @@
       "tiffany": "#22c2d6",
       "cateye": "#52d2b1",
       "grass": "#bdd655",
+      "olive": "#4cd964",
       "gold": "#edb63c",
-      "persimmon": "#ff793d",
-      "tomato": "#ff3737",
       "lemon": "#ffd800",
-      "olive": "#4cd964"
+      "tomato": "#ff3737",
+      "indigo": "#4a1e8c",
+      "purple": "#ea80fc",
+      "persimmon": "#ff793d"
     },
     "background": {
       "disabled": "rgba(255,55,55,.05)"
@@ -117,7 +119,8 @@
     "toast": 3000,
     "memberListHeader": 100,
     "floatButton": 10,
-    "makeZIndexStackingContext": 1
+    "makeZIndexStackingContext": 1,
+    "codeEditor": 0
   },
   "size": {
     "width": 4,
