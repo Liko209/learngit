@@ -8,6 +8,8 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
+import { kRTCAnonymous } from '../account/constants';
+
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
   REGISTRATION_EVENT,
@@ -16,7 +18,7 @@ import {
 } from '../account/types';
 import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
-import { RTC_ACCOUNT_STATE } from './types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -71,6 +73,7 @@ class RTCAccount implements IRTCAccount {
   public makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
+    options?: RTCCallOptions,
   ): RTCCall | null {
     if (toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
@@ -80,9 +83,25 @@ class RTCAccount implements IRTCAccount {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
       return null;
     }
-    const call = new RTCCall(false, toNumber, null, this, delegate);
+    const call = new RTCCall(false, toNumber, null, this, delegate, options);
     this._callManager.addCall(call);
     return call;
+  }
+
+  public makeAnonymousCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+    options?: RTCCallOptions,
+  ): RTCCall | null {
+    let optionsWithAnonymous: RTCCallOptions;
+    if (options) {
+      optionsWithAnonymous = options;
+      optionsWithAnonymous.fromNumber = kRTCAnonymous;
+    } else {
+      optionsWithAnonymous = { fromNumber: kRTCAnonymous };
+    }
+    rtcLogger.error(LOG_TAG, 'make anonymous call');
+    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
@@ -101,8 +120,8 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.getCallByUuid(uuid);
   }
 
-  createOutgoingCallSession(toNum: string): any {
-    return this._regManager.createOutgoingCallSession(toNum, {});
+  createOutgoingCallSession(toNum: string, options: RTCCallOptions): any {
+    return this._regManager.createOutgoingCallSession(toNum, options);
   }
 
   removeCallFromCallManager(uuid: string): void {

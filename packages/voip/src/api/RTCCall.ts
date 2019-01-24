@@ -8,11 +8,15 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
-import { kRTCHangupInvalidCallInterval } from '../account/constants';
+import {
+  kRTCAnonymous,
+  kRTCHangupInvalidCallInterval,
+} from '../account/constants';
 
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
+  RTCCallOptions,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
@@ -35,6 +39,8 @@ class RTCCall {
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
+  private _options: RTCCallOptions = {};
+  private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
 
   constructor(
@@ -43,10 +49,17 @@ class RTCCall {
     session: any,
     account: IRTCAccount,
     delegate: IRTCCallDelegate | null,
+    options?: RTCCallOptions,
   ) {
     this._account = account;
     if (delegate != null) {
       this._delegate = delegate;
+    }
+    if (options) {
+      this._options = options;
+      if (this._options.fromNumber === kRTCAnonymous) {
+        this._isAnonymous = true;
+      }
     }
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
@@ -64,11 +77,16 @@ class RTCCall {
     this._prepare();
   }
 
+  isAnonymous() {
+    return this._isAnonymous;
+  }
+
   private _addHangupTimer(): void {
     this._hangupInvalidCallTimer = setTimeout(() => {
       this.hangup();
     },                                        kRTCHangupInvalidCallInterval * 1000);
   }
+
   setCallDelegate(delegate: IRTCCallDelegate) {
     this._delegate = delegate;
   }
@@ -431,6 +449,7 @@ class RTCCall {
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,
+      this._options,
     );
     this.setCallSession(session);
   }

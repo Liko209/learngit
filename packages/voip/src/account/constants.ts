@@ -12,4 +12,5 @@ export const kRTCProvFreshTimer = 24 * 3600;
 export const kRTCMaxCallCount = 1;
 export const kRTCRegisterRetryTimerMin = 2;
 export const kRTCRegisterRetryTimerMax = 60;
+export const kRTCAnonymous = 'anonymous';
 export const kRTCHangupInvalidCallInterval = 10;
