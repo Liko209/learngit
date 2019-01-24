@@ -7,6 +7,9 @@
 import { Item } from '../../module/base/entity';
 import { FileItem } from '../../module/file/entity';
 import { ItemUtils } from '../ItemUtils';
+import { TimeUtils } from '../../../../utils/TimeUtils';
+
+jest.mock('../../../../utils/TimeUtils');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -20,6 +23,10 @@ describe('ItemUtils', () => {
   });
 
   describe('isValidItem', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
     const item1 = {
       id: 10,
       group_ids: [11, 222, 33],
@@ -69,6 +76,50 @@ describe('ItemUtils', () => {
     });
   });
 
+  describe('eventFilter', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
+    const item1 = {
+      id: 14,
+      group_ids: [11, 222, 33],
+      start: 111,
+      end: 333,
+      effective_end: 3333,
+    };
+
+    const item2 = {
+      id: 111,
+      group_ids: [11, 222, 33],
+    };
+
+    const item3 = {
+      id: 14,
+      group_ids: [11, 222, 33],
+      start: 111,
+      end: 333,
+      effective_end: 9007199254740992,
+    };
+
+    it('should return false when is not event', () => {
+      expect(ItemUtils.eventFilter(11)(item2)).toBeFalsy();
+    });
+
+    it('should return true when is not over due event', () => {
+      TimeUtils.compareDate = jest.fn().mockReturnValue(true);
+      expect(ItemUtils.eventFilter(11)(item1)).toBeTruthy();
+    });
+
+    it('should return false when is over due event', () => {
+      TimeUtils.compareDate = jest.fn().mockReturnValue(false);
+      expect(ItemUtils.eventFilter(11)(item1)).toBeFalsy();
+    });
+
+    it('should return true when effect time is max int', () => {
+      expect(ItemUtils.eventFilter(11)(item3)).toBeTruthy();
+    });
+  });
   describe('toSanitizedItem', () => {
     it('should return sanitized item', () => {
       const item = {

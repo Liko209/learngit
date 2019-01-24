@@ -6,11 +6,11 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { JuiConversationRightRailLoading } from '../Loading';
+import { JuiRightRailItemLoading } from '../Loading';
 
 storiesOf('Pattern/ConversationRightShelf', module).add(
-  'JuiConversationRightRailLoading',
+  'JuiRightRailItemLoading',
   () => {
-    return <JuiConversationRightRailLoading />;
+    return <JuiRightRailItemLoading />;
   },
 );

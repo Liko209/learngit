@@ -107,7 +107,7 @@ const FileCardContent = styled(MuiCardContent)`
   }
 `;
 
-const CardFileName = styled(JuiTypography)`
+const CardFileName = styled.div`
   && {
     ${typography('subheading1')};
     color: ${palette('grey', '900')};

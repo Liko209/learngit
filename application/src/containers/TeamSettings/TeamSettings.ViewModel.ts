@@ -5,13 +5,15 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { computed, observable, action } from 'mobx';
-import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { TeamSettingTypes } from './types';
 import { GroupService } from 'sdk/module/group';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { generalErrorHandler } from '@/utils/error';
 import {
   ErrorParserHolder,
   ERROR_TYPES,
@@ -23,7 +25,6 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
-import { generalErrorHandler } from '@/utils/error';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
@@ -58,8 +59,46 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @computed
+  get groupName() {
+    return this._group.displayName;
+  }
+
+  @computed
   get isAdmin() {
     return this._group.isAdmin;
+  }
+
+  leaveTeam = async () => {
+    const groupService = new GroupService();
+    const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
+    try {
+      await groupService.leaveTeam(userId, this.id);
+    } catch (e) {
+      this.onLeaveTeamError(e);
+    }
+  }
+
+  onLeaveTeamError = (e: Error) => {
+    const isBackEndError = errorHelper.isBackEndError(e);
+    const isNetworkError = errorHelper.isNetworkConnectionError(e);
+    let message = '';
+    if (isBackEndError) {
+      message = 'leaveTeamServerErrorContent';
+    }
+    if (isNetworkError) {
+      message = 'leaveTeamNetworkErrorContent';
+    }
+    if (message) {
+      return Notification.flashToast({
+        message,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
+    return generalErrorHandler(e);
   }
 
   @action

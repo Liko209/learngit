@@ -69,17 +69,19 @@ const JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
   children,
   loading,
   arrowDirection,
+  className,
   ...rest
 }: JuiLozengeButtonProps) => {
-  let className = loading ? 'lozengeButtonLoading' : '';
-  className += arrowDirection ? ' lozengeButtonWithArrow' : '';
+  let newClassName = className;
+  newClassName += loading ? ' lozengeButtonLoading' : '';
+  newClassName += arrowDirection ? ' lozengeButtonWithArrow' : '';
 
   const arrowComponent = arrowDirection ? (
     <Arrow direction={arrowDirection} />
   ) : null;
 
   return (
-    <StyledLozengeButton {...rest} className={className}>
+    <StyledLozengeButton {...rest} className={newClassName}>
       <span>{children}</span>
       {loading ? (
         <JuiCircularProgress color="inherit" size={16} />

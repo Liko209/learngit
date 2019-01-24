@@ -5,6 +5,7 @@
  */
 
 import TaskItemModel from '@/store/models/TaskItem';
+import { Palette } from 'jui/foundation/theme/theme';
 
 type TaskProps = {
   id: number;
@@ -14,6 +15,7 @@ type TaskItemProps = {
   personName: string;
   dueTime: string;
   task: TaskItemModel;
+  color: [keyof Palette, string];
 };
 
 export { TaskItemProps, TaskProps };

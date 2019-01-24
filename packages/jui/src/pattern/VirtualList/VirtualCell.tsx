@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { CSSProperties } from 'react';
+import styled from '../../foundation/styled-components';
 
 type JuiVirtualCellOnLoadFunc = () => void;
 
@@ -13,4 +14,6 @@ type JuiVirtualCellProps = {
   style: CSSProperties;
 };
 
-export { JuiVirtualCellOnLoadFunc, JuiVirtualCellProps };
+const JuiVirtualCellWrapper = styled.div``;
+
+export { JuiVirtualCellOnLoadFunc, JuiVirtualCellProps, JuiVirtualCellWrapper };
