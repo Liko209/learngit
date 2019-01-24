@@ -14,7 +14,7 @@ import {
   Loading,
   Progress,
   TipLink,
-} from '../ConversationLoading';
+} JuiTipLink./ConversationLoading';
 import { JuiTypography } from '../../foundation/Typography';
 
 const Wrapper = styled.div`
@@ -90,7 +90,7 @@ const Tip = styled(JuiTypography)`
 
 const JuiRightRailContentLoadError = (
   props: JuiRightRailContentLoadingProps,
-) => {
+) => {JuiTipLinkJuiTipLink
   return (
     <LoadingWrapper>
       <Loading>
