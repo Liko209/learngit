@@ -3,8 +3,8 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
+import { PostService, notificationCenter } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
@@ -264,6 +264,13 @@ describe('StreamViewModel', () => {
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();
     });
+
+    // This should be removed in future since sync item mustn't be initiated in stream.
+    it('should sync group items when switch conversation', () => {
+      const { vm } = localSetup();
+      vm.initialize(12);
+      expect(itemService.requestSyncGroupItems).toBeCalled();
+    });
   });
 
   describe('loadPrevPosts()', () => {
@@ -457,9 +464,13 @@ describe('fetchData()', () => {
   let vm;
   let postService;
   beforeEach(() => {
+    jest.spyOn(notificationCenter, 'on').mockImplementation();
     postService = new PostService();
     PostService.getInstance = jest.fn().mockReturnValue(postService);
     vm = setup();
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
   });
   it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
     jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);

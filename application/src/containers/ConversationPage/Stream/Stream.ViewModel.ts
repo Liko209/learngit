@@ -178,7 +178,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ENTITY_NAME.GROUP_STATE,
       this.props.groupId,
     );
-    this._syncGroupItems();
   }
 
   @loading
@@ -283,6 +282,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   initialize = (groupId: number) => {
+    this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
     this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
     globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
