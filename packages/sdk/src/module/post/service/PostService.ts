@@ -10,6 +10,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
+import { DEFAULT_PAGE_SIZE } from '../constant';
 
 class NewPostService extends EntityBaseService<Post> {
   static serviceName = 'NewPostService';
@@ -65,7 +66,7 @@ class NewPostService extends EntityBaseService<Post> {
   async getPostsByGroupId({
     groupId,
     postId = 0,
-    limit = 20,
+    limit = DEFAULT_PAGE_SIZE,
     direction = QUERY_DIRECTION.OLDER,
   }: IPostQuery): Promise<IPostResult> {
     return this.getPostController()

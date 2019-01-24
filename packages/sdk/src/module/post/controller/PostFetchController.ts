@@ -14,9 +14,9 @@ import { ItemService } from '../../item';
 import { Item } from '../../item/entity';
 import { DataHandleController } from './DataHandleController';
 import PostAPI from '../../../api/glip/post';
+import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
 
-const DEFAULT_PAGE_SIZE = 20;
 const TAG = 'PostFetchController';
 
 class PostFetchController {
