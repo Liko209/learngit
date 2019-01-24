@@ -49,7 +49,7 @@ const Loading = styled.div`
 
 const Tip = styled(JuiTypography)`
   ${typography('body1')};
-  color: ${grey('900dark')};
+  color: ${grey('900')};
 `;
 const TipLink = styled(JuiLink)`
   ${typography('body2')};
