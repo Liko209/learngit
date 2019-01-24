@@ -8,6 +8,8 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
+import { kRTCHangupInvalidCallInterval } from '../account/constants';
+
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
@@ -33,6 +35,7 @@ class RTCCall {
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
+  private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
 
   constructor(
     isIncoming: boolean,
@@ -54,12 +57,18 @@ class RTCCall {
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
       this.setCallSession(session);
     } else {
+      this._addHangupTimer();
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
     this._prepare();
   }
 
+  private _addHangupTimer(): void {
+    this._hangupInvalidCallTimer = setTimeout(() => {
+      this.hangup();
+    },                                        kRTCHangupInvalidCallInterval * 1000);
+  }
   setCallDelegate(delegate: IRTCCallDelegate) {
     this._delegate = delegate;
   }
@@ -178,6 +187,9 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
     });
+    this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
+      this._onSessionProgress(response);
+    });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
       (
@@ -204,6 +216,10 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      if (this._hangupInvalidCallTimer) {
+        clearTimeout(this._hangupInvalidCallTimer);
+        this._hangupInvalidCallTimer = null;
+      }
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -337,6 +353,13 @@ class RTCCall {
 
   private _onSessionError() {
     this._fsm.sessionError();
+  }
+
+  private _onSessionProgress(response: any) {
+    if (response.status_code === 183 && this._hangupInvalidCallTimer) {
+      clearTimeout(this._hangupInvalidCallTimer);
+      this._hangupInvalidCallTimer = null;
+    }
   }
   // fsm listener
   private _onAnswerAction() {

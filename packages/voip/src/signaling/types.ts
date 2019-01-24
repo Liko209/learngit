@@ -14,6 +14,7 @@ enum WEBPHONE_SESSION_STATE {
   ACCEPTED = 'accepted',
   BYE = 'bye',
   FAILED = 'failed',
+  PROGRESS = 'progress',
 }
 
 type ProvisionDataOptions = {
