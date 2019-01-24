@@ -15,6 +15,7 @@ const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-height: 100%;
 `;
 
 const JuiStream = (props: JuiStreamProps) => (
