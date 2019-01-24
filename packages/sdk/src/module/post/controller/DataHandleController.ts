@@ -62,7 +62,7 @@ class DataHandleController {
     // check if post's owner group exist in local or not
     // seems we only need check normal posts, don't need to check deactivated data
     await this._ensureGroupExist(normalPosts);
-    return posts;
+    return normalPosts;
   }
 
   private async _ensureGroupExist(posts: Post[]): Promise<void> {

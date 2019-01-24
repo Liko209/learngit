@@ -1,3 +1,9 @@
+/*
+ * @Author: kasni.huang (kasni.huang@ringcentral.com)
+ * @Date: 2019-01-24 09:58:25
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { ItemService } from '../../../item';
 import { PostDao, ItemDao, daoManager } from '../../../../dao';
 import { ExtendedBaseModel } from '../../../models';
@@ -9,11 +15,8 @@ import { Post } from '../../entity';
 
 jest.mock('../../../item');
 jest.mock('../../../../dao');
-/*
- * @Author: kasni.huang (kasni.huang@ringcentral.com)
- * @Date: 2019-01-24 09:58:25
- * Copyright © RingCentral. All rights reserved.
- */
+jest.mock('../../../../framework/controller');
+
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
   insert(entity: T): Promise<void> {
@@ -80,6 +83,54 @@ describe('DataHandleController', () => {
       );
       expect(filterAndSavePosts).not.toBeCalled();
       expect(itemService.handleIncomingData).not.toBeCalled();
+    });
+
+    it('should go through data handle process if data is not null', async () => {
+      const data = {
+        posts: [{ id: 3, group_id: 1 }, { id: 4, group_id: 2 }],
+        items: [{ id: 12 }, { id: 23 }],
+        hasMore: false,
+      };
+      const result = await dataHandleController.handleFetchedPosts(
+        data,
+        false,
+        (posts: Post[], items: Item[]) => {},
+      );
+      expect(itemService.handleIncomingData).toBeCalled();
+    });
+  });
+
+  describe('filterAndSavePosts()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should return not deactivated posts', async () => {
+      const data = [
+        { id: 3, group_id: 1, deactivated: false },
+        { id: 4, group_id: 2, deactivated: true },
+      ];
+      const result = await dataHandleController.filterAndSavePosts(data, false);
+      expect(result).toEqual([{ id: 3, group_id: 1, deactivated: false }]);
+    });
+
+    it('should return empty if all posts deactivated', async () => {
+      const data = [
+        { id: 3, group_id: 1, deactivated: true },
+        { id: 4, group_id: 2, deactivated: true },
+      ];
+      const result = await dataHandleController.filterAndSavePosts(data, false);
+      expect(result).toEqual([]);
+    });
+
+    it('should return all posts if posts not include deactivated', async () => {
+      const data = [
+        { id: 3, group_id: 1, deactivated: false },
+        { id: 4, group_id: 2, deactivated: false },
+      ];
+      const result = await dataHandleController.filterAndSavePosts(data, false);
+      expect(result).toEqual(data);
     });
   });
 });
