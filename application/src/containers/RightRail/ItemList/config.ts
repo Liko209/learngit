@@ -85,6 +85,9 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noImageSubText',
       image: ImagesEmptyImage,
     },
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorImagesPrompt',
     tryAgainPrompt: 'tryAgainImagesPrompt',
   },
@@ -111,6 +114,9 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'noLinkSubText',
       image: LinksEmptyImage,
     },
+    sort: {
+      desc: true,
+    },
     offlinePrompt: 'networkErrorLinksPrompt',
     tryAgainPrompt: 'tryAgainLinksPrompt',
   },
@@ -123,6 +129,9 @@ const TAB_CONFIG: TabConfig[] = [
       text: 'noNotesCreatedYet',
       content: 'noNoteSubText',
       image: NotesEmptyImage,
+    },
+    sort: {
+      desc: true,
     },
     offlinePrompt: 'networkErrorNotesPrompt',
     tryAgainPrompt: 'tryAgainNotesPrompt',
