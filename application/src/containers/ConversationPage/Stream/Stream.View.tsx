@@ -24,6 +24,7 @@ import { extractView } from 'jui/hoc/extractView';
 import { mainLogger } from 'sdk';
 import RO from 'resize-observer-polyfill';
 import { noop } from 'jui/foundation/utils';
+import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -44,14 +45,11 @@ class StreamViewComponent extends Component<Props> {
   private _ro: ResizeObserver;
   private _globalStore = storeManager.getGlobalStore();
   private _listLastWidth = 0;
-  @observable
-  private _jumpToFirstUnreadLoading = false;
 
-  @observable
-  private _firstHistoryUnreadPostViewed: boolean | null = null;
-  state = {
-    _jumpToPostId: 0,
-  };
+  state = { _jumpToPostId: 0 };
+
+  @observable private _jumpToFirstUnreadLoading = false;
+  @observable private _firstHistoryUnreadPostViewed: boolean | null = null;
 
   static getDerivedStateFromProps(props: Props) {
     if (props.jumpToPostId) {
@@ -59,21 +57,11 @@ class StreamViewComponent extends Component<Props> {
     }
     return null;
   }
+
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
-    const { _jumpToPostId } = this.state;
-    await this.props.loadInitialPosts();
-    if (!this._listRef.current) {
-      return; // the current component is unmounted
-    }
-    _jumpToPostId
-      ? await this.scrollToPost(_jumpToPostId)
-      : await this.scrollToBottom();
-    this._stickToBottom();
-    this._visibilitySensorEnabled = true;
-    this.props.updateHistoryHandler();
-    this.props.markAsRead();
+    this._loadInitialPosts();
   }
 
   componentWillUnmount() {
@@ -85,9 +73,13 @@ class StreamViewComponent extends Component<Props> {
   getSnapshotBeforeUpdate() {
     this._isAtBottom = this.props.atBottom();
     this._isAtTop = this.props.atTop();
-    const parentEl = getScrollParent(this._listRef.current!);
-    this._scrollHeight = parentEl.scrollHeight;
-    this._scrollTop = parentEl.scrollTop;
+
+    if (this._listRef.current) {
+      const parentEl = getScrollParent(this._listRef.current);
+      this._scrollHeight = parentEl.scrollHeight;
+      this._scrollTop = parentEl.scrollTop;
+    }
+
     return {};
   }
 
@@ -98,14 +90,15 @@ class StreamViewComponent extends Component<Props> {
     const currSize = postIds.length;
     const prevLastPost = _(prevPostIds).last();
     const currentLastPost = _(postIds).last();
+
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
         storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
       }
     }
-    if (prevSize === 0) {
-      return;
-    }
+
+    if (prevSize === 0) return;
+
     if (prevSize < currSize) {
       // scroll bottom and load post
       if (prevLastPost !== currentLastPost) {
@@ -115,9 +108,9 @@ class StreamViewComponent extends Component<Props> {
       }
 
       // scroll TOP and load posts
-      if (this._isAtTop && hasMoreUp) {
+      if (this._isAtTop && hasMoreUp && this._listRef.current) {
         await nextTick();
-        const parent = getScrollParent(this._listRef.current!);
+        const parent = getScrollParent(this._listRef.current);
         parent.scrollTop =
           this._scrollTop + parent.scrollHeight - this._scrollHeight;
         return;
@@ -128,31 +121,30 @@ class StreamViewComponent extends Component<Props> {
 
   private async _stickToBottom() {
     const el = this._listRef.current;
-    if (!el) {
-      return;
+    if (el) {
+      this._ro = new RO(this._heightChangedHandler);
+      this._ro.observe(el);
     }
-    this._ro = new RO(this._heightChangedHandler);
-    this._ro.observe(el);
   }
 
   private _heightChangedHandler = (entries: any[]) => {
-    const listEl = this._listRef.current;
-    if (!listEl) {
-      return;
-    }
+    if (!this._listRef.current) return;
+
     if (this._temporaryDisableAutoScroll) {
       this._temporaryDisableAutoScroll = false;
       return;
     }
+
     const width = entries[0].contentRect.width;
     if (this._listLastWidth && this._listLastWidth !== width) {
       this._listLastWidth = width;
       return;
     }
-    const { hasMoreDown } = this.props;
-    if (this.props.atBottom() && !hasMoreDown) {
+
+    if (this.props.atBottom() && !this.props.hasMoreDown) {
       return this.scrollToBottom();
     }
+
     return;
   }
 
@@ -175,12 +167,13 @@ class StreamViewComponent extends Component<Props> {
     ) {
       // Observe all visibility of posts which are older
       // than the first unread post
-
       return this._viewedPostFactory(streamItem);
     }
+
     if (streamItem.value.includes(this.props.mostRecentPostId)) {
       return this._mostRecentPostFactory(streamItem);
     }
+
     return this._ordinaryPostFactory(streamItem);
   }
 
@@ -316,13 +309,42 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    return (
+    const { loading, loadInitialPostsError, t } = this.props;
+
+    return loading || loadInitialPostsError ? (
+      <JuiStreamLoading
+        showTip={!!loadInitialPostsError}
+        tip={t('translations:messageLoadingErrorTip')}
+        linkText={t('translations:tryAgain')}
+        onClick={this._loadInitialPosts}
+      />
+    ) : (
       <JuiStream>
         {this._jumpToFirstUnreadButton}
         {this._initialPost}
         <section ref={this._listRef}>{this._streamItems}</section>
       </JuiStream>
     );
+  }
+
+  private _loadInitialPosts = async () => {
+    const { loadInitialPosts, updateHistoryHandler, markAsRead } = this.props;
+    const { _jumpToPostId } = this.state;
+
+    await loadInitialPosts();
+
+    if (!this._listRef.current) {
+      return; // the current component is unmounted
+    }
+
+    _jumpToPostId
+      ? await this.scrollToPost(_jumpToPostId)
+      : await this.scrollToBottom();
+
+    this._stickToBottom();
+    this._visibilitySensorEnabled = true;
+    updateHistoryHandler();
+    markAsRead();
   }
 
   @action
@@ -336,14 +358,18 @@ class StreamViewComponent extends Component<Props> {
       }
     }
   }
+
   private _handleMostRecentPostRead = (isVisible: boolean) => {
     const isFocused = document.hasFocus();
+
     if (!this._visibilitySensorEnabled) {
       return;
     }
+
     if (!isVisible) {
       return this._setUmiDisplay(true);
     }
+
     if (isFocused) {
       this.props.markAsRead();
       this._setUmiDisplay(false);
@@ -374,6 +400,7 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
+
     this.scrollToPost(scrollToPostId);
   }
 
@@ -391,10 +418,12 @@ class StreamViewComponent extends Component<Props> {
   ) => {
     await nextTick();
     const scrollToPostEl = this._postRefs.get(scrollToPostId);
+
     if (!scrollToPostEl) {
       mainLogger.warn('scrollToPostEl no found');
       return;
     }
+
     return scrollToComponent(scrollToPostEl, options);
   }
 
@@ -418,6 +447,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
-const StreamView = translate('Conversations')(view);
+const StreamView = translate(['Conversations', 'translations'])(view);
 
 export { StreamView, StreamViewComponent };
