@@ -1,93 +1,124 @@
 /*
- * @Author: Lip Wang (lip.wangn@ringcentral.com)
- * @Date: 2018-04-10 15:09:16
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-23 13:23:00
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../__tests__/types.d.ts" />
-import PersonService from '../../../service/person';
-import GroupService, {
-  FEATURE_TYPE,
-  FEATURE_STATUS,
-} from '../../../service/group';
-import { daoManager, PersonDao, AuthDao } from '../../../dao';
-import { Person } from '../../../module/person/entity';
-import { UserConfig } from '../../account/UserConfig';
-import { PHONE_NUMBER_TYPE, PhoneNumberInfo } from '../types';
-import { personFactory } from '../../../__tests__/factories';
+
+import { PersonController } from '../PersonController';
+import { daoManager, PersonDao, AuthDao } from '../../../../dao';
+import { Person, PHONE_NUMBER_TYPE } from '../../entity';
+import { UserConfig } from '../../../../service/account/UserConfig';
+import { personFactory } from '../../../../__tests__/factories';
 import { KVStorage } from 'foundation/src';
 import { KVStorageManager } from 'foundation';
-import PersonAPI from '../../../api/glip/person';
+import PersonAPI from '../../../../api/glip/person';
 
-jest.mock('../../../dao');
-jest.mock('../../../service/group');
-jest.mock('../../account/UserConfig');
+import {
+  buildEntitySourceController,
+  buildEntityCacheSearchController,
+  buildEntityCacheController,
+  buildEntityPersistentController,
+} from '../../../../framework/controller';
+import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
+import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
+import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
+import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
+import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
+
+jest.mock('../../../../service/group');
+jest.mock('../../../../service/account/UserConfig');
+jest.mock('../../../../service/notificationCenter');
+jest.mock('../../../../dao/DaoManager');
 
 describe('PersonService', () => {
+  let personController: PersonController;
+  let personDao: PersonDao;
+
+  let entityPersistentController: IEntityPersistentController<Person>;
+  let entitySourceController: IEntitySourceController<Person>;
+  let entityCacheController: IEntityCacheController<Person>;
+  let cacheSearchController: IEntityCacheSearchController<Person>;
+
+  function setUp() {
+    personController = new PersonController();
+    personDao = new PersonDao(null);
+
+    entityCacheController = buildEntityCacheController<Person>();
+    entityPersistentController = buildEntityPersistentController<Person>(
+      personDao,
+      entityCacheController,
+    );
+    entitySourceController = buildEntitySourceController<Person>(
+      entityPersistentController,
+    );
+    cacheSearchController = buildEntityCacheSearchController<Person>(
+      entityCacheController,
+    );
+
+    personController.setDependentController(
+      entitySourceController,
+      cacheSearchController,
+    );
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+    setUp();
   });
 
-  const personService = new PersonService();
-  const personDao = new PersonDao(null);
-
   describe('getPersonsByIds()', () => {
-    it('should return all matched person', async () => {
-      personService.getById = jest.fn();
-      await personService.getPersonsByIds([1, 2]);
-
-      expect(personService.getById).toHaveBeenCalledTimes(2);
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      setUp();
     });
 
-    it('should return [] by default', () => {
-      expect(personService.getPersonsByIds([123])).rejects.toThrow();
+    const person1: Person = {
+      id: 1,
+      created_at: 1,
+      modified_at: 1,
+      creator_id: 1,
+      is_new: false,
+      has_registered: true,
+      version: 1,
+      company_id: 1,
+      email: 'cat1@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'dora1',
+      last_name: 'bruce1',
+      display_name: 'dora1 bruce1',
+    };
+
+    const person2: Person = {
+      id: 2,
+      created_at: 2,
+      modified_at: 2,
+      creator_id: 2,
+      is_new: false,
+      has_registered: true,
+      version: 2,
+      company_id: 1,
+      email: 'cat2@ringcentral.com',
+      me_group_id: 2,
+      first_name: 'dora2',
+      last_name: 'bruce2',
+      display_name: 'dora2 bruce2',
+    };
+
+    it('should return all matched person', async () => {
+      entitySourceController.batchGet = jest.fn();
+      entitySourceController.batchGet.mockImplementation(() => {
+        return [person1, person2];
+      });
+      const result = await personController.getPersonsByIds([1, 2]);
+      expect(entitySourceController.batchGet).toBeCalledWith([1, 2]);
+      expect(result).toEqual([person1, person2]);
     });
 
     it('should return [] when no id was given', async () => {
-      const result = await personService.getPersonsByIds([]);
+      const result = await personController.getPersonsByIds([]);
       expect(result).toEqual([]);
-    });
-
-    it('should throw error when ids was not array', async () => {
-      try {
-        await personService.getPersonsByIds(123);
-      } catch (e) {
-        expect(e.message).toEqual('ids must be an array.');
-      }
-    });
-  });
-
-  describe('getPersonsByPrefix()', () => {
-    it('should return all matched person', async () => {
-      const mock = [{ id: 123, display_name: 'Albert' }];
-      daoManager.getDao.mockReturnValue(personDao);
-      personDao.getPersonsByPrefix.mockReturnValue(mock);
-      const result = await personService.getPersonsByPrefix('A');
-
-      expect(result).toEqual(mock);
-    });
-  });
-
-  describe('getPersonsCountByPrefix()', () => {
-    it('should return all matched person', async () => {
-      // personService.getById = jest.fn();
-      const mock = 3;
-      daoManager.getDao.mockReturnValue(personDao);
-      personDao.getPersonsCountByPrefix.mockReturnValue(mock);
-      const result = await personService.getPersonsCountByPrefix('A');
-
-      expect(result).toEqual(mock);
-    });
-  });
-
-  describe('getPersonsOfEachPrefix()', () => {
-    it('should return all matched person', async () => {
-      const mock = { A: [{ id: 123, display_name: 'Albert' }] };
-      daoManager.getDao.mockReturnValue(personDao);
-      personDao.getPersonsOfEachPrefix.mockReturnValue(mock);
-      const result = await personService.getPersonsOfEachPrefix();
-
-      expect(result).toEqual(mock);
     });
   });
 
@@ -95,16 +126,16 @@ describe('PersonService', () => {
     it('should return all matched person length', async () => {
       const mock = 3;
       daoManager.getDao.mockReturnValue(personDao);
+      personDao.getAllCount = jest.fn();
       personDao.getAllCount.mockReturnValue(mock);
-      const result = await personService.getAllCount();
+      const result = await personController.getAllCount();
       expect(result).toBe(mock);
     });
   });
 
-  describe('doFuzzySearchPersons', () => {
-    function prepareDataForSearchUTs() {
-      personService.enableCache();
-      const cacheManager = personService.getCacheManager();
+  describe('doFuzzySearchPersons', async () => {
+    async function prepareDataForSearchUTs() {
+      await entityCacheController.clear();
       for (let i = 1; i <= 10000; i += 1) {
         const person: Person = {
           id: i,
@@ -121,7 +152,7 @@ describe('PersonService', () => {
           last_name: `bruce${i.toString()}`,
           display_name: `dora${i.toString()} bruce${i.toString()}`,
         };
-        cacheManager.set(person);
+        await entityCacheController.put(person);
       }
 
       for (let i = 10001; i <= 20000; i += 1) {
@@ -140,7 +171,7 @@ describe('PersonService', () => {
           last_name: `niu${i.toString()}`,
           display_name: `ben${i.toString()} niu${i.toString()}`,
         };
-        cacheManager.set(person);
+        entityCacheController.put(person);
       }
 
       for (let i = 20001; i <= 20010; i += 1) {
@@ -160,7 +191,7 @@ describe('PersonService', () => {
           last_name: `wu${i.toString()}`,
           display_name: `kong${i.toString()} wu${i.toString()}`,
         };
-        cacheManager.set(person);
+        entityCacheController.put(person);
       }
 
       for (let i = 20011; i <= 20020; i += 1) {
@@ -180,7 +211,7 @@ describe('PersonService', () => {
           last_name: `wu${i.toString()}`,
           display_name: `monkey${i.toString()} wu${i.toString()}`,
         };
-        cacheManager.set(person);
+        entityCacheController.put(person);
       }
 
       const deactivatedByField: Person = {
@@ -198,7 +229,7 @@ describe('PersonService', () => {
         last_name: 'deactivatedByField',
         display_name: 'deactivatedByField',
       };
-      cacheManager.set(deactivatedByField);
+      entityCacheController.put(deactivatedByField);
 
       const deactivatedByFlags: Person = {
         id: 20022,
@@ -215,7 +246,7 @@ describe('PersonService', () => {
         last_name: 'deactivatedByFlags',
         display_name: 'deactivatedByFlags',
       };
-      cacheManager.set(deactivatedByFlags);
+      entityCacheController.put(deactivatedByFlags);
 
       const isRemovedGuest: Person = {
         id: 20023,
@@ -233,7 +264,7 @@ describe('PersonService', () => {
         last_name: 'isRemovedGuest',
         display_name: 'isRemovedGuest',
       };
-      cacheManager.set(isRemovedGuest);
+      entityCacheController.put(isRemovedGuest);
 
       const amRemovedGuest: Person = {
         id: 20024,
@@ -250,13 +281,19 @@ describe('PersonService', () => {
         last_name: 'amRemovedGuest',
         display_name: 'amRemovedGuest',
       };
-      cacheManager.set(amRemovedGuest);
+      entityCacheController.put(amRemovedGuest);
     }
 
-    prepareDataForSearchUTs();
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      setUp();
+
+      await prepareDataForSearchUTs();
+    });
 
     it('search parts of data, with multi terms', async () => {
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         'dora bruce',
         false,
       );
@@ -267,14 +304,14 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, with single term', async () => {
-      const result = await personService.doFuzzySearchPersons('dora', false);
+      const result = await personController.doFuzzySearchPersons('dora', false);
       expect(result.sortableModels.length).toBe(10000);
       expect(result.terms.length).toBe(1);
       expect(result.terms[0]).toBe('dora');
     });
 
     it('search parts of data, ignore case', async () => {
-      let result = await personService.doFuzzySearchPersons(
+      let result = await personController.doFuzzySearchPersons(
         'doRa,Bruce',
         false,
       );
@@ -283,38 +320,39 @@ describe('PersonService', () => {
       expect(result.terms[0]).toBe('doRa');
       expect(result.terms[1]).toBe('Bruce');
 
-      result = await personService.doFuzzySearchPersons('doXa', false);
+      result = await personController.doFuzzySearchPersons('doXa', false);
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(1);
       expect(result.terms[0]).toBe('doXa');
 
-      result = await personService.doFuzzySearchPersons('doXa Bruce', false);
+      result = await personController.doFuzzySearchPersons('doXa Bruce', false);
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(2);
     });
 
     it('search parts of data, email', async () => {
-      const result = await personService.doFuzzySearchPersons('cat', false);
+      const result = await personController.doFuzzySearchPersons('cat', false);
       expect(result.sortableModels.length).toBe(10000);
       expect(result.terms.length).toBe(1);
       expect(result.terms[0]).toBe('cat');
     });
 
     it('search parts of data, email and name, not match', async () => {
-      const result = await personService.doFuzzySearchPersons('cat dog', false);
+      const result = await personController.doFuzzySearchPersons(
+        'cat dog',
+        false,
+      );
       expect(result.sortableModels.length).toBe(0);
       expect(result.terms.length).toBe(2);
       expect(result.terms[0]).toBe('cat');
       expect(result.terms[1]).toBe('dog');
     });
     it('search parts of data, with arrangeIds', async () => {
-      const result = await personService.doFuzzySearchPersons('dora', false, [
-        3,
-        1,
-        2,
-        10001,
-        10002,
-      ]);
+      const result = await personController.doFuzzySearchPersons(
+        'dora',
+        false,
+        [3, 1, 2, 10001, 10002],
+      );
       expect(result.sortableModels.length).toBe(3);
       expect(result.sortableModels[0].displayName).toBe('dora1 bruce1');
       expect(result.sortableModels[1].displayName).toBe('dora2 bruce2');
@@ -323,13 +361,13 @@ describe('PersonService', () => {
 
     it('search parts of data, exclude self', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons('dora', true);
+      const result = await personController.doFuzzySearchPersons('dora', true);
       expect(result.sortableModels.length).toBe(9999);
     });
 
     it('search parts of data, searchKey is empty, return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         '',
         undefined,
         undefined,
@@ -340,7 +378,7 @@ describe('PersonService', () => {
 
     it('search parts of data, searchKey is empty, can not return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         '',
         undefined,
         undefined,
@@ -352,7 +390,7 @@ describe('PersonService', () => {
 
     it('search parts of data, searchKey not empty, can not return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         'dora',
         undefined,
         undefined,
@@ -364,7 +402,7 @@ describe('PersonService', () => {
 
     it('search parts of data, searchKey is empty, excludeSelf, return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         '',
         true,
         undefined,
@@ -375,7 +413,7 @@ describe('PersonService', () => {
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         undefined,
         true,
         [3, 1, 2, 10001, 10002],
@@ -391,7 +429,7 @@ describe('PersonService', () => {
 
     it('search parts of data, searchKey not empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         'dora',
         true,
         [3, 1, 2, 10001, 10002],
@@ -405,7 +443,7 @@ describe('PersonService', () => {
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, can not return all if search key is empty', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      const result = await personService.doFuzzySearchPersons(
+      const result = await personController.doFuzzySearchPersons(
         '',
         true,
         [3, 1, 2, 10001, 10002],
@@ -416,14 +454,14 @@ describe('PersonService', () => {
     });
 
     it('search persons, with email matched, name matched, check the priority', async () => {
-      let result = await personService.doFuzzySearchPersons('monkey');
+      let result = await personController.doFuzzySearchPersons('monkey');
       expect(result.sortableModels.length).toBe(20);
       expect(result.sortableModels[0].id).toBe(20011);
       expect(result.sortableModels[9].id).toBe(20020);
       expect(result.sortableModels[10].id).toBe(20001);
       expect(result.sortableModels[19].id).toBe(20010);
 
-      result = await personService.doFuzzySearchPersons('k w');
+      result = await personController.doFuzzySearchPersons('k w');
       expect(result.sortableModels.length).toBe(20);
       expect(result.sortableModels[0].id).toBe(20001);
       expect(result.sortableModels[9].id).toBe(20010);
@@ -432,77 +470,29 @@ describe('PersonService', () => {
     });
 
     it('search persons, with name matched, check if they are deactivated', async () => {
-      let result = await personService.doFuzzySearchPersons(
+      let result = await personController.doFuzzySearchPersons(
         'deactivatedByField',
       );
       expect(result.sortableModels.length).toBe(0);
 
-      result = await personService.doFuzzySearchPersons('deactivatedByFlags');
+      result = await personController.doFuzzySearchPersons(
+        'deactivatedByFlags',
+      );
       expect(result.sortableModels.length).toBe(0);
     });
 
     it('search persons, with name matched, check if they are isRemovedGuest ', async () => {
-      const result = await personService.doFuzzySearchPersons('isRemovedGuest');
+      const result = await personController.doFuzzySearchPersons(
+        'isRemovedGuest',
+      );
       expect(result.sortableModels.length).toBe(0);
     });
 
     it('search persons, with name matched, check if they are amRemovedGuest ', async () => {
-      const result = await personService.doFuzzySearchPersons('amRemovedGuest');
+      const result = await personController.doFuzzySearchPersons(
+        'amRemovedGuest',
+      );
       expect(result.sortableModels.length).toBe(0);
-    });
-  });
-
-  describe('getPersonsByGroupId()', () => {
-    const groupService = new GroupService();
-    const group = { id: 10, members: [1, 2, 3] };
-
-    beforeEach(() => {
-      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-    });
-
-    it('should return group members from cache if has cache', async () => {
-      const persons = [{ id: 3 }, { id: 4 }, { id: 5 }];
-
-      daoManager.getDao.mockReturnValue(personDao);
-      jest
-        .spyOn(personService, 'getMultiEntitiesFromCache')
-        .mockResolvedValueOnce(persons);
-      jest.spyOn(personService, 'isCacheInitialized').mockReturnValueOnce(true);
-
-      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
-      groupService.getGroupById.mockResolvedValueOnce(group);
-
-      const res = await personService.getPersonsByGroupId(group.id);
-      expect(res).toMatchObject(persons);
-      expect(personDao.getPersonsByIds).not.toBeCalled();
-      expect(groupService.getGroupById).toBeCalledWith(group.id);
-    });
-
-    it('should return group members from DB if has the group and no cache', async () => {
-      const persons = [{ id: 1 }, { id: 2 }, { id: 3 }];
-      daoManager.getDao.mockReturnValue(personDao);
-
-      const spy = jest.spyOn(personService, 'getMultiEntitiesFromCache');
-
-      spy.mockResolvedValueOnce([]);
-      personDao.getPersonsByIds.mockResolvedValueOnce(persons);
-      groupService.getGroupById.mockResolvedValueOnce(group);
-
-      const res = await personService.getPersonsByGroupId(group.id);
-      expect(res).toMatchObject(persons);
-      expect(personDao.getPersonsByIds).toBeCalledWith(group.members);
-      expect(groupService.getGroupById).toBeCalledWith(group.id);
-      expect(spy).toBeCalledTimes(0);
-    });
-
-    it('should return null when no group exist', async () => {
-      daoManager.getDao.mockReturnValue(personDao);
-      groupService.getGroupById.mockResolvedValueOnce(null);
-
-      const res = await personService.getPersonsByGroupId(group.id);
-      expect(res).toMatchObject([]);
-      expect(personDao.getPersonsByIds).not.toBeCalled();
-      expect(groupService.getGroupById).toBeCalledWith(group.id);
     });
   });
 
@@ -510,26 +500,26 @@ describe('PersonService', () => {
     const personId = 1;
     const person = { id: personId };
     it('should not have conference permission for person', async () => {
-      const spy = jest.spyOn(personService, 'getById');
+      const spy = jest.spyOn(entitySourceController, 'get');
       spy.mockResolvedValueOnce(person);
-      const res = await personService.buildPersonFeatureMap(personId);
+      const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.CONFERENCE)).toBeFalsy;
       expect(spy).toBeCalled;
     });
 
     it('should have message for person', async () => {
-      const spy = jest.spyOn(personService, 'getById');
+      const spy = jest.spyOn(entitySourceController, 'get');
       spy.mockResolvedValueOnce(person);
-      const res = await personService.buildPersonFeatureMap(personId);
+      const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
       expect(spy).toBeCalledWith(person.id);
     });
 
     it('should not have message for pseudo person', async () => {
       const pseudoPerson = { id: personId, is_pseudo_user: true };
-      const spy = jest.spyOn(personService, 'getById');
+      const spy = jest.spyOn(entitySourceController, 'get');
       spy.mockResolvedValueOnce(pseudoPerson);
-      const res = await personService.buildPersonFeatureMap(personId);
+      const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
       expect(spy).toBeCalledWith(pseudoPerson.id);
     });
@@ -560,7 +550,7 @@ describe('PersonService', () => {
 
     it('should not return extension id for guest user', () => {
       expect(
-        personService.getAvailablePhoneNumbers(
+        personController.getAvailablePhoneNumbers(
           123,
           rcPhoneNumbers,
           sanitizedRcExtension,
@@ -576,7 +566,7 @@ describe('PersonService', () => {
       'should return all available phone numbers, case index: %#',
       (rcPhones, rcExt, expectRes) => {
         expect(
-          personService.getAvailablePhoneNumbers(1, rcPhones, rcExt),
+          personController.getAvailablePhoneNumbers(1, rcPhones, rcExt),
         ).toEqual(expectRes);
       },
     );
@@ -588,14 +578,14 @@ describe('PersonService', () => {
       const person = personFactory.build({
         email: `${firstName}.${lastName}@ringcentral.com`,
       });
-      const result = personService.getEmailAsName(person);
+      const result = personController.getEmailAsName(person);
       expect(result).toEqual(`${firstName} ${lastName}`);
     });
     it('should return empty string while no email info', () => {
       const person = personFactory.build({
         email: null,
       });
-      const result = personService.getEmailAsName(person);
+      const result = personController.getEmailAsName(person);
       expect(result).toEqual('');
     });
     it("should convert name's first letter to UpperCase", () => {
@@ -604,7 +594,7 @@ describe('PersonService', () => {
       const person = personFactory.build({
         email: `${firstName}.${lastName}@ringcentral.com`,
       });
-      const result = personService.getEmailAsName(person);
+      const result = personController.getEmailAsName(person);
       expect(result).toEqual('Bruce Chen');
     });
   });
@@ -615,7 +605,7 @@ describe('PersonService', () => {
       const lastName = 'Rao';
       const email = 'Dog.Mao@ringcentral.com';
       expect(
-        personService.getFullName(
+        personController.getFullName(
           personFactory.build({
             email,
             display_name: displayName,
@@ -630,7 +620,7 @@ describe('PersonService', () => {
       const lastName = 'Chen';
       const email = 'Dog.Mao@ringcentral.com';
       expect(
-        personService.getFullName(
+        personController.getFullName(
           personFactory.build({
             email,
             display_name: '',
@@ -643,12 +633,13 @@ describe('PersonService', () => {
     it('should return name of email after displayName and FirstName LastName', () => {
       const email = 'Bruce.Chen@ringcentral.com';
       expect(
-        personService.getFullName(
+        personController.getFullName(
           personFactory.build({ email, first_name: '', last_name: '' }),
         ),
       ).toEqual('Bruce Chen');
     });
   });
+
   describe('getHeadShot()', () => {
     const kvStorageManager = new KVStorageManager();
     const kvStorage = kvStorageManager.getStorage();
@@ -656,12 +647,13 @@ describe('PersonService', () => {
     beforeEach(() => {});
     it('should return headShotUrl', () => {
       daoManager.getKVDao.mockReturnValueOnce(authDao);
+      authDao.get = jest.fn();
       authDao.get.mockReturnValueOnce('token');
       const headUrl = 'mockUrl';
       const spy = jest
         .spyOn(PersonAPI, 'getHeadShotUrl')
         .mockReturnValueOnce(headUrl);
-      const result = personService.getHeadShot(1, 'xxx', 33);
+      const result = personController.getHeadShot(1, 'xxx', 33);
       expect(result).toEqual(headUrl);
     });
     it('should return empty string when headShotVersion is empty', () => {
@@ -671,7 +663,7 @@ describe('PersonService', () => {
       const spy = jest
         .spyOn(PersonAPI, 'getHeadShotUrl')
         .mockReturnValueOnce(headUrl);
-      const result = personService.getHeadShot(1, '', 33);
+      const result = personController.getHeadShot(1, '', 33);
       expect(result).toEqual('');
     });
   });

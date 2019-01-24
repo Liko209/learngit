@@ -21,7 +21,7 @@ import CompanyService from './service/company';
 import ConfigService from './service/config';
 import GroupService from './service/group';
 import { ItemService } from './module/item';
-import PersonService from './service/person';
+import { PersonService } from './module/person';
 import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';

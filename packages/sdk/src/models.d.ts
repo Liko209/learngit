@@ -9,14 +9,6 @@ import { GroupCommon } from './module/group/entity';
 import { IdModel } from './framework/model';
 import { State } from './module/state/entity';
 
-export type SortableModel<T> = {
-  id: number;
-  displayName: string;
-  firstSortKey?: any;
-  secondSortKey?: any;
-  entity: T;
-};
-
 export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
 export type GroupApiType = ExtendedBaseModel & {

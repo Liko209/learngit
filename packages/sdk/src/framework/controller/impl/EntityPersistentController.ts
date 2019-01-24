@@ -7,12 +7,19 @@
 import { IdModel } from '../../model';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
 import { BaseDao } from '../../../dao';
+import notificationCenter, {
+  NotificationEntityPayload,
+} from '../../../service/notificationCenter';
+import { EVENT_TYPES } from '../../../service/constants';
+import { IEntityCacheController } from '../interface/IEntityCacheController';
 class EntityPersistentController<T extends IdModel = IdModel>
   implements IEntityPersistentController<T> {
   constructor(
     public dao?: BaseDao<T>,
-    public entityCacheController?: IEntityPersistentController<T>,
-  ) {}
+    public entityCacheController?: IEntityCacheController<T>,
+  ) {
+    this._subscribeEntityChange();
+  }
 
   async put(item: T | T[]): Promise<void> {
     if (this.dao) {
@@ -103,6 +110,31 @@ class EntityPersistentController<T extends IdModel = IdModel>
     return items;
   }
 
+  async getAll(): Promise<T[]> {
+    let items: T[] = [];
+    if (this.entityCacheController) {
+      items = await this.entityCacheController.getAll();
+    }
+
+    if (items.length === 0 && this.dao) {
+      items = await this.dao.getAll();
+    }
+
+    return items;
+  }
+
+  async getTotalCount(): Promise<number> {
+    let totalCount: number = 0;
+    if (this.entityCacheController) {
+      totalCount = await this.entityCacheController.getTotalCount();
+    }
+
+    if (totalCount === 0 && this.dao) {
+      totalCount = await this.dao.getAllCount();
+    }
+    return totalCount;
+  }
+
   getEntityNotificationKey() {
     if (this.dao) {
       const modelName = this.dao.modelName.toUpperCase();
@@ -115,6 +147,41 @@ class EntityPersistentController<T extends IdModel = IdModel>
     }
 
     return 'unknown';
+  }
+
+  private _subscribeEntityChange() {
+    if (this.dao && this.entityCacheController) {
+      const eventKey: string = this.getEntityNotificationKey();
+      notificationCenter.on(
+        eventKey,
+        (payload: NotificationEntityPayload<T>) => {
+          this._onCacheEntitiesChange(payload);
+        },
+      );
+    }
+  }
+
+  private async _onCacheEntitiesChange(payload: NotificationEntityPayload<T>) {
+    if (!this.entityCacheController) {
+      return;
+    }
+    switch (payload.type) {
+      case EVENT_TYPES.REPLACE:
+        await this.entityCacheController.replace(
+          payload.body.ids,
+          payload.body.entities,
+        );
+        break;
+      case EVENT_TYPES.UPDATE:
+        await this.entityCacheController.updateEx(
+          payload.body.entities,
+          payload.body.partials,
+        );
+        break;
+      case EVENT_TYPES.DELETE:
+        await this.entityCacheController.bulkDelete(payload.body.ids);
+        break;
+    }
   }
 }
 

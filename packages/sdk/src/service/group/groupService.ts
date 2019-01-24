@@ -12,9 +12,9 @@ import {
 } from '../../dao';
 import AccountDao from '../../dao/account';
 import GroupDao from '../../dao/group';
-import { Raw } from '../../framework/model';
+import { Raw, SortableModel } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
-import { GroupApiType, SortableModel } from '../../models';
+import { GroupApiType } from '../../models';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -50,7 +50,7 @@ import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
 import { UserConfig } from '../account';
-import PersonService from '../person';
+import { PersonService } from '../../module/person';
 import { compareName } from '../../utils/helper';
 import {
   FEATURE_STATUS,
@@ -64,6 +64,7 @@ import notificationCenter from '../notificationCenter';
 import PostService from '../post';
 import { ServiceResult } from '../ServiceResult';
 import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
+import { Person } from '../../module/person/entity';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -179,7 +180,9 @@ class GroupService extends BaseService<Group> {
       }
       result = await filterGroups(result, limit);
     }
-    return groupType === GROUP_QUERY_TYPE.FAVORITE ? result : result.slice(0, result.length > 50 ? 50 : result.length);
+    return groupType === GROUP_QUERY_TYPE.FAVORITE
+      ? result
+      : result.slice(0, result.length > 50 ? 50 : result.length);
   }
   // this function should refactor with getGroupsByType
   // we should support to get group by paging
@@ -612,28 +615,31 @@ class GroupService extends BaseService<Group> {
     if (!currentUserId) {
       return null;
     }
-    const result = await this.searchEntitiesFromCache(
-      (group: Group, terms: string[]) => {
-        if (this._isValidGroup(group) && group.members.length > 2) {
-          const groupName = this.getGroupNameByMultiMembers(
-            group.members,
-            currentUserId,
-          );
 
-          if (
-            (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
-            (fetchAllIfSearchKeyEmpty && terms.length === 0)
-          ) {
-            return {
-              id: group.id,
-              displayName: groupName,
-              firstSortKey: groupName.toLowerCase(),
-              entity: group,
-            };
-          }
+    const sortFunc = async (group: Group, terms: string[]) => {
+      if (this._isValidGroup(group) && group.members.length > 2) {
+        const groupName = await this.getGroupNameByMultiMembers(
+          group.members,
+          currentUserId,
+        );
+
+        if (
+          (terms.length > 0 && this.isFuzzyMatched(groupName, terms)) ||
+          (fetchAllIfSearchKeyEmpty && terms.length === 0)
+        ) {
+          return {
+            id: group.id,
+            displayName: groupName,
+            firstSortKey: groupName.toLowerCase(),
+            entity: group,
+          };
         }
-        return null;
-      },
+      }
+      return null;
+    };
+
+    const result = await this.searchEntitiesFromCache(
+      sortFunc,
       searchKey,
       undefined,
       (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
@@ -668,7 +674,7 @@ class GroupService extends BaseService<Group> {
     }
 
     const result = await this.searchEntitiesFromCache(
-      (team: Group, terms: string[]) => {
+      async (team: Group, terms: string[]) => {
         let isMatched: boolean = false;
         let sortValue: number = 0;
 
@@ -739,23 +745,28 @@ class GroupService extends BaseService<Group> {
     return team.privacy === 'protected' || team.members.includes(userId);
   }
 
-  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
+  async getGroupNameByMultiMembers(members: number[], currentUserId: number) {
     const names: string[] = [];
     const emails: string[] = [];
 
     const personService: PersonService = PersonService.getInstance();
     const diffMembers = _.difference(members, [currentUserId]);
 
-    diffMembers.forEach((id: number) => {
-      const person = personService.getEntityFromCache(id);
-      if (person) {
-        const name = personService.getName(person);
-        if (name.length > 0) {
-          names.push(name);
-        } else {
-          emails.push(person.email);
+    const promises = diffMembers.map(async (id: number) => {
+      return personService.getById(id);
+    });
+
+    await Promise.all(promises).then((persons: any[]) => {
+      persons.forEach((person: Person) => {
+        if (person) {
+          const name = personService.getName(person);
+          if (name.length > 0) {
+            names.push(name);
+          } else {
+            emails.push(person.email);
+          }
         }
-      }
+      });
     });
 
     return names

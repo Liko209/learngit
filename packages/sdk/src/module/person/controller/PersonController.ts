@@ -1,34 +1,30 @@
 /*
- * @Author: Thomas thomas.yang@ringcentral.com
- * @Date: 2018-11-15 14:40:50
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-21 17:18:00
  * Copyright © RingCentral. All rights reserved.
  */
 
-import BaseService from '../../service/BaseService';
-import PersonDao from '../../dao/person';
-import PersonAPI from '../../api/glip/person';
-import handleData from './handleData';
-import GroupService, { FEATURE_STATUS, FEATURE_TYPE } from '../group';
-import { daoManager, AuthDao } from '../../dao';
-import { IPagination } from '../../types';
 import {
   Person,
   PhoneNumberModel,
-  SanitizedExtensionModel,
-} from '../../module/person/entity';
-
-import { SortableModel } from '../../models';
-
-import {
-  CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,
   PhoneNumberInfo,
+  SanitizedExtensionModel,
+  CALL_ID_USAGE_TYPE,
   SortingOrder,
-} from './types';
-import { SOCKET } from '../eventKey';
-import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../utils';
-import { UserConfig } from '../account/UserConfig';
+} from '../entity';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { SortableModel, Raw } from '../../../framework/model';
+import { daoManager, AuthDao, AUTH_GLIP_TOKEN } from '../../../dao';
+import PersonAPI from '../../../api/glip/person';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+} from '../../../utils/performance';
+import { UserConfig } from '../../../service/account/UserConfig';
+import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
+import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import { PersonDataController } from './PersonDataController';
 
 const PersonFlags = {
   deactivated: 2,
@@ -39,18 +35,25 @@ const PersonFlags = {
 
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
 
-class PersonService extends BaseService<Person> {
-  static serviceName = 'PersonService';
+class PersonController {
+  private _entitySourceController: IEntitySourceController<Person>;
+  private _cacheSearchController: IEntityCacheSearchController<Person>;
 
-  constructor() {
-    const subscription = {
-      [SOCKET.PERSON]: handleData,
-    };
-    super(PersonDao, PersonAPI, handleData, subscription);
-    this.enableCache();
+  constructor() {}
+
+  setDependentController(
+    entitySourceController: IEntitySourceController<Person>,
+    _cacheSearchController: IEntityCacheSearchController<Person>,
+  ) {
+    this._entitySourceController = entitySourceController;
+    this._cacheSearchController = _cacheSearchController;
   }
 
-  async getPersonsByIds(ids: number[]): Promise<(Person | null)[]> {
+  async handleIncomingData(persons: Raw<Person>[]) {
+    await new PersonDataController().handleIncomingData(persons);
+  }
+
+  async getPersonsByIds(ids: number[]): Promise<Person[]> {
     if (!Array.isArray(ids)) {
       throw new Error('ids must be an array.');
     }
@@ -59,40 +62,11 @@ class PersonService extends BaseService<Person> {
       return [];
     }
 
-    const persons = await Promise.all(
-      ids.map(async (id: number) => {
-        const person = await this.getById(id);
-        return person;
-      }),
-    );
-
-    return persons.filter(person => person !== null);
-  }
-
-  async getPersonsByPrefix(
-    prefix: string,
-    pagination?: Partial<IPagination>,
-  ): Promise<Person[]> {
-    const personDao = daoManager.getDao(PersonDao);
-    return personDao.getPersonsByPrefix(prefix, pagination);
-  }
-
-  async getPersonsOfEachPrefix(limit?: number): Promise<Map<string, Person[]>> {
-    const personDao = daoManager.getDao(PersonDao);
-    return personDao.getPersonsOfEachPrefix({ limit });
-  }
-
-  async getPersonsCountByPrefix(prefix: string): Promise<number> {
-    const personDao = daoManager.getDao(PersonDao);
-    return personDao.getPersonsCountByPrefix(prefix);
+    return await this._entitySourceController.batchGet(ids);
   }
 
   async getAllCount() {
-    if (this.isCacheInitialized()) {
-      return this.getEntitiesFromCache().then(persons => persons.length);
-    }
-    const personDao = daoManager.getDao(PersonDao);
-    return personDao.getAllCount();
+    return await this._entitySourceController.getTotalCount();
   }
 
   getHeadShot(uid: number, headShotVersion: string, size: number) {
@@ -110,33 +84,12 @@ class PersonService extends BaseService<Person> {
     return '';
   }
 
-  async getPersonsByGroupId(groupId: number): Promise<Person[]> {
-    const groupService: GroupService = GroupService.getInstance();
-    const group = await groupService.getGroupById(groupId);
-    if (group) {
-      const memberIds = group.members;
-      if (memberIds.length > 0) {
-        if (this.isCacheInitialized()) {
-          return await this.getMultiEntitiesFromCache(
-            memberIds,
-            (entity: Person) => {
-              return this._isValid(entity);
-            },
-          );
-        }
-        const personDao = daoManager.getDao(PersonDao);
-        return await personDao.getPersonsByIds(memberIds);
-      }
-    }
-    return [];
-  }
-
   async buildPersonFeatureMap(
     personId: number,
   ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {
     const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
 
-    const person = (await this.getById(personId)) as Person;
+    const person = (await this._entitySourceController.get(personId)) as Person;
     if (person) {
       actionMap.set(FEATURE_TYPE.CONFERENCE, FEATURE_STATUS.INVISIBLE);
 
@@ -170,7 +123,8 @@ class PersonService extends BaseService<Person> {
     if (excludeSelf) {
       currentUserId = UserConfig.getCurrentUserId();
     }
-    const result = await this.searchEntitiesFromCache(
+
+    const result = await this._cacheSearchController.searchEntities(
       (person: Person, terms: string[]) => {
         do {
           if (
@@ -188,23 +142,29 @@ class PersonService extends BaseService<Person> {
           let sortValue = 0;
 
           if (terms.length > 0) {
-            if (this.isFuzzyMatched(name, terms)) {
+            if (this._cacheSearchController.isFuzzyMatched(name, terms)) {
               sortValue = SortingOrder.FullNameMatching;
               if (
                 person.first_name &&
-                this.isStartWithMatched(person.first_name, [terms[0]])
+                this._cacheSearchController.isStartWithMatched(
+                  person.first_name,
+                  [terms[0]],
+                )
               ) {
                 sortValue += SortingOrder.FirstNameMatching;
               }
               if (
                 person.last_name &&
-                this.isStartWithMatched(person.last_name, terms)
+                this._cacheSearchController.isStartWithMatched(
+                  person.last_name,
+                  terms,
+                )
               ) {
                 sortValue += SortingOrder.LastNameMatching;
               }
             } else if (
               person.email &&
-              this.isFuzzyMatched(person.email, terms)
+              this._cacheSearchController.isFuzzyMatched(person.email, terms)
             ) {
               sortValue = SortingOrder.EmailMatching;
             } else {
@@ -343,4 +303,4 @@ class PersonService extends BaseService<Person> {
   }
 }
 
-export { PersonService };
+export { PersonController };

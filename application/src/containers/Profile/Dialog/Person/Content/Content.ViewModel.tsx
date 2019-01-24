@@ -11,7 +11,7 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import CompanyModel from '@/store/models/Company';
 import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
-import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/service/person';
+import { PhoneNumberInfo, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
 
 class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel

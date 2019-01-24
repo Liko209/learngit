@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Person } from 'sdk/module/person/entity';
-import { PersonService } from 'sdk/service/index';
+import { PersonService } from 'sdk/module/person';
 
 export const getName = (item: Person) => {
   const personService = PersonService.getInstance() as PersonService;

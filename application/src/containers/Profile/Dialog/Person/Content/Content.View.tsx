@@ -33,7 +33,7 @@ import {
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import copy from 'copy-to-clipboard';
-import { PhoneNumberInfo } from 'sdk/service/person';
+import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 

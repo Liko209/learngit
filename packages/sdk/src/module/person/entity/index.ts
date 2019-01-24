@@ -6,4 +6,19 @@
 
 import { PhoneNumberModel, SanitizedExtensionModel, Person } from './Person';
 
-export { PhoneNumberModel, SanitizedExtensionModel, Person };
+import {
+  CALL_ID_USAGE_TYPE,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberInfo,
+  SortingOrder,
+} from './types';
+
+export {
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+  Person,
+  CALL_ID_USAGE_TYPE,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberInfo,
+  SortingOrder,
+};
