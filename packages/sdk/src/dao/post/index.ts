@@ -8,6 +8,7 @@ import { Post } from '../../module/post/entity';
 import { IDatabase } from 'foundation';
 import { QUERY_DIRECTION } from '../constants';
 import { daoManager } from '..';
+import _ from 'lodash';
 
 class PostDao extends BaseDao<Post> {
   static COLLECTION_NAME = 'post';
@@ -56,7 +57,12 @@ class PostDao extends BaseDao<Post> {
     direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
     limit: number = Infinity,
   ): Promise<Post[]> {
+    const fetchPostsFunc = async (ids: number[]) => {
+      const posts = await this.batchGet(ids);
+      return _.orderBy(posts, 'created_at', 'desc');
+    };
     return this.getPostViewDao().queryPostsByGroupId(
+      fetchPostsFunc,
       groupId,
       anchorPostId,
       direction,
@@ -88,7 +94,7 @@ class PostDao extends BaseDao<Post> {
   }
 
   private async _putPostView(item: Post) {
-    this.getPostViewDao().put({
+    await this.getPostViewDao().put({
       id: item.id,
       group_id: item.group_id,
       created_at: item.created_at,
@@ -96,7 +102,7 @@ class PostDao extends BaseDao<Post> {
   }
 
   private async _bulkPutPostView(array: Post[]) {
-    this.getPostViewDao().bulkPut(
+    await this.getPostViewDao().bulkPut(
       array.map((post: Post) => {
         return {
           id: post.id,

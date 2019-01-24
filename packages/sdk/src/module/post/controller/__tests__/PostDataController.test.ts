@@ -9,7 +9,7 @@ import { PostDao, ItemDao, daoManager } from '../../../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PROGRESS_STATUS } from '../../../progress';
-import { DataHandleController } from '../DataHandleController';
+import { PostDataController } from '../PostDataController';
 import { Item } from '../../../item/entity';
 import { Post } from '../../entity';
 
@@ -36,15 +36,12 @@ class MockPreInsertController<T extends ExtendedBaseModel>
   }
 }
 
-describe('DataHandleController', () => {
+describe('PostDataController', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
   const preInsertController = new MockPreInsertController();
-  const dataHandleController = new DataHandleController(
-    preInsertController,
-    null,
-  );
+  const postDataController = new PostDataController(preInsertController, null);
 
   function clearMocks() {
     jest.clearAllMocks();
@@ -72,13 +69,13 @@ describe('DataHandleController', () => {
     });
 
     it('should do nothing if data is null', async () => {
-      const result = await dataHandleController.handleFetchedPosts(
+      const result = await postDataController.handleFetchedPosts(
         null,
         false,
         (posts: Post[], items: Item[]) => {},
       );
       const filterAndSavePosts = jest.spyOn(
-        dataHandleController,
+        postDataController,
         'filterAndSavePosts',
       );
       expect(filterAndSavePosts).not.toBeCalled();
@@ -91,7 +88,7 @@ describe('DataHandleController', () => {
         items: [{ id: 12 }, { id: 23 }],
         hasMore: false,
       };
-      const result = await dataHandleController.handleFetchedPosts(
+      const result = await postDataController.handleFetchedPosts(
         data,
         false,
         (posts: Post[], items: Item[]) => {},
@@ -111,7 +108,7 @@ describe('DataHandleController', () => {
         { id: 3, group_id: 1, deactivated: false },
         { id: 4, group_id: 2, deactivated: true },
       ];
-      const result = await dataHandleController.filterAndSavePosts(data, false);
+      const result = await postDataController.filterAndSavePosts(data, false);
       expect(result).toEqual([{ id: 3, group_id: 1, deactivated: false }]);
     });
 
@@ -120,7 +117,7 @@ describe('DataHandleController', () => {
         { id: 3, group_id: 1, deactivated: true },
         { id: 4, group_id: 2, deactivated: true },
       ];
-      const result = await dataHandleController.filterAndSavePosts(data, false);
+      const result = await postDataController.filterAndSavePosts(data, false);
       expect(result).toEqual([]);
     });
 
@@ -129,7 +126,7 @@ describe('DataHandleController', () => {
         { id: 3, group_id: 1, deactivated: false },
         { id: 4, group_id: 2, deactivated: false },
       ];
-      const result = await dataHandleController.filterAndSavePosts(data, false);
+      const result = await postDataController.filterAndSavePosts(data, false);
       expect(result).toEqual(data);
     });
   });

@@ -5,7 +5,7 @@
  */
 import { daoManager, PostDao } from '../../../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
+import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { Post, IRawPostResult } from '../entity';
 import { Raw } from '../../../framework/model';
 import { baseHandleData, transform } from '../../../service/utils';
@@ -14,7 +14,7 @@ import { ENTITY, GroupService } from '../../../service';
 import { Item } from '../../item/entity';
 import _ from 'lodash';
 
-class DataHandleController {
+class PostDataController {
   constructor(
     public preInsertController: IPreInsertController,
     public entitySourceController: IEntitySourceController<Post>,
@@ -36,7 +36,7 @@ class DataHandleController {
     const posts: Post[] =
       (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
     const items =
-      (await (ItemService.getInstance() as ItemService).handleIncomingData(
+      (await ItemService.getInstance<ItemService>().handleIncomingData(
         data.items,
       )) || [];
     await updateResult(posts, items);
@@ -81,4 +81,4 @@ class DataHandleController {
   }
 }
 
-export { DataHandleController };
+export { PostDataController };

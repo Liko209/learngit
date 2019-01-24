@@ -16,22 +16,25 @@ function getController() {
   return controller;
 }
 
-describe('PreInsertIdController', () => {
+describe('PreInsertIdController()', () => {
   beforeEach(() => {
     const configDao = new ConfigDao(null);
     daoManager.getKVDao.mockReturnValue(configDao);
   });
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
-  describe('constructor', () => {
+
+  describe('constructor()', () => {
     it('should return [] when new a PreInsertIdController instance', () => {
       const controller = getController();
       expect(controller.getAll()).toEqual([]);
     });
   });
 
-  describe('insertId', async () => {
+  describe('insert()', async () => {
     it('should have data after insert ids', async () => {
       const controller = getController();
       await controller.insert(10);
@@ -39,7 +42,8 @@ describe('PreInsertIdController', () => {
       expect(all).toEqual([10]);
     });
   });
-  describe('removeIdByVersion', async () => {
+
+  describe('delete()', async () => {
     it('should remove id from the map when it is existed in map', async () => {
       const controller = getController();
       await controller.insert(10);

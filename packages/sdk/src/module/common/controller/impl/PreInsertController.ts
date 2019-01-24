@@ -44,9 +44,9 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
           id: entity.id,
           status: PROGRESS_STATUS.INPROGRESS,
         });
-
-        const key: string = this.getEntityNotificationKey();
-        key.length && notificationCenter.emitEntityUpdate(key, [entity]);
+        notificationCenter.emitEntityUpdate(this.getEntityNotificationKey(), [
+          entity,
+        ]);
         break;
 
       case PROGRESS_STATUS.FAIL:

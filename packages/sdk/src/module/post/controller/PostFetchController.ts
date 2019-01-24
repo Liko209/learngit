@@ -12,7 +12,7 @@ import { daoManager, GroupConfigDao, PostDao } from '../../../dao';
 import { mainLogger } from 'foundation';
 import { ItemService } from '../../item';
 import { Item } from '../../item/entity';
-import { DataHandleController } from './DataHandleController';
+import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
@@ -20,13 +20,13 @@ import _ from 'lodash';
 const TAG = 'PostFetchController';
 
 class PostFetchController {
-  private _dataHandleController: DataHandleController;
+  private _postDataController: PostDataController;
 
   constructor(
     public preInsertController: IPreInsertController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {
-    this._dataHandleController = new DataHandleController(
+    this._postDataController = new PostDataController(
       preInsertController,
       entitySourceController,
     );
@@ -96,7 +96,7 @@ class PostFetchController {
             }
           };
 
-          await this._dataHandleController.handleFetchedPosts(
+          await this._postDataController.handleFetchedPosts(
             serverResult,
             shouldSaveToDb,
             updateResult,

@@ -61,6 +61,7 @@ const posts: Post[] = [
 describe('PostViewDao', () => {
   let postViewDao: PostViewDao;
   let postDao: PostDao;
+  let fetchPostsFunc: (ids: number[]) => Promise<Post[]>;
 
   beforeAll(() => {
     const { database } = setup();
@@ -79,11 +80,16 @@ describe('PostViewDao', () => {
       jest.restoreAllMocks();
       jest.resetAllMocks();
       jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+      fetchPostsFunc = async (ids: number[]) => {
+        const posts = await postDao.batchGet(ids);
+        return _.orderBy(posts, 'created_at', 'desc');
+      };
     });
 
     it('should return older posts when direction is older and post id > 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
       const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
         9163628546,
         1151236399108,
         QUERY_DIRECTION.OLDER,
@@ -96,6 +102,7 @@ describe('PostViewDao', () => {
     it('should return newer posts when direction is newer and post id > 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[0]);
       const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
         9163628546,
         3752569593860,
         QUERY_DIRECTION.NEWER,
@@ -108,6 +115,7 @@ describe('PostViewDao', () => {
     it('should return older posts when direction is older and post id === 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
       const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
         9163628546,
         0,
         QUERY_DIRECTION.OLDER,
@@ -120,6 +128,7 @@ describe('PostViewDao', () => {
     it('should return empty when direction is newer and post id === 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[0]);
       const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
         9163628546,
         0,
         QUERY_DIRECTION.NEWER,

@@ -101,31 +101,6 @@ describe('PostFetchController()', () => {
       });
     });
 
-    it('should return empty result when shouldSaveToDb===true & local & remote is empty', async () => {
-      const mockPosts = [];
-      const mockItems = [];
-      const mockNormal = new ApiResultOk({ posts: [], items: [] }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
-      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
-      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
-      itemService.getByPosts.mockResolvedValue(mockItems);
-      PostAPI.requestPosts.mockResolvedValue(mockNormal);
-
-      const result = await postFetchController.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-
-      expect(result).toEqual({
-        hasMore: false,
-        items: [],
-        posts: [],
-        limit: 20,
-      });
-    });
-
     it('should return local + server result when shouldSaveToDb===true & local count < limit', async () => {
       const mockPosts = [{ id: 1 }, { id: 2 }];
       const mockItems = [{ id: 11 }, { id: 22 }];
@@ -158,7 +133,119 @@ describe('PostFetchController()', () => {
       });
     });
 
-    it('should return empty result when shouldSaveToDb===true & local remote is empty & api request is failed', async () => {
+    it('should return empty result when shouldSaveToDb===true & local remote is empty', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const mockNormal = new ApiResultOk({ posts: [], items: [] }, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      PostAPI.requestPosts.mockResolvedValue(mockNormal);
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
+
+    it('should return local result when shouldSaveToDb===true & local is not empty & remote is empty', async () => {
+      const mockPosts = [{ id: 1 }, { id: 2 }];
+      const mockItems = [{ id: 11 }, { id: 22 }];
+      const mockNormal = new ApiResultOk({ posts: [], items: [] }, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      PostAPI.requestPosts.mockResolvedValue(mockNormal);
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: mockItems,
+        posts: mockPosts,
+        limit: 20,
+      });
+    });
+
+    it('should return local result when shouldSaveToDb===true & local is empty & remote is not empty', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [{ id: 3 }, { id: 4 }],
+        items: [{ id: 12 }, { id: 23 }],
+      };
+      const mockNormal = new ApiResultOk(data, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      PostAPI.requestPosts.mockResolvedValue(mockNormal);
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(data.items);
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: data.items,
+        posts: data.posts,
+        limit: 20,
+      });
+    });
+
+    it('should return empty result when shouldSaveToDb===true & local is empty & api request is failed', async () => {
+      const mockPosts = [{ id: 1 }, { id: 2 }];
+      const mockItems = [{ id: 11 }, { id: 22 }];
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      PostAPI.requestPosts.mockResolvedValueOnce(
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
+            {
+              status: 403,
+              headers: {},
+            } as BaseResponse,
+        ),
+      );
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: true,
+        items: mockItems,
+        posts: mockPosts,
+        limit: 20,
+      });
+    });
+
+    it('should return local results when shouldSaveToDb===true & local is not empty & api request is failed', async () => {
       const mockPosts = [];
       const mockItems = [];
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
@@ -213,6 +300,36 @@ describe('PostFetchController()', () => {
         posts: data.posts,
         items: data.items,
         hasMore: false,
+        limit: 20,
+      });
+    });
+
+    it('should return empty when shouldSaveToDb===false & local is empty & api request is failed', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      jest.spyOn(groupConfigDao, 'hasMoreRemotePost').mockResolvedValue(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      PostAPI.requestPosts.mockResolvedValueOnce(
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
+            {
+              status: 403,
+              headers: {},
+            } as BaseResponse,
+        ),
+      );
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: true,
+        items: [],
+        posts: [],
         limit: 20,
       });
     });
