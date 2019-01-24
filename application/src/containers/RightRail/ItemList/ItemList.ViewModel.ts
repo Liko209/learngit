@@ -223,7 +223,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     await this.fetchNextPageItems();
   }
 
-  @action.bound
+  @action
   fetchNextPageItems = async () => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
