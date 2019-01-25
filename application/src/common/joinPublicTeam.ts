@@ -12,7 +12,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
 import GroupModel from '@/store/models/Group';
-import { SortableModel } from 'sdk/models';
+import { SortableModel } from 'sdk/framework/model';
 import { Group } from 'sdk/module/group/entity';
 import {
   ToastMessageAlign,

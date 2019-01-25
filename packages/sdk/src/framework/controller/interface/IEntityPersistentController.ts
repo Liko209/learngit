@@ -25,6 +25,10 @@ interface IEntityPersistentController<T extends IdModel = IdModel> {
 
   batchGet(ids: number[]): Promise<T[]>;
 
+  getAll(): Promise<T[]>;
+
+  getTotalCount(): Promise<number>;
+
   getEntityNotificationKey(): string;
 }
 

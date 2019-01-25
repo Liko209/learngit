@@ -5,7 +5,7 @@
  */
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
-import { SortableModel } from 'sdk/models';
+import { SortableModel } from 'sdk/framework/model';
 
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];

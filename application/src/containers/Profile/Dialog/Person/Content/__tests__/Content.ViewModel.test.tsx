@@ -7,7 +7,7 @@
 import { getEntity } from '../../../../../../store/utils';
 import { ProfileDialogPersonContentViewModel } from '../Content.ViewModel';
 import { ENTITY_NAME } from '@/store';
-import { PHONE_NUMBER_TYPE } from 'sdk/service/person';
+import { PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 
 jest.mock('../../../../../../store/utils');
 

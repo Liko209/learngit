@@ -197,6 +197,10 @@ class BaseDao<T extends {}> {
     }
   }
 
+  async getAllCount(): Promise<number> {
+    return this.createQuery().count();
+  }
+
   async doInTransaction(func: () => {}): Promise<void> {
     await this.db.ensureDBOpened();
     await this.db.getTransaction('rw', [this.collection], async () => {

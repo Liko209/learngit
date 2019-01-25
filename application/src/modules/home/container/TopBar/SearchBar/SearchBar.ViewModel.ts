@@ -5,7 +5,7 @@
  */
 import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import PersonService from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 import GroupService from 'sdk/service/group';
 import { GroupService as NGroupService } from 'sdk/module/group';
 import { SectionType, ViewProps, Person, Group, Props } from './types';
@@ -24,7 +24,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor() {
     super();
-    this.personService = PersonService.getInstance();
+    this.personService = PersonService.getInstance<PersonService>();
     this.groupService = GroupService.getInstance();
     this.nGroupService = new NGroupService();
   }
