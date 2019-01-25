@@ -33,6 +33,7 @@ jest.mock('../../../../store/base/visibilityChangeEvent');
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
 }
