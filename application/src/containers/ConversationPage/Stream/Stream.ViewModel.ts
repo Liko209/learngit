@@ -53,7 +53,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   jumpToPostId: number;
 
   @observable loadInitialPostsError: Error | null = null;
-  @observable groupId: number;
 
   @computed
   get hasHistoryUnread() {
@@ -119,6 +118,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   constructor(props: StreamProps) {
     super(props);
+
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);

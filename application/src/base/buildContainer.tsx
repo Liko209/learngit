@@ -94,7 +94,17 @@ function buildContainer<P = {}, S = {}, SS = any>({
       Object.keys(descriptors)
         .filter(this._isViewProp)
         .forEach((key: string) => {
-          props[key] = this.vm[key];
+          if (props[key] && props[key] !== this.vm[key]) {
+            throw new Error(
+              `buildContainer Error: '${Container.displayName}.props.${key}: ${
+                props[key]
+              }' conflict with '${ViewModel.name}.${key}: ${this.vm[key]}'`,
+            );
+          }
+
+          if (this.vm[key]) {
+            props[key] = this.vm[key];
+          }
         });
       return props;
     }

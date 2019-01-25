@@ -4,19 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed } from 'mobx';
+import { action, computed } from 'mobx';
 import { GroupService } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
 import { getEntity } from '@/store/utils';
-import { AbstractViewModel } from '@/base';
 import GroupModel from '@/store/models/Group';
+import StoreViewModel from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { ConversationPageProps } from './types';
 import _ from 'lodash';
 import history from '@/history';
 
-class ConversationPageViewModel extends AbstractViewModel {
+class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
 
@@ -33,13 +33,10 @@ class ConversationPageViewModel extends AbstractViewModel {
     },
   );
 
-  @observable
-  groupId: number;
-
   @computed
   private get _group() {
-    return this.groupId
-      ? getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId)
+    return this.props.groupId
+      ? getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
       : ({} as GroupModel);
   }
 
@@ -50,7 +47,7 @@ class ConversationPageViewModel extends AbstractViewModel {
 
   @action
   async onReceiveProps({ groupId }: ConversationPageProps) {
-    if (!_.isEqual(groupId, this.groupId) && groupId) {
+    if (!_.isEqual(groupId, this.props.groupId) && groupId) {
       const group = await this._groupService.getById(groupId);
       if (!group) {
         history.replace('/messages/loading', {
@@ -59,8 +56,8 @@ class ConversationPageViewModel extends AbstractViewModel {
         });
         return;
       }
-      this.groupId = group.id;
-      this.groupId && this._readGroup(groupId);
+      this.props.groupId = group.id;
+      this.props.groupId && this._readGroup(groupId);
     }
   }
 
