@@ -14,7 +14,6 @@ const ICON_MAP = {
   ppt: 'ppt',
   doc: 'doc',
   excel: 'excel',
-  file: 'file',
   zip: 'zip',
   music: 'music',
   video: 'video',
@@ -58,7 +57,7 @@ class JuiThumbnail extends React.Component<JuiThumbnailProps> {
           <StyledIcon size={size} {...this.props}>
             {iconType && ICON_MAP[iconType]
               ? ICON_MAP[iconType]
-              : 'image_preview'}
+              : 'default_file'}
           </StyledIcon>
         )}
       </>
