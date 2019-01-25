@@ -77,10 +77,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await h(t).glip(loginUser).clearAllUmi();
   });
 
-  // FIXME: it should be something like background, and outside test scope
-  const duplicateSteps = async (section, chatId, teamName, sectionName, cb: () => Promise<any>) => {
-    await cb();
-
+  async function nextSteps(section, chatId: string, teamName: string, sectionName: string) {
     await h(t).withLog(`Then ${teamName} should keep its position 2 in ${sectionName} section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(1).groupIdShouldBe(chatId);
@@ -98,82 +95,83 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   }
 
   // 1. Login -> Last open team conversation A
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`And set last_group_id is id of ${secondTeamName}`, async () => {
-      await h(t).glip(loginUser).setLastGroupId(teamId);
-    });
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog(`And set last_group_id is id of ${secondTeamName}`, async () => {
+    await h(t).glip(loginUser).setLastGroupId(teamId);
   });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // open via mentions
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
-      await mentionPageEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
-      await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
+    await mentionPageEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
+    await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // open via bookmark
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
-      await bookmarkEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
-      await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
+    await bookmarkEntry.enter();
+    await bookmarkPage.waitUntilPostsBeLoaded();
+    await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // open via URL
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`When I open conversation A via URL `, async () => {
-      const url = new URL(SITE_URL)
-      const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
-      await t.navigateTo(NEW_URL);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog(`When I open conversation A via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
   });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // Login -> Last open DM conversation B
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I logout And set last_group_id is id of conversation B and login again`, async () => {
-      await app.homePage.openSettingMenu();
-      await app.homePage.settingMenu.clickLogout();
-      await h(t).glip(loginUser).setLastGroupId(directMessageChatId);
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-  });
-  // open via mentions
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
-      await mentionPageEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
-      await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
-    });
-  });
-  // open via bookmark
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
-      await bookmarkEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
-      await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`When I logout And set last_group_id is id of conversation B and login again`, async () => {
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
+    await h(t).glip(loginUser).setLastGroupId(directMessageChatId);
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
   });
 
-  // open via URL
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I open conversation B via URL `, async () => {
-      const url = new URL(SITE_URL)
-      const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
-      await t.navigateTo(NEW_URL);
-      await app.homePage.ensureLoaded();
-    });
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+
+  // open via mentions
+  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
+    await mentionPageEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
+    await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+
+  // open via bookmark
+  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
+    await bookmarkEntry.enter();
+    await bookmarkPage.waitUntilPostsBeLoaded();
+    await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
+  });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+
+  // open via URL
+  await h(t).withLog(`When I open conversation B via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
+  });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 });
 
 
@@ -234,17 +232,17 @@ test(formalName('Should display in the top of conversation list when opening a c
       members: [loginUser.rcId, users[5].rcId],
     });
     await h(t).glip(loginUser).hideGroups(directMessageChatId); // hide first then show for pre condition of last group
-    const dm1 = await h(t).platform(loginUser).createAndGetGroupId({
+    await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[0].rcId],
     });
 
-    const dm2 = await h(t).platform(loginUser).createAndGetGroupId({
+    await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[1].rcId],
     });
 
-    const dm3 = await h(t).platform(loginUser).createAndGetGroupId({
+    await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[2].rcId],
     });
@@ -259,12 +257,11 @@ test(formalName('Should display in the top of conversation list when opening a c
     await h(t).glip(loginUser).clearAllUmi();
   });
 
-  const duplicateSteps = async (section, chatId, teamName, sectionName, cb: () => Promise<any>) => {
-    await cb();
-
+  async function nextSteps(section, chatId: string, teamName: string, sectionName: string) {
     await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(0).groupIdShouldBe(chatId);
+      await t.wait(5e3); // wait for back-end sync last-group-id
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
@@ -280,54 +277,54 @@ test(formalName('Should display in the top of conversation list when opening a c
   }
 
   // 1. Login -> Last open team conversation A
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`And set last_group_id is id of ${topTeamName}`, async () => {
-      await h(t).glip(loginUser).setMaxTeamDisplay(3);
-      await h(t).glip(loginUser).setLastGroupId(teamId);
-    });
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog(`And set last_group_id is id of ${topTeamName}`, async () => {
+    await h(t).glip(loginUser).setMaxTeamDisplay(3);
+    await h(t).glip(loginUser).setLastGroupId(teamId);
   });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // open via mentions
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`Given I hide the conversation A`, async () => {
-      await h(t).glip(loginUser).hideGroups([+teamId]);
-    });
-
-    await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
-      await mentionPageEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
-      await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`Given I hide the conversation A`, async () => {
+    await h(t).glip(loginUser).hideGroups([+teamId]);
   });
+
+  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
+    await mentionPageEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
+    await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
+  });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // open via bookmark
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`Given I hide the conversation A`, async () => {
-      await h(t).glip(loginUser).hideGroups([+teamId]);
-    });
-
-    await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
-      await bookmarkEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
-      await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`Given I hide the conversation A`, async () => {
+    await h(t).glip(loginUser).hideGroups([+teamId]);
   });
+
+  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
+    await bookmarkEntry.enter();
+    await bookmarkPage.waitUntilPostsBeLoaded();
+    await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
+  });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
 
   // open via URL
-  await duplicateSteps(teamSection, teamId, 'conversation A', 'team', async () => {
-    await h(t).withLog(`When I open conversation A via URL `, async () => {
-      const url = new URL(SITE_URL)
-      const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
-      await t.navigateTo(NEW_URL);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog(`When I open conversation A via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
   });
+
+  await nextSteps(teamSection, teamId, 'conversation A', 'team');
 
   // open via create new team
   const createTeamModal = app.homePage.createTeamModal;
@@ -339,6 +336,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await createTeamModal.typeTeamName(newTeamName);
     await createTeamModal.clickCreateButton();
   });
+
 
   await h(t).withLog(`Then ${newTeamName} should be opened and on the top in team section`, async () => {
     await t.expect(conversationPage.title.textContent).eql(newTeamName);
@@ -357,66 +355,67 @@ test(formalName('Should display in the top of conversation list when opening a c
 
 
   // 2. Login -> Last open DM conversation B
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I logout And set last_group_id is id of conversation B and login again`, async () => {
-      await app.homePage.openSettingMenu();
-      await app.homePage.settingMenu.clickLogout();
-      await h(t).glip(loginUser).showGroups(directMessageChatId); // set show again for open last group test
-      await h(t).glip(loginUser).setLastGroupId(directMessageChatId);
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog(`When I logout And set last_group_id is id of conversation B and login again`, async () => {
+    await app.homePage.openSettingMenu();
+    await app.homePage.settingMenu.clickLogout();
+    await h(t).glip(loginUser).showGroups(directMessageChatId); // set show again for open last group test
+    await h(t).glip(loginUser).setLastGroupId(directMessageChatId);
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
   });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via mentions
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
-      await mentionPageEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
-      await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
+    await mentionPageEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
+    await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via bookmark
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
-      await bookmarkEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
-      await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
-    });
+  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
+    await bookmarkEntry.enter();
+    await bookmarkPage.waitUntilPostsBeLoaded();
+    await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via URL
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`Given I hide the conversation A`, async () => {
-      await h(t).glip(loginUser).hideGroups([+teamId]);
-    });
-
-    await h(t).withLog(`When I open conversation B via URL `, async () => {
-      const url = new URL(SITE_URL)
-      const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
-      await t.navigateTo(NEW_URL);
-      await app.homePage.ensureLoaded();
-    });
+  await h(t).withLog(`Given I hide the conversation A`, async () => {
+    await h(t).glip(loginUser).hideGroups([+teamId]);
   });
+
+  await h(t).withLog(`When I open conversation B via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
+  });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via send new message entry
-  await duplicateSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage', async () => {
-    await h(t).withLog(`Given I hide the conversation A`, async () => {
-      await h(t).glip(loginUser).hideGroups([+directMessageChatId]);
-    });
-
-    await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
-      await app.homePage.openAddActionMenu();
-      await app.homePage.addActionMenu.sendNewMessageEntry.enter();
-      await createTeamModal.ensureLoaded();
-      const sendNewMessageModal = app.homePage.sendNewMessageModal;
-      await sendNewMessageModal.typeMember(otherUserName, { paste: true });
-      await t.wait(3e3);
-      await sendNewMessageModal.selectMemberByNth(0);
-      await sendNewMessageModal.clickSendButton();
-    });
+  await h(t).withLog(`Given I hide the conversation A`, async () => {
+    await h(t).glip(loginUser).hideGroups([+directMessageChatId]);
   });
+
+  await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.sendNewMessageEntry.enter();
+    await createTeamModal.ensureLoaded();
+    const sendNewMessageModal = app.homePage.sendNewMessageModal;
+    await sendNewMessageModal.typeMember(otherUserName, { paste: true });
+    await t.wait(3e3);
+    await sendNewMessageModal.selectMemberByNth(0);
+    await sendNewMessageModal.clickSendButton();
+  });
+
+  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+
 });
 
 test(formalName('Should display in the top of conversation list when searching whether it is out of the left list or not', ['P2', 'JPT-968', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
@@ -428,12 +427,8 @@ test(formalName('Should display in the top of conversation list when searching w
 
   const showedTeamName = uuid();
   const hidedTeamName = uuid();
-  const showedChatName = await h(t).glip(loginUser).getPerson(users[5].rcId).then(
-    res => res.data.display_name
-  )
-  const hidedChatName = await h(t).glip(loginUser).getPerson(users[6].rcId).then(
-    res => res.data.display_name
-  )
+  const showedChatName = await h(t).glip(loginUser).getPersonPartialData("display_name", users[5].rcId);
+  const hidedChatName = await h(t).glip(loginUser).getPersonPartialData("display_name", users[6].rcId);
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
