@@ -8,7 +8,7 @@ import FileItemModel, {
   FileType,
 } from '@/store/models/FileItem';
 
-const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
+const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg', 'bmp'];
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
