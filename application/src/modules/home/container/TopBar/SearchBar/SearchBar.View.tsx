@@ -319,6 +319,9 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       groups.sortableModel,
       teams.sortableModel,
     ];
+    if (section < 0 || cell < 0) {
+      return;
+    }
     const selectItem = searchItems[section][cell] as SortableModel<
       Person | Group
     >;
