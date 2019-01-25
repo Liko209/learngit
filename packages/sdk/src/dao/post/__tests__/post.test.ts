@@ -5,9 +5,11 @@
 import PostDao from '..';
 import { setup } from '../../__tests__/utils';
 import _ from 'lodash';
-import { Post } from '../../../models';
 import { postFactory } from '../../../__tests__/factories';
 import { QUERY_DIRECTION } from '../../constants';
+import { daoManager } from '../..';
+import { PostViewDao } from '../PostViewDao';
+import { Post } from '../../../module/post/entity';
 
 const posts: Post[] = [
   postFactory.build({
@@ -34,27 +36,41 @@ const posts: Post[] = [
 ];
 
 describe('Post Dao', () => {
+  let postViewDao: PostViewDao;
   let postDao: PostDao;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     const { database } = setup();
+    postViewDao = new PostViewDao(database);
+    jest.spyOn(daoManager, 'getDao').mockReturnValue(postViewDao);
     postDao = new PostDao(database);
   });
 
-  it('Save posts', async () => {
-    await postDao.bulkPut(posts);
-    const result: Post = await postDao.get(3752569593860);
-    expect(result.text).toBe('2');
+  describe('Save', () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      jest.restoreAllMocks();
+      jest.resetAllMocks();
+    });
+    it('Save posts', async () => {
+      await postDao.bulkPut(posts);
+      const results: Post = await postDao.get(3752569593860);
+      expect(results.text).toBe('2');
+    });
   });
 
   describe('Queries', () => {
     beforeAll(async () => {
+      jest.spyOn(postDao, 'getPostViewDao').mockReturnValue(postViewDao);
       await postDao.clear();
       await postDao.bulkPut(posts);
     });
 
-    afterEach(() => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
       jest.restoreAllMocks();
+      jest.resetAllMocks();
+      jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
     });
 
     it('Query older posts by group Id and post id', async () => {
@@ -78,7 +94,7 @@ describe('Post Dao', () => {
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.last(result).created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(2);
     });
 
     it('Query last post by group ID', async () => {

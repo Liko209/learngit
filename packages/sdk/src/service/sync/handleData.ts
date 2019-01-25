@@ -19,16 +19,16 @@ import personHandleData from '../person/handleData';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
-import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
 import { Raw } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
 import { ItemService } from '../../module/item';
+import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 
-const dispatchIncomingData = (data: IndexDataModel) => {
+const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
     user_id: userId,
     company_id: companyId,
@@ -54,7 +54,6 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   if (profile && Object.keys(profile).length > 0) {
     transProfile = profile;
   }
-
   return Promise.all([
     accountHandleData({
       userId,
@@ -65,7 +64,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     companyHandleData(companies),
     (ItemService.getInstance() as ItemService).handleIncomingData(items),
     presenceHandleData(presences),
-    stateHandleData(arrState),
+    (StateService.getInstance() as StateService).handleState(arrState),
     // featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(transProfile))

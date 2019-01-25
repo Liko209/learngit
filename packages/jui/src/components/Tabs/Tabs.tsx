@@ -21,6 +21,7 @@ import { StyledWrapper } from './StyledWrapper';
 import { JuiTabProps } from './Tab';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
+import { JuiArrowTip } from '../Tooltip/ArrowTip';
 
 type States = {
   openMenu: boolean;
@@ -36,6 +37,8 @@ type Props = {
   tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
+  onChangeTab?: (index: number) => void;
+  moreText: string; // more tab support i18N
 };
 
 const CLASSES = {
@@ -87,6 +90,8 @@ class JuiTabs extends PureComponent<Props, States> {
     if (indexSelected > Children.count(props.children) - 1) {
       indexSelected = 0;
     }
+    const { onChangeTab } = props;
+    onChangeTab && onChangeTab(indexSelected);
     this.state = {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
@@ -202,7 +207,7 @@ class JuiTabs extends PureComponent<Props, States> {
 
   private _setSelectedTabIndex = (indexSelected: number) => {
     let { indexLazyLoadComponents } = this.state;
-    const { tag } = this.props;
+    const { tag, onChangeTab } = this.props;
     if (!indexLazyLoadComponents.includes(indexSelected)) {
       indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
     }
@@ -210,6 +215,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (tag) {
       this._setLocalSelectedIndex(indexSelected);
     }
+    onChangeTab && onChangeTab(indexSelected);
   }
 
   private _getLocalKey = () => {
@@ -257,15 +263,19 @@ class JuiTabs extends PureComponent<Props, States> {
   }
 
   private _renderMore = () => {
-    const { tag } = this.props;
-    return this._renderStyledTab({
-      value: MORE,
-      icon: <MoreHoriz />,
-      onClick: this._showMenuList,
-      style: STYLE,
-      ref: this._moreRef,
-      automationId: `${tag}-more`,
-    });
+    const { tag, moreText } = this.props;
+    return (
+      <JuiArrowTip title={moreText}>
+        {this._renderStyledTab({
+          value: MORE,
+          icon: <MoreHoriz />,
+          onClick: this._showMenuList,
+          style: STYLE,
+          ref: this._moreRef,
+          automationId: `${tag}-more`,
+        })}
+      </JuiArrowTip>
+    );
   }
 
   private _renderForShow = () => {

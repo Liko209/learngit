@@ -62,6 +62,8 @@ const name2icon = {
   image_preview: 'image-preview',
   add_member: 'add-member',
   add_team: 'add-team',
+  double_chevron_right: 'double-chevron_right',
+  double_chevron_left: 'double-chevron_left',
   code: 'code-snippet',
 };
 

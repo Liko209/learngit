@@ -24,26 +24,26 @@ storiesOf('Components/Tabs', module)
   .add('Tabs', () => {
     return (
       <Wrapper>
-        <JuiTabs defaultActiveIndex={5}>
-          <JuiTab key={0} title="0Pinned">
+        <JuiTabs defaultActiveIndex={5} tag="right-shelf" moreText="More">
+          <JuiTab title="0Pinned">
             <div>Pinned List</div>
           </JuiTab>
-          <JuiTab key={1} title="1Files Files Files Files Files">
+          <JuiTab title="1Files Files Files Files Files">
             <div>Files List</div>
           </JuiTab>
-          <JuiTab key={2} title="2Images">
+          <JuiTab title="2Images">
             <div>Images List</div>
           </JuiTab>
-          <JuiTab key={3} title="3Tasks">
+          <JuiTab title="3Tasks">
             <div>Tasks List</div>
           </JuiTab>
-          <JuiTab key={4} title="4Notes">
+          <JuiTab title="4Notes">
             <div>Notes List</div>
           </JuiTab>
-          <JuiTab key={5} title="5Events">
+          <JuiTab title="5Events">
             <div>Events List</div>
           </JuiTab>
-          <JuiTab key={6} title="6Integration">
+          <JuiTab title="6Integration">
             <div>Integration List</div>
           </JuiTab>
         </JuiTabs>

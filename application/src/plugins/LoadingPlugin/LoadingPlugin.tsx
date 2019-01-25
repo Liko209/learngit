@@ -11,7 +11,9 @@ import { createLoadingStateDecorator } from '../utils';
 
 interface ILoadingViewModel extends IViewModel, WithLoadingProps {}
 
-type LoadingPluginOptions = {};
+type LoadingPluginOptions = {
+  CustomizedLoading?: ComponentType<any>;
+};
 
 class LoadingPlugin implements IPlugin {
   _options: LoadingPluginOptions;
@@ -24,7 +26,7 @@ class LoadingPlugin implements IPlugin {
   }
 
   wrapView(View: ComponentType<any>) {
-    return withLoading(View);
+    return withLoading(View, this._options.CustomizedLoading);
   }
 }
 const loading = createLoadingStateDecorator('loading');
