@@ -20,6 +20,10 @@ const StyledEditorWrapper = styled('div')<{ maxHeight: number }>`
   transition: max-height 0.75s ease-in-out;
 `;
 
+const StyledTextArea = styled('textarea')`
+  display: none;
+`;
+
 const OverrideDefaultStyle = createGlobalStyle<{}>`
 ${StyledEditorWrapper} {
   .CodeMirror {
@@ -178,6 +182,7 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
           }
         }
       }
+      return true;
     }
     return false;
   }
@@ -232,7 +237,7 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
           maxHeight={height}
           data-test-automation-id="codeSnippetBody"
         >
-          <textarea
+          <StyledTextArea
             ref={this.textareaNode}
             defaultValue={this.props.value}
             autoComplete="off"
