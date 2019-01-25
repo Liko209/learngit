@@ -177,7 +177,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
-        onClick={this.handleJoinTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
