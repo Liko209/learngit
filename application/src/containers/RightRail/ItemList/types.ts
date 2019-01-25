@@ -21,6 +21,7 @@ const InitLoadStatus: LoadStatus = {
 type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
+  active: boolean;
 };
 
 type ViewProps = {
