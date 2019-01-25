@@ -38,6 +38,7 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _image: HTMLImageElement;
   private _loaded: boolean = false;
+  private _mounted: boolean = false;
   constructor(props: JuiPreviewImageProps) {
     super(props);
     this._image = new Image();
@@ -57,7 +58,15 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     } else {
       this._imageInfo = getThumbnailSize(width, height);
     }
-    this.forceUpdate();
+    if (this._mounted) {
+      this.forceUpdate();
+    }
+  }
+  componentDidMount() {
+    this._mounted = true;
+  }
+  componentWillUnmount() {
+    this._mounted = false;
   }
   render() {
     const { Actions, fileName, forceSize } = this.props;
