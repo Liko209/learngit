@@ -180,7 +180,7 @@ test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendN
   }, true);
 
   await h(t).withLog('When I refresh page', async () => {
-    await h(t).refresh();
+    await h(t).reload();
     await app.homePage.messageTab.directMessagesSection.ensureLoaded();
   });
 

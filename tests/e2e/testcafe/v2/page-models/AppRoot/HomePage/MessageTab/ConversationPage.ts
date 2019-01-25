@@ -186,7 +186,7 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async shouldFocusOnMessageInputArea() {
-    await this.t.expect(this.messageInputArea.focused).ok();
+    await this.t.expect(this.messageInputArea.focused).ok({timeout: 5e3});
   }
 
   async sendMessage(message: string, options?: TypeActionOptions) {
@@ -552,4 +552,3 @@ class AudioConference extends BaseWebComponent {
     return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
   }
 }
-
