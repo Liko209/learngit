@@ -14,6 +14,7 @@ import {
 } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 
+jest.mock('sdk/api');
 jest.mock('sdk/service/profile');
 jest.mock('sdk/module/state');
 jest.mock('sdk/service/group');

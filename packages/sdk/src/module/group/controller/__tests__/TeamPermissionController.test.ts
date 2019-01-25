@@ -6,7 +6,6 @@
 
 import { TeamPermissionController } from '../TeamPermissionController';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
-import { groupFactory } from './factory';
 import { daoManager } from '../../../../dao';
 import {
   ACCOUNT_USER_ID,
@@ -226,7 +225,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(DEFAULT_USER_PERMISSION_LEVEL);
     });
     it('should return team permission level for common user and user permissions level is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -279,33 +278,27 @@ describe('TeamPermissionController', () => {
   describe('getCurrentUserPermissions()', () => {
     it('return permissions when current user is guest', () => {
       const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        guest_user_company_ids: [55668833],
         members: [],
       };
-      jest
-        .spyOn(teamPermissionController, 'isCurrentUserGuest')
-        .mockReturnValue(true);
-      jest
-        .spyOn(teamPermissionController, 'getCurrentUserPermissionLevel')
-        .mockReturnValue(11);
       expect(
         teamPermissionController.getCurrentUserPermissions(teamPermissionParams),
-      ).toEqual([PERMISSION_ENUM.TEAM_POST]);
+      ).toEqual([
+        PERMISSION_ENUM.TEAM_POST,
+        PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+      ]);
     });
     it('return permissions when current user is not guest', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
       };
-      jest
-        .spyOn(teamPermissionController, 'isCurrentUserGuest')
-        .mockReturnValue(false);
-      jest
-        .spyOn(teamPermissionController, 'getCurrentUserPermissionLevel')
-        .mockReturnValue(11);
       expect(
         teamPermissionController.getCurrentUserPermissions(teamPermissionParams),
       ).toEqual([
         PERMISSION_ENUM.TEAM_POST,
         PERMISSION_ENUM.TEAM_ADD_MEMBER,
+        PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
         PERMISSION_ENUM.TEAM_PIN_POST,
       ]);
     });
@@ -353,50 +346,68 @@ describe('TeamPermissionController', () => {
         ),
       ).toBeFalsy();
     });
-  });
 
-  describe('createPermissionsMask()', () => {
-    it('should return correct mask value 31', () => {
-      const permissionFlags = {
-        TEAM_POST: true,
-        TEAM_ADD_MEMBER: true,
-        TEAM_ADD_INTEGRATIONS: true,
-        TEAM_PIN_POST: true,
-        TEAM_ADMIN: true,
+    it('should user not have TEAM_ADMIN permission when there is admin', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        members: [5683],
+        guest_user_company_ids: [],
+        permissions: {
+          admin: {
+            uids: [123],
+          },
+        },
       };
       expect(
-        teamPermissionController.createPermissionsMask(permissionFlags),
-      ).toBe(1 + 2 + 4 + 8 + 16);
+        teamPermissionController.isCurrentUserHasPermission(
+          teamPermissionParams,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeFalsy();
     });
-    it('should return correct mask value 21', () => {
-      const permissionFlags = {
-        TEAM_POST: true,
-        TEAM_ADD_MEMBER: false,
-        TEAM_ADD_INTEGRATIONS: true,
-        TEAM_PIN_POST: false,
-        TEAM_ADMIN: true,
+
+    it('should user have TEAM_ADMIN permission when there is not admin', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        members: [5683],
+        guest_user_company_ids: [],
+        permissions: {
+          admin: {
+            uids: [],
+          },
+        },
       };
       expect(
-        teamPermissionController.createPermissionsMask(permissionFlags),
-      ).toBe(1 + 4 + 16);
+        teamPermissionController.isCurrentUserHasPermission(
+          teamPermissionParams,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeTruthy();
     });
-    it('should return correct mask value 14', () => {
-      const permissionFlags = {
-        TEAM_POST: false,
-        TEAM_ADD_MEMBER: true,
-        TEAM_ADD_INTEGRATIONS: true,
-        TEAM_PIN_POST: true,
-        TEAM_ADMIN: false,
+
+    it('should guest not have TEAM_ADMIN permission when there is not admin', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        members: [5683],
+        guest_user_company_ids: [55668833],
+        permissions: {
+          admin: {
+            uids: [],
+          },
+        },
       };
       expect(
-        teamPermissionController.createPermissionsMask(permissionFlags),
-      ).toBe(2 + 4 + 8);
+        teamPermissionController.isCurrentUserHasPermission(
+          teamPermissionParams,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeFalsy();
     });
   });
 
   describe('isTeamAdmin()', async () => {
     it('should return true if no team permission model', async () => {
-      expect(teamPermissionController.isTeamAdmin(11, undefined)).toBeTruthy();
+      expect(teamPermissionController.isTeamAdmin(11, undefined)).toBeFalsy();
     });
 
     it('should return true if person is in admin id list', async () => {
@@ -414,6 +425,19 @@ describe('TeamPermissionController', () => {
       expect(teamPermissionController.isTeamAdmin(2, permission)).toBeTruthy();
       expect(teamPermissionController.isTeamAdmin(3, permission)).toBeTruthy();
       expect(teamPermissionController.isTeamAdmin(4, permission)).toBeFalsy();
+    });
+
+    it('should return false if admin.uids is empty', async () => {
+      const permission1: TeamPermission = {
+        admin: {
+          uids: [],
+        },
+      };
+      const permission2: TeamPermission = {};
+      const permission3: TeamPermission = null;
+      expect(teamPermissionController.isTeamAdmin(4, permission1)).toBeFalsy();
+      expect(teamPermissionController.isTeamAdmin(4, permission2)).toBeFalsy();
+      expect(teamPermissionController.isTeamAdmin(4, permission3)).toBeFalsy();
     });
   });
 

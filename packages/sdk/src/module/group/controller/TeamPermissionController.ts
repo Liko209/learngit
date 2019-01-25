@@ -5,19 +5,16 @@
  */
 
 import _ from 'lodash';
-import { daoManager, AccountDao } from '../../../dao';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../../dao/account/constants';
 import {
   MAX_PERMISSION_LEVEL,
   PERMISSION_ENUM,
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
+  DEFAULT_GUEST_PERMISSION_LEVEL,
 } from '../constants';
 import { TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags } from '../types';
+import { UserConfig } from '../../../service/account/UserConfig';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
 
@@ -25,8 +22,7 @@ class TeamPermissionController {
   constructor() {}
 
   isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
-    const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
-    const companyId = accountDao.get(ACCOUNT_COMPANY_ID);
+    const companyId = UserConfig.getCurrentCompanyId();
     const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
@@ -47,8 +43,7 @@ class TeamPermissionController {
   getCurrentUserPermissionLevel(
     teamPermissionParams: TeamPermissionParams,
   ): number {
-    const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
-    const userId = accountDao.get(ACCOUNT_USER_ID);
+    const userId = UserConfig.getCurrentUserId();
 
     if (!teamPermissionParams.is_team) {
       if (this.isSelfGroup(teamPermissionParams, userId)) {
@@ -57,37 +52,32 @@ class TeamPermissionController {
       return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
     }
 
-    const permissions = teamPermissionParams.permissions;
-    if (!permissions || !permissions.admin) {
-      return DEFAULT_ADMIN_PERMISSION_LEVEL;
-    }
-    if (
-      permissions.admin.uids.length === 0 ||
-      permissions.admin.uids.includes(userId)
-    ) {
-      return permissions.admin.level || DEFAULT_ADMIN_PERMISSION_LEVEL;
+    if (this.isCurrentUserGuest(teamPermissionParams)) {
+      return DEFAULT_GUEST_PERMISSION_LEVEL;
     }
 
-    if (!permissions.user) {
-      return DEFAULT_ADMIN_PERMISSION_LEVEL;
-    }
+    const {
+      permissions: {
+        admin: {
+          uids: adminUids = [],
+          level: adminLevel = DEFAULT_ADMIN_PERMISSION_LEVEL,
+        } = {},
+        user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
+      } = {},
+    } = teamPermissionParams;
 
-    return permissions.user.level || DEFAULT_USER_PERMISSION_LEVEL;
+    if (adminUids.length === 0 || adminUids.includes(userId)) {
+      return adminLevel;
+    }
+    return userLevel;
   }
 
   getCurrentUserPermissions(
     teamPermissionParams: TeamPermissionParams,
   ): PERMISSION_ENUM[] {
-    let permissions = this._permissionLevelToArray(
+    const permissions = this._permissionLevelToArray(
       this.getCurrentUserPermissionLevel(teamPermissionParams),
     );
-    if (this.isCurrentUserGuest(teamPermissionParams)) {
-      permissions = permissions.filter(
-        permission =>
-          permission !== PERMISSION_ENUM.TEAM_ADD_MEMBER &&
-          permission !== PERMISSION_ENUM.TEAM_PIN_POST,
-      );
-    }
     return permissions;
   }
 
@@ -99,27 +89,16 @@ class TeamPermissionController {
     return permissionList.includes(type);
   }
 
-  createPermissionsMask(newPermissions: PermissionFlags) {
-    const permissions_mask = _.reduce(
-      newPermissions,
-      (mask: number, value: boolean, key: string) => {
-        if (value) {
-          return mask + PERMISSION_ENUM[key];
-        }
-        return mask;
-      },
-      0,
-    );
-    return permissions_mask;
+  isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
+    const { admin: { uids: adminUids = [] } = {} } = permission || {};
+    return adminUids.includes(personId);
   }
 
-  isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
-    if (permission) {
-      // for some old team, thy don't have permission, so all member are admin
-      const adminUserIds = this._getTeamAdmins(permission);
-      return adminUserIds.includes(personId);
-    }
-    return true;
+  hasTeamAdminPermission(teamPermissionParams: TeamPermissionParams): boolean {
+    return this.isCurrentUserHasPermission(
+      teamPermissionParams,
+      PERMISSION_ENUM.TEAM_ADMIN,
+    );
   }
 
   getTeamUserLevel(permission: TeamPermission | undefined) {
@@ -168,10 +147,6 @@ class TeamPermissionController {
       }
     }
     return array;
-  }
-
-  private _getTeamAdmins(permission?: TeamPermission): number[] {
-    return permission && permission.admin ? permission.admin.uids : [];
   }
 
   private _checkPermissionWithMask(
