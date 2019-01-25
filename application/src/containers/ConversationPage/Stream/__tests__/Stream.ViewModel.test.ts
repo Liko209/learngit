@@ -23,12 +23,17 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
+import { NewPostService } from 'sdk/module/post';
 import { StreamProps } from '../types';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
+
+const postService = {
+  getPostsByGroupId: jest.fn(),
+};
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
@@ -39,7 +44,6 @@ function setup(obj?: any) {
 }
 
 describe('StreamViewModel', () => {
-  let postService: PostService;
   let itemService: ItemService;
   const streamController = {
     dispose: jest.fn(),
@@ -51,8 +55,7 @@ describe('StreamViewModel', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
-    postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
@@ -68,7 +71,7 @@ describe('StreamViewModel', () => {
       const vm = setup({
         props: { groupId: 1 },
       });
-      (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
+      postService.getPostsByGroupId.mockResolvedValue({
         posts: [
           { id: 1, item_ids: [], created_at: 10000 },
           { id: 2, item_ids: [], created_at: 10001 },
@@ -541,5 +544,6 @@ describe('StreamViewModel', () => {
         expect(streamController.enableNewMessageSep).toBeCalled();
       });
     });
+    jest.restoreAllMocks();
   });
 });

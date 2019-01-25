@@ -64,16 +64,24 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
-  get favIcon() {
-    return this.getSelectorByAutomationId('favorite-icon');
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
 
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.favoriteButton);
+  }
+  
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
 
-  async clickFavIcon() {
-    await this.t.click(this.favIcon);
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
   }
 
   nthPostItem(nth: number) {
@@ -178,7 +186,7 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async shouldFocusOnMessageInputArea() {
-    await this.t.expect(this.messageInputArea.focused).ok();
+    await this.t.expect(this.messageInputArea.focused).ok({timeout: 5e3});
   }
 
   async sendMessage(message: string, options?: TypeActionOptions) {
@@ -544,4 +552,3 @@ class AudioConference extends BaseWebComponent {
     return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
   }
 }
-

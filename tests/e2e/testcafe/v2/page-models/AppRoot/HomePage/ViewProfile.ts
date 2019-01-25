@@ -140,7 +140,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get favoriteButton() {
-    return this.getSelectorByAutomationId('favorite-icon');
+    return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
 
   get unFavoriteStatusIcon() {

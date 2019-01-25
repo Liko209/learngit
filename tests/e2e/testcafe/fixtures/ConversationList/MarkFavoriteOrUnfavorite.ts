@@ -186,7 +186,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('And I click unfav icon in the conversation page header', async () => {
-      await conversationPage.clickFavIcon();
+      await conversationPage.clickFavoriteButton();
     });
 
     await h(t).withLog('Then the conversation should remove from Fav section', async () => {
@@ -198,7 +198,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('When I click unfav icon in the conversation page header', async () => {
-      await conversationPage.clickFavIcon();
+      await conversationPage.clickFavoriteButton();
     });
 
     await h(t).withLog('Then the conversation should show in fav section', async () => {
@@ -215,7 +215,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('And I click unfav icon in the conversation page header', async () => {
-      await conversationPage.clickFavIcon();
+      await conversationPage.clickFavoriteButton();
     });
 
     await h(t).withLog('Then the conversation should remove from Fav section', async () => {
@@ -227,7 +227,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     });
 
     await h(t).withLog('When I click fav icon in the conversation page header', async () => {
-      await conversationPage.clickFavIcon();
+      await conversationPage.clickFavoriteButton();
     });
 
     await h(t).withLog('Then the conversation should show in Fav section', async () => {

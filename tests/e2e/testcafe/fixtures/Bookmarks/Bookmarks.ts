@@ -269,7 +269,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     await h(t).withLog('Then I nagivate away from conversation and refresh browser', async () => {
       await bookmarksEntry.enter();
       await bookmarkPage.waitUntilPostsBeLoaded();
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.ensureLoaded();
     });
 

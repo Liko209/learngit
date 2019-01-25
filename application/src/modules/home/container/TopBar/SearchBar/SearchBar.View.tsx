@@ -177,7 +177,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
-        onClick={this.handleJoinTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
@@ -319,6 +318,9 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       groups.sortableModel,
       teams.sortableModel,
     ];
+    if (section < 0 || cell < 0) {
+      return;
+    }
     const selectItem = searchItems[section][cell] as SortableModel<
       Person | Group
     >;

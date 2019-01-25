@@ -84,7 +84,7 @@ module.exports = {
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: (info) =>
+    devtoolModuleFilenameTemplate: info =>
       path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
@@ -150,6 +150,12 @@ module.exports = {
     // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
     splitChunks: {
       chunks: "all",
+      cacheGroups: {
+        codeMirror: {
+          test: /[\\/]codemirror[\\/]/,
+          name: "codemirror"
+        }
+      },
       name: false
     },
     // Keep the runtime chunk seperated to enable long term caching
