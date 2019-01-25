@@ -105,9 +105,10 @@ class Helper {
 
   async interceptHasFocus(isFocus: boolean) {
     // intercept return value of document.hasFocus to cheat SUT
-    await this.t.eval(
-      () => Object.defineProperty(document, 'hasFocus', { value: () => isFocus })
-      , { dependencies: { isFocus } });
+    await ClientFunction(
+      (_isFocus) => {
+        Object.defineProperty(document, 'hasFocus', { value: () => _isFocus, configurable: true });
+      })(isFocus);
   }
 
   async reload() {

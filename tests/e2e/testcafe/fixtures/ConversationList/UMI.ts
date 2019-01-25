@@ -215,7 +215,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
       name: `My Team ${uuid()}`,
       members: [loginUser.rcId, users[5].rcId],
     });
-   });
+  });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
     async () => {
@@ -233,7 +233,6 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     await h(t).platform(otherUser).sendTextPost('TestGroupUMI', pvtChatId)
   });
 
-  // FIXME: When run cases concurrently, current browser will be lost focus, and fail.
   await h(t).withLog('Then I should not have UMI in the private chat', async () => {
     await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
     await pvtChat.umi.shouldBeNumber(0);
@@ -584,8 +583,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
-      const focus = ClientFunction(() => window.focus());
-      await focus();
       await conversationPage.scrollToBottom();
     });
 
@@ -649,50 +646,46 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
   },
 );
 
-//Need investigate how to unfocus page.
-test.skip(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P2', 'ConversationList', 'Yilia.Hong']),
+test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
-    const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
+
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-
     let pvtChatId;
-    await h(t).withLog('Given have a conversation', async () => {
+    await h(t).withLog('Given I have an extension with at least one conversation', async () => {
+      await h(t).glip(loginUser).resetProfile();
       pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId]
       });
-      await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
-      await h(t).glip(loginUser).resetProfile();
     });
 
-    await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
-      async () => {
-        await h(t).directLoginWithUser(SITE_URL, loginUser);
-        await app.homePage.ensureLoaded();
-      },
-    );
+    const app = new AppRoot(t);
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
 
-    await h(t).withLog('Given Open a conversation then does not focus on the page', async () => {
+    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    await h(t).withLog('And Open the conversation', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
-      await t.wait(3000);
-      const noFocus = ClientFunction(() => window.blur());
-      await noFocus();
     });
 
-    await h(t).withLog('When receive messages',
-      async () => {
-        await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
-      },
-    );
+    await h(t).withLog('And then leave browser window', async () => {
+      await h(t).interceptHasFocus(false);
+    });
 
-    await h(t).withLog(`Then show UMI`, async () => {
+    await h(t).withLog('And receive a messages in this conversation', async () => {
+      await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
+    });
+
+    await h(t).withLog('Then I should find UMI of this conversation is 1', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(1);
     });
   },
