@@ -19,6 +19,7 @@ import history from '@/history';
 class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
+  private _prevGroupId: number;
 
   private _throttledUpdateLastGroup = _.wrap(
     _.throttle(
@@ -47,7 +48,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
 
   @action
   async onReceiveProps({ groupId }: ConversationPageProps) {
-    if (!_.isEqual(groupId, this.props.groupId) && groupId) {
+    if (!_.isEqual(groupId, this._prevGroupId) && groupId) {
       const group = await this._groupService.getById(groupId);
       if (!group) {
         history.replace('/messages/loading', {
@@ -56,8 +57,8 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
         });
         return;
       }
-      this.props.groupId = group.id;
-      this.props.groupId && this._readGroup(groupId);
+      this._prevGroupId = group.id;
+      group.id && this._readGroup(group.id);
     }
   }
 

@@ -102,9 +102,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
             );
           }
 
-          if (this.vm[key]) {
-            props[key] = this.vm[key];
-          }
+          props[key] = this.vm[key];
         });
       return props;
     }
