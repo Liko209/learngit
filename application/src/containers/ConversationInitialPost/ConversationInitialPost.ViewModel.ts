@@ -11,6 +11,8 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import StoreViewModel from '@/store/ViewModel';
+import { dateFormatter } from '@/utils/date';
+import moment from 'moment';
 
 const { GroupService } = service;
 
@@ -64,6 +66,12 @@ class ConversationInitialPostViewModel extends StoreViewModel<
   @computed
   get isTeam() {
     return this._group.isTeam;
+  }
+
+  @computed
+  get createTime() {
+    const { createdAt } = this._group;
+    return dateFormatter.dateAndTime(moment(createdAt));
   }
 
   @action
