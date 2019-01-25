@@ -25,7 +25,7 @@ describe('Conversation sheet helpers', () => {
     const type = getFileIcon('xlsx');
     expect(type).toBe('sheet');
     const type1 = getFileIcon('xxx');
-    expect(type1).toBeNull();
+    expect(type1).toBe('default-file');
   });
   describe('getDateAndTime()', () => {
     it('should be today and time when event Date is DATE_2019_1_4 [JPT-712][JPT-713]', () => {

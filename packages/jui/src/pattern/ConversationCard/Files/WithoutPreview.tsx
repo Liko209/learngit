@@ -31,7 +31,7 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
 
   return (
     <Jui.FileItem disableGutters={true}>
-      <Jui.FileIcon iconType={iconType} />
+      <Jui.FileIcon>{iconType}</Jui.FileIcon>
       <Jui.FileInfo
         secondaryTypographyProps={{
           component: 'div',

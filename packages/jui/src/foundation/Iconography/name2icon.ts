@@ -65,6 +65,14 @@ const name2icon = {
   double_chevron_right: 'double-chevron_right',
   double_chevron_left: 'double-chevron_left',
   code: 'code-snippet',
+  doc: 'doc',
+  sheet: 'excel',
+  pdf: 'pdf',
+  ppt: 'ppt',
+  'default-file': 'default-file',
+  zip: 'zip',
+  'default-music': 'default-music',
+  'default-video': 'default-video',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

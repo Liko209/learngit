@@ -101,7 +101,7 @@ function getFileIcon(fileType: string) {
       return key;
     }
   }
-  return null;
+  return 'default-file';
 }
 
 export {
