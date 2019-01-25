@@ -7,7 +7,7 @@
 import { Person } from '../entity';
 import { daoManager, PersonDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
-import { UserConfig } from '../../../service/account';
+import { UserConfig } from '../../../service/account/UserConfig';
 import { transform, baseHandleData } from '../../../service/utils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
