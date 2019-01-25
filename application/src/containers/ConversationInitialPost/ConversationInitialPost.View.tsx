@@ -49,7 +49,7 @@ class ConversationInitialPost extends React.Component<
         {isTeam ? (
           <StyledTitle>
             {this._name}
-            <StyledSpan>&nbsp;created a team&nbsp;</StyledSpan>
+            <StyledSpan>&nbsp;{t('createTeam')}&nbsp;</StyledSpan>
             {<StyledTeamName>{displayName}</StyledTeamName>}
           </StyledTitle>
         ) : (
