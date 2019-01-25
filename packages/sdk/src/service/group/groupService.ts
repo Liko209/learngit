@@ -35,7 +35,6 @@ import {
 } from '../../utils';
 import { transform } from '../utils';
 import handleData, {
-  handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
   // handleFavoriteGroupsChanged,
@@ -89,7 +88,6 @@ class GroupService extends BaseService<Group> {
   constructor() {
     const subscriptions = {
       [SOCKET.GROUP]: handleData,
-      [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
@@ -179,7 +177,9 @@ class GroupService extends BaseService<Group> {
       }
       result = await filterGroups(result, limit);
     }
-    return groupType === GROUP_QUERY_TYPE.FAVORITE ? result : result.slice(0, result.length > 50 ? 50 : result.length);
+    return groupType === GROUP_QUERY_TYPE.FAVORITE
+      ? result
+      : result.slice(0, result.length > 50 ? 50 : result.length);
   }
   // this function should refactor with getGroupsByType
   // we should support to get group by paging
