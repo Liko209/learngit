@@ -102,7 +102,10 @@ function buildContainer<P = {}, S = {}, SS = any>({
               ViewModel.name
             }.${key}: ${this.vm[key]}'`;
 
-            if (process.env.NODE_ENV === 'development') {
+            if (
+              process.env.NODE_ENV === 'development' ||
+              process.env.NODE_ENV === 'test'
+            ) {
               throw new Error(errorMessage);
             } else {
               mainLogger.error(errorMessage);
