@@ -20,10 +20,10 @@ type ContactSearchProps = {
   hasMembers?: number[];
 };
 
-type ViewProps = {
+type ViewProps = ContactSearchProps & {
   searchMembers: (value: string) => void;
   suggestions: SelectedMember[];
-  onSelectChange: (item: any) => void;
+  onContactSelectChange: (item: any) => void;
   label: string;
   placeholder: string;
   error: boolean;
