@@ -6,6 +6,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
+import { JuiIconography } from 'jui/foundation/Iconography';
+import { PreloadImg } from '@/containers/common';
 import { ViewProps } from './types';
 
 @observer
@@ -14,7 +16,16 @@ class ThumbnailView extends React.Component<ViewProps> {
     const {
       fileTypeOrUrl: { icon, url },
     } = this.props;
-    return <JuiThumbnail iconType={icon} url={url} />;
+    return (
+      <PreloadImg
+        url={url}
+        placeholder={
+          <JuiIconography fontSize="large">image_preview</JuiIconography>
+        }
+      >
+        <JuiThumbnail iconType={icon} url={url} />
+      </PreloadImg>
+    );
   }
 }
 
