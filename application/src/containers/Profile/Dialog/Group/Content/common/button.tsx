@@ -29,7 +29,9 @@ const renderButton = (
       tabIndex={0}
       onClick={handleClick}
     >
-      <JuiIconography fontSize="small">{iconName}</JuiIconography>
+      <JuiIconography fontSize="small" color="primary.main">
+        {iconName}
+      </JuiIconography>
       {t(buttonMessage)}
     </JuiProfileDialogContentSummaryButton>
   );

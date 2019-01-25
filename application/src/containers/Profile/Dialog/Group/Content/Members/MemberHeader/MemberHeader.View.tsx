@@ -34,7 +34,9 @@ class MemberHeader extends React.Component<
         {`${t(key)} (${group.members && group.members.length})`}
         {isCurrentUserHasPermissionAddTeam ? (
           <ButtonInRight onClick={AddTeamMembers}>
-            <JuiIconography fontSize="small">add_team</JuiIconography>
+            <JuiIconography fontSize="small" color="primary.main">
+              add_team
+            </JuiIconography>
             {t('AddTeamMembers')}
           </ButtonInRight>
         ) : null}
