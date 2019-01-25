@@ -17,7 +17,7 @@ class NewPostService extends EntityBaseService<Post> {
   postController: PostController;
   constructor() {
     super(false, daoManager.getDao(PostDao), {
-      basePath: '/item',
+      basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });
   }
