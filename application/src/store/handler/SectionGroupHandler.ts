@@ -138,20 +138,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     groupIds: number[],
     shouldAdd: boolean,
   ) {
-    const intersectionIds = _.intersection(
-      groupIds,
-      this.groupIdsExcludeFavorites,
-    );
-    if (!intersectionIds.length) {
-      return;
+    let ids = groupIds;
+    if (!shouldAdd) {
+      ids = _.intersection(groupIds, this.groupIdsExcludeFavorites);
+      if (!ids.length) {
+        return;
+      }
     }
     if (shouldAdd) {
       const groupService = GroupService.getInstance<service.GroupService>();
-      const groups = await groupService.getGroupsByIds(intersectionIds);
+      const groups = await groupService.getGroupsByIds(ids);
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(groups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(groups);
     } else {
-      this._remove(intersectionIds);
+      this._remove(ids);
     }
   }
 
@@ -225,12 +225,15 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (!intersectionIds.length) {
       return;
     }
-    this._remove(intersectionIds);
+    this._remove(intersectionIds, true);
   }
 
-  private async _remove(ids: number[]) {
-    const profileService = ProfileService.getInstance<service.ProfileService>();
-    const limit = await profileService.getMaxLeftRailGroup();
+  private async _remove(ids: number[], checkLimit: boolean = false) {
+    let limit = 0;
+    if (checkLimit) {
+      const profileService: service.ProfileService = ProfileService.getInstance();
+      limit = await profileService.getMaxLeftRailGroup();
+    }
     const directIdsShouldBeRemoved: number[] = [];
     const teamIdsShouldBeRemoved: number[] = [];
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
