@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component, ComponentType } from 'react';
+import { computed, action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import _ from 'lodash';
-import { IPlugin } from './IPlugin';
+import { mainLogger } from 'sdk';
 import StoreViewModel from '@/store/ViewModel';
-import { computed, action, observable } from 'mobx';
+import { IPlugin } from './IPlugin';
 
 type Plugins = { [key: string]: IPlugin };
 type BuildContainerOptions<T> = {
@@ -95,11 +96,17 @@ function buildContainer<P = {}, S = {}, SS = any>({
         .filter(this._isViewProp)
         .forEach((key: string) => {
           if (props[key] && props[key] !== this.vm[key]) {
-            throw new Error(
-              `buildContainer Error: '${Container.displayName}.props.${key}: ${
-                props[key]
-              }' conflict with '${ViewModel.name}.${key}: ${this.vm[key]}'`,
-            );
+            const errorMessage = `buildContainer Error: '${
+              Container.displayName
+            }.props.${key}: ${props[key]}' conflict with '${
+              ViewModel.name
+            }.${key}: ${this.vm[key]}'`;
+
+            if (process.env.NODE_ENV === 'development') {
+              throw new Error(errorMessage);
+            } else {
+              mainLogger.error(errorMessage);
+            }
           }
 
           props[key] = this.vm[key];
