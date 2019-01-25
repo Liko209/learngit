@@ -5,13 +5,13 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import PreloadPostsProcessor from '../preloadPostsProcessor';
-import { Group } from '../../../models';
+import { Group } from '../../../module/group/entity';
 import PostService from '../../../service/post';
-import StateService from '../../../service/state';
+import { StateService } from '../../../module/state';
 import { baseHandleData } from '../../post/handleData';
 import GroupService from '../../../service/group';
 
-jest.mock('../../../service/state');
+jest.mock('../../../module/state');
 jest.mock('../../../service/post');
 jest.mock('../../post/handleData');
 jest.mock('../../../service/group');

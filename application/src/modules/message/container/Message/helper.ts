@@ -5,7 +5,7 @@
  */
 import { GroupService } from 'sdk/service/group';
 import { ProfileService } from 'sdk/service/profile';
-import { StateService } from 'sdk/service/state';
+import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';

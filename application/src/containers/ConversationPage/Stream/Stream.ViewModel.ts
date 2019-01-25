@@ -6,9 +6,10 @@
 import { IFetchSortableDataProvider } from './../../../store/base/fetch/FetchSortableDataListHandler';
 import _ from 'lodash';
 import { computed, action, observable } from 'mobx';
-import { PostService, StateService, ENTITY } from 'sdk/service';
+import { PostService, ENTITY } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
+import { StateService } from 'sdk/module/state';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
 import { errorHelper } from 'sdk/error';
@@ -233,7 +234,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    this._stateService.markAsRead(this.props.groupId);
+    this._stateService.updateReadStatus(this.props.groupId, false);
   }
 
   enableNewMessageSeparatorHandler = () => {
