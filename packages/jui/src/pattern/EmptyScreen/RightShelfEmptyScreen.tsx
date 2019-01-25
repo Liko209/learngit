@@ -22,6 +22,8 @@ const Wrapper = styled(EmptyScreen.Wrapper)`
 `;
 
 const Pic = styled(EmptyScreen.Pic)`
+  min-width: ${width(47)};
+  min-height: ${height(37)};
   width: ${width(47)};
   height: ${height(37)};
   margin: ${spacing(0, 0, 8)};
