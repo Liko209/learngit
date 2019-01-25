@@ -194,7 +194,8 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
     await joinTeamDialog.cancel();
   });
 
-  await h(t).withLog(`And loginUser did not join team A`, async () => {
+  await h(t).withLog(`And The confirmation dismiss, loginUser did not join team A`, async () => {
+    await t.expect(joinTeamDialog.exists).notOk();
     await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(publicTeamId).exists).notOk();
   });
 });
