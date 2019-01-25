@@ -90,9 +90,8 @@ function getDurationTimeText(
 
 const FILE_ICON_MAP = {
   pdf: ['pdf'],
-  sheet: ['xlsx', 'xls'],
+  excel: ['xlsx', 'xls'],
   ppt: ['ppt', 'pptx', 'potx'],
-  ps: ['ps', 'psd'],
 };
 
 function getFileIcon(fileType: string) {
@@ -101,7 +100,7 @@ function getFileIcon(fileType: string) {
       return key;
     }
   }
-  return 'default-file';
+  return 'default_file';
 }
 
 export {
