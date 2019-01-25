@@ -37,7 +37,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
           clearTimeout(this._timer);
           this._timer = setTimeout(() => {
             this.postStatus = this.postProgress;
-          },                       500);
+          },                       200);
         } else {
           this.postStatus = this.postProgress;
         }
