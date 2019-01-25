@@ -93,8 +93,6 @@ class PersonController {
     return '';
   }
 
-<<<<<<< HEAD:packages/sdk/src/module/person/controller/PersonController.ts
-=======
   private _getHighestResolutionHeadshotUrlFromThumbs(
     thumbs: { key: string; value: string }[],
     stored_file_id?: string,
@@ -165,28 +163,6 @@ class PersonController {
     return url;
   }
 
-  async getPersonsByGroupId(groupId: number): Promise<Person[]> {
-    const groupService: GroupService = GroupService.getInstance();
-    const group = await groupService.getGroupById(groupId);
-    if (group) {
-      const memberIds = group.members;
-      if (memberIds.length > 0) {
-        if (this.isCacheInitialized()) {
-          return await this.getMultiEntitiesFromCache(
-            memberIds,
-            (entity: Person) => {
-              return this._isValid(entity);
-            },
-          );
-        }
-        const personDao = daoManager.getDao(PersonDao);
-        return await personDao.getPersonsByIds(memberIds);
-      }
-    }
-    return [];
-  }
-
->>>>>>> stage/1.0.0.190124:packages/sdk/src/service/person/personService.ts
   async buildPersonFeatureMap(
     personId: number,
   ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {

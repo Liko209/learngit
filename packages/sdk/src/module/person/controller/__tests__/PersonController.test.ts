@@ -640,17 +640,12 @@ describe('PersonService', () => {
     });
   });
 
-<<<<<<< HEAD:packages/sdk/src/module/person/controller/__tests__/PersonController.test.ts
-  describe('getHeadShot()', () => {
-=======
   describe('getHeadShotWithSize()', () => {
     const URL = 'https://glip.com/test.jpg';
     const thumbsSize64 = 'https://glip.com/thumbs64.jpg';
     const thumbsSize92 = 'https://glip.com/thumbs92.jpg';
     const thumbsSize150 = 'https://glip.com/thumbs150.jpg';
     const thumbsSizeX = 'https://glip.com/thumbsx.jpg';
-
->>>>>>> stage/1.0.0.190124:packages/sdk/src/service/person/__tests__/index.test.ts
     const kvStorageManager = new KVStorageManager();
     const kvStorage = kvStorageManager.getStorage();
     const authDao = new AuthDao(kvStorage);
@@ -664,11 +659,7 @@ describe('PersonService', () => {
       const spy = jest
         .spyOn(PersonAPI, 'getHeadShotUrl')
         .mockReturnValueOnce(headUrl);
-<<<<<<< HEAD:packages/sdk/src/module/person/controller/__tests__/PersonController.test.ts
-      const result = personController.getHeadShot(1, 'xxx', 33);
-=======
-      const result = personService.getHeadShotWithSize(1, 'xxx', '', 33);
->>>>>>> stage/1.0.0.190124:packages/sdk/src/service/person/__tests__/index.test.ts
+      const result = personController.getHeadShotWithSize(1, 'xxx', '', 33);
       expect(result).toEqual(headUrl);
     });
 
@@ -679,17 +670,13 @@ describe('PersonService', () => {
       const spy = jest
         .spyOn(PersonAPI, 'getHeadShotUrl')
         .mockReturnValueOnce(headUrl);
-<<<<<<< HEAD:packages/sdk/src/module/person/controller/__tests__/PersonController.test.ts
-      const result = personController.getHeadShot(1, '', 33);
-      expect(result).toEqual('');
-=======
-      const result = personService.getHeadShotWithSize(1, null, '', 33);
+      const result = personController.getHeadShotWithSize(1, null, '', 33);
       expect(result).toBeNull;
     });
 
     it('should url when the headshot is string', () => {
       const headshot = URL;
-      const url = personService.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(URL);
     });
 
@@ -697,7 +684,7 @@ describe('PersonService', () => {
       const headshot = {
         url: URL,
       };
-      const url = personService.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(URL);
     });
 
@@ -707,7 +694,7 @@ describe('PersonService', () => {
         thumbs: thumbsString,
         url: URL,
       };
-      const url = personService.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(URL);
     });
 
@@ -717,7 +704,7 @@ describe('PersonService', () => {
         thumbs: thumbsString,
         url: URL,
       };
-      const url = personService.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(thumbsSizeX);
     });
 
@@ -735,7 +722,7 @@ describe('PersonService', () => {
         thumbs: thumbsString,
         url: URL,
       };
-      const url = personService.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(thumbsSize150);
     });
 
@@ -754,9 +741,8 @@ describe('PersonService', () => {
         url: URL,
         stored_file_id: '123',
       };
-      const url = personService.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(thumbsSize150);
->>>>>>> stage/1.0.0.190124:packages/sdk/src/service/person/__tests__/index.test.ts
     });
   });
 });
