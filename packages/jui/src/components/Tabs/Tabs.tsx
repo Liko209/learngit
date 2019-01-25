@@ -187,8 +187,6 @@ class JuiTabs extends PureComponent<Props, States> {
       return;
     }
     this._setSelectedTabIndex(indexSelected);
-    const { onChangeTab } = this.props;
-    onChangeTab && onChangeTab(indexSelected);
   }
 
   private _showMenuList = () => {
@@ -209,7 +207,7 @@ class JuiTabs extends PureComponent<Props, States> {
 
   private _setSelectedTabIndex = (indexSelected: number) => {
     let { indexLazyLoadComponents } = this.state;
-    const { tag } = this.props;
+    const { tag, onChangeTab } = this.props;
     if (!indexLazyLoadComponents.includes(indexSelected)) {
       indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
     }
@@ -217,6 +215,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (tag) {
       this._setLocalSelectedIndex(indexSelected);
     }
+    onChangeTab && onChangeTab(indexSelected);
   }
 
   private _getLocalKey = () => {
