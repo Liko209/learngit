@@ -9,7 +9,7 @@ import {
   ProfileDialogPersonViewProps,
 } from '../types';
 import CompanyModel from '@/store/models/Company';
-import { PhoneNumberInfo } from 'sdk/service/person';
+import { PhoneNumberInfo } from 'sdk/module/person/entity';
 
 type ProfileDialogPersonContentProps = ProfileDialogPersonProps;
 

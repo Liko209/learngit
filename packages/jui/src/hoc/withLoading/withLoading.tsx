@@ -26,7 +26,7 @@ const StyledLoading = styled.div<TStyledLoading>`
   justify-content: center;
   top: 0px;
   left: 0px;
-  visibility: ${({ isVisible }) => (isVisible ? 'visible' : 'hidden')};
+  display: ${({ isVisible }) => (isVisible ? 'flex' : 'none')};
   background: #fff;
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
@@ -35,7 +35,10 @@ const DefaultLoading = (props: any) => (
   <>
     {props.children}
     <JuiFade in={props.isVisible} style={{ transitionDelay: '100ms' }}>
-      <StyledLoading isVisible={props.isVisible}>
+      <StyledLoading
+        isVisible={props.isVisible}
+        data-test-automation-id="loading"
+      >
         <div>
           <JuiCircularProgress />
         </div>

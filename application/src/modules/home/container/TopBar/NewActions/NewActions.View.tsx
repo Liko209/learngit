@@ -39,9 +39,28 @@ class NewActions extends React.Component<NewActionsProps> {
 
   handleNewMessage = () => NewMessage.show();
 
-  render() {
+  renderCreateTeam() {
     const { t } = this.props;
+    return this.props.canCreateTeam ? (
+      <JuiMenuItem onClick={this.handleCreateTeam}>
+        {t('CreateTeam')}
+      </JuiMenuItem>
+    ) : null;
+  }
 
+  renderSendNewMessage() {
+    const { t } = this.props;
+    return this.props.canSendNewMessage ? (
+      <JuiMenuItem
+        onClick={this.handleNewMessage}
+        data-test-automation-id="sendNewMessage"
+      >
+        {t('SendNewMessage')}
+      </JuiMenuItem>
+    ) : null;
+  }
+
+  render() {
     return (
       <>
         <JuiNewActions
@@ -56,15 +75,8 @@ class NewActions extends React.Component<NewActionsProps> {
           }}
         >
           <JuiMenuList>
-            <JuiMenuItem onClick={this.handleCreateTeam}>
-              {t('CreateTeam')}
-            </JuiMenuItem>
-            <JuiMenuItem
-              onClick={this.handleNewMessage}
-              data-test-automation-id="sendNewMessage"
-            >
-              {t('SendNewMessage')}
-            </JuiMenuItem>
+            {this.renderCreateTeam()}
+            {this.renderSendNewMessage()}
           </JuiMenuList>
         </JuiNewActions>
       </>

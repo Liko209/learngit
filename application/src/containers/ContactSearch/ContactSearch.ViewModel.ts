@@ -6,9 +6,9 @@
 import { observable, action, computed } from 'mobx';
 import { debounce } from 'lodash';
 
-import PersonService from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 import { Person } from 'sdk/module/person/entity';
-import { SortableModel } from 'sdk/models';
+import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, ViewProps, SelectedMember } from './types';
 
@@ -67,13 +67,15 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
       query,
       this._isExcludeMe ? true : false,
     );
+    const { hasMembers } = this.props;
+    const existMembers = hasMembers
+      ? [...this.existMembers, ...hasMembers]
+      : this.existMembers;
 
     if (result) {
       const filterMembers = result.sortableModels.filter(
         (member: SortableModel<Person>) => {
-          return !this.existMembers.find(
-            existMember => existMember === member.id,
-          );
+          return !existMembers.find(existMember => existMember === member.id);
         },
       );
       return filterMembers;

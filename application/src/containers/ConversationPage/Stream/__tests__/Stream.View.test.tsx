@@ -79,8 +79,8 @@ describe('StreamView', () => {
         ...baseProps,
         postIds: [1, 2],
         items: [
-          { type: StreamItemType.POST, value: 1 },
-          { type: StreamItemType.POST, value: 2 },
+          { type: StreamItemType.POST, id: 1, timeStart: 1, value: [1] },
+          { type: StreamItemType.POST, id: 2, timeStart: 1, value: [2] },
         ],
       };
 
@@ -100,9 +100,14 @@ describe('StreamView', () => {
         ...baseProps,
         postIds: [1, 2],
         items: [
-          { type: StreamItemType.POST, value: 1 },
-          { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
-          { type: StreamItemType.POST, value: 2 },
+          { type: StreamItemType.POST, id: 1, timeStart: 1, value: [1] },
+          {
+            type: StreamItemType.NEW_MSG_SEPARATOR,
+            id: 333,
+            timeStart: 1,
+            value: [333],
+          },
+          { type: StreamItemType.POST, id: 2, timeStart: 1, value: [2] },
         ],
       };
       const wrapper = shallow(<StreamView {...props} />);
@@ -125,7 +130,7 @@ describe('StreamView', () => {
 
     describe('hasHistoryUnread=true', () => {
       // JPT-206 / JPT-232
-      it.skip('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
+      it('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
           firstHistoryUnreadInPage: true,

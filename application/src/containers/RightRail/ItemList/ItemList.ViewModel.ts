@@ -6,7 +6,7 @@
 
 import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps } from './types';
+import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { getGlobalValue } from '@/store/utils';
 import { t } from 'i18next';
@@ -27,7 +27,7 @@ import {
 import { ENTITY } from 'sdk/service';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
-import { TAB_CONFIG, TabConfig } from './config';
+import { TAB_CONFIG } from './config';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -60,11 +60,9 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 
 class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
+  private _loadStatus: LoadStatus;
+  @observable
   totalCount: number = 0;
-  @observable
-  private _sortKey: ITEM_SORT_KEYS = ITEM_SORT_KEYS.CREATE_TIME;
-  @observable
-  private _desc: boolean = true;
   @observable
   private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @computed
@@ -74,6 +72,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get type() {
     return this.props.type;
+  }
+
+  @computed
+  get tabConfig() {
+    return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
   @computed
@@ -87,45 +90,52 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         return ItemUtils.fileFilter(this._groupId, true);
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
         return ItemUtils.fileFilter(this._groupId, false);
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+        return ItemUtils.eventFilter(this._groupId);
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
+        return ItemUtils.taskFilter(this._groupId, false);
       default:
         return undefined;
     }
   }
 
+  @computed
+  get sort() {
+    return (
+      this.tabConfig.sort || {
+        sortKey: ITEM_SORT_KEYS.CREATE_TIME,
+        desc: false,
+      }
+    );
+  }
+
   constructor(props: Props) {
     super(props);
+    this._loadStatus = { ...InitLoadStatus };
     this.reaction(
-      () => this.props.groupId,
+      () => this._groupId,
       () => {
+        this._loadStatus.firstLoaded = false;
+        const {
+          sortKey = ITEM_SORT_KEYS.CREATE_TIME,
+          desc = false,
+        } = this.sort;
         this.props.groupId &&
           this._buildSortableMemberListHandler(
             this._groupId,
             this._typeId,
-            this._sortKey,
-            this._desc,
+            sortKey,
+            desc,
           );
         this.loadTotalCount();
+        this.forceReload();
       },
       { fireImmediately: true },
     );
-    this.reaction(
-      () => this.ids,
-      () => {
-        this.loadTotalCount();
-      },
-    );
+    this.reaction(() => this.ids, () => this.loadTotalCount());
   }
 
   async loadTotalCount() {
-    // To Do in  https://jira.ringcentral.com/browse/FIJI-1416
-    if (
-      this.type === RIGHT_RAIL_ITEM_TYPE.TASKS ||
-      this.type === RIGHT_RAIL_ITEM_TYPE.EVENTS
-    ) {
-      this.totalCount = 0;
-      return;
-    }
-
     const itemService: ItemService = ItemService.getInstance();
     this.totalCount = await itemService.getGroupItemsCount(
       this._groupId,
@@ -179,43 +189,69 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
     });
+    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
-    let isValidItem =
-      item.id > 0 &&
-      !item.deactivated &&
-      GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
-      item.group_ids.includes(this._groupId) &&
-      item.post_ids.length > 0;
+    let isValidItem = !item.deactivated && item.post_ids.length > 0;
     switch (this.type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
         isValidItem =
           isValidItem &&
           (this._getFilterFunc() as (valid: Item) => boolean)(item);
       default:
+        isValidItem =
+          isValidItem &&
+          GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
+          ItemUtils.isValidItem(this._groupId, item);
     }
     return isValidItem;
   }
 
   @action
-  fetchNextPageItems = () => {
+  forceReload = async () => {
+    this._loadStatus.firstLoaded = false;
+    await this.fetchNextPageItems();
+  }
+
+  @action
+  fetchNextPageItems = async () => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
-      const config: TabConfig = TAB_CONFIG.find(
-        looper => looper.type === this.props.type,
-      )!;
+      const { offlinePrompt } = this.tabConfig;
       Notification.flashToast({
-        message: t(config.offlinePrompt),
+        message: t(offlinePrompt),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });
+      Object.assign(this._loadStatus, { loadError: true, loading: false });
       return;
     }
-    return this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
+
+    try {
+      this._loadStatus.loading = true;
+      const result = await this._sortableDataHandler.fetchData(
+        QUERY_DIRECTION.NEWER,
+      );
+      Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
+      return result;
+    } catch (e) {
+      Object.assign(this._loadStatus, { loadError: true, loading: false });
+    }
+  }
+
+  @computed
+  get loadStatus() {
+    return this._loadStatus;
+  }
+
+  dispose() {
+    this._sortableDataHandler.dispose();
   }
 
   @computed

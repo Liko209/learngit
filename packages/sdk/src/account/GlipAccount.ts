@@ -7,7 +7,7 @@ import { AbstractAccount } from '../framework';
 import PostService from '../service/post';
 import GroupService from '../service/group';
 import CompanyService from '../service/company';
-import PersonService from '../service/person';
+import { PersonService } from '../module/person';
 import PresenceService from '../service/presence';
 import ProfileService from '../service/profile';
 import SearchService from '../service/search';

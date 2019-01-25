@@ -16,9 +16,11 @@ import {
   buildEntityCacheController,
   buildEntityPersistentController,
   buildEntitySourceController,
+  buildEntityCacheSearchController,
 } from '../controller';
 import { mainLogger } from 'foundation';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
+import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
 
 class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   private _subscribeController: ISubscribeController;
@@ -36,6 +38,10 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
 
   getEntitySource() {
     return this._entitySourceController;
+  }
+
+  getEntityCacheSearchController(): IEntityCacheSearchController<T> {
+    return buildEntityCacheSearchController<T>(this._entityCacheController);
   }
 
   setSubscriptionController(subscribeController: ISubscribeController) {
@@ -58,6 +64,14 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
       return Promise.resolve(this._entitySourceController.get(id));
     }
     throw new Error('entitySourceController is null');
+  }
+
+  isCacheInitialized() {
+    return this.isCacheEnable() && this._entityCacheController.isInitialized();
+  }
+
+  isCacheEnable(): boolean {
+    return this._entityCacheController ? true : false;
   }
 
   private _initControllers() {

@@ -31,6 +31,10 @@ export abstract class BaseWebComponent {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // sandbox and helper
+  async clickAndTypeText(selector: Selector, text: string, options?: TypeActionOptions) {
+    return await this.t.click(selector).typeText(selector, text, options)
+  }
 
   // delegate testcafe method
   get exists() {
@@ -86,6 +90,10 @@ export abstract class BaseWebComponent {
     } else {
       return this.self.find('.material-icons').withExactText(icon);
     }
+  }
+
+  button(name: string){
+   return this.self.find('button').withText(name);
   }
 
   // misc

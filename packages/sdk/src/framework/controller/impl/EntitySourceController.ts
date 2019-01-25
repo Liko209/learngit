@@ -63,6 +63,14 @@ class EntitySourceController<T extends IdModel = IdModel>
     return this.entityPersistentController.getEntityName();
   }
 
+  async getAll(): Promise<T[]> {
+    return await this.entityPersistentController.getAll();
+  }
+
+  async getTotalCount(): Promise<number> {
+    return await this.entityPersistentController.getTotalCount();
+  }
+
   getEntityNotificationKey(): string {
     return this.entityPersistentController.getEntityNotificationKey();
   }

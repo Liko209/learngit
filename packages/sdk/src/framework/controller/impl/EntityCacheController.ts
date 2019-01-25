@@ -16,7 +16,7 @@ enum CACHE_INITIAL_STATUS {
 
 class EntityCacheController<T extends IdModel = IdModel>
   implements IEntityCacheController<T> {
-  private _entities: { [id: number]: T } = {};
+  private _entities: Map<number, T> = new Map(); // { [id: number]: T } = {};
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
@@ -45,56 +45,41 @@ class EntityCacheController<T extends IdModel = IdModel>
     if (Array.isArray(item)) {
       await this.bulkPut(item);
     } else {
-      this._entities[item.id] = item;
+      this._put(item);
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
     array.forEach(async (item: T) => {
-      await this.put(item);
+      await this._put(item);
     });
   }
 
   async clear(): Promise<void> {
-    this._entities = {};
+    this._entities.clear();
   }
 
   async delete(key: number): Promise<void> {
-    const entity = this._entities[key];
-    if (entity) {
-      delete this._entities[key];
-    }
+    this._delete(key);
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
     keys.forEach(async (key: number) => {
-      await this.delete(key);
+      await this._delete(key);
     });
   }
 
   async update(item: Partial<T> | Partial<T>[]): Promise<void> {
-    if (Array.isArray(item)) {
-      this.bulkUpdate(item);
-    } else {
-      const oldItem = this._entities[item.id!];
-      if (oldItem) {
-        Object.keys(item).forEach((key: string) => {
-          oldItem[key] = item[key];
-        });
-      } else {
-        await this.put(item as T);
-      }
-    }
+    this._updatePartially(item);
   }
 
   async bulkUpdate(array: Partial<T>[]): Promise<void> {
-    array.forEach(async (item: Partial<T>) => {
-      await this.update(item);
-    });
+    this._updatePartially(array);
   }
 
   async get(key: number): Promise<T | null> {
-    return this._entities[key];
+    const result = this._entities.get(key);
+    return result ? result : null;
   }
 
   async batchGet(ids: number[]): Promise<T[]> {
@@ -112,33 +97,39 @@ class EntityCacheController<T extends IdModel = IdModel>
     return '';
   }
 
+  async getAll(): Promise<T[]> {
+    return Array.from(this._entities.values());
+  }
+
+  async getTotalCount(): Promise<number> {
+    return this._entities.size;
+  }
+
   getEntityNotificationKey(): string {
     return '';
   }
 
   async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    const values = await this.getAll();
     if (filterFunc) {
       const filterEntities: T[] = [];
-      Object.values(this._entities).forEach((entity: T) => {
+      values.forEach((entity: T) => {
         if (filterFunc(entity)) {
           filterEntities.push(entity);
         }
       });
       return filterEntities;
     }
-    return Object.values(this._entities);
+    return values;
   }
 
   async replace(ids: number[], entities: Map<number, T>) {
     ids.forEach((id: number) => {
-      const entity = this._entities[id];
-      if (entity) {
-        delete this._entities[id];
-      }
+      this._delete(id);
     });
 
     entities.forEach((entity: T) => {
-      this._entities[entity.id] = entity;
+      this._put(entity);
     });
   }
 
@@ -161,12 +152,39 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   private _update(entity: T, id: number) {
-    const oldEntity = this._entities[id];
+    const oldEntity = this._entities.get(id);
     if (oldEntity) {
       this._updatePartial(oldEntity, entity);
     } else {
-      this._entities[id] = entity;
+      this._put(entity);
     }
+  }
+
+  private _updatePartially(item: Partial<T> | Partial<T>[]) {
+    if (Array.isArray(item)) {
+      item.forEach((item: Partial<T>) => {
+        this._updatePartially(item);
+      });
+    } else {
+      const oldItem = this._entities.get(item.id!);
+      if (oldItem) {
+        Object.keys(item).forEach((key: string) => {
+          oldItem[key] = item[key];
+        });
+      } else {
+        this._put(item as T);
+      }
+    }
+  }
+
+  private _delete(key: number) {
+    if (this._entities.has(key)) {
+      this._entities.delete(key);
+    }
+  }
+
+  private _put(item: T) {
+    this._entities.set(item.id, item);
   }
 
   private _updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {

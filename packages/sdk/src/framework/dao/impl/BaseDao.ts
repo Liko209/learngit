@@ -202,6 +202,14 @@ class BaseDao<T extends {}> implements IDao<T> {
     }
   }
 
+  async getAllCount(): Promise<number> {
+    return this.createQuery().count();
+  }
+
+  async getTotalCount(): Promise<number> {
+    return await this.getAllCount();
+  }
+
   async doInTransaction(func: () => {}): Promise<void> {
     await this.db.ensureDBOpened();
     await this.db.getTransaction('rw', [this.collection], async () => {

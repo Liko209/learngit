@@ -33,13 +33,14 @@ type JuiModalProps = {
   okText?: string;
   okVariant?: JuiButtonProps['variant'];
   okType?: JuiButtonColor;
-  okBtnProps?: JuiButtonProps;
+  okBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelVariant?: JuiButtonProps['variant'];
-  cancelBtnProps?: JuiButtonProps;
+  cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
   onOK?(event?: React.MouseEvent): void;
   onCancel?(event?: React.MouseEvent): void;
   content?: string | JSX.Element;
+  fillContent?: boolean;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -109,6 +110,7 @@ class JuiModal extends Component<JuiModalProps, {}> {
       contentBefore,
       contentAfter,
       modalProps,
+      fillContent,
     } = this.props;
 
     return (
@@ -119,7 +121,9 @@ class JuiModal extends Component<JuiModalProps, {}> {
           title
         )}
         {contentBefore}
-        <JuiDialogContent>{this.renderContent()}</JuiDialogContent>
+        <JuiDialogContent fill={fillContent}>
+          {this.renderContent()}
+        </JuiDialogContent>
         {contentAfter}
         <StyledActions>{footer ? footer : this.defaultFooter()}</StyledActions>
       </JuiDialog>

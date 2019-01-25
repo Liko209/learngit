@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ContactSearchViewModel } from '../ContactSearch.ViewModel';
-import PersonService from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 
 const personService = {
   doFuzzySearchPersons() {

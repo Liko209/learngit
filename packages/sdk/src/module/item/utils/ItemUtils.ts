@@ -5,7 +5,7 @@
  */
 
 import { FileItemUtils } from '../module/file/utils';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary, TimeUtils } from '../../../utils';
 import { Item, SanitizedItem } from '../module/base/entity';
 
 class ItemUtils {
@@ -14,6 +14,28 @@ class ItemUtils {
     item: T,
   ) {
     return item.id > 0 && item.group_ids.includes(groupId);
+  }
+
+  static taskFilter<
+    T extends { id: number; group_ids: number[]; complete: boolean }
+  >(groupId: number, showCompleted: boolean) {
+    return (task: T) => {
+      let result = false;
+      do {
+        if (!ItemUtils.isValidItem(groupId, task)) {
+          result = false;
+        }
+
+        if (
+          GlipTypeUtil.extractTypeId(task.id) !== TypeDictionary.TYPE_ID_TASK
+        ) {
+          break;
+        }
+
+        result = showCompleted || !task.complete;
+      } while (false);
+      return result;
+    };
   }
 
   static fileFilter<
@@ -45,6 +67,35 @@ class ItemUtils {
     };
   }
 
+  static eventFilter<
+    T extends { id: number; group_ids: number[]; effective_end: number }
+  >(groupId: number) {
+    return (event: T) => {
+      let result = false;
+      do {
+        if (!ItemUtils.isValidItem(groupId, event)) {
+          break;
+        }
+
+        if (
+          GlipTypeUtil.extractTypeId(event.id) !== TypeDictionary.TYPE_ID_EVENT
+        ) {
+          break;
+        }
+
+        if (
+          event.effective_end < Number.MAX_SAFE_INTEGER &&
+          !TimeUtils.compareDate(event.effective_end, Date.now())
+        ) {
+          break;
+        }
+
+        result = true;
+      } while (false);
+
+      return result;
+    };
+  }
   static toSanitizedItem(item: Item) {
     return {
       id: item.id,
