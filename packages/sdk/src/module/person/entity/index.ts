@@ -4,8 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PhoneNumberModel, SanitizedExtensionModel, Person } from './Person';
+import {
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+  Person,
+  HeadShotModel,
+} from './Person';
 
+<<<<<<< HEAD
 import {
   CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,
@@ -22,3 +28,6 @@ export {
   PhoneNumberInfo,
   SortingOrder,
 };
+=======
+export { PhoneNumberModel, SanitizedExtensionModel, Person, HeadShotModel };
+>>>>>>> stage/1.0.0.190124

@@ -138,6 +138,9 @@ class EntityCacheController<T extends IdModel = IdModel>
         const oldEntity = this._entities[id];
         if (oldEntity) {
           this._updatePartial(oldEntity, partialModel);
+        } else {
+          const partialObject: {} = partialModel;
+          this._entities[id] = partialObject as T;
         }
       });
     } else {

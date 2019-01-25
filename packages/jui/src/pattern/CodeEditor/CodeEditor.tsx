@@ -20,6 +20,10 @@ const StyledEditorWrapper = styled('div')<{ maxHeight: number }>`
   transition: max-height 0.75s ease-in-out;
 `;
 
+const StyledTextArea = styled('textarea')`
+  display: none;
+`;
+
 const OverrideDefaultStyle = createGlobalStyle<{}>`
 ${StyledEditorWrapper} {
   .CodeMirror {
@@ -140,9 +144,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     const options = this.props.codeMirrorOption
       ? Object.assign(defaultOption, this.props.codeMirrorOption)
       : defaultOption;
-
-    // tslint:disable-next-line:space-in-parens
-    const CodeMirror = await import(/* webpackChunkName: "codemirror" */ 'codemirror');
+    const CodeMirror = await import('codemirror');
+    await import('./importModes');
     this.codeMirror = CodeMirror.fromTextArea(
       this.textareaNode.current,
       options,
@@ -177,26 +180,6 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
               nextProps.codeMirrorOption[optionName],
             );
           }
-        }
-      }
-
-      if (
-        nextProps.language &&
-        this.props.language !== nextProps.language &&
-        nextProps.language !== 'auto'
-      ) {
-        const modeName = nextProps.language;
-        if (!CodeEditor.loadedMode.has(modeName)) {
-          CodeEditor.loadedMode.add(modeName);
-          console.log('-------- [CodeEditor Log] --------');
-          console.log(modeName);
-          console.log('---------------- [Log End] ----------------');
-          require(`codemirror/mode/${modeName}/${modeName}`);
-          this.codeMirror.setOption('mode', this.props.codeMirrorOption.mode);
-          setTimeout(() => {
-            this.codeMirror.refresh();
-            this.codeMirror.setValue(this.props.value);
-          },         2000);
         }
       }
       return true;
@@ -254,7 +237,7 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
           maxHeight={height}
           data-test-automation-id="codeSnippetBody"
         >
-          <textarea
+          <StyledTextArea
             ref={this.textareaNode}
             defaultValue={this.props.value}
             autoComplete="off"

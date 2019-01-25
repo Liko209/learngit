@@ -6,6 +6,7 @@
 
 import {
   Person,
+  HeadShotModel,
   PhoneNumberModel,
   PHONE_NUMBER_TYPE,
   PhoneNumberInfo,
@@ -34,6 +35,10 @@ const PersonFlags = {
 };
 
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
+const HEADSHOT_THUMB_WIDTH = 'width';
+const HEADSHOT_THUMB_HEIGHT = 'height';
+const HEADSHOT_THUMB_SIZE_LIMIT = 500;
+const SIZE = 'size';
 
 class PersonController {
   private _entitySourceController: IEntitySourceController<Person>;
@@ -69,7 +74,11 @@ class PersonController {
     return await this._entitySourceController.getTotalCount();
   }
 
-  getHeadShot(uid: number, headShotVersion: string, size: number) {
+  private _getHeadShotByVersion(
+    uid: number,
+    headShotVersion: string,
+    size: number,
+  ) {
     const authDao = daoManager.getKVDao(AuthDao);
     const token = authDao.get(AUTH_GLIP_TOKEN);
     const glipToken = token && token.replace(/\"/g, '');
@@ -84,6 +93,100 @@ class PersonController {
     return '';
   }
 
+<<<<<<< HEAD:packages/sdk/src/module/person/controller/PersonController.ts
+=======
+  private _getHighestResolutionHeadshotUrlFromThumbs(
+    thumbs: { key: string; value: string }[],
+    stored_file_id?: string,
+  ): string {
+    const keys = Object.keys(thumbs);
+    let maxKey = keys[0];
+    let maxWidth: number = 0;
+    let firstKey: string = '';
+    for (let i = 0; i < keys.length; i++) {
+      if (
+        keys[i].startsWith(HEADSHOT_THUMB_WIDTH) ||
+        keys[i].startsWith(HEADSHOT_THUMB_HEIGHT)
+      ) {
+        continue;
+      }
+      if (stored_file_id && !keys[i].startsWith(stored_file_id)) {
+        continue;
+      }
+
+      if (firstKey === '') {
+        firstKey = keys[i];
+      }
+
+      const index = keys[i].indexOf(SIZE);
+      if (index !== -1) {
+        const sizeString = keys[i].substr(index + SIZE.length + 1);
+        const sizeWidth = Number(sizeString);
+        if (sizeWidth < HEADSHOT_THUMB_SIZE_LIMIT) {
+          if (sizeWidth > maxWidth) {
+            maxWidth = sizeWidth;
+            maxKey = keys[i];
+          }
+        }
+      }
+    }
+    let url = thumbs[firstKey];
+    if (maxWidth !== 0) {
+      url = thumbs[maxKey];
+    }
+    return url;
+  }
+
+  getHeadShotWithSize(
+    uid: number,
+    headshot_version: string,
+    headshot: HeadShotModel,
+    size: number,
+  ) {
+    let url: string | null = null;
+    if (headshot_version) {
+      url = this._getHeadShotByVersion(uid, headshot_version, size);
+    } else if (headshot) {
+      if (typeof headshot === 'string') {
+        url = headshot;
+      } else {
+        if (headshot.thumbs) {
+          url = this._getHighestResolutionHeadshotUrlFromThumbs(
+            headshot.thumbs,
+            headshot.stored_file_id,
+          );
+        }
+        if (!url) {
+          url = headshot.url;
+        }
+      }
+    }
+
+    return url;
+  }
+
+  async getPersonsByGroupId(groupId: number): Promise<Person[]> {
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getGroupById(groupId);
+    if (group) {
+      const memberIds = group.members;
+      if (memberIds.length > 0) {
+        if (this.isCacheInitialized()) {
+          return await this.getMultiEntitiesFromCache(
+            memberIds,
+            (entity: Person) => {
+              return this._isValid(entity);
+            },
+          );
+        }
+        const personDao = daoManager.getDao(PersonDao);
+        return await personDao.getPersonsByIds(memberIds);
+      }
+    }
+    return [];
+  }
+
+>>>>>>> stage/1.0.0.190124:packages/sdk/src/service/person/personService.ts
   async buildPersonFeatureMap(
     personId: number,
   ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>> {

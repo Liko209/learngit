@@ -22,7 +22,7 @@ import { Group } from '../../module/group/entity';
 import { Post } from '../../module/post/entity';
 import { Profile } from '../../module/profile/entity';
 
-import StateService from '../state';
+import { StateService } from '../../module/state';
 import { EVENT_TYPES } from '../constants';
 import { UserConfig } from '../account';
 

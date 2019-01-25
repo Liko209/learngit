@@ -8,7 +8,7 @@ import { IProcessor } from '../../framework/processor/IProcessor';
 import PostService from '../../service/post';
 import { baseHandleData } from '../post/handleData';
 import { mainLogger } from 'foundation';
-import StateService from '../state';
+import { StateService } from '../../module/state';
 import { ItemService } from '../../module/item';
 
 const DEFAULT_DIRECTION: string = 'order';

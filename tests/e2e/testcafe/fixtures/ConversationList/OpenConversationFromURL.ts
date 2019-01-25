@@ -87,7 +87,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.ensureLoaded();
     });
 
@@ -268,7 +268,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.ensureLoaded();
     });
 
@@ -346,7 +346,7 @@ test(formalName('Should display in the top of conversation list when opening a c
   });
 
   await h(t).withLog(`When I refresh page`, async () => {
-    await h(t).refresh();
+    await h(t).reload();
     await app.homePage.ensureLoaded();
   });
 
@@ -480,7 +480,7 @@ test(formalName('Should display in the top of conversation list when searching w
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.ensureLoaded();
     });
 

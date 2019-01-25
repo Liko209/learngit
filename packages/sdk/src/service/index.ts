@@ -11,7 +11,6 @@ export { default as PresenceService } from './presence';
 export { default as ProfileService } from './profile';
 export { default as SearchService } from './search';
 export { SplitIO } from './splitio';
-export { default as StateService } from './state';
 
 // instances
 export { default as notificationCenter } from './notificationCenter';

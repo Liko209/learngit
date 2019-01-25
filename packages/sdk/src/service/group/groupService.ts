@@ -35,7 +35,6 @@ import {
 } from '../../utils';
 import { transform } from '../utils';
 import handleData, {
-  handlePartialData,
   filterGroups,
   handleGroupMostRecentPostChanged,
   // handleFavoriteGroupsChanged,
@@ -90,7 +89,6 @@ class GroupService extends BaseService<Group> {
   constructor() {
     const subscriptions = {
       [SOCKET.GROUP]: handleData,
-      [SOCKET.PARTIAL_GROUP]: handlePartialData,
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
