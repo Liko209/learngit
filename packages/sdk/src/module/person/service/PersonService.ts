@@ -43,7 +43,7 @@ class PersonService extends EntityBaseService<Person>
     return this._personController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[]): Promise<void> {
+  handleIncomingData = async (persons: Raw<Person>[]): Promise<void> => {
     await this.getPersonController().handleIncomingData(persons);
   }
 
