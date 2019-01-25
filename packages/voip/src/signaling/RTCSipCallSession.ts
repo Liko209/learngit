@@ -212,6 +212,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
+  getPeerConnection() {
+    if (this._session) {
+      return this._session.sessionDescriptionHandler.peerConnection;
+    }
+  }
+
   getSession() {
     return this._session;
   }

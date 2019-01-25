@@ -6,11 +6,13 @@
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
+import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
   kRTCAnonymous,
   kRTCHangupInvalidCallInterval,
+  kRTCGetStatsInterval,
 } from '../account/constants';
 
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
@@ -20,6 +22,8 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
+  RTCInBoundRtp,
+  RTCOutBoundRtp,
 } from './types';
 import { v4 as uuid } from 'uuid';
 
@@ -42,6 +46,8 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
+  private _getStatsTimer: NodeJS.Timeout | null = null;
+  private _rtcMediaStatsManager: RTCMediaStatsManager = null;
 
   constructor(
     isIncoming: boolean,
@@ -85,6 +91,12 @@ class RTCCall {
     this._hangupInvalidCallTimer = setTimeout(() => {
       this.hangup();
     },                                        kRTCHangupInvalidCallInterval * 1000);
+  }
+
+  private _addGetStatsTimer(): void {
+    this._getStatsTimer = setInterval(() => {
+      this._getStats();
+    },                                kRTCGetStatsInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -186,6 +198,38 @@ class RTCCall {
     this._callSession.setSession(session);
   }
 
+  private async _getStats() {
+    const pc = this._callSession.getPeerConnection();
+    let outBoundRtp: RTCOutBoundRtp;
+    let inBoundRtp: RTCInBoundRtp;
+    if (pc) {
+      const report = await pc.getStats();
+      report.forEach((item: any) => {
+        if ('outbound-rtp' === item.type) {
+          outBoundRtp = item;
+          const outTransport: any = report.get(outBoundRtp.transportId);
+          const outCandidatePair: any = report.get(
+            outTransport.selectedCandidatePairId,
+          );
+          outBoundRtp.currentRoundTripTime =
+            outCandidatePair.currentRoundTripTime;
+
+          this._rtcMediaStatsManager.setOutBoundRtp(outBoundRtp);
+        }
+        if ('inbound-rtp' === item.type) {
+          inBoundRtp = item;
+          const inTransport: any = report.get(inBoundRtp.transportId);
+          const inCandidatePair: any = report.get(
+            inTransport.selectedCandidatePairId,
+          );
+          inBoundRtp.currentRoundTripTime =
+            inCandidatePair.currentRoundTripTime;
+          this._rtcMediaStatsManager.setInBoundRtp(inBoundRtp);
+        }
+      });
+    }
+  }
+
   private _startOutCallFSM(): void {
     if (this._account.isReady()) {
       this._fsm.accountReady();
@@ -238,6 +282,7 @@ class RTCCall {
         clearTimeout(this._hangupInvalidCallTimer);
         this._hangupInvalidCallTimer = null;
       }
+      this._addGetStatsTimer();
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -245,6 +290,12 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
       this._account.removeCallFromCallManager(this._callInfo.uuid);
       this._destroy();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.LEAVE_CONNECTED, () => {
+      if (this._getStatsTimer) {
+        clearInterval(this._getStatsTimer);
+        this._getStatsTimer = null;
+      }
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
@@ -379,6 +430,7 @@ class RTCCall {
       this._hangupInvalidCallTimer = null;
     }
   }
+
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();

@@ -47,6 +47,39 @@ enum RTC_CALL_ACTION {
   PARK = 'park',
 }
 
+type RTCOutBoundRtp = {
+  bytesSent: number;
+  codecId: string;
+  id: string;
+  isRemote: boolean;
+  mediaType: string;
+  packetsSent: number;
+  ssrc: number;
+  timestamp: number;
+  trackId: string;
+  transportId: string;
+  type: string;
+  currentRoundTripTime: number;
+};
+
+type RTCInBoundRtp = {
+  bytesReceived: number;
+  codecId: string;
+  fractionLost: number;
+  id: string;
+  isRemote: boolean;
+  jitter: number;
+  mediaType: string;
+  packetsLost: number;
+  packetsReceived: number;
+  ssrc: number;
+  timestamp: number;
+  trackId: string;
+  transportId: string;
+  type: string;
+  currentRoundTripTime: number;
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -54,4 +87,6 @@ export {
   RTC_CALL_ACTION,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
+  RTCInBoundRtp,
+  RTCOutBoundRtp,
 };

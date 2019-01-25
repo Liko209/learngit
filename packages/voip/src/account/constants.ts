@@ -14,3 +14,4 @@ export const kRTCRegisterRetryTimerMin = 2;
 export const kRTCRegisterRetryTimerMax = 60;
 export const kRTCAnonymous = 'anonymous';
 export const kRTCHangupInvalidCallInterval = 10;
+export const kRTCGetStatsInterval = 2;
