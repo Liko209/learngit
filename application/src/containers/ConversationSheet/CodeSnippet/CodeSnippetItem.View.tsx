@@ -34,7 +34,9 @@ class CodeSnippet extends React.Component<
     link.download = `${this.props.postItem.title}.txt`;
     const blob = new Blob([this.props.postItem.body], { type: 'text/plain' });
     link.href = window.URL.createObjectURL(blob);
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   }
 
   _getHeaderActions = memoize(() => {
