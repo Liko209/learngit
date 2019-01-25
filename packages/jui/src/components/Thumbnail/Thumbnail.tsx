@@ -12,8 +12,12 @@ import { JuiIconography } from '../../foundation/Iconography';
 const ICON_MAP = {
   pdf: 'pdf',
   ppt: 'ppt',
-  ps: 'ps',
-  sheet: 'sheet',
+  doc: 'doc',
+  excel: 'excel',
+  file: 'file',
+  zip: 'zip',
+  music: 'music',
+  video: 'video',
 };
 
 type JuiThumbnailProps = {
@@ -52,7 +56,9 @@ class JuiThumbnail extends React.Component<JuiThumbnailProps> {
           <StyledModifyImage src={url} />
         ) : (
           <StyledIcon size={size} {...this.props}>
-            {iconType ? ICON_MAP[iconType] : 'image_preview'}
+            {iconType && ICON_MAP[iconType]
+              ? ICON_MAP[iconType]
+              : 'image_preview'}
           </StyledIcon>
         )}
       </>

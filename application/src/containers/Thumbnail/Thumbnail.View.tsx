@@ -17,14 +17,20 @@ class ThumbnailView extends React.Component<ViewProps> {
       fileTypeOrUrl: { icon, url },
     } = this.props;
     return (
-      <PreloadImg
-        url={url}
-        placeholder={
-          <JuiIconography fontSize="large">image_preview</JuiIconography>
-        }
-      >
-        <JuiThumbnail iconType={icon} url={url} />
-      </PreloadImg>
+      <>
+        {url ? (
+          <PreloadImg
+            url={url}
+            placeholder={
+              <JuiIconography fontSize="large">image_preview</JuiIconography>
+            }
+          >
+            <JuiThumbnail url={url} />
+          </PreloadImg>
+        ) : (
+          <JuiThumbnail iconType={icon} />
+        )}
+      </>
     );
   }
 }
