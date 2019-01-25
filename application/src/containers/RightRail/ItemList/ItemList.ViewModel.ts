@@ -220,6 +220,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   fetchNextPageItems = async () => {
+    if (this._loadStatus.loading) {
+      return;
+    }
+
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       const { offlinePrompt } = this.tabConfig;
@@ -240,6 +244,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
+      await delay(50);
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
       return result;
     } catch (e) {
