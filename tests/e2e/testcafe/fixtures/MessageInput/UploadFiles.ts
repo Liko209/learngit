@@ -5,6 +5,7 @@
  */
 
 import * as _ from 'lodash';
+import * as assert from 'assert';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
@@ -61,19 +62,21 @@ test(formalName('JPT-448 The post is sent successfully when sending a post with 
     await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
   });
 
-  await h(t).withLog('Then I can read this message with files from post list', async () => {
-    // TODO bug https://jira.ringcentral.com/browse/FIJI-2399, so I skip the check point
-    // await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
-    for (let i of _.range(filesNames.length)) {
-      await lastPost.nthFileNameShouldBe(i, filesNames[i]);
-    }
-  }, true);
 
-  await h(t).withLog(`And the sent files size should be correct `, async () => {
-    for (let i of _.range(filesNames.length)) {
-      await lastPost.nthFileSizeShouldBe(i, filesSize[i]);
+  await h(t).withLog('Then I can read this message with files from post list, And the sent files size should be correct ', async () => {
+    await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
+    await t.expect(lastPost.fileName.count).eql(filesNames.length);
+    let count = 0;
+    for (const i of _.range(filesNames.length)) {
+      for (const j of _.range(filesNames.length)) {
+        if (await lastPost.fileName.nth(i).withText(filesNames[j]).exists) {
+          await lastPost.nthFileSizeShouldBe(i, filesSize[j]);
+          count += 1;
+        }
+      }
     }
-  });
+    assert.deepEqual(count, filesNames.length, "some files were not uploaded completely");
+  }, true);
 
   await h(t).withLog(`And the sent post\'s conversationCard shows ${NOTIFICATIONS}`, async () => {
     await t.expect(conversationPage.fileNotification.withText(NOTIFICATIONS).exists).ok();

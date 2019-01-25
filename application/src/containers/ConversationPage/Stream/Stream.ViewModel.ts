@@ -3,20 +3,17 @@
  * @Date: 2018-10-08 18:18:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { generalErrorHandler } from '@/utils/error';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
 import { IFetchSortableDataProvider } from './../../../store/base/fetch/FetchSortableDataListHandler';
 import _ from 'lodash';
-import { computed, action } from 'mobx';
-import { PostService, StateService, ENTITY } from 'sdk/service';
+import { computed, action, observable } from 'mobx';
+import { PostService, ENTITY } from 'sdk/service';
+import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
+import { StateService } from 'sdk/module/state';
 import { GroupState } from 'sdk/models';
 import { Group } from 'sdk/module/group/entity';
-import storeManager, { ENTITY_NAME } from '@/store';
 import { errorHelper } from 'sdk/error';
+import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 import {
   onScrollToTop,
@@ -31,11 +28,15 @@ import { StreamProps } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { QUERY_DIRECTION } from 'sdk/dao';
 import GroupModel from '@/store/models/Group';
 import { onScrollToBottom } from '@/plugins';
-import { StreamController } from './StreamController';
 import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { generalErrorHandler } from '@/utils/error';
+import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
@@ -45,10 +46,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
-  private _initialized = false;
-  private streamController: StreamController;
+  private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
+  private _initialized = false;
+
   jumpToPostId: number;
+
+  @observable loadInitialPostsError: Error | null = null;
+  @computed
+  get groupId() {
+    return this.props.groupId;
+  }
 
   @computed
   get hasHistoryUnread() {
@@ -71,17 +79,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get items() {
-    return this.streamController.items;
+    return this._streamController.items;
   }
 
   @computed
   get hasMoreUp() {
-    return this.streamController.hasMoreUp;
+    return this._streamController.hasMoreUp;
   }
 
   @computed
   get postIds() {
-    return this.streamController.postIds;
+    return this._streamController.postIds;
   }
 
   @computed
@@ -132,7 +140,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       eventName: ENTITY.POST,
     };
 
-    this.streamController = new StreamController(
+    this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
       this.postDataProvider,
@@ -141,33 +149,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
   postDataProvider: IFetchSortableDataProvider<Post> = {
     fetchData: async (direction, pageSize, anchor) => {
-      try {
-        const postService: PostService = PostService.getInstance();
-        const { posts, hasMore, items } = await postService.getPostsByGroupId({
-          direction,
-          groupId: this.props.groupId,
-          postId: anchor && anchor.id,
-          limit: pageSize,
-        });
-        storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
-        storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
-        return { hasMore, data: posts };
-      } catch (err) {
-        if (errorHelper.isBackEndError(err)) {
-          Notification.flashToast({
-            message: `SorryWeWereNotAbleToLoad${
-              direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
-            }Messages`,
-            type: ToastType.ERROR,
-            messageAlign: ToastMessageAlign.LEFT,
-            fullWidth: false,
-            dismissible: false,
-          });
-        } else {
-          generalErrorHandler(err);
-        }
-        return { data: [], hasMore: true };
-      }
+      const postService: PostService = PostService.getInstance();
+      const { posts, hasMore, items } = await postService.getPostsByGroupId({
+        direction,
+        groupId: this.props.groupId,
+        postId: anchor && anchor.id,
+        limit: pageSize,
+      });
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
+      return { hasMore, data: posts };
     },
   };
 
@@ -179,31 +170,48 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     );
   }
 
-  @loading
-  async loadInitialPosts() {
-    if (this.jumpToPostId) {
-      await this._loadSiblingPosts(this.jumpToPostId);
-    } else {
-      await this._loadPosts(QUERY_DIRECTION.OLDER);
-    }
-  }
-
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
+  }
+
+  @loading
+  async loadInitialPosts() {
+    this.loadInitialPostsError = null;
+    try {
+      if (this.jumpToPostId) {
+        await this._loadSiblingPosts(this.jumpToPostId);
+      } else {
+        await this._loadPosts(QUERY_DIRECTION.OLDER);
+      }
+    } catch (err) {
+      this._handleLoadInitialPostsError(err);
+    }
   }
 
   @onScrollToTop
   @loadingTop
   @action
   async loadPrevPosts() {
-    return this._loadPosts(QUERY_DIRECTION.OLDER);
+    try {
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      return posts;
+    } catch (err) {
+      this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
+      return;
+    }
   }
 
   @onScrollToBottom
   @loadingBottom
   @action
   async loadNextPosts() {
-    return this._loadPosts(QUERY_DIRECTION.NEWER);
+    try {
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      return posts;
+    } catch (err) {
+      this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
+      return;
+    }
   }
 
   @onScroll
@@ -218,9 +226,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       .getGlobalStore()
       .set(GLOBAL_KEYS.SHOULD_SHOW_UMI, !shouldHideUmi);
     if (shouldHideUmi && this._initialized) {
-      this.streamController.disableNewMessageSep();
+      this._streamController.disableNewMessageSep();
     } else {
-      this.streamController.enableNewMessageSep();
+      this._streamController.enableNewMessageSep();
     }
   }
 
@@ -229,19 +237,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    this._stateService.markAsRead(this.props.groupId);
+    this._stateService.updateReadStatus(this.props.groupId, false);
   }
 
   enableNewMessageSeparatorHandler = () => {
-    this.streamController.enableNewMessageSep();
+    this._streamController.enableNewMessageSep();
   }
 
   disableNewMessageSeparatorHandler = () => {
-    this.streamController.disableNewMessageSep();
+    this._streamController.disableNewMessageSep();
   }
   dispose() {
     super.dispose();
-    this.streamController.dispose();
+    this._streamController.dispose();
     storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
@@ -251,16 +259,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this.streamController.hasMore(direction)) {
+    if (!this._streamController.hasMore(direction)) {
       return [];
     }
-    return await this.streamController.fetchData(direction, limit);
+    return await this._streamController.fetchData(direction, limit);
   }
 
   private async _loadSiblingPosts(anchorPostId: number) {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
-      this.streamController.replacePostList([post]);
+      this._streamController.replacePostList([post]);
       await Promise.all([
         this._loadPosts(QUERY_DIRECTION.OLDER),
         this._loadPosts(QUERY_DIRECTION.NEWER),
@@ -274,7 +282,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const loadCount =
       this._historyHandler.getDistanceToFirstUnread(this.postIds) + 1;
     if (loadCount > 0) {
-      this.streamController.enableNewMessageSep();
+      this._streamController.enableNewMessageSep();
       await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
     }
     return this.firstHistoryUnreadPostId;
@@ -287,6 +295,37 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
     this._initialized = false;
+  }
+
+  private _canHandleError(err: Error) {
+    return (
+      errorHelper.isBackEndError(err) ||
+      errorHelper.isNetworkConnectionError(err)
+    );
+  }
+
+  private _handleLoadInitialPostsError(err: Error) {
+    if (this._canHandleError(err)) {
+      this.loadInitialPostsError = err;
+    } else {
+      generalErrorHandler(err);
+    }
+  }
+
+  private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
+    if (this._canHandleError(err)) {
+      Notification.flashToast({
+        message: `SorryWeWereNotAbleToLoad${
+          direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
+        }Messages`,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    } else {
+      generalErrorHandler(err);
+    }
   }
 }
 

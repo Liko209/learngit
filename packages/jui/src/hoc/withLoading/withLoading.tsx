@@ -10,13 +10,10 @@ import { JuiFade } from '../../components/Fade';
 
 type WithLoadingProps = {
   loading: boolean;
-  transitionDelay?: number;
   variant?: 'circular';
 };
-type TStyledLoading = {
-  isVisible: Boolean;
-};
-const StyledLoading = styled.div<TStyledLoading>`
+
+const StyledLoadingPage = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -26,46 +23,40 @@ const StyledLoading = styled.div<TStyledLoading>`
   justify-content: center;
   top: 0px;
   left: 0px;
-  display: ${({ isVisible }) => (isVisible ? 'flex' : 'none')};
   background: #fff;
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
-const DefaultLoading = (props: any) => (
-  <>
-    {props.children}
-    <JuiFade in={props.isVisible} style={{ transitionDelay: '100ms' }}>
-      <StyledLoading
-        isVisible={props.isVisible}
-        data-test-automation-id="loading"
-      >
-        <div>
-          <JuiCircularProgress />
-        </div>
-      </StyledLoading>
-    </JuiFade>
-  </>
+const DefaultLoading = () => (
+  <StyledLoadingPage>
+    <JuiCircularProgress />
+  </StyledLoadingPage>
 );
 
-const MAP = {
-  circular: DefaultLoading,
-};
+const MAP = { circular: DefaultLoading };
+const FADE_STYLE = { transitionDelay: '100ms' };
 
-const withLoading = <P extends { loading: boolean }>(
+const withLoading = <
+  P extends { loading: boolean; style?: React.CSSProperties }
+>(
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
-  return ({
-    loading,
-    variant,
-    transitionDelay = 0,
-    ...props
-  }: WithLoadingProps) => {
+  return ({ loading, variant, ...props }: WithLoadingProps) => {
     const Loading = CustomizedLoading || MAP[variant || 'circular'];
     return (
-      <Loading transitionDelay={transitionDelay} isVisible={loading}>
-        <Component {...props} loading={loading} />
-      </Loading>
+      <>
+        {loading && (
+          <JuiFade in={true} style={FADE_STYLE}>
+            <Loading />
+          </JuiFade>
+        )}
+        <Component
+          {...props}
+          loading={loading}
+          style={{ display: loading ? 'none' : '' }}
+        />
+      </>
     );
   };
 };

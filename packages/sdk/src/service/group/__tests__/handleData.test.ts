@@ -10,7 +10,7 @@ import { Post } from '../../../module/post/entity';
 import { Profile } from '../../../module/profile/entity';
 import { Raw } from '../../../framework/model';
 import { toArrayOf } from '../../../__tests__/utils';
-import StateService from '../../state';
+import { StateService } from '../../../module/state';
 import { EVENT_TYPES } from '../..';
 import { ApiResultOk } from '../../../api/ApiResult';
 import handleData, {
@@ -28,7 +28,7 @@ jest.mock('../../../service/person');
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
-jest.mock('../../state');
+jest.mock('../../../module/state');
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),

@@ -10,12 +10,12 @@ import {
   notificationCenter,
   ENTITY,
   ProfileService,
-  StateService,
   GroupService,
 } from 'sdk/service';
+import { StateService } from 'sdk/module/state';
 
 jest.mock('sdk/service/profile');
-jest.mock('sdk/service/state');
+jest.mock('sdk/module/state');
 jest.mock('sdk/service/group');
 jest.mock('../../utils/entities');
 
