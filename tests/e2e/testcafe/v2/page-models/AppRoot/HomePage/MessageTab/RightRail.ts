@@ -163,7 +163,7 @@ class ImagesTab extends BaseWebComponent {
   }
 
   get items() {
-    return this.getSelectorByAutomationId('e');
+    return this.getSelectorByAutomationId('rightRail-image-item');
   }
 
   nthItem(n: number) {
