@@ -53,7 +53,8 @@ describe('ThumbnailViewModel', () => {
     });
     it('should get file type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
-        type: 'text',
+        type: 'doc',
+        iconType: 'doc',
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
@@ -63,7 +64,7 @@ describe('ThumbnailViewModel', () => {
 
       expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
         url: '',
-        icon: 'text',
+        icon: 'doc',
       });
     });
     it('should get default type', async () => {
