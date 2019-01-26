@@ -99,7 +99,6 @@ class ItemListView extends React.Component<ViewProps & Props>
     const { totalCount, ids, loadStatus, tabConfig } = this.props;
     const { loading, firstLoaded, loadError } = loadStatus;
     const { subheader, tryAgainPrompt } = tabConfig;
-    console.log(11112, totalCount, ids.length);
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
