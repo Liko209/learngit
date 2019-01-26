@@ -405,14 +405,11 @@ class StreamViewComponent extends Component<Props> {
   }
 
   scrollToBottom = async () => {
-    const lastItem = _(this.props.items).nth(-1);
-    if (lastItem && lastItem.value) {
-      const lastPostId = _(lastItem.value as number[]).nth(-1);
-      if (!lastPostId) {
-        return;
-      }
-      await this.scrollToPost(lastPostId, false);
+    const lastPostId = _(this.props.postIds).nth(-1);
+    if (!lastPostId) {
+      return;
     }
+    await this.scrollToPost(lastPostId, false);
   }
 
   scrollToPost = async (

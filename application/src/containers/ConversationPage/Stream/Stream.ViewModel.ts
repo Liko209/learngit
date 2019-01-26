@@ -85,8 +85,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get hasMoreDown() {
+    return this._streamController.hasMoreDown;
+  }
+
+  @computed
   get postIds() {
-    return this._streamController.postIds;
+    return _(this.items)
+      .flatMap('value')
+      .compact()
+      .value();
   }
 
   @computed
