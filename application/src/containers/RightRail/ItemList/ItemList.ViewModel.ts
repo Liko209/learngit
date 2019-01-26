@@ -247,11 +247,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
     try {
       this._loadStatus.loading = true;
-      await delay(150);
+      await delay(250);
       const result = await this._sortableDataHandler.fetchData(
         QUERY_DIRECTION.NEWER,
       );
-      await delay(50);
+      await delay(250);
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
       return result;
     } catch (e) {
