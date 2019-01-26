@@ -128,7 +128,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   constructor(props: StreamProps) {
     super(props);
-
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
