@@ -357,6 +357,15 @@ describe('FetchSortableDataListHandler', () => {
         },
       },
     ],
+    [
+      'when update item without update sort value',
+      {
+        originalItems: [buildItem(1), buildItem(2)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
+        expectedOrder: [1, 2],
+        callbackMuted: true,
+      },
+    ],
     /**
      * REPLACE
      */
