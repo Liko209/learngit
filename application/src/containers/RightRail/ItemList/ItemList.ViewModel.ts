@@ -231,8 +231,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   fetchNextPageItems = async () => {
     const { active } = this.props;
-    const { loading } = this._loadStatus;
-    if (!active || loading) {
+    const { loading, firstLoaded } = this._loadStatus;
+    const noMore = firstLoaded && this.totalCount === this.ids.length;
+    if (!active || loading || noMore) {
       return;
     }
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
