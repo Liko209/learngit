@@ -36,19 +36,11 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     justifyWidth: false,
   };
   private _imageRef: RefObject<HTMLImageElement> = createRef();
-  private _image: HTMLImageElement;
-  private _loaded: boolean = false;
   private _mounted: boolean = false;
-  constructor(props: JuiPreviewImageProps) {
-    super(props);
-    this._image = new Image();
-    this._image.src = props.url;
-    this._image.onload = this._handleImageLoad;
-  }
+
   private _handleImageLoad = () => {
-    this._loaded = true;
     const { forceSize, squareSize } = this.props;
-    const { width, height } = this._image;
+    const { width, height } = this._imageRef.current!;
     if (forceSize) {
       this._imageInfo = getThumbnailForSquareSize(
         width,
@@ -69,7 +61,7 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize } = this.props;
+    const { Actions, fileName, forceSize, url } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     const imageStyle: CSSProperties = { position: 'absolute' };
@@ -89,14 +81,13 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     }
     return (
       <Jui.ImageCard width={width} height={height}>
-        {this._loaded && (
-          <img
-            style={imageStyle}
-            ref={this._imageRef}
-            src={this._image.src}
-            {...imageProps}
-          />
-        )}
+        <img
+          style={imageStyle}
+          ref={this._imageRef}
+          src={url}
+          onLoad={this._handleImageLoad}
+          {...imageProps}
+        />
         <Jui.ImageFileInfo width={width} height={height} component="div">
           <FileName filename={fileName} />
           <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
