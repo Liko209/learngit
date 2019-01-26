@@ -17,6 +17,10 @@ enum WEBPHONE_SESSION_STATE {
   PROGRESS = 'progress',
 }
 
+enum WEBPHONE_SESSION_EVENT {
+  ADD_TRACK = 'trackAdded',
+}
+
 type ProvisionDataOptions = {
   appKey?: string;
   appName?: string;
@@ -27,4 +31,9 @@ type ProvisionDataOptions = {
   onSession?: string;
 };
 
-export { UA_EVENT, WEBPHONE_SESSION_STATE, ProvisionDataOptions };
+export {
+  UA_EVENT,
+  WEBPHONE_SESSION_STATE,
+  WEBPHONE_SESSION_EVENT,
+  ProvisionDataOptions,
+};

@@ -64,7 +64,7 @@ class RTCCall {
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
     this._fsm = new RTCCallFsm();
-    this._callSession = new RTCSipCallSession();
+    this._callSession = new RTCSipCallSession(this._callInfo.uuid);
     if (this._isIncomingCall) {
       this._callInfo.fromName = session.remoteIdentity.displayName;
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
@@ -379,6 +379,7 @@ class RTCCall {
       this._hangupInvalidCallTimer = null;
     }
   }
+
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();

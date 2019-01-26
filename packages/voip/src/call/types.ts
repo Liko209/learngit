@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 enum CALL_SESSION_STATE {
-  CONFIRMED = 'callsessionstate.confirmed',
-  DISCONNECTED = 'callsessionstate.disconnected',
-  ERROR = 'callsessionstate.error',
-  PROGRESS = 'callsessionstate.progress',
+  CONFIRMED = 'callSessionConfirmed',
+  DISCONNECTED = 'callSessionDisconnected',
+  ERROR = 'callSessionError',
+  PROGRESS = 'callSessionProgress',
 }
 
 enum CALL_FSM_NOTIFY {
