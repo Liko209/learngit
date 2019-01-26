@@ -40,7 +40,7 @@ test(formalName('Check the upload image file and display on the right rail', ['S
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('When I open a team and  upload a image file', async () => {
+  await h(t).withLog('When I open a team and upload a image file', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);

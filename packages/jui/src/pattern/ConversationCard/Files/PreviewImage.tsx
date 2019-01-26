@@ -27,6 +27,7 @@ type JuiPreviewImageProps = {
 
 class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
+  private _mounted: boolean;
   private _imageInfo: ThumbnailInfo = {
     width: 0,
     height: 0,

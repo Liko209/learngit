@@ -9,8 +9,6 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ClientFunction } from 'testcafe';
-import * as assert from 'assert';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -109,8 +107,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
     await teamConversation.umi.shouldBeNumber(2);
   });
-},
-);
+});
 
 test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']), async (t: TestController) => {
   if (await H.isEdge()) {
@@ -528,8 +525,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   await h(t).withLog('Should have 1 umi in header of team sections', async () => {
     await teamsSection.headerUmi.shouldBeNumber(1);
   });
-},
-);
+});
 
 test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
@@ -730,6 +726,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
 );
 
 // bug https://jira.ringcentral.com/browse/FIJI-2766 so skip the checkpoint
+// skip due to https://jira.ringcentral.com/browse/FIJI-3130
 test.skip(formalName('JPT- 743 Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const app = new AppRoot(t);
