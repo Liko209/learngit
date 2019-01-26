@@ -37,6 +37,7 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   };
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _mounted: boolean = false;
+  private _loaded: boolean = false;
 
   private _handleImageLoad = () => {
     const { forceSize, squareSize } = this.props;
@@ -50,6 +51,7 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     } else {
       this._imageInfo = getThumbnailSize(width, height);
     }
+    this._loaded = true;
     if (this._mounted) {
       this.forceUpdate();
     }
@@ -65,7 +67,7 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     const imageStyle: CSSProperties = { position: 'absolute' };
-    if (this._imageInfo.width !== 0 && this._imageInfo.height !== 0) {
+    if (this._loaded) {
       if (!forceSize) {
         height = this._imageInfo.height;
         width = this._imageInfo.width;
