@@ -108,7 +108,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
             ) {
               throw new Error(errorMessage);
             } else {
-              mainLogger.error(errorMessage);
+              mainLogger.warn(errorMessage);
             }
           }
 
