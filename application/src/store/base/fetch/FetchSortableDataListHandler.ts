@@ -139,22 +139,37 @@ export class FetchSortableDataListHandler<
     const matchedSortableModels: ISortableModel<T>[] = [];
     const matchedEntities: T[] = [];
 
-    if (payload.type === EVENT_TYPES.REPLACE) {
-      if (payload.body.isReplaceAll) {
-        matchedKeys = keys;
-      }
-    }
-
     matchedKeys.forEach((key: number) => {
       const model = entities.get(key) as T;
       if (this._isMatchFunc(model)) {
         const sortableModel = this._transformFunc(model);
-        matchedSortableModels.push(sortableModel);
-        matchedEntities.push(model);
+        if (
+          sortableModel.sortValue !==
+          (this.sortableListStore.getById(key) as ISortableModel).sortValue
+        ) {
+          matchedSortableModels.push(sortableModel);
+          matchedEntities.push(model);
+        }
       } else {
         deletedSortableModelIds.push(key);
       }
     });
+
+    if (payload.type === EVENT_TYPES.REPLACE) {
+      if (payload.body.isReplaceAll) {
+        matchedKeys = keys;
+        matchedKeys.forEach((key: number) => {
+          const model = entities.get(key) as T;
+          if (this._isMatchFunc(model)) {
+            const sortableModel = this._transformFunc(model);
+            matchedSortableModels.push(sortableModel);
+            matchedEntities.push(model);
+          } else {
+            deletedSortableModelIds.push(key);
+          }
+        });
+      }
+    }
 
     if (payload.type === EVENT_TYPES.REPLACE) {
       if (payload.body.isReplaceAll) {

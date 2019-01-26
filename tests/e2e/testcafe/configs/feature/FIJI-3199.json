@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/MiniProfile.ts"
+    ],
+    "include_tags": ["P0"],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
