@@ -21,9 +21,9 @@ import {
   kRTCProvParamsErrorRertyTimer,
   kRTCProvRequestErrorRertyTimerMax,
 } from './constants';
-
 import { isNotEmptyString } from '../utils/utils';
 import { RTC_REST_API } from '../utils/types';
+import { rtcDaoManager } from '../utils/RTCDaoManager';
 import _ from 'lodash';
 
 enum ERROR_TYPE {
@@ -45,6 +45,11 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   async acquireSipProv() {
+    const localSipProvisionInfo = rtcDaoManager.readProvisioning();
+    if (localSipProvisionInfo) {
+      this._sipProvisionInfo = localSipProvisionInfo;
+      this.emit(RTC_PROV_EVENT.NEW_PROV, { info: this._sipProvisionInfo });
+    }
     if (!this._canAcquireSipProv) {
       return;
     }
@@ -89,7 +94,7 @@ class RTCProvManager extends EventEmitter2 {
 
     const responseData: RTCSipProvisionInfo = response.data;
 
-    if (!this._checkSipProvInfoParame(responseData)) {
+    if (!this._checkSipProvInfoParams(responseData)) {
       rtcLogger.info('RTCProvManager', 'the response param is error');
       this._errorHandling(ERROR_TYPE.PARAMS_ERROR, response.retryAfter);
       return;
@@ -101,6 +106,7 @@ class RTCProvManager extends EventEmitter2 {
     if (!_.isEqual(responseData, this._sipProvisionInfo)) {
       rtcLogger.info('RTCProvManager', 'emit new prov');
       this._sipProvisionInfo = responseData;
+      rtcDaoManager.saveProvisionInfo(this._sipProvisionInfo);
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: responseData });
     }
   }
@@ -160,27 +166,27 @@ class RTCProvManager extends EventEmitter2 {
     },         seconds * 1000);
   }
 
-  private _checkSipProvInfoParame(info: RTCSipProvisionInfo): boolean {
+  private _checkSipProvInfoParams(info: RTCSipProvisionInfo): boolean {
     rtcLogger.info('RTCProvManager', `the prov info: ${JSON.stringify(info)}`);
-    let parameCorrect: boolean = false;
+    let paramsCorrect: boolean = false;
     try {
-      const paramesipInfo =
+      const paramsSipInfo =
         info.sipInfo instanceof Array ? info.sipInfo[0] : info.sipInfo;
 
-      parameCorrect =
-        isNotEmptyString(paramesipInfo.authorizationId) &&
-        isNotEmptyString(paramesipInfo.domain) &&
-        isNotEmptyString(paramesipInfo.outboundProxy) &&
-        isNotEmptyString(paramesipInfo.password) &&
-        isNotEmptyString(paramesipInfo.transport) &&
-        isNotEmptyString(paramesipInfo.username);
+      paramsCorrect =
+        isNotEmptyString(paramsSipInfo.authorizationId) &&
+        isNotEmptyString(paramsSipInfo.domain) &&
+        isNotEmptyString(paramsSipInfo.outboundProxy) &&
+        isNotEmptyString(paramsSipInfo.password) &&
+        isNotEmptyString(paramsSipInfo.transport) &&
+        isNotEmptyString(paramsSipInfo.username);
     } catch (error) {
       rtcLogger.error(
         'RTCProvManager',
-        `the Prov Info Parame error is: ${error}`,
+        `the Prov Info Params error is: ${error}`,
       );
     }
-    return parameCorrect;
+    return paramsCorrect;
   }
 }
 
