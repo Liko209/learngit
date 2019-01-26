@@ -19,6 +19,17 @@ type ExtendFileItem = {
   previewUrl: string;
 };
 
+const FILE_ICON_MAP = {
+  pdf: 'pdf',
+  ppt: 'ppt',
+  doc: 'doc',
+  excel: 'excel',
+  zip: 'zip',
+  mp3: 'default_music',
+  mp4: 'default_video',
+  file: 'default_file',
+};
+
 export default class FileItemModel extends ItemModel {
   @observable type: string;
   @observable name: string;
@@ -100,6 +111,12 @@ export default class FileItemModel extends ItemModel {
   get origWidth() {
     if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_width');
+  }
+
+  @computed
+  get iconType() {
+    const type = (this.type && this.type.split('/').pop()) || '';
+    return FILE_ICON_MAP[type.toLowerCase()] || FILE_ICON_MAP.file;
   }
 
   static fromJS(data: Item) {

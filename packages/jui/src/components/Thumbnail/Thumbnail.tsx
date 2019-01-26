@@ -9,16 +9,6 @@ import { width, shape } from '../../foundation/utils/styles';
 // import { preloadImg } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 
-const ICON_MAP = {
-  pdf: 'pdf',
-  ppt: 'ppt',
-  doc: 'doc',
-  excel: 'excel',
-  zip: 'zip',
-  music: 'music',
-  video: 'video',
-};
-
 type JuiThumbnailProps = {
   size?: 'small' | 'large';
   url?: string;
@@ -55,9 +45,7 @@ class JuiThumbnail extends React.Component<JuiThumbnailProps> {
           <StyledModifyImage src={url} />
         ) : (
           <StyledIcon size={size} {...this.props}>
-            {iconType && ICON_MAP[iconType]
-              ? ICON_MAP[iconType]
-              : 'default_file'}
+            {iconType}
           </StyledIcon>
         )}
       </>

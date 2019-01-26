@@ -52,7 +52,6 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     };
 
     if (this.file && this.file.type) {
-      const { type } = this.file;
       // const { previewUrl, isImage } = this.isImage(this.file);
       // if (isImage) {
       if (FileItemUtils.isSupportPreview(this.file)) {
@@ -63,7 +62,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       // return thumb;
       // }
 
-      thumb.icon = (type && type.split('/').pop()) || '';
+      thumb.icon = this.file.iconType;
       return thumb;
     }
     return thumb;
