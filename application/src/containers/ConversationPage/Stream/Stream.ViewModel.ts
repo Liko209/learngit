@@ -54,7 +54,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   jumpToPostId: number;
 
   @observable loadInitialPostsError: Error | null = null;
-  @observable groupId: number;
 
   @computed
   get hasHistoryUnread() {
