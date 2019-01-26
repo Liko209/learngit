@@ -68,10 +68,15 @@ describe('PersonService', () => {
     });
   });
 
-  describe('getHeadShot', () => {
+  describe('getHeadShotWithSize', () => {
     it('should call controller with correct parameter', async () => {
-      personService.getHeadShot(1, '1111', 150);
-      expect(personController.getHeadShot).toBeCalledWith(1, '1111', 150);
+      personService.getHeadShotWithSize(1, '1111', '', 150);
+      expect(personController.getHeadShotWithSize).toBeCalledWith(
+        1,
+        '1111',
+        '',
+        150,
+      );
     });
   });
 

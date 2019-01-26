@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PhoneNumberModel, SanitizedExtensionModel, Person } from './Person';
-
-import {
+export {
   CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,
   PhoneNumberInfo,
@@ -17,8 +15,5 @@ export {
   PhoneNumberModel,
   SanitizedExtensionModel,
   Person,
-  CALL_ID_USAGE_TYPE,
-  PHONE_NUMBER_TYPE,
-  PhoneNumberInfo,
-  SortingOrder,
-};
+  HeadShotModel,
+} from './Person';

@@ -59,7 +59,7 @@ test.skip(formalName('Should remains where it is when click a conversation in th
     });
 
     await h(t).withLog('When I refresh page', async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.ensureLoaded();
     });
 
@@ -106,7 +106,7 @@ test(formalName('Should display in the top when open a closed conversation from 
     });
 
     await h(t).withLog('When I refresh page', async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.ensureLoaded();
     });
 

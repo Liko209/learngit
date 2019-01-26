@@ -3,11 +3,17 @@
  * @Date: 2019-01-16 09:52:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { IdModel } from '../../../../framework/model';
+import { ExtendedBaseModel } from '../../../models';
+import { PROGRESS_STATUS } from '../../../progress';
 
-interface IPreInsertController<T extends IdModel = IdModel> {
-  preInsert(entity: T): Promise<void>;
-  incomesStatusChange(id: number, shouldDelete: boolean): void;
+interface IPreInsertController<
+  T extends ExtendedBaseModel = ExtendedBaseModel
+> {
+  insert(entity: T): Promise<void>;
+  delete(entity: T): void;
+  bulkDelete(entities: T[]): Promise<void>;
+  updateStatus(entity: T, status: PROGRESS_STATUS): void;
+  isInPreInsert(version: number): boolean;
 }
 
 export { IPreInsertController };

@@ -11,7 +11,7 @@ import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import GroupDao from '../../dao/group';
 import PersonDao from '../../dao/person';
-import PostDao, { PostViewDao } from '../../dao/post';
+import PostDao from '../../dao/post';
 import ItemDao from '../../dao/item';
 import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';
 import { FileItemDao } from '../../module/item/module/file/dao/FileItemDao';
@@ -147,8 +147,6 @@ export default class SyncService extends BaseService {
     await itemDao.clear();
     const postDao = daoManager.getDao(PostDao);
     await postDao.clear();
-    const postViewDao = daoManager.getDao(PostViewDao);
-    await postViewDao.clear();
     const groupDao = daoManager.getDao(GroupDao);
     await groupDao.clear();
     const personDao = daoManager.getDao(PersonDao);

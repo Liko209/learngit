@@ -29,7 +29,7 @@ import SearchService from './service/search';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
-import StateService from './service/state';
+import { StateService } from './module/state';
 import SyncService from './service/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
