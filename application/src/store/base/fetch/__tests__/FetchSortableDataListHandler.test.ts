@@ -139,7 +139,7 @@ function buildPayload(
 function setup({ originalItems }: { originalItems: SimpleItem[] }) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
   const listStore = new SortableListStore<SimpleItem>(sortFunc);
-  listStore.append(
+  listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
     }),
