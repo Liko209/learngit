@@ -33,23 +33,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     const sdh = this._session.sessionDescriptionHandler;
     const pc = sdh && sdh.peerConnection;
     if (pc) {
-      const local_streams = pc.getLocalStreams();
-      local_streams.forEach((local_stream: any) => {
-        const local_tracks = local_stream.getTracks();
-        local_tracks.forEach((local_track: any) => {
-          local_track.stop();
-          local_stream.removeTrack(local_track);
-        });
-      });
-
-      const remote_streams = pc.getRemoteStreams();
-      remote_streams.forEach((remote_stream: any) => {
-        const remote_tracks = remote_stream.getTracks();
-        remote_tracks.forEach((remote_track: any) => {
-          remote_track.stop();
-          remote_stream.removeTrack(remote_track);
-        });
-      });
       sdh.close();
     }
     rtcMediaManager.removeMediaElement(this._uuid);
@@ -100,7 +83,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     const pc = this._session.sessionDescriptionHandler.peerConnection;
     let remote_stream: MediaStream;
     const receivers = pc.getReceivers && pc.getReceivers();
-    if (receivers && receivers.length > 0) {
+    if (receivers) {
       remote_stream = new MediaStream();
       receivers.forEach((receiver: any) => {
         const track = receiver.track;
@@ -117,7 +100,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
     let local_stream: MediaStream;
     const senders = pc.getSenders && pc.getSenders();
-    if (senders && senders.length > 0) {
+    if (senders) {
       local_stream = new MediaStream();
       senders.forEach((sender: any) => {
         local_stream.addTrack(sender.track);
