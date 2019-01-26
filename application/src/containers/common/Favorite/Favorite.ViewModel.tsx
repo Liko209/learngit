@@ -9,17 +9,18 @@ import { service } from 'sdk';
 import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
-import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
+import { StoreViewModel } from '@/store/ViewModel';
 
 import { FavoriteProps } from './types';
 
 const { GroupService } = service;
 
-class FavoriteViewModel extends AbstractViewModel<FavoriteProps> {
+class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
   private _groupService: service.GroupService = GroupService.getInstance();
+
   constructor(props: FavoriteProps) {
     super(props);
     this.autorun(this.getConversationId);
