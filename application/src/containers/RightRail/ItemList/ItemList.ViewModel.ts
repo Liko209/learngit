@@ -121,7 +121,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this._groupId,
       () => {
-        this._loadStatus.firstLoaded = false;
         const {
           sortKey = ITEM_SORT_KEYS.CREATE_TIME,
           desc = false,
@@ -138,8 +137,12 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       },
       { fireImmediately: true },
     );
-    this.reaction(() => this.ids, () => this.loadTotalCount());
-    this.reaction(() => this._active, () => this.forceReload());
+    this.reaction(
+      () => this._active,
+      (active: boolean) => {
+        if (active) this.fetchNextPageItems();
+      },
+    );
   }
 
   async loadTotalCount() {
@@ -221,6 +224,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   forceReload = async () => {
     this._loadStatus.firstLoaded = false;
+    this._loadStatus.loading = false;
     await this.fetchNextPageItems();
   }
 
