@@ -196,7 +196,10 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  private _renderStreamItem(streamItem: StreamItem, index: number) {
+  private _renderStreamItem = (
+    streamItem: StreamItem,
+    index: number,
+  ): JSX.Element => {
     const RENDERER_MAP = {
       [StreamItemType.POST]: this._renderConversationCard,
       [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
@@ -206,7 +209,7 @@ class StreamViewComponent extends Component<Props> {
     return streamItemRenderer.call(this, streamItem, index);
   }
 
-  private get _initialPost() {
+  private _renderInitialPost() {
     const { groupId, notEmpty, hasMoreUp } = this.props;
 
     return hasMoreUp ? null : (
@@ -271,15 +274,12 @@ class StreamViewComponent extends Component<Props> {
       </VisibilitySensor>
     );
   }
-  private get _streamItems() {
-    if (this.props.loading) {
-      return [];
-    }
 
-    return this.props.items.map(this._renderStreamItem.bind(this));
+  private _renderStreamItems() {
+    return this.props.items.map(this._renderStreamItem);
   }
 
-  private get _jumpToFirstUnreadButton() {
+  private _renderJumpToFirstUnreadButton() {
     const {
       t,
       firstHistoryUnreadInPage,
@@ -320,13 +320,14 @@ class StreamViewComponent extends Component<Props> {
       />
     ) : (
       <JuiStream>
-        {this._jumpToFirstUnreadButton}
-        {this._initialPost}
-        <section ref={this._listRef}>{this._streamItems}</section>
+        {this._renderJumpToFirstUnreadButton()}
+        {this._renderInitialPost()}
+        <section ref={this._listRef}>{this._renderStreamItems()}</section>
       </JuiStream>
     );
   }
 
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, updateHistoryHandler, markAsRead } = this.props;
     const { _jumpToPostId } = this.state;
@@ -349,37 +350,39 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _handleFirstUnreadPostVisibilityChange = (isVisible: boolean) => {
-    if (this._visibilitySensorEnabled) {
-      if (isVisible) {
-        this._firstHistoryUnreadPostViewed = true;
-        this.props.clearHistoryUnread();
-      } else if (this._firstHistoryUnreadPostViewed === null) {
-        this._firstHistoryUnreadPostViewed = false;
-      }
-    }
-  }
-
-  private _handleMostRecentPostRead = (isVisible: boolean) => {
-    const isFocused = document.hasFocus();
-
     if (!this._visibilitySensorEnabled) {
       return;
     }
 
-    if (!isVisible) {
-      return this._setUmiDisplay(true);
-    }
-
-    if (isFocused) {
-      this.props.markAsRead();
-      this._setUmiDisplay(false);
+    if (isVisible) {
+      this._firstHistoryUnreadPostViewed = true;
+      this.props.clearHistoryUnread();
+    } else if (this._firstHistoryUnreadPostViewed === null) {
+      this._firstHistoryUnreadPostViewed = false;
     }
   }
 
-  @action.bound
+  @action
+  private _handleMostRecentPostRead = (isVisible: boolean) => {
+    if (!this._visibilitySensorEnabled) {
+      return;
+    }
+
+    if (isVisible) {
+      if (document.hasFocus()) {
+        this.props.markAsRead();
+        this._setUmiDisplay(false);
+      }
+    } else {
+      return this._setUmiDisplay(true);
+    }
+  }
+
+  @action
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading || this._timeout) return;
     this._temporaryDisableAutoScroll = true;
+
     // Delay 500ms then show loading
     this._timeout = setTimeout(() => {
       this._jumpToFirstUnreadLoading = true;
