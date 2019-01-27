@@ -27,6 +27,7 @@ import {
 import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
+import { ItemDao } from '../../module/item/dao';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
