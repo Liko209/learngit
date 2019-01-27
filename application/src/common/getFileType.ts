@@ -19,10 +19,11 @@ const IMAGE_TYPE = [
   'psd',
   // Unable to parse the following suffix file,
   // If this format is added, the file name will not be displayed.
+  // https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
   // 'ps', // Only Safari support, Chrome and Firefox not support.
   // 'ai', // Chrome and Firefox and Safari not support.
-  // 'heic',
-  // 'giphy',
+  // 'heic', // Apple macOS Mojave dynamic wallpaper, Chrome and Firefox and Safari not support.
+  // 'giphy', // Chrome and Firefox and Safari not support.
 ];
 
 function getFileType(item: FileItemModel): ExtendFileItem {
@@ -69,10 +70,9 @@ function image(item: FileItemModel) {
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
   if (type) {
-    const isImage = IMAGE_TYPE.some(looper =>
-      type.toLocaleLowerCase().includes(looper),
-    );
-    if (type.includes('image/') || isImage) {
+    const t = type.toLocaleLowerCase();
+    const isImage = IMAGE_TYPE.some(looper => t.includes(looper));
+    if (t.includes('image/') || isImage) {
       image.isImage = true;
       image.previewUrl = versionUrl || '';
       return image;
