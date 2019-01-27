@@ -124,4 +124,4 @@ export default class FileItemModel extends ItemModel {
   }
 }
 
-export { FileType, ExtendFileItem };
+export { FileType, ExtendFileItem, FILE_ICON_MAP };
