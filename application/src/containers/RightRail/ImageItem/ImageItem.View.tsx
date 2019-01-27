@@ -25,7 +25,7 @@ class ImageItemView extends Component<ImageItemViewProps> {
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail id={id} />
+          <Thumbnail id={id} type="image" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}

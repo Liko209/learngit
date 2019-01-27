@@ -15,10 +15,11 @@ class ThumbnailView extends React.Component<ViewProps> {
   render() {
     const {
       fileTypeOrUrl: { icon, url },
+      type,
     } = this.props;
     return (
       <>
-        {url ? (
+        {type === 'image' ? (
           <PreloadImg
             url={url}
             placeholder={
