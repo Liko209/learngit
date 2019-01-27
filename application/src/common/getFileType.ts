@@ -94,4 +94,4 @@ function documentType(item: FileItemModel) {
   return doc;
 }
 
-export { getFileType, image, documentType };
+export { getFileType, image, documentType, IMAGE_TYPE };
