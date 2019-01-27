@@ -73,6 +73,24 @@ class NewPostService extends EntityBaseService<Post> {
       .getPostFetchController()
       .getPostsByGroupId({ groupId, postId, limit, direction });
   }
+
+  async getPostCountByGroupId(groupId: number): Promise<number> {
+    return this.getPostController()
+      .getPostDaoController()
+      .getPostCountByGroupId(groupId);
+  }
+
+  async getPostFromLocal(postId: number): Promise<Post | null> {
+    return this.getPostController()
+      .getPostDaoController()
+      .getPostFromLocal(postId);
+  }
+
+  async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
+    return this.getPostController()
+      .getPostDaoController()
+      .hasMorePostInRemote(groupId, direction);
+  }
 }
 
 export { NewPostService };

@@ -4,30 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../__tests__/types.d.ts" />
+import { Group } from '../../../module/group/entity/Group';
+import { NewPostService } from '../../../module/post/service/PostService';
 import PreloadPostsProcessor from '../preloadPostsProcessor';
-import { Group } from '../../../module/group/entity';
-import PostService from '../../../service/post';
+import { ProfileService } from '../../../service/profile';
 import { StateService } from '../../../module/state';
-import { baseHandleData } from '../../post/handleData';
-import GroupService from '../../../service/group';
 
+jest.mock('../../../module/post/service/PostService');
+jest.mock('../../../service/profile');
 jest.mock('../../../module/state');
-jest.mock('../../../service/post');
-jest.mock('../../post/handleData');
-jest.mock('../../../service/group');
 
-const postService = new PostService();
-const stateService = new StateService();
-const groupService = new GroupService();
+const postService: NewPostService = new NewPostService();
+const profileService: ProfileService = new ProfileService();
+const stateService: StateService = new StateService();
 beforeEach(() => {
-  PostService.getInstance = jest.fn().mockReturnValue(postService);
-  StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+  NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+  StateService.getInstance = jest.fn().mockReturnValueOnce(stateService);
 });
 
+const ONE_PAGE = 20;
+
 describe('PreloadPostsProcessor', () => {
-  function getGroup({ most_recent_post_id = 0 } = {}) {
+  function getGroup({ most_recent_post_id = 0, is_team = false } = {}) {
     const group: Group = {
+      is_team,
       most_recent_post_id,
       members: [2],
       company_id: 1,
@@ -60,144 +61,201 @@ describe('PreloadPostsProcessor', () => {
     });
   });
 
-  describe('needPreload', async () => {
+  describe('process', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
-    it('should return false if group has not most_recent_post_id', async () => {
-      const processor = new PreloadPostsProcessor('3', getGroup());
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(false);
+    it('should call postService.getPostsByGroupId if need preload', async () => {
+      const processor = new PreloadPostsProcessor('name1', getGroup());
+      jest.spyOn(processor, 'needPreload').mockResolvedValueOnce({
+        shouldPreload: true,
+        limit: ONE_PAGE,
+      });
+      postService.getPostsByGroupId.mockResolvedValueOnce(null);
+      await processor.process();
+      expect(postService.getPostsByGroupId).toHaveBeenCalledTimes(1);
     });
-    it('should return false if has not unread_count', async () => {
-      stateService.getById.mockResolvedValueOnce({
-        unread_count: 0,
+    it('should not call postService.getPostsByGroupId if need preload', async () => {
+      const processor = new PreloadPostsProcessor('name1', getGroup());
+      jest.spyOn(processor, 'needPreload').mockResolvedValueOnce({
+        shouldPreload: false,
+        limit: 0,
       });
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 1 }),
-      );
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(false);
-    });
-    it('should return false if has not unread_count is over 100', async () => {
-      stateService.getById.mockResolvedValueOnce({
-        unread_count: 101,
-      });
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 1 }),
-      );
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(false);
-    });
-
-    it('should return false if there is not group state', async () => {
-      stateService.getById.mockResolvedValueOnce(null);
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 1 }),
-      );
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(false);
-    });
-
-    it('should return false if oldest unread post is already in local and it is normal post', async () => {
-      stateService.getById.mockResolvedValueOnce({
-        unread_count: 99,
-      });
-      postService.getByIdFromDao.mockResolvedValueOnce({
-        id: 4,
-        creator_id: 3,
-        group_id: 2,
-      });
-
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 4 }),
-      );
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(false);
-    });
-    it('should return true if oldest unread post is already in local but is deactivated', async () => {
-      stateService.getById.mockResolvedValueOnce({
-        unread_count: 99,
-      });
-      postService.getByIdFromDao.mockResolvedValueOnce({
-        id: 4,
-        creator_id: 3,
-        group_id: 2,
-        deactivated: true,
-      });
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 4 }),
-      );
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(true);
-    });
-    it('should return true if oldest unread post is not in local ', async () => {
-      stateService.getById.mockResolvedValueOnce({
-        unread_count: 99,
-      });
-      postService.getByIdFromDao.mockResolvedValueOnce(null);
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 4 }),
-      );
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBe(true);
+      await processor.process();
+      expect(postService.getPostsByGroupId).toHaveBeenCalledTimes(0);
     });
   });
 
-  describe('process', async () => {
-    function getProcessorInstance() {
-      const processor = new PreloadPostsProcessor(
-        '3',
-        getGroup({ most_recent_post_id: 4 }),
-      );
-      jest.spyOn(processor, 'needPreload');
-      return processor;
-    }
-    beforeEach(() => {
-      jest.clearAllMocks();
+  describe('needPreload', () => {
+    it('should not preload if group not exist', async () => {
+      const processor = new PreloadPostsProcessor('name1', null);
+      const result = await processor.needPreload();
+      expect(result.shouldPreload).toBeFalsy();
+      expect(result.limit).toEqual(0);
     });
-    it('should not call requestPosts if it does not need preload', async () => {
-      const p = getProcessorInstance();
-      p.needPreload.mockResolvedValueOnce({
-        shouldPreload: false,
-        unread_count: 0,
+
+    // favorite and groups have the same behavior
+    describe('favorite/groups cases', () => {
+      afterEach(() => {
+        jest.resetAllMocks();
       });
-      await p.process();
-      expect(postService.getPostsFromRemote).toBeCalledTimes(0);
+      function setUpMock({
+        state = null,
+        profile = {},
+        postCount = 0,
+        hasMore = false,
+      } = {}) {
+        stateService.getById.mockResolvedValueOnce(state);
+        profileService.getProfile.mockResolvedValueOnce(profile);
+        postService.getPostCountByGroupId.mockResolvedValueOnce(postCount);
+        postService.hasMorePostInRemote.mockResolvedValueOnce(hasMore);
+      }
+      it('should not preload when local post has more than one page', async () => {
+        setUpMock({
+          state: null,
+          profile: {},
+          postCount: 21,
+        });
+
+        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeFalsy();
+      });
+      it('should not preload when local post < ONE_PAGE but has no more remote post', async () => {
+        setUpMock({
+          state: null,
+          profile: {},
+          postCount: 10,
+          hasMore: false,
+        });
+        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeFalsy();
+      });
+      it('should preload all unread when unread count > ONE_PAGE', async () => {
+        setUpMock({
+          state: {
+            unread_count: 21,
+          },
+          profile: {},
+          postCount: 0,
+          hasMore: true,
+        });
+
+        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeTruthy();
+        expect(result.limit).toEqual(21);
+      });
+      it('should preload ONE_PAGE when unread count < ONE_PAGE / should preload when local post < ONE_PAGE and has more remote post', async () => {
+        setUpMock({
+          state: {
+            unread_count: 19,
+          },
+          profile: {},
+          postCount: 0,
+          hasMore: true,
+        });
+
+        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeTruthy();
+        expect(result.limit).toEqual(ONE_PAGE);
+      });
+      it('should preload team if it is in favorites even but has not at mention', async () => {
+        setUpMock({
+          state: {
+            unread_count: 19,
+          },
+          profile: { favorite_group_ids: [1] },
+          postCount: 0,
+          hasMore: true,
+        });
+
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+        );
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeTruthy();
+        expect(result.limit).toEqual(ONE_PAGE);
+      });
     });
-    it('should not call baseHandleData if getPostsFromRemote has not data', async () => {
-      const p = getProcessorInstance();
-      p.needPreload.mockResolvedValueOnce({
-        shouldPreload: true,
-        unread_count: 10,
+    describe('teams which are not in favorite', () => {
+      afterEach(() => {
+        jest.clearAllMocks();
       });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [],
-        items: [],
-        has_more: false,
+      it('should not preload when has not state', async () => {
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+        );
+        profileService.getProfile.mockResolvedValueOnce({});
+        stateService.getById.mockResolvedValueOnce(null);
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeFalsy();
+        expect(result.limit).toEqual(0);
       });
-      await p.process();
-      expect(baseHandleData).toBeCalledTimes(0);
-    });
-    it('should call baseHandleData if need preload post and requestPosts success', async () => {
-      const p = getProcessorInstance();
-      p.needPreload.mockResolvedValueOnce({
-        shouldPreload: true,
-        unread_count: 10,
+      it('should not preload when has not unread_mentions_count', async () => {
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+        );
+        profileService.getProfile.mockResolvedValueOnce({});
+        stateService.getById.mockResolvedValueOnce({
+          unread_count: 99,
+        });
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeFalsy();
+        expect(result.limit).toEqual(0);
       });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 4 }],
-        items: [],
-        has_more: false,
+      it('should not preload when unread post has in local', async () => {
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+        );
+        profileService.getProfile.mockResolvedValueOnce({});
+        stateService.getById.mockResolvedValueOnce({
+          unread_count: 99,
+          unread_mentions_count: 1,
+        });
+        postService.getPostFromLocal.mockResolvedValueOnce({});
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeFalsy();
+        expect(result.limit).toEqual(0);
       });
-      await p.process();
-      expect(baseHandleData).toBeCalledTimes(1);
+
+      it('should preload all unread when unread count > ONE_PAGE', async () => {
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+        );
+        profileService.getProfile.mockResolvedValueOnce({});
+        stateService.getById.mockResolvedValueOnce({
+          unread_count: 99,
+          unread_mentions_count: 1,
+        });
+        postService.getPostFromLocal.mockResolvedValueOnce(null);
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeTruthy();
+        expect(result.limit).toEqual(99);
+      });
+
+      it('should preload one page when unread count < ONE_PAGE', async () => {
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+        );
+        profileService.getProfile.mockResolvedValueOnce({});
+        stateService.getById.mockResolvedValueOnce({
+          unread_count: 10,
+          unread_mentions_count: 1,
+        });
+        postService.getPostFromLocal.mockResolvedValueOnce(null);
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeTruthy();
+        expect(result.limit).toEqual(ONE_PAGE);
+      });
     });
   });
 });
