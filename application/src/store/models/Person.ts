@@ -4,7 +4,9 @@ import { observable, computed } from 'mobx';
 import {
   Person,
   PhoneNumberModel,
+  HeadShotModel,
   SanitizedExtensionModel,
+  PhoneNumberInfo,
 } from 'sdk/module/person/entity';
 import Base from './Base';
 import {
@@ -13,7 +15,7 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
-import PersonService, { PhoneNumberInfo } from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -23,9 +25,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   lastName: string;
   @observable
-  headshot?: {
-    url: string;
-  };
+  headshot?: HeadShotModel;
   @observable
   headshotVersion?: string;
   @observable

@@ -2,7 +2,7 @@
 import notificationCenter from '../../notificationCenter';
 import { daoManager, GroupDao } from '../../../dao';
 import GroupAPI from '../../../api/glip/group';
-import PersonService from '../../../service/person';
+import { PersonService } from '../../../module/person';
 import ProfileService from '../../../service/profile';
 import { UserConfig } from '../../../service/account';
 import { Group } from '../../../module/group/entity';
@@ -10,7 +10,7 @@ import { Post } from '../../../module/post/entity';
 import { Profile } from '../../../module/profile/entity';
 import { Raw } from '../../../framework/model';
 import { toArrayOf } from '../../../__tests__/utils';
-import StateService from '../../state';
+import { StateService } from '../../../module/state';
 import { EVENT_TYPES } from '../..';
 import { ApiResultOk } from '../../../api/ApiResult';
 import handleData, {
@@ -24,11 +24,13 @@ import handleData, {
   saveDataAndDoNotification,
 } from '../handleData';
 
-jest.mock('../../../service/person');
+jest.mock('../../../api');
+jest.mock('../../../framework/controller');
+
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
-jest.mock('../../state');
+jest.mock('../../../module/state');
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),

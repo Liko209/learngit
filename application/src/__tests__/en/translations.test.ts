@@ -309,6 +309,12 @@ describe('i18next-en', () => {
     expect(i18next.t('edit')).toEqual('Edit post');
     expect(i18next.t('AboutRingCentral')).toEqual('About RingCentral');
     expect(i18next.t('newActions')).toEqual('New actions');
+    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdate')).toEqual(
+      "Sorry, we weren't able to save the update.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdateTryAgain')).toEqual(
+      "Sorry, we weren't able to save the update. Try again.",
+    );
   });
 
   it('should check duplicate alert text JPT-455', () => {
@@ -350,7 +356,7 @@ describe('i18next-en', () => {
   expect(i18next.t('Members')).toEqual('Members');
 
   expect(i18next.t('alreadyTaken')).toEqual(
-    'The name is already taken, please choose another one.',
+    'The name is already taken, choose another one.',
   );
 
   expect(i18next.t('Invalid Email')).toEqual('Invalid Email');
@@ -372,4 +378,16 @@ describe('i18next-en', () => {
   );
   expect(i18next.t('newMessageTipLink')).toEqual('create a Team instead.');
   expect(i18next.t('InvalidEmail')).toEqual('Invalid Email');
+
+  expect(i18next.t('collapseLine')).toEqual('Collapse');
+  expect(i18next.t('expandLine', { lineNumber: 3 })).toEqual(
+    'Expand (3 lines)',
+  );
+  const restLines = 1;
+  expect(i18next.t('DownloadToSeeTheRestLine', { restLines })).toEqual(
+    `Download to see the rest ${restLines} line`,
+  );
+  expect(
+    i18next.t('DownloadToSeeTheRestLine', { restLines: restLines + 1 }),
+  ).toEqual(`Download to see the rest ${restLines + 1} lines`);
 });

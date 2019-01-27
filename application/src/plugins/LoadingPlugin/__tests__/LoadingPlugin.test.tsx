@@ -41,6 +41,16 @@ describe('LoadingPlugin', () => {
       const wrapper = mount(<View loading={true} />);
       expect(wrapper.find(JuiCircularProgress)).toBeTruthy();
     });
+
+    it('should wrap View with CustomLoading view component', () => {
+      const CustomizedLoading = () => <span>Custom Loading</span>;
+      const plugin = new LoadingPlugin({ CustomizedLoading });
+      const View = plugin.wrapView(() => <div>Hello World</div>);
+
+      const wrapper = mount(<View loading={true} />);
+
+      expect(wrapper.find(CustomizedLoading).text()).toBe('Custom Loading');
+    });
   });
 
   describe('decorator/loading', () => {

@@ -21,7 +21,7 @@ import CompanyService from './service/company';
 import ConfigService from './service/config';
 import GroupService from './service/group';
 import { ItemService } from './module/item';
-import PersonService from './service/person';
+import { PersonService } from './module/person';
 import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';
@@ -29,12 +29,12 @@ import SearchService from './service/search';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
-import { SplitIO } from './service/splitio';
-import StateService from './service/state';
+import { StateService } from './module/state';
 import SyncService from './service/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
 import { NewPostService } from './module/post';
+import { PermissionService } from './module/permission';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -77,6 +77,7 @@ const registerConfigs = {
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
     { name: NewPostService.name, value: NewPostService },
+    { name: PermissionService.name, value: PermissionService },
     {
       name: ConfigService.name,
       value: ConfigService,
@@ -122,7 +123,6 @@ const registerConfigs = {
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: SplitIO.name, value: new SplitIO() },
     { name: NetworkManager.name, value: networkManager },
   ],
 };

@@ -26,6 +26,8 @@ export default class TaskItemModel extends ItemModel {
   @observable completePeopleIds: number[];
   @observable completePercentage: number;
   @observable hasDueTime: boolean;
+  @observable creatorId: number;
+  @observable createdAt: number;
 
   constructor(data: TaskItem) {
     super(data);
@@ -48,6 +50,8 @@ export default class TaskItemModel extends ItemModel {
       attachment_ids,
       complete_people_ids,
       complete_percentage,
+      creator_id,
+      created_at,
     } = data;
     this.color = color;
     this.complete = complete;
@@ -67,6 +71,8 @@ export default class TaskItemModel extends ItemModel {
     this.attachmentIds = attachment_ids;
     this.completePeopleIds = complete_people_ids;
     this.completePercentage = complete_percentage;
+    this.creatorId = creator_id;
+    this.createdAt = created_at;
   }
 
   static fromJS(data: TaskItem) {

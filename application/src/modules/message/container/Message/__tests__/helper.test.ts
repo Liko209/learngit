@@ -3,7 +3,7 @@
  * @Date: 2018-12-07 14:47:58
  * Copyright © RingCentral. All rights reserved.
  */
-jest.mock('sdk/service/state');
+jest.mock('sdk/module/state');
 jest.mock('sdk/service/profile');
 jest.mock('sdk/service/group');
 jest.mock('@/history');
@@ -12,7 +12,7 @@ jest.mock('@/store/handler/SectionGroupHandler');
 
 import { GroupService } from 'sdk/service/group';
 import { ProfileService } from 'sdk/service/profile';
-import { StateService } from 'sdk/service/state';
+import { StateService } from 'sdk/module/state';
 import history from '@/history';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
@@ -22,7 +22,7 @@ let mockedStateService: any;
 let mockedProfileService: any;
 let mockedGroupService: any;
 let mockedGlobalStore: any;
-let mockedSectionHanlder: any;
+let mockedSectionHandler: any;
 function resetMockedServices() {
   mockedStateService = {
     lastGroupId: 110,
@@ -51,15 +51,16 @@ function resetMockedServices() {
   mockedGlobalStore = {
     set: jest.fn(),
   };
-  mockedSectionHanlder = {
-    onReady: (callback: Function) => callback(),
+  mockedSectionHandler = {
+    list: new Set([110]),
+    onReady: (callback: Function) => callback(mockedSectionHandler.list),
   };
 }
 
 function mockDependencies() {
   SectionGroupHandler.getInstance = jest
     .fn()
-    .mockImplementation(() => mockedSectionHanlder);
+    .mockImplementation(() => mockedSectionHandler);
   StateService.getInstance = jest
     .fn()
     .mockImplementation(() => mockedStateService);
@@ -80,19 +81,10 @@ describe('MessageRouterChangeHelper', () => {
   beforeEach(() => {
     mockDependencies();
     resetMockedServices();
-    Object.defineProperty(window.history, 'state', {
-      writable: true,
-      value: {},
-    });
-    window.history.state = {
-      state: {
-        source: 'leftRail',
-      },
-    };
     MessageRouterChangeHelper.isIndexDone = true;
   });
   afterEach(() => {
-    // jest.clearAllMocks();
+    jest.clearAllMocks();
   });
   describe('go to last group()', () => {
     it('should go to the last group when group is valid', async () => {
@@ -123,19 +115,13 @@ describe('MessageRouterChangeHelper', () => {
     });
   });
   describe('handleSourceOfRouter', () => {
-    it('should access Group when the source is undefined', () => {
-      window.history.state.state.source = undefined;
-      MessageRouterChangeHelper.handleSourceOfRouter(110);
-      expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(1);
-    });
-    it('should access Group when the source is other value except leftRail', () => {
-      window.history.state.state.source = 'rightRail';
-      MessageRouterChangeHelper.handleSourceOfRouter(110);
-      expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(1);
-    });
-    it('should access Group when the state is leftRail', () => {
+    it('should access Group when conversation is not in the left panel', () => {
       MessageRouterChangeHelper.handleSourceOfRouter(110);
       expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(0);
+    });
+    it('should not access Group when conversation is in the left panel', () => {
+      MessageRouterChangeHelper.handleSourceOfRouter(120);
+      expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(1);
     });
   });
 });
@@ -144,15 +130,6 @@ describe('ensureGroupOpened', () => {
   beforeEach(() => {
     mockDependencies();
     resetMockedServices();
-    Object.defineProperty(window.history, 'state', {
-      writable: true,
-      value: {},
-    });
-    window.history.state = {
-      state: {
-        source: '',
-      },
-    };
     mockedProfileService = {
       isConversationHidden: jest.fn(),
       reopenConversation: jest.fn(),

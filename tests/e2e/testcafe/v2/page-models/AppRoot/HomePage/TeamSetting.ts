@@ -9,8 +9,12 @@ export class TeamSettingDialog extends BaseWebComponent {
     return this.self.find('h2');
   }
 
+  get exists() {
+    return this.title.withText('Settings').exists;
+  }
+
   async shouldBePopup() {
-    await this.t.expect(this.title.withText('Settings').exists).ok();
+    await this.t.expect(this.exists).ok();
   }
 
   get avatar() {
@@ -140,5 +144,11 @@ export class TeamSettingDialog extends BaseWebComponent {
     await this.toggle(this.allowAddTeamMemberCheckbox, false);
   }
 
-}
+  get leaveTeamButton() {
+    return this.getSelectorByAutomationId('leaveTeamButton', this.self);
+  }
 
+  async clickLeaveTeamButton() {
+    await this.t.click(this.leaveTeamButton);
+  }
+}

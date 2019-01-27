@@ -23,6 +23,7 @@ export { default as ProfileDao } from './profile';
 export { default as StateDao } from './state';
 export { default as DeactivatedDao } from './deactivated';
 export { default as GroupConfigDao } from './groupConfig';
+export { default as VoIPDao } from './voip';
 
 import DaoManager from './DaoManager';
 const daoManager = new DaoManager();

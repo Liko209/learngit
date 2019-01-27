@@ -7,6 +7,7 @@
 import { SanitizedItem } from '../../base/entity';
 
 export type SanitizedTaskItem = SanitizedItem & {
+  complete: boolean;
   due: number;
   assigned_to_ids: number[];
   color: string;

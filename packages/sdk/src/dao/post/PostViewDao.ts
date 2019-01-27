@@ -4,12 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseDao } from '../../framework/dao';
-import PostDao from '.';
-import { Post, PostView } from '../../module/post/entity';
 import { IDatabase, mainLogger } from 'foundation';
-import { QUERY_DIRECTION } from '../constants';
 import _ from 'lodash';
-import { daoManager } from '..';
+import { Post, PostView } from '../../module/post/entity';
+import { QUERY_DIRECTION } from '../constants';
 
 class PostViewDao extends BaseDao<PostView> {
   static COLLECTION_NAME = 'postView';
@@ -19,6 +17,7 @@ class PostViewDao extends BaseDao<PostView> {
   }
 
   async queryPostsByGroupId(
+    fetchPostFunc: (ids: number[]) => Promise<Post[]>,
     groupId: number,
     anchorPostId?: number,
     direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
@@ -36,12 +35,12 @@ class PostViewDao extends BaseDao<PostView> {
     let postIds = await this._queryPostIdsByGroupId(groupId);
 
     // 2. If post id > 0, calculate the startIndex & endIndex via direction, else limit is the endIndex
-    postIds = this._handlePostIds(postIds, anchorPostId, direction, limit);
+    postIds = this._slicePostIds(postIds, anchorPostId, direction, limit);
     const end = performance.now();
     mainLogger.debug(`queryPostsByGroupId from postView ${end - start}`);
 
     // 3. Get posts via ids from post table
-    const posts = this._getPostByPostIds(postIds);
+    const posts = await fetchPostFunc(postIds);
     mainLogger.debug(
       `queryPostsByGroupId via ids from post ${performance.now() - end}`,
     );
@@ -56,7 +55,7 @@ class PostViewDao extends BaseDao<PostView> {
     );
   }
 
-  private _handlePostIds(
+  private _slicePostIds(
     postIds: number[],
     anchorPostId?: number,
     direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
@@ -90,12 +89,6 @@ class PostViewDao extends BaseDao<PostView> {
 
     // Slice ids
     return postIds.slice(startIndex, endIndex);
-  }
-
-  private async _getPostByPostIds(postIds: number[]): Promise<Post[]> {
-    const postDao = daoManager.getDao(PostDao);
-    const posts = await postDao.batchGet(postIds);
-    return _.orderBy(posts, 'created_at', 'desc');
   }
 }
 export { PostViewDao };

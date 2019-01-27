@@ -11,12 +11,14 @@ enum ENTITY_NAME {
   'LINK_ITEM' = 'linkItem',
   'NOTE_ITEM' = 'noteItem',
   'CODE_ITEM' = 'codeItem',
+  'CONFERENCE_ITEM' = 'conferenceItem',
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
   'PROFILE' = 'profile',
   'GLOBAL' = 'global',
   'PROGRESS' = 'progress',
+  'USER_PERMISSION' = 'userPermission',
 }
 
 enum HANDLER_TYPE {

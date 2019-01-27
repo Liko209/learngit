@@ -4,3 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './EditSection';
+export * from './SubSection';
+export * from './ButtonList';

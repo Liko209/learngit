@@ -108,10 +108,9 @@ class Task extends React.Component<taskViewProps> {
   }
 
   render() {
-    const { task, files, startTime, endTime, hasTime, t } = this.props;
+    const { task, files, startTime, endTime, hasTime, color, t } = this.props;
     const {
       section,
-      color,
       text,
       notes,
       complete,

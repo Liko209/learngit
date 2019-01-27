@@ -6,6 +6,9 @@
 
 type Props = {};
 
-type ViewProps = {};
+type ViewProps = {
+  canCreateTeam: boolean;
+  canSendNewMessage: boolean;
+};
 
 export { Props, ViewProps };

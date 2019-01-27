@@ -388,7 +388,7 @@ class Umi extends BaseWebComponent {
     return await this.getNumber(this.self);
   }
 
-  async shouldBeNumber(n: number, maxRetry = 5, interval = 5e3) {
+  async shouldBeNumber(n: number, maxRetry = 5, interval = 1e3) {
     await H.retryUntilPass(async () => {
       const umi = await this.count();
       assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);

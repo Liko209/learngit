@@ -6,6 +6,8 @@
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 
+jest.mock('sdk/api');
+
 describe('GroupModel', () => {
   describe('isThePersonGuest()', () => {
     it('should return result base on whether person company is in guest_user_company_ids', () => {

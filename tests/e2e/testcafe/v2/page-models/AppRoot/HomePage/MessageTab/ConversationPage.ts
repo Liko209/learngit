@@ -59,20 +59,29 @@ class BaseConversationPage extends BaseWebComponent {
   get headerStatus() {
     return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
   }
+
   get title() {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
-  get favIcon() {
-    return this.getSelectorByAutomationId('favorite-icon');
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.self);
   }
 
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon("star_border", this.favoriteButton);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon("star", this.favoriteButton);
+  }
+  
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
 
-  async clickFavIcon() {
-    await this.t.click(this.favIcon);
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
   }
 
   nthPostItem(nth: number) {
@@ -98,12 +107,12 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get loadingCircle() {
-    return this.self.find('circle');
+    return this.getSelectorByAutomationId('loading', this.self);
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     await this.t.wait(1e3); // loading circle is invisible in first 1 second.
-    return await this.t.expect(this.loadingCircle.visible).notOk({ timeout });
+    return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
   }
 
   // todo: find a more reliable method
@@ -177,7 +186,7 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async shouldFocusOnMessageInputArea() {
-    await this.t.expect(this.messageInputArea.focused).ok();
+    await this.t.expect(this.messageInputArea.focused).ok({timeout: 5e3});
   }
 
   async sendMessage(message: string, options?: TypeActionOptions) {
@@ -349,6 +358,10 @@ export class PostItem extends BaseWebComponent {
     return this.text.find('.at_mention_compose');
   }
 
+  async clickNthMentions(n = 0) {
+    return this.t.click(this.mentions.nth(n));
+  }
+
   getMentionByName(name: string) {
     return this.mentions.filter((el) => el.textContent === name);
   }
@@ -422,7 +435,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get headerNotification() {
-    return this.self.find('[data="cardHeaderNotification"]');
+    return this.self.find('[data-Name="cardHeaderNotification"]');
   }
 
   get fileNotification() {
@@ -482,5 +495,60 @@ export class PostItem extends BaseWebComponent {
     await this.t.hover(this.self)
     await displayJumpButton();
     await this.t.click(this.jumpToConversationButton);
+  }
+
+  // audio conference
+  get AudioConferenceHeaderNotification() {
+    return this.headerNotification.withText('started an audio conference');
+  }
+
+  get audioConference() {
+    return this.getComponent(AudioConference, this.self);
+  }
+
+}
+
+class AudioConference extends BaseWebComponent {
+  get container() {
+    return this.self.find('.conversation-item-cards');
+  }
+
+  get icon() {
+    return this.getSelectorByIcon('conference');
+  }
+
+  get title() {
+    this.warnFlakySelector();
+    return this.icon.parent('div').find('span').withText('Audio Conference');
+  }
+
+  get dialInNumber() {
+    return this.self.find('div').withText('Dial-in Number');
+  }
+
+  get phoneNumber() {
+    return this.getSelectorByAutomationId('conferencePhoneNumber', this.self.find('a'));
+  }
+
+  get globalNumber() {
+    return this.getSelectorByAutomationId('conferenceGlobalNumber', this.self.find('a'));
+  }
+
+  // only host can see
+  get hostAccess() {
+    return this.self.find('div').withText('Host Access');
+  }
+
+  // only host can see
+  get hostCode() {
+    return this.getSelectorByAutomationId('conferenceHostCode', this.self);
+  }
+
+  get participantAccess() {
+    return this.self.find('div').withText('Participant Access');
+  }
+
+  get participantCode() {
+    return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
   }
 }

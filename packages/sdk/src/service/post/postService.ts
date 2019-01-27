@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { daoManager, PostDao, GroupConfigDao, PostViewDao } from '../../dao';
+import { daoManager, PostDao, GroupConfigDao } from '../../dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
@@ -78,8 +78,8 @@ class PostService extends BaseService<Post> {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
-    const postViewDao = daoManager.getDao(PostViewDao);
-    const posts: Post[] = await postViewDao.queryPostsByGroupId(
+    const postDao = daoManager.getDao(PostDao);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
       postId,
       direction,
@@ -130,74 +130,6 @@ class PostService extends BaseService<Post> {
     return result;
   }
 
-  async getPostsByGroupId({
-    groupId,
-    postId = 0,
-    limit = 20,
-    direction = QUERY_DIRECTION.OLDER,
-  }: IPostQuery): Promise<IPostResult> {
-    const result = await this.getPostsFromLocal({
-      groupId,
-      postId,
-      direction,
-      limit,
-    });
-
-    if (result.posts.length < limit) {
-      const groupConfigDao = daoManager.getDao(GroupConfigDao);
-      const hasMoreRemote = await groupConfigDao.hasMoreRemotePost(
-        groupId,
-        direction,
-      );
-      if (hasMoreRemote) {
-        // should try to get more posts from server
-        mainLogger.debug(
-          `getPostsByGroupId groupId:${groupId} postId:${postId} limit:${limit} direction:${direction} no data in local DB, should do request`,
-        );
-
-        const lastPost = _.last(result.posts);
-
-        const remoteResult = await this.getPostsFromRemote({
-          groupId,
-          direction,
-          postId: lastPost ? lastPost.id : postId,
-          limit: limit - result.posts.length,
-        });
-
-        let shouldSave;
-        const includeNewest = await this.includeNewest(
-          remoteResult.posts.map(({ _id }) => _id),
-          groupId,
-        );
-        if (includeNewest) {
-          shouldSave = true;
-        } else {
-          shouldSave = await this.isNewestSaved(groupId);
-        }
-        const posts: Post[] =
-          (await baseHandleData(remoteResult.posts, shouldSave)) || [];
-
-        const itemService = ItemService.getInstance() as ItemService;
-        const items =
-          (await itemService.handleIncomingData(remoteResult.items)) || [];
-
-        result.posts.push(...posts);
-        result.items.push(...items);
-        result.hasMore = remoteResult.hasMore;
-        await groupConfigDao.update({
-          id: groupId,
-          [`has_more_${direction}`]: remoteResult.hasMore,
-        });
-      } else {
-        result.hasMore = false;
-      }
-    }
-
-    result.limit = limit;
-
-    return result;
-  }
-
   async getPostsByIds(
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
@@ -224,6 +156,7 @@ class PostService extends BaseService<Post> {
 
   async sendPost(params: RawPostInfo): Promise<PostData[] | null> {
     mainLogger.info('start to send post log');
+
     const buildPost: Post = await PostServiceHandler.buildPostInfo(params);
     return await this.innerSendPost(buildPost, false);
   }
@@ -400,12 +333,6 @@ class PostService extends BaseService<Post> {
     });
     const postDao = daoManager.getDao(PostDao);
     await postDao.put(buildPost);
-    const postViewDao = daoManager.getDao(PostViewDao);
-    await postViewDao.put({
-      id: buildPost.id,
-      group_id: buildPost.group_id,
-      created_at: buildPost.created_at,
-    });
     notificationCenter.emitEntityUpdate(ENTITY.POST, [buildPost]);
   }
 
@@ -441,7 +368,6 @@ class PostService extends BaseService<Post> {
 
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const postDao = daoManager.getDao(PostDao);
-    const postViewDao = daoManager.getDao(PostViewDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -457,12 +383,6 @@ class PostService extends BaseService<Post> {
     }
     await postDao.delete(preInsertId);
     await postDao.put(post);
-    await postViewDao.delete(preInsertId);
-    await postViewDao.put({
-      id: post.id,
-      group_id: post.group_id,
-      created_at: post.created_at,
-    });
     return result;
   }
 
@@ -531,13 +451,11 @@ class PostService extends BaseService<Post> {
 
   async deletePost(id: number): Promise<boolean> {
     const postDao = daoManager.getDao(PostDao);
-    const postViewDao = daoManager.getDao(PostViewDao);
     const post = (await postDao.get(id)) as Post;
 
     if (id < 0) {
       notificationCenter.emitEntityDelete(ENTITY.POST, [post.id]);
       postDao.delete(id);
-      postViewDao.delete(id);
 
       const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
       const failIds = await groupConfigService.getGroupSendFailurePostIds(
@@ -726,8 +644,6 @@ class PostService extends BaseService<Post> {
     const posts = _.union(...postsMap);
     const ids = posts.map(post => post.id);
     await dao.bulkDelete(ids);
-    const postViewDao = daoManager.getDao(PostViewDao);
-    await postViewDao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);
     }

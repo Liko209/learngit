@@ -161,6 +161,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
+
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -183,6 +184,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       let realContent: string = content;
+
       if (content.trim().length === 0) {
         realContent = '';
       }

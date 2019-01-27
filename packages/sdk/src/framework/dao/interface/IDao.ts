@@ -23,6 +23,10 @@ interface IDao<T> {
 
   batchGet(ids: number[]): Promise<T[]>;
 
+  getAll(): Promise<T[]>;
+
+  getTotalCount(): Promise<number>;
+
   getEntityName(): string;
 }
 

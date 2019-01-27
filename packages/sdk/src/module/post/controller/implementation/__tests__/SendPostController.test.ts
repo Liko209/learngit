@@ -19,14 +19,29 @@ import { IdModel } from '../../../../../framework/model';
 import { Post } from '../../../entity/Post';
 import { daoManager, PostDao, AccountDao } from '../../../../../dao';
 import notificationCenter from '../../../../../service/notificationCenter';
+import { ExtendedBaseModel } from '../../../../models';
+import { PROGRESS_STATUS } from '../../../../progress';
 
-class MockPreInsertController<T extends IdModel>
+class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
-  async preInsert(entity: T): Promise<void> {
+  async insert(entity: T): Promise<void> {
     return;
   }
-  incomesStatusChange(id: number, success: boolean): void {
+
+  delete(entity: T): void {
     return;
+  }
+
+  async bulkDelete(entities: T[]): Promise<void> {
+    return;
+  }
+
+  updateStatus(entity: T, status: PROGRESS_STATUS): void {
+    return;
+  }
+
+  isInPreInsert(version: number): boolean {
+    return false;
   }
 }
 jest.mock('../PostActionController');
@@ -52,6 +67,8 @@ describe('SendPostController', () => {
     );
   });
   afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
     jest.clearAllMocks();
   });
   describe('sendPost', () => {
@@ -92,6 +109,7 @@ describe('SendPostController', () => {
       expect(result).toEqual(null);
     });
   });
+
   describe('innerSendPost', () => {
     it('should not call buildItemVersionMap when is resend or has not item_ids', async () => {
       jest
@@ -180,6 +198,7 @@ describe('SendPostController', () => {
       expect(sendPostController.handleSendPostFail).toBeCalledTimes(1);
     });
   });
+
   describe('sendPostToServer', () => {
     it('should call return PostData when send post success', async () => {
       Object.assign(sendPostController, {
@@ -196,7 +215,6 @@ describe('SendPostController', () => {
       const data = _.cloneDeep(localPostJson4UnitTest);
       data['id'] = -999;
       const result = await sendPostController.sendPostToServer(data);
-      expect(result[0].id).toEqual(-999);
       expect(result[0].data).toEqual(serverPostJson4UnitTest);
     });
     it('should throw error when send post failed', async () => {
@@ -224,7 +242,7 @@ describe('SendPostController', () => {
       const data = _.cloneDeep(serverPostJson4UnitTest);
       postDao.put.mockResolvedValueOnce(null);
       daoManager.getDao.mockReturnValueOnce(postDao);
-      await sendPostController.handleSendPostSuccess(data, -999);
+      await sendPostController.handleSendPostSuccess(data, { id: -999 });
       expect(notificationCenter.emitEntityReplace).toHaveBeenCalledTimes(1);
       expect(groupConfigService.deletePostId).toBeCalledWith(7848853506, -999);
       expect(postDao.put).toHaveBeenCalledTimes(1);

@@ -7,13 +7,7 @@ import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
 import uuid from 'uuid';
-import {
-  JuiVirtualList,
-  IVirtualListDataSource,
-  JuiVirtualCellOnLoadFunc,
-  JuiVirtualCellProps,
-} from '..';
-import { IndexRange, Index } from 'react-virtualized';
+import { JuiVirtualList, IVirtualListDataSource } from '..';
 import { FileItem } from './FileItem';
 import { FileItemProps } from './types';
 
@@ -67,6 +61,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   class Content extends Component {
     private _listRef: RefObject<JuiVirtualList> = createRef();
@@ -74,7 +69,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
       setTimeout(() => {
         const { current } = this._listRef;
         if (current) {
-          current.scrollToCell(cellIndex);
+          // current.scrollToCell(cellIndex);
         }
       },         100);
     }
@@ -89,101 +84,75 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
   return <Content />;
 });
 
-storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
-  const part = ['Hello', 'This is title', 'A long text'];
-  const cellIndex = number('scroll to cell', -1);
+storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
   let count = number('cell count', 1000);
   if (count < 0) {
     count = 1000;
   }
-  const data: string[] = Array(count)
-    .fill(part)
-    .flat();
+  const part = ['Hello', 'This is title', 'A long text'];
 
   type CellProps = {
     title: string;
-    index: number;
     onLoad?: () => void;
   };
 
-  class Cell extends Component<CellProps & JuiVirtualCellProps> {
-    render() {
-      const imageWidth = 300;
-      const imageHeight = ((this.props.index % 4) + 1) * 100;
-      const source = `https://fillmurray.com/${imageWidth}/${imageHeight}`;
-
-      const { title, index, onLoad, ...rest } = this.props;
-      const footerStyle: CSSProperties = {
-        position: 'absolute',
-        top: 0,
-        color: 'white',
-      };
-      return (
-        <div {...rest}>
-          <div style={{ height: '100%', position: 'relative' }}>
-            <img
-              onLoad={onLoad}
-              src={source}
-              style={{
-                width: imageWidth,
-              }}
-            />
-            <div style={footerStyle}>{`${title}-${index}`}</div>
-          </div>
-        </div>
-      );
-    }
-  }
-
-  class DynamicDataSource implements IVirtualListDataSource {
-    private _list: string[];
-    constructor(data: string[]) {
-      this._list = data;
-    }
-
-    countOfCell() {
-      return this._list.length;
-    }
-
-    cellAtIndex(
-      index: number,
-      style: CSSProperties,
-      onLoad: JuiVirtualCellOnLoadFunc,
-    ) {
-      const text = this._list[index];
-      return (
-        <Cell
-          title={text}
-          index={index}
-          style={style}
-          key={index}
-          onLoad={onLoad}
-        />
-      );
-    }
-  }
-
-  const dynamicSource = new DynamicDataSource(data);
+  const StaticCell = ({ title, ...rest }: CellProps) => (
+    <div {...rest}>{title}</div>
+  );
 
   const style = {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
-  class Content extends Component {
-    private _listRef: RefObject<JuiVirtualList> = createRef();
-    componentDidMount() {
-      setTimeout(() => {
-        const { current } = this._listRef;
-        if (current) {
-          current.scrollToCell(cellIndex);
-        }
-      },         100);
+  class Content extends Component implements IVirtualListDataSource {
+    private _list: string[] = Array(5)
+      .fill(part)
+      .flat();
+    state = { isLoading: false };
+    countOfCell = () => {
+      return this._list.length;
+    }
+
+    cellAtIndex = (index: number, style: CSSProperties) => {
+      const text = `${this._list[index]}-${index + 1}`;
+      return (
+        <div key={index} style={style}>
+          <StaticCell title={text} />
+        </div>
+      );
+    }
+
+    isRowLoaded = (index: number) => {
+      return index < this._list.length;
+    }
+
+    loadMore = async (startIndex: number, endIndex: number) => {
+      this.setState({ isLoading: true });
+      const p = new Promise((resolve: any) => {
+        setTimeout(() => {
+          const array: string[] = Array(endIndex - startIndex).fill('XXX');
+          this._list = this._list.concat(array);
+          resolve();
+          this.setState({ isLoading: false });
+        },         1000);
+      });
+      return await p;
+    }
+
+    fixedCellHeight(): number {
+      return 44;
     }
     render() {
+      const cellCount = this.countOfCell();
       return (
         <div style={style}>
-          <JuiVirtualList ref={this._listRef} dataSource={dynamicSource} />
+          <JuiVirtualList
+            dataSource={this}
+            threshold={10}
+            isLoading={this.state.isLoading}
+          />
         </div>
       );
     }
@@ -218,6 +187,7 @@ storiesOf('Pattern/VirtualList', module).add('Empty VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   return (
     <div style={style}>
@@ -265,8 +235,7 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
       return 10;
     }
 
-    loadMore = (params: IndexRange) => {
-      const { startIndex, stopIndex } = params;
+    loadMore = (startIndex: number, stopIndex: number) => {
       for (let i = startIndex; i < stopIndex; ++i) {
         this._list.push('');
       }
@@ -280,8 +249,8 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
       });
     }
 
-    isRowLoaded = (params: Index) => {
-      return this._list.length > params.index;
+    isRowLoaded = (index: number) => {
+      return this._list.length > index;
     }
   }
 
@@ -290,6 +259,7 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   return (
     <div style={style}>
@@ -346,8 +316,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
       return 20;
     }
 
-    loadMore = (params: IndexRange) => {
-      const { startIndex, stopIndex } = params;
+    loadMore = (startIndex: number, stopIndex: number) => {
       for (let i = startIndex; i < stopIndex; ++i) {
         this._list.push({} as FileItemProps);
       }
@@ -365,8 +334,8 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
       });
     }
 
-    isRowLoaded = (params: Index) => {
-      return this._list.length > params.index;
+    isRowLoaded = (index: number) => {
+      return this._list.length > index;
     }
   }
 
@@ -375,6 +344,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
     width: 400,
     height: 400,
     border: '1px solid',
+    display: 'flex',
   };
   const Comp = () => (
     <div style={style}>
