@@ -84,6 +84,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return RightRailItemTypeIdMap[this.type];
   }
 
+  @computed
+  get _active() {
+    return this.props.active;
+  }
+
   private _getFilterFunc() {
     switch (this.type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
@@ -133,6 +138,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       { fireImmediately: true },
     );
     this.reaction(() => this.ids, () => this.loadTotalCount());
+    this.reaction(() => this._active, () => this.forceReload());
   }
 
   async loadTotalCount() {
@@ -219,6 +225,11 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   fetchNextPageItems = async () => {
+    const { active } = this.props;
+    const { loading } = this._loadStatus;
+    if (!active || loading) {
+      return;
+    }
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       const { offlinePrompt } = this.tabConfig;
