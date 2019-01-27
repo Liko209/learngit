@@ -139,7 +139,7 @@ function buildPayload(
 function setup({ originalItems }: { originalItems: SimpleItem[] }) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
   const listStore = new SortableListStore<SimpleItem>(sortFunc);
-  listStore.append(
+  listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
     }),
@@ -355,6 +355,15 @@ describe('FetchSortableDataListHandler', () => {
           deleted: [1],
           added: [],
         },
+      },
+    ],
+    [
+      'when update item without update sort value',
+      {
+        originalItems: [buildItem(1), buildItem(2)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
+        expectedOrder: [1, 2],
+        callbackMuted: true,
       },
     ],
     /**
