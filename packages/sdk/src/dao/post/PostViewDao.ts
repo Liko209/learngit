@@ -3,10 +3,10 @@
  * @Date: 2019-01-10 17:20:05
  * Copyright © RingCentral. All rights reserved.
  */
+import { BaseDao } from '../../framework/dao';
 import { IDatabase, mainLogger } from 'foundation';
 import _ from 'lodash';
 import { Post, PostView } from '../../module/post/entity';
-import { BaseDao } from '../base';
 import { QUERY_DIRECTION } from '../constants';
 
 class PostViewDao extends BaseDao<PostView> {

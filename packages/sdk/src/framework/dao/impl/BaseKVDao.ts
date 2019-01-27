@@ -3,7 +3,9 @@
  * @Date: 2018-02-27 21:44:43
  */
 import { KVStorage } from 'foundation';
-class BaseKVDao {
+import { IKVDao } from '../interface/IKVDao';
+
+class BaseKVDao implements IKVDao {
   private kvStorage: KVStorage;
   private collectionName: string;
   private keys: string[];

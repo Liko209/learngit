@@ -3,7 +3,7 @@
  * @Date: 2018-02-24 22:28:07
  */
 
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { Group } from '../../module/group/entity';
 import { IDatabase, mainLogger } from 'foundation';
 

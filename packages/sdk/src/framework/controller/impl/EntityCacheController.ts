@@ -93,6 +93,10 @@ class EntityCacheController<T extends IdModel = IdModel>
     return entities;
   }
 
+  getEntityName(): string {
+    return '';
+  }
+
   async getAll(): Promise<T[]> {
     return Array.from(this._entities.values());
   }

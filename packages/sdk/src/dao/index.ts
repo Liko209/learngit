@@ -3,7 +3,7 @@
  * @Date: 2018-05-23 09:42:06
  * Copyright © RingCentral. All rights reserved.
  */
-export * from './base';
+export * from '../framework/dao';
 export * from './constants';
 export * from './account/constants';
 export * from './auth/constants';

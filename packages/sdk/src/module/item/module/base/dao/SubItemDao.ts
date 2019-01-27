@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
-import { BaseDao } from '../../../../../dao/base';
+import { BaseDao } from '../../../../../framework/dao';
 import { SanitizedItem } from '../entity';
 import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { isIEOrEdge } from 'foundation/src/db/adapter/dexie/utils';
