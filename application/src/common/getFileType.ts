@@ -19,10 +19,10 @@ const IMAGE_TYPE = [
   'psd',
   // Unable to parse the following suffix file,
   // If this format is added, the file name will not be displayed.
+  // 'ps', // Only Safari support, Chrome and Firefox not support.
+  // 'ai', // Chrome and Firefox and Safari not support.
   // 'heic',
   // 'giphy',
-  // 'ps',
-  // 'ai',
 ];
 
 function getFileType(item: FileItemModel): ExtendFileItem {
