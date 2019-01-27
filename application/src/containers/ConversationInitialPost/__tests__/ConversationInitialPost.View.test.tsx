@@ -23,6 +23,7 @@ describe('ConversationInitialPostView', () => {
       creator: {} as PersonModel,
       tReady: {},
       isTeam: false,
+      createTime: 1531726169129,
     };
     it('should not render initialPostBody when notEmpty is true [JPT-478]', () => {
       const notEmpty = true;

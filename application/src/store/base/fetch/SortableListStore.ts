@@ -21,6 +21,9 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   }
 
   upsert(idArray: ISortableModel<T>[]) {
+    if (!idArray.length) {
+      return;
+    }
     const unionAndSortIds = _.unionBy(idArray, this.items, 'id').sort(
       this._sortFunc,
     );

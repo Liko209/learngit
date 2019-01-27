@@ -847,12 +847,101 @@ describe('GroupService', () => {
       expect(result.terms[2]).toBe('name');
     });
 
-    it('should display right order of teams', async () => {
-      const result = await groupService.doFuzzySearchTeams('Team', true);
-      expect(result.sortableModels.length).toBe(505);
-      expect(result.sortableModels[0].id).toBe(13002);
-      expect(result.sortableModels[4].id).toBe(13010);
-      expect(result.sortableModels[5].id).toBe(12002);
+    describe('doFuzzySearchTeamWithPriority', () => {
+      const team1: Group = {
+        id: 1,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: 'protected',
+        deactivated: false,
+        version: 1,
+        members: [1, 2],
+        company_id: 1,
+        set_abbreviation: 'Jupiter Access',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: 1,
+      };
+
+      const team2: Group = {
+        id: 2,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: 'protected',
+        deactivated: false,
+        version: 1,
+        members: [1, 2],
+        company_id: 1,
+        set_abbreviation: 'Access Jupiter',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: 1,
+      };
+
+      const team3: Group = {
+        id: 3,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: 'protected',
+        deactivated: false,
+        version: 1,
+        members: [1, 2],
+        company_id: 1,
+        set_abbreviation: 'Jupiter Engineer',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: 1,
+      };
+
+      const team4: Group = {
+        id: 4,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: 'protected',
+        deactivated: false,
+        version: 1,
+        members: [1, 2],
+        company_id: 1,
+        set_abbreviation: 'Engineer Jupiter',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: 1,
+      };
+
+      function prepareGroupsForSearch() {
+        UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+        groupService.enableCache();
+
+        groupService.getCacheManager().set(team1);
+        groupService.getCacheManager().set(team2);
+        groupService.getCacheManager().set(team3);
+        groupService.getCacheManager().set(team4);
+      }
+
+      beforeEach(() => {
+        prepareGroupsForSearch();
+      });
+
+      it('should show correct', async () => {
+        const result = await groupService.doFuzzySearchTeams('Jupiter, E');
+        expect(result.sortableModels.length).toBe(4);
+        expect(result.sortableModels[0].entity).toEqual(team3);
+        expect(result.sortableModels[1].entity).toEqual(team4);
+        expect(result.sortableModels[2].entity).toEqual(team1);
+        expect(result.sortableModels[3].entity).toEqual(team2);
+      });
     });
   });
 

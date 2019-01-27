@@ -671,6 +671,9 @@ class GroupService extends BaseService<Group> {
       return null;
     }
 
+    const kSortingRateWithFirstMatched: number = 1;
+    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+
     const result = await this.searchEntitiesFromCache(
       async (team: Group, terms: string[]) => {
         let isMatched: boolean = false;
@@ -697,8 +700,17 @@ class GroupService extends BaseService<Group> {
             break;
           }
 
-          if (this.isStartWithMatched(team.set_abbreviation, [terms[0]])) {
-            sortValue = 1;
+          const splitNames = this.getTermsFromSearchKey(team.set_abbreviation);
+
+          for (let i = 0; i < splitNames.length; ++i) {
+            for (let j = 0; j < terms.length; ++j) {
+              if (this.isStartWithMatched(splitNames[i], [terms[j]])) {
+                sortValue +=
+                  i === j
+                    ? kSortingRateWithFirstAndPositionMatched
+                    : kSortingRateWithFirstMatched;
+              }
+            }
           }
 
           isMatched = true;
