@@ -333,7 +333,7 @@ describe('FetchSortableDataListHandler', () => {
         ],
         payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
         callbackMuted: true,
-        expectedOrder: [5, 1, 2, 3, 4],
+        expectedOrder: [1, 2, 3, 4, 5],
         expectedCallbackResponse: {
           added: [],
         },
