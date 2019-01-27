@@ -10,7 +10,6 @@ import {
   PERMISSION_ENUM,
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
-  DEFAULT_GUEST_PERMISSION_LEVEL,
 } from '../constants';
 import { TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags } from '../types';
@@ -52,10 +51,6 @@ class TeamPermissionController {
       return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
     }
 
-    if (this.isCurrentUserGuest(teamPermissionParams)) {
-      return DEFAULT_GUEST_PERMISSION_LEVEL;
-    }
-
     const {
       permissions: {
         admin: {
@@ -65,6 +60,17 @@ class TeamPermissionController {
         user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
       } = {},
     } = teamPermissionParams;
+
+    const guestPermissionLevel = this.mergePermissionFlagsWithLevel(
+      {
+        TEAM_ADD_MEMBER: false,
+        TEAM_PIN_POST: false,
+      },
+      userLevel,
+    );
+    if (this.isCurrentUserGuest(teamPermissionParams)) {
+      return guestPermissionLevel;
+    }
 
     if (adminUids.length === 0 || adminUids.includes(userId)) {
       return adminLevel;

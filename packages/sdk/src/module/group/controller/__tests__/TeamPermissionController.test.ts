@@ -15,7 +15,10 @@ import {
   PERMISSION_ENUM,
   DEFAULT_USER_PERMISSION_LEVEL,
 } from '../../constants';
-
+import { UserConfig } from 'sdk/service/account/UserConfig';
+jest.mock('sdk/service/account/UserConfig');
+const mockCurrentUserId = 5683;
+const mockCurrentUserCompanyId = 55668833;
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
   beforeEach(() => {
@@ -25,16 +28,12 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
-      const mockGetAccountInfo = jest.fn((key: string) => {
-        const accountInfo = {
-          [ACCOUNT_USER_ID]: 5683,
-          [ACCOUNT_COMPANY_ID]: 55668833,
-        };
-        return accountInfo[key];
-      });
-      daoManager.getKVDao = jest.fn().mockReturnValue({
-        get: mockGetAccountInfo,
-      });
+      UserConfig.getCurrentUserId = jest
+        .fn()
+        .mockImplementation(() => mockCurrentUserId);
+      UserConfig.getCurrentCompanyId = jest
+        .fn()
+        .mockImplementation(() => mockCurrentUserCompanyId);
     });
     it('should return false when guestUserCompanyIds is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -65,7 +64,7 @@ describe('TeamPermissionController', () => {
     it('should return false when guestUserCompanyIds includes current user', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
-        guest_user_company_ids: [55668833],
+        guest_user_company_ids: [mockCurrentUserCompanyId],
       };
       expect(
         teamPermissionController.isCurrentUserGuest(teamPermissionParams),
@@ -79,7 +78,10 @@ describe('TeamPermissionController', () => {
         members: [],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeFalsy();
     });
     it('should return false when members more user', () => {
@@ -87,7 +89,10 @@ describe('TeamPermissionController', () => {
         members: [123, 555],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeFalsy();
     });
     it('should return false when member only contain one user and is not me', () => {
@@ -95,15 +100,21 @@ describe('TeamPermissionController', () => {
         members: [1234],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeFalsy();
     });
     it('should return true when member only contain myself', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [5683],
+        members: [mockCurrentUserId],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeTruthy();
     });
   });
@@ -112,8 +123,8 @@ describe('TeamPermissionController', () => {
     beforeAll(() => {
       const mockGetAccountInfo = jest.fn((key: string) => {
         const accountInfo = {
-          [ACCOUNT_USER_ID]: 5683,
-          [ACCOUNT_COMPANY_ID]: 55668833,
+          [ACCOUNT_USER_ID]: mockCurrentUserId,
+          [ACCOUNT_COMPANY_ID]: mockCurrentUserCompanyId,
         };
         return accountInfo[key];
       });
@@ -124,7 +135,7 @@ describe('TeamPermissionController', () => {
     it('should return self group permission level', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: false,
-        members: [5683],
+        members: [mockCurrentUserId],
       };
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(
@@ -203,7 +214,7 @@ describe('TeamPermissionController', () => {
         members: [],
         is_team: true,
         permissions: {
-          admin: { uids: [5683], level: 63 },
+          admin: { uids: [mockCurrentUserId], level: 63 },
           user: { uids: [] },
         },
       };
@@ -279,7 +290,7 @@ describe('TeamPermissionController', () => {
     it('return permissions when current user is guest', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: true,
-        guest_user_company_ids: [55668833],
+        guest_user_company_ids: [mockCurrentUserCompanyId],
         members: [],
       };
       expect(
@@ -350,7 +361,7 @@ describe('TeamPermissionController', () => {
     it('should user not have TEAM_ADMIN permission when there is admin', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: true,
-        members: [5683],
+        members: [mockCurrentUserId],
         guest_user_company_ids: [],
         permissions: {
           admin: {
@@ -369,7 +380,7 @@ describe('TeamPermissionController', () => {
     it('should user have TEAM_ADMIN permission when there is not admin', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: true,
-        members: [5683],
+        members: [mockCurrentUserId],
         guest_user_company_ids: [],
         permissions: {
           admin: {
@@ -388,8 +399,8 @@ describe('TeamPermissionController', () => {
     it('should guest not have TEAM_ADMIN permission when there is not admin', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: true,
-        members: [5683],
-        guest_user_company_ids: [55668833],
+        members: [mockCurrentUserId],
+        guest_user_company_ids: [mockCurrentUserCompanyId],
         permissions: {
           admin: {
             uids: [],
