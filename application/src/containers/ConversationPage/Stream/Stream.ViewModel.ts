@@ -54,10 +54,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   jumpToPostId: number;
 
   @observable loadInitialPostsError: Error | null = null;
-  @computed
-  get groupId() {
-    return this.props.groupId;
-  }
 
   @computed
   get hasHistoryUnread() {
@@ -89,8 +85,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get hasMoreDown() {
+    return this._streamController.hasMoreDown;
+  }
+
+  @computed
   get postIds() {
-    return this._streamController.postIds;
+    return _(this.items)
+      .flatMap('value')
+      .compact()
+      .value();
   }
 
   @computed
@@ -112,13 +116,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
-      ? undefined
-      : _.first(this.postIds);
-    return (
-      firstUnreadPostId ||
-      this._historyHandler.getFirstUnreadPostId(this.postIds)
-    );
+    return this._historyHandler.getFirstUnreadPostId(this.postIds);
   }
 
   constructor(props: StreamProps) {

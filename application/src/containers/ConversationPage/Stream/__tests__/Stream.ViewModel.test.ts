@@ -190,12 +190,15 @@ describe('StreamViewModel', () => {
         _streamController: { postIds },
       });
 
+      vm._streamController.items = postIds.map(i => ({
+        value: [i],
+      }));
+
       Object.defineProperty(vm, '_groupState', {
         value: groupState,
       });
 
       vm.updateHistoryHandler();
-
       expect(mockUpdate).toBeCalledTimes(1);
       expect(mockUpdate).toBeCalledWith(groupState, postIds);
     });

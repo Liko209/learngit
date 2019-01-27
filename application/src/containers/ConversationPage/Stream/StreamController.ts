@@ -38,11 +38,6 @@ export class StreamController {
   }
 
   @computed
-  get postIds() {
-    return this._orderListHandler.sortableListStore.getIds;
-  }
-
-  @computed
   private get _groupState() {
     return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,

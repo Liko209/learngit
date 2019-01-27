@@ -42,15 +42,18 @@ class ConversationInitialPost extends React.Component<
   }
 
   private get _conversationInitialPostHeader() {
-    const { isTeam, displayName, groupDescription, t } = this.props;
+    const { isTeam, displayName, groupDescription, t, createTime } = this.props;
 
     return (
       <JuiConversationInitialPostHeader>
         {isTeam ? (
           <StyledTitle>
             {this._name}
-            <StyledSpan>&nbsp;created a team&nbsp;</StyledSpan>
-            {<StyledTeamName>{displayName}</StyledTeamName>}
+            <StyledSpan>&nbsp;{t('createTeam')}&nbsp;</StyledSpan>
+            <StyledTeamName>{displayName}</StyledTeamName>
+            <StyledSpan>
+              &nbsp;{t('on')} {createTime}
+            </StyledSpan>
           </StyledTitle>
         ) : (
           <StyledSpan>
