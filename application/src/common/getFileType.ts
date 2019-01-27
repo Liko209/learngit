@@ -8,7 +8,22 @@ import FileItemModel, {
   FileType,
 } from '@/store/models/FileItem';
 
-const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg', 'bmp'];
+const IMAGE_TYPE = [
+  'gif',
+  'jpeg',
+  'png',
+  'jpg',
+  'bmp',
+  'tif',
+  'tiff',
+  'psd',
+  // Unable to parse the following suffix file,
+  // If this format is added, the file name will not be displayed.
+  // 'heic',
+  // 'giphy',
+  // 'ps',
+  // 'ai',
+];
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -54,7 +69,9 @@ function image(item: FileItemModel) {
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
   if (type) {
-    const isImage = IMAGE_TYPE.some(looper => type.includes(looper));
+    const isImage = IMAGE_TYPE.some(looper =>
+      type.toLocaleLowerCase().includes(looper),
+    );
     if (type.includes('image/') || isImage) {
       image.isImage = true;
       image.previewUrl = versionUrl || '';
