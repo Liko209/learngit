@@ -108,7 +108,6 @@ class StreamViewComponent extends Component<Props> {
       }
       // scroll TOP and load posts
       if (this._isAtTop && hasMoreUp && this._listRef.current) {
-        await nextTick();
         const parent = getScrollParent(this._listRef.current);
         parent.scrollTop =
           this._scrollTop + parent.scrollHeight - this._scrollHeight;
@@ -418,13 +417,8 @@ class StreamViewComponent extends Component<Props> {
   }
 
   scrollToBottom = async () => {
-    await nextTick();
-    const lastPostId = _(this.props.postIds).last();
-    if (!lastPostId) {
-      return;
-    }
-    const scrollToPostEl = this._postRefs.get(lastPostId);
-    await scrollToComponent(scrollToPostEl, false);
+    const parentEl = getScrollParent(this._listRef.current!);
+    parentEl.scrollTop = 9e10;
   }
 
   scrollToPost = async (
@@ -433,7 +427,6 @@ class StreamViewComponent extends Component<Props> {
   ) => {
     await nextTick();
     const scrollToPostEl = this._postRefs.get(scrollToPostId);
-    console.log('andy hu scroll to ', scrollToPostId);
     if (!scrollToPostEl) {
       mainLogger.warn('scrollToPostEl no found');
       return;
