@@ -148,6 +148,64 @@ describe('SectionGroupHandler', () => {
       ).toEqual([]);
     });
 
+    it('entity archive id not in id sets', () => {
+      SectionGroupHandler.getInstance();
+      const putData = [
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+        },
+      ];
+      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
+      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
+      notificationCenter.emitEntityArchive(ENTITY.GROUP, [
+        {
+          id: 3,
+          is_archived: true,
+        },
+      ]);
+      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
+      expect(
+        SectionGroupHandler.getInstance()
+          .getGroupIds(SECTION_TYPE.TEAM)
+          .sort(),
+      ).toEqual([2]);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [2]);
+    });
+
+    it('entity delete id in id sets', () => {
+      SectionGroupHandler.getInstance();
+      const putData = [
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+        },
+      ];
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
+      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+      ).toEqual([2]);
+      notificationCenter.emitEntityArchive(ENTITY.GROUP, [
+        {
+          id: 2,
+          is_archived: true,
+        },
+      ]);
+      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIds(
+          SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+      ).toEqual([]);
+    });
+
     it('should not add this group in because it has not post and not created by current user', () => {
       SectionGroupHandler.getInstance();
       const fakeData = [

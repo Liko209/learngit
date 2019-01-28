@@ -184,6 +184,12 @@ class EntityPersistentController<T extends IdModel = IdModel>
       case EVENT_TYPES.DELETE:
         await this.entityCacheController.bulkDelete(payload.body.ids);
         break;
+      case EVENT_TYPES.ARCHIVE:
+        await this.entityCacheController.replace(
+          payload.body.ids,
+          payload.body.entities,
+        );
+        break;
     }
   }
 }

@@ -136,7 +136,7 @@ describe('handleData()', () => {
   });
 
   it('passing an array', async () => {
-    expect.assertions(6);
+    expect.assertions(7);
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       {
@@ -155,6 +155,7 @@ describe('handleData()', () => {
       },
       { _id: 2, members: [1, 2], deactivated: false },
       { _id: 3, deactivated: false },
+      { _id: 4, is_archived: true },
     ]);
     await handleData(groups);
     // expect getTransformData function
@@ -166,6 +167,7 @@ describe('handleData()', () => {
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+    expect(notificationCenter.emitEntityArchive).toHaveBeenCalledTimes(1);
     // expect checkIncompleteGroupsMembers function
     // const personService: PersonService = PersonService.getInstance();
     // expect(personService.getPersonsByIds).toHaveBeenCalled();

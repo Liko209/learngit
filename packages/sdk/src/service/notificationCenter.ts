@@ -48,13 +48,19 @@ export type NotificationEntityReloadPayload = {
   type: EVENT_TYPES.RELOAD;
 };
 
+export type NotificationEntityArchivePayload<T> = {
+  type: EVENT_TYPES.ARCHIVE;
+  body: NotificationEntityBody<T>;
+};
+
 // unify notification payload
 export type NotificationEntityPayload<T> =
   | NotificationEntityReplacePayload<T>
   | NotificationEntityDeletePayload
   | NotificationEntityUpdatePayload<T>
   | NotificationEntityResetPayload
-  | NotificationEntityReloadPayload;
+  | NotificationEntityReloadPayload
+  | NotificationEntityArchivePayload<T>;
 
 /**
  * transform array to map structure
@@ -133,6 +139,20 @@ class NotificationCenter extends EventEmitter2 {
 
     const notification: NotificationEntityDeletePayload = {
       type: EVENT_TYPES.DELETE,
+      body: notificationBody,
+    };
+    this._notifyEntityChange(key, notification);
+  }
+
+  emitEntityArchive<T extends IdModel>(key: string, entities: T[]): void {
+    const entityMap = transform2Map(entities);
+    const notificationBody: NotificationEntityBody<T> = {
+      ids: Array.from(entityMap.keys()),
+      entities: entityMap,
+    };
+
+    const notification: NotificationEntityArchivePayload<T> = {
+      type: EVENT_TYPES.ARCHIVE,
       body: notificationBody,
     };
     this._notifyEntityChange(key, notification);

@@ -86,6 +86,36 @@ describe('Entity Cache Manager', () => {
     expect(entity).toBe(entity);
   });
 
+  it('test for archive func', async () => {
+    const entityC = {
+      id: 1,
+      name: 'fish',
+      age: 3,
+    };
+
+    const eMap = new Map<number, EntityCacheTestModel>();
+    eMap.set(entityC.id, entityC);
+
+    await manager.archive([entityA.id], eMap);
+
+    let entity = manager.getEntity(entityA.id);
+    expect(entity).toBe(entityC);
+
+    const entityD = {
+      id: 3,
+      name: 'fish',
+      age: 3,
+    };
+    const eMap2 = new Map<number, EntityCacheTestModel>();
+    eMap2.set(entityA.id, entityD);
+    await manager.archive([entityA.id], eMap2);
+
+    entity = manager.getEntity(entityA.id);
+    expect(entity).toBeUndefined();
+    entity = manager.getEntity(entityD.id);
+    expect(entity).toBe(entity);
+  });
+
   it('test for update func', async () => {
     const entityC = {
       id: 1,

@@ -143,18 +143,22 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const normalData = groups.filter(
     (group: Group) =>
       hiddenGroupIds.indexOf(group.id) === -1 &&
-      (group.members ? group.members.includes(currentUserId) : true),
+      (group.members ? group.members.includes(currentUserId) : true) &&
+      !group.is_archived,
   );
-
   normalData.length &&
     notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
-  const archivedGroups = normalData.filter((item: Group) => item.is_archived);
-  const deactivatedGroups = deactivatedData.concat(archivedGroups);
-  const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
+  const archivedGroups = groups
+    .filter((item: Group) => item.is_archived);
+
+  const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     return group.id;
   });
+  archivedGroups.length &&
+    notificationCenter.emitEntityArchive(ENTITY.GROUP, archivedGroups);
+
   deactivatedGroupIds.length &&
     notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
 

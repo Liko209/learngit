@@ -88,6 +88,7 @@ function buildPayload(
 
   switch (type) {
     case EVENT_TYPES.UPDATE:
+    case EVENT_TYPES.ARCHIVE:
       {
         payload = {
           type,
@@ -429,6 +430,26 @@ describe('FetchSortableDataListHandler', () => {
         },
       },
     ],
+    /**
+     * ARCHIVE
+     */
+    [
+      'when archive 2,4',
+      {
+        originalItems: [
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
+        ],
+        payload: buildPayload(EVENT_TYPES.ARCHIVE, [buildItem(2), buildItem(4)]),
+        expectedOrder: [1, 3, 5],
+        expectedCallbackResponse: {
+          deleted: [2, 4],
+        },
+      },
+    ],
     [
       'when trying to delete no existed item',
       {
@@ -440,6 +461,23 @@ describe('FetchSortableDataListHandler', () => {
           buildItem(5),
         ],
         payload: buildPayload(EVENT_TYPES.DELETE, [buildItem(6)]),
+        expectedOrder: [1, 2, 3, 4, 5],
+        expectedCallbackResponse: {
+          deleted: [],
+        },
+      },
+    ],
+    [
+      'when trying to archive no existed item',
+      {
+        originalItems: [
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
+        ],
+        payload: buildPayload(EVENT_TYPES.ARCHIVE, [buildItem(6)]),
         expectedOrder: [1, 2, 3, 4, 5],
         expectedCallbackResponse: {
           deleted: [],

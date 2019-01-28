@@ -12,6 +12,7 @@ import {
   NotificationEntityUpdatePayload,
   NotificationEntityReplacePayload,
   NotificationEntityDeletePayload,
+  NotificationEntityArchivePayload,
 } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
@@ -104,7 +105,11 @@ export class FetchSortableDataListHandler<
     return data;
   }
 
-  handleDataDeleted(payload: NotificationEntityDeletePayload) {
+  handleDataDeleted(
+    payload:
+      | NotificationEntityDeletePayload
+      | NotificationEntityArchivePayload<T>,
+  ) {
     let originalSortableIds: number[] = [];
 
     if (this._dataChangeCallBack) {
@@ -221,6 +226,7 @@ export class FetchSortableDataListHandler<
   onDataChanged(payload: NotificationEntityPayload<T>) {
     switch (payload.type) {
       case EVENT_TYPES.DELETE:
+      case EVENT_TYPES.ARCHIVE:
         this.handleDataDeleted(payload);
         break;
       case EVENT_TYPES.UPDATE:

@@ -16,6 +16,7 @@ enum EVENT_TYPES {
   'DELETE' = 'delete',
   'RELOAD' = 'reload',
   'RESET' = 'reset',
+  'ARCHIVE' = 'archive',
 }
 
 enum PERMISSION_ENUM {
