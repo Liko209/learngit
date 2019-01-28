@@ -22,7 +22,9 @@ import {
   JuiRightRailLoadingMore,
   JuiRightRailContentLoadError,
 } from 'jui/pattern/RightShelf';
+import ReactResizeDetector from 'react-resize-detector';
 
+const HEADER_HEIGHT = 36;
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
@@ -100,7 +102,17 @@ class ItemListView extends React.Component<ViewProps & Props>
           </JuiListSubheader>
         )}
         {firstLoaded && !loadError && (
-          <JuiVirtualList dataSource={this} threshold={1} isLoading={loading} />
+          <ReactResizeDetector handleWidth={true} handleHeight={true}>
+            {(width: number, height: number) => (
+              <JuiVirtualList
+                dataSource={this}
+                threshold={1}
+                isLoading={loading}
+                width={width}
+                height={height - HEADER_HEIGHT}
+              />
+            )}
+          </ReactResizeDetector>
         )}
         {loading && !firstLoaded && !loadError && this.firstLoader()}
         {loadError && (

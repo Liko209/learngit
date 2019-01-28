@@ -138,7 +138,14 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       { fireImmediately: true },
     );
     this.reaction(() => this.ids, () => this.loadTotalCount());
-    this.reaction(() => this._active, () => this.forceReload());
+    this.reaction(
+      () => this._active,
+      (active: boolean) => {
+        if (active && !this._loadStatus.firstLoaded) {
+          this.forceReload();
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
