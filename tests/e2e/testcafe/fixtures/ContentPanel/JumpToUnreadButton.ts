@@ -166,7 +166,7 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   // )
 });
 
-test(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
+test(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'JumpToUnreadButton']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -174,16 +174,9 @@ test(formalName('The count of the unread button (up) should display correct', ['
   await h(t).platform(loginUser).init();
   await h(t).platform(otherUser).init();
 
-  let conversationA, conversationB;
-  await h(t).withLog('Given I have an extension with 2 conversation', async () => {
-    conversationA = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-
-    conversationB = await h(t).platform(loginUser).createAndGetGroupId({
+  let teamId;
+  await h(t).withLog('Given I have an extension with 1 conversation', async () => {
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
       isPublic: true,
       name: `Team ${uuid()}`,
       type: 'Team',
@@ -191,19 +184,10 @@ test(formalName('The count of the unread button (up) should display correct', ['
     });
   });
 
-  async function sendMessage(conversationId, number) {
-    let msgs = _.range(number)
-    for (let msg of msgs) {
-      await h(t).platform(otherUser).createPost({ text: `${msg} ${uuid()}` }, conversationId);
+  await h(t).withLog('And the conversation has 20 unread message', async () => {
+    for (const i of _.range(20)) {
+      await h(t).platform(otherUser).createPost({ text: `${i} ${uuid()}` }, teamId);
     }
-  };
-
-  await h(t).withLog('And conversationA has 20 unread message', async () => {
-    await sendMessage(conversationA, 20);
-  });
-
-  await h(t).withLog('And conversationB has 100 unread message', async () => {
-    await sendMessage(conversationB, 100);
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -214,9 +198,9 @@ test(formalName('The count of the unread button (up) should display correct', ['
 
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog('And enter conversationA', async () => {
+  await h(t).withLog('And enter the conversation', async () => {
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversationA).enter();
+    await teamsSection.conversationEntryById(teamId).enter();
   });
 
   await h(t).withLog('Then I should see unread button with unread count 20', async () => {
@@ -224,9 +208,43 @@ test(formalName('The count of the unread button (up) should display correct', ['
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.find('span').withText('20').exists).ok()
   });
+});
 
-  await h(t).withLog('When I enter conversationB', async () => {
-    await teamsSection.conversationEntryById(conversationB).enter();
+
+test(formalName('The count of the unread button (up) should show 99+ when post more than 99.', ['JPT-699', 'P2', 'Potar.He', 'JumpToUnreadButton']), async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[6];
+  const otherUser = users[5];
+  await h(t).platform(otherUser).init();
+
+  let teamId;
+  await h(t).withLog('Given I have an extension with 1 conversation', async () => {
+    teamId = await h(t).platform(otherUser).createAndGetGroupId({
+      isPublic: true,
+      name: `Team ${uuid()}`,
+      type: 'Team',
+      members: [loginUser.rcId, otherUser.rcId],
+    });
+  });
+
+  await h(t).withLog('And the conversation has 100 unread message', async () => {
+    for (const i of _.range(100)) {
+      await h(t).platform(otherUser).createPost({ text: `${i} ${uuid()}` }, teamId);
+    }
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog('When I enter the conversation', async () => {
+    await teamsSection.conversationEntryById(teamId).enter();
   })
 
   await h(t).withLog('Then I should see unread button with unread count 99+', async () => {
@@ -234,7 +252,7 @@ test(formalName('The count of the unread button (up) should display correct', ['
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.find('span').withText('99+').exists).ok()
   });
-})
+});
 
 test(formalName('All unread messages can be downloaded when click the unread button', ['JPT-225', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
 
