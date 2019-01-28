@@ -77,8 +77,8 @@ class RightRailComponent extends React.Component<Props> {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(width: number, height: number) => (
+      <ReactResizeDetector handleWidth={true}>
+        {(width: number) => (
           <JuiTabs
             defaultActiveIndex={0}
             tag="right-shelf"
@@ -106,8 +106,6 @@ class RightRailComponent extends React.Component<Props> {
                     type={type}
                     groupId={id}
                     active={tabIndex === index}
-                    width={width}
-                    height={height}
                   />
                 </JuiTab>
               ),

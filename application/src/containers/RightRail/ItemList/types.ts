@@ -22,8 +22,6 @@ type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
   active: boolean;
-  width: number;
-  height: number;
 };
 
 type ViewProps = {

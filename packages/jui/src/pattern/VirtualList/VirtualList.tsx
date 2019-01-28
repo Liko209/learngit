@@ -64,27 +64,31 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     const { isLoading, dataSource, width, height } = this.props;
     const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
+    const { renderEmptyContent } = dataSource;
     return (
       <JuiVirtualListWrapper>
-        <InfiniteLoader
-          rowCount={rowCount}
-          isRowLoaded={this.isRowLoaded}
-          loadMoreRows={this.loadMore}
-        >
-          {({ onRowsRendered, registerChild }) => (
-            <List
-              overscanRowCount={20}
-              rowCount={rowCount}
-              width={width}
-              height={height}
-              rowHeight={this._rowHeight}
-              ref={registerChild}
-              noRowsRenderer={dataSource.renderEmptyContent}
-              onRowsRendered={onRowsRendered}
-              rowRenderer={this.rowRenderer}
-            />
-          )}
-        </InfiniteLoader>
+        {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
+        {rowCount !== 0 && (
+          <InfiniteLoader
+            rowCount={rowCount}
+            isRowLoaded={this.isRowLoaded}
+            loadMoreRows={this.loadMore}
+          >
+            {({ onRowsRendered, registerChild }) => (
+              <List
+                overscanRowCount={20}
+                rowCount={rowCount}
+                width={width}
+                height={height}
+                rowHeight={this._rowHeight}
+                ref={registerChild}
+                noRowsRenderer={dataSource.renderEmptyContent}
+                onRowsRendered={onRowsRendered}
+                rowRenderer={this.rowRenderer}
+              />
+            )}
+          </InfiniteLoader>
+        )}
       </JuiVirtualListWrapper>
     );
   }
