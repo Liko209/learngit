@@ -15,10 +15,9 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 
-
-// FIXME: we should following the display rule of Jupiter
 function fileSizeOf(filePath: string, unit: string = 'KB', num: number = 1) {
   // filePath is relative to current script (thanks to testcafe!), so we have to get absolute path before read stat
+  // FIXME: we should following the display rule of Jupiter
   const stat = fs.statSync(path.join(__dirname, filePath));
   if ('KB' === unit) {
     return `${(stat.size / 1024).toFixed(num)}KB`
@@ -36,14 +35,9 @@ fixture('UploadFiles')
 
 // bug: https://jira.ringcentral.com/browse/FIJI-2399, so I only skip the check point, only check uploading several files
 test(formalName('The post is sent successfully when sending a post with uploaded files', ['P0', 'JPT-448', 'UploadFiles', 'Mia.Cai']), async t => {
-  const app = new AppRoot(t);
-
   const users = h(t).rcData.mainCompany.users;
-
   const user = users[4];
   await h(t).platform(user).init();
-
-  const files = ['../../sources/1.txt', '../../sources/3.txt'];
 
   let teamId: string;
   await h(t).withLog(`Given I have an extension with at least one team conversation`, async () => {
@@ -54,6 +48,7 @@ test(formalName('The post is sent successfully when sending a post with uploaded
     });
   });
 
+  const app = new AppRoot(t);
   await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, user);
     await app.homePage.ensureLoaded();
@@ -66,7 +61,8 @@ test(formalName('The post is sent successfully when sending a post with uploaded
     await conversationPage.waitUntilPostsBeLoaded();
   });
 
-  await h(t).withLog('And upload one file to the message attachment', async () => {
+  const files = ['../../sources/1.txt', '../../sources/3.txt'];
+  await h(t).withLog('And upload two files as attachments', async () => {
     await conversationPage.uploadFilesToMessageAttachment(files);
   });
 
@@ -88,9 +84,9 @@ test(formalName('The post is sent successfully when sending a post with uploaded
     }
   });
 
-  const notification = `shared ${files.length} files`;
-  await h(t).withLog(`And the post's conversationCard should display: "${notification}"`, async () => {
-    await t.expect(conversationPage.fileNotification.withText(notification).exists).ok();
+  const note = `shared ${files.length} files`;
+  await h(t).withLog(`And the post's notification should display: "${note}"`, async () => {
+    await t.expect(conversationPage.fileNotification.withText(note).exists).ok();
   });
 });
 
