@@ -8,6 +8,7 @@ type Props = {
   id: number;
   width?: number;
   height?: number;
+  type?: 'image' | 'file';
 };
 
 type ViewProps = {
@@ -15,6 +16,7 @@ type ViewProps = {
     icon: string;
     url: string;
   };
+  type?: 'image' | 'file';
 };
 
 export { Props, ViewProps };

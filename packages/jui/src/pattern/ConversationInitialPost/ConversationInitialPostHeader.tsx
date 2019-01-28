@@ -28,6 +28,7 @@ const StyledSpan = styled.span`
   display: inline-block;
   ${typography('body1')};
   color: ${grey('700')};
+  word-break: break-all;
 `;
 const StyledTeamName = styled.span`
   ${typography('body2')};

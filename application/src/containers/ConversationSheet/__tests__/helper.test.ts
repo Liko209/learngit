@@ -23,9 +23,9 @@ const DATE_2019_1_5_12 = 1546617600000;
 describe('Conversation sheet helpers', () => {
   it('getFileIcon()', () => {
     const type = getFileIcon('xlsx');
-    expect(type).toBe('sheet');
+    expect(type).toBe('excel');
     const type1 = getFileIcon('xxx');
-    expect(type1).toBeNull();
+    expect(type1).toBe('default_file');
   });
   describe('getDateAndTime()', () => {
     it('should be today and time when event Date is DATE_2019_1_4 [JPT-712][JPT-713]', () => {

@@ -11,14 +11,12 @@ class HistoryHandler {
   /**
    * The group state when `update()` was called.
    */
-  @observable
-  groupState: GroupStateModel | null = null;
+  @observable groupState: GroupStateModel | null = null;
 
   /**
    * The latest post when `update()` was called.
    */
-  @observable
-  latestPostId: number | null = null;
+  @observable latestPostId: number | null = null;
 
   /**
    * Remember the current groupState and latestPostId
@@ -29,6 +27,7 @@ class HistoryHandler {
     this.latestPostId = _.last(postIds) || null;
   }
 
+  @action
   clear() {
     this.groupState = null;
     this.latestPostId = null;
