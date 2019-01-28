@@ -139,7 +139,7 @@ function buildPayload(
 function setup({ originalItems }: { originalItems: SimpleItem[] }) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
   const listStore = new SortableListStore<SimpleItem>(sortFunc);
-  listStore.append(
+  listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
     }),
@@ -355,6 +355,15 @@ describe('FetchSortableDataListHandler', () => {
           deleted: [1],
           added: [],
         },
+      },
+    ],
+    [
+      'when update item without update sort value',
+      {
+        originalItems: [buildItem(1), buildItem(2)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
+        expectedOrder: [1, 2],
+        callbackMuted: true,
       },
     ],
     /**
@@ -576,14 +585,14 @@ describe('FetchSortableDataListHandler', () => {
       };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
 
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);
 
       newGroup = { ...group, id: 789, most_recent_post_created_at: 1002 };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);

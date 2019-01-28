@@ -30,40 +30,37 @@ describe('ThumbnailViewModel', () => {
     ItemService.getInstance.mockReturnValue(itemService);
   });
   describe('get fileTypeOrUrl()', () => {
-    it('should get image url', async () => {
+    it('should get image url', () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: 'application/json',
       });
 
-      // (getFileType as jest.Mock).mockReturnValue({
-      //   previewUrl,
-      //   type: FileType.image,
-      // });
-      itemService.getThumbsUrlWithSize.mockResolvedValue(previewUrl);
-
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(true);
 
-      thumbnailViewModel = new ThumbnailViewModel();
-      await thumbnailViewModel.onReceiveProps({ id: 123 });
+      itemService.getThumbsUrlWithSize.mockResolvedValue(previewUrl);
 
-      expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
-        url: previewUrl,
-        icon: '',
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+
+      setTimeout(() => {
+        expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
+          url: previewUrl,
+          icon: '',
+        });
       });
     });
     it('should get file type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
-        type: 'text',
+        type: 'doc',
+        iconType: 'doc',
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
       thumbnailViewModel = new ThumbnailViewModel();
-      await thumbnailViewModel.onReceiveProps({ id: 123 });
 
       expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
         url: '',
-        icon: 'text',
+        icon: 'doc',
       });
     });
     it('should get default type', async () => {
@@ -74,7 +71,6 @@ describe('ThumbnailViewModel', () => {
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
       thumbnailViewModel = new ThumbnailViewModel();
-      await thumbnailViewModel.onReceiveProps({ id: 123 });
 
       expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
         url: '',

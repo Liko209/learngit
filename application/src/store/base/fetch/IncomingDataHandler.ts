@@ -3,7 +3,7 @@ import { SortableListStore } from './SortableListStore';
 import _ from 'lodash';
 
 function diff(keys: number[], store: SortableListStore) {
-  const existKeys = store.getIds();
+  const existKeys = store.getIds;
   const matchedKeys = _.intersection(keys, existKeys);
   const differentKeys = _.difference(keys, existKeys);
   return { matchedKeys, differentKeys };
@@ -39,7 +39,7 @@ function handleUpsert<T>(
     const entity = entities.get(key) as { id: number; data: T };
     const data = (entity.data || entity) as T;
     const idSortKey = transformFunc(data);
-    const index = store.getIds().indexOf(key);
+    const index = store.getIds.indexOf(key);
     if (entity.data) {
       updated.push({
         index,
@@ -73,7 +73,7 @@ function handleReplaceAll<T>(
   store: SortableListStore,
 ) {
   const updateEntity: T[] = [];
-  const deleted: number[] = store.getIds();
+  const deleted: number[] = store.getIds;
   const added: ISortableModel[] = keys.map((key: number) => {
     const model = entities.get(key) as T;
     return transformFunc(model);

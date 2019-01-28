@@ -116,7 +116,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    return this._historyHandler.getFirstUnreadPostId(this.postIds);
+    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
+      ? undefined
+      : _.first(this.postIds);
+
+    return (
+      firstUnreadPostId ||
+      this._historyHandler.getFirstUnreadPostId(this.postIds)
+    );
   }
 
   constructor(props: StreamProps) {
@@ -249,6 +256,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   disableNewMessageSeparatorHandler = () => {
     this._streamController.disableNewMessageSep();
   }
+
   dispose() {
     super.dispose();
     this._streamController.dispose();
