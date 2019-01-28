@@ -57,6 +57,9 @@ export class AllureHelper {
     this.allureReporter.startCase(caseName, startTime);
     this.allure.addArgument('User Agent', userAgent);
     this.allure.addArgument('Account Type', findKey(BrandTire, (value) => value === accountType) || accountType);
+    this.allure.addEnvironment('Site Url', process.env['SITE_URL'] || 'http://localhost:3000');
+    this.allure.addEnvironment('Site Env', process.env['SITE_ENV'] || 'XMN-UP');
+    this.allure.addEnvironment('Branch', process.env['BRANCH'] || 'develop');
   }
 
   endCase(status, testInfo, endTime) {

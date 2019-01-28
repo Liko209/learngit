@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, computed } from 'mobx';
+import { action, observable, computed } from 'mobx';
 import { GroupService } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
@@ -20,6 +20,24 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
   private _prevGroupId: number;
+
+  constructor(props: ConversationPageProps) {
+    super(props);
+    this.reaction(
+      () => this.props.groupId,
+      async (groupId: number) => {
+        const group = await this._groupService.getById(groupId);
+        if (!group) {
+          history.replace('/messages/loading', {
+            id: groupId,
+            error: true,
+          });
+          return;
+        }
+        this._readGroup(groupId);
+      },
+    );
+  }
 
   private _throttledUpdateLastGroup = _.wrap(
     _.throttle(
@@ -44,22 +62,6 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   @computed
   get canPost() {
     return this._group.canPost;
-  }
-
-  @action
-  async onReceiveProps({ groupId }: ConversationPageProps) {
-    if (!_.isEqual(groupId, this._prevGroupId) && groupId) {
-      const group = await this._groupService.getById(groupId);
-      if (!group) {
-        history.replace('/messages/loading', {
-          id: groupId,
-          error: true,
-        });
-        return;
-      }
-      this._prevGroupId = group.id;
-      group.id && this._readGroup(group.id);
-    }
   }
 
   private async _readGroup(groupId: number) {

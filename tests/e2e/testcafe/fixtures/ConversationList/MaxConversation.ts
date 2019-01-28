@@ -206,7 +206,7 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
-      await h(t).refresh();
+      await h(t).reload();
       await app.homePage.messageTab.ensureLoaded(10e3);
     });
 

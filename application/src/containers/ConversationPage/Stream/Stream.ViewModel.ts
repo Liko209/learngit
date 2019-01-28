@@ -6,7 +6,7 @@
 import { IFetchSortableDataProvider } from './../../../store/base/fetch/FetchSortableDataListHandler';
 import _ from 'lodash';
 import { computed, action, observable } from 'mobx';
-import { PostService, ENTITY } from 'sdk/service';
+import { ENTITY } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
 import { StateService } from 'sdk/module/state';
@@ -39,12 +39,13 @@ import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
+import { NewPostService } from 'sdk/module/post';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: PostService = PostService.getInstance();
+  private _postService: NewPostService = NewPostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
@@ -84,8 +85,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get hasMoreDown() {
+    return this._streamController.hasMoreDown;
+  }
+
+  @computed
   get postIds() {
-    return this._streamController.postIds;
+    return _(this.items)
+      .flatMap('value')
+      .compact()
+      .value();
   }
 
   @computed
@@ -107,13 +116,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
-      ? undefined
-      : _.first(this.postIds);
-    return (
-      firstUnreadPostId ||
-      this._historyHandler.getFirstUnreadPostId(this.postIds)
-    );
+    return this._historyHandler.getFirstUnreadPostId(this.postIds);
   }
 
   constructor(props: StreamProps) {
@@ -146,8 +149,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
   postDataProvider: IFetchSortableDataProvider<Post> = {
     fetchData: async (direction, pageSize, anchor) => {
-      const postService: PostService = PostService.getInstance();
-      const { posts, hasMore, items } = await postService.getPostsByGroupId({
+      const {
+        posts,
+        hasMore,
+        items,
+      } = await this._postService.getPostsByGroupId({
         direction,
         groupId: this.props.groupId,
         postId: anchor && anchor.id,

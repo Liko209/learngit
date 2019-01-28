@@ -23,6 +23,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
+import { NewPostService } from 'sdk/module/post';
 import { StreamProps } from '../types';
 
 jest.mock('sdk/module/item');
@@ -30,15 +31,19 @@ jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
+const postService = {
+  getPostsByGroupId: jest.fn(),
+};
+
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
 }
 
 describe('StreamViewModel', () => {
-  let postService: PostService;
   let itemService: ItemService;
   const streamController = {
     dispose: jest.fn(),
@@ -50,8 +55,7 @@ describe('StreamViewModel', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
-    postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
@@ -67,7 +71,7 @@ describe('StreamViewModel', () => {
       const vm = setup({
         props: { groupId: 1 },
       });
-      (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
+      postService.getPostsByGroupId.mockResolvedValue({
         posts: [
           { id: 1, item_ids: [], created_at: 10000 },
           { id: 2, item_ids: [], created_at: 10001 },
@@ -186,12 +190,15 @@ describe('StreamViewModel', () => {
         _streamController: { postIds },
       });
 
+      vm._streamController.items = postIds.map(i => ({
+        value: [i],
+      }));
+
       Object.defineProperty(vm, '_groupState', {
         value: groupState,
       });
 
       vm.updateHistoryHandler();
-
       expect(mockUpdate).toBeCalledTimes(1);
       expect(mockUpdate).toBeCalledWith(groupState, postIds);
     });
@@ -540,5 +547,6 @@ describe('StreamViewModel', () => {
         expect(streamController.enableNewMessageSep).toBeCalled();
       });
     });
+    jest.restoreAllMocks();
   });
 });
