@@ -112,6 +112,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 }
 
-const HeaderView = translate('ConversationPageHeader')(Header);
+const HeaderView = translate('translations')(Header);
 
 export { HeaderView, HeaderProps };
