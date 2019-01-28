@@ -28,22 +28,20 @@ const withProgress = (
     requestConfig?: object,
     headers?: object,
   ) => Promise<ApiResult<IndexDataModel, JError>>,
-) => {
-  return async (params: object) => {
-    progressBar.start();
-    let result: ApiResult<IndexDataModel, JError>;
-    try {
-      result = await getDataFunction(params, requestConfig);
-    } catch (e) {
-      if (e instanceof ApiResultErr) {
-        result = e;
-      }
-      throw e;
-    } finally {
-      progressBar.stop();
+) => async (params: object) => {
+  progressBar.start();
+  let result: ApiResult<IndexDataModel, JError>;
+  try {
+    result = await getDataFunction(params, requestConfig);
+  } catch (e) {
+    if (e instanceof ApiResultErr) {
+      result = e;
     }
-    return result;
-  };
+    throw e;
+  } finally {
+    progressBar.stop();
+  }
+  return result;
 };
 
 const initialWithProgress = withProgress(initialData);
