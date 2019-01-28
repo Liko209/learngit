@@ -83,7 +83,6 @@ class NewMessage extends React.Component<ViewProps, State> {
       emailErrorMsg,
       disabledOkBtn,
       handleSearchContactChange,
-      isOffline,
       serverError,
       errorEmail,
       errorUnknown,
@@ -96,7 +95,7 @@ class NewMessage extends React.Component<ViewProps, State> {
         open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        okBtnProps={{ disabled: isOffline || disabledOkBtn }}
+        okBtnProps={{ disabled: disabledOkBtn }}
         title={t('New Message')}
         onCancel={this.onClose}
         onOK={this.sendNewMessage}
