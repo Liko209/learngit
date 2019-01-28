@@ -8,10 +8,11 @@ import Collapse from '@material-ui/core/Collapse';
 import * as Jui from './style';
 import { FileName } from './FileName';
 import styled from '../../../foundation/styled-components';
-import { spacing, getFileIcon } from '../../../foundation/utils';
+import { spacing } from '../../../foundation/utils';
 import { Theme } from '../../../foundation/theme/theme';
 
 type JuiFileWithExpandProps = {
+  icon: string;
   fileName: string;
   fileNameColor?: ({ theme }: { theme: Theme }) => any;
   fileNameOpacity?: number;
@@ -42,14 +43,13 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
     expand,
     fileNameColor,
     fileNameOpacity,
+    icon,
   } = props;
-  const type = fileName && fileName.split('.').pop();
-  const iconType = getFileIcon(type || '');
   return (
     <Jui.FileExpandItemWrapper>
       {!expand && (
         <Jui.FileExpandItem>
-          <Jui.FileIcon size="small">{iconType}</Jui.FileIcon>
+          <Jui.FileIcon size="small">{icon}</Jui.FileIcon>
           <NameWithActions>
             <FileName
               statusColor={fileNameColor}

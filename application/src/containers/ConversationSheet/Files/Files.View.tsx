@@ -12,13 +12,14 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { getThumbnailSize, getFileIcon } from 'jui/foundation/utils';
+import { getThumbnailSize } from 'jui/foundation/utils';
 import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
+import { getFileIcon } from '@/common/getFileIcon';
 
 const SQUARE_SIZE = 180;
 
@@ -59,6 +60,7 @@ class FilesView extends React.Component<FilesViewProps> {
     }
     return (
       <AttachmentItem
+        fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
         name={name}

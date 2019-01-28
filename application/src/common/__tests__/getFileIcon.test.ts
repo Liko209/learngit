@@ -1,13 +1,13 @@
 /*
  * @Author: isaac.liu
- * @Date: 2019-01-28 18:39:15
+ * @Date: 2019-01-28 20:47:56
  * Copyright © RingCentral. All rights reserved.
  */
-import { getFileIcon } from '../getFileName';
+import { getFileIcon } from '../getFileIcon';
 import { ImageFileExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
-describe('Conversation sheet helpers', () => {
-  it('getFileIcon()', () => {
+describe('getFileIcon()', () => {
+  it('should get icon from file type', () => {
     let type = getFileIcon('xlsx');
     expect(type).toBe('excel');
     const type1 = getFileIcon('xxx');
@@ -31,5 +31,12 @@ describe('Conversation sheet helpers', () => {
       type = getFileIcon(ext);
       expect(type).toBe('image_preview');
     });
+  });
+
+  it('should get icon for file name with extension', () => {
+    const type = getFileIcon('a.xlsx');
+    expect(type).toBe('excel');
+    const type1 = getFileIcon('b.xxx');
+    expect(type1).toBe('default_file');
   });
 });

@@ -6,7 +6,7 @@
 import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
-import { getFileIcon } from 'jui/foundation/utils';
+import { getFileIcon } from '@/common/getFileIcon';
 
 enum FileType {
   image = 0,
