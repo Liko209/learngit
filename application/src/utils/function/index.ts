@@ -23,7 +23,7 @@ function compose(...funcs: Function[]) {
 
 async function delay(interval: number) {
   return new Promise((resolve: Function) => {
-    setTimeout(() => window.requestAnimationFrame(() => resolve()), interval);
+    setTimeout(() => resolve(), interval);
   });
 }
 
