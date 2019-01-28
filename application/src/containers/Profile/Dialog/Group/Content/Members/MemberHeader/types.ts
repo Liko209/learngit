@@ -13,6 +13,6 @@ type MemberHeaderProps = {
 
 type MemberHeaderViewProps = ProfileDialogGroupViewProps & {
   hasShadow: boolean;
-  isCurrentUserHasPermissionAddTeam: boolean;
+  isCurrentUserHasPermissionAddMember: boolean;
 };
 export { MemberHeaderProps, MemberHeaderViewProps };

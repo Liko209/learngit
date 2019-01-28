@@ -27,7 +27,8 @@ describe('ProfileDialogGroupViewModel', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    vm = new ProfileDialogGroupViewModel(props);
+    vm = new ProfileDialogGroupViewModel();
+    vm.getDerivedProps(props);
   });
 
   describe('id', () => {
