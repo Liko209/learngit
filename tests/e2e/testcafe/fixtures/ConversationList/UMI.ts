@@ -725,9 +725,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-// bug https://jira.ringcentral.com/browse/FIJI-2766 so skip the checkpoint
-// skip due to https://jira.ringcentral.com/browse/FIJI-3130
-test.skip(formalName('JPT- 743 Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
+test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
