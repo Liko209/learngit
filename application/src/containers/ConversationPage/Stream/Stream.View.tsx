@@ -124,15 +124,10 @@ class StreamViewComponent extends Component<Props> {
     if (!el) {
       return;
     }
-    const container = el.parentElement;
-    if (!container) {
-      return;
-    }
+
     const listRO = new RO(this._listHeightChangedHandler);
     listRO.observe(el);
-    const containerRO = new RO(this._containerHeightChangedHandler);
-    containerRO.observe(container);
-    this._ro.push(listRO, containerRO);
+    this._ro.push(listRO);
   }
 
   private _listHeightChangedHandler = (entries: any[]) => {
@@ -156,11 +151,6 @@ class StreamViewComponent extends Component<Props> {
     }
 
     return;
-  }
-  private _containerHeightChangedHandler = () => {
-    if (this._isAtBottom) {
-      this.scrollToBottom();
-    }
   }
 
   private _renderConversationCard(
