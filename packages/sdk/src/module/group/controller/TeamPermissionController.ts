@@ -44,14 +44,8 @@ class TeamPermissionController {
   ): number {
     const userId = UserConfig.getCurrentUserId();
 
-    if (!teamPermissionParams.is_team) {
-      if (this.isSelfGroup(teamPermissionParams, userId)) {
-        return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADD_MEMBER;
-      }
-      return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
-    }
-
     const {
+      members = [],
       permissions: {
         admin: {
           uids: adminUids = [],
@@ -60,6 +54,14 @@ class TeamPermissionController {
         user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
       } = {},
     } = teamPermissionParams;
+    if (!members.includes(userId)) return 0;
+
+    if (!teamPermissionParams.is_team) {
+      if (this.isSelfGroup(teamPermissionParams, userId)) {
+        return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADD_MEMBER;
+      }
+      return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
+    }
 
     const guestPermissionLevel = this.mergePermissionFlagsWithLevel(
       {
@@ -93,6 +95,11 @@ class TeamPermissionController {
   ): boolean {
     const permissionList = this.getCurrentUserPermissions(teamPermissionParams);
     return permissionList.includes(type);
+  }
+
+  hasTeamAdmin(permission?: TeamPermission): boolean {
+    const { admin: { uids: adminUids = [] } = {} } = permission || {};
+    return adminUids.length > 0;
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {

@@ -7,10 +7,11 @@ import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 import { UserConfig } from 'sdk/service/account/UserConfig';
 import { PERMISSION_ENUM } from 'sdk/service';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 jest.mock('sdk/api');
 jest.mock('sdk/service/account/UserConfig');
-
-jest.mock('sdk/api');
+jest.mock('@/store/utils/entities');
 
 describe('GroupModel', () => {
   const mockUserId = 1;
@@ -23,18 +24,29 @@ describe('GroupModel', () => {
     UserConfig.getCurrentCompanyId = jest
       .fn()
       .mockImplementation(() => mockUserCompanyId);
+
+    (getEntity as jest.Mock).mockImplementation((name: string) => {
+      if (name === ENTITY_NAME.PERSON) {
+        return {
+          companyId: mockUserCompanyId,
+        };
+      }
+    });
   });
   describe('isThePersonGuest()', () => {
     it('should return result base on whether person company is in guest_user_company_ids', () => {
-      const personA = { id: 10, company_id: 1 };
-      const personB = { id: 10, company_id: 4 };
-      const gm = GroupModel.fromJS({
+      const gm1 = GroupModel.fromJS({
         id: 1,
         members: [mockUserId],
         guest_user_company_ids: [mockUserCompanyId],
       } as Group);
-      expect(gm.isThePersonGuest(personA.company_id)).toBeTruthy;
-      expect(gm.isThePersonGuest(personB.company_id)).toBeFalsy;
+      const gm2 = GroupModel.fromJS({
+        id: 1,
+        members: [mockUserId],
+        guest_user_company_ids: [mockUserCompanyId + 1],
+      } as Group);
+      expect(gm1.isThePersonGuest(mockUserId)).toBeTruthy();
+      expect(gm2.isThePersonGuest(mockUserId)).toBeFalsy();
     });
   });
   describe('canPost', () => {
@@ -179,6 +191,78 @@ describe('GroupModel', () => {
         },
       } as Group);
       expect(gm.isAdmin).toBeTruthy();
+    });
+  });
+  describe('isThePersonAdmin', () => {
+    it('should return true when user is in admin list', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [mockUserId],
+        guest_user_company_ids: [],
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [mockUserId],
+          },
+        },
+      } as Group);
+      expect(gm.isThePersonAdmin(mockUserId)).toBeTruthy();
+    });
+    it('should return false when user is not a member', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [mockUserId + 1],
+        guest_user_company_ids: [],
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [mockUserId + 1],
+          },
+        },
+      } as Group);
+      expect(gm.isThePersonAdmin(mockUserId)).toBeFalsy();
+    });
+    it('should return false when user is not in admin list', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [mockUserId],
+        guest_user_company_ids: [],
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [mockUserCompanyId + 1],
+          },
+        },
+      } as Group);
+      expect(gm.isThePersonAdmin(mockUserId)).toBeFalsy();
+    });
+    it('should return false when admin list is empty and user is a guest', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [mockUserId],
+        guest_user_company_ids: [mockUserCompanyId],
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [],
+          },
+        },
+      } as Group);
+      expect(gm.isThePersonAdmin(mockUserId)).toBeFalsy();
+    });
+    it('should return true when admin list is empty and user is not a guest', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [mockUserId],
+        guest_user_company_ids: [],
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [],
+          },
+        },
+      } as Group);
+      expect(gm.isThePersonAdmin(mockUserId)).toBeTruthy();
     });
   });
 });
