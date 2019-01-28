@@ -111,29 +111,31 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('jui-stream');
   }
 
-  get loadingCircle() {
-    return this.getSelectorByAutomationId('loading', this.self);
+  get spinner() {
+    this.warnFlakySelector();
+    return this.getSelector('div[role="progressbar"]');
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     try {
       // spinning circle is expected to appear within 1 seconds if content doesn't loaded
-      await H.retryUntilPass(async () => assert(await this.loadingCircle.exists), 2, 1e3)
+      await H.retryUntilPass(async () => assert(await this.spinner.exists), 2, 1e3)
     } catch (e) {
       // it's ok that spinning circle doesn't appear if the content has already been loaded
     }
     finally {
       // wait until spinning circle disappear
-      await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+      await this.t.expect(this.spinner.exists).notOk({ timeout });
     }
   }
 
-  // todo: find a more reliable method
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.streamWrapper.scrollTop;
-    const streamHeight = await this.stream.clientHeight;
-    const streamWrapperHeight = await this.streamWrapper.clientHeight;
-    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.streamWrapper.scrollTop;
+      const streamHeight = await this.stream.clientHeight;
+      const streamWrapperHeight = await this.streamWrapper.clientHeight;
+      assert.equal(screenTop, streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+    });
   }
 
   async scrollToY(y: number) {
