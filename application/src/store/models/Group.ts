@@ -206,13 +206,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   isThePersonAdmin(personId: number) {
-    if (this.type !== CONVERSATION_TYPES.TEAM) {
-      return false;
-    }
-    if (this._nGroupService.hasTeamAdmin(this.permissions)) {
-      return this._nGroupService.isTeamAdmin(personId, this.permissions);
-    }
-    return !this.isThePersonGuest(personId);
+    return this.type === CONVERSATION_TYPES.TEAM
+      ? this._nGroupService.isTeamAdmin(personId, this.permissions)
+      : false;
   }
 
   isThePersonGuest(personId: number) {

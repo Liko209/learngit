@@ -250,7 +250,7 @@ describe('GroupModel', () => {
       } as Group);
       expect(gm.isThePersonAdmin(mockUserId)).toBeFalsy();
     });
-    it('should return true when admin list is empty and user is not a guest', () => {
+    it('should return false when admin list is empty and user is not a guest', () => {
       const gm = GroupModel.fromJS({
         id: 1,
         members: [mockUserId],
@@ -262,7 +262,7 @@ describe('GroupModel', () => {
           },
         },
       } as Group);
-      expect(gm.isThePersonAdmin(mockUserId)).toBeTruthy();
+      expect(gm.isThePersonAdmin(mockUserId)).toBeFalsy();
     });
   });
 });
