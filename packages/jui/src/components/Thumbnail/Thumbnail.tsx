@@ -28,11 +28,15 @@ const StyledIcon = styled(WrappedMuiIcon)<JuiThumbnailProps>`
   }
 `;
 
-const StyledModifyImage = styled<JuiThumbnailProps, 'img'>('img')`
+const StyledModifyImage = styled<JuiThumbnailProps, 'span'>('span')`
   width: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   height: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   border-radius: ${({ size }) =>
     size === 'small' ? shape('borderRadius', 0.5) : shape('borderRadius')};
+  background-image: url(${({ url }) => url});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 `;
 
 class JuiThumbnail extends React.Component<JuiThumbnailProps> {
@@ -42,7 +46,7 @@ class JuiThumbnail extends React.Component<JuiThumbnailProps> {
     return (
       <>
         {url ? (
-          <StyledModifyImage src={url} />
+          <StyledModifyImage url={url} />
         ) : (
           <StyledIcon size={size} {...this.props}>
             {iconType}
