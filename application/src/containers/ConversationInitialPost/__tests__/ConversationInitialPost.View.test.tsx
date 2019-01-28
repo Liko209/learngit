@@ -18,7 +18,6 @@ describe('ConversationInitialPostView', () => {
       groupType: CONVERSATION_TYPES.ME,
       groupDescription: 'text',
       userDisPlayName: 'a',
-      creatorGroupId: 123,
       t: (p: any) => p,
       creator: {} as PersonModel,
       tReady: {},

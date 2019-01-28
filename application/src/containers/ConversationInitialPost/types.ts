@@ -19,7 +19,6 @@ type ConversationInitialPostViewProps = WithNamespaces & {
   groupType: CONVERSATION_TYPES;
   groupDescription: string;
   creator: PersonModel;
-  creatorGroupId: number;
   t: TranslationFunction;
   isTeam: boolean;
   notEmpty: boolean;

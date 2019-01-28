@@ -40,7 +40,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get ids() {
-    return this._sortableListHandler.sortableListStore.getIds();
+    return this._sortableListHandler.sortableListStore.getIds;
   }
 
   private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
@@ -122,6 +122,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         .difference(postIds)
         .value();
       const postService: PostService = PostService.getInstance();
+      this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
@@ -140,7 +141,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           },
         });
       }
-      this._postIds = postIds;
     }
   }
 
