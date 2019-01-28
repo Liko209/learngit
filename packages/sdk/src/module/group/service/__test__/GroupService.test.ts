@@ -253,4 +253,25 @@ describe('GroupService', () => {
       expect(mockIsTeamAdmin).toBeCalledWith(mockPersonId, mockPermission);
     });
   });
+  describe('archiveTeam()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+      });
+      const mockArchiveTeam = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          archiveTeam: mockArchiveTeam,
+        });
+      await groupService.archiveTeam(mockTeam.id);
+      expect(mockArchiveTeam).toBeCalledWith(mockArchiveTeam);
+    });
+  });
 });

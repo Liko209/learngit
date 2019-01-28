@@ -91,6 +91,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getTeamPermissionController()
       .isTeamAdmin(personId, permission);
   }
+
+  async archiveTeam(teamId: number) {
+    await this.getTeamController()
+      .getTeamActionController()
+      .archiveTeam(teamId);
+  }
 }
 
 export { GroupService };

@@ -25,6 +25,8 @@ interface IGroupService {
   updateTeamSetting(teamId: number, teamSetting: TeamSetting): Promise<void>;
 
   getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags;
+
+  archiveTeam(teamId: number): Promise<void>;
 }
 
 export { IGroupService };

@@ -135,6 +135,24 @@ class TeamActionController {
     );
   }
 
+  async archiveTeam(teamId: number) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          is_archived: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await buildRequestController<Group>({
+          basePath: '/team',
+          networkClient: Api.glipNetworkClient,
+        }).put(updateEntity);
+      },
+    );
+  }
+
   private async _requestUpdateTeamMembers(
     teamId: number,
     members: number[],
