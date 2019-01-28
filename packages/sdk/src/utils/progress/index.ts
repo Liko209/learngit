@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 interface IProgressEvent {
   loaded: number;
   total: number;
@@ -20,6 +21,7 @@ export default class ProgressBar {
   }
   start() {
     this._counter += 1;
+    NProgress.configure({ showSpinner: false });
     NProgress.start();
   }
 

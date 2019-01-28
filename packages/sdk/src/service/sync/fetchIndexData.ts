@@ -8,7 +8,7 @@ import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { progressBar } from '../../utils/progress';
-import { ApiResult } from '../../api/ApiResult';
+import { ApiResult, ApiResultErr } from '../../api/ApiResult';
 import { IndexDataModel } from '../../api/glip/user';
 import { JError } from '../../error';
 
@@ -16,15 +16,32 @@ interface IParams {
   newer_than?: string;
 }
 
-const fetchInitialData = async (currentTime: number) => {
-  progressBar.start();
-  let promise: Promise<ApiResult<IndexDataModel, JError>>;
+const requestConfig = {
+  onDownloadProgress(e: any) {
+    progressBar.update(e);
+  },
+};
+
+const handerGetData = async (
+  getDataFunction: () => Promise<ApiResult<IndexDataModel, JError>>,
+) => {
+  let result: ApiResult<IndexDataModel, JError>;
   try {
-    promise = initialData({ _: currentTime });
+    result = await getDataFunction();
+  } catch (e) {
+    if (e instanceof ApiResultErr) {
+      result = e;
+    }
+    throw e;
   } finally {
     progressBar.stop();
   }
-  return promise;
+  return result;
+};
+
+const fetchInitialData = async (currentTime: number) => {
+  progressBar.start();
+  return handerGetData(() => initialData({ _: currentTime }, requestConfig));
 };
 
 const fetchRemainingData = async (currentTime: number) => {
@@ -38,23 +55,7 @@ const fetchIndexData = async (timeStamp: string) => {
   const params: IParams = { newer_than: timeStamp };
 
   notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_EXIST);
-
-  const requestConfig = {
-    onDownloadProgress(e: any) {
-      progressBar.update(e);
-    },
-  };
-  let result: ApiResult<IndexDataModel, JError>;
-
-  try {
-    result = await indexData(params, requestConfig);
-  } catch (e) {
-    result = e;
-  } finally {
-    progressBar.stop();
-  }
-
-  return result;
+  return handerGetData(() => indexData(params, requestConfig));
 };
 
 export { fetchIndexData, fetchInitialData, fetchRemainingData };
