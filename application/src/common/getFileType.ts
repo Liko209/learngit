@@ -33,7 +33,7 @@ function getFileType(item: FileItemModel): ExtendFileItem {
 }
 
 function image(item: FileItemModel) {
-  const { thumbs, type, versionUrl } = item;
+  const { thumbs, type, versionUrl, name } = item;
   const image = {
     isImage: false,
     previewUrl: '',
@@ -52,13 +52,19 @@ function image(item: FileItemModel) {
   // In order to show image
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
+  let isImage = false;
   if (type) {
-    const isImage = ImageFileExtensions.has(type.toLocaleLowerCase());
-    if (type.includes('image/') || isImage) {
-      image.isImage = true;
-      image.previewUrl = versionUrl || '';
-      return image;
-    }
+    isImage =
+      type.includes('image/') ||
+      ImageFileExtensions.has(type.toLocaleLowerCase());
+  } else if (name) {
+    const extension = (name && name.split('.').pop()) || '';
+    isImage = ImageFileExtensions.has(extension.toLocaleLowerCase());
+  }
+  if (isImage) {
+    image.isImage = true;
+    image.previewUrl = versionUrl || '';
+    return image;
   }
   return image;
 }

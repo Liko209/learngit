@@ -4,22 +4,32 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getFileIcon } from '../getFileName';
-
-jest.mock('i18next', () => ({
-  t: (text: string) => text,
-}));
-
-const DAY = 24 * 3600 * 1000;
-const DATE_2019_1_4 = 1546564919703;
-const DATE_2019_1_3 = 1546564919703 - DAY;
-const DATE_2019_1_5 = 1546564919703 + DAY;
-const DATE_2019_1_5_12 = 1546617600000;
+import { ImageFileExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
 describe('Conversation sheet helpers', () => {
   it('getFileIcon()', () => {
-    const type = getFileIcon('xlsx');
+    let type = getFileIcon('xlsx');
     expect(type).toBe('excel');
     const type1 = getFileIcon('xxx');
     expect(type1).toBe('default_file');
+
+    type = getFileIcon('doc');
+    expect(type).toBe('doc');
+    type = getFileIcon('pptx');
+    expect(type).toBe('ppt');
+    type = getFileIcon('pdf');
+    expect(type).toBe('pdf');
+    type = getFileIcon('zip');
+    expect(type).toBe('zip');
+    type = getFileIcon('rar');
+    expect(type).toBe('zip');
+    type = getFileIcon('mp3');
+    expect(type).toBe('default_music');
+    type = getFileIcon('mov');
+    expect(type).toBe('default_video');
+    Array.from(ImageFileExtensions).forEach((ext: string) => {
+      type = getFileIcon(ext);
+      expect(type).toBe('image_preview');
+    });
   });
 });
