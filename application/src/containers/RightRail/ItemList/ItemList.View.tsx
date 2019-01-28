@@ -109,7 +109,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         )}
         {firstLoaded && !loadError && (
           <ReactResizeDetector handleWidth={true} handleHeight={true}>
-            {(width: number, height: number) => (
+            {(width: number = 0, height: number = HEADER_HEIGHT) => (
               <JuiVirtualList
                 dataSource={this}
                 threshold={1}

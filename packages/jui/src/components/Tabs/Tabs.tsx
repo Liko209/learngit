@@ -265,7 +265,7 @@ class JuiTabs extends PureComponent<Props, States> {
   private _renderMore = () => {
     const { tag, moreText } = this.props;
     return (
-      <JuiArrowTip title={moreText}>
+      <JuiArrowTip title={moreText} key={moreText}>
         {this._renderStyledTab({
           value: MORE,
           icon: <MoreHoriz />,
