@@ -8,23 +8,7 @@ import FileItemModel, {
   FileType,
 } from '@/store/models/FileItem';
 
-const IMAGE_TYPE = [
-  'gif',
-  'jpeg',
-  'png',
-  'jpg',
-  'bmp',
-  'tif',
-  'tiff',
-  'psd',
-  // Unable to parse the following suffix file,
-  // If this format is added, the file name will not be displayed.
-  // https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
-  // 'ps', // Only Safari support, Chrome and Firefox not support.
-  // 'ai', // Chrome and Firefox and Safari not support.
-  // 'heic', // Apple macOS Mojave dynamic wallpaper, Chrome and Firefox and Safari not support.
-  // 'giphy', // Chrome and Firefox and Safari not support.
-];
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -64,6 +48,7 @@ function image(item: FileItemModel) {
         image.previewUrl = thumbs[key];
       }
     }
+    return image;
   }
 
   // In order to show image
@@ -71,11 +56,9 @@ function image(item: FileItemModel) {
   // FIXME: FIJI-2565
   if (type) {
     const t = type.toLocaleLowerCase();
-    const isImage = IMAGE_TYPE.some(looper => t.includes(looper));
-    if (t.includes('image/') || isImage) {
+    if (FileItemUtils.isSupportPreview({ type }) || t.includes('image/')) {
       image.isImage = true;
       image.previewUrl = versionUrl || '';
-      return image;
     }
   }
   return image;
@@ -94,4 +77,4 @@ function documentType(item: FileItemModel) {
   return doc;
 }
 
-export { getFileType, image, documentType, IMAGE_TYPE };
+export { getFileType, image, documentType };

@@ -11,16 +11,22 @@ const SupportPreviewImageExtensions = new Set([
   'png',
   'jpeg',
   'bmp',
-  'tif',
-  'tiff',
-  'heic',
-  'giphy',
   'gif',
+  // 'giphy', // todo: Unrealized support preivew giphy
+  'tif', // use thumbs url
+  // Unable to parse the following suffix file.
+  // https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+  // 'tiff', // Only Safari support, Chrome and Firefox not support.
+  // 'ps', // Only Safari support, Chrome and Firefox not support.
+  // 'psd', // Only Safari support, Chrome and Firefox not support.
+  // 'ai', // Chrome and Firefox and Safari not support.
+  // 'heic', // Chrome and Firefox and Safari not support. Apple macOS Mojave dynamic wallpaper.
 ]);
 
 const ResizableExtensions = new Set(['bmp', 'jpg', 'jpeg', 'png']);
 
 const ImageFileExtensions = new Set([
+  'heic',
   'ase',
   'art',
   'bmp',

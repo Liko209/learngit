@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FileType } from '../../store/models/FileItem';
-import { getFileType, IMAGE_TYPE } from '../getFileType';
+import { getFileType } from '../getFileType';
+import { SupportPreviewImageExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
 const previewUrl = 'http://www.google.com';
 
@@ -24,14 +25,16 @@ describe('getFileType', () => {
     expect(extendFile.item).toEqual(fileItem);
   });
   it('should be image type when include target type', () => {
-    const _IMAGE_TYPE = IMAGE_TYPE.concat(
-      IMAGE_TYPE.map(type => type.toUpperCase()),
+    const IMAGE_TYPE = new Set(
+      [...SupportPreviewImageExtensions].map(type => type.toUpperCase()),
     );
-    _IMAGE_TYPE.forEach((type: string) => {
+    const arr = [...SupportPreviewImageExtensions, ...IMAGE_TYPE];
+    arr.forEach((type: string) => {
       const fileItem = {
         type,
         versionUrl: previewUrl,
       };
+      console.log(11111, type);
       const extendFile = getFileType(fileItem);
       expect(extendFile.type).toBe(FileType.image);
       expect(extendFile.previewUrl).toBe(previewUrl);
