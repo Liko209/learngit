@@ -54,4 +54,5 @@ export default class ProgressBar {
   }
 }
 
-export const progressBar = new ProgressBar();
+const progressBar = new ProgressBar();
+export { progressBar, IProgressEvent };
