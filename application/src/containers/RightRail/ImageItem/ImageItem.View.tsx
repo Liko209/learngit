@@ -20,15 +20,14 @@ import { SecondaryText } from '../common/SecondaryText.View';
 @observer
 class ImageItemView extends Component<ImageItemViewProps> {
   private _renderItem = (hover: boolean) => {
-    const { file, id, personName, createdTime, downloadUrl } = this.props;
-    const { name } = file;
+    const { fileName, id, personName, createdTime, downloadUrl } = this.props;
     return (
       <>
         <JuiListItemIcon>
           <Thumbnail id={id} type="image" />
         </JuiListItemIcon>
         <JuiListItemText
-          primary={<FileName filename={name} />}
+          primary={<FileName filename={fileName} />}
           secondary={
             <SecondaryText personName={personName} createdTime={createdTime} />}
         />
