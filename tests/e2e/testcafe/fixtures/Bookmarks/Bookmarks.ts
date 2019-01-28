@@ -10,26 +10,24 @@ fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-
 test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'Bookmarks']),
   async (t: TestController) => {
-    const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
+
     const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
+
     const otherUser = users[5];
+    await h(t).platform(otherUser).init();
 
-    const conversationPage = app.homePage.messageTab.conversationPage;
-    const teamsSection = app.homePage.messageTab.teamsSection;
-    const dmSection = app.homePage.messageTab.directMessagesSection;
-    const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-    const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+    const teamBookmarkMessage = `team bookmark message ${uuid()}`;
+    const privateChatBookmarkMessage = `private chat bookmark message ${uuid()}`;
 
-    let verifyTextTeam = uuid();
-    let verifyTextChat = uuid();
-
-    let teamId, pvChatId, bookmarksPostTeamId, bookmarksPostChatId;
-    await h(t).withLog('Given I have 1 Bookmarks post in team ,one in group', async () => {
-      await h(t).platform(loginUser).init();
+    let teamId: string, pvChatId: string, bookmarksPostTeamId: string, bookmarksPostChatId: string;
+    await h(t).withLog('Given I have an extension with one Bookmarks post in team and one in group', async () => {
+      // ensure have at least one team
       teamId = await h(t).platform(loginUser).createAndGetGroupId({
         isPublic: true,
         name: `Team ${uuid()}`,
@@ -37,83 +35,94 @@ test(formalName('Jump to post position when click button or clickable area of po
         members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
       });
 
-
+      // ensure have at least one private chat
       pvChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, otherUser.rcId],
       });
-      await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).resetProfile();
 
-
-      await h(t).platform(otherUser).init();
+      // using platform sdk to send posts to team and private chat
       bookmarksPostTeamId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextTeam,
+        teamBookmarkMessage,
         teamId,
       );
       bookmarksPostChatId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        verifyTextChat,
+        privateChatBookmarkMessage,
         pvChatId,
       );
-
     });
 
+    const app = new AppRoot(t);
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('And I enter the team conversation page', async () => {
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    const conversationPage = app.homePage.messageTab.conversationPage;
+    await h(t).withLog('And enter the team conversation', async () => {
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
       await conversationPage.waitUntilPostsBeLoaded();
     });
 
-    await h(t).withLog('And I bookmark the team post', async () => {
+    await h(t).withLog('And bookmark the post in the team', async () => {
       await conversationPage.postItemById(bookmarksPostTeamId).clickBookmarkToggle();
     });
 
-    await h(t).withLog('When I go to Bookmarks page', async () => {
+    const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+    const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+    await h(t).withLog('And go to Bookmarks page', async () => {
       await bookmarksEntry.enter();
       await bookmarkPage.waitUntilPostsBeLoaded();
     });
 
-    await h(t).withLog('And I click the Bookmarks post item then jump to pvTeam', async () => {
+    await h(t).withLog('Then I should find the bookmarked post', async () => {
+      await t.expect(bookmarkPage.postItemById(bookmarksPostTeamId).exists).ok();
+    }, true);
+
+    await h(t).withLog('When I click the bookmarked post item', async () => {
       await bookmarkPage.postItemById(bookmarksPostTeamId).clickConversationByButton();
     });
 
-    await h(t).withLog('Then I can see the Bookmarks post in the pvTeam', async () => {
+    await h(t).withLog('Then I should find the bookmarked post in the team', async () => {
       await conversationPage.waitUntilPostsBeLoaded();
       await t
-        .expect(conversationPage.postItemById(bookmarksPostTeamId).body.withText(verifyTextTeam).exists)
+        .expect(conversationPage.postItemById(bookmarksPostTeamId).body.withText(teamBookmarkMessage).exists)
         .ok({ timeout: 5e3 });
-    });
+    }, true);
 
-    await h(t).withLog('When I enter the team conversation page', async () => {
+    const dmSection = app.homePage.messageTab.directMessagesSection;
+    await h(t).withLog('When I enter the private chat conversation', async () => {
       await dmSection.expand();
       await dmSection.conversationEntryById(pvChatId).enter();
       await conversationPage.waitUntilPostsBeLoaded();
     });
 
-    await h(t).withLog('And I bookmark the DM post', async () => {
+    await h(t).withLog('And bookmark the post in the private chat', async () => {
       await conversationPage.postItemById(bookmarksPostChatId).clickBookmarkToggle();
     });
 
-    await h(t).withLog('When I back to Bookmarks page', async () => {
+    await h(t).withLog('And go back to Bookmarks page', async () => {
       await bookmarksEntry.enter();
     });
 
-    await h(t).withLog('And I click the Bookmarks post item then jump to pvChat', async () => {
+    await h(t).withLog('Then I should find the bookmarked post', async () => {
+      await t.expect(bookmarkPage.postItemById(bookmarksPostChatId).exists).ok();
+    }, true);
+
+    await h(t).withLog('When I click the bookmarked post item', async () => {
       await bookmarkPage.postItemById(bookmarksPostChatId).jumpToConversationByClickName();
     });
 
-    await h(t).withLog('Then I can see the Bookmarks post in the pvChat', async () => {
+    await h(t).withLog('Then I should find the bookmarked post in the private chat', async () => {
       await conversationPage.waitUntilPostsBeLoaded();
       await t
-        .expect(conversationPage.postItemById(bookmarksPostChatId).body.withText(verifyTextChat).exists)
+        .expect(conversationPage.postItemById(bookmarksPostChatId).body.withText(privateChatBookmarkMessage).exists)
         .ok({ timeout: 5e3 });
     });
   });
+
 
 test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JPT-311', 'zack']),
   async (t: TestController) => {
