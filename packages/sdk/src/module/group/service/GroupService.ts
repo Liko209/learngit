@@ -93,7 +93,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async deleteTeam(teamId: number): Promise<void> {
-    return this.getTeamController()
+    await this.getTeamController()
       .getTeamActionController()
       .deleteTeam(teamId);
   }
