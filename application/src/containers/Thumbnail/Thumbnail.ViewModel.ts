@@ -15,6 +15,11 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { getFileType } from '@/common/getFileType';
 import { Props, ViewProps } from './types';
 
+type Size = {
+  width: number;
+  height: number;
+};
+
 class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   static DEFAULT_WIDTH = 36;
   static DEFAULT_HEIGHT = 36;
@@ -24,7 +29,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   constructor(props: Props) {
     super(props);
     this.reaction(
-      () => ({ width: this._width, height: this._height, id: this._id }),
+      () => ({ size: this._size, id: this._id }),
       this._getThumbsUrlWithSize,
       {
         fireImmediately: true,
@@ -34,13 +39,30 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
-  private get _width() {
-    return this.props.width || ThumbnailViewModel.DEFAULT_WIDTH;
-  }
-
-  @computed
-  private get _height() {
-    return this.props.height || ThumbnailViewModel.DEFAULT_HEIGHT;
+  private get _size() {
+    const { origWidth, origHeight } = this.file;
+    const size: Size = {
+      width: ThumbnailViewModel.DEFAULT_WIDTH,
+      height: ThumbnailViewModel.DEFAULT_WIDTH,
+    };
+    if (origWidth && origHeight) {
+      if (origWidth > origHeight) {
+        size.width = Math.max(
+          Math.round(
+            (origWidth / origHeight) * ThumbnailViewModel.DEFAULT_WIDTH,
+          ),
+          ThumbnailViewModel.DEFAULT_WIDTH,
+        );
+      } else {
+        size.height = Math.max(
+          Math.round(
+            (origHeight / origWidth) * ThumbnailViewModel.DEFAULT_WIDTH,
+          ),
+          ThumbnailViewModel.DEFAULT_WIDTH,
+        );
+      }
+    }
+    return size;
   }
 
   @computed
@@ -54,12 +76,16 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   private _getThumbsUrlWithSize = async () => {
-    const itemService = ItemService.getInstance() as ItemService;
-    this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
-      this._id,
-      this._width,
-      this._height,
-    );
+    const { origWidth, origHeight } = this.file;
+    if (origWidth && origHeight) {
+      const { width, height } = this._size;
+      const itemService = ItemService.getInstance() as ItemService;
+      this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
+        this._id,
+        width,
+        height,
+      );
+    }
   }
 
   @computed

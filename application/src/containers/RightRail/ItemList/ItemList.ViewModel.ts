@@ -79,7 +79,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
-  @computed
   private get _typeId() {
     return RightRailItemTypeIdMap[this.type];
   }
