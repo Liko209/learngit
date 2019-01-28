@@ -36,7 +36,7 @@ type FileIconProps = {
 const FileItem = styled(MuiListItem)`
   && {
     margin: ${spacing(0, 0, 3, 0)};
-    padding: ${spacing(2)};
+    padding: ${spacing(4)};
     width: ${width(ITEM_WIDTH)};
     border-radius: ${shape('borderRadius', 1)};
     box-shadow: ${props => props.theme.shadows[1]};
@@ -45,7 +45,7 @@ const FileItem = styled(MuiListItem)`
 
 const FileIcon = styled<FileIconProps>(JuiIconography)`
   && {
-    font-size: ${({ size }) => (size === 'small' ? width(5) : width(14))};
+    font-size: ${({ size }) => (size === 'small' ? width(5) : width(9))};
     background-size: cover;
     margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
   }
@@ -55,16 +55,17 @@ const FileInfo = styled(MuiListItemText)`
   && {
     display: flex;
     flex-direction: column;
-    height: ${height(14)};
-    justify-content: space-between;
+    justify-content: center;
     padding: ${spacing(0, 0, 0, 3)};
     .file-item-primary {
+      ${typography('body1')};
       width: ${width(57)};
       color: ${palette('grey', '900')};
     }
     .file-item-secondary {
       display: flex;
       justify-content: space-between;
+      ${typography('caption1')};
       color: ${palette('accent', 'ash')};
     }
   }
@@ -99,15 +100,15 @@ const FileCardContent = styled(MuiCardContent)`
 
 const CardFileName = styled.div`
   && {
-    ${typography('subheading1')};
+    ${typography('body1')};
     color: ${palette('grey', '900')};
-    margin: ${spacing(0, 0, 2, 0)};
   }
 `;
 
 const CardFileInfo = styled(JuiTypography)`
   && {
-    ${typography('body1')};
+    ${typography('caption1')};
+    color: ${palette('grey', '500')};
     display: flex;
     justify-content: space-between;
   }
