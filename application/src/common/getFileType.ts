@@ -3,11 +3,13 @@
  * @Date: 2019-01-10 11:22:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { ImageFileExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
+
 import FileItemModel, {
   ExtendFileItem,
   FileType,
 } from '@/store/models/FileItem';
+
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -39,6 +41,26 @@ function image(item: FileItemModel) {
     previewUrl: '',
   };
 
+  // In order to show image
+  // If upload doc and image together, image will not has thumbs
+  // FIXME: FIJI-2565
+  let isImage = false;
+  if (type) {
+    const t = type.toLowerCase();
+    isImage = FileItemUtils.isSupportPreview({ type }) || t.includes('image/');
+  } else if (name) {
+    const extension = (name && name.split('.').pop()) || '';
+    isImage = FileItemUtils.isSupportPreview({
+      type: extension.toLocaleLowerCase(),
+    });
+  }
+  if (isImage) {
+    image.isImage = true;
+    image.previewUrl = versionUrl || '';
+    return image;
+  }
+
+  // The thumbnail will blur
   if (thumbs) {
     for (const key in thumbs) {
       const value = thumbs[key];
@@ -47,24 +69,6 @@ function image(item: FileItemModel) {
         image.previewUrl = thumbs[key];
       }
     }
-  }
-
-  // In order to show image
-  // If upload doc and image together, image will not has thumbs
-  // FIXME: FIJI-2565
-  let isImage = false;
-  if (type) {
-    isImage =
-      type.includes('image/') ||
-      ImageFileExtensions.has(type.toLocaleLowerCase());
-  } else if (name) {
-    const extension = (name && name.split('.').pop()) || '';
-    isImage = ImageFileExtensions.has(extension.toLocaleLowerCase());
-  }
-  if (isImage) {
-    image.isImage = true;
-    image.previewUrl = versionUrl || '';
-    return image;
   }
   return image;
 }

@@ -23,12 +23,12 @@ class FileActionController {
         break;
       }
 
-      if (!FileItemUtils.isSupportPreview(file)) {
+      if (FileItemUtils.isFromGiphy(file)) {
+        url = this._replaceHostWithProxy(FileItemUtils.getDownloadUrl(file));
         break;
       }
 
-      if (FileItemUtils.isFromGiphy(file)) {
-        url = this._replaceHostWithProxy(FileItemUtils.getDownloadUrl(file));
+      if (!FileItemUtils.isSupportPreview(file)) {
         break;
       }
 

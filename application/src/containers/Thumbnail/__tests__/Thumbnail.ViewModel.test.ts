@@ -77,5 +77,40 @@ describe('ThumbnailViewModel', () => {
         icon: '',
       });
     });
+
+    it('should get size by origWidth > origHeight', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        type: 'png',
+        origWidth: 400,
+        origHeight: 70,
+      });
+
+      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
+
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+
+      expect(itemService.getThumbsUrlWithSize).toHaveBeenCalledWith(
+        123,
+        thumbnailViewModel._size.width,
+        thumbnailViewModel._size.height,
+      );
+    });
+    it('should get size by origWidth < origHeight', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        type: 'png',
+        origWidth: 70,
+        origHeight: 400,
+      });
+
+      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
+
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+
+      expect(itemService.getThumbsUrlWithSize).toHaveBeenCalledWith(
+        123,
+        thumbnailViewModel._size.width,
+        thumbnailViewModel._size.height,
+      );
+    });
   });
 });

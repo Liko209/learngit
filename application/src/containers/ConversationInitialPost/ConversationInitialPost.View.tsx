@@ -14,11 +14,12 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
+import { MiniCard } from '../MiniCard';
 
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
@@ -27,15 +28,21 @@ class ConversationInitialPost extends React.Component<
     super(props);
   }
 
+  showProfile = (event: React.MouseEvent) => {
+    const { creator } = this.props;
+    const target = event.target as HTMLElement;
+    event.stopPropagation();
+    MiniCard.showProfile({
+      id: creator.id,
+      anchor: target,
+    });
+  }
+
   private get _name() {
-    const { creator, creatorGroupId } = this.props;
+    const { creator } = this.props;
 
     return (
-      <JuiLink
-        Component={props => (
-          <Link to={`/messages/${creatorGroupId}`} {...props} />
-        )}
-      >
+      <JuiLink handleOnClick={this.showProfile}>
         {creator.userDisplayName}
       </JuiLink>
     );
