@@ -11,7 +11,7 @@ fixture('Bookmarks/Bookmarks')
   .afterEach(teardownCase());
 
 
-test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack']),
+test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'Bookmarks']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -115,7 +115,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
   });
 
-  test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JPT-311', 'zack']),
+test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JPT-311', 'zack']),
   async (t: TestController) => {
 
     const app = new AppRoot(t);
@@ -199,7 +199,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[7];
-    const otherUser =users[5];
+    const otherUser = users[5];
     await h(t).resetGlipAccount(loginUser);
     await h(t).glip(loginUser).init();
 
@@ -362,81 +362,81 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   });
 });
 
-test(formalName('Bookmark/Remove Bookmark a message in a conversation',['P2','JPT-330','JPT-326','zack']),
-  async (t: TestController)=>{
-  const app =new AppRoot(t);
-  const users =h(t).rcData.mainCompany.users;
-  const user = users[7];
-  const otherUser= users[5];
-  await h(t).resetGlipAccount(user);
-  await h(t).platform(user).init();
-  await h(t).glip(user).init();
-  await h(t).platform(otherUser).init()
+test(formalName('Bookmark/Remove Bookmark a message in a conversation', ['P2', 'JPT-330', 'JPT-326', 'zack']),
+  async (t: TestController) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const user = users[7];
+    const otherUser = users[5];
+    await h(t).resetGlipAccount(user);
+    await h(t).platform(user).init();
+    await h(t).glip(user).init();
+    await h(t).platform(otherUser).init()
 
 
-  const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-  const conversationPage =app.homePage.messageTab.conversationPage;
-  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-  const dmSection = app.homePage.messageTab.directMessagesSection;
-  user.sdk = await h(t).getSdk(user);
+    const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+    const conversationPage = app.homePage.messageTab.conversationPage;
+    const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+    const dmSection = app.homePage.messageTab.directMessagesSection;
+    user.sdk = await h(t).getSdk(user);
 
-  let group;
-  await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
-    group = await h(t).platform(user).createGroup({
-      type: 'Group', members: [user.rcId, users[5].rcId],
+    let group;
+    await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
+      group = await h(t).platform(user).createGroup({
+        type: 'Group', members: [user.rcId, users[5].rcId],
+      });
     });
-  });
 
-  let bookmarkPost;
-  await h(t).withLog('And I have a post', async () => {
-    bookmarkPost = await h(t).platform(otherUser).sendTextPost(
-      `Hi I'm Bookmarks, (${user.rcId})`,
-      group.data.id,
-    );
-  }, true);
+    let bookmarkPost;
+    await h(t).withLog('And I have a post', async () => {
+      bookmarkPost = await h(t).platform(otherUser).sendTextPost(
+        `Hi I'm Bookmarks, (${user.rcId})`,
+        group.data.id,
+      );
+    }, true);
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
-    await app.homePage.ensureLoaded();
-  });
+    await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, user);
+      await app.homePage.ensureLoaded();
+    });
 
-  await h(t).withLog(`And I jump to the specific conversation`, async () => {
-    await dmSection.expand();
-    await dmSection.conversationEntryById(group.data.id).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
-  });
+    await h(t).withLog(`And I jump to the specific conversation`, async () => {
+      await dmSection.expand();
+      await dmSection.conversationEntryById(group.data.id).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    });
 
-  await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
-    await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
-    await t.expect(conversationPage.postItemById(bookmarkPost.data.id).bookmarkIcon.exists).ok();
-  });
+    await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
+      await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+      await t.expect(conversationPage.postItemById(bookmarkPost.data.id).bookmarkIcon.exists).ok();
+    });
 
-  await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
-    await bookmarksEntry.enter();
-    await bookmarkPage.waitUntilPostsBeLoaded();
-    await t.expect(bookmarkPage.posts.count).eql(1);
-  }, true);
+    await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
+      await bookmarksEntry.enter();
+      await bookmarkPage.waitUntilPostsBeLoaded();
+      await t.expect(bookmarkPage.posts.count).eql(1);
+    }, true);
 
-  await h(t).withLog('When I click the post and jump to the conversation', async () => {
-    await bookmarkPage.postItemById(bookmarkPost.data.id).jumpToConversationByClickPost();
-  });
+    await h(t).withLog('When I click the post and jump to the conversation', async () => {
+      await bookmarkPage.postItemById(bookmarkPost.data.id).jumpToConversationByClickPost();
+    });
 
-  await h(t).withLog('And I cancel the bookmark in the post then make sure bookmark icon is correct', async () => {
-    await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
-    await t.expect(conversationPage.postItemById(bookmarkPost.data.id).unBookmarkIcon.exists).ok();
-  });
+    await h(t).withLog('And I cancel the bookmark in the post then make sure bookmark icon is correct', async () => {
+      await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+      await t.expect(conversationPage.postItemById(bookmarkPost.data.id).unBookmarkIcon.exists).ok();
+    });
 
-  await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
-    await bookmarksEntry.enter();
-    await t.expect(bookmarkPage.posts.count).eql(0);
-  }, true);
-})
+    await h(t).withLog('Then I enter Bookmark page and the bookmark post has been removed', async () => {
+      await bookmarksEntry.enter();
+      await t.expect(bookmarkPage.posts.count).eql(0);
+    }, true);
+  })
 
 
-test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page', ['P2', 'JPT-733', 'Mia.Cai','Bookmarks']), async (t: TestController) => {
+test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page', ['P2', 'JPT-733', 'Mia.Cai', 'Bookmarks']), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[4];
+  const user = users[4];
   const otherUser = users[5];
   await h(t).platform(user).init();
   await h(t).platform(otherUser).init();
@@ -468,7 +468,7 @@ test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page
   });
 
   await h(t).withLog('Then I can\'t find the posts in the bookmarks page', async () => {
-    await t.expect(bookmarkPage.postItemById(newPostId).exists).notOk({timeout: 10e3});
+    await t.expect(bookmarkPage.postItemById(newPostId).exists).notOk({ timeout: 10e3 });
   }, true);
 
-},);
+});

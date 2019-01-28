@@ -322,7 +322,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
 });
 
 
-test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack']),
+test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
