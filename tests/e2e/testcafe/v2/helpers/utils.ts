@@ -31,6 +31,11 @@ export class H {
     });
   }
 
+  static escapePostText(origin: string) {
+    // ref: https://en.wikipedia.org/wiki/Non-breaking_space
+    return origin.replace(/ /g, '\u00A0').replace(/$/, '\n');
+  }
+
   static async retryUntilPass(cb: () => Promise<any>, maxRetryTime = 10, retryInterval = 5e2) {
     let i = 0;
     while (true) {
