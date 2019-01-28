@@ -118,11 +118,12 @@ class BaseConversationPage extends BaseWebComponent {
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     try {
       // spinning circle is expected to appear within 1 seconds if content doesn't loaded
-      this.t.expect(this.loadingCircle.exists).ok({ timeout: 2e3 });
+      await H.retryUntilPass(async () => assert(await this.loadingCircle.exists), 2, 1e3)
     } catch (e) {
       // it's ok that spinning circle doesn't appear if the content has already been loaded
-    } finally {
-      // we sho
+    }
+    finally {
+      // wait until spinning circle disappear
       await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
     }
   }
