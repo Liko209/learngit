@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed } from 'mobx';
+import { computed } from 'mobx';
 import { GroupService } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
@@ -19,7 +19,6 @@ import history from '@/history';
 class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
-  private _prevGroupId: number;
 
   constructor(props: ConversationPageProps) {
     super(props);
