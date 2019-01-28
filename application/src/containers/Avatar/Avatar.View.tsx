@@ -6,6 +6,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { JuiAvatar } from 'jui/components/Avatar';
+// import { PreloadImg } from '@/containers/common';
 import { AvatarViewProps } from './types';
 
 @observer

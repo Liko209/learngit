@@ -22,8 +22,6 @@ const WrappedListItemSecondarySpan = ({
 
 const StyledListItemSecondarySpan = styled(WrappedListItemSecondarySpan)`
   && {
-    display: flex;
-    align-items: center;
     ${({ isEllipsis }: { isEllipsis: boolean }) => isEllipsis && ellipsis()};
   }
 `;
