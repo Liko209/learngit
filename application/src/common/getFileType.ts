@@ -40,17 +40,6 @@ function image(item: FileItemModel) {
     previewUrl: '',
   };
 
-  if (thumbs) {
-    for (const key in thumbs) {
-      const value = thumbs[key];
-      if (typeof value === 'string' && value.indexOf('http') > -1) {
-        image.isImage = true;
-        image.previewUrl = thumbs[key];
-      }
-    }
-    return image;
-  }
-
   // In order to show image
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
@@ -59,6 +48,18 @@ function image(item: FileItemModel) {
     if (FileItemUtils.isSupportPreview({ type }) || t.includes('image/')) {
       image.isImage = true;
       image.previewUrl = versionUrl || '';
+      return image;
+    }
+  }
+
+  // The thumbnail will blur
+  if (thumbs) {
+    for (const key in thumbs) {
+      const value = thumbs[key];
+      if (typeof value === 'string' && value.indexOf('http') > -1) {
+        image.isImage = true;
+        image.previewUrl = thumbs[key];
+      }
     }
   }
   return image;
