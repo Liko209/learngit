@@ -7,7 +7,7 @@ class MessageUmiViewModel extends StoreViewModel<MessageUmiProps>
   implements MessageUmiViewProps {
   @computed
   get groupIds() {
-    return SectionGroupHandler.getInstance().getAllGroupIds();
+    return SectionGroupHandler.getInstance().groupIds;
   }
 }
 

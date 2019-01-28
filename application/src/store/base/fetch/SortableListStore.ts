@@ -3,6 +3,7 @@
  * @Date: 2018-10-07 00:11:41
  * Copyright © RingCentral. All rights reserved.
  */
+import { computed, action } from 'mobx';
 import { ListStore } from './ListStore';
 import { ISortableModel, ISortFunc } from './types';
 import _ from 'lodash';
@@ -20,30 +21,39 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
     this._sortFunc = sortFunc;
   }
 
+  @action
   upsert(idArray: ISortableModel<T>[]) {
-    const unionAndSortIds = _.unionBy(idArray, this.items, 'id').sort(
-      this._sortFunc,
-    );
-    this.replaceAll(unionAndSortIds);
+    if (idArray.length) {
+      const unionAndSortIds = _.unionBy(idArray, this.items, 'id').sort(
+        this._sortFunc,
+      );
+      this.replaceAll(unionAndSortIds);
+    }
   }
 
+  @action
   removeByIds(ids: number[]) {
     if (!ids.length) {
       return;
     }
     ids.forEach((id: number) => {
-      _.remove(this.items, { id });
+      const index = this.findIndexById(id);
+      if (index > -1) {
+        this.removeAt(index);
+      }
     });
-    this._atom.reportChanged();
   }
 
-  getIds() {
-    this._atom.reportObserved();
+  findIndexById(id: number) {
+    return this._items.findIndex(item => item.id === id);
+  }
+
+  @computed
+  get getIds() {
     return _.map(this.items, 'id');
   }
 
   getById(id: number) {
-    this._atom.reportObserved();
     return _.find(this.items, { id });
   }
 }

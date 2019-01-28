@@ -37,6 +37,7 @@ type Props = {
   tag?: string; // If there is a tag props, save it locally
   defaultActiveIndex: number;
   children: JSX.Element[];
+  onChangeTab?: (index: number) => void;
   moreText: string; // more tab support i18N
 };
 
@@ -89,6 +90,8 @@ class JuiTabs extends PureComponent<Props, States> {
     if (indexSelected > Children.count(props.children) - 1) {
       indexSelected = 0;
     }
+    const { onChangeTab } = props;
+    onChangeTab && onChangeTab(indexSelected);
     this.state = {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],
@@ -204,7 +207,7 @@ class JuiTabs extends PureComponent<Props, States> {
 
   private _setSelectedTabIndex = (indexSelected: number) => {
     let { indexLazyLoadComponents } = this.state;
-    const { tag } = this.props;
+    const { tag, onChangeTab } = this.props;
     if (!indexLazyLoadComponents.includes(indexSelected)) {
       indexLazyLoadComponents = indexLazyLoadComponents.concat(indexSelected);
     }
@@ -212,6 +215,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (tag) {
       this._setLocalSelectedIndex(indexSelected);
     }
+    onChangeTab && onChangeTab(indexSelected);
   }
 
   private _getLocalKey = () => {

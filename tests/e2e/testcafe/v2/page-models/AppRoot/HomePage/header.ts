@@ -196,6 +196,10 @@ export class joinTeamDialog extends BaseWebComponent {
     return this.getSelector('h2', this.self).withText('Join team?')
   }
 
+  get exists () {
+    return this.title.exists;
+  }
+  
   get content() {
     return this.self.find('p').withText("You are not currently a member of the");
   }

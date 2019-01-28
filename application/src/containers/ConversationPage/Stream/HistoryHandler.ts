@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import GroupStateModel from '@/store/models/GroupState';
 
 class HistoryHandler {
@@ -17,11 +17,13 @@ class HistoryHandler {
   /**
    * The latest post when `update()` was called.
    */
+  @observable
   latestPostId: number | null = null;
 
   /**
    * Remember the current groupState and latestPostId
    */
+  @action
   update(groupState: GroupStateModel, postIds: number[]) {
     this.groupState = _.cloneDeep(groupState);
     this.latestPostId = _.last(postIds) || null;

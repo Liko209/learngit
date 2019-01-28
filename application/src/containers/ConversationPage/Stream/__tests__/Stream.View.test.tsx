@@ -48,16 +48,19 @@ const baseProps = {
 
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
+  historyUnreadCount,
   firstHistoryUnreadInPage,
   firstHistoryUnreadPostViewed,
 }: {
   hasHistoryUnread: boolean;
+  historyUnreadCount: number;
   firstHistoryUnreadInPage: boolean;
   firstHistoryUnreadPostViewed: boolean;
 }) {
   const props = {
     ...baseProps,
     hasHistoryUnread,
+    historyUnreadCount,
     firstHistoryUnreadInPage,
   };
 
@@ -120,6 +123,7 @@ describe('StreamView', () => {
       it('should not render jumpToFirstUnreadButton', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: false,
+          historyUnreadCount: 0,
           firstHistoryUnreadInPage: false,
           firstHistoryUnreadPostViewed: false,
         });
@@ -133,6 +137,7 @@ describe('StreamView', () => {
       it('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
+          historyUnreadCount: 3,
           firstHistoryUnreadInPage: true,
           firstHistoryUnreadPostViewed: true,
         });
@@ -143,6 +148,7 @@ describe('StreamView', () => {
       it('should render jumpToFirstUnreadButton when first history unread in current page but was not viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
+          historyUnreadCount: 3,
           firstHistoryUnreadInPage: true,
           firstHistoryUnreadPostViewed: false,
         });
@@ -150,9 +156,20 @@ describe('StreamView', () => {
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
       });
 
+      it('should not render jumpToFirstUnreadButton when unread count not greater than 1', () => {
+        const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
+          hasHistoryUnread: true,
+          historyUnreadCount: 1,
+          firstHistoryUnreadInPage: false,
+          firstHistoryUnreadPostViewed: false,
+        });
+        expect(hasJumpToFirstUnreadButton).toBeFalsy();
+      });
+
       it('should render jumpToFirstUnreadButton when first history unread not in current page', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
+          historyUnreadCount: 3,
           firstHistoryUnreadInPage: false,
           firstHistoryUnreadPostViewed: false,
         });
