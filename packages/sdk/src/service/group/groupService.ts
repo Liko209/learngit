@@ -912,6 +912,20 @@ class GroupService extends BaseService<Group> {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     groupConfigDao.bulkUpdate(data);
   }
+
+  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const isHidden = await profileService.isConversationHidden(groupId);
+    let isIncludeSelf = false;
+    let isValid = false;
+    const group = await this.getById(groupId);
+    if (group) {
+      isValid = this.isValid(group);
+      const currentUserId = UserConfig.getCurrentUserId();
+      isIncludeSelf = group.members.includes(currentUserId);
+    }
+    return !isHidden && isValid && isIncludeSelf;
+  }
 }
 
 export { CreateTeamOptions, GroupService };

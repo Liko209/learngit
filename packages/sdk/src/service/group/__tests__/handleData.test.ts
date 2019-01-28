@@ -22,6 +22,7 @@ import handleData, {
   getUniqMostRecentPostsByGroup,
   handleHiddenGroupsChanged,
   saveDataAndDoNotification,
+  calculateDeltaData,
 } from '../handleData';
 
 jest.mock('../../../service/person');
@@ -595,6 +596,41 @@ describe('saveDataAndDoNotification()', () => {
       const groups = [];
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('calculateDeltaData()', () => {
+    it('should return correct data when include removes', async () => {
+      daoManager.getDao(GroupDao).get.mockReturnValue({
+        members: [123, 456, 789],
+      });
+      const deltaGroup = {
+        _id: 122222,
+        _delta: {
+          remove: {
+            members: [456],
+          },
+        },
+      } as Raw<Group>;
+      expect(await calculateDeltaData(deltaGroup)).toEqual({
+        members: [123, 789],
+      });
+    });
+    it('should return correct data when include adds', async () => {
+      daoManager.getDao(GroupDao).get.mockReturnValue({
+        members: [123, 456, 789],
+      });
+      const deltaGroup = {
+        _id: 122222,
+        _delta: {
+          add: {
+            members: [456, 111222],
+          },
+        },
+      } as Raw<Group>;
+      expect(await calculateDeltaData(deltaGroup)).toEqual({
+        members: [123, 456, 789, 111222],
+      });
     });
   });
 });

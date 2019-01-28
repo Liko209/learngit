@@ -75,7 +75,7 @@ async function calculateDeltaData(
     if (remove) {
       for (const key in remove) {
         if (remove.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
-          result[key] = _.drop(originData[key], remove[key]);
+          result[key] = _.difference(originData[key], remove[key]);
         } else {
           // No a regular delta message if the remove field is not existed,
           // Force end the calculation and return
@@ -474,4 +474,5 @@ export {
   handlePartialData,
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
+  calculateDeltaData,
 };
