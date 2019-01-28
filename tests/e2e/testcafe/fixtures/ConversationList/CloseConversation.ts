@@ -442,7 +442,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
     await app.homePage.ensureLoaded();
   });
 
-  
+
     await h(t).withLog('And other user send post to each conversation', async () => {
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId2).enter();
@@ -571,7 +571,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
 
     await h(t).withLog(`When I open the direct messages conversation`, async () => {
       await privateChat.enter();
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
@@ -580,7 +580,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
 
     await h(t).withLog(`When I open the team conversation`, async () => {
       await teamChat.enter();
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('Then history posts can be displayed in order in conversations stream', async () => {

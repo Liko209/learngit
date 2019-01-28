@@ -47,7 +47,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userA open T1, and hover M1 card`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await t.hover(postCard.self)
   });
@@ -71,7 +71,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userA click "unlike" button`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeOnActionBar();
   });
@@ -85,7 +85,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userB view the message M1 card`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   });
 
@@ -99,7 +99,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userA click 'like' icon on action bar`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeOnActionBar();
   });
@@ -117,7 +117,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userB view the message M1 card`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   });
 
@@ -128,7 +128,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userA click "unlike" button`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeOnActionBar();
   });
@@ -143,7 +143,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userB view the message M1 card`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   });
 
@@ -157,7 +157,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userA click 'like' icon on footer`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeButtonOnFooter();
   });
@@ -172,7 +172,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`When userB view the message M1 card`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   });
 
@@ -239,7 +239,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userA hover M1`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   })
 
@@ -262,7 +262,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   })
 
@@ -274,7 +274,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userA click the solid "like" icon`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeOnActionBar();
   });
@@ -288,7 +288,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   })
 
@@ -301,7 +301,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userA click "unlike" icon on M1 footer`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeButtonOnFooter();
   })
@@ -315,7 +315,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   })
 
@@ -327,7 +327,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userA click the solid "like" icon on footer`, async () => {
     await t.useRole(roleA);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
     await postCard.clickLikeButtonOnFooter();
   });
@@ -341,7 +341,7 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
   await h(t).withLog(`When userB check the M1`, async () => {
     await t.useRole(roleB);
     await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await postCard.ensureLoaded();
   })
 

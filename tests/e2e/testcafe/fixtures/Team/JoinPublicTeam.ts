@@ -311,7 +311,7 @@ test(formalName(`The user should see go to conversation icon instead of the join
   const post = conversationPage.postItemById(teamMentionPostId);
   await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await t.click(post.mentions);
   });
 
@@ -388,7 +388,7 @@ test(formalName(`Will show confirmation dialog when joining the public team from
   const post = conversationPage.postItemById(teamMentionPostId);
   await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
     await t.click(post.mentions);
   });
 

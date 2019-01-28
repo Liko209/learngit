@@ -120,7 +120,7 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelector('div[role="progressbar"]', this.self);
   }
 
-  async waitUntilPostsBeLoaded(timeout = 20e3) {
+  async waitForPostsToBeLoaded(timeout = 20e3) {
     try {
       // spinning circle is expected to appear within 1 seconds if content doesn't loaded
       await H.retryUntilPass(async () => assert(await this.spinner.exists), 2, 1e3)

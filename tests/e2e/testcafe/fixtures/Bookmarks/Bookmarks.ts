@@ -63,7 +63,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     await h(t).withLog('And enter the team conversation', async () => {
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('And bookmark the post in the team', async () => {
@@ -74,7 +74,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     const bookmarkPage = app.homePage.messageTab.bookmarkPage;
     await h(t).withLog('And go to Bookmarks page', async () => {
       await bookmarksEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
+      await bookmarkPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('Then I should find the bookmarked post', async () => {
@@ -86,7 +86,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I should find the bookmarked post in the team', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
       await t
         .expect(conversationPage.postItemById(bookmarksPostTeamId).body.withText(teamBookmarkMessage).exists)
         .ok({ timeout: 5e3 });
@@ -96,7 +96,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     await h(t).withLog('When I enter the private chat conversation', async () => {
       await dmSection.expand();
       await dmSection.conversationEntryById(pvChatId).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('And bookmark the post in the private chat', async () => {
@@ -116,7 +116,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I should find the bookmarked post in the private chat', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
       await t
         .expect(conversationPage.postItemById(bookmarksPostChatId).body.withText(privateChatBookmarkMessage).exists)
         .ok({ timeout: 5e3 });
@@ -182,7 +182,7 @@ test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JP
 
     await h(t).withLog('When I go to Bookmarks page', async () => {
       await bookmarksEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
+      await bookmarkPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('And I have 2 post in bookmark page', async () => {
@@ -192,13 +192,13 @@ test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JP
     await h(t).withLog('When I bookmark 3th post in conversation', async () => {
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
       await conversationPage.postItemById(bookmarksPostTeamId3).clickBookmarkToggle();
     });
 
     await h(t).withLog('And I have 3 post in bookmark page', async () => {
       await bookmarksEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
+      await bookmarkPage.waitForPostsToBeLoaded();
       await t.expect(bookmarkPage.posts.count).eql(3);
     });
   })
@@ -251,7 +251,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
       await bookmarksEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
+      await bookmarkPage.waitForPostsToBeLoaded();
       await t.expect(bookmarkPage.posts.count).eql(1);
     }, true);
 
@@ -277,7 +277,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then I nagivate away from conversation and refresh browser', async () => {
       await bookmarksEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
+      await bookmarkPage.waitForPostsToBeLoaded();
       await h(t).reload();
       await app.homePage.ensureLoaded();
     });
@@ -342,7 +342,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
 
   await h(t).withLog('When I enter Bookmark page and find the Bookmark posts', async () => {
     await bookmarksEntry.enter();
-    await bookmarkPage.waitUntilPostsBeLoaded();
+    await bookmarkPage.waitForPostsToBeLoaded();
     await dmSection.headerUmi.shouldBeNumber(0);
   });
 
@@ -412,7 +412,7 @@ test(formalName('Bookmark/Remove Bookmark a message in a conversation', ['P2', '
     await h(t).withLog(`And I jump to the specific conversation`, async () => {
       await dmSection.expand();
       await dmSection.conversationEntryById(group.data.id).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
@@ -422,7 +422,7 @@ test(formalName('Bookmark/Remove Bookmark a message in a conversation', ['P2', '
 
     await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
       await bookmarksEntry.enter();
-      await bookmarkPage.waitUntilPostsBeLoaded();
+      await bookmarkPage.waitForPostsToBeLoaded();
       await t.expect(bookmarkPage.posts.count).eql(1);
     }, true);
 
@@ -468,7 +468,7 @@ test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page
 
   await h(t).withLog('And I open bookmarks page', async () => {
     await bookmarksEntry.enter();
-    await bookmarkPage.waitUntilPostsBeLoaded();
+    await bookmarkPage.waitForPostsToBeLoaded();
   });
 
   let message = uuid(), newPostId;

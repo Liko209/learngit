@@ -58,7 +58,7 @@ test(formalName('The post is sent successfully when sending a post with uploaded
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('And open the created team conversation', async () => {
     await teamsSection.conversationEntryById(teamId).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.waitForPostsToBeLoaded();
   });
 
   const files = ['../../sources/1.txt', '../../sources/3.txt'];
