@@ -24,7 +24,7 @@ import {
 } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType } from './types';
+import { StreamProps } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -76,14 +76,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get items() {
-    let startIndex = 0;
-    const items = this._streamController.items;
-    const firstItem = _.first(items);
-    const isFirstItemPost = firstItem && firstItem.type === StreamItemType.POST;
-    if (!isFirstItemPost) {
-      startIndex = 1;
-    }
-    return items.slice(startIndex);
+    return this._streamController.items;
   }
 
   @computed

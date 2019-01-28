@@ -7,7 +7,7 @@ import { OrdinaryPostWrapper } from './StreamItemAssemblyLine/Assembler/Ordinary
 import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
-import { StreamItem, TDeltaWithData } from './types';
+import { StreamItem, TDeltaWithData, StreamItemType } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { Post } from 'sdk/module/post/entity';
@@ -91,7 +91,17 @@ export class StreamController {
   @computed
   get items() {
     const items = this._streamListHandler.sortableListStore.items;
+    let startIndex = 0;
+    const firstItem = _.first(items);
+    const isFirstItemPost =
+      firstItem &&
+      firstItem.data &&
+      firstItem.data.type === StreamItemType.POST;
+    if (!isFirstItemPost) {
+      startIndex = 1;
+    }
     return _(items)
+      .slice(startIndex)
       .map('data')
       .compact()
       .value();
@@ -108,11 +118,15 @@ export class StreamController {
 
   @action
   handlePostsChanged = (delta: TDeltaWithData) => {
+    const items = _(this._streamListHandler.listStore.items)
+      .map('data')
+      .compact()
+      .value();
     const { streamItems } = this._assemblyLine.process(
       delta,
       this._orderListHandler.listStore.items,
       this.hasMoreUp,
-      this.items,
+      items,
       this._readThrough,
     );
     if (streamItems) {
