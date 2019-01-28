@@ -586,15 +586,13 @@ describe('handleHiddenGroupsChanged', () => {
 
 describe('saveDataAndDoNotification()', () => {
   describe('doNotification()', () => {
-    it('should not call notificationCenter.emit when normal group is empty', async () => {
-      const groups = generateFakeGroups(1, { members: [3, 4] });
-      UserConfig.getCurrentUserId.mockReturnValue(4);
+    it('should call notificationCenter.emit when group is not empty', async () => {
+      const groups = generateFakeGroups(1);
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
-
-    it('should call notificationCenter.emit when normal group is not empty', async () => {
-      const groups = generateFakeGroups(1);
+    it('should not call notificationCenter.emit when group is empty', async () => {
+      const groups = [];
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
     });

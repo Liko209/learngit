@@ -72,11 +72,6 @@ type CreateTeamOptions = {
   canPin?: boolean;
 };
 
-const handleTeamsRemovedFrom = async (ids: number[]) => {
-  const service: GroupService = GroupService.getInstance();
-  service.removeTeamsByIds(ids, true);
-};
-
 const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
   const service: GroupService = GroupService.getInstance();
   service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
@@ -91,7 +86,6 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
-      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
       [SERVICE.POST_SERVICE
         .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
     };
