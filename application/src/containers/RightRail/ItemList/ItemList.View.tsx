@@ -22,14 +22,25 @@ import {
   JuiRightRailLoadingMore,
   JuiRightRailContentLoadError,
 } from 'jui/pattern/RightShelf';
+import { debounce } from 'lodash';
+const LOAD_DELAY = 300;
 import ReactResizeDetector from 'react-resize-detector';
 
 const HEADER_HEIGHT = 36;
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
-  async componentDidMount() {
-    await this.loadMore(0, 0);
+  private _loadData: Function;
+  constructor(props: ViewProps & Props) {
+    super(props);
+    this._loadData = debounce(async () => {
+      const { loadStatus, ids, totalCount } = this.props;
+      const { firstLoaded, loading } = loadStatus;
+      if ((firstLoaded && ids.length === totalCount) || loading) {
+        return;
+      }
+      await this.props.fetchNextPageItems();
+    },                        LOAD_DELAY);
   }
 
   countOfCell() {
@@ -70,12 +81,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    const { loadStatus, ids, totalCount } = this.props;
-    const { firstLoaded } = loadStatus;
-    if (firstLoaded && ids.length === totalCount) {
-      return;
-    }
-    await this.props.fetchNextPageItems();
+    await this._loadData();
   }
 
   firstLoader = () => {
@@ -103,7 +109,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         )}
         {firstLoaded && !loadError && (
           <ReactResizeDetector handleWidth={true} handleHeight={true}>
-            {(width: number, height: number) => (
+            {(width: number = 0, height: number = HEADER_HEIGHT) => (
               <JuiVirtualList
                 dataSource={this}
                 threshold={1}
