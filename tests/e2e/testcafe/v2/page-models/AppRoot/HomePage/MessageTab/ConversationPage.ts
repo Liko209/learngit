@@ -10,6 +10,11 @@ import * as assert from 'assert';
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../../helpers';
 
+import { getLogger } from 'log4js';
+
+const logger = getLogger(__filename);
+logger.level = 'info';
+
 class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
@@ -75,7 +80,7 @@ class BaseConversationPage extends BaseWebComponent {
   get favoriteStatusIcon() {
     return this.getSelectorByIcon("star", this.favoriteButton);
   }
-  
+
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
@@ -111,8 +116,15 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
-    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
-    return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    try {
+      // spinning circle is expected to appear within 1 seconds if content doesn't loaded
+      this.t.expect(this.loadingCircle.exists).ok({ timeout: 2e3 });
+    } catch (e) {
+      // it's ok that spinning circle doesn't appear if the content has already been loaded
+    } finally {
+      // we sho
+      await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    }
   }
 
   // todo: find a more reliable method
@@ -186,7 +198,7 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async shouldFocusOnMessageInputArea() {
-    await this.t.expect(this.messageInputArea.focused).ok({timeout: 5e3});
+    await this.t.expect(this.messageInputArea.focused).ok({ timeout: 5e3 });
   }
 
   async sendMessage(message: string, options?: TypeActionOptions) {
