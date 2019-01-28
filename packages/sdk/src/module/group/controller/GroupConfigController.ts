@@ -1,28 +1,11 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
- * @Date: 2019-01-27 14:15:59
+ * @Date: 2019-01-28 13:34:04
  * Copyright © RingCentral. All rights reserved.
  */
-
-import {
-  daoManager,
-  PostDao,
-  QUERY_DIRECTION,
-  GroupConfigDao,
-} from '../../../dao';
-import { Post } from '../entity/Post';
-class PostDaoController {
+import { daoManager, QUERY_DIRECTION, GroupConfigDao } from '../../../dao';
+class GroupConfigController {
   constructor() {}
-
-  async getPostCountByGroupId(groupId: number): Promise<number> {
-    const dao = daoManager.getDao(PostDao);
-    return dao.groupPostCount(groupId);
-  }
-
-  async getPostFromLocal(postId: number): Promise<Post | null> {
-    const dao = daoManager.getDao(PostDao);
-    return dao.get(postId);
-  }
 
   /**
    * If direction === QUERY_DIRECTION.OLDER, should check has more.
@@ -34,6 +17,14 @@ class PostDaoController {
       ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
       : true;
   }
+
+  updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.update({
+      id: groupId,
+      [`has_more_${direction}`]: hasMore,
+    });
+  }
 }
 
-export { PostDaoController };
+export { GroupConfigController };

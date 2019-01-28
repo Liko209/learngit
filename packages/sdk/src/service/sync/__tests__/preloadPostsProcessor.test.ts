@@ -7,20 +7,21 @@
 import { Group } from '../../../module/group/entity/Group';
 import { NewPostService } from '../../../module/post/service/PostService';
 import PreloadPostsProcessor from '../preloadPostsProcessor';
-import { ProfileService } from '../../../service/profile';
 import { StateService } from '../../../module/state';
+import { NewGroupService } from '../../../module/group';
 
 jest.mock('../../../module/post/service/PostService');
 jest.mock('../../../service/profile');
 jest.mock('../../../module/state');
+jest.mock('../../../module/group');
 
 const postService: NewPostService = new NewPostService();
-const profileService: ProfileService = new ProfileService();
 const stateService: StateService = new StateService();
+const groupService: NewGroupService = new NewGroupService();
 beforeEach(() => {
   NewPostService.getInstance = jest.fn().mockReturnValue(postService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-  StateService.getInstance = jest.fn().mockReturnValueOnce(stateService);
+  StateService.getInstance = jest.fn().mockReturnValue(stateService);
+  NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
 });
 
 const ONE_PAGE = 20;
@@ -48,7 +49,7 @@ describe('PreloadPostsProcessor', () => {
 
   describe('name', () => {
     it('should return "name1" when pass "name1" as name', () => {
-      const processor = new PreloadPostsProcessor('name1', getGroup());
+      const processor = new PreloadPostsProcessor('name1', getGroup(), false);
       expect(processor.name()).toBe('name1');
     });
   });
@@ -56,44 +57,42 @@ describe('PreloadPostsProcessor', () => {
   describe('canContinue', () => {
     // for current solution, will always return true regards current processor is success or not
     it('should return true', () => {
-      const processor = new PreloadPostsProcessor('3', getGroup());
+      const processor = new PreloadPostsProcessor('3', getGroup(), false);
       expect(processor.canContinue()).toBe(true);
     });
   });
 
   describe('process', () => {
     afterEach(() => {
-      jest.clearAllMocks();
+      jest.resetAllMocks();
     });
     it('should call postService.getPostsByGroupId if need preload', async () => {
-      const processor = new PreloadPostsProcessor('name1', getGroup());
+      const processor = new PreloadPostsProcessor('name1', getGroup(), false);
       jest.spyOn(processor, 'needPreload').mockResolvedValueOnce({
         shouldPreload: true,
         limit: ONE_PAGE,
       });
-      postService.getPostsByGroupId.mockResolvedValueOnce(null);
+      postService.getRemotePostsByGroupIdAndSave.mockResolvedValueOnce(null);
       await processor.process();
-      expect(postService.getPostsByGroupId).toHaveBeenCalledTimes(1);
+      expect(postService.getRemotePostsByGroupIdAndSave).toHaveBeenCalledTimes(
+        1,
+      );
     });
     it('should not call postService.getPostsByGroupId if need preload', async () => {
-      const processor = new PreloadPostsProcessor('name1', getGroup());
+      const processor = new PreloadPostsProcessor('name1', getGroup(), false);
       jest.spyOn(processor, 'needPreload').mockResolvedValueOnce({
         shouldPreload: false,
         limit: 0,
       });
+      postService.getRemotePostsByGroupIdAndSave.mockResolvedValueOnce(null);
       await processor.process();
-      expect(postService.getPostsByGroupId).toHaveBeenCalledTimes(0);
+      expect(postService.getRemotePostsByGroupIdAndSave).toHaveBeenCalledTimes(
+        0,
+      );
     });
   });
 
   describe('needPreload', () => {
-    it('should not preload if group not exist', async () => {
-      const processor = new PreloadPostsProcessor('name1', null);
-      const result = await processor.needPreload();
-      expect(result.shouldPreload).toBeFalsy();
-      expect(result.limit).toEqual(0);
-    });
-
     // favorite and groups have the same behavior
     describe('favorite/groups cases', () => {
       afterEach(() => {
@@ -101,48 +100,44 @@ describe('PreloadPostsProcessor', () => {
       });
       function setUpMock({
         state = null,
-        profile = {},
         postCount = 0,
         hasMore = false,
       } = {}) {
         stateService.getById.mockResolvedValueOnce(state);
-        profileService.getProfile.mockResolvedValueOnce(profile);
         postService.getPostCountByGroupId.mockResolvedValueOnce(postCount);
-        postService.hasMorePostInRemote.mockResolvedValueOnce(hasMore);
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(hasMore);
       }
       it('should not preload when local post has more than one page', async () => {
         setUpMock({
           state: null,
-          profile: {},
           postCount: 21,
         });
 
-        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const processor = new PreloadPostsProcessor('name1', getGroup(), false);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeFalsy();
       });
       it('should not preload when local post < ONE_PAGE but has no more remote post', async () => {
         setUpMock({
           state: null,
-          profile: {},
           postCount: 10,
           hasMore: false,
         });
-        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const processor = new PreloadPostsProcessor('name1', getGroup(), false);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeFalsy();
       });
+
       it('should preload all unread when unread count > ONE_PAGE', async () => {
         setUpMock({
           state: {
             unread_count: 21,
           },
-          profile: {},
           postCount: 0,
           hasMore: true,
         });
 
-        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const processor = new PreloadPostsProcessor('name1', getGroup(), false);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeTruthy();
         expect(result.limit).toEqual(21);
@@ -152,12 +147,11 @@ describe('PreloadPostsProcessor', () => {
           state: {
             unread_count: 19,
           },
-          profile: {},
           postCount: 0,
           hasMore: true,
         });
 
-        const processor = new PreloadPostsProcessor('name1', getGroup());
+        const processor = new PreloadPostsProcessor('name1', getGroup(), false);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeTruthy();
         expect(result.limit).toEqual(ONE_PAGE);
@@ -167,7 +161,6 @@ describe('PreloadPostsProcessor', () => {
           state: {
             unread_count: 19,
           },
-          profile: { favorite_group_ids: [1] },
           postCount: 0,
           hasMore: true,
         });
@@ -175,6 +168,7 @@ describe('PreloadPostsProcessor', () => {
         const processor = new PreloadPostsProcessor(
           'name1',
           getGroup({ is_team: true }),
+          true,
         );
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeTruthy();
@@ -189,8 +183,8 @@ describe('PreloadPostsProcessor', () => {
         const processor = new PreloadPostsProcessor(
           'name1',
           getGroup({ is_team: true }),
+          false,
         );
-        profileService.getProfile.mockResolvedValueOnce({});
         stateService.getById.mockResolvedValueOnce(null);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeFalsy();
@@ -200,8 +194,8 @@ describe('PreloadPostsProcessor', () => {
         const processor = new PreloadPostsProcessor(
           'name1',
           getGroup({ is_team: true }),
+          false,
         );
-        profileService.getProfile.mockResolvedValueOnce({});
         stateService.getById.mockResolvedValueOnce({
           unread_count: 99,
         });
@@ -213,8 +207,8 @@ describe('PreloadPostsProcessor', () => {
         const processor = new PreloadPostsProcessor(
           'name1',
           getGroup({ is_team: true }),
+          false,
         );
-        profileService.getProfile.mockResolvedValueOnce({});
         stateService.getById.mockResolvedValueOnce({
           unread_count: 99,
           unread_mentions_count: 1,
@@ -229,8 +223,8 @@ describe('PreloadPostsProcessor', () => {
         const processor = new PreloadPostsProcessor(
           'name1',
           getGroup({ is_team: true }),
+          false,
         );
-        profileService.getProfile.mockResolvedValueOnce({});
         stateService.getById.mockResolvedValueOnce({
           unread_count: 99,
           unread_mentions_count: 1,
@@ -245,8 +239,8 @@ describe('PreloadPostsProcessor', () => {
         const processor = new PreloadPostsProcessor(
           'name1',
           getGroup({ is_team: true }),
+          false,
         );
-        profileService.getProfile.mockResolvedValueOnce({});
         stateService.getById.mockResolvedValueOnce({
           unread_count: 10,
           unread_mentions_count: 1,

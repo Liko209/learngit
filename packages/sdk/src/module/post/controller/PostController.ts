@@ -19,14 +19,12 @@ import { PreInsertController } from '../../common/controller/impl/PreInsertContr
 import { ProgressService } from '../../progress';
 import { PostFetchController } from './PostFetchController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
-import { PostDaoController } from './PostDaoController';
 
 class PostController {
   private _actionController: PostActionController;
   private _sendController: SendPostController;
   private _preInsertController: IPreInsertController;
   private _fetchController: PostFetchController;
-  private _daoController: PostDaoController;
 
   constructor() {}
 
@@ -83,13 +81,6 @@ class PostController {
       );
     }
     return this._fetchController;
-  }
-
-  getPostDaoController() {
-    if (!this._daoController) {
-      this._daoController = new PostDaoController();
-    }
-    return this._daoController;
   }
 
   private _getPreInsertController() {

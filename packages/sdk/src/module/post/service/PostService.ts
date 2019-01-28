@@ -11,6 +11,7 @@ import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
+import { IRequestRemotePostAndSave } from '../entity/Post';
 
 class NewPostService extends EntityBaseService<Post> {
   static serviceName = 'NewPostService';
@@ -74,22 +75,22 @@ class NewPostService extends EntityBaseService<Post> {
       .getPostsByGroupId({ groupId, postId, limit, direction });
   }
 
+  async getRemotePostsByGroupIdAndSave(
+    params: IRequestRemotePostAndSave,
+  ): Promise<IPostResult> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getRemotePostsByGroupIdAndSave(params);
+  }
+
   async getPostCountByGroupId(groupId: number): Promise<number> {
     return this.getPostController()
-      .getPostDaoController()
+      .getPostFetchController()
       .getPostCountByGroupId(groupId);
   }
 
   async getPostFromLocal(postId: number): Promise<Post | null> {
-    return this.getPostController()
-      .getPostDaoController()
-      .getPostFromLocal(postId);
-  }
-
-  async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
-    return this.getPostController()
-      .getPostDaoController()
-      .hasMorePostInRemote(groupId, direction);
+    return this.getEntitySource().getEntityLocally(postId);
   }
 }
 
