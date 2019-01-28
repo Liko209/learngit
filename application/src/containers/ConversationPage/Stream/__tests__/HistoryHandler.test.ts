@@ -3,6 +3,7 @@
  * @Date: 2018-11-14 12:27:13
  * Copyright © RingCentral. All rights reserved.
  */
+import { isObservableProp } from 'mobx';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from '../HistoryHandler';
 
@@ -34,6 +35,18 @@ function setup({ groupState, latestPostId }: SetupOptions) {
 }
 
 describe('HistoryHandler', () => {
+  describe('latestPostId', () => {
+    it('should be observable', () => {
+      const handler = setup({
+        latestPostId: 1,
+        groupState: {},
+      });
+
+      expect(isObservableProp(handler, 'latestPostId')).toBeTruthy();
+      expect(isObservableProp(handler, 'groupState')).toBeTruthy();
+    });
+  });
+
   describe('update()', () => {
     it('should update history state', () => {
       const updateOptions = {
