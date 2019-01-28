@@ -25,12 +25,18 @@ class PreloadImg extends Component<PreloadImgProps> {
 
   render() {
     const { children, placeholder, url } = this.props;
+    const { loaded, isError } = this.state;
     return (
       <>
-        {!this.state.loaded && url && (
-          <img src={url} onLoad={this.handleLoad} onError={this.handleError} />
+        {!loaded && url && (
+          <img
+            src={url}
+            onLoad={this.handleLoad}
+            onError={this.handleError}
+            style={{ display: 'none' }}
+          />
         )}
-        {this.state.loaded && !this.state.isError ? children : placeholder}
+        {loaded && !isError ? children : placeholder}
       </>
     );
   }

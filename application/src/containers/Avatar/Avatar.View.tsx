@@ -6,8 +6,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { JuiAvatar } from 'jui/components/Avatar';
-// import { PreloadImg } from '@/containers/common';
 import { AvatarViewProps } from './types';
+import { PreloadImg } from '../common/PreloadImg';
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
@@ -21,15 +21,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
       presence,
       ...rest
     } = this.props;
-    return !shouldShowShortName ? (
-      <JuiAvatar
-        src={headShotUrl}
-        data-test-automation-id={automationId}
-        color=""
-        presence={presence}
-        {...rest}
-      />
-    ) : (
+    const placeholder = (
       <JuiAvatar
         color={bgColor}
         data-test-automation-id={automationId}
@@ -38,6 +30,22 @@ class AvatarView extends React.Component<AvatarViewProps> {
       >
         {shortName}
       </JuiAvatar>
+    );
+    const content = (
+      <JuiAvatar
+        src={headShotUrl}
+        data-test-automation-id={automationId}
+        color=""
+        presence={presence}
+        {...rest}
+      />
+    );
+    return !shouldShowShortName ? (
+      <PreloadImg url={headShotUrl} placeholder={placeholder}>
+        {content}
+      </PreloadImg>
+    ) : (
+      placeholder
     );
   }
 }
