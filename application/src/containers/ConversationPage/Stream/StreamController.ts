@@ -7,7 +7,7 @@ import { OrdinaryPostWrapper } from './StreamItemAssemblyLine/Assembler/Ordinary
 import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
-import { StreamItem, TDeltaWithData, StreamItemType } from './types';
+import { StreamItem, TDeltaWithData } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { Post } from 'sdk/module/post/entity';
@@ -90,7 +90,8 @@ export class StreamController {
 
   @computed
   get items() {
-    return _(this._streamListHandler.sortableListStore.items)
+    const items = this._streamListHandler.sortableListStore.items;
+    return _(items)
       .map('data')
       .compact()
       .value();
@@ -115,10 +116,6 @@ export class StreamController {
       this._readThrough,
     );
     if (streamItems) {
-      const last = _.nth(streamItems, -1);
-      if (last && last.type !== StreamItemType.POST) {
-        streamItems.pop();
-      }
       this._streamListHandler.replaceAll(streamItems);
     }
   }
