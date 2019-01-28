@@ -135,6 +135,24 @@ class TeamActionController {
     );
   }
 
+  async deleteTeam(teamId: number): Promise<void> {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          deactivated: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await buildRequestController<Group>({
+          basePath: '/team',
+          networkClient: Api.glipNetworkClient,
+        }).put(updateEntity);
+      },
+    );
+  }
+
   private async _requestUpdateTeamMembers(
     teamId: number,
     members: number[],

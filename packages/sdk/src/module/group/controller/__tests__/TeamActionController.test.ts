@@ -373,4 +373,21 @@ describe('TeamController', () => {
       );
     });
   });
+  describe('deleteTeam()', () => {
+    it('should call requestController.put with correct team info.', async () => {
+      const mockTeam = groupFactory.build({
+        deactivated: false,
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await teamActionController.deleteTeam(mockTeam.id);
+      expect(testRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          _id: mockTeam.id,
+          deactivated: true,
+        }),
+      );
+    });
+  });
 });
