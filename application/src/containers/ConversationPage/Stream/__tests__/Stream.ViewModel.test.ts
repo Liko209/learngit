@@ -38,6 +38,7 @@ const postService = {
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
 }
@@ -189,12 +190,15 @@ describe('StreamViewModel', () => {
         _streamController: { postIds },
       });
 
+      vm._streamController.items = postIds.map(i => ({
+        value: [i],
+      }));
+
       Object.defineProperty(vm, '_groupState', {
         value: groupState,
       });
 
       vm.updateHistoryHandler();
-
       expect(mockUpdate).toBeCalledTimes(1);
       expect(mockUpdate).toBeCalledWith(groupState, postIds);
     });

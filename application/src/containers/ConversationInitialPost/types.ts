@@ -23,6 +23,7 @@ type ConversationInitialPostViewProps = WithNamespaces & {
   t: TranslationFunction;
   isTeam: boolean;
   notEmpty: boolean;
+  createTime: number;
 };
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };

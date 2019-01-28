@@ -52,7 +52,7 @@ class LeftNavViewModel extends StoreViewModel {
 
   @computed
   get groupIds() {
-    return SectionGroupHandler.getInstance().getAllGroupIds();
+    return SectionGroupHandler.getInstance().groupIds;
   }
 
   @computed

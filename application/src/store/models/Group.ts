@@ -35,6 +35,8 @@ export default class GroupModel extends Base<Group> {
   @observable
   creatorId: number;
   @observable
+  createdAt: number;
+  @observable
   guestUserCompanyIds?: number[];
   @observable
   permissions?: TeamPermission;
@@ -70,6 +72,7 @@ export default class GroupModel extends Base<Group> {
       ? most_recent_post_created_at
       : created_at;
     this.creatorId = creator_id;
+    this.createdAt = created_at;
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
@@ -89,6 +92,11 @@ export default class GroupModel extends Base<Group> {
   get isAdmin() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return this.isThePersonAdmin(currentUserId);
+  }
+
+  get isMember() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.members.indexOf(currentUserId) >= 0;
   }
 
   @computed
@@ -188,11 +196,14 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
-  get isCurrentUserHasPermissionAddTeam() {
-    const GroupService = new NGroupService();
+  get isCurrentUserHasPermissionAddMember() {
+    if (!this.isMember) {
+      return false;
+    }
+    const groupService = new NGroupService();
     const members = this.members || [];
     const guestUserCompanyIds = this.guestUserCompanyIds || [];
-    return GroupService.isCurrentUserHasPermission(
+    return groupService.isCurrentUserHasPermission(
       {
         members,
         is_team: this.isTeam,

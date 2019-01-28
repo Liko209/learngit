@@ -150,7 +150,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  translate('Conversations')(ConversationPageViewComponent),
+  translate('translations')(ConversationPageViewComponent),
 );
 
 export { ConversationPageView };

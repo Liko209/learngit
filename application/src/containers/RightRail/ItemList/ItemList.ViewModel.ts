@@ -137,10 +137,13 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       },
       { fireImmediately: true },
     );
+    this.reaction(() => this.ids, () => this.loadTotalCount());
     this.reaction(
       () => this._active,
       (active: boolean) => {
-        if (active) this.fetchNextPageItems();
+        if (active && !this._loadStatus.firstLoaded) {
+          this.forceReload();
+        }
       },
     );
   }
@@ -275,7 +278,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get ids() {
-    return this._sortableDataHandler.sortableListStore.getIds();
+    return this._sortableDataHandler.sortableListStore.getIds;
   }
 }
 

@@ -40,7 +40,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get ids() {
-    return this._sortableListHandler.sortableListStore.getIds();
+    return this._sortableListHandler.sortableListStore.getIds;
   }
 
   private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
