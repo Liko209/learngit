@@ -86,9 +86,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (receivers) {
       remote_stream = new MediaStream();
       receivers.forEach((receiver: any) => {
-        const track = receiver.track;
-        if (track) {
-          remote_stream.addTrack(track);
+        const rtrack = receiver.track;
+        if (rtrack) {
+          remote_stream.addTrack(rtrack);
         }
       });
     } else {
@@ -103,7 +103,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (senders) {
       local_stream = new MediaStream();
       senders.forEach((sender: any) => {
-        local_stream.addTrack(sender.track);
+        const strack = sender.track;
+        if (strack && strack.kind === 'audio') {
+          local_stream.addTrack(strack);
+        }
       });
     } else {
       local_stream = pc.getLocalStreams() && pc.getLocalStreams()[0];
