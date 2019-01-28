@@ -99,8 +99,6 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
     ${StyledIcon} {
-      color: ${({ theme, colorScope, colorName }) =>
-        palette(colorScope, colorName)({ theme })};
       &, svg {
         font-size: ${({ size = 'medium', theme }) =>
           width(iconSizes[size])({ theme })};

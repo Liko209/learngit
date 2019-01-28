@@ -59,18 +59,14 @@ class ProfileDialogPersonContentViewComponent extends Component<
         tabIndex={0}
         aria-label={t(this.getAriaLabelKey(), { name: person.userDisplayName })}
       >
-        {this.renderIcon('chat_bubble', 'primary.main')}
+        {this.renderIcon('chat_bubble')}
         {t('message')}
       </JuiProfileDialogContentSummaryButton>
     );
   }
 
-  renderIcon = (key: string, color?: string) => {
-    return (
-      <JuiIconography fontSize="small" color={color}>
-        {key}
-      </JuiIconography>
-    );
+  renderIcon = (key: string) => {
+    return <JuiIconography fontSize="small">{key}</JuiIconography>;
   }
 
   renderCopy = (value: string, aria?: string) => {
