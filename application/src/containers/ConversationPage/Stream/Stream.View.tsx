@@ -41,7 +41,7 @@ class StreamViewComponent extends Component<Props> {
   private _temporaryDisableAutoScroll = false;
   private _scrollHeight = 0;
   private _scrollTop = 0;
-  private _ro: ResizeObserver;
+  private _ro: ResizeObserver[] = [];
   private _globalStore = storeManager.getGlobalStore();
   private _listLastWidth = 0;
 
@@ -66,7 +66,7 @@ class StreamViewComponent extends Component<Props> {
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
-    this._ro && this._ro.disconnect();
+    this._ro.forEach(i => i.disconnect());
   }
 
   getSnapshotBeforeUpdate() {
@@ -105,7 +105,6 @@ class StreamViewComponent extends Component<Props> {
           return this.scrollToBottom();
         }
       }
-
       // scroll TOP and load posts
       if (this._isAtTop && hasMoreUp && this._listRef.current) {
         await nextTick();
@@ -120,15 +119,26 @@ class StreamViewComponent extends Component<Props> {
 
   private async _stickToBottom() {
     const el = this._listRef.current;
-    if (el) {
-      this._ro = new RO(this._heightChangedHandler);
-      this._ro.observe(el);
+
+    if (!el) {
+      return;
     }
+    const container = el.parentElement;
+    if (!container) {
+      return;
+    }
+    const listRO = new RO(this._listHeightChangedHandler);
+    listRO.observe(el);
+    const containerRO = new RO(this._containerHeightChangedHandler);
+    containerRO.observe(container);
+    this._ro.push(listRO, containerRO);
   }
 
-  private _heightChangedHandler = (entries: any[]) => {
-    if (!this._listRef.current) return;
-
+  private _listHeightChangedHandler = (entries: any[]) => {
+    const listEl = this._listRef.current;
+    if (!listEl) {
+      return;
+    }
     if (this._temporaryDisableAutoScroll) {
       this._temporaryDisableAutoScroll = false;
       return;
@@ -140,11 +150,16 @@ class StreamViewComponent extends Component<Props> {
       return;
     }
 
-    if (this.props.atBottom() && !this.props.hasMoreDown) {
+    if (this._isAtBottom && !this.props.hasMoreDown) {
       return this.scrollToBottom();
     }
 
     return;
+  }
+  private _containerHeightChangedHandler = () => {
+    if (this._isAtBottom) {
+      this.scrollToBottom();
+    }
   }
 
   private _renderPost(streamItem: StreamItem & { value: number[] }) {
@@ -266,6 +281,7 @@ class StreamViewComponent extends Component<Props> {
 
     const shouldHaveJumpButton =
       hasHistoryUnread &&
+      historyUnreadCount > 1 &&
       (!firstHistoryUnreadInPage ||
         this._firstHistoryUnreadPostViewed === false);
 
@@ -308,13 +324,10 @@ class StreamViewComponent extends Component<Props> {
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, updateHistoryHandler, markAsRead } = this.props;
     const { _jumpToPostId } = this.state;
-
     await loadInitialPosts();
-
     if (!this._listRef.current) {
       return; // the current component is unmounted
     }
-
     _jumpToPostId
       ? await this.scrollToPost(_jumpToPostId)
       : await this.scrollToBottom();
@@ -377,11 +390,13 @@ class StreamViewComponent extends Component<Props> {
   }
 
   scrollToBottom = async () => {
-    const lastPostId = _(this.props.postIds).nth(-1);
+    await nextTick();
+    const lastPostId = _(this.props.postIds).last();
     if (!lastPostId) {
       return;
     }
-    await this.scrollToPost(lastPostId, false);
+    const scrollToPostEl = this._postRefs.get(lastPostId);
+    await scrollToComponent(scrollToPostEl, false);
   }
 
   scrollToPost = async (
@@ -390,7 +405,7 @@ class StreamViewComponent extends Component<Props> {
   ) => {
     await nextTick();
     const scrollToPostEl = this._postRefs.get(scrollToPostId);
-
+    console.log('andy hu scroll to ', scrollToPostId);
     if (!scrollToPostEl) {
       mainLogger.warn('scrollToPostEl no found');
       return;
