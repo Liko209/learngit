@@ -28,7 +28,7 @@ class ConversationInitialPost extends React.Component<
     super(props);
   }
 
-  onClickAtMention = (event: React.MouseEvent) => {
+  showProfile = (event: React.MouseEvent) => {
     const { creator } = this.props;
     const target = event.target as HTMLElement;
     event.stopPropagation();
@@ -42,7 +42,7 @@ class ConversationInitialPost extends React.Component<
     const { creator } = this.props;
 
     return (
-      <JuiLink handleOnClick={this.onClickAtMention}>
+      <JuiLink handleOnClick={this.showProfile}>
         {creator.userDisplayName}
       </JuiLink>
     );
