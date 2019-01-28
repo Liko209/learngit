@@ -22,20 +22,6 @@ describe('getFileType', () => {
     expect(extendFile.previewUrl).toBe(previewUrl);
     expect(extendFile.item).toEqual(fileItem);
   });
-  it('should be image type if include target type', () => {
-    const previewUrl = 'http://www.google.com';
-    const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
-    IMAGE_TYPE.forEach((type: string) => {
-      const fileItem = {
-        type,
-        versionUrl: previewUrl,
-      };
-      const extendFile = getFileType(fileItem);
-      expect(extendFile.type).toBe(FileType.image);
-      expect(extendFile.previewUrl).toBe(previewUrl);
-      expect(extendFile.item).toEqual(fileItem);
-    });
-  });
 
   it('should be image type if upload image', () => {
     const previewUrl = 'http://www.google.com';

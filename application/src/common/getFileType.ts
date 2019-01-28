@@ -3,12 +3,11 @@
  * @Date: 2019-01-10 11:22:52
  * Copyright © RingCentral. All rights reserved.
  */
+import { ImageFileExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 import FileItemModel, {
   ExtendFileItem,
   FileType,
 } from '@/store/models/FileItem';
-
-const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -54,7 +53,7 @@ function image(item: FileItemModel) {
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
   if (type) {
-    const isImage = IMAGE_TYPE.some(looper => type.includes(looper));
+    const isImage = ImageFileExtensions.has(type.toLocaleLowerCase());
     if (type.includes('image/') || isImage) {
       image.isImage = true;
       image.previewUrl = versionUrl || '';

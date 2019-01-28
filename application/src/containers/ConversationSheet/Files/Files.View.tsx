@@ -11,13 +11,12 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { getThumbnailSize } from 'jui/foundation/utils/calculateImageSize';
+import { getThumbnailSize, getFileIcon } from 'jui/foundation/utils';
 import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
-import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 
 const SQUARE_SIZE = 180;

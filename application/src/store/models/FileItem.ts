@@ -6,6 +6,7 @@
 import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
+import { getFileIcon } from 'jui/foundation/utils';
 
 enum FileType {
   image = 0,
@@ -17,17 +18,6 @@ type ExtendFileItem = {
   item: FileItemModel;
   type: number;
   previewUrl: string;
-};
-
-const FILE_ICON_MAP = {
-  pdf: 'pdf',
-  ppt: 'ppt',
-  doc: 'doc',
-  excel: 'excel',
-  zip: 'zip',
-  mp3: 'default_music',
-  mp4: 'default_video',
-  file: 'default_file',
 };
 
 export default class FileItemModel extends ItemModel {
@@ -115,8 +105,7 @@ export default class FileItemModel extends ItemModel {
 
   @computed
   get iconType() {
-    const type = (this.type && this.type.split('/').pop()) || '';
-    return FILE_ICON_MAP[type.toLowerCase()] || FILE_ICON_MAP.file;
+    return getFileIcon(this.type);
   }
 
   static fromJS(data: Item) {
@@ -124,4 +113,4 @@ export default class FileItemModel extends ItemModel {
   }
 }
 
-export { FileType, ExtendFileItem, FILE_ICON_MAP };
+export { FileType, ExtendFileItem };

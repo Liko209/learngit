@@ -36,4 +36,28 @@ const getListItemSecondaryText = (text: string) => {
   return [text, ''];
 };
 
-export { getFileName, truncateLongName, getListItemSecondaryText };
+const FILE_ICON_MAP = {
+  doc: ['doc', 'pages'],
+  excel: ['xlsx', 'xls', 'numbers'],
+  pdf: ['pdf'],
+  ppt: ['ppt', 'pptx', 'potx', 'key'],
+  default_file: ['file'],
+  zip: ['zip', 'rar'],
+  default_music: ['mp3', 'flac', 'ape', 'wav'],
+  default_video: ['mp4', 'mov'],
+};
+
+function getFileIcon(fileType: string): string {
+  const type = ((fileType && fileType.split('/').pop()) || '').toLowerCase();
+  const keys: string[] = Object.keys(FILE_ICON_MAP);
+  for (let i = 0; i < keys.length; ++i) {
+    const icon = keys[i];
+    const types: string[] = FILE_ICON_MAP[icon] || [];
+    if (types.includes(type)) {
+      return icon;
+    }
+  }
+  return 'default_file';
+}
+
+export { getFileName, truncateLongName, getListItemSecondaryText, getFileIcon };
