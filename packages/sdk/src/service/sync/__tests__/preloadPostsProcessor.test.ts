@@ -229,6 +229,7 @@ describe('PreloadPostsProcessor', () => {
           unread_count: 99,
           unread_mentions_count: 1,
         });
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
         postService.getPostFromLocal.mockResolvedValueOnce(null);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeTruthy();
@@ -245,10 +246,26 @@ describe('PreloadPostsProcessor', () => {
           unread_count: 10,
           unread_mentions_count: 1,
         });
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
         postService.getPostFromLocal.mockResolvedValueOnce(null);
         const result = await processor.needPreload();
         expect(result.shouldPreload).toBeTruthy();
         expect(result.limit).toEqual(ONE_PAGE);
+      });
+      it('should not preload when has not more post in remote', async () => {
+        const processor = new PreloadPostsProcessor(
+          'name1',
+          getGroup({ is_team: true }),
+          false,
+        );
+        stateService.getById.mockResolvedValueOnce({
+          unread_count: 10,
+          unread_mentions_count: 1,
+        });
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(false);
+        postService.getPostFromLocal.mockResolvedValueOnce(null);
+        const result = await processor.needPreload();
+        expect(result.shouldPreload).toBeFalsy();
       });
     });
   });

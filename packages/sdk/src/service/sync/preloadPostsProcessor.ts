@@ -66,7 +66,7 @@ class PreloadPostsProcessor implements IProcessor {
     const state = await stateService.getById(this._group.id);
 
     const postService: NewPostService = NewPostService.getInstance();
-
+    const groupService: NewGroupService = NewGroupService.getInstance();
     if (this._isFavorite || !this._group.is_team) {
       // if unread count < one page, load one page
       limit = ONE_PAGE;
@@ -78,7 +78,6 @@ class PreloadPostsProcessor implements IProcessor {
         this._group.id,
       );
       if (localPostCount < ONE_PAGE) {
-        const groupService: NewGroupService = NewGroupService.getInstance();
         const hasMore = await groupService.hasMorePostInRemote(
           this._group.id,
           QUERY_DIRECTION.OLDER,
@@ -95,7 +94,11 @@ class PreloadPostsProcessor implements IProcessor {
           state.read_through || 0,
         );
         if (!post) {
-          shouldPreload = true;
+          const hasMore = await groupService.hasMorePostInRemote(
+            this._group.id,
+            QUERY_DIRECTION.OLDER,
+          );
+          shouldPreload = hasMore;
           limit = ONE_PAGE;
           if (state.unread_count && state.unread_count > ONE_PAGE) {
             limit = state.unread_count;
