@@ -39,11 +39,11 @@ test(formalName('The post is sent successfully when sending a post with uploaded
   const user = users[4];
   await h(t).platform(user).init();
 
-  let teamId: string;
-  await h(t).withLog(`Given I have an extension with at least one team conversation`, async () => {
+  let teamId: string, teamName: string = `Team ${uuid()}`;
+  await h(t).withLog(`Given I have an extension with at least one team conversation: "${teamName}"`, async () => {
     teamId = await h(t).platform(user).createAndGetGroupId({
       type: 'Team',
-      name: `Team ${uuid()}`,
+      name: teamName,
       members: [user.rcId, users[5].rcId],
     });
   });
