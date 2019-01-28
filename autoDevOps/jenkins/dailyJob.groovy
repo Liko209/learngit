@@ -108,6 +108,7 @@ def runOnSeleniumGrid(
                                 "SCREENSHOTS_PATH=./screenshots",
                                 "DEBUG_MODE=false",
                                 "SCREENSHOT_WEBP_QUALITY=80",
+                                "QUARANTINE_MODE=true",
                             ]) {
                                 sh 'env'  // for debug
                                 withCredentials([usernamePassword(
