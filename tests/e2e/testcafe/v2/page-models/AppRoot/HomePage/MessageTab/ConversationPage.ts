@@ -75,7 +75,7 @@ class BaseConversationPage extends BaseWebComponent {
   get favoriteStatusIcon() {
     return this.getSelectorByIcon("star", this.favoriteButton);
   }
-  
+
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
@@ -115,32 +115,43 @@ class BaseConversationPage extends BaseWebComponent {
     return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
   }
 
-  // todo: find a more reliable method
+  get scrollDiv() {
+    this.warnFlakySelector();
+    return this.stream.parent('div');
+  }
+
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.streamWrapper.scrollTop;
-    const streamHeight = await this.stream.clientHeight;
-    const streamWrapperHeight = await this.streamWrapper.clientHeight;
-    await this.t.expect(scrollTop).eql(streamHeight - streamWrapperHeight, `${scrollTop}, ${streamHeight} - ${streamWrapperHeight}`);
+    const scrollTop = await this.scrollDiv.scrollTop;
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    const clientHeight = await this.scrollDiv.clientHeight;
+    await this.t.expect(scrollTop).eql(scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`);
   }
 
   async scrollToY(y: number) {
-    await this.t.eval(() => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = y;
-    }, {
-        dependencies: { y }
-      });
+    await ClientFunction((_y) => {
+      document.querySelector('[data-test-automation-id="jui-stream-wrapper"] div').scrollTop = _y;
+    })(y);
   }
 
   async scrollToMiddle() {
-    const scrollHeight = await this.streamWrapper.clientHeight;
-    await this.scrollToY(scrollHeight / 2);
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    const clientHeight = await this.scrollDiv.clientHeight;
+    const middleHeight = (scrollHeight - clientHeight) / 2;
+    await this.scrollToY(middleHeight);
   }
 
-  async scrollToBottom() {
-    await this.t.eval(() => {
-      const scrollHeight = document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollHeight;
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"]').firstElementChild.scrollTop = scrollHeight;
-    });
+  async scrollToBottom(retryTime = 3) {
+    // retry until scroll bar at the end
+    let initHeight = 0;
+    for (const i of _.range(retryTime)) {
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      if (initHeight == scrollHeight) {
+        break
+      }
+      initHeight = scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      await this.scrollToY(scrollHeight - clientHeight);
+    }
   }
 
   get newMessageDeadLine() {
@@ -186,7 +197,7 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async shouldFocusOnMessageInputArea() {
-    await this.t.expect(this.messageInputArea.focused).ok({timeout: 5e3});
+    await this.t.expect(this.messageInputArea.focused).ok({ timeout: 5e3 });
   }
 
   async sendMessage(message: string, options?: TypeActionOptions) {
