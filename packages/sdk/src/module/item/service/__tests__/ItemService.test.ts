@@ -368,31 +368,43 @@ describe('ItemService', () => {
       getItemsByIds: jest.fn(),
     };
 
+    const entitySourceController = {
+      batchGet: jest.fn(),
+    };
+
     beforeEach(() => {
       clearMocks();
       setup();
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+      itemService.getEntitySource = jest
+        .fn()
+        .mockReturnValue(entitySourceController);
     });
 
     it('should call dao method with right id array', async () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: undefined }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([]);
+      expect(entitySourceController.batchGet).not.toBeCalled();
     });
 
     it('should call dao method with right id array', async () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: [1, 2, 3] }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2, 3]);
     });
 
     it('should call dao method with right id array', async () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: [1, 2, 3], at_mention_item_ids: [5] }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3, 5]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([
+        1,
+        2,
+        3,
+        5,
+      ]);
     });
 
     it('should call dao method with right id array', async () => {
@@ -402,7 +414,12 @@ describe('ItemService', () => {
           at_mention_item_ids: [1, 2, 5],
         }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3, 5]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([
+        1,
+        2,
+        3,
+        5,
+      ]);
     });
   });
 
