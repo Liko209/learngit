@@ -22,9 +22,6 @@ export class AppRoot extends BaseWebComponent {
     return this.getComponent(HomePage);
   }
 
-  get spinners() {
-    return this.getSelector('div[role="progressbar"]');
-  }
 
   get pagePath() {
     return this.t.eval(() => window.location.pathname);
@@ -34,16 +31,6 @@ export class AppRoot extends BaseWebComponent {
     await this.t.eval(() => location.reload(true));
   }
 
-  async waitForAllSpinnersToDisappear(timeout: number = 30e3) {
-    // this is an application-wide spinner waiter
-    try {
-      await H.retryUntilPass(async () => assert(await this.spinners.count > 0), 4);
-    } catch (e) {
-      // it's ok if spinner doesn't exist
-    } finally {
-      await this.t.expect(this.spinners.count).eql(0, { timeout });
-    }
-  }
 
   async openConversationByUrl(groupId: number | string) {
     const url = new URL(SITE_URL);
