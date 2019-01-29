@@ -13,6 +13,7 @@ import { toArrayOf } from '../../../__tests__/utils';
 import { StateService } from '../../../module/state';
 import { EVENT_TYPES } from '../..';
 import { ApiResultOk } from '../../../api/ApiResult';
+import { ENTITY } from '../../../service/eventKey';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
@@ -136,7 +137,8 @@ describe('handleData()', () => {
   });
 
   it('passing an array', async () => {
-    expect.assertions(6);
+    expect.assertions(7);
+    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       {
@@ -154,7 +156,9 @@ describe('handleData()', () => {
         },
       },
       { _id: 2, members: [1, 2], deactivated: false },
-      { _id: 3, deactivated: false },
+      { _id: 3, members: [2], deactivated: false },
+      { _id: 4, deactivated: false },
+      { _id: 5, is_archived: true },
     ]);
     await handleData(groups);
     // expect getTransformData function
@@ -166,9 +170,12 @@ describe('handleData()', () => {
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
-    // expect checkIncompleteGroupsMembers function
-    // const personService: PersonService = PersonService.getInstance();
-    // expect(personService.getPersonsByIds).toHaveBeenCalled();
+    expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
+      { id: 2, members: [1, 2], deactivated: false },
+      // { id: 3, members: [2], deactivated: false }, // members is not include self
+      { id: 4, deactivated: false },
+      { id: 5, is_archived: true },
+    ]);
   });
 });
 

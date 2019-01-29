@@ -150,9 +150,7 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
     notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
-  const archivedGroups = normalData.filter((item: Group) => item.is_archived);
-  const deactivatedGroups = deactivatedData.concat(archivedGroups);
-  const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
+  const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     return group.id;
   });
   deactivatedGroupIds.length &&
@@ -175,11 +173,6 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
   result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
-  // addedTeams.length > 0 &&
-  //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
-  // addedGroups.length > 0 &&
-  //   notificationCenter.emitEntityUpdate(ENTITY.PEOPLE_GROUPS, addedGroups);
-  // addFavorites.length > 0 && (await doFavoriteGroupsNotification(favIds));
 }
 
 async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {

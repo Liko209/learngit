@@ -195,14 +195,17 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       (payload: NotificationEntityPayload<Group>) => {
         const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
-        if (
-          payload.type === EVENT_TYPES.DELETE ||
-          payload.type === EVENT_TYPES.UPDATE
-        ) {
+        if (payload.type === EVENT_TYPES.DELETE) {
           ids = payload.body!.ids!;
+        } else if (payload.type === EVENT_TYPES.UPDATE) {
+          ids = payload.body!.ids!;
+          ids = ids.filter((id: number) => {
+            const group = payload.body.entities.get(id);
+            return !group || group.is_archived;
+          });
         }
         // update url
-        this._updateUrl(payload.type, ids);
+        this._updateUrl(EVENT_TYPES.DELETE, ids);
         keys.forEach((key: string) => {
           this._handlersMap[key].onDataChanged(payload);
         });
@@ -315,7 +318,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const isMatchFun = (model: Group) => {
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1
+        this._hiddenGroupIds.indexOf(model.id) === -1 &&
+        !model.is_archived
       );
     };
     const transformFun = (model: Group) => {
@@ -363,7 +367,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const includesMe =
         userId && model.members ? model.members.includes(userId) : true;
-      return notInFav && isTeamInTeamSection && includesMe;
+      return (
+        notInFav && isTeamInTeamSection && includesMe && !model.is_archived
+      );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
