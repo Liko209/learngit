@@ -52,20 +52,24 @@ class ConversationPageViewModel extends AbstractViewModel {
   async onReceiveProps({ groupId }: ConversationPageProps) {
     if (!_.isEqual(groupId, this.groupId) && groupId) {
       const group = await this._groupService.getById(groupId);
-      if (!group) {
+      if (this._isInValidGroup(group)) {
         history.replace('/messages/loading', {
           id: groupId,
           error: true,
         });
         return;
       }
-      this.groupId = group.id;
+      this.groupId = group!.id;
       this.groupId && this._readGroup(groupId);
     }
   }
 
   private async _readGroup(groupId: number) {
     this._throttledUpdateLastGroup(groupId);
+  }
+
+  private _isInValidGroup(group: Group | null) {
+    return !group || group.deactivated || group.is_archived;
   }
 }
 
