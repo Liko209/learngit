@@ -22,7 +22,6 @@ export class AppRoot extends BaseWebComponent {
     return this.getComponent(HomePage);
   }
 
-
   get pagePath() {
     return this.t.eval(() => window.location.pathname);
   }
@@ -30,7 +29,6 @@ export class AppRoot extends BaseWebComponent {
   async reload() {
     await this.t.eval(() => location.reload(true));
   }
-
 
   async openConversationByUrl(groupId: number | string) {
     const url = new URL(SITE_URL);

@@ -65,7 +65,6 @@ test(formalName('Unread button will disappear when resizing window then full scr
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('Then I should see unread button', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
   });
 
@@ -74,7 +73,6 @@ test(formalName('Unread button will disappear when resizing window then full scr
   });
 
   await h(t).withLog('Then I should not see unread button', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).notOk()
   });
 });
@@ -130,7 +128,6 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   });
 
   await h(t).withLog('Then I should see unread button', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
   });
 
@@ -220,7 +217,6 @@ test(formalName('The count of the unread button (up) should display correct', ['
   });
 
   await h(t).withLog('Then I should see unread button with unread count 20', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.find('span').withText('20').exists).ok()
   });
@@ -230,7 +226,6 @@ test(formalName('The count of the unread button (up) should display correct', ['
   })
 
   await h(t).withLog('Then I should see unread button with unread count 99+', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.find('span').withText('99+').exists).ok()
   });
@@ -333,18 +328,15 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('Then I should see unread button', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
   });
 
   await h(t).withLog('When I navigate to conversationB then back to conversationA', async () => {
     await teamsSection.conversationEntryById(conversationB).enter();
-    await conversationPage.waitForPostsToBeLoaded();
     await teamsSection.conversationEntryById(conversationA).enter();
   });
 
   await h(t).withLog('Then I should not see unread button', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).notOk()
   });
 })

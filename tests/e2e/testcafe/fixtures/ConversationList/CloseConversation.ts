@@ -443,52 +443,52 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
   });
 
 
-    await h(t).withLog('And other user send post to each conversation', async () => {
-      await teamsSection.expand();
-      await teamsSection.conversationEntryById(teamId2).enter();
+  await h(t).withLog('And other user send post to each conversation', async () => {
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(teamId2).enter();
 
-      const umiGroupIds = [favGroupId, pvtChatId, teamId1];
-      for (const id of umiGroupIds) {
-        await h(t).platform(otherUser).createPost(
-          { text: `${uuid()} ![:Person](${loginUser.rcId})` },
-          id,
-        );
-      }
-    });
-
-
-    const favoriteItem = favoritesSection.conversationEntryById(favGroupId);
-    const directMessageItem = directMessagesSection.conversationEntryById(pvtChatId);
-    const teamItem = teamsSection.conversationEntryById(teamId1);
-    await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section', async () => {
-      await favoritesSection.expand();
-      await favoriteItem.umi.shouldBeNumber(1);
-      await directMessagesSection.expand();
-      await directMessageItem.umi.shouldBeNumber(1);
-      await teamsSection.expand();
-      await teamItem.umi.shouldBeNumber(1);
-    });
-
-    const groupList = {
-      favorite: favoriteItem,
-      directMessage: directMessageItem,
-      team: teamItem,
-    };
-    const closeButton = app.homePage.messageTab.moreMenu.close;
-    for (const key in groupList) {
-      const item = groupList[key];
-      await h(t).withLog(`When I click more Icon of a ${key} conversation with UMI`,
-        async () => {
-          await item.openMoreMenu();
-        },
+    const umiGroupIds = [favGroupId, pvtChatId, teamId1];
+    for (const id of umiGroupIds) {
+      await h(t).platform(otherUser).createPost(
+        { text: `${uuid()} ![:Person](${loginUser.rcId})` },
+        id,
       );
-
-      await h(t).withLog('Then the close button should not be show', async () => {
-        await closeButton.shouldBeDisabled();
-        await t.pressKey('esc');
-      });
     }
-  },
+  });
+
+
+  const favoriteItem = favoritesSection.conversationEntryById(favGroupId);
+  const directMessageItem = directMessagesSection.conversationEntryById(pvtChatId);
+  const teamItem = teamsSection.conversationEntryById(teamId1);
+  await h(t).withLog('Then I can find conversation with UMI in favorites/DM/teams section', async () => {
+    await favoritesSection.expand();
+    await favoriteItem.umi.shouldBeNumber(1);
+    await directMessagesSection.expand();
+    await directMessageItem.umi.shouldBeNumber(1);
+    await teamsSection.expand();
+    await teamItem.umi.shouldBeNumber(1);
+  });
+
+  const groupList = {
+    favorite: favoriteItem,
+    directMessage: directMessageItem,
+    team: teamItem,
+  };
+  const closeButton = app.homePage.messageTab.moreMenu.close;
+  for (const key in groupList) {
+    const item = groupList[key];
+    await h(t).withLog(`When I click more Icon of a ${key} conversation with UMI`,
+      async () => {
+        await item.openMoreMenu();
+      },
+    );
+
+    await h(t).withLog('Then the close button should not be show', async () => {
+      await closeButton.shouldBeDisabled();
+      await t.pressKey('esc');
+    });
+  }
+},
 );
 
 
@@ -571,7 +571,6 @@ test(formalName('JPT-138 Can display conversation history when receiving message
 
     await h(t).withLog(`When I open the direct messages conversation`, async () => {
       await privateChat.enter();
-      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('Then history posts can be displayed in conversations stream', async () => {
@@ -580,7 +579,6 @@ test(formalName('JPT-138 Can display conversation history when receiving message
 
     await h(t).withLog(`When I open the team conversation`, async () => {
       await teamChat.enter();
-      await conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('Then history posts can be displayed in order in conversations stream', async () => {

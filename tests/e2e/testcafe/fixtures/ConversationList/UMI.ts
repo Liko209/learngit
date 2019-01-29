@@ -171,7 +171,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
   await h(t).withLog('Then I click the team to open the team conversation', async () => {
     await teamsSection.conversationEntryById(teamId).enter();
-    await app.homePage.messageTab.conversationPage.waitForPostsToBeLoaded();
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
@@ -569,7 +568,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
-      await conversationPage.waitForPostsToBeLoaded();
       await conversationPage.scrollToMiddle();
       await h(t).platform(otherUser).sendTextPost('test again', pvtChatId);
     });

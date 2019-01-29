@@ -42,7 +42,6 @@ test(formalName('Check the posts display and the order', ['P1', 'JPT-52', 'Conve
       const teamsSection = app.homePage.messageTab.teamsSection;
       await teamsSection.expand();
       await teamsSection.conversationEntryById(teamId).enter();
-      await app.homePage.messageTab.conversationPage.waitForPostsToBeLoaded();
     });
 
     await h(t).withLog('And I send 3 posts in order via API', async () => {
@@ -99,7 +98,6 @@ test(formalName('No post in conversation when the conversation', ['P2', 'JPT-53'
     });
 
     await h(t).withLog('And I should not find any post in the new created conversation', async () => {
-      await app.homePage.messageTab.conversationPage.waitForPostsToBeLoaded();
       const postsSelector = await app.homePage.messageTab.conversationPage.posts;
       await t.expect(postsSelector.exists).notOk();
     });
@@ -146,7 +144,6 @@ test(formalName('Should be able to read the newest posts once open a conversatio
     const conversationPage = app.homePage.messageTab.conversationPage;
     const posts = app.homePage.messageTab.conversationPage.posts;
     await h(t).withLog(`Then I should find post "${msgBeforeLogin}" in the conversation posts history`, async () => {
-      await conversationPage.waitForPostsToBeLoaded();
       await t.expect(posts.nth(-1).withText(msgBeforeLogin).exists).ok();
     })
 
@@ -199,7 +196,6 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
   });
 
   await h(t).withLog('And scroll to middle of page', async () => {
-    await conversationPage.waitForPostsToBeLoaded();
     await conversationPage.scrollToMiddle();
   });
 

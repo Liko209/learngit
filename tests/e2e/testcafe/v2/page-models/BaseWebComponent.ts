@@ -94,7 +94,8 @@ export abstract class BaseWebComponent {
       await H.retryUntilPass(async () => assert(await this.spinners.count > 0), 4);
     } catch (e) {
       // it's ok if spinner doesn't exist
-    } finally {
+    }
+    finally {
       await this.t.expect(this.spinners.count).eql(0, { timeout });
     }
   }

@@ -10,6 +10,7 @@ import { LeftRail } from './LeftRail';
 class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -175,6 +176,8 @@ class ConversationEntry extends BaseWebComponent {
 
   async enter() {
     await this.t.hover(this.self).click(this.self);
+    // whenever we enter
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 

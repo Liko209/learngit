@@ -44,7 +44,6 @@ test(formalName('Jump to post position when click button or clickable area of po
 
   await h(t).withLog('And I enter the team conversation page', async () => {
     await teamsSection.conversationEntryById(teamId).enter();
-    await conversationPage.waitForPostsToBeLoaded();
   });
 
   await h(t).withLog('And I click Edit Post in Action bar more item', async () => {

@@ -109,7 +109,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
     await mentionPageEntry.enter();
-    await mentionPage.waitForPostsToBeLoaded();
     await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -118,7 +117,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   // open via bookmark
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
     await bookmarkEntry.enter();
-    await bookmarkPage.waitForPostsToBeLoaded();
     await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -148,7 +146,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
     await mentionPageEntry.enter();
-    await mentionPage.waitForPostsToBeLoaded();
     await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -157,7 +154,6 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   // open via bookmark
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
     await bookmarkEntry.enter();
-    await bookmarkPage.waitForPostsToBeLoaded();
     await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -296,7 +292,6 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
     await mentionPageEntry.enter();
-    await mentionPage.waitForPostsToBeLoaded();
     await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -309,7 +304,6 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
     await bookmarkEntry.enter();
-    await bookmarkPage.waitForPostsToBeLoaded();
     await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -369,7 +363,6 @@ test(formalName('Should display in the top of conversation list when opening a c
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
     await mentionPageEntry.enter();
-    await mentionPage.waitForPostsToBeLoaded();
     await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -378,7 +371,6 @@ test(formalName('Should display in the top of conversation list when opening a c
   // open via bookmark
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
     await bookmarkEntry.enter();
-    await bookmarkPage.waitForPostsToBeLoaded();
     await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
