@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { ConversationPostViewProps, POST_TYPE } from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
@@ -15,6 +16,7 @@ const PostTypeMappingComponent = {
   [POST_TYPE.NOTIFICATION]: Notification,
 };
 
+@observer
 class ConversationPostView extends Component<ConversationPostViewProps> {
   constructor(props: ConversationPostViewProps) {
     super(props);

@@ -29,7 +29,7 @@ const handleTeamRemovedIds = async (people: any[]) => {
       return false;
     });
     ids.length &&
-      notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM, ids);
+      notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM, ids);
   }
 };
 const personHandleData = async (persons: Raw<Person>[]) => {

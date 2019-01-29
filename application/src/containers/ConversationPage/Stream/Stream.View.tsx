@@ -3,7 +3,7 @@
  * @Date: 2018-09-17 14:01:06
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import React, { Component } from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
@@ -35,7 +35,7 @@ class StreamViewComponent extends Component<Props> {
   private _listRef: React.RefObject<HTMLElement> = React.createRef();
   private _postRefs: Map<number, any> = new Map();
   private _visibilitySensorEnabled = false;
-  private _isAtBottom = false;
+  private _isAtBottom = true;
   private _isAtTop = false;
   private _timeout: NodeJS.Timeout | null;
   private _temporaryDisableAutoScroll = false;
@@ -60,19 +60,22 @@ class StreamViewComponent extends Component<Props> {
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
-    this._loadInitialPosts();
+    await this._loadInitialPosts();
   }
 
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
     this._ro.forEach(i => i.disconnect());
+    if (this._listRef.current) {
+      getScrollParent(this._listRef.current).removeEventListener(
+        'scroll',
+        this._recordPosition,
+      );
+    }
   }
 
   getSnapshotBeforeUpdate() {
-    this._isAtBottom = this.props.atBottom();
-    this._isAtTop = this.props.atTop();
-
     if (this._listRef.current) {
       const parentEl = getScrollParent(this._listRef.current);
       this._scrollHeight = parentEl.scrollHeight;
@@ -89,15 +92,14 @@ class StreamViewComponent extends Component<Props> {
     const currSize = postIds.length;
     const prevLastPost = _(prevPostIds).last();
     const currentLastPost = _(postIds).last();
-
+    this._isAtBottom = this.props.atBottom();
+    this._isAtTop = this.props.atTop();
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
         storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
       }
     }
-
     if (prevSize === 0) return;
-
     if (prevSize < currSize) {
       // scroll bottom and load post
       if (prevLastPost !== currentLastPost) {
@@ -325,6 +327,14 @@ class StreamViewComponent extends Component<Props> {
     this._visibilitySensorEnabled = true;
     updateHistoryHandler();
     markAsRead();
+    getScrollParent(this._listRef.current).addEventListener(
+      'scroll',
+      this._recordPosition,
+      {
+        capture: true,
+        passive: true,
+      },
+    );
   }
 
   @action
@@ -379,8 +389,16 @@ class StreamViewComponent extends Component<Props> {
   }
 
   scrollToBottom = async () => {
-    const parentEl = getScrollParent(this._listRef.current!);
-    parentEl.scrollTop = 9e10;
+    const listEl = this._listRef.current;
+    if (!listEl) {
+      return;
+    }
+    const lastChildEl = listEl && listEl.lastElementChild;
+    if (lastChildEl) {
+      await nextTick();
+      lastChildEl.scrollIntoView(false);
+    }
+    this._isAtBottom = true;
   }
 
   scrollToPost = async (
@@ -393,9 +411,13 @@ class StreamViewComponent extends Component<Props> {
       mainLogger.warn('scrollToPostEl no found');
       return;
     }
-
     return scrollToComponent(scrollToPostEl, options);
   }
+
+  private _recordPosition = debounce(() => {
+    this._isAtBottom = this.props.atBottom();
+    this._isAtTop = this.props.atTop();
+  },                                 500);
 
   private _focusHandler = () => {
     const { atBottom, markAsRead } = this.props;

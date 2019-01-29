@@ -17,6 +17,7 @@ import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
 import { NewGroupService } from '../../../module/group';
 import { IRequestRemotePostAndSave } from '../entity/Post';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const TAG = 'PostFetchController';
 
@@ -55,6 +56,9 @@ class PostFetchController {
       hasMore: true,
     };
 
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+    );
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
       TAG,
@@ -98,6 +102,9 @@ class PostFetchController {
       }
     }
     result.limit = limit;
+    PerformanceTracerHolder.getPerformanceTracer().end(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+    );
     return result;
   }
 
@@ -191,6 +198,7 @@ class PostFetchController {
       direction,
       limit,
     );
+
     const itemService: ItemService = ItemService.getInstance();
     const result: IPostResult = {
       limit,

@@ -72,9 +72,11 @@ type CreateTeamOptions = {
   canPin?: boolean;
 };
 
-const handleTeamsRemovedFrom = async (ids: number[]) => {
-  const service: GroupService = GroupService.getInstance();
-  service.removeTeamsByIds(ids, true);
+const deleteAllTeamInformation = async (ids: number[]) => {
+  const postService: PostService = PostService.getInstance();
+  await postService.deletePostsByGroupIds(ids, true);
+  const groupConfigDao = daoManager.getDao(GroupConfigDao);
+  groupConfigDao.bulkDelete(ids);
 };
 
 const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
@@ -91,7 +93,7 @@ class GroupService extends BaseService<Group> {
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
       [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
-      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM]: handleTeamsRemovedFrom,
+      [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: deleteAllTeamInformation,
       [SERVICE.POST_SERVICE
         .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
     };
@@ -890,10 +892,7 @@ class GroupService extends BaseService<Group> {
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
     }
-    const postService: PostService = PostService.getInstance();
-    await postService.deletePostsByGroupIds(ids, true);
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    groupConfigDao.bulkDelete(ids);
+    deleteAllTeamInformation(ids);
   }
 
   async setAsTrue4HasMoreConfigByDirection(
@@ -917,6 +916,20 @@ class GroupService extends BaseService<Group> {
     });
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     groupConfigDao.bulkUpdate(data);
+  }
+
+  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const isHidden = await profileService.isConversationHidden(groupId);
+    let isIncludeSelf = false;
+    let isValid = false;
+    const group = await this.getById(groupId);
+    if (group) {
+      isValid = this.isValid(group);
+      const currentUserId = UserConfig.getCurrentUserId();
+      isIncludeSelf = group.members.includes(currentUserId);
+    }
+    return !isHidden && isValid && isIncludeSelf;
   }
 }
 

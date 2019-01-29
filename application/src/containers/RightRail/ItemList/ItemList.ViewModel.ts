@@ -15,7 +15,6 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { delay } from '@/utils/function';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
@@ -80,7 +79,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
-  @computed
   private get _typeId() {
     return RightRailItemTypeIdMap[this.type];
   }
@@ -146,6 +144,14 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         }
       },
     );
+    this.reaction(
+      () => this._loadStatus.firstLoaded,
+      (firstLoaded: boolean) => {
+        if (firstLoaded) {
+          this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
@@ -201,6 +207,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
+      hasMoreDown: true,
+      hasMoreUp: true,
     });
     this.fetchNextPageItems();
   }
@@ -255,7 +263,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
     try {
       this._loadStatus.loading = true;
-      await delay(500);
       await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
     } catch (e) {
