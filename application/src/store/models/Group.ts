@@ -42,6 +42,8 @@ export default class GroupModel extends Base<Group> {
   permissions?: TeamPermission;
   @observable
   mostRecentPostId?: number;
+  @observable
+  isCompanyTeam: boolean;
 
   latestTime: number;
 
@@ -60,6 +62,7 @@ export default class GroupModel extends Base<Group> {
       creator_id,
       guest_user_company_ids,
       permissions,
+      is_company_team,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -76,6 +79,7 @@ export default class GroupModel extends Base<Group> {
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
+    this.isCompanyTeam = is_company_team;
   }
 
   @computed
