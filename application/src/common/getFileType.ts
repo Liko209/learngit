@@ -8,7 +8,7 @@ import FileItemModel, {
   FileType,
 } from '@/store/models/FileItem';
 
-const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -40,6 +40,19 @@ function image(item: FileItemModel) {
     previewUrl: '',
   };
 
+  // In order to show image
+  // If upload doc and image together, image will not has thumbs
+  // FIXME: FIJI-2565
+  if (type) {
+    const t = type.toLocaleLowerCase();
+    if (FileItemUtils.isSupportPreview({ type }) || t.includes('image/')) {
+      image.isImage = true;
+      image.previewUrl = versionUrl || '';
+      return image;
+    }
+  }
+
+  // The thumbnail will blur
   if (thumbs) {
     for (const key in thumbs) {
       const value = thumbs[key];
@@ -47,18 +60,6 @@ function image(item: FileItemModel) {
         image.isImage = true;
         image.previewUrl = thumbs[key];
       }
-    }
-  }
-
-  // In order to show image
-  // If upload doc and image together, image will not has thumbs
-  // FIXME: FIJI-2565
-  if (type) {
-    const isImage = IMAGE_TYPE.some(looper => type.includes(looper));
-    if (type.includes('image/') || isImage) {
-      image.isImage = true;
-      image.previewUrl = versionUrl || '';
-      return image;
     }
   }
   return image;

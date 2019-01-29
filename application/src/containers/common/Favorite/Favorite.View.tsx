@@ -20,9 +20,9 @@ type Props = FavoriteViewProps & WithNamespaces;
 
 @observer
 class FavoriteViewComponent extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
+  static defaultProps: Partial<Props> = {
+    size: 'small',
+  };
 
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;

@@ -15,6 +15,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { delay } from '@/utils/function';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
@@ -79,9 +80,13 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
-  @computed
   private get _typeId() {
     return RightRailItemTypeIdMap[this.type];
+  }
+
+  @computed
+  get _active() {
+    return this.props.active;
   }
 
   private _getFilterFunc() {
@@ -115,7 +120,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this._groupId,
       () => {
-        this._loadStatus.firstLoaded = false;
         const {
           sortKey = ITEM_SORT_KEYS.CREATE_TIME,
           desc = false,
@@ -133,6 +137,14 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       { fireImmediately: true },
     );
     this.reaction(() => this.ids, () => this.loadTotalCount());
+    this.reaction(
+      () => this._active,
+      (active: boolean) => {
+        if (active && !this._loadStatus.firstLoaded) {
+          this.forceReload();
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
@@ -214,11 +226,18 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   forceReload = async () => {
     this._loadStatus.firstLoaded = false;
+    this._loadStatus.loading = false;
     await this.fetchNextPageItems();
   }
 
   @action
   fetchNextPageItems = async () => {
+    const { active } = this.props;
+    const { loading, firstLoaded } = this._loadStatus;
+    const noMore = firstLoaded && this.totalCount === this.ids.length;
+    if (!active || loading || noMore) {
+      return;
+    }
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       const { offlinePrompt } = this.tabConfig;
@@ -235,11 +254,9 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
     try {
       this._loadStatus.loading = true;
-      const result = await this._sortableDataHandler.fetchData(
-        QUERY_DIRECTION.NEWER,
-      );
+      await delay(500);
+      await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
-      return result;
     } catch (e) {
       Object.assign(this._loadStatus, { loadError: true, loading: false });
     }
@@ -256,7 +273,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get ids() {
-    return this._sortableDataHandler.sortableListStore.getIds();
+    return this._sortableDataHandler.sortableListStore.getIds;
   }
 }
 

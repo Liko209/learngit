@@ -224,7 +224,7 @@ describe('StateDataHandleController', () => {
             marked_as_unread: true,
             post_cursor: 13,
             read_through: 209,
-            unread_deactivated_count: 11,
+            unread_deactivated_count: 10,
             unread_mentions_count: 0,
           },
           {
@@ -274,12 +274,12 @@ describe('StateDataHandleController', () => {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
             id: 2,
-            marked_as_unread: false,
+            marked_as_unread: true,
             post_cursor: 13,
             read_through: 209,
-            unread_deactivated_count: 11,
+            unread_deactivated_count: 10,
             unread_mentions_count: 0,
-            unread_count: 0,
+            unread_count: 1,
           },
           {
             id: 3,
@@ -292,6 +292,54 @@ describe('StateDataHandleController', () => {
           },
         ],
         isSelf: false,
+        myState: undefined,
+      });
+    });
+
+    it('should return groupState with unread count = 0 when isSelf is true', async () => {
+      const transformedState = {
+        groupStates: [
+          {
+            id: 1,
+            group_post_cursor: 18,
+          },
+        ],
+        isSelf: true,
+      };
+
+      mockStateFetchDataController.getAllGroupStatesFromLocal = jest
+        .fn()
+        .mockReturnValue([
+          {
+            id: 1,
+            marked_as_unread: true,
+            group_post_cursor: 17,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 1,
+          },
+        ]);
+
+      expect(
+        await stateDataHandleController['_generateUpdatedState'](
+          transformedState,
+        ),
+      ).toEqual({
+        groupStates: [
+          {
+            id: 1,
+            marked_as_unread: false,
+            group_post_cursor: 18,
+            post_cursor: 16,
+            read_through: 7,
+            unread_deactivated_count: 0,
+            unread_mentions_count: 0,
+            unread_count: 0,
+          },
+        ],
+        isSelf: true,
         myState: undefined,
       });
     });

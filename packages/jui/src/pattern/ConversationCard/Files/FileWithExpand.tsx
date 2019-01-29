@@ -48,7 +48,7 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
     <Jui.FileExpandItemWrapper>
       {!expand && (
         <Jui.FileExpandItem>
-          <Jui.FileIcon size="small" />
+          <Jui.FileIcon size="small">default-file</Jui.FileIcon>
           <NameWithActions>
             <FileName
               statusColor={fileNameColor}
