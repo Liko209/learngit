@@ -142,10 +142,8 @@ export class NetworkRequestExecutor
         break;
       case HTTP_STATUS_CODE.BAD_GATEWAY:
         this._handle502XApiCompletionCallback(response);
-        break;
       case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
-        break;
       default:
         this._callXApiCompletionCallback(response);
     }
