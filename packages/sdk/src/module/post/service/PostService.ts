@@ -11,7 +11,11 @@ import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
-
+import ProfileService from '../../../service/profile';
+import { Item } from '../../../module/item/entity';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { SOCKET } from '../../../service';
+import { handleDataFromSexio } from '../../../service/post/handleData';
 class NewPostService extends EntityBaseService<Post> {
   static serviceName = 'NewPostService';
   postController: PostController;
@@ -20,6 +24,12 @@ class NewPostService extends EntityBaseService<Post> {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });
+
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SOCKET.POST]: handleDataFromSexio,
+      }),
+    );
   }
 
   protected getPostController() {
@@ -72,6 +82,50 @@ class NewPostService extends EntityBaseService<Post> {
     return this.getPostController()
       .getPostFetchController()
       .getPostsByGroupId({ groupId, postId, limit, direction });
+  }
+
+  async getPostsByIds(
+    ids: number[],
+  ): Promise<{ posts: Post[]; items: Item[] }> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getPostsByIds(ids);
+  }
+
+  async bookmarkPost(postId: number, toBook: boolean) {
+    // favorite_post_ids in profile
+    const profileService: ProfileService = ProfileService.getInstance();
+    return await profileService.putFavoritePost(postId, toBook);
+  }
+
+  async getLastPostOfGroup(groupId: number): Promise<Post | null> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getLastPostOfGroup(groupId);
+  }
+
+  async groupHasPostInLocal(groupId: number) {
+    return this.getPostController()
+      .getPostFetchController()
+      .groupHasPostInLocal(groupId);
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getNewestPostIdOfGroup(groupId);
+  }
+
+  async removeItemFromPost(postId: number, itemId: number) {
+    this.getPostController()
+      .getPostActionController()
+      .removeItemFromPost(postId, itemId);
+  }
+
+  async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
+    this.getPostController()
+      .getPostActionController()
+      .deletePostsByGroupIds(groupIds, shouldNotify);
   }
 }
 

@@ -171,6 +171,60 @@ class PostFetchController {
     return result;
   }
 
+  async getPostsByIds(
+    ids: number[],
+  ): Promise<{ posts: Post[]; items: Item[] }> {
+    const itemService: ItemService = ItemService.getInstance();
+    const localPosts = await this.entitySourceController.batchGet(ids);
+    const result = {
+      posts: localPosts,
+      items: await itemService.getByPosts(localPosts),
+    };
+    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+    if (restIds.length) {
+      const remoteResult = await PostAPI.requestByIds(restIds);
+      const remoteData = remoteResult.expect('getPostsByIds failed');
+      const posts: Post[] =
+        (await this._postDataController.filterAndSavePosts(
+          this._postDataController.transformData(remoteData.posts),
+          false,
+        )) || [];
+      const itemService = ItemService.getInstance() as ItemService;
+      const items =
+        (await itemService.handleIncomingData(remoteData.items)) || [];
+      result.posts.push(...posts);
+      result.items.push(...items);
+    }
+    return result;
+  }
+
+  async getLastPostOfGroup(groupId: number): Promise<Post | null> {
+    const postDao = daoManager.getDao(PostDao);
+    return postDao.queryLastPostByGroupId(groupId);
+  }
+
+  async groupHasPostInLocal(groupId: number) {
+    const postDao: PostDao = daoManager.getDao(PostDao);
+    const posts: Post[] = await postDao.queryPostsByGroupId(
+      groupId,
+      0,
+      undefined,
+      1,
+    );
+    return posts.length !== 0;
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    const result = await this.fetchPaginationPosts({
+      groupId,
+      limit: 1,
+    });
+    if (result && result.posts && result.posts.length) {
+      return result.posts[0]._id;
+    }
+    return null;
+  }
+
   /**
    * If direction === QUERY_DIRECTION.OLDER, should check has more.
    * If direction === QUERY_DIRECTION.NEWER, return true

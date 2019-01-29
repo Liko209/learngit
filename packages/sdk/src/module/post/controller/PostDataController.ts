@@ -29,7 +29,7 @@ class PostDataController {
       return;
     }
 
-    const transformedData = this._transformData(data.posts);
+    const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
     }
@@ -74,7 +74,7 @@ class PostDataController {
     }
   }
 
-  private _transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
+  transformData(data: Raw<Post>[] | Raw<Post>): Post[] {
     return ([] as Raw<Post>[])
       .concat(data)
       .map((item: Raw<Post>) => transform<Post>(item));

@@ -10,14 +10,22 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { daoManager, PostDao } from '../../../../dao';
 import { EditPostType } from '../../types';
-import { GroupConfigService } from '../../../../service';
+import {
+  GroupConfigService,
+  notificationCenter,
+  ENTITY,
+} from '../../../../service';
 import { IPostActionController } from '../interface/IPostActionController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
+import { ItemService } from '../../../../module/item/service';
+import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
+import { PostControllerUtils } from './PostControllerUtils';
 class PostActionController implements IPostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
     public requestController: IRequestController<Post>,
     public preInsertController: IPreInsertController<Post>,
+    public entitySourceController: IEntitySourceController<Post>,
   ) {}
 
   async likePost(
@@ -105,6 +113,51 @@ class PostActionController implements IPostActionController {
       return this._deletePreInsertedPost(id);
     }
     return !!this._deletePostFromRemote(id);
+  }
+
+  async removeItemFromPost(postId: number, itemId: number) {
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.deleteItemData(itemId);
+    const post = await this.entitySourceController.getEntityLocally(postId);
+    if (post) {
+      const itemIds = post.item_ids.filter((value: number) => {
+        return value !== itemId;
+      });
+      post.item_ids = itemIds;
+      const result = !PostControllerUtils.isValidPost(post);
+      if (result) {
+        // await this.deletePost(postId);
+      } else {
+        const preHandlePartial = (
+          partialPost: Partial<Raw<Post>>,
+          originalPost: Post,
+        ): Partial<Raw<Post>> => {
+          return {
+            item_ids: itemIds,
+            ...partialPost,
+          };
+        };
+        await this.partialModifyController.updatePartially(
+          postId,
+          preHandlePartial,
+          async (newPost: Post) => {
+            return this.requestController.put(newPost);
+          },
+        );
+      }
+    }
+  }
+
+  async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
+    const dao = daoManager.getDao(PostDao);
+    const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
+    const postsMap = await Promise.all(promises);
+    const posts = _.union(...postsMap);
+    const ids = posts.map(post => post.id);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.POST, ids);
+    }
   }
 
   private async _deletePostFromRemote(id: number) {

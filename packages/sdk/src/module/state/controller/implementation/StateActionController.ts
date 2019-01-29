@@ -8,7 +8,7 @@ import { GroupState, State } from '../../entity/State';
 import { Post } from '../../../post/entity';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import PostService from '../../../../service/post';
+import { NewPostService } from '../../../post';
 import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
 
@@ -23,8 +23,9 @@ class StateActionController {
     const lastPost = await this._getLastPostOfGroup(groupId);
     let lastPostId = lastPost && lastPost.id;
     if (!lastPostId) {
-      const postService = PostService.getInstance<PostService>();
+      const postService: NewPostService = NewPostService.getInstance();
       lastPostId = await postService.getNewestPostIdOfGroup(groupId);
+      lastPostId = 1;
     }
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (lastPostId && myStateId > 0) {
@@ -67,7 +68,7 @@ class StateActionController {
   }
 
   private async _getLastPostOfGroup(groupId: number): Promise<Post | null> {
-    const postService: PostService = PostService.getInstance();
+    const postService: NewPostService = NewPostService.getInstance();
     return await postService.getLastPostOfGroup(groupId);
   }
 

@@ -15,13 +15,9 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { t } from 'i18next';
 import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import {
-  PostService,
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
+import { NewPostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType } from './types';
 import { getFileType } from '@/common/getFileType';
@@ -33,14 +29,14 @@ import {
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
-  private _postService: PostService;
+  private _postService: NewPostService;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
 
   constructor(props: FilesViewProps) {
     super(props);
     this._itemService = ItemService.getInstance();
-    this._postService = PostService.getInstance();
+    this._postService = NewPostService.getInstance();
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);

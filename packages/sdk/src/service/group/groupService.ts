@@ -60,10 +60,10 @@ import {
 import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
-import PostService from '../post';
 import { ServiceResult } from '../ServiceResult';
 import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 import { Person } from '../../module/person/entity';
+import { NewPostService } from '../../module/post';
 
 type CreateTeamOptions = {
   isPublic?: boolean;
@@ -899,7 +899,7 @@ class GroupService extends BaseService<Group> {
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
     }
-    const postService: PostService = PostService.getInstance();
+    const postService: NewPostService = NewPostService.getInstance();
     await postService.deletePostsByGroupIds(ids, true);
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     groupConfigDao.bulkDelete(ids);

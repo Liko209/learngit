@@ -1,5 +1,6 @@
 import { service } from 'sdk';
 import { ItemService } from 'sdk/module/item';
+import { NewPostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
@@ -9,7 +10,6 @@ const {
   CompanyService,
   GroupService,
   GroupConfigService,
-  PostService,
   PresenceService,
   ProfileService,
   ENTITY,
@@ -95,7 +95,7 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
-    service: () => PostService.getInstance(),
+    service: () => NewPostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
