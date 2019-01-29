@@ -145,6 +145,14 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         }
       },
     );
+    this.reaction(
+      () => this._loadStatus.firstLoaded,
+      (firstLoaded: boolean) => {
+        if (firstLoaded) {
+          this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
