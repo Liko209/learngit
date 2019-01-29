@@ -94,6 +94,11 @@ export default class GroupModel extends Base<Group> {
     return this.isThePersonAdmin(currentUserId);
   }
 
+  get isMember() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.members.indexOf(currentUserId) >= 0;
+  }
+
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
@@ -191,11 +196,14 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
-  get isCurrentUserHasPermissionAddTeam() {
-    const GroupService = new NGroupService();
+  get isCurrentUserHasPermissionAddMember() {
+    if (!this.isMember) {
+      return false;
+    }
+    const groupService = new NGroupService();
     const members = this.members || [];
     const guestUserCompanyIds = this.guestUserCompanyIds || [];
-    return GroupService.isCurrentUserHasPermission(
+    return groupService.isCurrentUserHasPermission(
       {
         members,
         is_team: this.isTeam,

@@ -24,7 +24,7 @@ import {
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
 import { NewPostService } from 'sdk/module/post';
-import { StreamProps } from '../types';
+import { StreamProps, StreamItemType } from '../types';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
@@ -38,6 +38,7 @@ const postService = {
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
 }
@@ -147,10 +148,11 @@ describe('StreamViewModel', () => {
       Object.assign(vm, {
         _streamController: {
           hasMoreUp: props.hasMoreUp,
-          items: props.id ? [{ id: props.id, value: [props.id] }] : [],
+          items: props.id
+            ? [{ id: props.id, value: [props.id], type: StreamItemType.POST }]
+            : [],
         },
       });
-
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
@@ -186,12 +188,15 @@ describe('StreamViewModel', () => {
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
         _historyHandler: { update: mockUpdate },
-        _streamController: { postIds },
+        _streamController: {
+          postIds,
+          items: postIds.map(i => ({
+            id: i,
+            value: i,
+            type: StreamItemType.POST,
+          })),
+        },
       });
-
-      vm._streamController.items = postIds.map(i => ({
-        value: [i],
-      }));
 
       Object.defineProperty(vm, '_groupState', {
         value: groupState,

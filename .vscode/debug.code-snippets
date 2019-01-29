@@ -1,0 +1,6 @@
+{
+  "Assign to window": {
+    "prefix": ["tw"],
+    "body": ["Object.assign(window, {${1:temp1}: this})"]
+  }
+}

@@ -84,7 +84,11 @@ class EventUpdate extends React.Component<Props> {
           )
         }
       >
-        {hasNewTime && <JuiTimeMessage time={`${newTime} ${newTimeText}`} />}
+        {hasNewTime && (
+          <JuiEventContent title={t('due')}>
+            <JuiTimeMessage time={`${newTime} ${newTimeText}`} />
+          </JuiEventContent>
+        )}
         {newLocation && (
           <JuiEventContent title={t('locationTitle')}>
             <JuiEventLocation location={newLocation} />

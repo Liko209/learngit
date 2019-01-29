@@ -144,6 +144,7 @@ const JuiConversationListItem: IConversationListItem = (
     selected,
     innerRef,
     umiHint,
+    children,
     ...rest
   } = props;
 
@@ -168,6 +169,7 @@ const JuiConversationListItem: IConversationListItem = (
           more_vert
         </StyledIconographyMore>
       </StyledRightWrapper>
+      {children}
     </StyledListItem>
   );
 };
