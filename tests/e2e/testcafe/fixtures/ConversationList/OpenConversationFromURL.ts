@@ -80,7 +80,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await h(t).glip(loginUser).clearAllUmi();
   });
 
-  async function nextSteps(section, chatId: string, teamName: string, sectionName: string) {
+  async function stepsToCheckPositionFixed(section, chatId: string, teamName: string, sectionName: string) {
     await h(t).withLog(`Then ${teamName} should keep its position 2 in ${sectionName} section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(1).groupIdShouldBe(chatId);
@@ -107,7 +107,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await app.homePage.ensureLoaded();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionFixed(teamSection, teamId, 'conversation A', 'team');
 
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
@@ -116,7 +116,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionFixed(teamSection, teamId, 'conversation A', 'team');
 
   // open via bookmark
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
@@ -125,7 +125,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionFixed(teamSection, teamId, 'conversation A', 'team');
 
   // open via URL
   await h(t).withLog(`When I open conversation A via URL `, async () => {
@@ -135,7 +135,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await app.homePage.ensureLoaded();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionFixed(teamSection, teamId, 'conversation A', 'team');
 
   // open via search team name
   await h(t).withLog(`When I search the showed team ${secondTeamName} and click it`, async () => {
@@ -144,7 +144,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await search.nthTeam(0).enter();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionFixed(teamSection, teamId, 'conversation A', 'team');
 
   // Login -> Last open DM conversation B
   await h(t).withLog(`When I logout And set last_group_id is id of conversation B and login again`, async () => {
@@ -155,7 +155,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await app.homePage.ensureLoaded();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionFixed(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
@@ -164,7 +164,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionFixed(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via bookmark
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
@@ -173,7 +173,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionFixed(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via URL
   await h(t).withLog(`When I open conversation B via URL `, async () => {
@@ -183,7 +183,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await app.homePage.ensureLoaded();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionFixed(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via search other user name
   await h(t).withLog(`When I search the showed privateChat ${otherUserName} and click it`, async () => {
@@ -192,7 +192,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
     await search.nthPeople(0).enter();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionFixed(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 });
 
 
@@ -279,7 +279,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await h(t).glip(loginUser).clearAllUmi();
   });
 
-  async function nextSteps(section, chatId: string, teamName: string, sectionName: string) {
+  async function stepsToCheckPositionOnTop(section, chatId: string, teamName: string, sectionName: string) {
     await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(0).groupIdShouldBe(chatId);
@@ -309,7 +309,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await app.homePage.ensureLoaded();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via mentions
   await h(t).withLog(`Given I hide the conversation A`, async () => {
@@ -322,7 +322,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via bookmark
   await h(t).withLog(`Given I hide the conversation A`, async () => {
@@ -335,7 +335,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
   // // open via URL
@@ -360,7 +360,7 @@ test(formalName('Should display in the top of conversation list when opening a c
   await h(t).withLog(`When I search the hide team ${topTeamName} and click it`, async () => {
     await search.typeText(topTeamName, { replace: true, paste: true });
     await t.wait(3e3);
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
     await h(t).reload();
     await app.homePage.ensureLoaded();
     await search.typeText(topTeamName, { replace: true, paste: true });
@@ -368,7 +368,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await search.nthTeam(0).enter();
   });
 
-  await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via create new team
   const createTeamModal = app.homePage.createTeamModal;
@@ -408,7 +408,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await app.homePage.ensureLoaded();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
@@ -417,7 +417,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via bookmark
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
@@ -426,7 +426,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
   // open via URL
@@ -451,7 +451,7 @@ test(formalName('Should display in the top of conversation list when opening a c
   await h(t).withLog(`When I search the hide privateChat ${otherUserName} and click it`, async () => {
     await search.typeText(otherUserName, { replace: true, paste: true });
     await t.wait(3e3);
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500    
     await h(t).reload();
     await app.homePage.ensureLoaded();
     await search.typeText(otherUserName, { replace: true, paste: true });
@@ -459,7 +459,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await search.nthPeople(0).enter();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via send new message entry
   await h(t).withLog(`Given I hide the conversation A`, async () => {
@@ -477,6 +477,6 @@ test(formalName('Should display in the top of conversation list when opening a c
     await sendNewMessageModal.clickSendButton();
   });
 
-  await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
 });
