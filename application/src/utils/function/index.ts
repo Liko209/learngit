@@ -21,4 +21,10 @@ function compose(...funcs: Function[]) {
   return funcs.reduce((a, b) => (...args: any[]) => a(b(...args)));
 }
 
-export { compose };
+async function delay(interval: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => resolve(), interval);
+  });
+}
+
+export { compose, delay };

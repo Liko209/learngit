@@ -7,8 +7,9 @@ import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 import { UserConfig } from 'sdk/service/account/UserConfig';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+
 jest.mock('sdk/api');
 jest.mock('sdk/service/account/UserConfig');
 jest.mock('@/store/utils/entities');
@@ -263,6 +264,93 @@ describe('GroupModel', () => {
         },
       } as Group);
       expect(gm.isThePersonAdmin(mockUserId)).toBeFalsy();
+    });
+  });
+
+  describe('isMember', () => {
+    // beforeEach(() => {
+    //   (getGlobalValue as jest.Mock).mockImplementationOnce((key: any) => {
+    //     if (key === GLOBAL_KEYS.CURRENT_USER_ID) {
+    //       return 123;
+    //     }
+    //     return null;
+    //   });
+    // });
+    // afterEach(() => {
+    //   jest.resetAllMocks();
+    //   jest.clearAllMocks();
+    // });
+    it('should return true if currentUserId is in the members array', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        members: [mockUserId, 3, 11, 654],
+      } as Group);
+
+      expect(gm.isMember).toBe(true);
+    });
+
+    it('should return false if currentUserId is not in the members array', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        members: [3, 11, 654],
+      } as Group);
+
+      expect(gm.isMember).toBe(false);
+    });
+  });
+
+  describe('isCurrentUserHasPermissionAddMember', () => {
+    const groupService = {
+      isCurrentUserHasPermission: jest.fn(),
+    };
+    beforeEach(() => {
+      // (GroupService as any).mockImplementation(() => groupService);
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+    });
+    it('should return false if current user is not a member', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        members: [mockUserId + 1],
+      } as Group);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
+    });
+    it('should return false when user is a member but has not permission', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [0],
+          },
+          user: {
+            level: 0,
+          },
+        },
+      } as Group);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
+    });
+    it('should return true when user is a member and has permission', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [0],
+          },
+          user: {
+            level: PERMISSION_ENUM.TEAM_ADD_MEMBER,
+          },
+        },
+      } as Group);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(true);
     });
   });
 });

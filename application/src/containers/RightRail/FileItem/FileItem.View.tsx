@@ -27,7 +27,7 @@ class FileItemView extends Component<FileItemViewProps> {
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail id={id} />
+          <Thumbnail id={id} type="file" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}

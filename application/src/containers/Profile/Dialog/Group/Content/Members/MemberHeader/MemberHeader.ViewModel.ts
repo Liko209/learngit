@@ -17,8 +17,8 @@ class MemberHeaderViewModel extends ProfileDialogGroupViewModel
   }
 
   @computed
-  get isCurrentUserHasPermissionAddTeam() {
-    return this.group.isCurrentUserHasPermissionAddTeam;
+  get isCurrentUserHasPermissionAddMember() {
+    return this.group.isCurrentUserHasPermissionAddMember;
   }
 }
 export { MemberHeaderViewModel };

@@ -182,7 +182,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   getSortedGroupMembersIds() {
-    return this._sortableDataHandler.sortableListStore.getIds();
+    return this._sortableDataHandler.sortableListStore.getIds;
   }
 }
 

@@ -9,15 +9,15 @@ import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
-import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
-import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
 import { TeamPermission } from 'sdk/service/group';
 import { GroupService as NGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
+import { UserConfig } from 'sdk/service/account';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -91,13 +91,17 @@ export default class GroupModel extends Base<Group> {
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
+  get isMember() {
+    return this.members.indexOf(UserConfig.getCurrentUserId()) >= 0;
+  }
+
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation || '';
     }
 
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const currentUserId = UserConfig.getCurrentUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -142,7 +146,7 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const currentUserId = UserConfig.getCurrentUserId();
 
     const members = this.members || [];
 
@@ -170,7 +174,7 @@ export default class GroupModel extends Base<Group> {
   get membersExcludeMe() {
     const members = this.members || [];
 
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const currentUserId = UserConfig.getCurrentUserId();
 
     return members.filter(member => member !== currentUserId);
   }
@@ -191,7 +195,7 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
-  get isCurrentUserHasPermissionAddTeam() {
+  get isCurrentUserHasPermissionAddMember() {
     return this._nGroupService.isCurrentUserHasPermission(
       this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADD_MEMBER,

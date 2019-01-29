@@ -15,6 +15,7 @@ import { toTitleCase } from '@/utils/string';
 import { SectionViewProps } from './types';
 import { Umi } from '../../Umi';
 import { JuiDivider } from 'jui/components/Divider';
+import { observer } from 'mobx-react';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
@@ -22,6 +23,7 @@ const SortableItem = SortableElement(ConversationListItem);
 
 type Props = SectionViewProps & WithNamespaces;
 
+@observer
 class SectionViewComponent extends React.Component<Props> {
   renderList() {
     const { sortable, onSortEnd } = this.props;
@@ -83,7 +85,7 @@ class SectionViewComponent extends React.Component<Props> {
   }
 }
 
-const SectionView = translate('Conversations')(SectionViewComponent);
+const SectionView = translate('translations')(SectionViewComponent);
 
 export { SectionView };
 export default SectionView;
