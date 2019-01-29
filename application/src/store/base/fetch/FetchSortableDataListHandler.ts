@@ -50,6 +50,7 @@ export class FetchSortableDataListHandler<
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;
+  private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
 
   constructor(
@@ -62,6 +63,7 @@ export class FetchSortableDataListHandler<
     this._transformFunc = options.transformFunc;
     this._sortableDataProvider = dataProvider;
     this._entityName = options.entityName;
+    this._sortFun = options.sortFunc;
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, body }) => {
@@ -173,7 +175,7 @@ export class FetchSortableDataListHandler<
         const model = entities.get(key) as T;
         if (this._isMatchFunc(model)) {
           const idSortKey = this._transformFunc(model);
-          if (this._isInRange(idSortKey.sortValue)) {
+          if (this._isInRange(idSortKey)) {
             matchedSortableModels.push(idSortKey);
             matchedEntities.push(model);
           }
@@ -230,20 +232,36 @@ export class FetchSortableDataListHandler<
     }
   }
 
-  private _isInRange(sortValue: number) {
+  private _isInRange(newData: ISortableModel<T>) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
       const smallest = idArray[0];
       const biggest = idArray[idArray.length - 1];
-      inRange =
-        sortValue >= smallest.sortValue && sortValue <= biggest.sortValue;
-      if (!inRange) {
+      if (this._sortFun) {
         inRange =
-          (sortValue < smallest.sortValue &&
-            !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-          (sortValue > biggest.sortValue &&
-            !this.hasMore(QUERY_DIRECTION.NEWER));
+          this._sortFun(newData, smallest) >= 0 &&
+          this._sortFun(newData, biggest) <= 0;
+      } else {
+        inRange =
+          newData.sortValue >= smallest.sortValue &&
+          newData.sortValue <= biggest.sortValue;
+      }
+
+      if (!inRange) {
+        if (this._sortFun) {
+          inRange =
+            (this._sortFun(newData, smallest) < 0 &&
+              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+            (this._sortFun(newData, biggest) > 0 &&
+              !this.hasMore(QUERY_DIRECTION.NEWER));
+        } else {
+          inRange =
+            (newData.sortValue < smallest.sortValue &&
+              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+            (newData.sortValue > biggest.sortValue &&
+              !this.hasMore(QUERY_DIRECTION.NEWER));
+        }
       }
     } else {
       inRange = !(
