@@ -53,7 +53,9 @@ function image(item: FileItemModel) {
     t = t.toLowerCase();
   }
 
-  isImage = FileItemUtils.isSupportPreview({ type: t });
+  isImage =
+    FileItemUtils.isSupportPreview({ type: t }) ||
+    (type ? type.includes('image/') : false);
   if (isImage) {
     image.isImage = true;
     image.previewUrl = versionUrl || '';
