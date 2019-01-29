@@ -107,7 +107,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             {t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
-        {firstLoaded && !loadError && (
+        {firstLoaded && (
           <ReactResizeDetector handleWidth={true} handleHeight={true}>
             {(width: number = 0, height: number = HEADER_HEIGHT) => (
               <JuiVirtualList
@@ -121,7 +121,7 @@ class ItemListView extends React.Component<ViewProps & Props>
           </ReactResizeDetector>
         )}
         {loading && !firstLoaded && !loadError && this.firstLoader()}
-        {loadError && (
+        {!firstLoaded && loadError && (
           <JuiRightRailContentLoadError
             tip={t(tryAgainPrompt)}
             linkText={t('tryAgain')}
