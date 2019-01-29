@@ -106,11 +106,6 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return this.props.ids;
   }
 
-  // @computed
-  // get urlMap() {
-  //   return this._urlMap;
-  // }
-
   @computed
   get files() {
     const files = {
