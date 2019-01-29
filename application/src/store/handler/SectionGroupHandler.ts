@@ -197,8 +197,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         let ids: number[] = [];
         if (
           payload.type === EVENT_TYPES.DELETE ||
-          payload.type === EVENT_TYPES.UPDATE ||
-          payload.type === EVENT_TYPES.ARCHIVE
+          payload.type === EVENT_TYPES.UPDATE
         ) {
           ids = payload.body!.ids!;
         }
@@ -284,7 +283,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const currentGroupId = storeManager
       .getGlobalStore()
       .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    if (type === EVENT_TYPES.DELETE || type === EVENT_TYPES.ARCHIVE) {
+    if (type === EVENT_TYPES.DELETE) {
       if (ids.includes(currentGroupId)) {
         history.replace('/messages');
       }

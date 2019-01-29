@@ -77,15 +77,6 @@ export default class MultiEntityMapStore<
           }
         }
         break;
-
-      case EVENT_TYPES.ARCHIVE:
-        {
-          const entities = payload.body.entities;
-          entities.forEach((entity: T) => {
-            this._partialUpdate(entity, entity.id);
-          });
-        }
-        break;
     }
   }
 

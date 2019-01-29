@@ -86,19 +86,6 @@ describe('handleIncomingData()', () => {
       expect(Object.keys(models)).toHaveLength(0);
     },         0);
   });
-
-  it('for archive type', () => {
-    const data: NotificationEntityPayload<BaseModel> = {
-      body,
-      type: EVENT_TYPES.ARCHIVE,
-    };
-    instance.handleIncomingData(data);
-    const models = instance.getData();
-    setTimeout(() => {
-      expect(Object.keys(models)).toHaveLength(5);
-      expect(models).toEqual(body.entities);
-    },         0);
-  });
 });
 
 describe('get()', () => {

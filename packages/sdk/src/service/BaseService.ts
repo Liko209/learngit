@@ -326,12 +326,6 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       case EVENT_TYPES.DELETE:
         await this._cachedManager.delete(payload.body.ids);
         break;
-      case EVENT_TYPES.ARCHIVE:
-        await this._cachedManager.archive(
-          payload.body.ids,
-          payload.body.entities,
-        );
-        break;
     }
   }
 

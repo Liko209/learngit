@@ -106,19 +106,6 @@ class EntityCacheManager<T extends IdModel = IdModel> {
     });
   }
 
-  async archive(ids: number[], entities: Map<number, T>) {
-    ids.forEach((id: number) => {
-      const entity = this._entities[id];
-      if (entity) {
-        delete this._entities[id];
-      }
-    });
-
-    entities.forEach((entity: T) => {
-      this._entities[entity.id] = entity;
-    });
-  }
-
   private _update(entity: T, id: number) {
     const oldEntity = this._entities[id];
     if (oldEntity) {
