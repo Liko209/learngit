@@ -200,6 +200,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
+      hasMoreDown: true,
+      hasMoreUp: true,
     });
     this.fetchNextPageItems();
   }
