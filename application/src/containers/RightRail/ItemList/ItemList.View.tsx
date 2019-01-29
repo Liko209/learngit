@@ -99,7 +99,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   render() {
     const { totalCount, ids, loadStatus, tabConfig } = this.props;
     const { loading, firstLoaded, loadError } = loadStatus;
-    const { subheader, tryAgainPrompt } = tabConfig;
+    const { subheader } = tabConfig;
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
@@ -123,7 +123,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         {loading && !firstLoaded && !loadError && this.firstLoader()}
         {loadError && (
           <JuiRightRailContentLoadError
-            tip={t(tryAgainPrompt)}
+            tip={t('rightShelfTryAgainPinnedPrompt')}
             linkText={t('tryAgain')}
             onClick={this._handleRetry}
           />
