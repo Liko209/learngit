@@ -144,6 +144,14 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         }
       },
     );
+    this.reaction(
+      () => this._loadStatus.firstLoaded,
+      (firstLoaded: boolean) => {
+        if (firstLoaded) {
+          this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
@@ -199,6 +207,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
+      hasMoreDown: true,
+      hasMoreUp: true,
     });
     this.fetchNextPageItems();
   }
