@@ -6,14 +6,14 @@
 import { ImageFileExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
 const FILE_ICON_MAP = {
-  doc: ['doc', 'docx', 'pages'],
+  doc: ['doc', 'docx', 'rtf', 'dotx', 'docm', 'pages'],
   excel: ['xlsx', 'xls', 'numbers'],
   pdf: ['pdf'],
-  ppt: ['ppt', 'pptx', 'potx', 'key'],
+  ppt: ['ppt', 'pptx', 'potx', 'ppsx', 'pps', 'key'],
   default_file: ['file'],
   zip: ['zip', 'rar', 'iso', 'tar', '7z'],
   default_music: ['mp3', 'flac', 'ape', 'wav'],
-  default_video: ['mp4', 'mov', 'flv', 'avi', 'mkv', 'm4v'],
+  default_video: ['mp4', 'mpeg', 'mov', 'flv', 'avi', 'mkv', 'm4v'],
   image_preview: Array.from(ImageFileExtensions),
 };
 
