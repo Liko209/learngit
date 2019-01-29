@@ -174,9 +174,9 @@ export class FetchSortableDataListHandler<
       differentKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
         if (this._isMatchFunc(model)) {
-          const idSortKey = this._transformFunc(model);
-          if (this._isInRange(idSortKey)) {
-            matchedSortableModels.push(idSortKey);
+          const sortModel = this._transformFunc(model);
+          if (this._isInRange(sortModel)) {
+            matchedSortableModels.push(sortModel);
             matchedEntities.push(model);
           }
         }
