@@ -26,7 +26,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
       () => this.props.groupId,
       async (groupId: number) => {
         const group = await this._groupService.getById(groupId);
-        if (this._isInvalidGroup(group)) {
+        if (!group || !this._groupService.isValid(group!)) {
           history.replace('/messages/loading', {
             id: groupId,
             error: true,
@@ -65,10 +65,6 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
 
   private async _readGroup(groupId: number) {
     this._throttledUpdateLastGroup(groupId);
-  }
-
-  private _isInvalidGroup(group: Group | null) {
-    return !group || group.deactivated || group.is_archived;
   }
 }
 
