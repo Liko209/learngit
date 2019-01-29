@@ -53,6 +53,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+    event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
     const result = await this.props.toggleFavorite();
@@ -79,6 +80,7 @@ class MenuViewComponent extends Component<Props, State> {
 
   private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
     const { t } = this.props;
+    event.stopPropagation();
     this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();

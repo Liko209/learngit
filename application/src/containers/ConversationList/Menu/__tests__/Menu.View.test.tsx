@@ -31,7 +31,7 @@ describe('MenuView', () => {
 
       wrapper
         .find('[data-test-automation-id="closeConversation"]')
-        .simulate('click');
+        .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -54,7 +54,9 @@ describe('MenuView', () => {
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
-      wrapper.find('[data-test-automation-id="favToggler"]').simulate('click');
+      wrapper
+        .find('[data-test-automation-id="favToggler"]')
+        .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -80,7 +82,9 @@ describe('MenuView', () => {
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
-      wrapper.find('[data-test-automation-id="favToggler"]').simulate('click');
+      wrapper
+        .find('[data-test-automation-id="favToggler"]')
+        .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(

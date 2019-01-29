@@ -5,6 +5,15 @@
  */
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
+import * as utils from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { GroupService } from 'sdk/module/group';
+
+jest.mock('sdk/module/group', () => {
+  return {
+    GroupService: jest.fn(),
+  };
+});
 
 jest.mock('sdk/api');
 
@@ -82,6 +91,81 @@ describe('GroupModel', () => {
       } as Group);
       gm.isThePersonAdmin = jest.fn().mockReturnValue(false);
       expect(gm.canPost).toBeTruthy();
+    });
+  });
+
+  describe('isMember', () => {
+    beforeEach(() => {
+      jest.spyOn(utils, 'getGlobalValue').mockImplementationOnce((key: any) => {
+        if (key === GLOBAL_KEYS.CURRENT_USER_ID) {
+          return 123;
+        }
+        return null;
+      });
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+    });
+    it('should return true if currentUserId is in the members array', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [123, 3, 11, 654],
+      } as Group);
+
+      expect(gm.isMember).toBe(true);
+    });
+
+    it('should return false if currentUserId is not in the members array', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        members: [3, 11, 654],
+      } as Group);
+
+      expect(gm.isMember).toBe(false);
+    });
+  });
+
+  describe('isCurrentUserHasPermissionAddMember', () => {
+    const groupService = {
+      isCurrentUserHasPermission: jest.fn(),
+    };
+    beforeEach(() => {
+      (GroupService as any).mockImplementation(() => groupService);
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+    });
+    it('should return false if current user is not a member', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+      } as Group);
+      jest.spyOn(gm, 'isMember', 'get').mockReturnValueOnce(false);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
+      expect(groupService.isCurrentUserHasPermission).not.toHaveBeenCalled();
+    });
+    it('should return the value from service method', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+      } as Group);
+      jest.spyOn(gm, 'isMember', 'get').mockReturnValueOnce(true);
+      jest
+        .spyOn(groupService, 'isCurrentUserHasPermission')
+        .mockReturnValueOnce(true);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(true);
+      expect(groupService.isCurrentUserHasPermission).toHaveBeenCalled();
+    });
+    it('should return the value from service method', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+      } as Group);
+      jest.spyOn(gm, 'isMember', 'get').mockReturnValueOnce(true);
+      jest
+        .spyOn(groupService, 'isCurrentUserHasPermission')
+        .mockReturnValueOnce(false);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
+      expect(groupService.isCurrentUserHasPermission).toHaveBeenCalled();
     });
   });
 });
