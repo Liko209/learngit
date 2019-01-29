@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { JuiAvatar } from 'jui/components/Avatar';
-// import { JuiIconography } from 'jui/foundation/Iconography';
 import { AvatarViewProps } from './types';
 import { PreloadImg } from '../common/PreloadImg';
 import defaultAvatar from './defaultAvatar.svg';
@@ -40,7 +39,6 @@ class AvatarView extends React.Component<AvatarViewProps> {
         src={defaultAvatar}
         data-test-automation-id={automationId}
         color=""
-        presence={presence}
         {...rest}
       />
     );

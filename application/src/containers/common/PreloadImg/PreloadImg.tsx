@@ -47,17 +47,13 @@ class PreloadImg extends Component<PreloadImgProps> {
 
     return (
       <>
-        {!loaded && url && !isError && (
-          <>
-            <img
-              src={url}
-              onLoad={this.handleLoad}
-              onError={this.handleError}
-              style={{ display: 'none' }}
-            />
-            {placeholder}
-          </>
-        )}
+        <img
+          src={url}
+          onLoad={this.handleLoad}
+          onError={this.handleError}
+          style={{ display: 'none' }}
+        />
+        {placeholder}
       </>
     );
   }
