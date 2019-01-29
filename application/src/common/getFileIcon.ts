@@ -17,7 +17,7 @@ const FILE_ICON_MAP = {
   image_preview: Array.from(ImageFileExtensions),
 };
 
-function getFileIcon(typeOrName: string): string {
+function getFileIcon(typeOrName?: string): string {
   if (typeOrName) {
     let type = typeOrName;
     // treat as file name

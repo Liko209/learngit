@@ -45,15 +45,15 @@ function image(item: FileItemModel) {
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
   let isImage = false;
+  let t = '';
   if (type) {
-    const t = type.toLowerCase();
-    isImage = FileItemUtils.isSupportPreview({ type }) || t.includes('image/');
+    t = type.toLowerCase();
   } else if (name) {
-    const extension = (name && name.split('.').pop()) || '';
-    isImage = FileItemUtils.isSupportPreview({
-      type: extension.toLocaleLowerCase(),
-    });
+    t = (name && name.split('.').pop()) || '';
+    t = t.toLowerCase();
   }
+
+  isImage = FileItemUtils.isSupportPreview({ type: t });
   if (isImage) {
     image.isImage = true;
     image.previewUrl = versionUrl || '';
