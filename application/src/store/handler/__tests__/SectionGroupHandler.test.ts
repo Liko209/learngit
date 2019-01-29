@@ -494,6 +494,7 @@ describe('SectionGroupHandler', () => {
           id: 3,
           company_id: 1,
           is_team: false,
+          members: [],
         },
       ]);
       await handler.checkIfGroupOpenedFromHidden([1, 2], [1]);
