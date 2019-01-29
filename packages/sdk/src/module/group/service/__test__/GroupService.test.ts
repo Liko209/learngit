@@ -271,7 +271,7 @@ describe('GroupService', () => {
           archiveTeam: mockArchiveTeam,
         });
       await groupService.archiveTeam(mockTeam.id);
-      expect(mockArchiveTeam).toBeCalledWith(mockArchiveTeam);
+      expect(mockArchiveTeam).toBeCalledWith(mockTeam.id);
     });
   });
 });
