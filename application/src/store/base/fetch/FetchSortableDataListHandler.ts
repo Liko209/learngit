@@ -236,30 +236,30 @@ export class FetchSortableDataListHandler<
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
-      const smallest = idArray[0];
-      const biggest = idArray[idArray.length - 1];
+      const first = idArray[0];
+      const last = idArray[idArray.length - 1];
       if (this._sortFun) {
         inRange =
-          this._sortFun(newData, smallest) >= 0 &&
-          this._sortFun(newData, biggest) <= 0;
+          this._sortFun(newData, first) >= 0 &&
+          this._sortFun(newData, last) <= 0;
       } else {
         inRange =
-          newData.sortValue >= smallest.sortValue &&
-          newData.sortValue <= biggest.sortValue;
+          newData.sortValue >= first.sortValue &&
+          newData.sortValue <= last.sortValue;
       }
 
       if (!inRange) {
         if (this._sortFun) {
           inRange =
-            (this._sortFun(newData, smallest) < 0 &&
+            (this._sortFun(newData, first) < 0 &&
               !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (this._sortFun(newData, biggest) > 0 &&
+            (this._sortFun(newData, last) > 0 &&
               !this.hasMore(QUERY_DIRECTION.NEWER));
         } else {
           inRange =
-            (newData.sortValue < smallest.sortValue &&
+            (newData.sortValue < first.sortValue &&
               !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-            (newData.sortValue > biggest.sortValue &&
+            (newData.sortValue > last.sortValue &&
               !this.hasMore(QUERY_DIRECTION.NEWER));
         }
       }
