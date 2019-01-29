@@ -10,6 +10,11 @@ import * as assert from 'assert';
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../../helpers';
 
+import { getLogger } from 'log4js';
+
+const logger = getLogger(__filename);
+logger.level = 'info';
+
 class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
@@ -86,6 +91,10 @@ class BaseConversationPage extends BaseWebComponent {
 
   nthPostItem(nth: number) {
     return this.getComponent(PostItem, this.posts.nth(nth));
+  }
+
+  get lastPostItem() {
+    return this.nthPostItem(-1);
   }
 
   async historyPostsDisplayedInOrder(posts: string[]) {
@@ -171,14 +180,14 @@ class BaseConversationPage extends BaseWebComponent {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.posts.nth(n));
       assert.strictEqual(result, isVisible, `This post expect visible: ${isVisible}, but actual: ${result}`);
-    }, 2)
+    });
   }
 
   async newMessageDeadLineExpectVisible(isVisible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
       assert.strictEqual(result, isVisible, `This 'New Messages' deadline expect visible: ${isVisible}, but actual: ${result}`);
-    }, 2);
+    });
   }
 }
 
@@ -260,7 +269,6 @@ export class ConversationPage extends BaseConversationPage {
   get fileNotification() {
     return this.getSelectorByAutomationId('conversation-card-activity');
   }
-
 
   async uploadFilesToMessageAttachment(filesPath: Array<string> | string) {
     await this.t.setFilesToUpload(this.uploadFileInput, filesPath);
@@ -457,25 +465,32 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitUntilFilesUploaded(timeout = 20e3) {
+  async waitForPostToSend(timeout = 5e3) {
+    try {
+      await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
+    } catch (e) {
+      // it's ok if spinner doesn't appear
+    } finally {
+      await this.t.expect(this.progressBar.exists).notOk({ timeout });
+    }
+    // wait extra 1 sec for writing indexedDB
     await this.t.wait(1e3);
-    await this.t.expect(this.progressBar.exists).notOk({ timeout });
   }
 
-  get fileName() {
+  get fileNames() {
     return this.getSelectorByAutomationId('file-name', this.self);
   }
 
-  get fileSize() {
+  get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
   }
 
   async nthFileNameShouldBe(n: number, name: string) {
-    await this.t.expect(this.fileName.nth(n).withText(name).exists).ok();
+    await this.t.expect(this.fileNames.nth(n).withText(name).exists).ok();
   }
 
   async nthFileSizeShouldBe(n: number, size: string) {
-    await this.t.expect(this.fileSize.nth(n).withText(size).exists).ok();
+    await this.t.expect(this.fileSizes.nth(n).withText(size).exists).ok();
   }
 
   // --- mention and bookmark page only ---
@@ -488,6 +503,8 @@ export class PostItem extends BaseWebComponent {
   }
 
   get jumpToConversationButton() {
+    // FIXME: should take i18n into account
+    this.warnFlakySelector();
     return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
   }
 
@@ -510,6 +527,8 @@ export class PostItem extends BaseWebComponent {
 
   // audio conference
   get AudioConferenceHeaderNotification() {
+    // FIXME: should take i18n into account
+    this.warnFlakySelector();
     return this.headerNotification.withText('started an audio conference');
   }
 
