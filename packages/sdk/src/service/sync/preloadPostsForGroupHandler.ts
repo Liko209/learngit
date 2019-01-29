@@ -19,9 +19,7 @@ class PreloadPostsForGroupHandler {
       GROUP_QUERY_TYPE.TEAM,
     ];
     for (let i = 0; i < types.length; i += 1) {
-      const groups = await groupService.getGroupsByType(
-        GROUP_QUERY_TYPE.FAVORITE,
-      );
+      const groups = await groupService.getGroupsByType(types[i]);
       await this._preloadPosts(groups, types[i] === GROUP_QUERY_TYPE.FAVORITE);
     }
   }
