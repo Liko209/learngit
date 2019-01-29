@@ -6,7 +6,7 @@
 
 import { formalName } from '../../libs/filter';
 import * as _ from 'lodash';
-import { h, H } from '../../v2/helpers'
+import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
@@ -14,13 +14,14 @@ import { v4 as uuid } from 'uuid';
 
 function getCodeString(lineNumber: number) {
   let code = '';
-  for (let i = 0; i !== lineNumber-1; i++){
+  for (let i = 0; i !== lineNumber - 1; i++) {
     code += `code${i}\n`;
   }
   return code;
 }
 
-async function snippetHeightCorrect(snippet, lineNumber){
+
+async function snippetHeightCorrect(snippet, lineNumber) {
   const padding = 4;
   const wrapperHeight = await snippet.body.find('*[data-test-automation-id="codeSnippetBody"]').offsetHeight
   const lineHeight = await snippet.body.find('.CodeMirror-line').offsetHeight
@@ -68,7 +69,6 @@ test(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'W
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
     await teamsSection.conversationEntryById(conversation).enter();
-    await teamsSection.ensureLoaded();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -124,7 +124,6 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
     await teamsSection.conversationEntryById(conversation).enter();
-    await teamsSection.ensureLoaded();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -192,7 +191,6 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
     await teamsSection.conversationEntryById(conversation).enter();
-    await teamsSection.ensureLoaded();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -209,7 +207,7 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
   })
 
   await h(t).withLog(`And I should see a "download to see the rest ${lineNumber} lines" button`, async () => {
-    await t.expect(snippet.body.find('span').withText(`Download to see the rest ${lineNumber-200} lines`).exists).ok()
+    await t.expect(snippet.body.find('span').withText(`Download to see the rest ${lineNumber - 200} lines`).exists).ok()
   })
 
   await h(t).withLog('When I click collapse button', async () => {
@@ -219,7 +217,7 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
 
   await h(t).withLog('Then the code snippet should collapse ', async () => {
     await t.wait(1e3)
-    await t.expect(await snippetHeightCorrect(snippet,10)).ok()
+    await t.expect(await snippetHeightCorrect(snippet, 10)).ok()
   })
 })
 
@@ -260,7 +258,6 @@ test.skip(formalName('This change of code snippet should be synced to backend an
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
     await teamsSection.conversationEntryById(conversation).enter();
-    await teamsSection.ensureLoaded();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -272,11 +269,11 @@ test.skip(formalName('This change of code snippet should be synced to backend an
 
   const newTitle = `newTitle${uuid()}`;
   await h(t).withLog('When I change the code snippet title in server ', async () => {
-    const response =  await h(t).glip(loginUser).updateCodeSnippet(sentSnippetId, { title:newTitle })
+    const response = await h(t).glip(loginUser).updateCodeSnippet(sentSnippetId, { title: newTitle })
   })
 
   await h(t).withLog('Then I should see the code snippet title changed', async () => {
-    await t.expect(snippet.body.find('span').withText(newTitle).exists).ok({ timeout:120e3 });
+    await t.expect(snippet.body.find('span').withText(newTitle).exists).ok({ timeout: 120e3 });
   })
 })
 
@@ -329,7 +326,6 @@ test(formalName('The limitation of code lines display for code snippet', ['JPT-9
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
     await teamsSection.conversationEntryById(conversation).enter();
-    await teamsSection.ensureLoaded();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
