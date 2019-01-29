@@ -23,6 +23,7 @@ type FilesViewProps = {
   ids: number[];
   removeFile: (id: number) => void;
   dispose: () => void;
+  urlMap: Map<number, string>;
 };
 
 export { FilesProps, FilesViewProps, FileType, ExtendFileItem };

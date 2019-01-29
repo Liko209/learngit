@@ -23,19 +23,23 @@ import {
 } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
-import { FilesViewProps, FileType } from './types';
+import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
 import PostModel from '@/store/models/Post';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { getThumbnail, RULE } from '@/common/getThumbnail';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
+  @observable
+  urlMap: Map<number, string> = new Map();
 
   constructor(props: FilesViewProps) {
     super(props);
@@ -45,6 +49,38 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
     }
+    this.autorun(async () => {
+      const images = this.files[FileType.image];
+      const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
+      await Promise.all(
+        images.map(async (file: ExtendFileItem) => {
+          const { id, origWidth, origHeight, type, versionUrl } = file.item;
+          let url = '';
+          // Notes
+          // 1. There is no thumbnail for the image just uploaded.
+          // 2. tif has thumbnail field.
+          // 3. git use original url.
+          if (FileItemUtils.isGifItem({ type })) {
+            url = versionUrl || '';
+          } else if (
+            origWidth > 0 &&
+            origHeight > 0 &&
+            FileItemUtils.isSupportPreview({ type })
+          ) {
+            const thumbnail = await getThumbnail({
+              id,
+              origWidth,
+              origHeight,
+              rule,
+              squareSize: 180,
+            });
+            url = thumbnail.url;
+          }
+
+          this.urlMap.set(id, url);
+        }),
+      );
+    });
   }
 
   private _handleItemChanged = (
@@ -69,6 +105,11 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   get _ids() {
     return this.props.ids;
   }
+
+  // @computed
+  // get urlMap() {
+  //   return this._urlMap;
+  // }
 
   @computed
   get files() {
