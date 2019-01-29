@@ -21,15 +21,6 @@ class GroupHandler {
     });
   }
 
-  static async groupIdValidator(id: number) {
-    const _groupService: GroupService = GroupService.getInstance();
-    const group = await _groupService.getById(id);
-    if (!group) {
-      return;
-    }
-    return _groupService.isValid(group);
-  }
-
   static async isGroupHidden(id: number) {
     const _profileService: ProfileService = ProfileService.getInstance();
     return _profileService.isConversationHidden(id);
@@ -83,11 +74,9 @@ export class MessageRouterChangeHelper {
   }
 
   static async verifyGroup(id: number) {
-    const [isHidden, isValidate] = await Promise.all([
-      await GroupHandler.isGroupHidden(id),
-      await GroupHandler.groupIdValidator(id),
-    ]);
-    return !isHidden && isValidate ? String(id) : '';
+    const groupService: GroupService = GroupService.getInstance();
+    const isGroupCanBeShown = await groupService.isGroupCanBeShown(id);
+    return isGroupCanBeShown ? String(id) : '';
   }
 
   static isConversation(id: string) {

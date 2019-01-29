@@ -41,6 +41,7 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     groups = [],
     teams = [],
     posts = [],
+    public_teams = [],
     max_posts_exceeded: maxPostsExceeded = false,
     client_config: clientConfig = {},
   } = data;
@@ -68,9 +69,14 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     // featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(transProfile))
+<<<<<<< HEAD
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
+=======
+    .then(() => personHandleData(people))
+    .then(() => groupHandleData(public_teams))
+>>>>>>> stage/1.0.0.190124
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));

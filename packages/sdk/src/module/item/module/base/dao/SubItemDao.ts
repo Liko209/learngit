@@ -25,6 +25,10 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     const { groupId, sortKey, desc, limit, offsetItemId, filterFunc } = options;
     let sanitizedItems = await this.queryItemsByGroupId(groupId);
 
+    if (sanitizedItems.length === 0) {
+      return [];
+    }
+
     if (filterFunc) {
       sanitizedItems = sanitizedItems.filter(filterFunc);
     }
