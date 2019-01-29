@@ -5,13 +5,9 @@
  */
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { writeFileSync } from 'fs';
-import { getLogger } from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
 
-const logger = getLogger(__filename);
-logger.level = 'info';
 
 dotenv.config();
 
@@ -84,16 +80,6 @@ const RUNNER_OPTS = {
   STOP_ON_FIRST_FAIL,
   MAX_RESOLUTION,
 }
-
-// create electron configuration file
-const electronRunConfig = {
-  mainWindowUrl: process.env.MAIN_WINDOW_URL || SITE_URL,
-  electronPath: process.env.ELECTRON_PATH || '/Applications/Jupiter.app/Contents/MacOS/Jupiter'
-};
-const testcafeElectronRcFilename = '.testcafe-electron-rc';
-const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
-writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
-logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";

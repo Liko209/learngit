@@ -47,7 +47,9 @@ class Event extends React.Component<Props, {}> {
     );
     return (
       <JuiConversationItemCard title={text} titleColor={color} Icon="event">
-        <JuiTimeMessage time={`${time} ${timeText}`} />
+        <JuiEventContent title={t('due')}>
+          <JuiTimeMessage time={`${time} ${timeText}`} />
+        </JuiEventContent>
         {location && (
           <JuiEventContent title={t('locationTitle')}>
             <JuiEventLocation location={location} />

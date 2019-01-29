@@ -6,18 +6,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { width, shape } from '../../foundation/utils/styles';
-import pdf from '../../assets/pdf_conversation_xxh.png';
-import ppt from '../../assets/ppt_conversation_xxh.png';
-import ps from '../../assets/ps_conversation_xxh.png';
-import sheet from '../../assets/sheet_conversation_xxh.png';
-import defaultIcon from '../../assets/default.svg';
-
-const ICON_MAP = {
-  pdf,
-  ppt,
-  ps,
-  sheet,
-};
+// import { preloadImg } from '../../foundation/utils';
+import { JuiIconography } from '../../foundation/Iconography';
 
 type JuiThumbnailProps = {
   size?: 'small' | 'large';
@@ -25,25 +15,46 @@ type JuiThumbnailProps = {
   iconType?: string;
 };
 
-const getBgImage = (url?: string, iconType?: string) => {
-  return (
-    url || (iconType && ICON_MAP[iconType] ? ICON_MAP[iconType] : defaultIcon)
-  );
-};
+const WrappedMuiIcon = ({
+  iconType,
+  size,
+  url,
+  ...rest
+}: JuiThumbnailProps) => <JuiIconography {...rest} />;
 
-const StyledThumbnail = styled<JuiThumbnailProps, 'div'>('div')`
+const StyledIcon = styled(WrappedMuiIcon)<JuiThumbnailProps>`
+  && {
+    font-size: ${({ size }) => (size === 'small' ? width(5) : width(9))};
+  }
+`;
+
+const StyledModifyImage = styled<JuiThumbnailProps, 'span'>('span')`
   width: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   height: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   border-radius: ${({ size }) =>
     size === 'small' ? shape('borderRadius', 0.5) : shape('borderRadius')};
-  background-image: url(${({ url, iconType }) => getBgImage(url, iconType)});
+  background-image: url(${({ url }) => url});
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 `;
 
-const JuiThumbnail = (props: JuiThumbnailProps) => {
-  return <StyledThumbnail {...props} />;
-};
+class JuiThumbnail extends React.Component<JuiThumbnailProps> {
+  render() {
+    const { size, url, iconType } = this.props;
+
+    return (
+      <>
+        {url ? (
+          <StyledModifyImage url={url} />
+        ) : (
+          <StyledIcon size={size} {...this.props}>
+            {iconType}
+          </StyledIcon>
+        )}
+      </>
+    );
+  }
+}
 
 export { JuiThumbnail };

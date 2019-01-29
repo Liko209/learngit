@@ -623,14 +623,14 @@ describe('FetchSortableDataListHandler', () => {
       };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
 
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);
 
       newGroup = { ...group, id: 789, most_recent_post_created_at: 1002 };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);

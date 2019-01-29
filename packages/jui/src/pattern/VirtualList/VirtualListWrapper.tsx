@@ -10,6 +10,7 @@ const JuiVirtualListWrapper = styled.div`
   display: flex;
   flex: 1;
   position: relative;
+  justify-content: center;
 `;
 
 export { JuiVirtualListWrapper };
