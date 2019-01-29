@@ -8,8 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { AvatarProps, AvatarViewProps } from './types';
-import { PersonService } from 'sdk/service';
-// import defaultAvatar from './defaultAvatar.svg';
+import { PersonService } from 'sdk/module/person';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -76,7 +75,6 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
       headshot,
       150,
     );
-
     return url || '';
   }
   @computed
