@@ -49,38 +49,41 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
     }
-    this.autorun(async () => {
-      const images = this.files[FileType.image];
-      const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
-      await Promise.all(
-        images.map(async (file: ExtendFileItem) => {
-          const { id, origWidth, origHeight, type, versionUrl } = file.item;
-          let url = '';
-          // Notes
-          // 1. There is no thumbnail for the image just uploaded.
-          // 2. tif has thumbnail field.
-          // 3. git use original url.
-          if (FileItemUtils.isGifItem({ type })) {
-            url = versionUrl || '';
-          } else if (
-            origWidth > 0 &&
-            origHeight > 0 &&
-            FileItemUtils.isSupportPreview({ type })
-          ) {
-            const thumbnail = await getThumbnail({
-              id,
-              origWidth,
-              origHeight,
-              rule,
-              squareSize: 180,
-            });
-            url = thumbnail.url;
-          }
 
-          this.urlMap.set(id, url);
-        }),
-      );
-    });
+    this.reaction(() => ids, this.getCropImage);
+  }
+
+  getCropImage = async () => {
+    const images = this.files[FileType.image];
+    const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
+    await Promise.all(
+      images.map(async (file: ExtendFileItem) => {
+        const { id, origWidth, origHeight, type, versionUrl } = file.item;
+        let url = '';
+        // Notes
+        // 1. There is no thumbnail for the image just uploaded.
+        // 2. tif has thumbnail field.
+        // 3. git use original url.
+        if (FileItemUtils.isGifItem({ type })) {
+          url = versionUrl || '';
+        } else if (
+          origWidth > 0 &&
+          origHeight > 0 &&
+          FileItemUtils.isSupportPreview({ type })
+        ) {
+          const thumbnail = await getThumbnail({
+            id,
+            origWidth,
+            origHeight,
+            rule,
+            squareSize: 180,
+          });
+          url = thumbnail.url;
+        }
+
+        this.urlMap.set(id, url);
+      }),
+    );
   }
 
   private _handleItemChanged = (
@@ -114,7 +117,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.others]: [],
     };
     this.items.forEach((item: FileItemModel) => {
-      if (item.deactivated) return;
+      if (item && item.deactivated) return;
 
       const file = getFileType(item);
       files[file.type].push(file);

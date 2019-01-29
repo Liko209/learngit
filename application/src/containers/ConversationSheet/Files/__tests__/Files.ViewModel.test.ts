@@ -56,27 +56,27 @@ describe('filesItemVM', () => {
     expect(filesItemVM._ids).toEqual([1, 2, -3]);
   });
 
-  // it('get files', () => {
-  //   expect(filesItemVM.files).toEqual({
-  //     [FileType.image]: [],
-  //     [FileType.document]: [
-  //       { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
-  //       { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
-  //       { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
-  //     ],
-  //     [FileType.others]: [],
-  //   });
-  // });
+  it('get files', () => {
+    expect(filesItemVM.files).toEqual({
+      [FileType.image]: [],
+      [FileType.document]: [
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+        { item: mockItemValue, type: 1, previewUrl: 'http://www.xxx.com' },
+      ],
+      [FileType.others]: [],
+    });
+  });
 
-  // it('get items', () => {
-  //   expect(filesItemVM.items).toMatchObject([
-  //     {
-  //       ...mockItemValue,
-  //     },
-  //     { ...mockItemValue },
-  //     { ...mockItemValue },
-  //   ]);
-  // });
+  it('get items', () => {
+    expect(filesItemVM.items).toMatchObject([
+      {
+        ...mockItemValue,
+      },
+      { ...mockItemValue },
+      { ...mockItemValue },
+    ]);
+  });
 
   describe('removeFile()', () => {
     it('should call post service', async () => {

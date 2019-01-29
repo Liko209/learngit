@@ -68,6 +68,11 @@ class FilesView extends React.Component<FilesViewProps> {
       />
     );
   }
+
+  componentDidMount() {
+    this.props.getCropImage();
+  }
+
   render() {
     const { files, progresses, urlMap } = this.props;
     const singleImage = files[FileType.image].length === 1;
