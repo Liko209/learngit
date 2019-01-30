@@ -66,10 +66,12 @@ class AttachmentView extends Component<Props> {
 
   private _hideMenuAndShowDialog = () => {
     this._hideMenu();
-    const ref = this._uploadRef.current;
-    if (ref) {
-      ref.showFileDialog();
-    }
+    setTimeout(() => {
+      const ref = this._uploadRef.current;
+      if (ref) {
+        ref.showFileDialog();
+      }
+    },         0);
   }
 
   render() {
