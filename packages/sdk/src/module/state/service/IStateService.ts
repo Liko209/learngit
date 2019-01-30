@@ -26,11 +26,6 @@ interface IStateService {
   handlePartialGroup(groups: Partial<Group>[]): Promise<void>;
 
   handleGroupChanges(groups?: Group[]): Promise<void>;
-
-  getUmiByIds(
-    ids: number[],
-    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
-  ): Promise<void>;
 }
 
 export { IStateService };
