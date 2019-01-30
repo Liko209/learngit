@@ -135,6 +135,60 @@ class TeamActionController {
     );
   }
 
+  async makeAdmin(teamId: number, member: number) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity: Group) => {
+        console.log('makeAdmin:', member, originalEntity);
+        const {
+          permissions: { admin: { uids: adminUids = [] } = {} } = {},
+        } = originalEntity;
+        const result = _.merge(partialEntity, {
+          permissions: {
+            admin: {
+              uids: _.union(adminUids, [member]),
+            },
+          },
+        });
+        console.log('makeAdmin:', result);
+        return result;
+      },
+      async (updateEntity: Group) => {
+        return await buildRequestController<Group>({
+          basePath: '/team',
+          networkClient: Api.glipNetworkClient,
+        }).put(updateEntity);
+      },
+    );
+  }
+
+  async revokeAdmin(teamId: number, member: number) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity: Group) => {
+        console.log('revokeAdmin:', member, originalEntity);
+        const {
+          permissions: { admin: { uids: adminUids = [] } = {} } = {},
+        } = originalEntity;
+        const result = _.merge(partialEntity, {
+          permissions: {
+            admin: {
+              uids: _.difference(adminUids, [member]),
+            },
+          },
+        });
+        console.log('revokeAdmin:', result);
+        return result;
+      },
+      async (updateEntity: Group) => {
+        return await buildRequestController<Group>({
+          basePath: '/team',
+          networkClient: Api.glipNetworkClient,
+        }).put(updateEntity);
+      },
+    );
+  }
+
   private async _requestUpdateTeamMembers(
     teamId: number,
     members: number[],
