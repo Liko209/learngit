@@ -66,6 +66,7 @@ class AttachmentView extends Component<Props> {
 
   private _hideMenuAndShowDialog = () => {
     this._hideMenu();
+    // fix for Edge bug: FIJI-2818
     setTimeout(() => {
       const ref = this._uploadRef.current;
       if (ref) {
