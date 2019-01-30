@@ -57,8 +57,6 @@ interface IItemService {
 
   getByPosts(posts: Post[]): Promise<Item[]>;
 
-  getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]>;
-
   doNotRenderItem(id: number, type: string): Promise<void>;
 
   getGroupItemsCount(

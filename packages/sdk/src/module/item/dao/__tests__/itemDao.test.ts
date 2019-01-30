@@ -39,59 +39,6 @@ describe('Item Dao', () => {
     expect(itemDao.getItemsByIds([1, 2, 3, 4])).resolves.toEqual(items);
   });
 
-  describe('getItemsByGroupId()', () => {
-    const items: Item[] = [
-      itemFactory.build({
-        id: 1,
-        group_ids: [123],
-      }),
-      itemFactory.build({
-        id: 2,
-        group_ids: [123, 444],
-      }),
-      itemFactory.build({
-        id: 3,
-        group_ids: [321],
-      }),
-      itemFactory.build({
-        id: 4,
-        group_ids: [321],
-      }),
-      itemFactory.build({
-        id: 5,
-        group_ids: [123],
-      }),
-    ];
-    beforeEach(async () => {
-      await itemDao.bulkPut(items);
-    });
-    it('no limit', async () => {
-      expect(itemDao.getItemsByGroupId(123)).resolves.toMatchObject([
-        {
-          id: 1,
-          group_ids: [123],
-        },
-        {
-          id: 2,
-          group_ids: [123, 444],
-        },
-        {
-          id: 5,
-          group_ids: [123],
-        },
-      ]);
-    });
-
-    it('with limit', async () => {
-      expect(itemDao.getItemsByGroupId(123, 1)).resolves.toMatchObject([
-        {
-          id: 1,
-          group_ids: [123],
-        },
-      ]);
-    });
-  });
-
   function buildTestItems(): Item[] {
     const items: Item[] = [
       itemFactory.build({

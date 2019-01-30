@@ -44,7 +44,7 @@ test(formalName('Check the upload image file and display on the right rail', ['S
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
-    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
   const imagesTab = rightRail.imagesTab;
@@ -62,7 +62,7 @@ test(formalName('Check the upload image file and display on the right rail', ['S
   await h(t).withLog('When I  upload another image file', async () => {
     await conversationPage.uploadFilesToMessageAttachment(filesPath[1]);
     await conversationPage.sendMessage(message);
-    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
   await h(t).withLog('Then The images number is correct: 2', async () => {

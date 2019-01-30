@@ -5,11 +5,12 @@ import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
-import { LeftRail} from './LeftRail';
+import { LeftRail } from './LeftRail';
 
 class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -175,6 +176,8 @@ class ConversationEntry extends BaseWebComponent {
 
   async enter() {
     await this.t.hover(this.self).click(this.self);
+    // whenever we enter
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -285,8 +288,6 @@ class CloseConversationModal extends BaseWebComponent {
     await this.t.click(this.confirmButton);
   }
 }
-
-
 
 export class MessageTab extends BaseWebComponent {
   get self() {

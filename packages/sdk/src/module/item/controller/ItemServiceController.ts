@@ -75,6 +75,11 @@ class ItemServiceController {
     if (subItemService) {
       ids = await subItemService.getSortedIds(options);
     }
+
+    if (ids.length === 0) {
+      return [];
+    }
+
     const itemDao = daoManager.getDao(ItemDao);
     const items = await itemDao.getItemsByIds(ids);
 

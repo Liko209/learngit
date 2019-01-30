@@ -52,7 +52,6 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
   await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
     await mentionsEntry.enter();
-    await mentionPage.waitUntilPostsBeLoaded();
     await t.expect(mentionPage.posts.count).eql(2);
   }, true);
 
@@ -66,7 +65,6 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
   await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
     await mentionsEntry.enter();
-    await mentionPage.waitUntilPostsBeLoaded();
     await t.expect(mentionPage.posts.count).eql(3);
   }, true);
 
@@ -76,7 +74,6 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
 
   await h(t).withLog('Then I can find 2 posts in the mentions page', async () => {
     await mentionsEntry.enter();
-    await mentionPage.waitUntilPostsBeLoaded();
     await t.expect(mentionPage.posts.count).eql(2);
   }, true);
 },
@@ -135,7 +132,6 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
     await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
       await mentionsEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
       await t.expect(mentionPage.posts.count).gte(3);
       await t.expect(mentionPage.postItemById(chatPostId).exists).ok();
       await t.expect(mentionPage.postItemById(groupPostId).exists).ok();
@@ -153,9 +149,7 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
     await h(t).withLog('When I click the conversation name in the group\'s conversation card', async () => {
       await mentionsEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
       await mentionPage.postItemById(groupPostId).jumpToConversationByClickName();
-      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('Then should jump to the group page and scroll to bottom', async () => {
@@ -166,12 +160,10 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
 
     await h(t).withLog('When I click the conversation name in the team\'s conversation card', async () => {
       await mentionsEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
       await mentionPage.postItemById(teamPostId).jumpToConversationByClickName();
     });
 
     await h(t).withLog('Then should jump to the team page and scroll to bottom', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.groupIdShouldBe(teamId);
       await conversationPage.expectStreamScrollToBottom();
     });
@@ -235,7 +227,6 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
     await h(t).withLog('Then I navigate away from conversation and refresh browser', async () => {
       await mentionsEntry.enter();
-      await mentionPage.waitUntilPostsBeLoaded();
       await h(t).reload();
       await app.homePage.ensureLoaded();
     });
@@ -296,7 +287,6 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   await h(t).withLog('And I jump to conversation from AtMentions page should no UMI', async () => {
     await mentionsEntry.enter();
-    await postMentionPage.waitUntilPostsBeLoaded();
     await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
     await directMessagesSection.headerUmi.shouldBeNumber(0);
   }, true);
@@ -322,7 +312,7 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
 });
 
 
-test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack']),
+test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -371,7 +361,6 @@ test(formalName('Jump to post position when click button or clickable area of po
 
     await h(t).withLog('And I enter AtMentions page', async () => {
       await mentionsEntry.enter();
-      await postMentionPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I click the post item', async () => {
@@ -379,7 +368,6 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the AtMention post in the team', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(atMentionTeamPostId).body.withText(verifyTextTeam).exists)
         .ok({ timeout: 5e3 });
@@ -387,7 +375,6 @@ test(formalName('Jump to post position when click button or clickable area of po
 
     await h(t).withLog('When I back to AtMention page', async () => {
       await mentionsEntry.enter();
-      await postMentionPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog('And I click AtMention post item from pvChat', async () => {
@@ -395,7 +382,6 @@ test(formalName('Jump to post position when click button or clickable area of po
     });
 
     await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
       await t
         .expect(conversationPage.postItemById(atMentionChatPostId).body.withText(verifyTextChat).exists)
         .ok({ timeout: 5e3 });
