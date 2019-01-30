@@ -25,6 +25,7 @@ import {
 import { AvatarName } from './AvatarName';
 import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
+import { getFileIcon } from '@/common/getFileIcon';
 
 type taskViewProps = WithNamespaces & ViewProps;
 
@@ -43,10 +44,11 @@ const downloadBtn = (downloadUrl: string) => (
 const FILE_COMPS = {
   [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
     const { item, previewUrl } = file;
-    const { id, name, downloadUrl, deactivated } = item;
+    const { id, name, downloadUrl, deactivated, type } = item;
     return (
       !deactivated && (
         <JuiExpandImage
+          icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}
           fileName={name}
@@ -60,10 +62,11 @@ const FILE_COMPS = {
   },
   [FileType.others]: (file: ExtendFileItem) => {
     const { item } = file;
-    const { name, downloadUrl, id, deactivated } = item;
+    const { name, downloadUrl, id, deactivated, type } = item;
     return (
       !deactivated && (
         <JuiFileWithExpand
+          icon={getFileIcon(type)}
           key={id}
           fileName={name}
           Actions={downloadBtn(downloadUrl)}

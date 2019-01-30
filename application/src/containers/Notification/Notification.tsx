@@ -6,7 +6,7 @@
 import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
-import { observable, action, autorun } from 'mobx';
+import { observable, autorun } from 'mobx';
 import { ToastProps, ToastMessageAlign } from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
@@ -22,7 +22,6 @@ class Notification extends AbstractViewModel {
   static data: ToastProps[] = [];
   static _buffer: NotificationProps[] = [];
 
-  @action
   private static _showNotification(props: NotificationProps) {
     if (Notification.data.length === MAX_SHOW_COUNT) {
       Notification._buffer.push(props);

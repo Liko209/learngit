@@ -18,7 +18,6 @@ describe('StateService', () => {
   const mockGetMyStateId = jest.fn();
   const mockHandleState = jest.fn();
   const mockHandleGroupCursor = jest.fn();
-  const mockGetUmiByIds = jest.fn();
 
   beforeAll(() => {
     const mockStateActionController = jest.fn().mockReturnValue({
@@ -34,7 +33,6 @@ describe('StateService', () => {
       getGroupStatesFromLocalWithUnread: mockGetGroupStatesFromLocalWithUnread,
       getMyState: mockGetMyState,
       getMyStateId: mockGetMyStateId,
-      getUmiByIds: mockGetUmiByIds,
     });
     stateService['getStateController'] = jest.fn().mockReturnValue({
       getStateActionController: mockStateActionController,
@@ -103,18 +101,6 @@ describe('StateService', () => {
       const groups: Partial<Group>[] = [];
       await stateService.handleGroupCursor(groups);
       expect(mockHandleGroupCursor).toBeCalledWith(groups);
-    });
-  });
-
-  describe('getUmiByIds()', () => {
-    it('should call with correct params', async () => {
-      const ids: number[] = [5683];
-      const updateUmi = (
-        unreadCounts: Map<number, number>,
-        important: boolean,
-      ) => {};
-      await stateService.getUmiByIds(ids, updateUmi);
-      expect(mockGetUmiByIds).toBeCalledWith(ids, updateUmi);
     });
   });
 });

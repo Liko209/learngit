@@ -8,7 +8,7 @@ import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { MemberHeaderViewModel } from '../MemberHeader.ViewModel';
 jest.mock('sdk/module/group', () => ({
-  GroupService: jest.fn(),
+  NewGroupService: jest.fn(),
 }));
 
 const globalStore = storeManager.getGlobalStore();

@@ -3,12 +3,13 @@
  * @Date: 2019-01-10 11:22:52
  * Copyright © RingCentral. All rights reserved.
  */
+
 import FileItemModel, {
   ExtendFileItem,
   FileType,
 } from '@/store/models/FileItem';
 
-const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -34,12 +35,34 @@ function getFileType(item: FileItemModel): ExtendFileItem {
 }
 
 function image(item: FileItemModel) {
-  const { thumbs, type, versionUrl } = item;
+  const { thumbs, type, versionUrl, name } = item;
   const image = {
     isImage: false,
     previewUrl: '',
   };
 
+  // In order to show image
+  // If upload doc and image together, image will not has thumbs
+  // FIXME: FIJI-2565
+  let isImage = false;
+  let t = '';
+  if (type) {
+    t = type.toLowerCase();
+  } else if (name) {
+    t = (name && name.split('.').pop()) || '';
+    t = t.toLowerCase();
+  }
+
+  isImage =
+    FileItemUtils.isSupportPreview({ type: t }) ||
+    (type ? type.includes('image/') : false);
+  if (isImage) {
+    image.isImage = true;
+    image.previewUrl = versionUrl || '';
+    return image;
+  }
+
+  // The thumbnail will blur
   if (thumbs) {
     for (const key in thumbs) {
       const value = thumbs[key];
@@ -47,18 +70,6 @@ function image(item: FileItemModel) {
         image.isImage = true;
         image.previewUrl = thumbs[key];
       }
-    }
-  }
-
-  // In order to show image
-  // If upload doc and image together, image will not has thumbs
-  // FIXME: FIJI-2565
-  if (type) {
-    const isImage = IMAGE_TYPE.some(looper => type.includes(looper));
-    if (type.includes('image/') || isImage) {
-      image.isImage = true;
-      image.previewUrl = versionUrl || '';
-      return image;
     }
   }
   return image;

@@ -10,49 +10,20 @@ import PersonService from 'sdk/service/person';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/models';
 import { StoreViewModel } from '@/store/ViewModel';
-import { ContactSearchProps, ViewProps, SelectedMember } from './types';
+import { ContactSearchProps, SelectedMember } from './types';
 
-class ContactSearchViewModel extends StoreViewModel<ContactSearchProps>
-  implements ViewProps {
-  @observable
-  existMembers: number[] = [];
+class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
+  @observable existMembers: number[] = [];
+  @observable suggestions: SelectedMember[] = [];
 
-  @observable
-  suggestions: SelectedMember[] = [];
-
-  @computed
-  get label() {
-    return this.props.label;
-  }
-
-  onSelectChange = (arg: any) => {
+  onContactSelectChange = (arg: any) => {
     this.suggestions = [];
     return this.props.onSelectChange(arg);
   }
 
   @computed
-  get placeholder() {
-    return this.props.placeholder;
-  }
-
-  @computed
-  get error() {
-    return this.props.error;
-  }
-
-  @computed
-  get helperText() {
-    return this.props.helperText;
-  }
-
-  @computed
   private get _isExcludeMe() {
     return this.props.isExcludeMe;
-  }
-
-  @computed
-  get errorEmail() {
-    return this.props.errorEmail;
   }
 
   constructor(props: ContactSearchProps) {

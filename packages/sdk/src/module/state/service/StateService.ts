@@ -105,15 +105,6 @@ class StateService extends EntityBaseService<GroupState>
       .getTotalUnreadController()
       .handleProfile(payload);
   }
-
-  async getUmiByIds(
-    ids: number[],
-    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
-  ): Promise<void> {
-    await this.getStateController()
-      .getStateFetchDataController()
-      .getUmiByIds(ids, updateUmi);
-  }
 }
 
 export { StateService };

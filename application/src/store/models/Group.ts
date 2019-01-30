@@ -16,7 +16,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
 import GroupService, { TeamPermission } from 'sdk/service/group';
-import { GroupService as NGroupService } from 'sdk/module/group';
+import { NewGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 
 export default class GroupModel extends Base<Group> {
@@ -92,6 +92,11 @@ export default class GroupModel extends Base<Group> {
   get isAdmin() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     return this.isThePersonAdmin(currentUserId);
+  }
+
+  get isMember() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.members.indexOf(currentUserId) >= 0;
   }
 
   @computed
@@ -191,11 +196,14 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
-  get isCurrentUserHasPermissionAddTeam() {
-    const GroupService = new NGroupService();
+  get isCurrentUserHasPermissionAddMember() {
+    if (!this.isMember) {
+      return false;
+    }
+    const groupService: NewGroupService = NewGroupService.getInstance();
     const members = this.members || [];
     const guestUserCompanyIds = this.guestUserCompanyIds || [];
-    return GroupService.isCurrentUserHasPermission(
+    return groupService.isCurrentUserHasPermission(
       {
         members,
         is_team: this.isTeam,

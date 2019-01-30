@@ -8,14 +8,16 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
 import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
-import { daoManager, GroupConfigDao, PostDao } from '../../../dao';
+import { daoManager, PostDao } from '../../../dao';
 import { mainLogger } from 'foundation';
 import { ItemService } from '../../item';
-import { Item } from '../../item/entity';
 import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
+import { NewGroupService } from '../../../module/group';
+import { IRequestRemotePostAndSave } from '../entity/Post';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const TAG = 'PostFetchController';
 
@@ -54,6 +56,11 @@ class PostFetchController {
       hasMore: true,
     };
 
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+      logId,
+    );
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
       TAG,
@@ -70,43 +77,34 @@ class PostFetchController {
     }
 
     if (result.posts.length < limit) {
-      const shouldFetch = await this._shouldFetchFromServer(direction, groupId);
+      const groupService: NewGroupService = NewGroupService.getInstance();
+      const shouldFetch = await groupService.hasMorePostInRemote(
+        groupId,
+        direction,
+      );
       if (!shouldSaveToDb || shouldFetch) {
-        mainLogger.debug(
-          TAG,
-          'getPostsByGroupId() db is not exceed limit, request from server',
-        );
         const validAnchorPostId = this._findValidAnchorPostId(
           direction,
           result.posts,
         );
-        const serverResult = await this.fetchPaginationPosts({
-          groupId,
+        const serverResult = await this.getRemotePostsByGroupIdAndSave({
           direction,
+          groupId,
           limit,
+          shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
         });
-        if (serverResult) {
-          const updateResult = (posts: Post[], items: Item[]) => {
-            result.posts.push(...posts);
-            result.items.push(...items);
-            result.hasMore = serverResult.hasMore;
-            if (shouldSaveToDb) {
-              this._updateHasMore(groupId, direction, serverResult.hasMore);
-            }
-          };
-
-          await this._postDataController.handleFetchedPosts(
-            serverResult,
-            shouldSaveToDb,
-            updateResult,
-          );
+        if (serverResult.success) {
+          result.posts.push(...serverResult.posts);
+          result.items.push(...serverResult.items);
+          result.hasMore = serverResult.hasMore;
         }
       } else {
         result.hasMore = shouldFetch;
       }
     }
     result.limit = limit;
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -143,6 +141,45 @@ class PostFetchController {
     return null;
   }
 
+  async getRemotePostsByGroupIdAndSave({
+    direction,
+    groupId,
+    limit,
+    postId,
+    shouldSaveToDb,
+  }: IRequestRemotePostAndSave) {
+    mainLogger.debug(
+      TAG,
+      'getPostsByGroupId() db is not exceed limit, request from server',
+    );
+    const serverResult = await this.fetchPaginationPosts({
+      groupId,
+      direction,
+      limit,
+      postId,
+    });
+
+    const result = {
+      posts: [],
+      items: [],
+      hasMore: true,
+      success: false,
+    };
+    if (serverResult) {
+      const handledResult = await this._postDataController.handleFetchedPosts(
+        serverResult,
+        shouldSaveToDb,
+      );
+      if (shouldSaveToDb) {
+        const groupService: NewGroupService = NewGroupService.getInstance();
+        groupService.updateHasMore(groupId, direction, handledResult.hasMore);
+      }
+      Object.assign(result, handledResult);
+      result.success = true;
+    }
+    return result;
+  }
+
   private async _isPostInDb(postId: number): Promise<boolean> {
     const post = await this.entitySourceController.getEntityLocally(postId);
     return post ? true : false;
@@ -161,6 +198,7 @@ class PostFetchController {
       direction,
       limit,
     );
+
     const itemService: ItemService = ItemService.getInstance();
     const result: IPostResult = {
       limit,
@@ -169,20 +207,6 @@ class PostFetchController {
       items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
     };
     return result;
-  }
-
-  /**
-   * If direction === QUERY_DIRECTION.OLDER, should check has more.
-   * If direction === QUERY_DIRECTION.NEWER, return true
-   */
-  private async _shouldFetchFromServer(
-    direction: QUERY_DIRECTION,
-    groupId: number,
-  ) {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    return direction === QUERY_DIRECTION.OLDER
-      ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
-      : true;
   }
 
   private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {
@@ -196,16 +220,9 @@ class PostFetchController {
     return 0;
   }
 
-  private _updateHasMore(
-    groupId: number,
-    direction: QUERY_DIRECTION,
-    hasMore: boolean,
-  ) {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    groupConfigDao.update({
-      id: groupId,
-      [`has_more_${direction}`]: hasMore,
-    });
+  async getPostCountByGroupId(groupId: number): Promise<number> {
+    const dao = daoManager.getDao(PostDao);
+    return dao.groupPostCount(groupId);
   }
 }
 

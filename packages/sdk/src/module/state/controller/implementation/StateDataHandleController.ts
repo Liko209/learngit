@@ -310,17 +310,18 @@ class StateDataHandleController {
           // calculate umi
           if (transformedState.isSelf) {
             resultGroupState.unread_count = 0;
+          } else {
+            const group_cursor =
+              (resultGroupState.group_post_cursor || 0) +
+              (resultGroupState.group_post_drp_cursor || 0);
+            const state_cursor =
+              (resultGroupState.post_cursor || 0) +
+              (resultGroupState.unread_deactivated_count || 0);
+            resultGroupState.unread_count = Math.max(
+              group_cursor - state_cursor,
+              0,
+            );
           }
-          const group_cursor =
-            (resultGroupState.group_post_cursor || 0) +
-            (resultGroupState.group_post_drp_cursor || 0);
-          const state_cursor =
-            (resultGroupState.post_cursor || 0) +
-            (resultGroupState.unread_deactivated_count || 0);
-          resultGroupState.unread_count = Math.max(
-            group_cursor - state_cursor,
-            0,
-          );
 
           if (resultGroupState.unread_count > 0) {
             resultGroupState.marked_as_unread = true;

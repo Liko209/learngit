@@ -140,4 +140,20 @@ describe('Post Dao', () => {
       expect(result[0].id).toBeLessThan(0);
     });
   });
+
+  describe('groupPostCount', () => {
+    beforeEach(async () => {
+      await postDao.clear();
+      await postDao.bulkPut(posts);
+    });
+    it('should return 4 when there has 4 posts group_id 9163628546', async () => {
+      const result = await postDao.groupPostCount(9163628546);
+      expect(result).toEqual(4);
+    });
+
+    it('should return 0 when there has not post group_id 99999', async () => {
+      const result = await postDao.groupPostCount(99999);
+      expect(result).toEqual(0);
+    });
+  });
 });

@@ -31,11 +31,6 @@ interface IStateService {
   handleProfileChange(
     payload: NotificationEntityPayload<Profile>,
   ): Promise<void>;
-
-  getUmiByIds(
-    ids: number[],
-    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
-  ): Promise<void>;
 }
 
 export { IStateService };

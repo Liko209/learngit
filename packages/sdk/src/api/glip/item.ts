@@ -122,7 +122,7 @@ class ItemAPI extends Api {
   static getItems(typeId: number, groupId: number, newerThan: number) {
     return this.glipNetworkClient.get<Raw<Item>[]>('/items', {
       type_id: typeId,
-      group_ids: [groupId],
+      group_ids: groupId,
       newer_than: newerThan,
     });
   }

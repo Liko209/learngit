@@ -79,7 +79,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
-  @computed
   private get _typeId() {
     return RightRailItemTypeIdMap[this.type];
   }
@@ -120,7 +119,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this._groupId,
       () => {
-        this._loadStatus.firstLoaded = false;
         const {
           sortKey = ITEM_SORT_KEYS.CREATE_TIME,
           desc = false,
@@ -138,7 +136,22 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       { fireImmediately: true },
     );
     this.reaction(() => this.ids, () => this.loadTotalCount());
-    this.reaction(() => this._active, () => this.forceReload());
+    this.reaction(
+      () => this._active,
+      (active: boolean) => {
+        if (active && !this._loadStatus.firstLoaded) {
+          this.forceReload();
+        }
+      },
+    );
+    this.reaction(
+      () => this._loadStatus.firstLoaded,
+      (firstLoaded: boolean) => {
+        if (firstLoaded) {
+          this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
@@ -194,6 +207,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
+      hasMoreDown: true,
+      hasMoreUp: true,
     });
     this.fetchNextPageItems();
   }
@@ -220,14 +235,16 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   forceReload = async () => {
     this._loadStatus.firstLoaded = false;
+    this._loadStatus.loading = false;
     await this.fetchNextPageItems();
   }
 
   @action
   fetchNextPageItems = async () => {
     const { active } = this.props;
-    const { loading } = this._loadStatus;
-    if (!active || loading) {
+    const { loading, firstLoaded } = this._loadStatus;
+    const noMore = firstLoaded && this.totalCount === this.ids.length;
+    if (!active || loading || noMore) {
       return;
     }
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
@@ -246,11 +263,8 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
     try {
       this._loadStatus.loading = true;
-      const result = await this._sortableDataHandler.fetchData(
-        QUERY_DIRECTION.NEWER,
-      );
+      await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
-      return result;
     } catch (e) {
       Object.assign(this._loadStatus, { loadError: true, loading: false });
     }
@@ -267,7 +281,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get ids() {
-    return this._sortableDataHandler.sortableListStore.getIds();
+    return this._sortableDataHandler.sortableListStore.getIds;
   }
 }
 

@@ -25,9 +25,9 @@ describe('AvatarVM', () => {
   });
 
   describe('headShotUrl()', () => {
-    it('should return defaultAvatar if headShot not exist', () => {
+    it('should return "" if headShot not exist', () => {
       (getEntity as jest.Mock).mockReturnValue({ hasHeadShot: '' });
-      expect(avatarViewModel.headShotUrl).toBe('defaultAvatar.svg');
+      expect(avatarViewModel.headShotUrl).toBe('');
     });
     it('should return url if headshot is string and hasHeadShot is false', () => {
       (getEntity as jest.Mock).mockReturnValue({
@@ -38,7 +38,10 @@ describe('AvatarVM', () => {
       expect(avatarViewModel.headShotUrl).toBe('https://avatar.url');
     });
     it('should return url if headshot is object and hasHeadShot is false', () => {
-      (getEntity as jest.Mock).mockReturnValue({ hasHeadShot: true, headshot: { url: 'https://avatar.url' } });
+      (getEntity as jest.Mock).mockReturnValue({
+        hasHeadShot: true,
+        headshot: { url: 'https://avatar.url' },
+      });
       expect(avatarViewModel.headShotUrl).toBe('https://avatar.url');
     });
     it('should return thumbs url if hasHeadShot is true and headshot not exist', () => {
@@ -47,15 +50,22 @@ describe('AvatarVM', () => {
         headshot_version: '',
         headshot: {
           thumbs: {
-            '90791948crop=1024x1024&offset=0x0&size=80x80': 'https://xmnup.s3.amazonaws.com',
-            '90791948crop = 1024x1024 & offset= 0x0 & size=92': 'https://xmnup.s3.amazonaws.com/web/175947788/',
-            '90791948crop = 1024x1024 & offset= 0x0 & size=100': 'https://xmnup.s3.amazonaws.com/web/90841100',
-            '90791948crop = 1024x1024 & offset= 0x0 & size=138': 'https://xmnup.s3.amazonaws.com/web/171155468',
-            '90791948crop = 1024x1024 & offset= 0x0 & size=150': 'https://xmnup.s3.amazonaws.com/web/90824716',
+            '90791948crop=1024x1024&offset=0x0&size=80x80':
+              'https://xmnup.s3.amazonaws.com',
+            '90791948crop = 1024x1024 & offset= 0x0 & size=92':
+              'https://xmnup.s3.amazonaws.com/web/175947788/',
+            '90791948crop = 1024x1024 & offset= 0x0 & size=100':
+              'https://xmnup.s3.amazonaws.com/web/90841100',
+            '90791948crop = 1024x1024 & offset= 0x0 & size=138':
+              'https://xmnup.s3.amazonaws.com/web/171155468',
+            '90791948crop = 1024x1024 & offset= 0x0 & size=150':
+              'https://xmnup.s3.amazonaws.com/web/90824716',
           },
         },
       });
-      expect(avatarViewModel.headShotUrl).toBe('https://xmnup.s3.amazonaws.com/web/90824716');
+      expect(avatarViewModel.headShotUrl).toBe(
+        'https://xmnup.s3.amazonaws.com/web/90824716',
+      );
     });
   });
 });
