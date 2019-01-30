@@ -7,7 +7,9 @@
 import _ from 'lodash';
 import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
-import { daoManager, ItemDao } from '../../../../../../dao';
+import { daoManager } from '../../../../../../dao';
+import { ItemDao } from '../../../../dao';
+
 import ItemAPI from '../../../../../../api/glip/item';
 import { ApiResultOk, ApiResultErr } from '../../../../../../api/ApiResult';
 import notificationCenter from '../../../../../../service/notificationCenter';
@@ -38,6 +40,7 @@ jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../service/account/clientConfig');
 jest.mock('../../../../../../service/account/UserConfig');
 jest.mock('../../../../../../api/glip/item');
+jest.mock('../../../../dao');
 jest.mock('../../../../../../dao');
 jest.mock('../../../../../../service/notificationCenter');
 
