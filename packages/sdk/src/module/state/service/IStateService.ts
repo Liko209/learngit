@@ -26,9 +26,11 @@ interface IStateService {
 
   handleGroupCursor(groups: Partial<Group>[]): Promise<void>;
 
-  handleGroupChange(payload: NotificationEntityPayload<Group>): Promise<void>;
+  handleGroupChangeForTotalUnread(
+    payload: NotificationEntityPayload<Group>,
+  ): Promise<void>;
 
-  handleProfileChange(
+  handleProfileChangeForTotalUnread(
     payload: NotificationEntityPayload<Profile>,
   ): Promise<void>;
 }

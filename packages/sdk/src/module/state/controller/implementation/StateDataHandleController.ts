@@ -37,12 +37,6 @@ class StateDataHandleController {
   }
 
   handleState(states: Partial<State>[]): void {
-    if (!states || states.length === 0) {
-      mainLogger.info(
-        '[StateDataHandleController] Invalid state change trigger',
-      );
-      return;
-    }
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
       data: states,
@@ -54,12 +48,6 @@ class StateDataHandleController {
   }
 
   handleGroupCursor(groups: Partial<Group>[]): void {
-    if (!groups || !groups.length) {
-      mainLogger.info(
-        '[StateDataHandleController] Invalid group cursor change trigger',
-      );
-      return;
-    }
     const groupTask: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
@@ -92,7 +80,6 @@ class StateDataHandleController {
   private _transformGroupData(groups: Partial<Group>[]): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
-      isSelf: false,
     };
     transformedState.groupStates = _.compact(
       groups.map((group: Partial<State>) => {
@@ -136,7 +123,6 @@ class StateDataHandleController {
   private _transformStateData(states: Partial<State>[]): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
-      isSelf: false,
     };
     const myState: Partial<State> = {};
     const groupStates = {};
@@ -148,6 +134,10 @@ class StateDataHandleController {
         }
         if (key === '_id') {
           myState.id = state[key];
+          return;
+        }
+        if (key === '__from_index') {
+          transformedState.isFromIndexData = true;
           return;
         }
         const keys = [
@@ -195,7 +185,6 @@ class StateDataHandleController {
     const updatedState: TransformedState = {
       groupStates: [],
       myState: transformedState.myState,
-      isSelf: transformedState.isSelf,
     };
     if (transformedState.groupStates.length > 0) {
       const groupStates = transformedState.groupStates;
@@ -272,7 +261,10 @@ class StateDataHandleController {
               } else if (
                 groupState.post_cursor < (localGroupState.post_cursor || 0)
               ) {
-                if (!groupState.marked_as_unread) {
+                if (
+                  !groupState.marked_as_unread &&
+                  !transformedState.isFromIndexData
+                ) {
                   mainLogger.info(
                     `[StateDataHandleController]: invalid state_post_cursor change: ${groupState}`,
                   );
@@ -301,15 +293,13 @@ class StateDataHandleController {
             ) {
               stateChanged = true;
             }
-            if (!stateChanged) {
-              return;
-            }
           }
           const resultGroupState = _.merge({}, localGroupState, groupState);
 
           // calculate umi
+          let unreadCount: number = 0;
           if (transformedState.isSelf) {
-            resultGroupState.unread_count = 0;
+            unreadCount = 0;
           } else {
             const group_cursor =
               (resultGroupState.group_post_cursor || 0) +
@@ -317,10 +307,12 @@ class StateDataHandleController {
             const state_cursor =
               (resultGroupState.post_cursor || 0) +
               (resultGroupState.unread_deactivated_count || 0);
-            resultGroupState.unread_count = Math.max(
-              group_cursor - state_cursor,
-              0,
-            );
+            unreadCount = Math.max(group_cursor - state_cursor, 0);
+          }
+
+          if (unreadCount !== resultGroupState.unread_count) {
+            resultGroupState.unread_count = unreadCount;
+            stateChanged = true;
           }
 
           if (resultGroupState.unread_count > 0) {
@@ -328,7 +320,7 @@ class StateDataHandleController {
           } else {
             resultGroupState.marked_as_unread = false;
           }
-          return resultGroupState;
+          return stateChanged ? resultGroupState : undefined;
         }),
       );
     }

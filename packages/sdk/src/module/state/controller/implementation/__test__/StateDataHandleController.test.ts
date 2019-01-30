@@ -219,7 +219,6 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 5,
           },
         ],
-        isSelf: false,
         myState: {
           id: 5683,
         },
@@ -268,7 +267,9 @@ describe('StateDataHandleController', () => {
             read_through: 7,
             unread_deactivated_count: 1,
             unread_mentions_count: 6,
-            unread_count: 3,
+            group_post_cursor: 15,
+            group_post_drp_cursor: 9,
+            unread_count: 0,
           },
           {
             id: 2,
@@ -290,6 +291,17 @@ describe('StateDataHandleController', () => {
       ).toEqual({
         groupStates: [
           {
+            id: 1,
+            marked_as_unread: true,
+            post_cursor: 18,
+            read_through: 7,
+            unread_deactivated_count: 1,
+            unread_mentions_count: 6,
+            group_post_cursor: 15,
+            group_post_drp_cursor: 9,
+            unread_count: 5,
+          },
+          {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
             id: 2,
@@ -310,7 +322,6 @@ describe('StateDataHandleController', () => {
             unread_count: 0,
           },
         ],
-        isSelf: false,
         myState: undefined,
       });
     });
@@ -358,7 +369,6 @@ describe('StateDataHandleController', () => {
             unread_count: 0,
           },
         ],
-        isSelf: true,
         myState: undefined,
       });
     });

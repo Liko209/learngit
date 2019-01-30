@@ -13,6 +13,7 @@ import PostService from '../../../../../service/post';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
+import { TotalUnreadController } from '../TotalUnreadController';
 
 class MockRequestController implements IRequestController {
   get = jest.fn();
@@ -53,6 +54,7 @@ describe('StateActionController', () => {
   let mockPartialModifyController: MockPartialModifyController;
   let mockEntitySourceController: EntitySourceController;
   let mockStateFetchDataController: StateFetchDataController;
+  let mockTotalUnreadController: TotalUnreadController;
   beforeEach(() => {
     jest.clearAllMocks();
     mockRequestController = new MockRequestController();
@@ -64,10 +66,14 @@ describe('StateActionController', () => {
     mockStateFetchDataController = new StateFetchDataController(
       mockEntitySourceController,
     );
+    mockTotalUnreadController = new TotalUnreadController(
+      mockEntitySourceController,
+    );
     stateActionController = new StateActionController(
       mockPartialModifyController,
       mockRequestController,
       mockStateFetchDataController,
+      mockTotalUnreadController,
     );
   });
 

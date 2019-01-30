@@ -38,6 +38,7 @@ class StateController {
         partialModifyController,
         requestController,
         this.getStateFetchDataController(),
+        this.getTotalUnreadController(),
       );
     }
     return this._stateActionController;

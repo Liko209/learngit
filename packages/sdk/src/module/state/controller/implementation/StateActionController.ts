@@ -10,13 +10,16 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import PostService from '../../../../service/post';
 import { StateFetchDataController } from './StateFetchDataController';
+import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
+import { mainLogger } from 'foundation';
 
 class StateActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<GroupState>,
     private _requestController: IRequestController<State>,
     private _stateFetchDataController: StateFetchDataController,
+    private _totalUnreadController: TotalUnreadController,
   ) {}
 
   async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
@@ -48,9 +51,15 @@ class StateActionController {
           };
         },
         async (updatedEntity: GroupState) => {
-          return await this._requestController.put(
-            this._buildUpdateReadStatusParams(myStateId, updatedEntity),
-          );
+          this._totalUnreadController.handleGroupState([updatedEntity]);
+          try {
+            return await this._requestController.put(
+              this._buildUpdateReadStatusParams(myStateId, updatedEntity),
+            );
+          } catch (e) {
+            mainLogger.error('updateReadStatus: send request failed');
+            return updatedEntity;
+          }
         },
       );
     }
@@ -59,10 +68,15 @@ class StateActionController {
   async updateLastGroup(groupId: number): Promise<void> {
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (myStateId > 0) {
-      await this._requestController.put({
-        id: myStateId,
-        last_group_id: groupId,
-      });
+      try {
+        await this._requestController.put({
+          id: myStateId,
+          last_group_id: groupId,
+        });
+      } catch (e) {
+        mainLogger.error('updateLastGroup failed');
+        return;
+      }
     }
   }
 

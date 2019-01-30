@@ -27,8 +27,8 @@ class StateService extends EntityBaseService<GroupState>
         [SOCKET.PARTIAL_STATE]: this.handleState,
         [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
         [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
-        [ENTITY.GROUP]: this.handleGroupChange,
-        [ENTITY.PROFILE]: this.handleProfileChange,
+        [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
+        [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
       }),
     );
   }
@@ -90,7 +90,7 @@ class StateService extends EntityBaseService<GroupState>
       .handleGroupCursor(groups);
   }
 
-  handleGroupChange = async (
+  handleGroupChangeForTotalUnread = async (
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> => {
     await this.getStateController()
@@ -98,7 +98,7 @@ class StateService extends EntityBaseService<GroupState>
       .handleGroup(payload);
   }
 
-  handleProfileChange = async (
+  handleProfileChangeForTotalUnread = async (
     payload: NotificationEntityPayload<Profile>,
   ): Promise<void> => {
     await this.getStateController()

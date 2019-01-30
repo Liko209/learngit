@@ -43,12 +43,12 @@ class TotalUnreadController {
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {
+    this._taskArray = [];
     this._unreadInitialized = false;
     this.reset();
   }
 
   async reset() {
-    this._taskArray = [];
     this._groupSectionUnread = new Map<number, SectionUnread>();
     this._totalUnread = {
       section: GROUP_SECTION_TYPE.ALL,
@@ -135,6 +135,7 @@ class TotalUnreadController {
           groupUnread.section,
           (groupState.unread_count || 0) - groupUnread.unreadCount,
           (groupState.unread_mentions_count || 0) - groupUnread.mentionCount,
+          groupUnread.isTeam || false,
         );
         groupUnread.unreadCount = groupState.unread_count || 0;
         groupUnread.mentionCount = groupState.unread_mentions_count || 0;
@@ -153,6 +154,7 @@ class TotalUnreadController {
             groupUnread.section,
             -groupUnread.unreadCount,
             -groupUnread.mentionCount,
+            groupUnread.isTeam || false,
           );
           this._groupSectionUnread.delete(id);
         }
@@ -176,6 +178,7 @@ class TotalUnreadController {
                 groupUnread.section,
                 -groupUnread.unreadCount,
                 -groupUnread.mentionCount,
+                groupUnread.isTeam || false,
               );
               this._groupSectionUnread.delete(id);
             }
@@ -203,6 +206,7 @@ class TotalUnreadController {
         this._updateTotalUnreadByFavoriteChanges(adds, true);
         const removes = _.difference(this._favoriteGroupIds, newFavoriteIds);
         this._updateTotalUnreadByFavoriteChanges(removes, false);
+        this._favoriteGroupIds = newFavoriteIds;
       });
     }
   }
@@ -222,11 +226,13 @@ class TotalUnreadController {
             groupUnread.section,
             -groupUnread.unreadCount,
             -groupUnread.mentionCount,
+            groupUnread.isTeam || false,
           );
           this._updateTotalUnread(
             GROUP_SECTION_TYPE.FAVORITE,
             groupUnread.unreadCount,
             groupUnread.mentionCount,
+            groupUnread.isTeam || false,
           );
           groupUnread.section = GROUP_SECTION_TYPE.FAVORITE;
         }
@@ -236,12 +242,14 @@ class TotalUnreadController {
             groupUnread.section,
             -groupUnread.unreadCount,
             -groupUnread.mentionCount,
+            groupUnread.isTeam || false,
           );
           if (!groupUnread.isTeam) {
             this._updateTotalUnread(
               GROUP_SECTION_TYPE.DIRECT_MESSAGE,
               groupUnread.unreadCount,
               groupUnread.mentionCount,
+              groupUnread.isTeam || false,
             );
             groupUnread.section = GROUP_SECTION_TYPE.DIRECT_MESSAGE;
           } else {
@@ -249,6 +257,7 @@ class TotalUnreadController {
               GROUP_SECTION_TYPE.TEAM,
               groupUnread.unreadCount,
               groupUnread.mentionCount,
+              groupUnread.isTeam || false,
             );
             groupUnread.section = GROUP_SECTION_TYPE.TEAM;
           }
@@ -272,7 +281,7 @@ class TotalUnreadController {
     await Promise.all(
       groups.map(async (group: Group) => {
         // todo check group is valid
-        if (groupService.isValid(group)) {
+        if (!groupService.isValid(group)) {
           return;
         }
         // todo check current user is in group
@@ -305,8 +314,12 @@ class TotalUnreadController {
     } else {
       section = GROUP_SECTION_TYPE.TEAM;
     }
-    this._updateTotalUnread(section, unreadCount, mentionCount);
-    this._updateTotalUnread(GROUP_SECTION_TYPE.ALL, unreadCount, mentionCount);
+    this._updateTotalUnread(
+      section,
+      unreadCount,
+      mentionCount,
+      group.is_team || false,
+    );
 
     this._groupSectionUnread.set(group.id, {
       section,
@@ -320,6 +333,7 @@ class TotalUnreadController {
     section: GROUP_SECTION_TYPE,
     unreadUpdate: number,
     mentionUpdate: number,
+    isTeam: boolean,
   ): void {
     let target = undefined;
     switch (section) {
@@ -341,8 +355,17 @@ class TotalUnreadController {
       }
     }
     if (target) {
-      target.unreadCount += unreadUpdate;
-      target.mentionCount += mentionUpdate;
+      if (isTeam) {
+        target.unreadCount += mentionUpdate;
+        target.mentionCount += mentionUpdate;
+        this._totalUnread.unreadCount += mentionUpdate;
+        this._totalUnread.mentionCount += mentionUpdate;
+      } else {
+        target.unreadCount += unreadUpdate;
+        target.mentionCount += mentionUpdate;
+        this._totalUnread.unreadCount += unreadUpdate;
+        this._totalUnread.mentionCount += mentionUpdate;
+      }
     }
   }
 
