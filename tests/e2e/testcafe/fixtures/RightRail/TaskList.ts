@@ -47,6 +47,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
   })
   // step 2 create a task
   await h(t).withLog('Then User create tasks count should be 2', async () => {
+    await t.wait(3000);
     await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
     await t.expect(tasksTab.nthItem(0).withText(taskTitle).exists).ok();
     await tasksTab.countOnSubTitleShouldBe(1);
