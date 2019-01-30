@@ -13,6 +13,7 @@ describe('getFileType', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
+
   it('should be image type when include target type', () => {
     const IMAGE_TYPE = new Set(
       [...SupportPreviewImageExtensions].map(type => type.toUpperCase()),

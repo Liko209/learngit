@@ -7,8 +7,8 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  ISortableModel,
   IFetchSortableDataListHandlerOptions,
+  ISortableModel,
 } from '@/store/base/fetch';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { service } from 'sdk';
@@ -195,14 +195,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       (payload: NotificationEntityPayload<Group>) => {
         const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
-        if (
-          payload.type === EVENT_TYPES.DELETE ||
-          payload.type === EVENT_TYPES.UPDATE
-        ) {
+        if (payload.type === EVENT_TYPES.DELETE) {
           ids = payload.body!.ids!;
+        } else if (payload.type === EVENT_TYPES.UPDATE) {
+          ids = payload.body!.ids!;
+          const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+          ids = ids.filter((id: number) => {
+            const group = payload.body.entities.get(id);
+            return !group || !group.members.includes(currentUserId);
+          });
         }
         // update url
-        this._updateUrl(payload.type, ids);
+        this._updateUrl(EVENT_TYPES.DELETE, ids);
         keys.forEach((key: string) => {
           this._handlersMap[key].onDataChanged(payload);
         });
@@ -313,17 +317,21 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private async _addFavoriteSection() {
     const isMatchFun = (model: Group) => {
+      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      const includesMe = userId && model.members.includes(userId);
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1
+        this._hiddenGroupIds.indexOf(model.id) === -1 &&
+        includesMe
       );
     };
     const transformFun = (model: Group) => {
       return {
         id: model.id,
-        sortValue: this._oldFavGroupIds.indexOf(model.id),
+        sortValue: 0,
       } as ISortableModel<Group>;
     };
+
     return this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {
       isMatchFunc: isMatchFun,
       transformFunc: transformFun,
@@ -361,8 +369,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe =
-        userId && model.members ? model.members.includes(userId) : true;
+      const includesMe = userId && model.members.includes(userId);
       return notInFav && isTeamInTeamSection && includesMe;
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
