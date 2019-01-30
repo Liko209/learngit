@@ -9,23 +9,21 @@ import { GroupService } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
 import { getEntity } from '@/store/utils';
-import { AbstractViewModel } from '@/base';
 import GroupModel from '@/store/models/Group';
+import StoreViewModel from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { ConversationPageProps } from './types';
 import _ from 'lodash';
 import history from '@/history';
 
-class ConversationPageViewModel extends AbstractViewModel<
-  ConversationPageProps
-> {
+class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService: GroupService = GroupService.getInstance();
   private _stateService: StateService = StateService.getInstance();
 
   constructor(props: ConversationPageProps) {
     super(props);
     this.reaction(
-      () => this.groupId,
+      () => this.props.groupId,
       async (groupId: number) => {
         const group = await this._groupService.getById(groupId);
         if (!group) {
@@ -54,14 +52,9 @@ class ConversationPageViewModel extends AbstractViewModel<
   );
 
   @computed
-  get groupId() {
-    return this.props.groupId;
-  }
-
-  @computed
   private get _group() {
-    return this.groupId
-      ? getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId)
+    return this.props.groupId
+      ? getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
       : ({} as GroupModel);
   }
 

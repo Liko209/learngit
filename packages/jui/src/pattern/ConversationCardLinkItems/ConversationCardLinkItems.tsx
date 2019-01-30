@@ -7,7 +7,13 @@ import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons/IconButton';
 import { JuiCard } from '../../components/Cards';
-import { width, height, spacing, grey } from '../../foundation/utils/styles';
+import {
+  width,
+  height,
+  spacing,
+  grey,
+  typography,
+} from '../../foundation/utils/styles';
 import defaultLinkImage from './link_img@2x.png';
 
 const LinkItemsWrapper = styled(JuiCard)`
@@ -49,6 +55,7 @@ const TitleWithSummary = styled.div`
   justify-content: space-between;
 `;
 const LinkTitle = styled.p`
+  ${typography('subheading1')};
   margin: ${spacing(0, 0, 2, 0)};
   word-break: break-word;
   overflow: hidden;

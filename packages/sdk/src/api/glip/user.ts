@@ -28,6 +28,7 @@ export type IndexDataModel = {
   presences?: RawPresence[];
   state?: Raw<State>;
   people?: Raw<Person>[];
+  public_teams?: Raw<Group>[];
   groups?: Raw<Group>[];
   teams?: Raw<Group>[];
   posts?: Raw<Post>[];

@@ -2,6 +2,7 @@ import 'testcafe';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import { ClientFunction } from 'testcafe';
+
 export class H {
   static getUserAgent(): Promise<string> {
     return ClientFunction(() => navigator.userAgent)();
@@ -13,7 +14,7 @@ export class H {
 
   static isEdge(): Promise<boolean> {
     return H.getUserAgent().then(ua => ua.includes('Edge'));
-  } 
+  }
 
   static getUtcOffset(): Promise<number> {
     return ClientFunction(() => new Date().getTimezoneOffset())();
@@ -30,9 +31,14 @@ export class H {
     });
   }
 
-  static async retryUntilPass(cb: () => Promise<any>, maxRetryTime = 5, retryInterval = 5e3) {
+  static escapePostText(origin: string) {
+    // ref: https://en.wikipedia.org/wiki/Non-breaking_space
+    return origin.replace(/ /g, '\u00A0').replace(/$/, '\n');
+  }
+
+  static async retryUntilPass(cb: () => Promise<any>, maxRetryTime = 10, retryInterval = 5e2) {
     let i = 0;
-    while(true ) {
+    while (true) {
       try {
         await cb();
         break;

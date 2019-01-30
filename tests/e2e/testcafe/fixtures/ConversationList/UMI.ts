@@ -171,7 +171,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
   await h(t).withLog('Then I click the team to open the team conversation', async () => {
     await teamsSection.conversationEntryById(teamId).enter();
-    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
@@ -569,7 +568,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.scrollToMiddle();
       await h(t).platform(otherUser).sendTextPost('test again', pvtChatId);
     });
@@ -725,9 +723,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-// bug https://jira.ringcentral.com/browse/FIJI-2766 so skip the checkpoint
-// skip due to https://jira.ringcentral.com/browse/FIJI-3130
-test.skip(formalName('JPT- 743 Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
+test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;

@@ -16,7 +16,8 @@ import { h } from '../../../helpers';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
-    await this.waitUntilExist(this.leftPanel, 60e3);
+    await this.waitUntilExist(this.leftPanel, timeout)
+    await this.waitForAllSpinnersToDisappear();
     if (alwaysFocus)
       await h(this.t).interceptHasFocus(true);
   }
