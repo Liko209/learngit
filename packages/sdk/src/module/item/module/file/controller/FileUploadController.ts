@@ -6,7 +6,8 @@
 
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, ItemDao } from '../../../../../dao';
+import { daoManager } from '../../../../../dao';
+import { ItemDao } from '../../../dao';
 import { Progress, PROGRESS_STATUS } from '../../../../progress';
 import { Raw } from '../../../../../framework/model';
 import { StoredFile, ItemFile, Item } from '../../../entity';

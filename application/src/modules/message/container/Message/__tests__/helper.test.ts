@@ -40,19 +40,19 @@ function resetMockedServices() {
   mockedGroupService = {
     valid: true,
     group: {},
-    async isValid() {
-      return this.valid;
-    },
     async getById() {
       return {};
     },
     updateGroupLastAccessedTime: jest.fn(),
+    async isGroupCanBeShown(id: number) {
+      return this.valid && !(await mockedProfileService.isConversationHidden());
+    },
   };
   mockedGlobalStore = {
     set: jest.fn(),
   };
   mockedSectionHandler = {
-    list: new Set([110]),
+    list: [110],
     onReady: (callback: Function) => callback(mockedSectionHandler.list),
   };
 }

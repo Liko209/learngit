@@ -27,13 +27,8 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   }
 
   @computed
-  get ids() {
-    return this.props.ids;
-  }
-
-  @computed
   private get _umiObj() {
-    const groupIds = this.ids;
+    const groupIds = this.props.ids;
     const groupStates = _.map(groupIds, (groupId: number) => {
       return getEntity(ENTITY_NAME.GROUP_STATE, groupId) as GroupStateModel;
     });

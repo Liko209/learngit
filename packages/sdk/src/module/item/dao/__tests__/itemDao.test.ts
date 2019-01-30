@@ -1,7 +1,13 @@
-import ItemDao from '../';
-import { setup } from '../../__tests__/utils';
-import { Item } from '../../../models';
-import { itemFactory } from '../../../__tests__/factories';
+/*
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-21 14:58:00
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { ItemDao } from '../';
+import { setup } from '../../../../dao/__tests__/utils';
+import { Item } from '../../entity';
+import { itemFactory } from '../../../../__tests__/factories';
 
 describe('Item Dao', () => {
   let itemDao: ItemDao;
@@ -31,59 +37,6 @@ describe('Item Dao', () => {
     ];
     await itemDao.bulkPut(items);
     expect(itemDao.getItemsByIds([1, 2, 3, 4])).resolves.toEqual(items);
-  });
-
-  describe('getItemsByGroupId()', () => {
-    const items: Item[] = [
-      itemFactory.build({
-        id: 1,
-        group_ids: [123],
-      }),
-      itemFactory.build({
-        id: 2,
-        group_ids: [123, 444],
-      }),
-      itemFactory.build({
-        id: 3,
-        group_ids: [321],
-      }),
-      itemFactory.build({
-        id: 4,
-        group_ids: [321],
-      }),
-      itemFactory.build({
-        id: 5,
-        group_ids: [123],
-      }),
-    ];
-    beforeEach(async () => {
-      await itemDao.bulkPut(items);
-    });
-    it('no limit', async () => {
-      expect(itemDao.getItemsByGroupId(123)).resolves.toMatchObject([
-        {
-          id: 1,
-          group_ids: [123],
-        },
-        {
-          id: 2,
-          group_ids: [123, 444],
-        },
-        {
-          id: 5,
-          group_ids: [123],
-        },
-      ]);
-    });
-
-    it('with limit', async () => {
-      expect(itemDao.getItemsByGroupId(123, 1)).resolves.toMatchObject([
-        {
-          id: 1,
-          group_ids: [123],
-        },
-      ]);
-    });
   });
 
   function buildTestItems(): Item[] {

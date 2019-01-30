@@ -22,6 +22,8 @@ interface IGroupService {
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
 
+  hasTeamAdmin(permission?: TeamPermission): boolean;
+
   updateTeamSetting(teamId: number, teamSetting: TeamSetting): Promise<void>;
 
   getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags;

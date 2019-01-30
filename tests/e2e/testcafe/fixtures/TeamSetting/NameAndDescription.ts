@@ -72,7 +72,6 @@ test(formalName(`Show team settings page when admin clicks settings button in th
   await h(t).withLog(`When I open the the team profile from post @team_mention`, async () => {
     await settingDialog.cancel();
     await teamSection.conversationEntryById(teamId).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
     await conversationPage.postItemById(postId).clickNthMentions();
     await app.homePage.miniProfile.openProfile();
   });

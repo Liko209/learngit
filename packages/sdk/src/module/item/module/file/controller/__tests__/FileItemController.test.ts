@@ -7,7 +7,8 @@
 import { FileItemController } from '../FileItemController';
 import { FileUploadController } from '../FileUploadController';
 import { IItemService } from '../../../../service/IItemService';
-import { daoManager, ItemDao } from '../../../../../../dao';
+import { daoManager } from '../../../../../../dao';
+import { ItemDao } from '../../../../dao';
 import {
   buildEntitySourceController,
   buildPartialModifyController,
@@ -27,7 +28,7 @@ jest.mock(
 );
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../api');
-jest.mock('../../../../../../dao');
+jest.mock('../../../../dao');
 jest.mock('../FileUploadController');
 jest.mock('../../../../../../framework/controller');
 

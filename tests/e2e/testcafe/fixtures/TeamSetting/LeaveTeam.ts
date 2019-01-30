@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
@@ -164,15 +164,12 @@ test(formalName(`The team information is updated when the member is left`, ['P1'
     await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
-
-  let members;
-  await h(t).withLog(`When I check the team member list from API`, async () => {
-    members = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data['members']);
-  });
-
-  await h(t).withLog(`Then the loginUser is not in the member list`, async () => {
+  await h(t).withLog(`Then the loginUser should not be in the member list (check via API)`, async () => {
     const personId = await h(t).glip(adminUser).toPersonId(loginUser.rcId);
-    assert.ok(!_.includes(members, personId), `Login User should no be in team members list`);
+    await H.retryUntilPass(async () => {
+      const members = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data['members']);
+      assert.ok(!_.includes(members, personId), `Login User should no be in team members list`);
+    });
   });
 
   await h(t).withLog(`When team member send a message on the team`, async () => {

@@ -16,7 +16,7 @@ import { observable } from 'mobx';
 
 type Props = ConversationListItemViewProps;
 type State = {
-  currentGroupId: number;
+  isHover: boolean;
 };
 
 @observer
@@ -28,6 +28,10 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
     CONVERSATION_TYPES.ME,
   ];
+
+  state = {
+    isHover: false,
+  };
 
   constructor(props: Props) {
     super(props);
@@ -53,7 +57,24 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     return <Indicator id={this.props.groupId} />;
   }
 
+  private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    this.setState({
+      isHover: true,
+    });
+  }
+
+  private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    this.setState({
+      isHover: false,
+    });
+  }
+
   render() {
+    const { isHover } = this.state;
     return (
       <Fragment>
         <JuiConversationListItem
@@ -68,13 +89,18 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           title={this.props.displayName}
           selected={this.props.selected}
           hidden={this.props.hidden}
-        />
-        <Menu
-          personId={this.props.personId}
-          groupId={this.props.groupId}
-          anchorEl={this.menuAnchorEl}
-          onClose={this._closeMenu}
-        />
+          onMouseEnter={this._handleMouseEnter}
+          onMouseLeave={this._handleMouseLeave}
+        >
+          {isHover && (
+            <Menu
+              personId={this.props.personId}
+              groupId={this.props.groupId}
+              anchorEl={this.menuAnchorEl}
+              onClose={this._closeMenu}
+            />
+          )}
+        </JuiConversationListItem>
       </Fragment>
     );
   }
@@ -88,7 +114,8 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this.menuAnchorEl = event.currentTarget;
   }
 
-  private _closeMenu() {
+  private _closeMenu(event: MouseEvent<HTMLElement>) {
+    event.stopPropagation();
     this.menuAnchorEl = null;
   }
 }

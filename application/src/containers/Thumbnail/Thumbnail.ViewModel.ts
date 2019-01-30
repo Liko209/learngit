@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable } from 'mobx';
+import { computed, observable, comparer } from 'mobx';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/utils';
 import { Item } from 'sdk/module/item/entity';
@@ -15,12 +15,54 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { getFileType } from '@/common/getFileType';
 import { Props, ViewProps } from './types';
 
+type Size = {
+  width: number;
+  height: number;
+};
+
 class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
+  static DEFAULT_WIDTH = 36;
+  static DEFAULT_HEIGHT = 36;
   @observable
   private _thumbsUrlWithSize: string;
 
-  async onReceiveProps() {
-    await this._getThumbsUrlWithSize();
+  constructor(props: Props) {
+    super(props);
+    this.reaction(
+      () => ({ size: this._size, id: this._id }),
+      this._getThumbsUrlWithSize,
+      {
+        fireImmediately: true,
+        equals: comparer.structural,
+      },
+    );
+  }
+
+  @computed
+  private get _size() {
+    const { origWidth, origHeight } = this.file;
+    const size: Size = {
+      width: ThumbnailViewModel.DEFAULT_WIDTH,
+      height: ThumbnailViewModel.DEFAULT_WIDTH,
+    };
+    if (origWidth && origHeight) {
+      if (origWidth > origHeight) {
+        size.width = Math.max(
+          Math.round(
+            (origWidth / origHeight) * ThumbnailViewModel.DEFAULT_WIDTH,
+          ),
+          ThumbnailViewModel.DEFAULT_WIDTH,
+        );
+      } else {
+        size.height = Math.max(
+          Math.round(
+            (origHeight / origWidth) * ThumbnailViewModel.DEFAULT_WIDTH,
+          ),
+          ThumbnailViewModel.DEFAULT_WIDTH,
+        );
+      }
+    }
+    return size;
   }
 
   @computed
@@ -34,14 +76,16 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   private _getThumbsUrlWithSize = async () => {
-    const itemService = ItemService.getInstance() as ItemService;
-    const width = this.props.width || 36;
-    const height = this.props.height || 36;
-    this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
-      this._id,
-      width,
-      height,
-    );
+    const { origWidth, origHeight } = this.file;
+    if (origWidth && origHeight) {
+      const { width, height } = this._size;
+      const itemService = ItemService.getInstance() as ItemService;
+      this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
+        this._id,
+        width,
+        height,
+      );
+    }
   }
 
   @computed
@@ -52,7 +96,6 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     };
 
     if (this.file && this.file.type) {
-      const { type } = this.file;
       // const { previewUrl, isImage } = this.isImage(this.file);
       // if (isImage) {
       if (FileItemUtils.isSupportPreview(this.file)) {
@@ -63,7 +106,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       // return thumb;
       // }
 
-      thumb.icon = (type && type.split('/').pop()) || '';
+      thumb.icon = this.file.iconType;
       return thumb;
     }
     return thumb;

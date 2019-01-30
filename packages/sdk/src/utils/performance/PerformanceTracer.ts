@@ -28,6 +28,7 @@ class PerformanceTracer {
       if (startTime) {
         const endTime = performance.now();
         this.tracePerformance(key, { startTime, endTime });
+        mainLogger.info(key, ':', String(endTime - startTime));
       }
       this.scenarios.delete(key);
     }

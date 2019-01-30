@@ -130,7 +130,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       handleNameChange,
       handleDescChange,
       handleSearchContactChange,
-      isOffline,
       serverError,
       errorEmail,
       serverUnknownError,
@@ -143,7 +142,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        okBtnProps={{ disabled: isOffline || disabledOkBtn }}
+        okBtnProps={{ disabled: disabledOkBtn }}
         title={t('CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
