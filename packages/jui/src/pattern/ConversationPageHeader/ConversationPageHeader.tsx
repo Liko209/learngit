@@ -138,7 +138,7 @@ class JuiConversationPageHeader
     } = this.props;
 
     const right = <div className="right-wrapper">{Right}</div>;
-    const textElement = (
+    const titleElement = (
       <TitleWrapper
         ref={this.textRef}
         variant="title"
@@ -162,9 +162,9 @@ class JuiConversationPageHeader
           <div className="left-wrapper">
             <TitleAndStatusWrapper>
               {this.state.showTooltip ? (
-                <JuiArrowTip title={title}>{textElement}</JuiArrowTip>
+                <JuiArrowTip title={title}>{titleElement}</JuiArrowTip>
               ) : (
-                textElement
+                titleElement
               )}
               {status ? (
                 <StatusWrapper data-test-automation-id="conversation-page-header-status">
