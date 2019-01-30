@@ -6,7 +6,7 @@
 import { TeamSettingsViewModel } from '../TeamSettings.ViewModel';
 import { errorHelper } from 'sdk/error';
 import * as utils from '@/utils/error';
-import { GroupService } from 'sdk/module/group';
+import { NewGroupService } from 'sdk/module/group';
 import { Notification } from '@/containers/Notification';
 import {
   ToastMessageAlign,
@@ -14,14 +14,14 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('sdk/module/group', () => ({
-  GroupService: jest.fn(),
+  NewGroupService: jest.fn(),
 }));
+const groupService = new NewGroupService();
 
 describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
-    const groupService = new GroupService();
     beforeEach(() => {
-      (GroupService as any).mockImplementation(() => groupService);
+      NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();
@@ -109,9 +109,9 @@ describe('TeamSettingsViewModel', () => {
   });
 });
 describe('TeamSettingsViewModel', () => {
-  const groupService = new GroupService();
+  const groupService = new NewGroupService();
   beforeEach(() => {
-    (GroupService as any).mockImplementation(() => groupService);
+    (NewGroupService as any).mockImplementation(() => groupService);
   });
   afterEach(() => {
     jest.resetAllMocks();

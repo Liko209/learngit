@@ -608,8 +608,10 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.SEARCH_GROUP,
+      logId,
     );
     const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
@@ -652,9 +654,7 @@ class GroupService extends BaseService<Group> {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.SEARCH_GROUP,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -665,8 +665,10 @@ class GroupService extends BaseService<Group> {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.SEARCH_TEAM,
+      logId,
     );
     const currentUserId = UserConfig.getCurrentUserId();
     if (!currentUserId) {
@@ -747,9 +749,7 @@ class GroupService extends BaseService<Group> {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.SEARCH_TEAM,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 

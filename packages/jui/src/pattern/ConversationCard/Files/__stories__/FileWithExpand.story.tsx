@@ -18,6 +18,7 @@ storiesOf('Pattern/ConversationCard', module)
     return (
       <div>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -41,6 +42,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -64,6 +66,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -87,6 +90,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -110,6 +114,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={

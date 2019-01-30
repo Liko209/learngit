@@ -88,26 +88,10 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
-const FILE_ICON_MAP = {
-  pdf: ['pdf'],
-  excel: ['xlsx', 'xls'],
-  ppt: ['ppt', 'pptx', 'potx'],
-};
-
-function getFileIcon(fileType: string) {
-  for (const key in FILE_ICON_MAP) {
-    if (FILE_ICON_MAP[key].includes(fileType)) {
-      return key;
-    }
-  }
-  return 'default_file';
-}
-
 export {
   getDateMessage,
   getDateAndTime,
   getDurationTime,
   getDurationDate,
   getDurationTimeText,
-  getFileIcon,
 };
