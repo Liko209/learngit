@@ -14,7 +14,7 @@ import {
 import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
 import { GroupState } from '../../entity';
-import { GroupService as NewGroupService } from '../../../group';
+import { NewGroupService } from '../../../group';
 import { GroupService } from '../../../../service/group';
 import { ProfileService } from '../../../../service/profile';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
@@ -261,7 +261,7 @@ class TotalUnreadController {
     this.reset();
 
     // todo instance
-    const newGroupService: NewGroupService = new NewGroupService();
+    const newGroupService: NewGroupService = NewGroupService.getInstance();
     const groupService: GroupService = GroupService.getInstance();
     // todo get favorite group ids
     const profileService: ProfileService = ProfileService.getInstance();
