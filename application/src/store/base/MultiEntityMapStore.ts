@@ -80,6 +80,7 @@ export default class MultiEntityMapStore<
     }
   }
 
+  @action
   set(data: T) {
     const model = this.createModel(data);
     const { id } = model;
@@ -95,6 +96,7 @@ export default class MultiEntityMapStore<
     });
   }
 
+  @action
   private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
     const model = this._data[id];
     if (model) {
@@ -128,6 +130,7 @@ export default class MultiEntityMapStore<
     }
   }
 
+  @action
   remove(id: number) {
     setTimeout(() => {
       const model = this._data[id];

@@ -68,21 +68,6 @@ describe('PostDataController', () => {
       clearMocks();
       setup();
     });
-
-    it('should do nothing if data is null', async () => {
-      const result = await postDataController.handleFetchedPosts(
-        null,
-        false,
-        (posts: Post[], items: Item[]) => {},
-      );
-      const filterAndSavePosts = jest.spyOn(
-        postDataController,
-        'filterAndSavePosts',
-      );
-      expect(filterAndSavePosts).not.toBeCalled();
-      expect(itemService.handleIncomingData).not.toBeCalled();
-    });
-
     it('should go through data handle process if data is not null', async () => {
       const data = {
         posts: [{ id: 3, group_id: 1 }, { id: 4, group_id: 2 }],

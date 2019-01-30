@@ -1,4 +1,4 @@
-import { GroupService } from '../GroupService';
+import { NewGroupService } from '../NewGroupService';
 import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
 import { TeamController } from '../../controller/TeamController';
@@ -18,7 +18,7 @@ jest.mock('sdk/api');
 jest.mock('sdk/dao');
 
 describe('GroupService', () => {
-  let groupService: GroupService;
+  let groupService: NewGroupService;
   const mockTeamActionController = {
     joinTeam: jest.fn(),
     canJoinTeam: jest.fn(),
@@ -35,7 +35,7 @@ describe('GroupService', () => {
   }
 
   function setup() {
-    groupService = new GroupService();
+    groupService = new NewGroupService();
     (TeamController as any).mockImplementation(() => {
       return {
         getTeamActionController: jest

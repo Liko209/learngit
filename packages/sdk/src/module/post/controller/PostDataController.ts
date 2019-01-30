@@ -11,7 +11,6 @@ import { Raw } from '../../../framework/model';
 import { baseHandleData, transform } from '../../../service/utils';
 import { ItemService } from '../../item';
 import { ENTITY, GroupService } from '../../../service';
-import { Item } from '../../item/entity';
 import _ from 'lodash';
 
 class PostDataController {
@@ -20,15 +19,7 @@ class PostDataController {
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
 
-  async handleFetchedPosts(
-    data: IRawPostResult | null,
-    shouldSaveToDb: boolean,
-    updateResult: (posts: Post[], items: Item[]) => void,
-  ) {
-    if (!data) {
-      return;
-    }
-
+  async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
     const transformedData = this._transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
@@ -39,7 +30,11 @@ class PostDataController {
       (await ItemService.getInstance<ItemService>().handleIncomingData(
         data.items,
       )) || [];
-    await updateResult(posts, items);
+    return {
+      posts,
+      items,
+      hasMore: data.hasMore,
+    };
   }
 
   async filterAndSavePosts(posts: Post[], save?: boolean): Promise<Post[]> {
