@@ -41,6 +41,7 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     groups = [],
     teams = [],
     posts = [],
+    public_teams = [],
     max_posts_exceeded: maxPostsExceeded = false,
     client_config: clientConfig = {},
   } = data;
@@ -71,6 +72,7 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
+    .then(() => groupHandleData(public_teams))
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));

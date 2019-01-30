@@ -43,7 +43,7 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
-    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
   const filesTab = rightRail.filesTab;
@@ -61,7 +61,7 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
   await h(t).withLog('When I  upload another text file', async () => {
     await conversationPage.uploadFilesToMessageAttachment(filesPath[1]);
     await conversationPage.sendMessage(message);
-    await conversationPage.nthPostItem(-1).waitUntilFilesUploaded();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
   await h(t).withLog('And I click Files Tab', async () => {

@@ -23,6 +23,7 @@ import handleData, {
   getUniqMostRecentPostsByGroup,
   handleHiddenGroupsChanged,
   saveDataAndDoNotification,
+  calculateDeltaData,
 } from '../handleData';
 
 jest.mock('../../../api');
@@ -595,17 +596,50 @@ describe('handleHiddenGroupsChanged', () => {
 
 describe('saveDataAndDoNotification()', () => {
   describe('doNotification()', () => {
-    it('should not call notificationCenter.emit when normal group is empty', async () => {
-      const groups = generateFakeGroups(1, { members: [3, 4] });
-      UserConfig.getCurrentUserId.mockReturnValue(4);
+    it('should call notificationCenter.emit when group is not empty', async () => {
+      const groups = generateFakeGroups(1);
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
-
-    it('should call notificationCenter.emit when normal group is not empty', async () => {
-      const groups = generateFakeGroups(1);
+    it('should not call notificationCenter.emit when group is empty', async () => {
+      const groups = [];
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('calculateDeltaData()', () => {
+    it('should return correct data when include removes', async () => {
+      daoManager.getDao(GroupDao).get.mockReturnValue({
+        members: [123, 456, 789],
+      });
+      const deltaGroup = {
+        _id: 122222,
+        _delta: {
+          remove: {
+            members: [456],
+          },
+        },
+      } as Raw<Group>;
+      expect(await calculateDeltaData(deltaGroup)).toEqual({
+        members: [123, 789],
+      });
+    });
+    it('should return correct data when include adds', async () => {
+      daoManager.getDao(GroupDao).get.mockReturnValue({
+        members: [123, 456, 789],
+      });
+      const deltaGroup = {
+        _id: 122222,
+        _delta: {
+          add: {
+            members: [456, 111222],
+          },
+        },
+      } as Raw<Group>;
+      expect(await calculateDeltaData(deltaGroup)).toEqual({
+        members: [123, 456, 789, 111222],
+      });
     });
   });
 });

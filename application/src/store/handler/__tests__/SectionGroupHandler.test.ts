@@ -72,12 +72,14 @@ describe('SectionGroupHandler', () => {
           is_team: false,
           created_at: 0,
           most_recent_post_created_at: 1,
+          members: [1],
         },
         {
           id: 2,
           is_team: true,
           created_at: 0,
           most_recent_post_created_at: 1,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
@@ -105,6 +107,7 @@ describe('SectionGroupHandler', () => {
           id: 2,
           is_team: true,
           created_at: 0,
+          members: [1],
         },
       ];
       expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
@@ -127,6 +130,7 @@ describe('SectionGroupHandler', () => {
           id: 2,
           is_team: true,
           created_at: 0,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
@@ -154,6 +158,7 @@ describe('SectionGroupHandler', () => {
           is_team: false,
           created_at: 0,
           creator_id: 2,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
@@ -182,6 +187,7 @@ describe('SectionGroupHandler', () => {
           is_team: false,
           created_at: 0,
           creator_id: 3,
+          members: [3],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
@@ -550,6 +556,7 @@ describe('SectionGroupHandler', () => {
           id: 3,
           company_id: 1,
           is_team: false,
+          members: [],
         },
       ]);
       await handler.checkIfGroupOpenedFromHidden([1, 2], [1]);

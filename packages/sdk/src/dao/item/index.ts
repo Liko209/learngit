@@ -23,11 +23,6 @@ class ItemDao extends BaseDao<Item> {
     );
   }
 
-  async getItemsByGroupId(groupId: number, limit?: number): Promise<Item[]> {
-    const query = this.createQuery().contain('group_ids', groupId);
-    return limit ? query.limit(limit).toArray() : query.toArray();
-  }
-
   async isFileItemExist(
     groupId: number,
     fileName: string,

@@ -199,9 +199,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           ids = payload.body!.ids!;
         } else if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
+          const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
           ids = ids.filter((id: number) => {
             const group = payload.body.entities.get(id);
-            return !group || group.is_archived;
+            return (
+              !group ||
+              !group.members.includes(currentUserId) ||
+              group.is_archived
+            );
           });
         }
         // update url
@@ -316,9 +321,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private async _addFavoriteSection() {
     const isMatchFun = (model: Group) => {
+      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+      const includesMe = userId && model.members.includes(userId);
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1 &&
+        includesMe &&
         !model.is_archived
       );
     };
@@ -365,8 +373,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe =
-        userId && model.members ? model.members.includes(userId) : true;
+      const includesMe = userId && model.members.includes(userId);
       return (
         notInFav && isTeamInTeamSection && includesMe && !model.is_archived
       );
