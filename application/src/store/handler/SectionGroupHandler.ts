@@ -7,8 +7,8 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  ISortableModel,
   IFetchSortableDataListHandlerOptions,
+  ISortableModel,
 } from '@/store/base/fetch';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { service } from 'sdk';
@@ -328,9 +328,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const transformFun = (model: Group) => {
       return {
         id: model.id,
-        sortValue: this._oldFavGroupIds.indexOf(model.id),
+        sortValue: 0,
       } as ISortableModel<Group>;
     };
+
     return this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {
       isMatchFunc: isMatchFun,
       transformFunc: transformFun,
