@@ -5,13 +5,13 @@
  */
 import _ from 'lodash';
 import { RTCProvManager } from '../RTCProvManager';
-import { rtcRestApiManager } from '../../utils/RTCRestApiManager';
+import { RTCRestApiManager } from '../../utils/RTCRestApiManager';
 import {
   kRTCProvParamsErrorRertyTimer,
   kRTCProvRequestErrorRertyTimerMax,
   kRTCProvRequestErrorRertyTimerMin,
 } from '../constants';
-import { rtcDaoManager } from '../../utils/RTCDaoManager';
+import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { ITelephonyDaoDelegate } from 'foundation';
 import { RTCSipProvisionInfo } from '../types';
 
@@ -61,7 +61,7 @@ describe('RTCProvManager', async () => {
     function setupMockLocalStorage() {
       provManager = new RTCProvManager();
       localStorage = new MockLocalStorage();
-      rtcDaoManager.setDaoDelegate(localStorage);
+      RTCDaoManager.instance().setDaoDelegate(localStorage);
       localStorage.remove('sip-info');
     }
     it('should send provisioning request and return local provisioning info when local provisioning info exist after call acquireSipProv. [JPT-1005]', async () => {
@@ -69,7 +69,9 @@ describe('RTCProvManager', async () => {
       localStorage.put('sip-info', mockProvData_normal);
       jest.spyOn(provManager, '_sendSipProvRequest');
       jest.spyOn(provManager, 'emit');
-      jest.spyOn(rtcRestApiManager, 'sendRequest').mockReturnValue(null);
+      jest
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
+        .mockReturnValue(null);
       await provManager.acquireSipProv();
       expect(provManager.emit).toBeCalled();
       expect(provManager._sendSipProvRequest).toBeCalled();
@@ -79,7 +81,9 @@ describe('RTCProvManager', async () => {
       setupMockLocalStorage();
       jest.spyOn(provManager, '_sendSipProvRequest');
       jest.spyOn(provManager, 'emit');
-      jest.spyOn(rtcRestApiManager, 'sendRequest').mockReturnValue(null);
+      jest
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
+        .mockReturnValue(null);
       await provManager.acquireSipProv();
       localStorage.remove('sip-info');
       expect(provManager.emit).not.toBeCalled();
@@ -92,7 +96,7 @@ describe('RTCProvManager', async () => {
       jest.spyOn(provManager, '_sendSipProvRequest');
       jest.spyOn(provManager, 'emit');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvData_normal);
       await provManager.acquireSipProv();
       expect(provManager.emit).toBeCalledTimes(1);
@@ -107,7 +111,7 @@ describe('RTCProvManager', async () => {
       jest.spyOn(provManager, '_sendSipProvRequest');
       jest.spyOn(provManager, 'emit');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(newProveResponse);
       await provManager.acquireSipProv();
       expect(provManager.emit).toBeCalledTimes(2);
@@ -121,7 +125,7 @@ describe('RTCProvManager', async () => {
       pm._canAcquireSipProv = false;
       jest.spyOn(pm, '_sendSipProvRequest');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
       expect(pm._sendSipProvRequest).not.toBeCalled();
@@ -135,7 +139,7 @@ describe('RTCProvManager', async () => {
       jest.spyOn(pm, 'emit');
       jest.spyOn(pm, '_resetFreshTimer');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
       expect(pm.emit).toBeCalled();
@@ -150,7 +154,7 @@ describe('RTCProvManager', async () => {
       jest.spyOn(pm, 'emit');
       jest.spyOn(pm, '_resetFreshTimer');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
       expect(pm.emit).toBeCalled();
@@ -166,7 +170,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.status = 400;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
@@ -190,7 +194,7 @@ describe('RTCProvManager', async () => {
       mockProvResponse_unnormal.status = 400;
       mockProvResponse_unnormal.retryAfter = 2000;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
@@ -215,7 +219,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].transport = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
@@ -229,7 +233,7 @@ describe('RTCProvManager', async () => {
       mockProvResponse_unnormal.retryAfter = 7300;
       mockProvResponse_unnormal.data.sipInfo[0].transport = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
@@ -238,13 +242,13 @@ describe('RTCProvManager', async () => {
     });
 
     it('should do nothing when same sip provision is returned JPT-659', async () => {
-      rtcDaoManager.setDaoDelegate(null);
+      RTCDaoManager.instance().setDaoDelegate(null);
       const pm = new RTCProvManager();
       jest.spyOn(pm, 'emit');
       jest.spyOn(pm, '_resetFreshTimer');
       pm._sipProvisionInfo = _.cloneDeep(mockProvData_normal);
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_normal);
       await pm.acquireSipProv();
       expect(pm.emit).not.toBeCalled();
@@ -261,7 +265,7 @@ describe('RTCProvManager', async () => {
       mockProvResponse_unnormal.status = 400;
       jest.spyOn(pm, '_sendSipProvRequest');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       await pm.acquireSipProv();
       await pm.acquireSipProv();
@@ -274,9 +278,9 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].transport = '';
       jest.spyOn(pm, '_sendSipProvRequest');
-      jest.spyOn(rtcRestApiManager, 'sendRequest');
+      jest.spyOn(RTCRestApiManager.instance(), 'sendRequest');
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       await pm.acquireSipProv();
       await pm.acquireSipProv();
@@ -290,7 +294,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       delete mockProvResponse_unnormal.data.sipInfo[0].transport;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -302,7 +306,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].transport = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -314,7 +318,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       delete mockProvResponse_unnormal.data.sipInfo[0].password;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -326,7 +330,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].password = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -338,7 +342,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       delete mockProvResponse_unnormal.data.sipInfo[0].domain;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -350,7 +354,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].domain = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -362,7 +366,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       delete mockProvResponse_unnormal.data.sipInfo[0].username;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -374,7 +378,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].username = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -386,7 +390,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       delete mockProvResponse_unnormal.data.sipInfo[0].authorizationId;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -398,7 +402,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].authorizationId = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -410,7 +414,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       delete mockProvResponse_unnormal.data.sipInfo[0].outboundProxy;
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();
@@ -422,7 +426,7 @@ describe('RTCProvManager', async () => {
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
       mockProvResponse_unnormal.data.sipInfo[0].outboundProxy = '';
       jest
-        .spyOn(rtcRestApiManager, 'sendRequest')
+        .spyOn(RTCRestApiManager.instance(), 'sendRequest')
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_checkSipProvInfoParams');
       await pm.acquireSipProv();

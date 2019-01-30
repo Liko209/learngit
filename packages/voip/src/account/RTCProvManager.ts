@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcRestApiManager } from '../utils/RTCRestApiManager';
+import { RTCRestApiManager } from '../utils/RTCRestApiManager';
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCSipProvisionInfo, RTC_PROV_EVENT } from './types';
 import {
@@ -23,7 +23,7 @@ import {
 } from './constants';
 import { isNotEmptyString } from '../utils/utils';
 import { RTC_REST_API } from '../utils/types';
-import { rtcDaoManager } from '../utils/RTCDaoManager';
+import { RTCDaoManager } from '../utils/RTCDaoManager';
 import _ from 'lodash';
 
 enum ERROR_TYPE {
@@ -45,7 +45,7 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   async acquireSipProv() {
-    const localSipProvisionInfo = rtcDaoManager.readProvisioning();
+    const localSipProvisionInfo = RTCDaoManager.instance().readProvisioning();
     if (localSipProvisionInfo) {
       this._sipProvisionInfo = localSipProvisionInfo;
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: this._sipProvisionInfo });
@@ -68,7 +68,7 @@ class RTCProvManager extends EventEmitter2 {
 
     let response: IResponse | null = null;
     try {
-      response = await rtcRestApiManager.sendRequest(provRequest);
+      response = await RTCRestApiManager.instance().sendRequest(provRequest);
     } catch (error) {
       rtcLogger.error('RTCProvManager', `the request error is: ${error}`);
     }
@@ -106,7 +106,7 @@ class RTCProvManager extends EventEmitter2 {
     if (!_.isEqual(responseData, this._sipProvisionInfo)) {
       rtcLogger.info('RTCProvManager', 'emit new prov');
       this._sipProvisionInfo = responseData;
-      rtcDaoManager.saveProvisionInfo(this._sipProvisionInfo);
+      RTCDaoManager.instance().saveProvisionInfo(this._sipProvisionInfo);
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: responseData });
     }
   }

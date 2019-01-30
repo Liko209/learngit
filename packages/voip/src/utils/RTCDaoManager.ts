@@ -7,11 +7,23 @@
 import { ITelephonyDaoDelegate } from 'foundation';
 import { RTCSipProvisionInfo } from '../account/types';
 import { rtcLogger } from './RTCLoggerProxy';
-
+import { kProvisioningInfoKey } from './constants';
 const LOG_TAG = 'RTCDaoMananger';
 
 class RTCDaoManager {
+  private static _singleton: RTCDaoManager | null = null;
   private _delegate: ITelephonyDaoDelegate | null = null;
+
+  public static instance(): RTCDaoManager {
+    if (!RTCDaoManager._singleton) {
+      return (RTCDaoManager._singleton = new RTCDaoManager());
+    }
+    return RTCDaoManager._singleton;
+  }
+
+  public static destroy() {
+    RTCDaoManager._singleton = null;
+  }
 
   public setDaoDelegate(delegate: ITelephonyDaoDelegate) {
     this._delegate = delegate;
@@ -25,7 +37,7 @@ class RTCDaoManager {
       );
       return;
     }
-    this._delegate.put('sip-info', provisionInfo);
+    this._delegate.put(kProvisioningInfoKey, provisionInfo);
   }
 
   public readProvisioning(): RTCSipProvisionInfo | null {
@@ -36,10 +48,8 @@ class RTCDaoManager {
       );
       return null;
     }
-    return this._delegate.get('sip-info');
+    return this._delegate.get(kProvisioningInfoKey);
   }
 }
 
-const rtcDaoManager = new RTCDaoManager();
-
-export { rtcDaoManager };
+export { RTCDaoManager };
