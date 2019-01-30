@@ -45,7 +45,8 @@ class StreamViewComponent extends Component<Props> {
   private _ro: ResizeObserver[] = [];
   private _globalStore = storeManager.getGlobalStore();
   private _listLastWidth = 0;
-
+  @observable
+  private _hideList = true;
   state = { _jumpToPostId: 0 };
 
   @observable private _jumpToFirstUnreadLoading = false;
@@ -324,7 +325,7 @@ class StreamViewComponent extends Component<Props> {
         onClick={this._loadInitialPosts}
       />
     ) : (
-      <JuiStream>
+      <JuiStream style={{ visibility: this._hideList ? 'hidden' : 'visible' }}>
         {this._jumpToFirstUnreadButton}
         {this._initialPost}
         <section ref={this._listRef}>{this._streamItems}</section>
@@ -339,14 +340,25 @@ class StreamViewComponent extends Component<Props> {
     if (!this._listRef.current) {
       return; // the current component is unmounted
     }
+    this._stickToBottom();
     _jumpToPostId
       ? await this.scrollToPost(_jumpToPostId)
       : await this.scrollToBottom();
-
-    this._stickToBottom();
     this._visibilitySensorEnabled = true;
     updateHistoryHandler();
     markAsRead();
+
+    getScrollParent(this._listRef.current).addEventListener(
+      'scroll',
+      this._recordPosition,
+      {
+        capture: true,
+        passive: true,
+      },
+    );
+    setTimeout(() => {
+      this._hideList = false;
+    },         0);
   }
 
   @action

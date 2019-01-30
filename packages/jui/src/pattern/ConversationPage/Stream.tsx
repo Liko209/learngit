@@ -9,6 +9,7 @@ import styled from '../../foundation/styled-components';
 type JuiStreamProps = {
   className?: string;
   children?: React.ReactNode[] | React.ReactNode;
+  style?: React.CSSProperties;
 };
 
 const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
