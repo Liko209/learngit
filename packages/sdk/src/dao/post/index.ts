@@ -117,6 +117,11 @@ class PostDao extends BaseDao<Post> {
     );
   }
 
+  async groupPostCount(groupId: number): Promise<number> {
+    const query = this.createQuery();
+    return query.equal('group_id', groupId).count();
+  }
+
   private async _putPostView(item: Post) {
     await this.getPostViewDao().put({
       id: item.id,
