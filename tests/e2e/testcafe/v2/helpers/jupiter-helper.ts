@@ -1,21 +1,8 @@
 import 'testcafe';
-import { Selector, RequestHook } from 'testcafe';
+import { Selector } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
-import { SITE_ENV, ENV_OPTS, MOCK_AUTH_URL, MOCK_ENV } from '../../config';
-import { MockClient, BrowserInitDto } from 'mock-client';
-
-class MockClientHook extends RequestHook {
-  public requestId: string;
-
-  onRequest(event) {
-    event.requestOptions.headers['x-mock-request-id'] = this.requestId;
-  }
-
-  onResponse(event) {
-  }
-}
 
 export class JupiterHelper {
 
@@ -26,6 +13,14 @@ export class JupiterHelper {
   }
 
   constructor(private t: TestController) { }
+
+  get siteEnv(): string {
+    return this.t.ctx.__siteEnv;
+  }
+
+  set siteEnv(siteEnv: string) {
+    this.t.ctx.__siteEnv = siteEnv;
+  }
 
   get authUrl(): string {
     return this.t.ctx.__authUrl;
@@ -43,18 +38,18 @@ export class JupiterHelper {
     this.t.ctx.__appClientId = appClientId;
   }
 
-  get mockClient(): MockClient {
-    return this.t.ctx.__mockClient;
+  get mockRequestId(): string {
+    return this.t.ctx.__mockRequestId;
   }
 
-  set mockClient(mockClient: MockClient) {
-    this.t.ctx.__mockClient = mockClient;
+  set mockRequestId(mockRequestId: string) {
+    this.t.ctx.__mockRequestId = mockRequestId;
   }
 
-  async setup(authUrl: string, appClientId: string, mockClient: MockClient) {
+  async setup(siteEnv: string, authUrl: string, appClientId: string) {
+    this.siteEnv = siteEnv;
     this.authUrl = authUrl;
     this.appClientId = appClientId;
-    this.mockClient = mockClient;
   }
 
   async getUrlWithAuthCode(redirectUrl: string, user: IUser, ) {
@@ -78,31 +73,17 @@ export class JupiterHelper {
     if (user.extension && user.company.number) {
       data['extension'] = user.extension;
     }
+
     const response = await axios.post(this.authUrl, data, {
       headers: {
-        'x-mock-request-id': this.mockClient['requestId']
+        'x-mock-request-id': this.mockRequestId || 'no mock'
       }
     });
     return response.data.redirectUri;
   }
 
-  async directLoginWithUser(url: string, user: IUser, env: string = SITE_ENV) {
-    if (this.mockClient) {
-      const initDto = BrowserInitDto.of()
-        .env(env)
-        .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
-        .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
-
-      this.mockClient['requestId'] = await this.mockClient.registerBrowser(initDto);
-      const hook = new MockClientHook();
-      hook.requestId = this.mockClient['requestId'];
-      await this.t.addRequestHooks([hook]);
-
-      this.authUrl = MOCK_AUTH_URL;
-      env = MOCK_ENV;
-    }
-
-    await this.selectEnvironment(url, env);
+  async directLoginWithUser(url: string, user: IUser) {
+    await this.selectEnvironment(url, this.siteEnv);
     const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
     await this.t.navigateTo(urlWithAuthCode);
   }

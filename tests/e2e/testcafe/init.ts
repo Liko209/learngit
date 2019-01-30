@@ -1,13 +1,14 @@
 import 'testcafe';
+import { RequestHook } from 'testcafe';
 import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER } from './config';
+import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
-import { MockClient } from 'mock-client';
+import { MockClient, BrowserInitDto } from 'mock-client';
 
 export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
@@ -62,6 +63,7 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
 
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
+
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
@@ -73,11 +75,27 @@ export function setupCase(accountType: string) {
       ENV_OPTS.RC_PLATFORM_BASE_URL,
       ENV_OPTS.GLIP_SERVER_BASE_URL,
     );
+
     await h(t).jupiterHelper.setup(
+      SITE_ENV,
       ENV_OPTS.AUTH_URL,
       ENV_OPTS.JUPITER_APP_KEY,
-      mockClient,
-    )
+    );
+
+    if (mockClient) {
+      const mockEnvConfig = BrowserInitDto.of()
+        .env(SITE_ENV)
+        .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
+        .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
+      const requestId = await mockClient.registerBrowser(mockEnvConfig);
+      const hook = new MockClientHook();
+      hook.requestId = requestId;
+      await t.addRequestHooks([hook]);
+      h(t).jupiterHelper.siteEnv = MOCK_ENV;
+      h(t).jupiterHelper.authUrl = MOCK_AUTH_URL;
+      h(t).jupiterHelper.mockRequestId = requestId;
+    }
+
     await h(t).logHelper.setup();
     await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);
     await t.maximizeWindow();
@@ -130,5 +148,17 @@ export function teardownCase() {
         await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
+  }
+}
+
+
+class MockClientHook extends RequestHook {
+  public requestId: string;
+
+  onRequest(event) {
+    event.requestOptions.headers['x-mock-request-id'] = this.requestId;
+  }
+
+  onResponse(event) {
   }
 }
