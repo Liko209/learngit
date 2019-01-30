@@ -11,7 +11,12 @@ import { ENTITY_NAME } from '../../constants';
 import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import { NewPostService } from 'sdk/module/post';
 const { EVENT_TYPES } = service;
+
+jest.mock('sdk/module/post');
+const postService = new NewPostService();
+NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
 // jest.mock('../ModelProvider');
 const instance: MultiEntityMapStore<any, any> = new MultiEntityMapStore(
@@ -89,6 +94,7 @@ describe('handleIncomingData()', () => {
 });
 
 describe('get()', () => {
+  postService.getById.mockResolvedValueOnce({ id: '1' });
   instance.get(1);
   const models = instance.getData();
   expect(Object.keys(models)).toHaveLength(1);

@@ -9,17 +9,21 @@ import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';
+import { NewPostService } from 'sdk/module/post';
+
+jest.mock('sdk/module/post');
 jest.mock('@/history');
 jest.mock('sdk/service/group');
 jest.mock('sdk/utils');
 jest.mock('@/containers/Notification');
 
-const { GroupService, PostService } = service;
+const { GroupService } = service;
+
+const postService = new NewPostService();
+NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const groupService = new GroupService();
-const postService = new PostService();
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-PostService.getInstance = jest.fn().mockReturnValue(postService);
 beforeAll(() => {
   Object.defineProperty(window.history, 'state', {
     writable: true,

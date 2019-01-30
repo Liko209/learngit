@@ -6,14 +6,16 @@
  */
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
-import { service } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store';
 import * as _ from 'lodash';
 import * as utils from '@/store/utils';
-const { PostService } = service;
+import { NewPostService } from 'sdk/module/post';
+
 jest.mock('@/store');
 jest.mock('@/store/utils');
+jest.mock('sdk/module/post');
+
 function setup(obj: any) {
   const vm = new StreamViewModel();
   vm.props.type = POST_LIST_TYPE.mentions;
@@ -23,9 +25,7 @@ function setup(obj: any) {
   return vm;
 }
 
-const postService = {
-  getPostsByIds: jest.fn(),
-};
+const postService = new NewPostService();
 
 describe('StreamViewModel', () => {
   let mockedSortableListHandler: any;
@@ -33,7 +33,7 @@ describe('StreamViewModel', () => {
   let vm: any;
   let newProps: any;
   beforeEach(() => {
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
     mockedSortableListHandler = {
       sortableListStore: {
         getIds: jest.fn().mockReturnValue([1, 2, 3]),
