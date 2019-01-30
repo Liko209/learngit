@@ -49,20 +49,26 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
     }
-    this.reaction(() => ids, this.getCropImage);
+    this.autorun(this.getCropImage);
   }
 
   getCropImage = async () => {
     const images = this.files[FileType.image];
     const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
     await Promise.all(
-      images.map((file: ExtendFileItem) => this.fetchUrl(file, rule)),
+      images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
     );
   }
 
-  fetchUrl = async ({ item }: ExtendFileItem, rule: RULE): Promise<string> => {
+  private _fetchUrl = async (
+    { item }: ExtendFileItem,
+    rule: RULE,
+  ): Promise<string> => {
     const { id, origWidth, origHeight, type, versionUrl } = item;
     let url = '';
+    if (!type) {
+      return url;
+    }
     // Notes
     // 1. There is no thumbnail for the image just uploaded.
     // 2. tif has thumbnail field.
@@ -120,8 +126,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.others]: [],
     };
     this.items.forEach((item: FileItemModel) => {
-      if (item && item.deactivated) return;
-
+      if (!item) {
+        return;
+      }
+      if (item.deactivated) {
+        return;
+      }
       const file = getFileType(item);
       files[file.type].push(file);
     });
