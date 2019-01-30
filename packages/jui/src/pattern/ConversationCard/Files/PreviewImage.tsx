@@ -86,9 +86,15 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
       width = 0;
       height = 0;
     }
+    const hasImageSize = this.props.width > 0 && this.props.height > 0;
     return (
       <>
-        {!this._loaded && placeholder}
+        {!this._loaded && !hasImageSize && placeholder}
+        {!this._loaded && hasImageSize && (
+          <Jui.ImageCard width={this.props.width} height={this.props.height}>
+            <div />
+          </Jui.ImageCard>
+        )}
         <Jui.ImageCard width={width} height={height}>
           <img
             style={imageStyle}
