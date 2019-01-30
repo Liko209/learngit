@@ -25,6 +25,7 @@ import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { SortableListStore } from '../SortableListStore';
+jest.mock('sdk/api');
 
 type SimpleItem = BaseModel & {
   value: number;

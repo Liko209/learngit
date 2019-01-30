@@ -1,7 +1,13 @@
-import ItemDao from '../';
-import { setup } from '../../__tests__/utils';
-import { Item } from '../../../models';
-import { itemFactory } from '../../../__tests__/factories';
+/*
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-21 14:58:00
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { ItemDao } from '../';
+import { setup } from '../../../../dao/__tests__/utils';
+import { Item } from '../../entity';
+import { itemFactory } from '../../../../__tests__/factories';
 
 describe('Item Dao', () => {
   let itemDao: ItemDao;
