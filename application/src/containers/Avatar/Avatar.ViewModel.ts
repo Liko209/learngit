@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { AvatarProps, AvatarViewProps } from './types';
-import { PersonService } from 'sdk/module/person';
+import { PersonService } from 'sdk/service';
 
 const AVATAR_COLORS = [
   'tomato',
