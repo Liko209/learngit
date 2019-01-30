@@ -103,6 +103,19 @@ class EntityPersistentController<T extends IdModel = IdModel>
     return items;
   }
 
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    let items: T[] = [];
+    if (this.entityCacheController) {
+      items = await this.entityCacheController.getEntities(filterFunc);
+    }
+
+    if (items.length === 0 && this.dao) {
+      items = await this.dao.getAll();
+    }
+
+    return items;
+  }
+
   getEntityNotificationKey() {
     if (this.dao) {
       const modelName = this.dao.modelName.toUpperCase();

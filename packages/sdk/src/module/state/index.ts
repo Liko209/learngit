@@ -4,4 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { StateService } from './service';
+import { IStateService, StateService } from './service';
+import { SectionUnread } from './types';
+import { GROUP_SECTION_TYPE } from './constants';
+
+export { IStateService, StateService, SectionUnread, GROUP_SECTION_TYPE };

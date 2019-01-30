@@ -14,6 +14,8 @@ interface IEntitySourceController<T extends IdModel = IdModel>
   getEntityLocally(id: number): Promise<T>;
 
   getEntitiesLocally(ids: number[], includeDeactivated: boolean): Promise<T[]>;
+
+  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 }
 
 export { IEntitySourceController };

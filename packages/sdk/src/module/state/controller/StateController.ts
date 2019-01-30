@@ -13,12 +13,14 @@ import {
 import { StateActionController } from './implementation/StateActionController';
 import { StateDataHandleController } from './implementation/StateDataHandleController';
 import { StateFetchDataController } from './implementation/StateFetchDataController';
+import { TotalUnreadController } from './implementation/TotalUnreadController';
 import { GroupState, State } from '../entity';
 
 class StateController {
   private _stateActionController: StateActionController;
   private _stateDataHandleController: StateDataHandleController;
   private _stateFetchDataController: StateFetchDataController;
+  private _totalUnreadController: TotalUnreadController;
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {}
@@ -46,6 +48,7 @@ class StateController {
       this._stateDataHandleController = new StateDataHandleController(
         this._entitySourceController,
         this.getStateFetchDataController(),
+        this.getTotalUnreadController(),
       );
     }
     return this._stateDataHandleController;
@@ -58,6 +61,15 @@ class StateController {
       );
     }
     return this._stateFetchDataController;
+  }
+
+  getTotalUnreadController(): TotalUnreadController {
+    if (!this._totalUnreadController) {
+      this._totalUnreadController = new TotalUnreadController(
+        this._entitySourceController,
+      );
+    }
+    return this._totalUnreadController;
   }
 }
 export { StateController };

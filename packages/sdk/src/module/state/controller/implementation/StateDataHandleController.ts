@@ -17,34 +17,31 @@ import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
 import { TASK_DATA_TYPE } from '../../constants';
-import {
-  stateHandleTask,
-  groupHandleTask,
-  dataHandleTask,
-  dataHandleTaskArray,
-} from '../../types';
+import { DataHandleTask, DataHandleTaskArray } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
+import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 
 class StateDataHandleController {
-  private _taskArray: dataHandleTaskArray;
+  private _taskArray: DataHandleTaskArray;
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
+    private _totalUnreadController: TotalUnreadController,
   ) {
     this._taskArray = [];
   }
 
   async handleState(states: Partial<State>[]): Promise<void> {
-    if (states.length === 0) {
+    if (!states || states.length === 0) {
       mainLogger.info(
         '[StateDataHandleController] Invalid state change trigger',
       );
       return;
     }
-    const stateTask: stateHandleTask = {
+    const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
@@ -54,32 +51,15 @@ class StateDataHandleController {
     }
   }
 
-  async handlePartialGroup(groups: Partial<Group>[]): Promise<void> {
-    if (groups.length === 0) {
-      mainLogger.info(
-        '[StateDataHandleController] Invalid partial group change trigger',
-      );
-      return;
-    }
-    const groupTask: groupHandleTask = {
-      type: TASK_DATA_TYPE.GROUP,
-      data: groups,
-    };
-    this._taskArray.push(groupTask);
-    if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
-    }
-  }
-
-  async handleGroupChanges(groups?: Group[]): Promise<void> {
+  async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
     if (!groups || !groups.length) {
       mainLogger.info(
-        '[StateDataHandleController] Invalid group change trigger',
+        '[StateDataHandleController] Invalid group cursor change trigger',
       );
       return;
     }
-    const groupTask: groupHandleTask = {
-      type: TASK_DATA_TYPE.GROUP,
+    const groupTask: DataHandleTask = {
+      type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
     this._taskArray.push(groupTask);
@@ -88,7 +68,7 @@ class StateDataHandleController {
     }
   }
 
-  private async _startDataHandleTask(task: dataHandleTask): Promise<void> {
+  private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     let transformedState: TransformedState;
     if (task.type === TASK_DATA_TYPE.STATE) {
       transformedState = this._transformStateData(task.data);
@@ -97,6 +77,10 @@ class StateDataHandleController {
     }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
+    await this._totalUnreadController.updateTotalUnreadByStateChanges(
+      updatedState.groupStates,
+    );
+
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
       this._startDataHandleTask(this._taskArray[0]);

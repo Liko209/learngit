@@ -26,6 +26,8 @@ interface IEntityPersistentController<T extends IdModel = IdModel> {
   batchGet(ids: number[]): Promise<T[]>;
 
   getEntityNotificationKey(): string;
+
+  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 }
 
 export { IEntityPersistentController };

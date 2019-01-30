@@ -17,7 +17,7 @@ describe('StateService', () => {
   const mockGetMyState = jest.fn();
   const mockGetMyStateId = jest.fn();
   const mockHandleState = jest.fn();
-  const mockHandlePartialGroup = jest.fn();
+  const mockHandleGroupCursor = jest.fn();
   const mockGetUmiByIds = jest.fn();
 
   beforeAll(() => {
@@ -27,7 +27,7 @@ describe('StateService', () => {
     });
     const mockStateDataHandleController = jest.fn().mockReturnValue({
       handleState: mockHandleState,
-      handlePartialGroup: mockHandlePartialGroup,
+      handleGroupCursor: mockHandleGroupCursor,
     });
     const mockStateFetchDataController = jest.fn().mockReturnValue({
       getAllGroupStatesFromLocal: mockGetAllGroupStatesFromLocal,
@@ -98,11 +98,11 @@ describe('StateService', () => {
     });
   });
 
-  describe('handlePartialGroup()', () => {
+  describe('handleGroupCursor()', () => {
     it('should call with correct params', async () => {
       const groups: Partial<Group>[] = [];
-      await stateService.handlePartialGroup(groups);
-      expect(mockHandlePartialGroup).toBeCalledWith(groups);
+      await stateService.handleGroupCursor(groups);
+      expect(mockHandleGroupCursor).toBeCalledWith(groups);
     });
   });
 

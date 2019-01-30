@@ -6,7 +6,7 @@
 
 import { GroupState, MyState, State } from '../entity';
 import { Group } from '../../group/entity';
-import { Raw } from '../../../framework/model';
+import { NotificationEntityPayload } from '../../../service/notificationCenter';
 
 interface IStateService {
   updateReadStatus(groupId: number, isUnread: boolean): Promise<void>;
@@ -21,11 +21,11 @@ interface IStateService {
 
   getMyStateId(): number;
 
-  handleState(states: Raw<State>[]): Promise<void>;
+  handleState(states: Partial<State>[]): Promise<void>;
 
-  handlePartialGroup(groups: Partial<Group>[]): Promise<void>;
+  handleGroupCursor(groups: Partial<Group>[]): Promise<void>;
 
-  handleGroupChanges(groups?: Group[]): Promise<void>;
+  handleGroupChange(payload: NotificationEntityPayload<Group>): Promise<void>;
 
   getUmiByIds(
     ids: number[],

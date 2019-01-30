@@ -4,27 +4,34 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TASK_DATA_TYPE } from './constants';
+import { TASK_DATA_TYPE, GROUP_SECTION_TYPE } from './constants';
 import { Group } from '../group/entity';
 import { State } from './entity';
 
-type stateHandleTask = {
+type StateHandleTask = {
   type: TASK_DATA_TYPE.STATE;
   data: Partial<State>[];
 };
 
-type groupHandleTask = {
-  type: TASK_DATA_TYPE.GROUP;
+type GroupCursorHandleTask = {
+  type: TASK_DATA_TYPE.GROUP_CURSOR;
   data: Partial<Group>[];
 };
 
-type dataHandleTask = stateHandleTask | groupHandleTask;
+type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
-type dataHandleTaskArray = dataHandleTask[];
+type DataHandleTaskArray = DataHandleTask[];
+
+type SectionUnread = {
+  section: GROUP_SECTION_TYPE;
+  unreadCount: number;
+  mentionCount: number;
+};
 
 export {
-  stateHandleTask,
-  groupHandleTask,
-  dataHandleTask,
-  dataHandleTaskArray,
+  StateHandleTask,
+  GroupCursorHandleTask,
+  DataHandleTask,
+  DataHandleTaskArray,
+  SectionUnread,
 };

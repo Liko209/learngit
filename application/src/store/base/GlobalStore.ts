@@ -6,8 +6,10 @@
 import { action, get, set, remove, observable } from 'mobx';
 
 import BaseStore from './BaseStore';
-import { ENTITY_NAME } from '../constants';
+import { ENTITY_NAME, GLOBAL_KEYS } from '../constants';
 import { GLOBAL_VALUES } from '../config';
+import { SERVICE, notificationCenter } from 'sdk/service';
+import { SectionUnread, GROUP_SECTION_TYPE } from 'sdk/module/state';
 
 export default class GlobalStore extends BaseStore {
   private _data = observable.object<typeof GLOBAL_VALUES>(
@@ -18,6 +20,30 @@ export default class GlobalStore extends BaseStore {
 
   constructor() {
     super(ENTITY_NAME.GLOBAL);
+    notificationCenter.on(SERVICE.TOTAL_UNREAD, this.setTotalUnread);
+  }
+
+  setTotalUnread = (sectionUnreadArray: SectionUnread[]) => {
+    sectionUnreadArray.forEach((sectionUnread: SectionUnread) => {
+      switch (sectionUnread.section) {
+        case GROUP_SECTION_TYPE.ALL: {
+          this.set(GLOBAL_KEYS.TOTAL_UNREAD, sectionUnread);
+          break;
+        }
+        case GROUP_SECTION_TYPE.FAVORITE: {
+          this.set(GLOBAL_KEYS.FAVORITE_UNREAD, sectionUnread);
+          break;
+        }
+        case GROUP_SECTION_TYPE.DIRECT_MESSAGE: {
+          this.set(GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD, sectionUnread);
+          break;
+        }
+        case GROUP_SECTION_TYPE.TEAM: {
+          this.set(GLOBAL_KEYS.TEAM_UNREAD, sectionUnread);
+          break;
+        }
+      }
+    });
   }
 
   @action

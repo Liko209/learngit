@@ -8,10 +8,11 @@ import { daoManager, GroupStateDao } from '../../../dao';
 import { EntityBaseService } from '../../../framework';
 import { IStateService } from './IStateService';
 import { GroupState, MyState, State } from '../entity';
-import { SOCKET, SERVICE } from '../../../service/eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
+import { NotificationEntityPayload } from '../../../service/notificationCenter';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -23,8 +24,9 @@ class StateService extends EntityBaseService<GroupState>
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
         [SOCKET.PARTIAL_STATE]: this.handleState,
-        [SOCKET.PARTIAL_GROUP]: this.handlePartialGroup,
-        [SERVICE.GROUP_CURSOR]: this.handleGroupChanges,
+        [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
+        [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
+        [ENTITY.GROUP]: this.handleGroupChange,
       }),
     );
   }
@@ -80,16 +82,18 @@ class StateService extends EntityBaseService<GroupState>
       .handleState(states);
   }
 
-  handlePartialGroup = async (groups: Partial<Group>[]): Promise<void> => {
+  handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handlePartialGroup(groups);
+      .handleGroupCursor(groups);
   }
 
-  handleGroupChanges = async (groups?: Group[]): Promise<void> => {
+  handleGroupChange = async (
+    payload: NotificationEntityPayload<Group>,
+  ): Promise<void> => {
     await this.getStateController()
-      .getStateDataHandleController()
-      .handleGroupChanges(groups);
+      .getTotalUnreadController()
+      .updateTotalUnreadByGroupChanges(payload);
   }
 
   async getUmiByIds(
