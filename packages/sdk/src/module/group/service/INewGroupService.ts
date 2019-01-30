@@ -1,8 +1,9 @@
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PERMISSION_ENUM } from '../constants';
 import { TeamSetting, PermissionFlags } from '../types';
+import { QUERY_DIRECTION } from '../../../dao/constants';
 
-interface IGroupService {
+interface INewGroupService {
   isInTeam(userId: number, team: Group): boolean;
 
   canJoinTeam(team: Group): boolean;
@@ -28,7 +29,18 @@ interface IGroupService {
 
   getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags;
 
+  hasMorePostInRemote(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+  ): Promise<boolean>;
+
+  updateHasMore(
+    groupId: number,
+    direction: QUERY_DIRECTION,
+    hasMore: boolean,
+  ): void;
+
   archiveTeam(teamId: number): Promise<void>;
 }
 
-export { IGroupService };
+export { INewGroupService };

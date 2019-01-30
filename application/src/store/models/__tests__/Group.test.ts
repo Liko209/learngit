@@ -302,9 +302,6 @@ describe('GroupModel', () => {
   });
 
   describe('isCurrentUserHasPermissionAddMember', () => {
-    const groupService = {
-      isCurrentUserHasPermission: jest.fn(),
-    };
     beforeEach(() => {
       // (GroupService as any).mockImplementation(() => groupService);
     });

@@ -85,13 +85,13 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getItems(options: ItemQueryOptions) {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
+      logId,
     );
     const result = await this.itemServiceController.getItems(options);
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -202,8 +202,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getByPosts(posts: Post[]): Promise<Item[]> {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      logId,
     );
     let itemIds: number[] = [];
     posts.forEach((post: Post) => {
@@ -227,9 +229,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ': item count:',
       String(itemIds.length),
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
 
     return items;
   }
