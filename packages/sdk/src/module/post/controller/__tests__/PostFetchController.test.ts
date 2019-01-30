@@ -6,7 +6,8 @@
 
 import { postFactory, itemFactory } from '../../../../__tests__/factories';
 import { ItemService } from '../../../item';
-import { PostDao, ItemDao, GroupConfigDao, daoManager } from '../../../../dao';
+import { PostDao, GroupConfigDao, daoManager } from '../../../../dao';
+import { ItemDao } from '../../../item/dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PostFetchController } from '../PostFetchController';
