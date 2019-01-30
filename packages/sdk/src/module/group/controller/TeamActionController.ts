@@ -139,7 +139,6 @@ class TeamActionController {
     await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity: Group) => {
-        console.log('makeAdmin:', member, originalEntity);
         const {
           permissions: { admin: { uids: adminUids = [] } = {} } = {},
         } = originalEntity;
@@ -150,7 +149,6 @@ class TeamActionController {
             },
           },
         });
-        console.log('makeAdmin:', result);
         return result;
       },
       async (updateEntity: Group) => {
@@ -166,7 +164,6 @@ class TeamActionController {
     await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity: Group) => {
-        console.log('revokeAdmin:', member, originalEntity);
         const {
           permissions: { admin: { uids: adminUids = [] } = {} } = {},
         } = originalEntity;
@@ -177,7 +174,6 @@ class TeamActionController {
             },
           },
         });
-        console.log('revokeAdmin:', result);
         return result;
       },
       async (updateEntity: Group) => {
