@@ -45,6 +45,7 @@ describe('PostDataController', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
+  const deactivatedDao = new DeactivatedDao(null);
   const preInsertController = new MockPreInsertController();
   const mockEntitySourceController: EntitySourceController = new EntitySourceController(
     {} as IEntityPersistentController,
@@ -70,6 +71,9 @@ describe('PostDataController', () => {
       }
       if (arg === ItemDao) {
         return itemDao;
+      }
+      if (arg === DeactivatedDao) {
+        return deactivatedDao;
       }
     });
   }
@@ -103,7 +107,7 @@ describe('PostDataController', () => {
         .mockResolvedValueOnce({});
     });
 
-    it('should return [] when maxPostsExceed=true & post is empty', async () => {
+    it('should return [] when [maxPostsExceed=true | posts.length=0]', async () => {
       const result = await postDataController.handleIndexPosts([], true);
       expect(result).toEqual([]);
     });
@@ -198,7 +202,7 @@ describe('PostDataController', () => {
       expect(result).toEqual(posts.slice(9, posts.length));
     });
 
-    it.only('should not delete when maxPostsExceed=true & post length < 50 & not any posts older than oldest post in db', async () => {
+    it('should not delete when [maxPostsExceed=true | posts.length < 50 | not any posts older than oldest post in db]', async () => {
       const posts = [];
       for (let i = 1; i < 30; i += 1) {
         posts.push({
@@ -215,7 +219,7 @@ describe('PostDataController', () => {
       expect(result).toEqual(posts);
     });
 
-    it.only('should delete when [maxPostsExceed=true | posts.length < 50 | group.length = 1 | not any posts older than oldest post in db]', async () => {
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length = 1 | not any posts older than oldest post in db]', async () => {
       const posts = [];
       for (let i = 1; i < 30; i += 1) {
         posts.push({
@@ -232,9 +236,9 @@ describe('PostDataController', () => {
       expect(result).toEqual(posts);
     });
 
-    it.only('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
       const posts = [];
-      for (let i = 1; i < 30; i += 1) {
+      for (let i = 1; i <= 30; i += 1) {
         posts.push({
           id: i,
           group_id: 1,
@@ -242,7 +246,7 @@ describe('PostDataController', () => {
           modified_at: i % 2 === 0 ? i : i + 1,
         });
       }
-      for (let i = 31; i < 60; i += 1) {
+      for (let i = 31; i <= 60; i += 1) {
         posts.push({
           id: i,
           group_id: 2,
@@ -262,204 +266,137 @@ describe('PostDataController', () => {
       let result = await postDataController.handleIndexPosts(posts, true);
 
       result = _.orderBy(result, 'id', 'asc');
-      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(30, 39)));
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it.only('should filter deactivated posts when [maxPostsExceed=true | has deactivated posts]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i,
+          deactivated: i % 4 === 0 ? true : false,
+        });
+      }
+      deactivatedDao.bulkPut.mockResolvedValueOnce({});
+      postDao.bulkDelete.mockResolvedValueOnce({});
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.filter((post: Post) => !post.deactivated));
     });
   });
 
-  // describe('Post service handleData', () => {
-  //   it('maxPostsExceed = false', async () => {
-  //     utilsBaseHandleData.mockReturnValue([]);
-  //     daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
-  //       count: jest.fn().mockReturnValue(300001),
-  //     }));
-  //     jest
-  //       .spyOn(require('../handleData'), 'handlePreInsertPosts')
-  //       .mockResolvedValueOnce([]);
-
-  //     await handleData([rawPostFactory.build({ _id: 1 })], false);
-  //     expect(
-  //       IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold,
-  //     ).toHaveBeenCalled();
-  //     expect(
-  //       IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-  //     ).toHaveBeenCalled();
-  //   });
-
-  //   it('maxPostsExceed = true', async () => {
-  //     daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
-  //       count: jest.fn().mockReturnValue(299999),
-  //     }));
-  //     utilsBaseHandleData.mockReturnValue([{ group_id: 123 }]);
-  //     await handleData([], true);
-  //   });
-  // });
-
-  // describe('handleDataFromSexio', () => {
-  //   it('empty array', async () => {
-  //     const ret = await handleDataFromSexio([]);
-  //     expect(ret).toBeUndefined();
-  //     expect(
-  //       IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-  //     ).not.toHaveBeenCalled();
-  //   });
-
-  //   it('default data', async () => {
-  //     // jest.spyOn(service, 'isVersionInPreInsert').mockReturnValue();
-  //     IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue(
-  //       [{}, {}],
-  //     );
-  //     await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-  //     expect(
-  //       IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-  //     ).toHaveBeenCalled();
-  //     expect(utilsBaseHandleData).toHaveBeenCalled();
-  //   });
-  //   it('default data', async () => {
-  //     IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue(
-  //       [],
-  //     );
-  //     await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-  //     expect(
-  //       IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-  //     ).toHaveBeenCalled();
-  //     expect(utilsBaseHandleData).not.toHaveBeenCalled();
-  //   });
-  // });
-
-  //   it('test do not delete', async () => {
-  //     const mock = [];
-  //     for (let i = 1; i < 60; i += 1) {
-  //       mock.push({ id: i, group_id: Math.random() > 0.5 ? 1 : 2 });
-  //     }
-  //     daoManager
-  //       .getDao<PostDao>(null)
-  //       .queryPostsByGroupId.mockResolvedValue([]);
-  //     const result = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
-  //       mock,
-  //       true,
-  //     );
-  //     expect(result).toEqual(mock);
-  //   });
-
-  //   it('test should be delete postid === 1', async () => {
-  //     const mock = [];
-  //     for (let i = 1; i < 100; i += 1) {
-  //       mock.push({ id: i, group_id: Math.random() > 0.5 ? 1 : 2 });
-  //     }
-  //     daoManager
-  //       .getDao<PostDao>(null)
-  //       .queryPostsByGroupId.mockResolvedValue([{ id: 1 }]);
-  //     const result = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
-  //       mock,
-  //       true,
-  //     );
-  //     mock.shift();
-  //     expect(result).toEqual(mock);
-  //   });
-
-  //   it('test error', async () => {
-  //     const mock = [];
-  //     for (let i = 1; i < 100; i += 1) {
-  //       mock.push({ id: i, group_id: Math.random() > 0.5 ? 1 : 2 });
-  //     }
-  //     daoManager
-  //       .getDao<PostDao>(null)
-  //       .queryPostsByGroupId.mockImplementation(() => {
-  //         throw new Error('error msg');
-  //       });
-  //     const result = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
-  //       mock,
-  //       true,
-  //     );
-  //     expect(result).toEqual([]);
-  //   });
-  // });
-
-  // it('isGroupPostsDiscontinuous()', () => {
-  //   const result1 = IncomingPostHandler.isGroupPostsDiscontinuous([
-  //     postFactory.build({
-  //       id: 1,
-  //       group_id: 1,
-  //       created_at: 1,
-  //       modified_at: 1,
-  //     }),
-  //   ]);
-  //   expect(result1).toBe(false);
-  //   const result2 = IncomingPostHandler.isGroupPostsDiscontinuous([
-  //     postFactory.build({
-  //       id: 1,
-  //       group_id: 1,
-  //       created_at: 1,
-  //       modified_at: 2,
-  //     }),
-  //   ]);
-  //   expect(result2).toBe(true);
-  // });
-
-  // it('removeDiscontinuousPosts()', async () => {
-  //   const mock = {
-  //     1: [
-  //       postFactory.build({
-  //         id: 11,
-  //         group_id: 1,
-  //         created_at: 1,
-  //         modified_at: 1,
-  //       }),
-  //       postFactory.build({
-  //         id: 12,
-  //         group_id: 1,
-  //         created_at: 1,
-  //         modified_at: 2,
-  //       }),
-  //     ],
-  //     2: [
-  //       postFactory.build({
-  //         id: 22,
-  //         group_id: 1,
-  //         created_at: 1,
-  //         modified_at: 2,
-  //       }),
-  //     ],
-  //   };
-  //   daoManager
-  //     .getDao<PostDao>(null)
-  //     .queryOldestPostByGroupId.mockResolvedValueOnce([
-  //       postFactory.build({
-  //         id: 11,
-  //         group_id: 1,
-  //         created_at: 1,
-  //         modified_at: 1,
-  //       }),
-  //     ]);
-  //   await IncomingPostHandler.removeDiscontinuousPosts(mock);
-  //   // TODO figure out why this test don't have any assert
-  //   // expect(result1).toBe(false);
-  //   // const result2 = IncomingPostHandler
-  //   //    .isGroupPostsDiscontinuous([{ created_at: 1, modified_at: 2 }]);
-  //   // expect(result2).toBe(true);
-  // });
-
-  // it('handleGroupPostsDiscontinuousCausedByModificationTimeChange()', async () => {
-  //   const mock = [
-  //     postFactory.build({
-  //       id: 11,
-  //       group_id: 1,
-  //       created_at: 1,
-  //       modified_at: 1,
-  //     }),
-  //     postFactory.build({
-  //       id: 12,
-  //       group_id: 1,
-  //       created_at: 1,
-  //       modified_at: 2,
-  //     }),
-  //   ];
-
-  //   const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-  //     mock,
-  //   );
-  //   expect(result).toEqual([]);
-  // });
+  describe('handleIndexPosts()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      jest
+        .spyOn(mockEntitySourceController, 'bulkDelete')
+        .mockResolvedValueOnce({});
+    });
+  });
 
   describe('filterAndSavePosts()', () => {
     beforeEach(() => {

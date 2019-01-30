@@ -100,11 +100,6 @@ class PostDataController {
           ? groupPostsNumber[post.group_id].push(post.id)
           : (groupPostsNumber[post.group_id] = [post.id]);
       });
-      console.error('2================');
-      console.error('2================');
-      console.error(`2=======${groupPostsNumber}=========`);
-      console.error('2================');
-      console.error('2================');
       const shouldRemoveGroupIds: number[] = [];
       const groupIds = Object.keys(groupPostsNumber);
       groupIds.forEach((groupId: string) => {
@@ -112,11 +107,6 @@ class PostDataController {
           shouldRemoveGroupIds.push(Number(groupId));
         }
       });
-      console.error('3================');
-      console.error('3================');
-      console.error(`3=======${shouldRemoveGroupIds}=========`);
-      console.error('3================');
-      console.error('3================');
       if (shouldRemoveGroupIds.length) {
         let deleteIds: number[] = [];
         // TODO Need to refactor db interface to support delete by where
