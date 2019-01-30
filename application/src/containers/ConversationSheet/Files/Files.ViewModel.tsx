@@ -83,7 +83,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       });
       url = thumbnail.url;
     }
-    this.urlMap.set(id, url);
+    if (url) {
+      this.urlMap.set(id, url);
+    }
     return url;
   }
 
