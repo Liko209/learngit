@@ -452,6 +452,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
-const StreamView = translate(['Conversations', 'translations'])(view);
+const StreamView = translate('translations')(view);
 
 export { StreamView, StreamViewComponent };

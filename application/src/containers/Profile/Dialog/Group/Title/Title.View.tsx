@@ -30,7 +30,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
     return (
       <>
         <JuiDialogTitleWithActionLeft>
-          {t('profile')}
+          {t('Profile')}
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
           {group.isTeam && <Privacy id={id} size="medium" />}

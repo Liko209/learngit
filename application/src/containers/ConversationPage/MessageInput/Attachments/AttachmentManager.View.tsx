@@ -10,7 +10,7 @@ import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
-import { t } from 'i18next';
+import i18next from 'i18next';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
@@ -21,9 +21,11 @@ class AttachmentManagerViewComponent extends Component<
     if (showDuplicateFiles) {
       return (
         <JuiDuplicateAlert
-          title={t('updateFiles')}
-          subtitle={t('theFollowingFilesAlreadyExist')}
-          footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}
+          title={i18next.t('updateFiles')}
+          subtitle={i18next.t('theFollowingFilesAlreadyExist')}
+          footText={i18next.t(
+            'wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
+          )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
@@ -58,6 +60,6 @@ class AttachmentManagerViewComponent extends Component<
 const view = extractView<WithNamespaces & AttachmentsViewProps>(
   AttachmentManagerViewComponent,
 );
-const AttachmentManagerView = translate('Conversations')(view);
+const AttachmentManagerView = translate('translations')(view);
 
 export { AttachmentManagerView, AttachmentManagerViewComponent };

@@ -25,6 +25,6 @@ class FooterViewComponent extends Component<Props> {
   }
 }
 
-const FooterView = translate('Conversations')(FooterViewComponent);
+const FooterView = translate('translations')(FooterViewComponent);
 
 export { FooterView };

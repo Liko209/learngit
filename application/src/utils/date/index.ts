@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import _ from 'lodash';
 
 function getDateMessage(
@@ -18,13 +18,13 @@ function getDateMessage(
     .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
-    return t('today');
+    return i18next.t('today');
   }
   if (diff === 1) {
-    return t('yesterday');
+    return i18next.t('yesterday');
   }
   if (diff === -1) {
-    return t('tomorrow');
+    return i18next.t('tomorrow');
   }
   if (diff <= 7) {
     return m.format(format); // Tue, Oct 30th  周二, 10月30日
@@ -47,14 +47,14 @@ const dateFormatter = {
     return m.format('LT');
   },
   today: () => {
-    return t('today');
+    return i18next.t('today');
   },
   yesterday: () => {
-    return t('yesterday');
+    return i18next.t('yesterday');
   },
   weekday: (m: Moment) => {
     const date = new Date(m.format());
-    return t(WEEKDAY[date.getDay()]);
+    return i18next.t(WEEKDAY[date.getDay()]);
   },
   exactDate: (m: Moment) => {
     return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;

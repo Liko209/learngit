@@ -17,7 +17,6 @@ import {
   ProfileDialogGroup,
   ProfileDialogPerson,
 } from '@/containers/Profile/Dialog';
-import { TranslationFunction } from 'i18next';
 import {
   ToastType,
   ToastMessageAlign,
@@ -40,7 +39,8 @@ class MenuViewComponent extends Component<Props, State> {
     this._checkboxChange = this._checkboxChange.bind(this);
   }
 
-  renderCloseMenuItem(t: TranslationFunction, closable: boolean) {
+  renderCloseMenuItem() {
+    const { t, closable } = this.props;
     return (
       <JuiMenuItem
         data-test-automation-id="closeConversation"
@@ -158,7 +158,7 @@ class MenuViewComponent extends Component<Props, State> {
     });
   }
   render() {
-    const { anchorEl, onClose, favoriteText, t, closable } = this.props;
+    const { anchorEl, onClose, favoriteText, t } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -176,16 +176,14 @@ class MenuViewComponent extends Component<Props, State> {
           data-test-automation-id="profileEntry"
           onClick={this._handleProfileDialog}
         >
-          {t('viewProfile')}
+          {t('Profile')}
         </JuiMenuItem>
-        {this.renderCloseMenuItem(t, closable)}
+        {this.renderCloseMenuItem()}
       </JuiMenu>
     );
   }
 }
 
-const MenuView = withRouter(
-  translate('conversationMenuItem')(MenuViewComponent),
-);
+const MenuView = withRouter(translate('translations')(MenuViewComponent));
 
 export { MenuView, MenuViewComponent };

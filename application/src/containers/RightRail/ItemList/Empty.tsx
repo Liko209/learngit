@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   JuiRightShelfEmptyScreen,
   JuiFlexWrapper,
@@ -21,8 +21,8 @@ const emptyView = (type: RIGHT_RAIL_ITEM_TYPE) => {
       <JuiFlexWrapper>
         <JuiRightShelfEmptyScreen
           actions={[]}
-          text={t(text)}
-          content={t(content)}
+          text={i18next.t(text)}
+          content={i18next.t(content)}
           image={image}
         />
       </JuiFlexWrapper>

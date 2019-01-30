@@ -5,7 +5,7 @@
  */
 import React, { CSSProperties } from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { ITEM_HEIGHT } from './config';
@@ -104,7 +104,7 @@ class ItemListView extends React.Component<ViewProps & Props>
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {t(subheader)} ({totalCount})
+            {i18next.t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
         {firstLoaded && !loadError && (
@@ -123,8 +123,8 @@ class ItemListView extends React.Component<ViewProps & Props>
         {loading && !firstLoaded && !loadError && this.firstLoader()}
         {loadError && (
           <JuiRightRailContentLoadError
-            tip={t('rightShelfTryAgainPrompt')}
-            linkText={t('tryAgain')}
+            tip={i18next.t('rightShelfTryAgainPrompt')}
+            linkText={i18next.t('tryAgain')}
             onClick={this._handleRetry}
           />
         )}

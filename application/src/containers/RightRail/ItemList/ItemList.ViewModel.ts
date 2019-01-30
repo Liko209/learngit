@@ -9,7 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { getGlobalValue } from '@/store/utils';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -254,7 +254,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     if (status === 'offline') {
       const { offlinePrompt } = this.tabConfig;
       Notification.flashToast({
-        message: t(offlinePrompt),
+        message: i18next.t(offlinePrompt),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
