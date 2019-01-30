@@ -86,6 +86,13 @@ const JuiProfileDialogContentSummaryButton = styled('div')`
   }
 `;
 
+const JuiProfileDialogContentSummaryButtonInRight = styled(
+  JuiProfileDialogContentSummaryButton,
+)`
+  ${typography('body1')}
+  color: ${primary('700')};
+`;
+
 const JuiProfileDialogContentSummaryStatus = styled('div')`
   ${typography('body1')};
   ${ellipsis()};
@@ -107,4 +114,5 @@ export {
   JuiProfileDialogContentSummaryButton,
   JuiProfileDialogContentSummaryStatus,
   JuiProfileDialogContentSummaryTitle,
+  JuiProfileDialogContentSummaryButtonInRight,
 };

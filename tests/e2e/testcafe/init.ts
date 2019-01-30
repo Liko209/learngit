@@ -4,15 +4,34 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
+import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
 import { MockClient, BrowserInitDto } from 'mock-client';
 
+import { getLogger } from 'log4js';
+const logger = getLogger(__filename);
+logger.level = 'info';
+
+// create electron configuration file
+const electronRunConfig = {
+  mainWindowUrl: process.env.MAIN_WINDOW_URL || SITE_URL,
+  electronPath: process.env.ELECTRON_PATH || '/Applications/Jupiter.app/Contents/MacOS/Jupiter'
+};
+const testcafeElectronRcFilename = '.testcafe-electron-rc';
+const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
+fs.writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
+logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
+
+
+// initialize mock client
 export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
+
+// initialize account pool client
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
+// initialize beat dashboard
 const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
 
 // _runId is a share state
@@ -61,6 +80,7 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
   return _runId;
 }
 
+// inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
 

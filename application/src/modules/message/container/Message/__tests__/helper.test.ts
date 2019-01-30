@@ -3,7 +3,7 @@
  * @Date: 2018-12-07 14:47:58
  * Copyright © RingCentral. All rights reserved.
  */
-jest.mock('sdk/service/state');
+jest.mock('sdk/module/state');
 jest.mock('sdk/service/profile');
 jest.mock('sdk/service/group');
 jest.mock('@/history');
@@ -12,7 +12,7 @@ jest.mock('@/store/handler/SectionGroupHandler');
 
 import { GroupService } from 'sdk/service/group';
 import { ProfileService } from 'sdk/service/profile';
-import { StateService } from 'sdk/service/state';
+import { StateService } from 'sdk/module/state';
 import history from '@/history';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
@@ -40,19 +40,19 @@ function resetMockedServices() {
   mockedGroupService = {
     valid: true,
     group: {},
-    async isValid() {
-      return this.valid;
-    },
     async getById() {
       return {};
     },
     updateGroupLastAccessedTime: jest.fn(),
+    async isGroupCanBeShown(id: number) {
+      return this.valid && !(await mockedProfileService.isConversationHidden());
+    },
   };
   mockedGlobalStore = {
     set: jest.fn(),
   };
   mockedSectionHandler = {
-    list: new Set([110]),
+    list: [110],
     onReady: (callback: Function) => callback(mockedSectionHandler.list),
   };
 }

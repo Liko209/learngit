@@ -5,31 +5,21 @@
  */
 import { service } from 'sdk';
 import { JServerError, ERROR_CODES_SERVER } from 'sdk/error';
-import { GroupService as NGroupService } from 'sdk/module/group';
 import { Notification } from '@/containers/Notification';
 import { getGlobalValue } from '../../../../../../store/utils';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
+import { PersonService } from 'sdk/module/person';
 jest.mock('../../../../../../store/utils');
 jest.mock('@/containers/Notification');
 
 jest.mock('sdk/api');
-jest.mock('sdk/dao', () => jest.fn());
-
-jest.mock('sdk/module/group', () => ({
-  GroupService: jest.fn(),
-}));
+jest.mock('sdk/dao');
 
 const searchBarViewModel = new SearchBarViewModel();
-const { PersonService, GroupService } = service;
+const { GroupService } = service;
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
-
-const personService = {
-  doFuzzySearchPersons() {
-    return { terms: [], sortableModels: [{ id: 1 }] };
-  },
-};
 
 const groupService = {
   doFuzzySearchGroups() {
@@ -41,8 +31,16 @@ const groupService = {
 };
 
 describe('SearchBarViewModel', () => {
+  let personService: PersonService;
+
   beforeEach(() => {
     jest.resetAllMocks();
+    personService = new PersonService();
+
+    jest.spyOn(personService, 'doFuzzySearchPersons').mockImplementation(() => {
+      return { terms: [], sortableModels: [{ id: 1 }] };
+    });
+
     jest.spyOn(PersonService, 'getInstance').mockReturnValue(personService);
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
   });

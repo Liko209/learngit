@@ -4,17 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import FileItemModel from '@/store/models/FileItem';
+import { FileProps, FileViewProps } from '../common/File/File.types';
 
-type FilesProps = {
-  id: number;
-};
+type ImageItemProps = FileProps;
 
-type ImageItemProps = {
-  file: FileItemModel;
-  personName: string;
-  createdTime: string;
-  url: string;
-};
+type ImageItemViewProps = FileViewProps;
 
-export { ImageItemProps, FilesProps };
+export { ImageItemProps, ImageItemViewProps };

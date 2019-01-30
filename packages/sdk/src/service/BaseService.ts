@@ -7,8 +7,7 @@ import _ from 'lodash';
 import { mainLogger, JError } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { IdModel, Raw } from '../framework/model';
-import { SortableModel } from '../models'; // eslint-disable-line
+import { IdModel, Raw, SortableModel } from '../framework/model';
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
@@ -131,7 +130,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
     SubModel[]
-    > {
+  > {
     this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
 
@@ -215,7 +214,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     genSortableModelFunc: (
       entity: SubModel,
       terms: string[],
-    ) => SortableModel<SubModel> | null,
+    ) => Promise<SortableModel<SubModel> | null>,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (
@@ -240,11 +239,16 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       entities = await this.getEntitiesFromCache();
     }
 
-    entities.forEach((entity: SubModel) => {
-      const result = genSortableModelFunc(entity, terms);
-      if (result) {
-        sortableEntities.push(result);
-      }
+    const promises = entities.map(async (entity: SubModel) => {
+      return await genSortableModelFunc(entity, terms);
+    });
+
+    await Promise.all(promises).then((results: any[]) => {
+      results.forEach((result: any) => {
+        if (result) {
+          sortableEntities.push(result);
+        }
+      });
     });
 
     if (sortFunc) {
@@ -257,10 +261,10 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
     return srcText.length > 0
       ? terms.reduce(
-        (prev: boolean, key: string) =>
-          prev && new RegExp(`${key}`, 'i').test(srcText),
-        true,
-      )
+          (prev: boolean, key: string) =>
+            prev && new RegExp(`${key}`, 'i').test(srcText),
+          true,
+        )
       : false;
   }
 
@@ -374,8 +378,8 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
-        ? partialModel._id
-        : 0;
+      ? partialModel._id
+      : 0;
     let result: ServiceResult<SubModel>;
 
     do {

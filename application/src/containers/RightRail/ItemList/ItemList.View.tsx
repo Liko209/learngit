@@ -3,52 +3,70 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { observer } from 'mobx-react';
 import { t } from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import { debounce } from 'lodash';
+import { ITEM_HEIGHT } from './config';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
+  JuiVirtualCellWrapper,
 } from 'jui/pattern/VirtualList';
-
-import { JuiRightShelfContent } from 'jui/pattern/RightShelf';
-
 import { emptyView } from './Empty';
-import { TAB_CONFIG, TabConfig } from './config';
 
+import {
+  JuiRightShelfContent,
+  JuiRightRailContentLoading,
+  JuiRightRailLoadingMore,
+  JuiRightRailContentLoadError,
+} from 'jui/pattern/RightShelf';
+import { debounce } from 'lodash';
+const LOAD_DELAY = 300;
+import ReactResizeDetector from 'react-resize-detector';
+
+const HEADER_HEIGHT = 36;
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
-  private _fetchMore: any;
+  private _loadData: Function;
   constructor(props: ViewProps & Props) {
     super(props);
-    this._fetchMore = debounce(this.props.fetchNextPageItems, 200);
-  }
-  countOfCell() {
-    const { totalCount } = this.props;
-    return totalCount;
+    this._loadData = debounce(async () => {
+      const { loadStatus, ids, totalCount } = this.props;
+      const { firstLoaded, loading } = loadStatus;
+      if ((firstLoaded && ids.length === totalCount) || loading) {
+        return;
+      }
+      await this.props.fetchNextPageItems();
+    },                        LOAD_DELAY);
   }
 
-  cellAtIndex = (index: number, style: React.CSSProperties) => {
-    const { ids, type } = this.props;
-    const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
-    const Component: any = config.item;
+  countOfCell() {
+    const { ids, loadStatus } = this.props;
+    const { loading } = loadStatus;
+    return loading ? ids.length + 1 : ids.length;
+  }
+
+  cellAtIndex = (index: number, style: CSSProperties) => {
+    const { ids, tabConfig } = this.props;
+    const Component: any = tabConfig.item;
     const id = ids[index];
+    let content;
     if (id) {
-      return (
-        <div key={index} style={style}>
-          <Component id={id} />
-        </div>
-      );
+      content = <Component id={id} />;
     }
-    return null;
+
+    return (
+      <JuiVirtualCellWrapper key={index} style={style}>
+        {content}
+      </JuiVirtualCellWrapper>
+    );
   }
 
   fixedCellHeight() {
-    return 52;
+    return ITEM_HEIGHT;
   }
 
   renderEmptyContent = () => {
@@ -63,21 +81,53 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   loadMore = async (startIndex: number, stopIndex: number) => {
-    return await this._fetchMore();
+    await this._loadData();
+  }
+
+  firstLoader = () => {
+    return <JuiRightRailContentLoading />;
+  }
+
+  moreLoader = () => {
+    return <JuiRightRailLoadingMore />;
+  }
+
+  private _handleRetry = async () => {
+    return await this.loadMore(0, 0);
   }
 
   render() {
-    const { type, totalCount } = this.props;
-    const config: TabConfig = TAB_CONFIG.find(looper => looper.type === type)!;
-    const subheaderText = config.subheader;
+    const { totalCount, ids, loadStatus, tabConfig } = this.props;
+    const { loading, firstLoaded, loadError } = loadStatus;
+    const { subheader, tryAgainPrompt } = tabConfig;
     return (
       <JuiRightShelfContent>
-        {totalCount > 0 && (
+        {firstLoaded && totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {t(subheaderText)} ({totalCount})
+            {t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
-        <JuiVirtualList dataSource={this} />
+        {firstLoaded && !loadError && (
+          <ReactResizeDetector handleWidth={true} handleHeight={true}>
+            {(width: number = 0, height: number = HEADER_HEIGHT) => (
+              <JuiVirtualList
+                dataSource={this}
+                threshold={1}
+                isLoading={loading}
+                width={width}
+                height={height - HEADER_HEIGHT}
+              />
+            )}
+          </ReactResizeDetector>
+        )}
+        {loading && !firstLoaded && !loadError && this.firstLoader()}
+        {loadError && (
+          <JuiRightRailContentLoadError
+            tip={t(tryAgainPrompt)}
+            linkText={t('tryAgain')}
+            onClick={this._handleRetry}
+          />
+        )}
       </JuiRightShelfContent>
     );
   }

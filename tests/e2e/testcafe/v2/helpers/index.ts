@@ -121,8 +121,16 @@ class Helper {
     return ClientFunction(() => document.location.href)();
   }
 
-  async refresh() {
-    await this.t.navigateTo(await this.href);
+  async interceptHasFocus(isFocus: boolean) {
+    // intercept return value of document.hasFocus to cheat SUT
+    await ClientFunction(
+      (_isFocus) => {
+        Object.defineProperty(document, 'hasFocus', { value: () => _isFocus, configurable: true });
+      })(isFocus);
+  }
+
+  async reload() {
+    await this.t.eval(() => location.reload(true));
   }
 
   async waitUntilExist(selector: Selector, timeout: number = 5e3) {

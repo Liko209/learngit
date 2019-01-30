@@ -4,5 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { Post, PostView } from './Post';
+export {
+  Post,
+  PostView,
+  IPostQuery,
+  IPostResult,
+  IRawPostResult,
+} from './Post';
 export { PostItemData } from './PostItemData';

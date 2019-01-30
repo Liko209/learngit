@@ -22,9 +22,9 @@ describe('Permission', () => {
     return new Permission(mock, userId, companyId);
   }
 
-  it('isPublic(): should return true when is_public=true', () => {
+  it('isPublic(): should return true when privacy=protected', () => {
     const group = {
-      is_public: true,
+      privacy: 'protected',
     };
     const mock = { ...groupBase, ...group };
     const permission = createPermission(mock);
@@ -130,7 +130,9 @@ describe('Permission', () => {
         TEAM_PIN_POST: true,
         TEAM_ADMIN: true,
       };
-      expect(Permission.createPermissionsMask(permissionFlags)).toBe(1 + 2 + 4 + 8 + 16);
+      expect(Permission.createPermissionsMask(permissionFlags)).toBe(
+        1 + 2 + 4 + 8 + 16,
+      );
     });
     it('should return correct mask value 2', () => {
       const permissionFlags = {
@@ -140,7 +142,9 @@ describe('Permission', () => {
         TEAM_PIN_POST: false,
         TEAM_ADMIN: true,
       };
-      expect(Permission.createPermissionsMask(permissionFlags)).toBe(1 + 4 + 16);
+      expect(Permission.createPermissionsMask(permissionFlags)).toBe(
+        1 + 4 + 16,
+      );
     });
     it('should return correct mask value 3', () => {
       const permissionFlags = {

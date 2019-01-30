@@ -34,6 +34,9 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   }
 
   public makeCall(phoneNumber: string, options: RTCCallOptions): any {
+    if (!options.homeCountryId) {
+      options.homeCountryId = '1';
+    }
     return this._webphone.userAgent.invite(phoneNumber, options);
   }
 

@@ -48,16 +48,19 @@ const baseProps = {
 
 function renderJumpToFirstUnreadButton({
   hasHistoryUnread,
+  historyUnreadCount,
   firstHistoryUnreadInPage,
   firstHistoryUnreadPostViewed,
 }: {
   hasHistoryUnread: boolean;
+  historyUnreadCount: number;
   firstHistoryUnreadInPage: boolean;
   firstHistoryUnreadPostViewed: boolean;
 }) {
   const props = {
     ...baseProps,
     hasHistoryUnread,
+    historyUnreadCount,
     firstHistoryUnreadInPage,
   };
 
@@ -79,8 +82,8 @@ describe('StreamView', () => {
         ...baseProps,
         postIds: [1, 2],
         items: [
-          { type: StreamItemType.POST, value: 1 },
-          { type: StreamItemType.POST, value: 2 },
+          { type: StreamItemType.POST, id: 1, timeStart: 1, value: [1] },
+          { type: StreamItemType.POST, id: 2, timeStart: 1, value: [2] },
         ],
       };
 
@@ -100,9 +103,14 @@ describe('StreamView', () => {
         ...baseProps,
         postIds: [1, 2],
         items: [
-          { type: StreamItemType.POST, value: 1 },
-          { type: StreamItemType.NEW_MSG_SEPARATOR, value: null },
-          { type: StreamItemType.POST, value: 2 },
+          { type: StreamItemType.POST, id: 1, timeStart: 1, value: [1] },
+          {
+            type: StreamItemType.NEW_MSG_SEPARATOR,
+            id: 333,
+            timeStart: 1,
+            value: [333],
+          },
+          { type: StreamItemType.POST, id: 2, timeStart: 1, value: [2] },
         ],
       };
       const wrapper = shallow(<StreamView {...props} />);
@@ -115,6 +123,7 @@ describe('StreamView', () => {
       it('should not render jumpToFirstUnreadButton', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: false,
+          historyUnreadCount: 0,
           firstHistoryUnreadInPage: false,
           firstHistoryUnreadPostViewed: false,
         });
@@ -128,6 +137,7 @@ describe('StreamView', () => {
       it('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
+          historyUnreadCount: 3,
           firstHistoryUnreadInPage: true,
           firstHistoryUnreadPostViewed: true,
         });
@@ -138,6 +148,7 @@ describe('StreamView', () => {
       it('should render jumpToFirstUnreadButton when first history unread in current page but was not viewed', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
+          historyUnreadCount: 3,
           firstHistoryUnreadInPage: true,
           firstHistoryUnreadPostViewed: false,
         });
@@ -145,9 +156,20 @@ describe('StreamView', () => {
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
       });
 
+      it('should not render jumpToFirstUnreadButton when unread count not greater than 1', () => {
+        const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
+          hasHistoryUnread: true,
+          historyUnreadCount: 1,
+          firstHistoryUnreadInPage: false,
+          firstHistoryUnreadPostViewed: false,
+        });
+        expect(hasJumpToFirstUnreadButton).toBeFalsy();
+      });
+
       it('should render jumpToFirstUnreadButton when first history unread not in current page', () => {
         const { hasJumpToFirstUnreadButton } = renderJumpToFirstUnreadButton({
           hasHistoryUnread: true,
+          historyUnreadCount: 3,
           firstHistoryUnreadInPage: false,
           firstHistoryUnreadPostViewed: false,
         });

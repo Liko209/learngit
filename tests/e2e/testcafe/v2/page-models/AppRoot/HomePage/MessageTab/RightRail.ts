@@ -13,7 +13,7 @@ export class RightRail extends BaseWebComponent {
 
   get foldStatusButton() {
     this.warnFlakySelector();
-    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]'); 
+    return this.getSelectorByIcon('chevron_left').parent('button[aria-label="Show details"]');
   }
 
   async expand() {
@@ -88,6 +88,14 @@ export class RightRail extends BaseWebComponent {
     return this.getComponent(FilesTab);
   }
 
+  get eventsTab() {
+    return this.getComponent(EventsTab);
+  }
+
+  get tasksTab() {
+    return this.getComponent(TasksTab);
+  }
+
   get linkTab() {
     return this.getComponent(LinksTab);
   }
@@ -135,7 +143,6 @@ class FilesTab extends BaseWebComponent {
   }
 
 }
-
 class ImagesTab extends BaseWebComponent {
   // this is a temp. selector
   get self() {
@@ -165,6 +172,33 @@ class ImagesTab extends BaseWebComponent {
 
 }
 
+class EventsTab extends BaseWebComponent {
+  // this is a temp. selector
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get subTitle() {
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Events/);
+  }
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
+  }
+
+  async waitUntilEventsItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-event-item');
+  }
+
+  nthItem(n: number) {
+    return this.items.nth(n).find('.list-item-primary');
+  }
+}
 
 class ImageAndFileItem extends BaseWebComponent {
   get name() {
@@ -194,7 +228,6 @@ class ImageAndFileItem extends BaseWebComponent {
   get previewIcon() {
     return this.getSelectorByIcon('image_preview', this.self);
   }
-
 }
 
 class LinksTab extends BaseWebComponent {
@@ -223,4 +256,34 @@ class LinksTab extends BaseWebComponent {
   async linksCountsShouldBe(n: number) {
     await this.t.expect(this.items.count).eql(n);
   }
+
+}
+
+class TasksTab extends BaseWebComponent {
+
+  get self() {
+    return this.getSelectorByAutomationId('rightRail');
+  }
+
+  get subTitle() {
+    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Tasks/);
+  }
+
+  async countOnSubTitleShouldBe(n: number) {
+    const reg = new RegExp(`\(${n}\)`)
+    await this.t.expect(this.subTitle.textContent).match(reg);
+  }
+
+  async waitUntilImagesItemExist(timeout = 10e3) {
+    await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-task-item');
+  }
+
+  nthItem(n: number) {
+    return this.items.nth(n).find('.list-item-primary');
+  }
+
 }

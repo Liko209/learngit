@@ -1,6 +1,16 @@
-import { GroupService } from '../GroupService';
+import { NewGroupService } from '../NewGroupService';
 import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
+import { TeamController } from '../../controller/TeamController';
+import { TeamActionController } from '../../controller/TeamActionController';
+import { TeamSetting } from '../../types';
+
+jest.mock('../../controller/TeamActionController', () => ({
+  TeamActionController: jest.fn(),
+}));
+jest.mock('../../controller/TeamController', () => ({
+  TeamController: jest.fn(),
+}));
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 
 jest.mock('../../controller/TeamActionController');
@@ -8,7 +18,16 @@ jest.mock('sdk/api');
 jest.mock('sdk/dao');
 
 describe('GroupService', () => {
-  let groupService: GroupService;
+  let groupService: NewGroupService;
+  const mockTeamActionController = {
+    joinTeam: jest.fn(),
+    canJoinTeam: jest.fn(),
+    getTeamSetting: jest.fn(),
+    updateTeamSetting: jest.fn(),
+  };
+  const mockTeamPermissionController = {
+    getTeamUserPermissionFlags: jest.fn(),
+  };
   function clearMocks() {
     jest.clearAllMocks();
     jest.resetModules();
@@ -16,7 +35,20 @@ describe('GroupService', () => {
   }
 
   function setup() {
-    groupService = new GroupService();
+    groupService = new NewGroupService();
+    (TeamController as any).mockImplementation(() => {
+      return {
+        getTeamActionController: jest
+          .fn()
+          .mockReturnValue(mockTeamActionController),
+        getTeamPermissionController: jest
+          .fn()
+          .mockReturnValue(mockTeamPermissionController),
+      };
+    });
+    (TeamActionController as any).mockImplementation(() => {
+      return mockTeamActionController;
+    });
   }
 
   beforeEach(() => {
@@ -81,6 +113,36 @@ describe('GroupService', () => {
         });
       await groupService.joinTeam(mockUserId, mockTeamId);
       expect(mockJoinTeam).toBeCalledWith(mockUserId, mockTeamId);
+    });
+  });
+
+  describe('getTeamUserPermissionFlags()', () => {
+    it('should call teamActionController with correct parameter', async () => {
+      const mockPermission = {};
+      await groupService.getTeamUserPermissionFlags(mockPermission);
+      expect(
+        mockTeamPermissionController.getTeamUserPermissionFlags,
+      ).toBeCalledWith(mockPermission);
+    });
+  });
+
+  describe('updateTeamSetting()', () => {
+    it('should call teamActionController with correct parameter', async () => {
+      const mockTeamId = 123;
+      const mockTeamSetting: TeamSetting = {
+        name: 'test team',
+        description: 'this is a team',
+        isPublic: true,
+        permissionFlags: {
+          TEAM_POST: true,
+          TEAM_ADD_MEMBER: true,
+        },
+      };
+      await groupService.updateTeamSetting(mockTeamId, mockTeamSetting);
+      expect(mockTeamActionController.updateTeamSetting).toBeCalledWith(
+        mockTeamId,
+        mockTeamSetting,
+      );
     });
   });
   describe('leaveTeam()', () => {

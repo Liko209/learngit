@@ -2,7 +2,7 @@
 import notificationCenter from '../../notificationCenter';
 import { daoManager, GroupDao } from '../../../dao';
 import GroupAPI from '../../../api/glip/group';
-import PersonService from '../../../service/person';
+import { PersonService } from '../../../module/person';
 import ProfileService from '../../../service/profile';
 import { UserConfig } from '../../../service/account';
 import { Group } from '../../../module/group/entity';
@@ -10,7 +10,7 @@ import { Post } from '../../../module/post/entity';
 import { Profile } from '../../../module/profile/entity';
 import { Raw } from '../../../framework/model';
 import { toArrayOf } from '../../../__tests__/utils';
-import StateService from '../../state';
+import { StateService } from '../../../module/state';
 import { EVENT_TYPES } from '../..';
 import { ApiResultOk } from '../../../api/ApiResult';
 import handleData, {
@@ -22,13 +22,16 @@ import handleData, {
   getUniqMostRecentPostsByGroup,
   handleHiddenGroupsChanged,
   saveDataAndDoNotification,
+  calculateDeltaData,
 } from '../handleData';
 
-jest.mock('../../../service/person');
+jest.mock('../../../api');
+jest.mock('../../../framework/controller');
+
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
-jest.mock('../../state');
+jest.mock('../../../module/state');
 jest.mock('../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
@@ -586,17 +589,50 @@ describe('handleHiddenGroupsChanged', () => {
 
 describe('saveDataAndDoNotification()', () => {
   describe('doNotification()', () => {
-    it('should not call notificationCenter.emit when normal group is empty', async () => {
-      const groups = generateFakeGroups(1, { members: [3, 4] });
-      UserConfig.getCurrentUserId.mockReturnValue(4);
+    it('should call notificationCenter.emit when group is not empty', async () => {
+      const groups = generateFakeGroups(1);
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     });
-
-    it('should call notificationCenter.emit when normal group is not empty', async () => {
-      const groups = generateFakeGroups(1);
+    it('should not call notificationCenter.emit when group is empty', async () => {
+      const groups = [];
       await saveDataAndDoNotification(groups);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('calculateDeltaData()', () => {
+    it('should return correct data when include removes', async () => {
+      daoManager.getDao(GroupDao).get.mockReturnValue({
+        members: [123, 456, 789],
+      });
+      const deltaGroup = {
+        _id: 122222,
+        _delta: {
+          remove: {
+            members: [456],
+          },
+        },
+      } as Raw<Group>;
+      expect(await calculateDeltaData(deltaGroup)).toEqual({
+        members: [123, 789],
+      });
+    });
+    it('should return correct data when include adds', async () => {
+      daoManager.getDao(GroupDao).get.mockReturnValue({
+        members: [123, 456, 789],
+      });
+      const deltaGroup = {
+        _id: 122222,
+        _delta: {
+          add: {
+            members: [456, 111222],
+          },
+        },
+      } as Raw<Group>;
+      expect(await calculateDeltaData(deltaGroup)).toEqual({
+        members: [123, 456, 789, 111222],
+      });
     });
   });
 });

@@ -10,7 +10,7 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 
-import PersonService from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 import GroupService from 'sdk/service/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person } from 'sdk/module/person/entity';
@@ -33,7 +33,12 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
     anchor: ISortableModel<Person>,
   ): Promise<{ data: Person[]; hasMore: boolean }> {
     const personService = PersonService.getInstance<PersonService>();
-    const result = await personService.getPersonsByGroupId(this._groupId);
+    const group = await GroupService.getInstance<GroupService>().getById(
+      this._groupId,
+    );
+    const result = await personService.getPersonsByIds(
+      group && group.members ? group.members : [],
+    );
     return { data: result, hasMore: false };
   }
 }
@@ -43,7 +48,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _group: Group;
 
   static async createSortableGroupMemberHandler(groupId: number) {
-    const group = await GroupService.getInstance<GroupService>().getGroupById(
+    const group = await GroupService.getInstance<GroupService>().getById(
       groupId,
     );
     if (group) {
@@ -167,12 +172,17 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
 
   private async _replaceData() {
     const personService = PersonService.getInstance<PersonService>();
-    const result = await personService.getPersonsByGroupId(this._group.id);
+    const groupService = GroupService.getInstance<GroupService>();
+    const group = await groupService.getById(this._group.id);
+    const result = await personService.getPersonsByIds(
+      group && group.members ? group.members : [],
+    );
+
     this._sortableDataHandler.replaceAll(result);
   }
 
   getSortedGroupMembersIds() {
-    return this._sortableDataHandler.sortableListStore.getIds();
+    return this._sortableDataHandler.sortableListStore.getIds;
   }
 }
 

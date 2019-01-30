@@ -15,18 +15,17 @@ import {
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = dateFormatter.localTime(moment(timestamp));
   const date = recentlyTwoDayAndOther(timestamp);
-
   return `${date} ${t('at')} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
   const startTime = getDateAndTime(startTimestamp);
-  let endTime = getDateAndTime(endTimestamp);
-  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
+  const endTime = getDateAndTime(endTimestamp);
 
-  if (isToday) {
-    const endTimeArr = endTime.split(' ');
-    endTime = endTime.replace(`${endTimeArr[0]} ${endTimeArr[1]} `, '');
+  const isSameDay = moment(startTimestamp).isSame(endTimestamp, 'day');
+
+  if (isSameDay) {
+    return `${startTime} - ${dateFormatter.localTime(moment(endTimestamp))}`;
   }
   return `${startTime} - ${endTime}`;
 }
@@ -89,27 +88,10 @@ function getDurationTimeText(
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
 }
 
-const FILE_ICON_MAP = {
-  pdf: ['pdf'],
-  sheet: ['xlsx', 'xls'],
-  ppt: ['ppt', 'pptx', 'potx'],
-  ps: ['ps', 'psd'],
-};
-
-function getFileIcon(fileType: string) {
-  for (const key in FILE_ICON_MAP) {
-    if (FILE_ICON_MAP[key].includes(fileType)) {
-      return key;
-    }
-  }
-  return null;
-}
-
 export {
   getDateMessage,
   getDateAndTime,
   getDurationTime,
   getDurationDate,
   getDurationTimeText,
-  getFileIcon,
 };

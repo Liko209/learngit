@@ -18,7 +18,6 @@ import { transform2Map } from '@/store/utils';
 
 import {
   ISortableModel,
-  TUpdated,
   IMatchFunc,
   ITransformFunc,
   ISortFunc,
@@ -29,6 +28,7 @@ import {
   IFetchDataListHandlerOptions,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
+import { mainLogger } from 'sdk';
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -50,10 +50,11 @@ export class FetchSortableDataListHandler<
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
   private _transformFunc: ITransformFunc<T>;
-  private _sortableDataProvider: IFetchSortableDataProvider<T>;
+  private _sortFun?: ISortFunc<ISortableModel<T>>;
+  private _sortableDataProvider?: IFetchSortableDataProvider<T>;
 
   constructor(
-    dataProvider: IFetchSortableDataProvider<T>,
+    dataProvider: IFetchSortableDataProvider<T> | undefined,
     options: IFetchSortableDataListHandlerOptions<T>,
     listStore: SortableListStore<T> = new SortableListStore<T>(options.sortFunc),
   ) {
@@ -62,6 +63,7 @@ export class FetchSortableDataListHandler<
     this._transformFunc = options.transformFunc;
     this._sortableDataProvider = dataProvider;
     this._entityName = options.entityName;
+    this._sortFun = options.sortFunc;
 
     if (options.eventName) {
       this.subscribeNotification(options.eventName, ({ type, body }) => {
@@ -79,6 +81,9 @@ export class FetchSortableDataListHandler<
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
+    if (!this._sortableDataProvider) {
+      return mainLogger.warn('data fetcher should be defined ');
+    }
     const { data, hasMore } = await this._sortableDataProvider.fetchData(
       direction,
       pageSize,
@@ -94,7 +99,6 @@ export class FetchSortableDataListHandler<
       this.handlePageData(sortableResult);
       this._dataChangeCallBack &&
         this._dataChangeCallBack({
-          direction,
           added: sortableResult,
           deleted: [],
         });
@@ -106,7 +110,7 @@ export class FetchSortableDataListHandler<
     let originalSortableIds: number[] = [];
 
     if (this._dataChangeCallBack) {
-      originalSortableIds = this.sortableListStore.getIds();
+      originalSortableIds = this.sortableListStore.getIds;
     }
 
     const deletedSortableModelIds = Array.from(payload.body.ids);
@@ -116,8 +120,6 @@ export class FetchSortableDataListHandler<
       this._dataChangeCallBack({
         deleted: _.intersection(originalSortableIds, payload.body.ids),
         added: [],
-        updated: [],
-        direction: QUERY_DIRECTION.NEWER,
       });
     }
   }
@@ -130,13 +132,11 @@ export class FetchSortableDataListHandler<
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
-    let updatedSortableItems: TUpdated = [];
-    let updatedSortableModels: ISortableModel[] = [];
 
     const entities = payload.body.entities;
     const keys = Array.from(payload.body.ids);
 
-    const existKeys = this.sortableListStore.getIds();
+    const existKeys = this.sortableListStore.getIds;
     let matchedKeys: number[] = _.intersection(keys, existKeys);
     const matchedSortableModels: ISortableModel<T>[] = [];
     const matchedEntities: T[] = [];
@@ -146,13 +146,18 @@ export class FetchSortableDataListHandler<
         matchedKeys = keys;
       }
     }
-
     matchedKeys.forEach((key: number) => {
       const model = entities.get(key) as T;
       if (this._isMatchFunc(model)) {
         const sortableModel = this._transformFunc(model);
-        matchedSortableModels.push(sortableModel);
-        matchedEntities.push(model);
+        if (
+          payload.type === EVENT_TYPES.REPLACE ||
+          sortableModel.sortValue !==
+            (this.sortableListStore.getById(key) as ISortableModel).sortValue
+        ) {
+          matchedSortableModels.push(sortableModel);
+          matchedEntities.push(model);
+        }
       } else {
         deletedSortableModelIds.push(key);
       }
@@ -169,9 +174,9 @@ export class FetchSortableDataListHandler<
       differentKeys.forEach((key: number) => {
         const model = entities.get(key) as T;
         if (this._isMatchFunc(model)) {
-          const idSortKey = this._transformFunc(model);
-          if (this._isInRange(idSortKey.sortValue)) {
-            matchedSortableModels.push(idSortKey);
+          const sortModel = this._transformFunc(model);
+          if (this._isInRange(sortModel)) {
+            matchedSortableModels.push(sortModel);
             matchedEntities.push(model);
           }
         }
@@ -203,36 +208,16 @@ export class FetchSortableDataListHandler<
           originalSortableModels,
           item => item.id,
         );
-
-        // calculate updated models
-        updatedSortableModels = _.differenceBy(
-          matchedSortableModels,
-          addedSortableModels,
-          item => item.id,
-        );
-      }
-
-      if (updatedSortableModels.length) {
-        const storeIds = this.sortableListStore.getIds();
-        updatedSortableItems = updatedSortableModels.map(
-          (item: ISortableModel) => {
-            return {
-              value: item,
-              index: storeIds.indexOf(item.id),
-              oldValue: originalSortableModels.find(iter => iter.id === item.id),
-            };
-          },
-        );
       }
     }
 
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        deleted: deletedSortableModelIds,
-        added: addedSortableModels,
-        updated: updatedSortableItems,
-        direction: QUERY_DIRECTION.NEWER,
-      });
+    if (deletedSortableModelIds.length || addedSortableModels.length) {
+      this._dataChangeCallBack &&
+        this._dataChangeCallBack({
+          deleted: deletedSortableModelIds,
+          added: addedSortableModels,
+        });
+    }
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {
@@ -247,20 +232,36 @@ export class FetchSortableDataListHandler<
     }
   }
 
-  private _isInRange(sortValue: number) {
+  private _isInRange(newData: ISortableModel<T>) {
     let inRange = false;
     const idArray = this.sortableListStore.items;
     if (idArray && idArray.length > 0) {
-      const smallest = idArray[0];
-      const biggest = idArray[idArray.length - 1];
-      inRange =
-        sortValue >= smallest.sortValue && sortValue <= biggest.sortValue;
-      if (!inRange) {
+      const first = idArray[0];
+      const last = idArray[idArray.length - 1];
+      if (this._sortFun) {
         inRange =
-          (sortValue < smallest.sortValue &&
-            !this.hasMore(QUERY_DIRECTION.OLDER)) ||
-          (sortValue > biggest.sortValue &&
-            !this.hasMore(QUERY_DIRECTION.NEWER));
+          this._sortFun(newData, first) >= 0 &&
+          this._sortFun(newData, last) <= 0;
+      } else {
+        inRange =
+          newData.sortValue >= first.sortValue &&
+          newData.sortValue <= last.sortValue;
+      }
+
+      if (!inRange) {
+        if (this._sortFun) {
+          inRange =
+            (this._sortFun(newData, first) < 0 &&
+              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+            (this._sortFun(newData, last) > 0 &&
+              !this.hasMore(QUERY_DIRECTION.NEWER));
+        } else {
+          inRange =
+            (newData.sortValue < first.sortValue &&
+              !this.hasMore(QUERY_DIRECTION.OLDER)) ||
+            (newData.sortValue > last.sortValue &&
+              !this.hasMore(QUERY_DIRECTION.NEWER));
+        }
       }
     } else {
       inRange = !(

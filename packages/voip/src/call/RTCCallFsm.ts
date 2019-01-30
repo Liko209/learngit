@@ -13,14 +13,16 @@ const CallFsmEvent = {
   FLIP: 'flipEvent',
   START_RECORD: 'startRecordEvent',
   STOP_RECORD: 'stopRecordEvent',
-  MUTE: 'mute',
-  UNMUTE: 'unmute',
+  MUTE: 'muteEvent',
+  UNMUTE: 'unmuteEvent',
   TRANSFER: 'transferEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
   HOLD: 'holdEvent',
   UNHOLD: 'unholdEvent',
+  PARK: 'parkEvent',
+  DTMF: 'dtmfEvent',
   ACCOUNT_READY: 'accountReadyEvent',
   ACCOUNT_NOT_READY: 'accountNotReadyEvent',
   SESSION_CONFIRMED: 'sessionConfirmedEvent',
@@ -30,7 +32,6 @@ const CallFsmEvent = {
   HOLD_FAILED: 'holdFailedEvent',
   UNHOLD_SUCCESS: 'unholdSuccessEvent',
   UNHOLD_FAILED: 'unholdFailedEvent',
-  PARK: 'parkEvent',
 };
 
 class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
@@ -92,6 +93,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.UNHOLD: {
           this._onUnhold();
+          break;
+        }
+        case CallFsmEvent.DTMF: {
+          this._onDtmf(task.params);
           break;
         }
         case CallFsmEvent.ACCOUNT_READY: {
@@ -217,6 +222,13 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._eventQueue.push({ name: CallFsmEvent.UNHOLD }, () => {});
   }
 
+  dtmf(digits: string): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.DTMF, params: digits },
+      () => {},
+    );
+  }
+
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
   }
@@ -316,6 +328,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.UNHOLD_ACTION);
   }
 
+  onDtmfAction(digits: string) {
+    this.emit(CALL_FSM_NOTIFY.DTMF_ACTION, digits);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
   }
@@ -366,6 +382,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onUnhold() {
     this._callFsmTable.unhold();
+  }
+
+  private _onDtmf(digits: string) {
+    this._callFsmTable.dtmf(digits);
   }
 
   private _onAccountReady() {

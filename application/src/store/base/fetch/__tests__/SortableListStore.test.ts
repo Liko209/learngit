@@ -48,7 +48,7 @@ describe('SortableListStore', () => {
   });
 
   it('getIds', () => {
-    expect(listStore.getIds()).toEqual([1, 2]);
+    expect(listStore.getIds).toEqual([1, 2]);
   });
 
   it('getById', () => {

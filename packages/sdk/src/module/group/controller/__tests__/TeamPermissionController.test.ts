@@ -6,14 +6,14 @@
 
 import { TeamPermissionController } from '../TeamPermissionController';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
-import { groupFactory } from './factory';
-import { daoManager } from '../../../../dao';
 import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../../../dao/account/constants';
-import { PERMISSION_ENUM } from '../../constants';
-
+  PERMISSION_ENUM,
+  DEFAULT_USER_PERMISSION_LEVEL,
+} from '../../constants';
+import { UserConfig } from 'sdk/service/account/UserConfig';
+jest.mock('sdk/service/account/UserConfig');
+const mockCurrentUserId = 5683;
+const mockCurrentUserCompanyId = 55668833;
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
   beforeEach(() => {
@@ -23,20 +23,16 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
-      const mockGetAccountInfo = jest.fn((key: string) => {
-        const accountInfo = {
-          [ACCOUNT_USER_ID]: 5683,
-          [ACCOUNT_COMPANY_ID]: 55668833,
-        };
-        return accountInfo[key];
-      });
-      daoManager.getKVDao = jest.fn().mockReturnValue({
-        get: mockGetAccountInfo,
-      });
+      UserConfig.getCurrentUserId = jest
+        .fn()
+        .mockImplementation(() => mockCurrentUserId);
+      UserConfig.getCurrentCompanyId = jest
+        .fn()
+        .mockImplementation(() => mockCurrentUserCompanyId);
     });
     it('should return false when guestUserCompanyIds is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
       };
       expect(
         teamPermissionController.isCurrentUserGuest(teamPermissionParams),
@@ -44,7 +40,7 @@ describe('TeamPermissionController', () => {
     });
     it('should return false when guestUserCompanyIds is empty', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         guest_user_company_ids: [],
       };
       expect(
@@ -53,7 +49,7 @@ describe('TeamPermissionController', () => {
     });
     it('should return false when guestUserCompanyIds does not include current user', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         guest_user_company_ids: [123456],
       };
       expect(
@@ -62,8 +58,8 @@ describe('TeamPermissionController', () => {
     });
     it('should return false when guestUserCompanyIds includes current user', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
-        guest_user_company_ids: [55668833],
+        members: [mockCurrentUserId],
+        guest_user_company_ids: [mockCurrentUserCompanyId],
       };
       expect(
         teamPermissionController.isCurrentUserGuest(teamPermissionParams),
@@ -77,15 +73,21 @@ describe('TeamPermissionController', () => {
         members: [],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeFalsy();
     });
     it('should return false when members more user', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [123, 555],
+        members: [123, 555, mockCurrentUserId],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeFalsy();
     });
     it('should return false when member only contain one user and is not me', () => {
@@ -93,36 +95,30 @@ describe('TeamPermissionController', () => {
         members: [1234],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeFalsy();
     });
     it('should return true when member only contain myself', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [5683],
+        members: [mockCurrentUserId],
       };
       expect(
-        teamPermissionController.isSelfGroup(teamPermissionParams, 5683),
+        teamPermissionController.isSelfGroup(
+          teamPermissionParams,
+          mockCurrentUserId,
+        ),
       ).toBeTruthy();
     });
   });
 
   describe('getCurrentUserPermissionLevel()', () => {
-    beforeAll(() => {
-      const mockGetAccountInfo = jest.fn((key: string) => {
-        const accountInfo = {
-          [ACCOUNT_USER_ID]: 5683,
-          [ACCOUNT_COMPANY_ID]: 55668833,
-        };
-        return accountInfo[key];
-      });
-      daoManager.getKVDao = jest.fn().mockReturnValue({
-        get: mockGetAccountInfo,
-      });
-    });
     it('should return self group permission level', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: false,
-        members: [5683],
+        members: [mockCurrentUserId],
       };
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(
@@ -133,7 +129,7 @@ describe('TeamPermissionController', () => {
     it('should return common group permission level', () => {
       const teamPermissionParams: TeamPermissionParams = {
         is_team: false,
-        members: [540, 524],
+        members: [540, 524, mockCurrentUserId],
       };
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(
@@ -141,9 +137,20 @@ describe('TeamPermissionController', () => {
         ),
       ).toEqual(15);
     });
-    it('should return team permission level when permissions is undefined', () => {
+    it('should return 0 level when user is not a team member', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
+        is_team: true,
+      };
+      expect(
+        teamPermissionController.getCurrentUserPermissionLevel(
+          teamPermissionParams,
+        ),
+      ).toEqual(0);
+    });
+    it('should return team permission level when permissions is undefined', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        members: [mockCurrentUserId],
         is_team: true,
       };
       expect(
@@ -154,7 +161,7 @@ describe('TeamPermissionController', () => {
     });
     it('should return team permission level when admin permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
           user: { uids: [] },
@@ -168,7 +175,7 @@ describe('TeamPermissionController', () => {
     });
     it('should return team permission level when admin uids is empty and level is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
           admin: { uids: [] },
@@ -183,7 +190,7 @@ describe('TeamPermissionController', () => {
     });
     it('should return team permission level when admin uids is empty and level is defined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
           admin: { uids: [], level: 63 },
@@ -198,10 +205,10 @@ describe('TeamPermissionController', () => {
     });
     it('should return team permission level when admin uids includes current user and level is defined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
-          admin: { uids: [5683], level: 63 },
+          admin: { uids: [mockCurrentUserId], level: 63 },
           user: { uids: [] },
         },
       };
@@ -213,7 +220,7 @@ describe('TeamPermissionController', () => {
     });
     it('should return team permission level for common user and user permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
           admin: { uids: [540], level: 63 },
@@ -223,11 +230,11 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(DEFAULT_USER_PERMISSION_LEVEL);
     });
     it('should return team permission level for common user and user permissions level is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
           admin: { uids: [540], level: 63 },
@@ -238,11 +245,11 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(DEFAULT_USER_PERMISSION_LEVEL);
     });
     it('should return team permission level for common user and user permissions level is defined', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
         is_team: true,
         permissions: {
           admin: { uids: [540], level: 63 },
@@ -258,7 +265,7 @@ describe('TeamPermissionController', () => {
   });
 
   describe('permissionLevelToArray()', () => {
-    it('return permission array', () => {
+    it('should return permission array', () => {
       const level: number =
         PERMISSION_ENUM.TEAM_POST +
         PERMISSION_ENUM.TEAM_ADD_MEMBER +
@@ -274,36 +281,32 @@ describe('TeamPermissionController', () => {
   });
 
   describe('getCurrentUserPermissions()', () => {
-    it('return permissions when current user is guest', () => {
+    it('should return permissions when current user is guest', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        is_team: true,
+        guest_user_company_ids: [mockCurrentUserCompanyId],
+        members: [mockCurrentUserId],
       };
-      jest
-        .spyOn(teamPermissionController, 'isCurrentUserGuest')
-        .mockReturnValue(true);
-      jest
-        .spyOn(teamPermissionController, 'getCurrentUserPermissionLevel')
-        .mockReturnValue(11);
       expect(
         teamPermissionController.getCurrentUserPermissions(teamPermissionParams),
-      ).toEqual([PERMISSION_ENUM.TEAM_POST]);
+      ).toEqual([
+        PERMISSION_ENUM.TEAM_POST,
+        PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+      ]);
     });
     it('return permissions when current user is not guest', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        is_team: true,
+        members: [mockCurrentUserId],
       };
-      jest
-        .spyOn(teamPermissionController, 'isCurrentUserGuest')
-        .mockReturnValue(false);
-      jest
-        .spyOn(teamPermissionController, 'getCurrentUserPermissionLevel')
-        .mockReturnValue(11);
       expect(
         teamPermissionController.getCurrentUserPermissions(teamPermissionParams),
       ).toEqual([
         PERMISSION_ENUM.TEAM_POST,
         PERMISSION_ENUM.TEAM_ADD_MEMBER,
+        PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
         PERMISSION_ENUM.TEAM_PIN_POST,
+        PERMISSION_ENUM.TEAM_ADMIN,
       ]);
     });
   });
@@ -311,7 +314,7 @@ describe('TeamPermissionController', () => {
   describe('isCurrentUserHasPermission()', () => {
     it('is current user has permission', () => {
       const teamPermissionParams: TeamPermissionParams = {
-        members: [],
+        members: [mockCurrentUserId],
       };
       jest
         .spyOn(teamPermissionController, 'getCurrentUserPermissions')
@@ -350,50 +353,68 @@ describe('TeamPermissionController', () => {
         ),
       ).toBeFalsy();
     });
-  });
 
-  describe('createPermissionsMask()', () => {
-    it('should return correct mask value 31', () => {
-      const permissionFlags = {
-        TEAM_POST: true,
-        TEAM_ADD_MEMBER: true,
-        TEAM_ADD_INTEGRATIONS: true,
-        TEAM_PIN_POST: true,
-        TEAM_ADMIN: true,
+    it('should user not have TEAM_ADMIN permission when there is admin', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        members: [mockCurrentUserId],
+        guest_user_company_ids: [],
+        permissions: {
+          admin: {
+            uids: [123],
+          },
+        },
       };
       expect(
-        teamPermissionController.createPermissionsMask(permissionFlags),
-      ).toBe(1 + 2 + 4 + 8 + 16);
+        teamPermissionController.isCurrentUserHasPermission(
+          teamPermissionParams,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeFalsy();
     });
-    it('should return correct mask value 21', () => {
-      const permissionFlags = {
-        TEAM_POST: true,
-        TEAM_ADD_MEMBER: false,
-        TEAM_ADD_INTEGRATIONS: true,
-        TEAM_PIN_POST: false,
-        TEAM_ADMIN: true,
+
+    it('should user have TEAM_ADMIN permission when there is not admin', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        members: [mockCurrentUserId],
+        guest_user_company_ids: [],
+        permissions: {
+          admin: {
+            uids: [],
+          },
+        },
       };
       expect(
-        teamPermissionController.createPermissionsMask(permissionFlags),
-      ).toBe(1 + 4 + 16);
+        teamPermissionController.isCurrentUserHasPermission(
+          teamPermissionParams,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeTruthy();
     });
-    it('should return correct mask value 14', () => {
-      const permissionFlags = {
-        TEAM_POST: false,
-        TEAM_ADD_MEMBER: true,
-        TEAM_ADD_INTEGRATIONS: true,
-        TEAM_PIN_POST: true,
-        TEAM_ADMIN: false,
+
+    it('should guest not have TEAM_ADMIN permission when there is not admin', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+        is_team: true,
+        members: [mockCurrentUserId],
+        guest_user_company_ids: [mockCurrentUserCompanyId],
+        permissions: {
+          admin: {
+            uids: [],
+          },
+        },
       };
       expect(
-        teamPermissionController.createPermissionsMask(permissionFlags),
-      ).toBe(2 + 4 + 8);
+        teamPermissionController.isCurrentUserHasPermission(
+          teamPermissionParams,
+          PERMISSION_ENUM.TEAM_ADMIN,
+        ),
+      ).toBeFalsy();
     });
   });
 
   describe('isTeamAdmin()', async () => {
     it('should return true if no team permission model', async () => {
-      expect(teamPermissionController.isTeamAdmin(11, undefined)).toBeTruthy();
+      expect(teamPermissionController.isTeamAdmin(11, undefined)).toBeFalsy();
     });
 
     it('should return true if person is in admin id list', async () => {
@@ -411,6 +432,111 @@ describe('TeamPermissionController', () => {
       expect(teamPermissionController.isTeamAdmin(2, permission)).toBeTruthy();
       expect(teamPermissionController.isTeamAdmin(3, permission)).toBeTruthy();
       expect(teamPermissionController.isTeamAdmin(4, permission)).toBeFalsy();
+    });
+
+    it('should return false if admin.uids is empty', async () => {
+      const permission1: TeamPermission = {
+        admin: {
+          uids: [],
+        },
+      };
+      const permission2: TeamPermission = {};
+      const permission3: TeamPermission = null;
+      expect(teamPermissionController.isTeamAdmin(4, permission1)).toBeFalsy();
+      expect(teamPermissionController.isTeamAdmin(4, permission2)).toBeFalsy();
+      expect(teamPermissionController.isTeamAdmin(4, permission3)).toBeFalsy();
+    });
+  });
+
+  describe('getTeamUserPermissionFlags()', () => {
+    describe('should return permissionFlags correctly.', () => {
+      const ENUMS_DETAIL = [
+        {
+          key: 'TEAM_ADD_INTEGRATIONS',
+          mask: PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+        },
+        {
+          key: 'TEAM_ADD_MEMBER',
+          mask: PERMISSION_ENUM.TEAM_ADD_MEMBER,
+        },
+        {
+          key: 'TEAM_ADMIN',
+          mask: PERMISSION_ENUM.TEAM_ADMIN,
+        },
+        {
+          key: 'TEAM_PIN_POST',
+          mask: PERMISSION_ENUM.TEAM_PIN_POST,
+        },
+        {
+          key: 'TEAM_POST',
+          mask: PERMISSION_ENUM.TEAM_POST,
+        },
+      ];
+      const getTotalLevel = (indexs: number[]) => {
+        let level = 0;
+        indexs.forEach((index: number) => {
+          level = level | ENUMS_DETAIL[index].mask;
+        });
+        return level;
+      };
+
+      const getKeys = (indexs: number[]) => {
+        return indexs.map((index: number) => ENUMS_DETAIL[index].key);
+      };
+      it.each`
+        level                          | trueFlagsKeys            | falseFlagsKeys
+        ${getTotalLevel([0])}          | ${getKeys([0])}          | ${getKeys([1, 2, 3, 4])}
+        ${getTotalLevel([1])}          | ${getKeys([1])}          | ${getKeys([0, 2, 3, 4])}
+        ${getTotalLevel([2])}          | ${getKeys([2])}          | ${getKeys([0, 1, 3, 4])}
+        ${getTotalLevel([3])}          | ${getKeys([3])}          | ${getKeys([0, 1, 2, 4])}
+        ${getTotalLevel([4])}          | ${getKeys([4])}          | ${getKeys([0, 1, 2, 3])}
+        ${getTotalLevel([0, 1])}       | ${getKeys([0, 1])}       | ${getKeys([2, 3, 4])}
+        ${getTotalLevel([0, 2])}       | ${getKeys([0, 2])}       | ${getKeys([1, 3, 4])}
+        ${getTotalLevel([0, 3])}       | ${getKeys([0, 3])}       | ${getKeys([1, 2, 4])}
+        ${getTotalLevel([0, 4])}       | ${getKeys([0, 4])}       | ${getKeys([1, 2, 3])}
+        ${getTotalLevel([1, 2])}       | ${getKeys([1, 2])}       | ${getKeys([0, 3, 4])}
+        ${getTotalLevel([1, 3])}       | ${getKeys([1, 3])}       | ${getKeys([0, 2, 4])}
+        ${getTotalLevel([1, 4])}       | ${getKeys([1, 4])}       | ${getKeys([0, 2, 3])}
+        ${getTotalLevel([2, 3])}       | ${getKeys([2, 3])}       | ${getKeys([0, 1, 4])}
+        ${getTotalLevel([2, 4])}       | ${getKeys([2, 4])}       | ${getKeys([0, 1, 3])}
+        ${getTotalLevel([3, 4])}       | ${getKeys([3, 4])}       | ${getKeys([0, 1, 2])}
+        ${getTotalLevel([0, 1, 2])}    | ${getKeys([0, 1, 2])}    | ${getKeys([3, 4])}
+        ${getTotalLevel([0, 1, 3])}    | ${getKeys([0, 1, 3])}    | ${getKeys([2, 4])}
+        ${getTotalLevel([0, 1, 4])}    | ${getKeys([0, 1, 4])}    | ${getKeys([2, 3])}
+        ${getTotalLevel([0, 2, 3])}    | ${getKeys([0, 2, 3])}    | ${getKeys([1, 4])}
+        ${getTotalLevel([0, 2, 4])}    | ${getKeys([0, 2, 4])}    | ${getKeys([1, 3])}
+        ${getTotalLevel([0, 3, 4])}    | ${getKeys([0, 3, 4])}    | ${getKeys([1, 2])}
+        ${getTotalLevel([1, 2, 3])}    | ${getKeys([1, 2, 3])}    | ${getKeys([0, 4])}
+        ${getTotalLevel([1, 2, 4])}    | ${getKeys([1, 2, 4])}    | ${getKeys([0, 3])}
+        ${getTotalLevel([1, 3, 4])}    | ${getKeys([1, 3, 4])}    | ${getKeys([0, 2])}
+        ${getTotalLevel([2, 3, 4])}    | ${getKeys([2, 3, 4])}    | ${getKeys([0, 1])}
+        ${getTotalLevel([0, 1, 2, 3])} | ${getKeys([0, 1, 2, 3])} | ${getKeys([4])}
+        ${getTotalLevel([0, 1, 2, 4])} | ${getKeys([0, 1, 2, 4])} | ${getKeys([3])}
+        ${getTotalLevel([0, 1, 3, 4])} | ${getKeys([0, 1, 3, 4])} | ${getKeys([2])}
+        ${getTotalLevel([0, 2, 3, 4])} | ${getKeys([0, 2, 3, 4])} | ${getKeys([1])}
+        ${getTotalLevel([1, 2, 3, 4])} | ${getKeys([1, 2, 3, 4])} | ${getKeys([0])}
+      `(
+        'level = $level, $trueFlagsKeys = true',
+        async ({ level, trueFlagsKeys, falseFlagsKeys }) => {
+          const permission = {
+            user: {
+              level,
+              uids: [],
+            },
+          };
+          const teamPermissionFlags = await teamPermissionController.getTeamUserPermissionFlags(
+            permission,
+          );
+          const flags = {};
+          trueFlagsKeys.forEach((k: string) => {
+            flags[k] = true;
+          });
+          falseFlagsKeys.forEach((k: string) => {
+            flags[k] = false;
+          });
+          expect(teamPermissionFlags).toEqual(flags);
+        },
+      );
     });
   });
 });

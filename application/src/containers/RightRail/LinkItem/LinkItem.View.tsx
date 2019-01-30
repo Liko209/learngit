@@ -5,28 +5,21 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import {
   JuiListItemText,
   JuiListItem,
   JuiListItemIcon,
-  JuiListItemSecondaryText,
-  JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { LinkItemViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
+import { SecondaryText } from '../common/SecondaryText.View';
+import { Palette } from 'jui/foundation/theme/theme';
 
+@observer
 class LinkItemView extends Component<LinkItemViewProps> {
-  private _renderSecondaryText = () => {
-    const { personName, createdTime } = this.props;
-    return (
-      <JuiListItemSecondaryText>
-        <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
-        &nbsp;·&nbsp;
-        <JuiListItemSecondarySpan text={createdTime} />
-      </JuiListItemSecondaryText>
-    );
-  }
+  private _color: [keyof Palette, string] = ['grey', '500'];
 
   private _openLink = () => {
     const { url } = this.props;
@@ -34,7 +27,7 @@ class LinkItemView extends Component<LinkItemViewProps> {
   }
 
   render() {
-    const { link } = this.props;
+    const { link, personName, createdTime } = this.props;
     const textPrimary = link.title || link.url || '';
     const faviconUrl = link.faviconUrl;
     return (
@@ -46,12 +39,15 @@ class LinkItemView extends Component<LinkItemViewProps> {
           {faviconUrl ? (
             <JuiThumbnail url={faviconUrl} />
           ) : (
-            <JuiIconography fontSize="large">link</JuiIconography>
+            <JuiIconography fontSize="large" color={this._color}>
+              link
+            </JuiIconography>
           )}
         </JuiListItemIcon>
         <JuiListItemText
           primary={textPrimary}
-          secondary={this._renderSecondaryText()}
+          secondary={
+            <SecondaryText personName={personName} createdTime={createdTime} />}
         />
       </JuiListItem>
     );

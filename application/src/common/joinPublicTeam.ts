@@ -7,26 +7,30 @@ import { t } from 'i18next';
 import { goToConversation } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
 import { errorHelper } from 'sdk/error';
-import { GroupService as NGroupService } from 'sdk/module/group';
+import { NewGroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
 import GroupModel from '@/store/models/Group';
-import { SortableModel } from 'sdk/models';
+import { SortableModel } from 'sdk/framework/model';
 import { Group } from 'sdk/module/group/entity';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
 
 const joinHander = async (conversationId: number) => {
-  const nGroupService = new NGroupService();
+  const nGroupService: NewGroupService = NewGroupService.getInstance();
   const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   try {
     await nGroupService.joinTeam(useId, conversationId);
   } catch (error) {
     const e = error;
-    if (errorHelper.isNotAuthorizedError(e)) {
+    if (errorHelper.isAuthenticationError(e)) {
       Notification.flashToast({
         message: 'JoinTeamNotAuthorizedError',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

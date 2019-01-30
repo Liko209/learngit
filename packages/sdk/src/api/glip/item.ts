@@ -31,6 +31,7 @@ const ITEMPATH = {
   [TypeDictionary.TYPE_ID_LINK]: 'link',
   [TypeDictionary.TYPE_ID_FILE]: 'file',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
+  [TypeDictionary.TYPE_ID_CONFERENCE]: 'conference',
   // [TypeDictionary.TYPE_ID_RC_VIDEO]: 'item',
   // [TypeDictionary.TYPE_ID_RC_SMS]: 'rc_sms',
   [TypeDictionary.TYPE_ID_RC_VOICEMAIL]: 'rc_voicemail',
@@ -116,6 +117,14 @@ class ItemAPI extends Api {
 
   static requestById(id: number) {
     return this.glipNetworkClient.get<Raw<ItemFile>>(getItemServerUrl(id));
+  }
+
+  static getItems(typeId: number, groupId: number, newerThan: number) {
+    return this.glipNetworkClient.get<Raw<Item>[]>('/items', {
+      type_id: typeId,
+      group_ids: groupId,
+      newer_than: newerThan,
+    });
   }
 
   static requestRightRailItems(groupId: number) {

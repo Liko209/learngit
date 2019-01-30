@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { KVStorage } from 'foundation';
-import { BaseKVDao } from '../base';
+import { BaseKVDao } from '../../framework/dao';
 import { CONFIG_KEYS, ENV } from './constants';
 
 class ConfigDao extends BaseKVDao {

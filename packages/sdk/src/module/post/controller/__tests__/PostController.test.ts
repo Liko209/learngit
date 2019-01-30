@@ -5,11 +5,9 @@
  */
 
 import { PostController } from '../PostController';
-import { Post } from '../../../../models';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
-import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager, PostDao } from '../../../../dao';
+import { daoManager, PostDao, ConfigDao } from '../../../../dao';
 import {
   buildEntitySourceController,
   buildRequestController,
@@ -26,20 +24,21 @@ jest.mock('../../../progress');
 
 describe('PostController', () => {
   const progressService: ProgressService = new ProgressService();
+  const postDao: PostDao = new PostDao(null);
+  const configDao: ConfigDao = new ConfigDao(null);
+
   beforeEach(() => {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+    jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+    jest.spyOn(daoManager, 'getKVDao').mockReturnValue(configDao);
   });
+
   describe('getPostActionController()', () => {
     afterAll(() => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {
       const postController = new PostController();
-
-      const dao = new BaseDao('Post', new TestDatabase());
-      jest.spyOn(daoManager, 'getDao').mockImplementationOnce(() => {
-        return dao;
-      });
 
       Object.assign(Api, {
         glipNetworkClient: null,
@@ -64,6 +63,7 @@ describe('PostController', () => {
       expect(buildRequestController).toBeCalledTimes(1);
     });
   });
+
   describe('getSendPostController', () => {
     it('getSendPostController should not be null/undefined', () => {
       const postController = new PostController();

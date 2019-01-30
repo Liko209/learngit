@@ -8,6 +8,7 @@ import { Post } from '../../post/entity';
 import { Item, ItemFile } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
+import { Raw } from '../../../framework/model';
 
 interface IItemService {
   getItems(options: ItemQueryOptions): Promise<Item[]>;
@@ -56,8 +57,6 @@ interface IItemService {
 
   getByPosts(posts: Post[]): Promise<Item[]>;
 
-  getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]>;
-
   doNotRenderItem(id: number, type: string): Promise<void>;
 
   getGroupItemsCount(
@@ -65,6 +64,10 @@ interface IItemService {
     typeId: number,
     filterFunc?: ItemFilterFunction,
   ): Promise<number>;
+
+  getItemDataHandler(): (items: Raw<Item>[]) => void;
+
+  requestSyncGroupItems(groupId: number): Promise<void>;
 
   getThumbsUrlWithSize(
     itemId: number,

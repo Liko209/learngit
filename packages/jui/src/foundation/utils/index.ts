@@ -6,3 +6,7 @@
 export * from './isEllipsis';
 export * from './noop';
 export * from './styles';
+export * from './getAccentColor';
+export * from './preloadImg';
+export * from './calculateImageSize';
+export * from './getFileName';

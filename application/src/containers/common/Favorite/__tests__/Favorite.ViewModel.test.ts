@@ -41,15 +41,6 @@ describe('Favorite view model', () => {
     jest.clearAllMocks();
   });
 
-  it('computed size', () => {
-    vm.props.size = 'small';
-    expect(vm.size).toEqual('small');
-    vm.props.size = 'medium';
-    expect(vm.size).toEqual('medium');
-    vm.props.size = 'large';
-    expect(vm.size).toEqual('large');
-  });
-
   it('computed conversationId by person id', async () => {
     vm.props.id = 2514947;
     await vm.getConversationId();

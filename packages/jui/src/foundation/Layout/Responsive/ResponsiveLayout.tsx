@@ -29,8 +29,18 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
     visual: {},
   };
 
-  componentDidUpdate(props: Props) {
-    if (props.children !== this.props.children && this.prevWidth !== 1) {
+  componentDidUpdate(prevProps: Props) {
+    const prevTags = React.Children.map(
+      prevProps.children,
+      // @ts-ignore
+      (child: React.ReactElement<any>) => child && child.type.tag,
+    );
+    const tags = React.Children.map(
+      this.props.children,
+      // @ts-ignore
+      (child: React.ReactElement<any>) => child && child.type.tag,
+    );
+    if (prevTags.toString() !== tags.toString()) {
       this.initWidthAndResponsiveInfo();
       this.init(this.prevWidth);
     }
@@ -102,21 +112,23 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   }
 
   smallHandler = (width: number) => {
-    if (width < this.contentWidth) {
-      const { visual } = this.state;
-      this.hasSortedResponsiveInfo.some((info: ResponsiveInfo) => {
-        if (info.visualMode !== undefined && visual[info.tag] !== false) {
+    const { visual } = this.state;
+    [...this.hasSortedResponsiveInfo].reduce((contentWidth, info, i, arr) => {
+      const { visualMode, minWidth, tag } = info;
+      if (visual[tag] !== false) {
+        if (visualMode !== undefined && width < contentWidth) {
           this.setState({
             visual: {
-              ...this.state.visual,
-              [info.tag]: false,
+              ...visual,
+              [tag]: false,
             },
           });
-          return true;
+          arr.splice(1);
         }
-        return false;
-      });
-    }
+        return contentWidth;
+      }
+      return contentWidth - Number(minWidth);
+    },                                       this.contentWidth);
   }
 
   onResize = (width: number) => {

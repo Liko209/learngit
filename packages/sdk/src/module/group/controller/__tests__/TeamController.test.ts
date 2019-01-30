@@ -5,13 +5,12 @@
  */
 
 import { TeamController } from '../TeamController';
-import { Group } from '../../entity/Group';
 import { TeamActionController } from '../TeamActionController';
 import { TeamPermissionController } from '../TeamPermissionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager } from '../../../../dao';
-import { buildPartialModifyController } from '../../../../framework/controller';
+import { daoManager } from '../../../../dao';
+import { BaseDao } from '../../../../framework/dao';
 
 jest.mock('../../../../api');
 

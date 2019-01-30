@@ -18,12 +18,14 @@ import ItemAPI from '../../../../api/glip/item';
 import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
 import { TypeDictionary } from '../../../../utils';
+import { ItemSyncController } from '../../controller/ItemSyncController';
 
 jest.mock('../../../../service/utils', () => ({
   baseHandleData: jest.fn(),
   transform: jest.fn(),
 }));
 
+jest.mock('../../controller/ItemSyncController');
 jest.mock('../../../../service/utils');
 jest.mock('../../controller/ItemActionController');
 jest.mock('../../../../dao');
@@ -37,6 +39,7 @@ describe('ItemService', () => {
   let itemServiceController: ItemServiceController;
   let fileItemService: FileItemService;
   let itemActionController: ItemActionController;
+  const itemSyncController = new ItemSyncController(null);
 
   function setup() {
     itemService = new ItemService();
@@ -45,6 +48,21 @@ describe('ItemService', () => {
     itemActionController = new ItemActionController(
       undefined as IPartialModifyController<Item>,
     );
+
+    Object.assign(itemService, {
+      _itemServiceController: itemServiceController,
+    });
+
+    Object.defineProperties(itemServiceController, {
+      itemActionController: {
+        get: jest.fn(() => itemActionController),
+        configurable: true,
+      },
+      itemSyncController: {
+        get: jest.fn(() => itemSyncController),
+        configurable: true,
+      },
+    });
   }
 
   function clearMocks() {
@@ -56,6 +74,18 @@ describe('ItemService', () => {
   beforeEach(() => {
     clearMocks();
     setup();
+  });
+
+  describe('itemSyncController', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+    it('requestSyncGroupItems', async () => {
+      const groupId = 11;
+      itemService.requestSyncGroupItems(groupId);
+      expect(itemSyncController.requestSyncGroupItems).toBeCalledWith(groupId);
+    });
   });
 
   describe('fileItemService', () => {
@@ -338,31 +368,43 @@ describe('ItemService', () => {
       getItemsByIds: jest.fn(),
     };
 
+    const entitySourceController = {
+      batchGet: jest.fn(),
+    };
+
     beforeEach(() => {
       clearMocks();
       setup();
       daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+      itemService.getEntitySource = jest
+        .fn()
+        .mockReturnValue(entitySourceController);
     });
 
     it('should call dao method with right id array', async () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: undefined }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([]);
+      expect(entitySourceController.batchGet).not.toBeCalled();
     });
 
     it('should call dao method with right id array', async () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: [1, 2, 3] }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2, 3]);
     });
 
     it('should call dao method with right id array', async () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: [1, 2, 3], at_mention_item_ids: [5] }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3, 5]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([
+        1,
+        2,
+        3,
+        5,
+      ]);
     });
 
     it('should call dao method with right id array', async () => {
@@ -372,7 +414,12 @@ describe('ItemService', () => {
           at_mention_item_ids: [1, 2, 5],
         }),
       ]);
-      expect(itemDao.getItemsByIds).toHaveBeenCalledWith([1, 2, 3, 5]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([
+        1,
+        2,
+        3,
+        5,
+      ]);
     });
   });
 
@@ -380,14 +427,6 @@ describe('ItemService', () => {
     beforeEach(() => {
       clearMocks();
       setup();
-
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      Object.defineProperty(itemServiceController, 'itemActionController', {
-        get: jest.fn(() => itemActionController),
-      });
     });
 
     it('should controller with correct parameter', async () => {
@@ -395,58 +434,6 @@ describe('ItemService', () => {
       const itemId = 1;
       await itemService.doNotRenderItem(itemId, 'file');
       expect(itemActionController.doNotRenderItem).toBeCalled();
-    });
-  });
-
-  describe('getRightRailItemsOfGroup()', () => {
-    const itemDao = {
-      getItemsByGroupId: jest.fn(),
-    };
-
-    beforeEach(() => {
-      ItemAPI.requestRightRailItems = jest.fn().mockResolvedValue(
-        new ApiResultOk(
-          {
-            items: [],
-          },
-          200,
-          {},
-        ),
-      );
-      daoManager.getDao = jest.fn().mockReturnValue(itemDao);
-      itemService.handleIncomingData = jest.fn();
-    });
-
-    it('should call related api', () => {
-      itemService.getRightRailItemsOfGroup(123, 1);
-      expect(ItemAPI.requestRightRailItems).toHaveBeenCalledWith(123);
-      expect(itemDao.getItemsByGroupId).toHaveBeenCalledWith(123, 1);
-      expect(itemService.handleIncomingData).not.toHaveBeenCalled();
-    });
-
-    it('should call handleData if api gets the data', (done: any) => {
-      ItemAPI.requestRightRailItems.mockResolvedValue(
-        new ApiResultOk(
-          {
-            items: [{ _id: 1 }, { _id: 2 }],
-          },
-          200,
-          {},
-        ),
-      );
-      itemService.getRightRailItemsOfGroup(123);
-      setTimeout(() => {
-        expect(itemService.handleIncomingData).toHaveBeenCalled();
-        done();
-      });
-    });
-
-    it('should return dao query result', async () => {
-      const mockLocalData = [{ id: 1 }, { id: 2 }, { id: 3 }];
-      itemDao.getItemsByGroupId.mockResolvedValue(mockLocalData);
-      await expect(itemService.getRightRailItemsOfGroup(123)).resolves.toBe(
-        mockLocalData,
-      );
     });
   });
 

@@ -5,7 +5,7 @@
  */
 import { GroupService } from 'sdk/service/group';
 import { ProfileService } from 'sdk/service/profile';
-import { StateService } from 'sdk/service/state';
+import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
@@ -19,15 +19,6 @@ class GroupHandler {
       id,
       timestamp: accessTime,
     });
-  }
-
-  static async groupIdValidator(id: number) {
-    const _groupService: GroupService = GroupService.getInstance();
-    const group = await _groupService.getById(id);
-    if (!group) {
-      return;
-    }
-    return _groupService.isValid(group);
   }
 
   static async isGroupHidden(id: number) {
@@ -83,11 +74,9 @@ export class MessageRouterChangeHelper {
   }
 
   static async verifyGroup(id: number) {
-    const [isHidden, isValidate] = await Promise.all([
-      await GroupHandler.isGroupHidden(id),
-      await GroupHandler.groupIdValidator(id),
-    ]);
-    return !isHidden && isValidate ? String(id) : '';
+    const groupService: GroupService = GroupService.getInstance();
+    const isGroupCanBeShown = await groupService.isGroupCanBeShown(id);
+    return isGroupCanBeShown ? String(id) : '';
   }
 
   static isConversation(id: string) {
@@ -106,9 +95,9 @@ export class MessageRouterChangeHelper {
 
   static handleSourceOfRouter(id: number) {
     const handler = SectionGroupHandler.getInstance();
-    handler.onReady((conversationList: Set<number>) => {
+    handler.onReady((conversationList: number[]) => {
       GroupHandler.ensureGroupOpened(id);
-      if (conversationList.has(id)) {
+      if (conversationList.includes(id)) {
         return;
       }
       GroupHandler.accessGroup(id);

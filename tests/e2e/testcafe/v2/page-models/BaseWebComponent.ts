@@ -2,9 +2,8 @@ import * as _ from 'lodash'
 import 'testcafe';
 import { Selector } from 'testcafe';
 
-import { IUser } from '../models'
-import { h, H } from '../helpers'
 import * as assert from 'assert';
+import { H } from '../helpers'
 import { getLogger } from 'log4js';
 
 const logger = getLogger('BaseWebComponent');
@@ -53,12 +52,6 @@ export abstract class BaseWebComponent {
     return this.self.getAttribute(attributeName);
   }
 
-  // jupiter
-  async directLoginWithUser(url: string, user: IUser) {
-    const urlWithAuthCode = await h(this.t).jupiterHelper.getUrlWithAuthCode(url, user);
-    await this.t.navigateTo(urlWithAuthCode);
-  }
-
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
     const component = new ctor(this.t);
     if (root) {
@@ -92,12 +85,30 @@ export abstract class BaseWebComponent {
     }
   }
 
+  get spinners() {
+    return this.getSelector('div[role="progressbar"]');
+  }
+
+  async waitForAllSpinnersToDisappear(timeout: number = 30e3) {
+    try {
+      await H.retryUntilPass(async () => assert(await this.spinners.count > 0), 4);
+    } catch (e) {
+      // it's ok if spinner doesn't exist
+    }
+    finally {
+      await this.t.expect(this.spinners.count).eql(0, { timeout });
+    }
+  }
+
+  button(name: string) {
+    return this.self.find('button').withText(name);
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
     logger.warn(`a flaky selector is found ${stack.split('\n')[2].trim()}`);
   }
-
 
   // Some specific scenarios
   async getNumber(sel: Selector) {

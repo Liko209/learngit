@@ -5,7 +5,8 @@
  */
 
 import { EntitySourceController } from './impl/EntitySourceController';
-import { daoManager, BaseDao, DeactivatedDao } from '../../dao';
+import { daoManager, DeactivatedDao } from '../../dao';
+import { IDao } from '../../framework/dao';
 import { RequestController } from './impl/RequestController';
 import { PartialModifyController } from './impl/PartialModifyController';
 import { IdModel } from '../model';
@@ -17,6 +18,7 @@ import { IEntityCacheController } from './interface/IEntityCacheController';
 import { EntityCacheSearchController } from './impl/EntityCacheSearchController';
 import { IEntityPersistentController } from './interface/IEntityPersistentController';
 import { EntityPersistentController } from './impl/EntityPersistentController';
+import { IEntityCacheSearchController } from './interface/IEntityCacheSearchController';
 
 export function buildPartialModifyController<T extends IdModel = IdModel>(
   entitySourceController: IEntitySourceController<T>,
@@ -37,23 +39,32 @@ export function buildEntitySourceController<T extends IdModel = IdModel>(
 
 export function buildRequestController<
   T extends IdModel = IdModel
->(networkConfig: { basePath: string; networkClient: NetworkClient }) {
-  return new RequestController<T>(networkConfig);
+>(networkConfig: {
+  basePath: string;
+  networkClient: NetworkClient;
+}): IRequestController<T> {
+  const requestController: IRequestController<T> = new RequestController<T>(
+    networkConfig,
+  );
+  return requestController;
 }
 
 export function buildEntityCacheController<T extends IdModel = IdModel>() {
-  return new EntityCacheController<T>();
+  return new EntityCacheController<T>() as IEntityCacheController<T>;
 }
 
 export function buildEntityCacheSearchController<T extends IdModel = IdModel>(
   entityCacheController: IEntityCacheController<T>,
 ) {
-  return new EntityCacheSearchController<T>(entityCacheController);
+  const cacheSearchController: IEntityCacheSearchController<
+    T
+  > = new EntityCacheSearchController<T>(entityCacheController);
+  return cacheSearchController;
 }
 
 export function buildEntityPersistentController<T extends IdModel = IdModel>(
-  dao?: BaseDao<T>,
-  cacheController?: IEntityPersistentController<T>,
+  dao?: IDao<T>,
+  cacheController?: IEntityCacheController<T>,
 ) {
   return new EntityPersistentController<T>(dao, cacheController);
 }

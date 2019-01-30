@@ -17,12 +17,13 @@ type ContactSearchProps = {
   helperText: string;
   errorEmail?: string;
   isExcludeMe?: boolean;
+  hasMembers?: number[];
 };
 
-type ViewProps = {
+type ViewProps = ContactSearchProps & {
   searchMembers: (value: string) => void;
   suggestions: SelectedMember[];
-  onSelectChange: (item: any) => void;
+  onContactSelectChange: (item: any) => void;
   label: string;
   placeholder: string;
   error: boolean;
