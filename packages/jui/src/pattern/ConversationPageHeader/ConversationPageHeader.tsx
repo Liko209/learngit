@@ -45,11 +45,9 @@ const TitleWrapper = styled<TypographyProps>(Typography)`
 const StatusWrapper = styled.div`
   ${typography('subheading1')};
   color: ${grey('600')};
-  white-space: nowrap;
   ${ellipsis()};
   padding-left: ${spacing(1.5)};
   padding-right: ${spacing(1.5)};
-  flex-shrink: 0;
 `;
 const WrappedAppBar = ({ Right, ...rest }: JuiConversationPageHeaderProps) => (
   <MuiAppBar {...rest} />
@@ -60,7 +58,6 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(WrappedAppBar)`
     padding-left: 0;
     padding-right: 0;
     background-color: white;
-    /* z-index: ${({ theme }) => `${theme.zIndex.drawer + 10}`}; */
     > div {
       min-height: ${height(12)};
       padding-left: ${spacing(4)};
@@ -99,7 +96,7 @@ class JuiConversationPageHeader
     { showTooltip: boolean }
   >
   implements IJuiConversationPageHeader {
-  textRef: React.RefObject<any>;
+  titleRef: React.RefObject<any>;
   static dependencies = [MuiAppBar, MuiToolbar, JuiArrowTip, Typography];
   static defaultProps = {
     title: '',
@@ -109,7 +106,7 @@ class JuiConversationPageHeader
     this.state = {
       showTooltip: false,
     };
-    this.textRef = React.createRef();
+    this.titleRef = React.createRef();
     this._handleMouseEnter = this._handleMouseEnter.bind(this);
   }
 
@@ -122,10 +119,10 @@ class JuiConversationPageHeader
   }
 
   checkShouldTooltipRender() {
-    const textEl = ReactDOM.findDOMNode(this.textRef.current);
+    const titleEl = ReactDOM.findDOMNode(this.titleRef.current);
 
     this.setState({
-      showTooltip: textEl instanceof HTMLElement && isTextOverflow(textEl),
+      showTooltip: titleEl instanceof HTMLElement && isTextOverflow(titleEl),
     });
   }
 
@@ -143,7 +140,7 @@ class JuiConversationPageHeader
     const right = <div className="right-wrapper">{Right}</div>;
     const titleElement = (
       <TitleWrapper
-        ref={this.textRef}
+        ref={this.titleRef}
         variant="title"
         component="h6"
         data-test-automation-id="conversation-page-header-title"
