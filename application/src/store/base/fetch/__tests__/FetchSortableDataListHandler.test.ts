@@ -25,6 +25,7 @@ import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { SortableListStore } from '../SortableListStore';
+jest.mock('sdk/api');
 
 type SimpleItem = BaseModel & {
   value: number;
@@ -51,6 +52,11 @@ const sortFunc: ISortFunc<any> = (
   first: ISortableModel,
   second: ISortableModel,
 ) => first.sortValue - second.sortValue;
+
+const sortByDescFunc: ISortFunc<any> = (
+  first: ISortableModel,
+  second: ISortableModel,
+) => second.sortValue - first.sortValue;
 
 function buildReplacePayload(
   originalIds: number[],
@@ -136,9 +142,12 @@ function buildPayload(
   return payload;
 }
 
-function setup({ originalItems }: { originalItems: SimpleItem[] }) {
+function setup(
+  { originalItems }: { originalItems: SimpleItem[] },
+  customSortFunc?: ISortFunc<any>,
+) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
-  const listStore = new SortableListStore<SimpleItem>(sortFunc);
+  const listStore = new SortableListStore<SimpleItem>(customSortFunc);
   listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
@@ -146,7 +155,12 @@ function setup({ originalItems }: { originalItems: SimpleItem[] }) {
   );
   const fetchSortableDataHandler = new FetchSortableDataListHandler(
     dataProvider,
-    { transformFunc, sortFunc, isMatchFunc: matchInRange, pageSize: 2 },
+    {
+      transformFunc,
+      sortFunc: customSortFunc,
+      isMatchFunc: matchInRange,
+      pageSize: 2,
+    },
     listStore,
   );
 
@@ -468,6 +482,21 @@ describe('FetchSortableDataListHandler', () => {
         expect(
           fetchSortableDataHandler2.listStore.items.map(item => item.id),
         ).toEqual(expectedOrder);
+      });
+
+      it(`should have correct order which is ordered by custom sort func,  ${when}`, () => {
+        const { fetchSortableDataHandler: fetchSortableDataHandler2 } = setup(
+          {
+            originalItems,
+          },
+          sortByDescFunc,
+        );
+
+        fetchSortableDataHandler2.onDataChanged(payload);
+
+        expect(
+          fetchSortableDataHandler2.listStore.items.map(item => item.id),
+        ).toEqual(_.reverse(expectedOrder));
       });
 
       it(`should notify callback ${when}`, () => {

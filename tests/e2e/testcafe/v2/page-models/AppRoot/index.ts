@@ -1,8 +1,11 @@
 import 'testcafe';
+import * as assert from 'assert';
+
 import { BaseWebComponent } from '../BaseWebComponent';
 import { HomePage } from './HomePage';
 import { LoginPage } from './LoginPage';
 import { SITE_URL } from '../../../config';
+import { H } from '../../helpers';
 
 export class AppRoot extends BaseWebComponent {
   async ensureLoaded() { }

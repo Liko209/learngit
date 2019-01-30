@@ -23,6 +23,7 @@ type JuiPreviewImageProps = {
   forceSize?: boolean;
   squareSize?: number;
   url: string;
+  placeholder?: JSX.Element;
 } & SizeType;
 
 class JuiPreviewImage extends Component<JuiPreviewImageProps> {
@@ -63,10 +64,10 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize, url } = this.props;
+    const { Actions, fileName, forceSize, url, placeholder } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
-    const imageStyle: CSSProperties = { position: 'absolute' };
+    const imageStyle: CSSProperties = { position: 'absolute', display: 'none' };
     if (this._loaded) {
       if (!forceSize) {
         height = this._imageInfo.height;
@@ -75,26 +76,33 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
       const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
       imageStyle.top = top;
       imageStyle.left = left;
+      imageStyle.display = 'block';
       if (justifyHeight) {
         imageProps.height = this._imageInfo.height;
       } else if (justifyWidth) {
         imageProps.width = this._imageInfo.width;
       }
+    } else {
+      width = 0;
+      height = 0;
     }
     return (
-      <Jui.ImageCard width={width} height={height}>
-        <img
-          style={imageStyle}
-          ref={this._imageRef}
-          src={url}
-          onLoad={this._handleImageLoad}
-          {...imageProps}
-        />
-        <Jui.ImageFileInfo width={width} height={height} component="div">
-          <FileName filename={fileName} />
-          <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
-        </Jui.ImageFileInfo>
-      </Jui.ImageCard>
+      <>
+        {!this._loaded && placeholder}
+        <Jui.ImageCard width={width} height={height}>
+          <img
+            style={imageStyle}
+            ref={this._imageRef}
+            src={url}
+            onLoad={this._handleImageLoad}
+            {...imageProps}
+          />
+          <Jui.ImageFileInfo width={width} height={height} component="div">
+            <FileName filename={fileName} />
+            <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
+          </Jui.ImageFileInfo>
+        </Jui.ImageCard>
+      </>
     );
   }
 }

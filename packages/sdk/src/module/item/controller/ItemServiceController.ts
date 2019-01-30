@@ -9,7 +9,8 @@ import { SubItemServiceRegister } from '../config';
 import { ItemActionController } from './ItemActionController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
-import { daoManager, ItemDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { ItemDao } from '../dao';
 import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
@@ -74,6 +75,11 @@ class ItemServiceController {
     if (subItemService) {
       ids = await subItemService.getSortedIds(options);
     }
+
+    if (ids.length === 0) {
+      return [];
+    }
+
     const itemDao = daoManager.getDao(ItemDao);
     const items = await itemDao.getItemsByIds(ids);
 

@@ -9,15 +9,15 @@ import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
-import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getSingleEntity } from '@/store/utils';
 import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
-import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
 import { t } from 'i18next';
-import GroupService, { TeamPermission } from 'sdk/service/group';
+import { TeamPermission } from 'sdk/service/group';
 import { GroupService as NGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
+import { UserConfig } from 'sdk/service/account';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -44,6 +44,7 @@ export default class GroupModel extends Base<Group> {
   mostRecentPostId?: number;
 
   latestTime: number;
+  private _nGroupService: NGroupService;
 
   constructor(data: Group) {
     super(data);
@@ -76,6 +77,7 @@ export default class GroupModel extends Base<Group> {
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
+    this._nGroupService = new NGroupService();
   }
 
   @computed
@@ -89,14 +91,8 @@ export default class GroupModel extends Base<Group> {
     return favoriteGroupIds.some(groupId => groupId === this.id);
   }
 
-  get isAdmin() {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    return this.isThePersonAdmin(currentUserId);
-  }
-
   get isMember() {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-    return this.members.indexOf(currentUserId) >= 0;
+    return this.members.indexOf(UserConfig.getCurrentUserId()) >= 0;
   }
 
   @computed
@@ -105,7 +101,7 @@ export default class GroupModel extends Base<Group> {
       return this.setAbbreviation || '';
     }
 
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const currentUserId = UserConfig.getCurrentUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -150,7 +146,7 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const currentUserId = UserConfig.getCurrentUserId();
 
     const members = this.members || [];
 
@@ -178,7 +174,7 @@ export default class GroupModel extends Base<Group> {
   get membersExcludeMe() {
     const members = this.members || [];
 
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const currentUserId = UserConfig.getCurrentUserId();
 
     return members.filter(member => member !== currentUserId);
   }
@@ -188,30 +184,35 @@ export default class GroupModel extends Base<Group> {
     return getEntity(ENTITY_NAME.PERSON, this.creatorId);
   }
 
-  isThePersonAdmin(personId: number) {
-    const groupService: GroupService = GroupService.getInstance();
-    return this.type === CONVERSATION_TYPES.TEAM
-      ? groupService.isTeamAdmin(personId, this.permissions)
-      : false;
+  @computed
+  get teamPermissionParams() {
+    return {
+      members: this.members || [],
+      is_team: this.isTeam,
+      guest_user_company_ids: this.guestUserCompanyIds || [],
+      permissions: this.permissions,
+    };
   }
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    if (!this.isMember) {
-      return false;
-    }
-    const groupService = new NGroupService();
-    const members = this.members || [];
-    const guestUserCompanyIds = this.guestUserCompanyIds || [];
-    return groupService.isCurrentUserHasPermission(
-      {
-        members,
-        is_team: this.isTeam,
-        guest_user_company_ids: guestUserCompanyIds,
-        permissions: this.permissions,
-      },
+    return this._nGroupService.isCurrentUserHasPermission(
+      this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADD_MEMBER,
     );
+  }
+
+  get isAdmin() {
+    return this._nGroupService.isCurrentUserHasPermission(
+      this.teamPermissionParams,
+      PERMISSION_ENUM.TEAM_ADMIN,
+    );
+  }
+
+  isThePersonAdmin(personId: number) {
+    return this.type === CONVERSATION_TYPES.TEAM
+      ? this._nGroupService.isTeamAdmin(personId, this.permissions)
+      : false;
   }
 
   isThePersonGuest(personId: number) {
@@ -228,18 +229,10 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get canPost() {
-    if (this.isTeam) {
-      const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      if (!this.isThePersonAdmin(currentUserId)) {
-        if (this.permissions && this.permissions.user) {
-          const { level = 0 } = this.permissions.user;
-          return !!(level & PERMISSION_ENUM.TEAM_POST);
-        }
-        return true;
-      }
-      return true;
-    }
-    return true;
+    return this._nGroupService.isCurrentUserHasPermission(
+      this.teamPermissionParams,
+      PERMISSION_ENUM.TEAM_POST,
+    );
   }
 
   static fromJS(data: Group) {
