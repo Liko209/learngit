@@ -104,12 +104,12 @@ class PostDao extends BaseDao<Post> {
   }
 
   async doInTransaction(func: () => {}): Promise<void> {
-    await this.db.ensureDBOpened();
-    await this.db.getTransaction(
+    await this.getDb().ensureDBOpened();
+    await this.getDb().getTransaction(
       'rw',
       [
-        this.db.getCollection<PostDao>(PostDao.COLLECTION_NAME),
-        this.db.getCollection<PostViewDao>(PostViewDao.COLLECTION_NAME),
+        this.getDb().getCollection<PostDao>(PostDao.COLLECTION_NAME),
+        this.getDb().getCollection<PostViewDao>(PostViewDao.COLLECTION_NAME),
       ],
       async () => {
         await func();

@@ -13,7 +13,7 @@ import { ERROR_CODES_DB } from '../../error';
 class BaseDao<T extends {}> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T>;
-  protected db: IDatabase;
+  private db: IDatabase;
   private _modelName: string;
   constructor(modelName: string, db: IDatabase) {
     this.db = db;
@@ -26,6 +26,10 @@ class BaseDao<T extends {}> {
 
   get modelName(): string {
     return this._modelName;
+  }
+
+  protected getDb(): IDatabase {
+    return this.db;
   }
 
   async put(item: T | T[]): Promise<void> {
