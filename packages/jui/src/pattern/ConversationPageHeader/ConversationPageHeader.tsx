@@ -96,7 +96,7 @@ class JuiConversationPageHeader
     { showTooltip: boolean }
   >
   implements IJuiConversationPageHeader {
-  titleRef: React.RefObject<any>;
+  textRef: React.RefObject<any>;
   static dependencies = [MuiAppBar, MuiToolbar, JuiArrowTip, Typography];
   static defaultProps = {
     title: '',
@@ -106,7 +106,7 @@ class JuiConversationPageHeader
     this.state = {
       showTooltip: false,
     };
-    this.titleRef = React.createRef();
+    this.textRef = React.createRef();
     this._handleMouseEnter = this._handleMouseEnter.bind(this);
   }
 
@@ -119,10 +119,10 @@ class JuiConversationPageHeader
   }
 
   checkShouldTooltipRender() {
-    const titleEl = ReactDOM.findDOMNode(this.titleRef.current);
+    const textEl = ReactDOM.findDOMNode(this.textRef.current);
 
     this.setState({
-      showTooltip: titleEl instanceof HTMLElement && isTextOverflow(titleEl),
+      showTooltip: textEl instanceof HTMLElement && isTextOverflow(textEl),
     });
   }
 
@@ -138,9 +138,9 @@ class JuiConversationPageHeader
     } = this.props;
 
     const right = <div className="right-wrapper">{Right}</div>;
-    const titleElement = (
+    const textElement = (
       <TitleWrapper
-        ref={this.titleRef}
+        ref={this.textRef}
         variant="title"
         component="h6"
         data-test-automation-id="conversation-page-header-title"
@@ -162,9 +162,9 @@ class JuiConversationPageHeader
           <div className="left-wrapper">
             <TitleAndStatusWrapper>
               {this.state.showTooltip ? (
-                <JuiArrowTip title={title}>{titleElement}</JuiArrowTip>
+                <JuiArrowTip title={title}>{textElement}</JuiArrowTip>
               ) : (
-                titleElement
+                textElement
               )}
               {status ? (
                 <StatusWrapper data-test-automation-id="conversation-page-header-status">
