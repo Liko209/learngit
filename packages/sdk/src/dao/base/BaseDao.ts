@@ -13,7 +13,7 @@ import { ERROR_CODES_DB } from '../../error';
 class BaseDao<T extends {}> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T>;
-  private db: IDatabase;
+  protected db: IDatabase;
   private _modelName: string;
   constructor(modelName: string, db: IDatabase) {
     this.db = db;
