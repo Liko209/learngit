@@ -5,7 +5,7 @@
  */
 import { mainLogger } from 'foundation';
 import { daoManager, DeactivatedDao } from '../../dao';
-import GroupDao from '../../dao/group';
+import { GroupDao } from '../../module/group/dao';
 import GroupAPI from '../../api/glip/group';
 import notificationCenter, {
   NotificationEntityUpdatePayload,

@@ -1,6 +1,7 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import notificationCenter from '../../notificationCenter';
-import { daoManager, GroupDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { GroupDao } from '../../../module/group/dao';
 import GroupAPI from '../../../api/glip/group';
 import { PersonService } from '../../../module/person';
 import ProfileService from '../../../service/profile';

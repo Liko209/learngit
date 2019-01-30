@@ -6,7 +6,8 @@
 
 /// <reference path="../../../__tests__/types.d.ts" />
 
-import { daoManager, GroupDao, PersonDao } from '../../../dao';
+import { daoManager, PersonDao } from '../../../dao';
+import { GroupDao } from '../../../module/group/dao';
 import SearchService from '../../../service/search';
 import SearchAPI from '../../../api/glip/search';
 
@@ -102,7 +103,9 @@ describe('SearchService', () => {
     });
     it('cancelSearchRequest()', () => {
       searchService.cancelSearchRequest(1230);
-      expect(SearchAPI.search).toHaveBeenCalledWith({ previous_server_request_id: 1230 });
+      expect(SearchAPI.search).toHaveBeenCalledWith({
+        previous_server_request_id: 1230,
+      });
     });
   });
   it('remoteSearch()', () => {

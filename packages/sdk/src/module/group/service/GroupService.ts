@@ -10,7 +10,8 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { TeamSetting, PermissionFlags } from '../types';
 import { PERMISSION_ENUM } from '../constants';
 import { IGroupService } from './IGroupService';
-import { daoManager, GroupDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { GroupDao } from '../../../module/group/dao';
 import { Api } from '../../../api';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {

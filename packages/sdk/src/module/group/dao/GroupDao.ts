@@ -1,10 +1,11 @@
 /*
- * @Author: Steve Chen (steve.chen@ringcentral.com)
- * @Date: 2018-02-24 22:28:07
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-30 14:09:00
+ * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao } from '../../framework/dao';
-import { Group } from '../../module/group/entity';
+import { BaseDao } from '../../../framework/dao';
+import { Group } from '../entity';
 import { IDatabase, mainLogger } from 'foundation';
 
 class GroupDao extends BaseDao<Group> {
@@ -105,4 +106,4 @@ class GroupDao extends BaseDao<Group> {
   }
 }
 
-export default GroupDao;
+export { GroupDao };

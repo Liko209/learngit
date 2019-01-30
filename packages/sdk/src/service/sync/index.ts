@@ -9,7 +9,7 @@ import { SERVICE } from '../eventKey';
 import { IndexDataModel } from '../../api/glip/user';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
-import GroupDao from '../../dao/group';
+import { GroupDao } from '../../module/group/dao';
 import PersonDao from '../../dao/person';
 import PostDao from '../../dao/post';
 import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';

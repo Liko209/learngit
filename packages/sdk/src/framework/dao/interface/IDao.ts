@@ -21,7 +21,7 @@ interface IDao<T> {
 
   get(key: number): Promise<T | null>;
 
-  batchGet(ids: number[]): Promise<T[]>;
+  batchGet(ids: number[], order?: boolean): Promise<T[]>;
 
   getAll(): Promise<T[]>;
 
