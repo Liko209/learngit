@@ -207,6 +207,7 @@ describe('SectionGroupHandler', () => {
           id: 2,
           is_team: true,
           created_at: 0,
+          members: [1],
         },
       ];
       expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
@@ -236,6 +237,7 @@ describe('SectionGroupHandler', () => {
           id: 2,
           is_team: true,
           created_at: 0,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
