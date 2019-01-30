@@ -74,7 +74,7 @@ type CreateTeamOptions = {
 };
 
 const deleteAllTeamInformation = async (ids: number[]) => {
-  const postService: PostService = PostService.getInstance();
+  const postService: NewPostService = NewPostService.getInstance();
   await postService.deletePostsByGroupIds(ids, true);
   const groupConfigDao = daoManager.getDao(GroupConfigDao);
   groupConfigDao.bulkDelete(ids);
