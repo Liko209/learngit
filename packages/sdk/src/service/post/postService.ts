@@ -429,26 +429,6 @@ class PostService extends BaseService<Post> {
     }
   }
 
-  /**
-   * POST related operations
-   * PIN,LIKE,DELETE,EDIT,FAVORITE
-   */
-  async modifyPost(params: RawPostInfo): Promise<Post | null> {
-    try {
-      const post = await PostServiceHandler.buildModifiedPostInfo(params);
-      if (params.postId && post) {
-        const resp = await PostAPI.editPost(params.postId, post);
-        const data = resp.expect('modified post fail');
-        const result = await baseHandleData(data);
-        return result[0];
-      }
-      return null;
-    } catch (e) {
-      mainLogger.warn(`modify post error ${JSON.stringify(e)}`);
-      return null;
-    }
-  }
-
   async deletePost(id: number): Promise<boolean> {
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;

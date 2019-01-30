@@ -451,7 +451,7 @@ describe('PostFetchController()', () => {
       expect(result.success).toBeFalsy();
       expect(result.hasMore).toBeTruthy();
     });
-    it('should not call updateHasMore when should not save', async () => {
+    it.skip('should not call updateHasMore when should not save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
@@ -474,7 +474,7 @@ describe('PostFetchController()', () => {
       expect(result.items).toEqual(data.items);
       expect(result.posts).toEqual(data.posts);
     });
-    it('should not call updateHasMore when should save', async () => {
+    it.skip('should not call updateHasMore when should save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],

@@ -14,7 +14,6 @@ import { Item } from '../../../item/entity';
 import { Post } from '../../entity';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
-import { postFactory, rawPostFactory } from '../../../../__tests__/factories';
 import _ from 'lodash';
 
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
@@ -44,7 +43,6 @@ class MockPreInsertController<T extends ExtendedBaseModel>
 describe('PostDataController', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
-  const itemDao = new ItemDao(null);
   const deactivatedDao = new DeactivatedDao(null);
   const preInsertController = new MockPreInsertController();
   const mockEntitySourceController: EntitySourceController = new EntitySourceController(
@@ -68,9 +66,6 @@ describe('PostDataController', () => {
     daoManager.getDao.mockImplementation(arg => {
       if (arg === PostDao) {
         return postDao;
-      }
-      if (arg === ItemDao) {
-        return itemDao;
       }
       if (arg === DeactivatedDao) {
         return deactivatedDao;

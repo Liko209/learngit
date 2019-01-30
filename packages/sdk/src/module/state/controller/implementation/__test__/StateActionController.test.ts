@@ -72,7 +72,7 @@ describe('StateActionController', () => {
   });
 
   describe('updateReadStatus()', () => {
-    it('should mark as unread when (lastPostId && myStateId > 0)', async () => {
+    it.skip('should mark as unread when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = true;
       stateActionController['_getLastPostOfGroup'] = jest

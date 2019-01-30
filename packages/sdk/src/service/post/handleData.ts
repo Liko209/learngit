@@ -90,21 +90,6 @@ export async function handleDeactivatedAndNormalPosts(
   return posts;
 }
 
-export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
-  if (data.length === 0) {
-    return;
-  }
-  const transformedData: Post[] = transformData(data);
-  // handle edited posts not in local db
-  const validPosts: Post[] = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    transformedData,
-  );
-  await handlePreInsertPosts(validPosts);
-  if (validPosts.length) {
-    await handleDeactivatedAndNormalPosts(validPosts, true);
-  }
-}
-
 /**
  * @param data
  * @param needTransformed
@@ -118,22 +103,4 @@ export function baseHandleData(
     | Raw<Post>[]
     | Raw<Post>);
   return handleDeactivatedAndNormalPosts(transformedData, save);
-}
-
-export async function handlePreInsertPosts(posts: Post[] = []) {
-  if (!posts || !posts.length) {
-    return [];
-  }
-  const ids: number[] = [];
-  posts.map(async (post: Post) => {
-    if (post.id < 0) {
-      ids.push(post.version);
-    }
-  });
-
-  if (ids.length) {
-    const postDao = daoManager.getDao(PostDao);
-    await postDao.bulkDelete(ids);
-  }
-  return ids;
 }

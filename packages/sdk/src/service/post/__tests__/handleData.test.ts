@@ -4,21 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import { postFactory, rawPostFactory } from '../../../__tests__/factories';
+import { rawPostFactory } from '../../../__tests__/factories';
 import { daoManager } from '../../../dao';
-import IncomingPostHandler from '../../../service/post/incomingPostHandler';
 import {
   baseHandleData as utilsBaseHandleData,
   transform,
 } from '../../../service/utils';
 import PostService from '../../post';
 import GroupService from '../../group';
-import PostDao from '../../../dao/post/index';
-import handleData, {
-  baseHandleData,
-  handleDataFromSexio,
-  handlePreInsertPosts,
-} from '../handleData';
+import { baseHandleData } from '../handleData';
 
 jest.mock('../../post');
 jest.mock('../../group');
@@ -26,11 +20,6 @@ const postService = new PostService();
 const groupService = new GroupService();
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-
-jest.mock('../../post/incomingPostHandler', () => ({
-  handelGroupPostsDiscontinuousCasuedByOverThreshold: jest.fn(),
-  handleGroupPostsDiscontinuousCausedByModificationTimeChange: jest.fn(),
-}));
 
 jest.mock('../../utils', () => ({
   transform: jest.fn().mockImplementation(data => data),
@@ -60,65 +49,6 @@ beforeAll(() => {
 beforeEach(() => {
   jest.clearAllMocks();
 });
-describe('Post service handleData', () => {
-  it('maxPostsExceed = false', async () => {
-    utilsBaseHandleData.mockReturnValue([]);
-    daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
-      count: jest.fn().mockReturnValue(300001),
-    }));
-    jest
-      .spyOn(require('../handleData'), 'handlePreInsertPosts')
-      .mockResolvedValueOnce([]);
-
-    await handleData([rawPostFactory.build({ _id: 1 })], false);
-    expect(
-      IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold,
-    ).toHaveBeenCalled();
-    expect(
-      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-    ).toHaveBeenCalled();
-  });
-
-  it('maxPostsExceed = true', async () => {
-    daoManager.getDao(PostDao).createQuery.mockImplementation(() => ({
-      count: jest.fn().mockReturnValue(299999),
-    }));
-    utilsBaseHandleData.mockReturnValue([{ group_id: 123 }]);
-    await handleData([], true);
-  });
-});
-
-describe('handleDataFromSexio', () => {
-  it('empty array', async () => {
-    const ret = await handleDataFromSexio([]);
-    expect(ret).toBeUndefined();
-    expect(
-      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-    ).not.toHaveBeenCalled();
-  });
-
-  it('default data', async () => {
-    // jest.spyOn(service, 'isVersionInPreInsert').mockReturnValue();
-    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue(
-      [{}, {}],
-    );
-    await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-    expect(
-      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-    ).toHaveBeenCalled();
-    expect(utilsBaseHandleData).toHaveBeenCalled();
-  });
-  it('default data', async () => {
-    IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange.mockReturnValue(
-      [],
-    );
-    await handleDataFromSexio([rawPostFactory.build({ _id: 1 })]);
-    expect(
-      IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange,
-    ).toHaveBeenCalled();
-    expect(utilsBaseHandleData).not.toHaveBeenCalled();
-  });
-});
 
 describe('baseHandleData', () => {
   beforeEach(() => {});
@@ -129,44 +59,6 @@ describe('baseHandleData', () => {
     );
     expect(ret).toMatchObject([{ _id: 1 }, { _id: 2 }]);
     expect(transform).toHaveBeenCalledTimes(2);
-  });
-});
-
-describe('handlePreInsertedPosts', () => {
-  it('handlePreInsertedPosts should be [] with invalid parameters', async () => {
-    const result = await handlePreInsertPosts([]);
-    expect(result.length).toBe(0);
-  });
-
-  it('handlePreInsertedPosts should be [] with valid parameter', async () => {
-    const result = await handlePreInsertPosts([
-      postFactory.build({
-        id: 1,
-        version: 100,
-        modified_at: 101,
-        created_at: 101,
-        creator_id: 101,
-        group_id: 101,
-        text: '',
-      }),
-    ]);
-    expect(result.length).toBe(0);
-  });
-
-  it('handlePreInsertedPosts should be [1] with valid parameter', async () => {
-    const result = await handlePreInsertPosts([
-      postFactory.build({
-        id: -1,
-        version: 100,
-        modified_at: 101,
-        created_at: 101,
-        creator_id: 101,
-        group_id: 101,
-        text: '',
-      }),
-    ]);
-
-    expect(result[0]).toBe(100);
   });
 });
 
