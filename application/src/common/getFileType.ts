@@ -52,16 +52,6 @@ function image(item: FileItemModel) {
     }
   }
 
-  // The thumbnail will blur
-  // if (thumbs) {
-  //   for (const key in thumbs) {
-  //     const value = thumbs[key];
-  //     if (typeof value === 'string' && value.indexOf('http') > -1) {
-  //       image.isImage = true;
-  //       image.previewUrl = thumbs[key];
-  //     }
-  //   }
-  // }
   return image;
 }
 

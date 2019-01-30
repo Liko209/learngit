@@ -69,8 +69,8 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
-  componentDidMount() {
-    this.props.getCropImage();
+  async componentDidMount() {
+    await this.props.getCropImage();
   }
 
   render() {

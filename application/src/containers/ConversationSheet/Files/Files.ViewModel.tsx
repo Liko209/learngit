@@ -55,12 +55,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   getCropImage = async () => {
     const images = this.files[FileType.image];
     const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
-    Promise.all(
+    await Promise.all(
       images.map((file: ExtendFileItem) => this.fetchUrl(file, rule)),
     );
   }
 
-  fetchUrl = async ({ item }: ExtendFileItem, rule: RULE) => {
+  fetchUrl = async ({ item }: ExtendFileItem, rule: RULE): Promise<string> => {
     const { id, origWidth, origHeight, type, versionUrl } = item;
     let url = '';
     // Notes
@@ -84,6 +84,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       url = thumbnail.url;
     }
     this.urlMap.set(id, url);
+    return url;
   }
 
   private _handleItemChanged = (
