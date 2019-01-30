@@ -195,8 +195,10 @@ class PersonController {
     terms: string[];
     sortableModels: SortableModel<Person>[];
   } | null> {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.SEARCH_PERSON,
+      logId,
     );
     let currentUserId: number | null = null;
     if (excludeSelf) {
@@ -284,9 +286,7 @@ class PersonController {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 

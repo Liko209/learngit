@@ -9,7 +9,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { AvatarProps, AvatarViewProps } from './types';
 import { PersonService } from 'sdk/module/person';
-import defaultAvatar from './defaultAvatar.svg';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -66,7 +65,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
   @computed
   get headShotUrl() {
     if (!(this._person && this._person.hasHeadShot)) {
-      return defaultAvatar;
+      return '';
     }
     const { headshotVersion, headshot } = this._person;
     const personService = PersonService.getInstance<PersonService>();
@@ -76,8 +75,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
       headshot,
       150,
     );
-
-    return url;
+    return url || '';
   }
   @computed
   get automationId() {

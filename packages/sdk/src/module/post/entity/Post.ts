@@ -60,3 +60,11 @@ export type IRawPostResult = {
   items: Raw<Item>[];
   hasMore: boolean;
 };
+
+export type IRequestRemotePostAndSave = {
+  direction: QUERY_DIRECTION;
+  groupId: number;
+  limit: number;
+  postId: number;
+  shouldSaveToDb: boolean;
+};

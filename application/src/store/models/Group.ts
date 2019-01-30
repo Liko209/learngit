@@ -15,9 +15,9 @@ import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
 import { t } from 'i18next';
 import { TeamPermission } from 'sdk/service/group';
-import { GroupService as NGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { UserConfig } from 'sdk/service/account';
+import { NewGroupService } from 'sdk/module/group';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -46,8 +46,6 @@ export default class GroupModel extends Base<Group> {
   isCompanyTeam: boolean;
 
   latestTime: number;
-  private _nGroupService: NGroupService;
-
   constructor(data: Group) {
     super(data);
     const {
@@ -81,7 +79,6 @@ export default class GroupModel extends Base<Group> {
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
     this.isCompanyTeam = is_company_team;
-    this._nGroupService = new NGroupService();
   }
 
   @computed
@@ -200,22 +197,25 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    return this._nGroupService.isCurrentUserHasPermission(
+    const groupService: NewGroupService = NewGroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
       this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADD_MEMBER,
     );
   }
 
   get isAdmin() {
-    return this._nGroupService.isCurrentUserHasPermission(
+    const groupService: NewGroupService = NewGroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
       this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADMIN,
     );
   }
 
   isThePersonAdmin(personId: number) {
+    const groupService: NewGroupService = NewGroupService.getInstance();
     return this.type === CONVERSATION_TYPES.TEAM
-      ? this._nGroupService.isTeamAdmin(personId, this.permissions)
+      ? groupService.isTeamAdmin(personId, this.permissions)
       : false;
   }
 
@@ -233,7 +233,8 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get canPost() {
-    return this._nGroupService.isCurrentUserHasPermission(
+    const groupService: NewGroupService = NewGroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
       this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_POST,
     );
