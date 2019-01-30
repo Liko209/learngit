@@ -12,11 +12,13 @@ import { StateFetchDataController } from '../StateFetchDataController';
 import { State, GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { TASK_DATA_TYPE } from '../../../constants';
-import { DataHandleTask } from '../../../types';
+import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
 
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
+
+type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
 describe('StateDataHandleController', () => {
   let stateDataHandleController: StateDataHandleController;
@@ -95,13 +97,11 @@ describe('StateDataHandleController', () => {
       const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_generateUpdatedState'] = jest
-        .fn()
-        .mockReturnValue({
-          groupStates: [],
-        });
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
-      mockTotalUnreadController.updateTotalUnreadByStateChanges = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
@@ -116,9 +116,7 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalledTimes(1);
-      expect(
-        mockTotalUnreadController.updateTotalUnreadByStateChanges,
-      ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
 
     it('should handle group task and stop the queue', async () => {
@@ -128,13 +126,11 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_generateUpdatedState'] = jest
-        .fn()
-        .mockReturnValue({
-          groupStates: [],
-        });
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
-      mockTotalUnreadController.updateTotalUnreadByStateChanges = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
@@ -149,9 +145,7 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalledTimes(1);
-      expect(
-        mockTotalUnreadController.updateTotalUnreadByStateChanges,
-      ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
   });
 

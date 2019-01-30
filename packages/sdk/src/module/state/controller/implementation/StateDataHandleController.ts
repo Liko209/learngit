@@ -17,15 +17,17 @@ import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
 import { TASK_DATA_TYPE } from '../../constants';
-import { DataHandleTask, DataHandleTaskArray } from '../../types';
+import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 
+type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
+
 class StateDataHandleController {
-  private _taskArray: DataHandleTaskArray;
+  private _taskArray: DataHandleTask[];
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
@@ -34,7 +36,7 @@ class StateDataHandleController {
     this._taskArray = [];
   }
 
-  async handleState(states: Partial<State>[]): Promise<void> {
+  handleState(states: Partial<State>[]): void {
     if (!states || states.length === 0) {
       mainLogger.info(
         '[StateDataHandleController] Invalid state change trigger',
@@ -51,7 +53,7 @@ class StateDataHandleController {
     }
   }
 
-  async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
+  handleGroupCursor(groups: Partial<Group>[]): void {
     if (!groups || !groups.length) {
       mainLogger.info(
         '[StateDataHandleController] Invalid group cursor change trigger',
@@ -77,7 +79,7 @@ class StateDataHandleController {
     }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
-    await this._totalUnreadController.updateTotalUnreadByStateChanges(
+    await this._totalUnreadController.handleGroupState(
       updatedState.groupStates,
     );
 

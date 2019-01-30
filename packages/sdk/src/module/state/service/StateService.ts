@@ -12,6 +12,7 @@ import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
+import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 
 class StateService extends EntityBaseService<GroupState>
@@ -27,6 +28,7 @@ class StateService extends EntityBaseService<GroupState>
         [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
         [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
         [ENTITY.GROUP]: this.handleGroupChange,
+        [ENTITY.PROFILE]: this.handleProfileChange,
       }),
     );
   }
@@ -93,7 +95,15 @@ class StateService extends EntityBaseService<GroupState>
   ): Promise<void> => {
     await this.getStateController()
       .getTotalUnreadController()
-      .updateTotalUnreadByGroupChanges(payload);
+      .handleGroup(payload);
+  }
+
+  handleProfileChange = async (
+    payload: NotificationEntityPayload<Profile>,
+  ): Promise<void> => {
+    await this.getStateController()
+      .getTotalUnreadController()
+      .handleProfile(payload);
   }
 
   async getUmiByIds(

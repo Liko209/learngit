@@ -4,9 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GROUP_SECTION_TYPE } from '../../constants';
-import { SectionUnread } from '../../types';
+import { GROUP_SECTION_TYPE, TASK_DATA_TYPE } from '../../constants';
+import {
+  SectionUnread,
+  GroupStateHandleTask,
+  GroupEntityHandleTask,
+  ProfileEntityHandleTask,
+} from '../../types';
 import { Group } from '../../../group/entity';
+import { Profile } from '../../../profile/entity';
 import { GroupState } from '../../entity';
 import { GroupService as NewGroupService } from '../../../group';
 import { GroupService } from '../../../../service/group';
@@ -18,8 +24,15 @@ import notificationCenter, {
 } from '../../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../../service/constants';
 import { SERVICE } from '../../../../service/eventKey';
+import _ from 'lodash';
+
+type DataHandleTask =
+  | GroupStateHandleTask
+  | GroupEntityHandleTask
+  | ProfileEntityHandleTask;
 
 class TotalUnreadController {
+  private _taskArray: DataHandleTask[];
   private _unreadInitialized: boolean;
   private _groupSectionUnread: Map<number, SectionUnread>;
   private _totalUnread: SectionUnread;
@@ -31,6 +44,11 @@ class TotalUnreadController {
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {
     this._unreadInitialized = false;
+    this.reset();
+  }
+
+  async reset() {
+    this._taskArray = [];
     this._groupSectionUnread = new Map<number, SectionUnread>();
     this._totalUnread = {
       section: GROUP_SECTION_TYPE.ALL,
@@ -54,81 +72,194 @@ class TotalUnreadController {
     };
   }
 
-  async updateTotalUnreadByStateChanges(
-    groupStates: GroupState[],
-  ): Promise<void> {
-    if (!this._unreadInitialized) {
-      await this._initializeTotalUnread();
-    } else {
-      groupStates.forEach((groupState: GroupState) => {
-        const groupUnread = this._groupSectionUnread.get(groupState.id);
-        if (groupUnread) {
-          this._updateTotalUnread(
-            groupUnread.section,
-            (groupState.unread_count || 0) - groupUnread.unreadCount,
-            (groupState.unread_mentions_count || 0) - groupUnread.mentionCount,
-          );
-          groupUnread.unreadCount = groupState.unread_count || 0;
-          groupUnread.mentionCount = groupState.unread_mentions_count || 0;
-        }
-      });
+  handleGroupState(groupStates: GroupState[]): void {
+    const task: DataHandleTask = {
+      type: TASK_DATA_TYPE.GROUP_STATE,
+      data: groupStates,
+    };
+    this._taskArray.push(task);
+    if (this._taskArray.length === 1) {
+      this._startDataHandleTask(this._taskArray[0]);
     }
-    this._doNotification();
   }
 
-  async updateTotalUnreadByGroupChanges(
-    payload: NotificationEntityPayload<Group>,
-  ): Promise<void> {
+  handleGroup(payload: NotificationEntityPayload<Group>): void {
+    const task: DataHandleTask = {
+      type: TASK_DATA_TYPE.GROUP_ENTITY,
+      data: payload,
+    };
+    this._taskArray.push(task);
+    if (this._taskArray.length === 1) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
+  }
+
+  handleProfile(payload: NotificationEntityPayload<Profile>): void {
+    const task: DataHandleTask = {
+      type: TASK_DATA_TYPE.PROFILE_ENTITY,
+      data: payload,
+    };
+    this._taskArray.push(task);
+    if (this._taskArray.length === 1) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
+  }
+
+  private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     if (!this._unreadInitialized) {
       await this._initializeTotalUnread();
     } else {
-      if (payload.type === EVENT_TYPES.DELETE) {
-        payload.body.ids.forEach((id: number) => {
-          const groupUnread = this._groupSectionUnread.get(id);
-          if (groupUnread) {
-            this._updateTotalUnread(
-              groupUnread.section,
-              -groupUnread.unreadCount,
-              -groupUnread.mentionCount,
-            );
-            this._groupSectionUnread.delete(id);
-          }
-        });
-      } else if (payload.type === EVENT_TYPES.UPDATE) {
-        const currentUserId = UserConfig.getCurrentUserId();
-        await Promise.all(
-          payload.body.ids.map(async (id: number) => {
-            const group = payload.body.entities.get(id);
-            if (!group) {
-              return;
-            }
-            const groupUnread = this._groupSectionUnread.get(id);
-            if (
-              group.deactivated ||
-              true === group.is_archived ||
-              !group.members.includes(currentUserId)
-            ) {
-              if (groupUnread) {
-                this._updateTotalUnread(
-                  groupUnread.section,
-                  -groupUnread.unreadCount,
-                  -groupUnread.mentionCount,
-                );
-                this._groupSectionUnread.delete(id);
-              }
-            } else {
-              if (!groupUnread) {
-                await this._addNewGroupUnread(group);
-              }
-            }
-          }),
-        );
+      if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
+        await this._updateTotalUnreadByStateChanges(task.data);
+      } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
+        await this._updateTotalUnreadByGroupChanges(task.data);
+      } else {
+        await this._updateTotalUnreadByProfileChanges(task.data);
       }
     }
     this._doNotification();
+
+    this._taskArray.shift();
+    if (this._taskArray.length > 0) {
+      this._startDataHandleTask(this._taskArray[0]);
+    }
+  }
+
+  private async _updateTotalUnreadByStateChanges(
+    groupStates: GroupState[],
+  ): Promise<void> {
+    groupStates.forEach((groupState: GroupState) => {
+      const groupUnread = this._groupSectionUnread.get(groupState.id);
+      if (groupUnread) {
+        this._updateTotalUnread(
+          groupUnread.section,
+          (groupState.unread_count || 0) - groupUnread.unreadCount,
+          (groupState.unread_mentions_count || 0) - groupUnread.mentionCount,
+        );
+        groupUnread.unreadCount = groupState.unread_count || 0;
+        groupUnread.mentionCount = groupState.unread_mentions_count || 0;
+      }
+    });
+  }
+
+  private async _updateTotalUnreadByGroupChanges(
+    payload: NotificationEntityPayload<Group>,
+  ): Promise<void> {
+    if (payload.type === EVENT_TYPES.DELETE) {
+      payload.body.ids.forEach((id: number) => {
+        const groupUnread = this._groupSectionUnread.get(id);
+        if (groupUnread) {
+          this._updateTotalUnread(
+            groupUnread.section,
+            -groupUnread.unreadCount,
+            -groupUnread.mentionCount,
+          );
+          this._groupSectionUnread.delete(id);
+        }
+      });
+    } else if (payload.type === EVENT_TYPES.UPDATE) {
+      const currentUserId = UserConfig.getCurrentUserId();
+      await Promise.all(
+        payload.body.ids.map(async (id: number) => {
+          const group = payload.body.entities.get(id);
+          if (!group) {
+            return;
+          }
+          const groupUnread = this._groupSectionUnread.get(id);
+          if (
+            group.deactivated ||
+            true === group.is_archived ||
+            !group.members.includes(currentUserId)
+          ) {
+            if (groupUnread) {
+              this._updateTotalUnread(
+                groupUnread.section,
+                -groupUnread.unreadCount,
+                -groupUnread.mentionCount,
+              );
+              this._groupSectionUnread.delete(id);
+            }
+          } else {
+            if (!groupUnread) {
+              await this._addNewGroupUnread(group);
+            }
+          }
+        }),
+      );
+    }
+  }
+
+  private async _updateTotalUnreadByProfileChanges(
+    payload: NotificationEntityPayload<Profile>,
+  ): Promise<void> {
+    if (payload.type === EVENT_TYPES.UPDATE) {
+      payload.body.ids.forEach((id: number) => {
+        const profile = payload.body.entities.get(id);
+        if (!profile) {
+          return;
+        }
+        const newFavoriteIds = profile.favorite_group_ids;
+        const adds = _.difference(newFavoriteIds, this._favoriteGroupIds);
+        this._updateTotalUnreadByFavoriteChanges(adds, true);
+        const removes = _.difference(this._favoriteGroupIds, newFavoriteIds);
+        this._updateTotalUnreadByFavoriteChanges(removes, false);
+      });
+    }
+  }
+
+  private _updateTotalUnreadByFavoriteChanges(
+    ids: number[],
+    isAdd: boolean,
+  ): void {
+    ids.forEach((id: number) => {
+      const groupUnread = this._groupSectionUnread.get(id);
+      if (!groupUnread) {
+        return;
+      }
+      if (isAdd) {
+        if (groupUnread.section !== GROUP_SECTION_TYPE.FAVORITE) {
+          this._updateTotalUnread(
+            groupUnread.section,
+            -groupUnread.unreadCount,
+            -groupUnread.mentionCount,
+          );
+          this._updateTotalUnread(
+            GROUP_SECTION_TYPE.FAVORITE,
+            groupUnread.unreadCount,
+            groupUnread.mentionCount,
+          );
+          groupUnread.section = GROUP_SECTION_TYPE.FAVORITE;
+        }
+      } else {
+        if (groupUnread.section === GROUP_SECTION_TYPE.FAVORITE) {
+          this._updateTotalUnread(
+            groupUnread.section,
+            -groupUnread.unreadCount,
+            -groupUnread.mentionCount,
+          );
+          if (!groupUnread.isTeam) {
+            this._updateTotalUnread(
+              GROUP_SECTION_TYPE.DIRECT_MESSAGE,
+              groupUnread.unreadCount,
+              groupUnread.mentionCount,
+            );
+            groupUnread.section = GROUP_SECTION_TYPE.DIRECT_MESSAGE;
+          } else {
+            this._updateTotalUnread(
+              GROUP_SECTION_TYPE.TEAM,
+              groupUnread.unreadCount,
+              groupUnread.mentionCount,
+            );
+            groupUnread.section = GROUP_SECTION_TYPE.TEAM;
+          }
+        }
+      }
+    });
   }
 
   private async _initializeTotalUnread(): Promise<void> {
+    this.reset();
+
     // todo instance
     const newGroupService: NewGroupService = new NewGroupService();
     const groupService: GroupService = GroupService.getInstance();
@@ -152,6 +283,8 @@ class TotalUnreadController {
         await this._addNewGroupUnread(group);
       }),
     );
+
+    this._unreadInitialized = true;
   }
 
   private async _addNewGroupUnread(group: Group): Promise<void> {
@@ -179,6 +312,7 @@ class TotalUnreadController {
       section,
       unreadCount,
       mentionCount,
+      isTeam: group.is_team,
     });
   }
 

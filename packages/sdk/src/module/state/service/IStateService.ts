@@ -6,6 +6,7 @@
 
 import { GroupState, MyState, State } from '../entity';
 import { Group } from '../../group/entity';
+import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 
 interface IStateService {
@@ -26,6 +27,10 @@ interface IStateService {
   handleGroupCursor(groups: Partial<Group>[]): Promise<void>;
 
   handleGroupChange(payload: NotificationEntityPayload<Group>): Promise<void>;
+
+  handleProfileChange(
+    payload: NotificationEntityPayload<Profile>,
+  ): Promise<void>;
 
   getUmiByIds(
     ids: number[],
