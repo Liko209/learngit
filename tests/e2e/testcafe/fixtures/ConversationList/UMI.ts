@@ -110,11 +110,6 @@ test(formalName('UMI should be added received messages count in conversations', 
 });
 
 test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']), async (t: TestController) => {
-  if (await H.isEdge()) {
-    await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-    return;
-  }
-
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -182,11 +177,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 });
 
 test(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']), async (t: TestController) => {
-  if (await H.isEdge()) {
-    await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-    return;
-  }
-
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -528,11 +518,6 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
 
 test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
-    if (await H.isEdge()) {
-      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-      return;
-    }
-
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -589,11 +574,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
 
 test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
-    if (await H.isEdge()) {
-      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-      return;
-    }
-
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
