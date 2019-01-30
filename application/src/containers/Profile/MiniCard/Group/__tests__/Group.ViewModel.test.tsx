@@ -10,12 +10,12 @@ import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import storeManager from '@/store';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
-import { GroupService } from 'sdk/module/group';
+import { NewGroupService } from 'sdk/module/group';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { ToastMessageAlign } from '../../../../ToastWrapper/Toast/types';
 
 jest.mock('sdk/module/group', () => ({
-  GroupService: jest.fn(),
+  NewGroupService: jest.fn(),
 }));
 jest.mock('../../../../../store/utils');
 jest.mock('@/utils/error');
@@ -26,7 +26,8 @@ const mockData = {
   displayName: 'Group name',
   isTeam: true,
 };
-
+const groupService: NewGroupService = new NewGroupService();
+NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
 const props = {
   id: 1,
 };
@@ -49,15 +50,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
   });
 
   describe('group', () => {
-    let groupService: any;
-    beforeEach(() => {
-      groupService = {
-        getById: jest.fn(),
-      };
-      (GroupService as any).mockImplementation(() => {
-        return groupService;
-      });
-    });
+    beforeEach(() => {});
     it('should be get group entity when invoke class instance property group [JPT-405]', () => {
       groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
       expect(vm.group).toEqual(mockData);
