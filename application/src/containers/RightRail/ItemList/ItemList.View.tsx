@@ -123,7 +123,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         {loading && !firstLoaded && !loadError && this.firstLoader()}
         {loadError && (
           <JuiRightRailContentLoadError
-            tip={t('rightShelfTryAgainPinnedPrompt')}
+            tip={t('rightShelfTryAgainPrompt')}
             linkText={t('tryAgain')}
             onClick={this._handleRetry}
           />
