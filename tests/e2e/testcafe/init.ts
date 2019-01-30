@@ -83,17 +83,18 @@ export function setupCase(accountType: string) {
     );
 
     if (mockClient) {
+      h(t).mockClient = mockClient;
       const mockEnvConfig = BrowserInitDto.of()
         .env(SITE_ENV)
         .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
         .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
-      const requestId = await mockClient.registerBrowser(mockEnvConfig);
+      h(t).mockRequestId = await mockClient.registerBrowser(mockEnvConfig);
       const hook = new MockClientHook();
-      hook.requestId = requestId;
+      hook.requestId = h(t).mockRequestId;
       await t.addRequestHooks([hook]);
       h(t).jupiterHelper.siteEnv = MOCK_ENV;
       h(t).jupiterHelper.authUrl = MOCK_AUTH_URL;
-      h(t).jupiterHelper.mockRequestId = requestId;
+      h(t).jupiterHelper.mockRequestId = h(t).mockRequestId;
     }
 
     await h(t).logHelper.setup();
@@ -104,6 +105,9 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    if (mockClient)
+      await mockClient.releaseBrowser(h(t).mockRequestId);
+
     // release account
     await h(t).dataHelper.teardown();
 

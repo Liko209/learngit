@@ -1,4 +1,6 @@
 import 'testcafe';
+import { MockClient } from 'mock-client';
+
 import { ClientFunction, Role } from 'testcafe';
 import { getLogger } from 'log4js';
 
@@ -19,6 +21,22 @@ const logger = getLogger(__filename);
 logger.level = 'info';
 
 class Helper {
+
+  get mockRequestId(): string {
+    return this.t.ctx.__mockRequestId;
+  }
+
+  set mockRequestId(mockRequestId: string) {
+    this.t.ctx.__mockRequestId = mockRequestId;
+  }
+
+  get mockClient(): MockClient {
+    return this.t.ctx.__mockClient;
+  }
+
+  set mockClient(mockClient: MockClient) {
+    this.t.ctx.__mockClient = mockClient;
+  }
 
   constructor(private t: TestController) { };
 
@@ -91,7 +109,7 @@ class Helper {
   }
 
   glip(user: IUser) {
-    return  this.sdkHelper.sdkManager.glip(user);
+    return this.sdkHelper.sdkManager.glip(user);
   }
 
   platform(user: IUser) {
@@ -150,6 +168,8 @@ class Helper {
   async resetGlipAccount(user: IUser) {
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(user.company.admin);
     await adminGlip.deactivated(user.rcId);
+    if (this.mockClient)
+      await this.mockClient.resetAccount(user.company.number, user.extension, SITE_ENV);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
 }
