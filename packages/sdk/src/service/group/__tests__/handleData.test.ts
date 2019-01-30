@@ -173,7 +173,7 @@ describe('handleData()', () => {
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
       { id: 2, members: [1, 2], deactivated: false },
-      // { id: 3, members: [2], deactivated: false }, // members is not include self
+      { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
       { id: 4, deactivated: false },
       { id: 5, is_archived: true },
     ]);
