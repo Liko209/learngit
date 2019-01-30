@@ -55,8 +55,10 @@ class PostFetchController {
       hasMore: true,
     };
 
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+      logId,
     );
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
@@ -111,9 +113,7 @@ class PostFetchController {
       }
     }
     result.limit = limit;
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 

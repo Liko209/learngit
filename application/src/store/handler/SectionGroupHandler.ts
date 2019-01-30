@@ -383,9 +383,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      PerformanceTracerHolder.getPerformanceTracer().start(performanceKey);
+      const logId = Date.now();
+      PerformanceTracerHolder.getPerformanceTracer().start(
+        performanceKey,
+        logId,
+      );
       await this._handlersMap[sectionType].fetchData(direction);
-      PerformanceTracerHolder.getPerformanceTracer().end(performanceKey);
+      PerformanceTracerHolder.getPerformanceTracer().end(logId);
     }
   }
 
