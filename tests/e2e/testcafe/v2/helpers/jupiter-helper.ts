@@ -3,7 +3,7 @@ import { Selector, RequestHook } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
-import { SITE_ENV, ENV_OPTS } from '../../config';
+import { SITE_ENV, ENV_OPTS, MOCK_AUTH_URL, MOCK_ENV } from '../../config';
 import { MockClient, BrowserInitDto } from 'mock-client';
 
 class MockClientHook extends RequestHook {
@@ -78,25 +78,28 @@ export class JupiterHelper {
     if (user.extension && user.company.number) {
       data['extension'] = user.extension;
     }
-    const response = await axios.post(this.authUrl, data);
+    const response = await axios.post(this.authUrl, data, {
+      headers: {
+        'x-mock-request-id': this.mockClient['requestId']
+      }
+    });
     return response.data.redirectUri;
   }
 
   async directLoginWithUser(url: string, user: IUser, env: string = SITE_ENV) {
     if (this.mockClient) {
       const initDto = BrowserInitDto.of()
-        .credential(user.company.number)
-        .pin(user.extension)
-        .password(user.password)
         .env(env)
         .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
         .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
 
+      this.mockClient['requestId'] = await this.mockClient.registerBrowser(initDto);
       const hook = new MockClientHook();
-      hook.requestId = await this.mockClient.registerBrowser(initDto);
+      hook.requestId = this.mockClient['requestId'];
       await this.t.addRequestHooks([hook]);
 
-      env = 'XMN-MOCK';
+      this.authUrl = MOCK_AUTH_URL;
+      env = MOCK_ENV;
     }
 
     await this.selectEnvironment(url, env);

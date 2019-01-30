@@ -23,8 +23,10 @@ const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
 const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
 const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
 
-const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
 const ENABLE_MOCK_SERVER = (process.env.ENABLE_MOCK_SERVER === 'true');
+const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+const MOCK_ENV = process.env.MOCK_ENV || 'XMN-MOCK';
+const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/login/api/login';
 
 const ENV_OPTS = {
   'XMN-UP': {
@@ -123,6 +125,9 @@ export {
   DASHBOARD_URL,
   RUN_NAME,
   BrandTire,
-  MOCK_SERVER_URL,
+
   ENABLE_MOCK_SERVER,
+  MOCK_SERVER_URL,
+  MOCK_ENV,
+  MOCK_AUTH_URL,
 };
