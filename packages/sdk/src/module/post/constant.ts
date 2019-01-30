@@ -4,3 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export const DEFAULT_PAGE_SIZE = 20;
+export const INDEX_POST_MAX_SIZE = 50;

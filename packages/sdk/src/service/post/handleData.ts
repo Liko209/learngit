@@ -7,7 +7,6 @@ import { daoManager } from '../../dao';
 import PostDao from '../../dao/post';
 import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../service/group';
-import IncomingPostHandler from '../../service/post/incomingPostHandler';
 import { transform, baseHandleData as utilsBaseHandleData } from '../utils';
 import { Raw } from '../../framework/model';
 import { Group } from '../../module/group/entity';
@@ -104,33 +103,6 @@ export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
   if (validPosts.length) {
     await handleDeactivatedAndNormalPosts(validPosts, true);
   }
-}
-
-export async function handleDataFromIndex(
-  data: Raw<Post>[],
-  maxPostsExceed: boolean,
-): Promise<void> {
-  if (data.length === 0) {
-    return;
-  }
-  const transformedData = transformData(data);
-
-  // handle max exceeded
-  const exceedPostsHandled = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
-    transformedData,
-    maxPostsExceed,
-  );
-  await handlePreInsertPosts(exceedPostsHandled);
-
-  // handle discontinuous by modified
-  const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    exceedPostsHandled,
-  );
-  handleDeactivatedAndNormalPosts(result, true);
-}
-
-export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
-  return handleDataFromIndex(data, maxPostsExceed);
 }
 
 /**

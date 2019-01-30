@@ -12,6 +12,9 @@ import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import { IRequestRemotePostAndSave } from '../entity/Post';
+import { Raw } from '../../../framework/model';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { SOCKET } from '../../../service';
 
 class NewPostService extends EntityBaseService<Post> {
   static serviceName = 'NewPostService';
@@ -21,6 +24,11 @@ class NewPostService extends EntityBaseService<Post> {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SOCKET.POST]: this.handleSexioData,
+      }),
+    );
   }
 
   protected getPostController() {
@@ -91,6 +99,30 @@ class NewPostService extends EntityBaseService<Post> {
 
   async getPostFromLocal(postId: number): Promise<Post | null> {
     return this.getEntitySource().getEntityLocally(postId);
+  }
+
+  async getLastPostOfGroup(groupId: number): Promise<Post | null> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getLastPostOfGroup(groupId);
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getNewestPostIdOfGroup(groupId);
+  }
+
+  handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+    this.getPostController()
+      .getPostDataController()
+      .handleIndexPosts(data, maxPostsExceed);
+  }
+
+  handleSexioData = async (data: Raw<Post>[]) => {
+    this.getPostController()
+      .getPostDataController()
+      .handleSexioPosts(data);
   }
 }
 

@@ -15,7 +15,6 @@ import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
-import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
 import { IndexDataModel } from '../../api/glip/user';
@@ -27,6 +26,7 @@ import { ItemService } from '../../module/item';
 import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
+import { NewPostService } from '../../module/post';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -75,7 +75,12 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     .then(() => groupHandleData(public_teams))
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))
-    .then(() => postHandleData(posts, maxPostsExceeded));
+    .then(() =>
+      NewPostService.getInstance<NewPostService>().handleIndexData(
+        posts,
+        maxPostsExceeded,
+      ),
+    );
 };
 
 const handleData = async (

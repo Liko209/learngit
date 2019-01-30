@@ -51,6 +51,10 @@ class PostDao extends BaseDao<Post> {
     ]);
   }
 
+  async queryPostIdsByGroupId(groupId: number) {
+    return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
+  }
+
   async queryPostsByGroupId(
     groupId: number,
     anchorPostId?: number,

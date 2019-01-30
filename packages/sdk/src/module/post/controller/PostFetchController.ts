@@ -5,7 +5,6 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
 import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager, PostDao } from '../../../dao';
@@ -22,17 +21,10 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 const TAG = 'PostFetchController';
 
 class PostFetchController {
-  private _postDataController: PostDataController;
-
   constructor(
-    public preInsertController: IPreInsertController,
+    public postDataController: PostDataController,
     public entitySourceController: IEntitySourceController<Post>,
-  ) {
-    this._postDataController = new PostDataController(
-      preInsertController,
-      entitySourceController,
-    );
-  }
+  ) {}
 
   /** 1, Check does postId is 0 or post id is in db
    *  1) PostId is 0, means open conversation from group | contact | profile,
@@ -166,7 +158,7 @@ class PostFetchController {
       success: false,
     };
     if (serverResult) {
-      const handledResult = await this._postDataController.handleFetchedPosts(
+      const handledResult = await this.postDataController.handleFetchedPosts(
         serverResult,
         shouldSaveToDb,
       );
@@ -178,6 +170,29 @@ class PostFetchController {
       result.success = true;
     }
     return result;
+  }
+
+  getLastPostOfGroup(groupId: number): Promise<Post | null> {
+    const postDao = daoManager.getDao(PostDao);
+    return postDao.queryLastPostByGroupId(groupId);
+  }
+
+  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
+    const params: any = {
+      limit: 1,
+      group_id: groupId,
+    };
+    try {
+      const requestResult = await PostAPI.requestPosts(params);
+      const data = requestResult.expect('get newest post id of group failed');
+      const post = data.posts[0];
+      if (post) {
+        return post._id;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 
   private async _isPostInDb(postId: number): Promise<boolean> {

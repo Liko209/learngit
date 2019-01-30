@@ -12,12 +12,12 @@ import PostServiceHandler from '../../service/post/postServiceHandler';
 import ProfileService from '../../service/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
-import { baseHandleData, handleDataFromSexio } from './handleData';
+import { baseHandleData } from './handleData';
 import { Post } from '../../module/post/entity';
 import { Item } from '../../module/item/entity';
 import { Raw } from '../../framework/model';
 import { Group } from '../../module/group/entity';
-import { ENTITY, SOCKET, SERVICE } from '../eventKey';
+import { ENTITY, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
 import { mainLogger, err, Result } from 'foundation';
@@ -66,10 +66,10 @@ class PostService extends BaseService<Post> {
   }
 
   constructor() {
-    const subscriptions = {
-      [SOCKET.POST]: handleDataFromSexio,
-    };
-    super(PostDao, PostAPI, baseHandleData, subscriptions);
+    // const subscriptions = {
+    //   [SOCKET.POST]: handleDataFromSexio,
+    // };
+    super(PostDao, PostAPI, baseHandleData);
   }
 
   async getPostsFromLocal({
@@ -587,14 +587,6 @@ class PostService extends BaseService<Post> {
     } catch (e) {
       return null;
     }
-  }
-
-  async includeNewest(postIds: number[], groupId: number): Promise<boolean> {
-    const newestPostId = await this.getNewestPostIdOfGroup(groupId);
-    if (!newestPostId) {
-      return false;
-    }
-    return postIds.indexOf(newestPostId) >= 0;
   }
 
   async isNewestSaved(groupId: number): Promise<boolean> {
