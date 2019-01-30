@@ -7,13 +7,10 @@ import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 import * as utils from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { GroupService } from 'sdk/module/group';
+import { NewGroupService } from 'sdk/module/group';
 
-jest.mock('sdk/module/group', () => {
-  return {
-    GroupService: jest.fn(),
-  };
-});
+jest.mock('sdk/module/group');
+const groupService = new NewGroupService();
 
 describe('GroupModel', () => {
   describe('isThePersonGuest()', () => {
@@ -125,11 +122,8 @@ describe('GroupModel', () => {
   });
 
   describe('isCurrentUserHasPermissionAddMember', () => {
-    const groupService = {
-      isCurrentUserHasPermission: jest.fn(),
-    };
     beforeEach(() => {
-      (GroupService as any).mockImplementation(() => groupService);
+      NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();
@@ -139,6 +133,7 @@ describe('GroupModel', () => {
       const gm = GroupModel.fromJS({
         id: 1,
       } as Group);
+      groupService.isCurrentUserHasPermission.mockImplementationOnce(() => {});
       jest.spyOn(gm, 'isMember', 'get').mockReturnValueOnce(false);
       expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
       expect(groupService.isCurrentUserHasPermission).not.toHaveBeenCalled();
@@ -159,9 +154,7 @@ describe('GroupModel', () => {
         id: 1,
       } as Group);
       jest.spyOn(gm, 'isMember', 'get').mockReturnValueOnce(true);
-      jest
-        .spyOn(groupService, 'isCurrentUserHasPermission')
-        .mockReturnValueOnce(false);
+      groupService.isCurrentUserHasPermission.mockReturnValueOnce(false);
       expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
       expect(groupService.isCurrentUserHasPermission).toHaveBeenCalled();
     });

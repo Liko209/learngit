@@ -13,7 +13,7 @@ import {
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
-import { GroupService } from 'sdk/module/group';
+import { NewGroupService } from 'sdk/module/group';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { GlipTypeUtil } from 'sdk/utils';
 import { Notification } from '@/containers/Notification';
@@ -52,7 +52,7 @@ class ProfileMiniCardGroupViewModel
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!groupStore.hasValid(this.id)) {
-      const groupService = new GroupService();
+      const groupService: NewGroupService = NewGroupService.getInstance();
       groupService
         .getById(this.id)
         .then((group: Group | null) => {

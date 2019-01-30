@@ -39,6 +39,7 @@ type AttachmentItemProps = StatusProps &
     name: string;
     hideRemoveButton?: boolean;
     onClickDeleteButton?: (event: MouseEvent) => void;
+    fileIcon: string;
   };
 
 const StatusMap = {
@@ -120,6 +121,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
       hideRemoveButton,
       onClickDeleteButton,
       progress,
+      fileIcon,
     } = this.props;
     const loading = status === ITEM_STATUS.LOADING;
     const action = (
@@ -135,6 +137,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
     return (
       <Wrapper>
         <JuiFileWithExpand
+          icon={fileIcon}
           fileNameColor={StatusMap[status]}
           fileNameOpacity={loading ? 0.26 : 1}
           fileName={name}

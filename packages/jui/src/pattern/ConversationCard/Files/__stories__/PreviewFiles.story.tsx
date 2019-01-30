@@ -63,6 +63,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
         {[1, 2, 3, 4].map((id: number) => {
           return (
             <JuiFileWithExpand
+              icon="default_file"
               key={id}
               fileName={fileName}
               Actions={

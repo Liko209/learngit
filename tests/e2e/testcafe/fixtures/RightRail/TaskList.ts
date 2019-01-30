@@ -19,6 +19,7 @@ fixture('RightRail/TaskList')
 
 test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850', 'TaskList']), async t => {
   const app = new AppRoot(t);
+  const conversationPage = app.homePage.messageTab.conversationPage;
   const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
   const taskTitle = uuid();
@@ -46,15 +47,24 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
     await rightRail.tasksEntry.shouldBeOpened();
   })
   // step 2 create a task
-  await h(t).withLog('Then User create tasks count should be 2', async () => {
-    await t.wait(3000);
+  await h(t).withLog('And User create 1 tasks via api', async () => {
     await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
-    await t.expect(tasksTab.nthItem(0).withText(taskTitle).exists).ok();
-    await tasksTab.countOnSubTitleShouldBe(1);
-    await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(2);
+    await t.expect(conversationPage.posts.count).eql(1, { timeout: 5e3 });
   });
 
+  await h(t).withLog('Then tasks count in tasks tab should be 1', async () => {
+    await t.expect(tasksTab.nthItem(0).withText(taskTitle).exists).ok();
+    await tasksTab.countOnSubTitleShouldBe(1);
+  });
+
+  await h(t).withLog('When User create 1 tasks again via api', async () => {
+    await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+    await t.expect(conversationPage.posts.count).eql(2, { timeout: 5e3 });
+  });
+
+  await h(t).withLog('Then tasks count in tasks tab should be 2', async () => {
+    await tasksTab.countOnSubTitleShouldBe(2);
+  });
 });
 
 test(formalName('Task info will sync immediately when update', ['Nello', 'P2', 'JPT-852', 'TaskList']), async t => {
