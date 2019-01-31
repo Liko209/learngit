@@ -12,6 +12,10 @@ import { SubItemServiceRegister } from '../../config';
 import { ItemDao } from '../../dao';
 import { daoManager } from '../../../../dao';
 import { ItemUtils } from '../../utils';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
+import { EntityPersistentController } from '../../../../framework/controller/impl/EntityPersistentController';
+import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
+import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 
 jest.mock('../../dao');
 jest.mock('../../config');
@@ -31,7 +35,9 @@ describe('ItemServiceController', () => {
 
   const itemService = {} as IItemService;
 
-  const itemServiceController = new ItemServiceController(itemService, null);
+  let entitySourceController: IEntitySourceController<Item>;
+
+  let itemServiceController: ItemServiceController;
   const subServices: Map<number, ISubItemService> = new Map();
 
   function setUp() {
@@ -45,6 +51,15 @@ describe('ItemServiceController', () => {
       getSubItemsCount: jest.fn(),
       getSortedIds: jest.fn(),
     };
+
+    entitySourceController = new EntitySourceController(
+      new EntityPersistentController<Item>(itemDao),
+      itemDao,
+    );
+    itemServiceController = new ItemServiceController(
+      itemService,
+      entitySourceController,
+    );
 
     subServices.set(fileTypeId, subItemService);
 
@@ -103,9 +118,9 @@ describe('ItemServiceController', () => {
       clearMocks();
       setUp();
       subItemService.getSortedIds = jest.fn().mockResolvedValue([1, 3, 2]);
-      itemDao.getItemsByIds = jest
+      entitySourceController.batchGet = jest
         .fn()
-        .mockResolvedValue([item1, item2, item3]);
+        .mockResolvedValue([item1, item3, item2]);
     });
 
     it('should return sorted items', async () => {
