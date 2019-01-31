@@ -338,6 +338,7 @@
   "DeletePost": "Delete post",
   "createTeam": "create a team",
   "on": "on",
+  "Favorite": "Favorite",
   "closeConfirmDialogHeader": "Close Conversation?",
   "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
   "closeConfirmDialogDontAskMeAgain": "Don't ask me again",

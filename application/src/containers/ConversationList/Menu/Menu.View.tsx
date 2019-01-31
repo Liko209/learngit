@@ -47,7 +47,7 @@ class MenuViewComponent extends Component<Props, State> {
         onClick={this._handleCloseConversation}
         disabled={!closable}
       >
-        {t('conversationMenuItem:close')}
+        {t('close')}
       </JuiMenuItem>
     );
   }
@@ -89,20 +89,18 @@ class MenuViewComponent extends Component<Props, State> {
         checked: false,
       });
       Dialog.alert({
-        title: t('conversationMenuItem:closeConfirmDialogHeader'),
+        title: t('closeConfirmDialogHeader'),
         content: (
           <>
-            <JuiTypography>
-              {t('conversationMenuItem:closeConfirmDialogContent')}
-            </JuiTypography>
+            <JuiTypography>{t('closeConfirmDialogContent')}</JuiTypography>
             <JuiCheckboxLabel
-              label={t('conversationMenuItem:closeConfirmDialogDontAskMeAgain')}
+              label={t('closeConfirmDialogDontAskMeAgain')}
               checked={false}
               handleChange={this._checkboxChange}
             />
           </>
         ),
-        okText: t('conversationMenuItem:Close Conversation'),
+        okText: t('Close Conversation'),
         okVariant: 'text',
         onOK: () => {
           this._closeConversationWithConfirm();
@@ -170,7 +168,7 @@ class MenuViewComponent extends Component<Props, State> {
           data-test-automation-id="favToggler"
           onClick={this._handleToggleFavorite}
         >
-          {t(`conversationMenuItem:${favoriteText}`)}
+          {t(`${favoriteText}`)}
         </JuiMenuItem>
         <JuiMenuItem
           data-test-automation-id="profileEntry"
