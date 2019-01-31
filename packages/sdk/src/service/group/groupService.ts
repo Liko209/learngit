@@ -11,7 +11,7 @@ import {
   QUERY_DIRECTION,
 } from '../../dao';
 import AccountDao from '../../dao/account';
-import GroupDao from '../../dao/group';
+import { GroupDao } from '../../module/group/dao';
 import { Raw, SortableModel } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
 import { GroupApiType } from '../../models';

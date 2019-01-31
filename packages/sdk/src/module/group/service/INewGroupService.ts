@@ -41,6 +41,8 @@ interface INewGroupService {
   ): void;
 
   archiveTeam(teamId: number): Promise<void>;
+
+  deleteTeam(teamId: number): Promise<void>;
 }
 
 export { INewGroupService };

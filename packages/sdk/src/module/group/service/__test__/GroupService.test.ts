@@ -274,4 +274,26 @@ describe('GroupService', () => {
       expect(mockArchiveTeam).toBeCalledWith(mockTeam.id);
     });
   });
+
+  describe('deleteTeam()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+      });
+      const mockDeleteTeam = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          deleteTeam: mockDeleteTeam,
+        });
+      await groupService.deleteTeam(mockTeam.id);
+      expect(mockDeleteTeam).toBeCalledWith(mockTeam.id);
+    });
+  });
 });
