@@ -46,11 +46,21 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 
   return (
     <div>
-      <AttachmentItem name="test" status={ITEM_STATUS.NORMAL} />
-      <br />
-      <AttachmentItem name="test" progress={-1} status={ITEM_STATUS.ERROR} />
+      <AttachmentItem
+        fileIcon="default_file"
+        name="test"
+        status={ITEM_STATUS.NORMAL}
+      />
       <br />
       <AttachmentItem
+        fileIcon="default_file"
+        name="test"
+        progress={-1}
+        status={ITEM_STATUS.ERROR}
+      />
+      <br />
+      <AttachmentItem
+        fileIcon="default_file"
         name="test"
         progress={value}
         status={ITEM_STATUS.LOADING}
@@ -58,12 +68,17 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
       <br />
       <div>Long title example:</div>
       <AttachmentItem
+        fileIcon="default_file"
         name="this is a really long title this is a really long title this is a really long title"
         status={ITEM_STATUS.NORMAL}
       />
       <br />
       <div>Property test</div>
-      <AttachmentItem name={name} status={ITEM_STATUS.NORMAL} />
+      <AttachmentItem
+        fileIcon="default_file"
+        name={name}
+        status={ITEM_STATUS.NORMAL}
+      />
     </div>
   );
 });

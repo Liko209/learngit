@@ -13,17 +13,7 @@ describe('getFileType', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-  it('should be image type when item has thumbs', () => {
-    const fileItem = {
-      thumbs: {
-        xxx: previewUrl,
-      },
-    };
-    const extendFile = getFileType(fileItem);
-    expect(extendFile.type).toBe(FileType.image);
-    expect(extendFile.previewUrl).toBe(previewUrl);
-    expect(extendFile.item).toEqual(fileItem);
-  });
+
   it('should be image type when include target type', () => {
     const IMAGE_TYPE = new Set(
       [...SupportPreviewImageExtensions].map(type => type.toUpperCase()),
@@ -34,7 +24,6 @@ describe('getFileType', () => {
         type,
         versionUrl: previewUrl,
       };
-      console.log(11111, type);
       const extendFile = getFileType(fileItem);
       expect(extendFile.type).toBe(FileType.image);
       expect(extendFile.previewUrl).toBe(previewUrl);

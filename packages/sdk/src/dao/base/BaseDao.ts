@@ -28,6 +28,10 @@ class BaseDao<T extends {}> {
     return this._modelName;
   }
 
+  protected getDb(): IDatabase {
+    return this.db;
+  }
+
   async put(item: T | T[]): Promise<void> {
     try {
       if (Array.isArray(item)) {

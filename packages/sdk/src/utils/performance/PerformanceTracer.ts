@@ -8,29 +8,36 @@ import { mainLogger } from 'foundation';
 
 class PerformanceTracer {
   PERFORMANCE_KEY = 'jupiter';
-  scenarios: Map<string, number>;
+  scenarios: Map<number, number>;
+  keys: Map<number, string>;
 
   constructor() {
-    this.scenarios = new Map<string, number>();
+    this.scenarios = new Map<number, number>();
+    this.keys = new Map<number, string>();
   }
 
-  start(key: string) {
-    if (this.scenarios.has(key)) {
-      mainLogger.error(`performanceStart already has key ${key}`);
+  start(key: string, id: number) {
+    if (this.scenarios.has(id)) {
+      mainLogger.warn(`performanceStart already has key ${key}`);
     } else {
-      this.scenarios.set(key, performance.now());
+      this.scenarios.set(id, performance.now());
+      this.keys.set(id, key);
     }
   }
 
-  end(key: string) {
-    if (this.scenarios.has(key)) {
-      const startTime = this.scenarios.get(key);
+  end(id: number) {
+    if (this.scenarios.has(id)) {
+      const startTime = this.scenarios.get(id);
       if (startTime) {
         const endTime = performance.now();
-        this.tracePerformance(key, { startTime, endTime });
-        mainLogger.info(key, ':', String(endTime - startTime));
+        const key = this.keys.get(id);
+        if (key) {
+          this.tracePerformance(key, { startTime, endTime });
+          mainLogger.info(key, ':', String(endTime - startTime));
+        }
       }
-      this.scenarios.delete(key);
+      this.scenarios.delete(id);
+      this.keys.delete(id);
     }
   }
 

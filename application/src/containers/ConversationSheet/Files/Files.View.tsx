@@ -12,14 +12,14 @@ import {
   JuiPreviewImage,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { getThumbnailSize } from 'jui/foundation/utils/calculateImageSize';
+import { getThumbnailSize } from 'jui/foundation/utils';
 import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
 import { getFileSize } from './helper';
-import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
+import { getFileIcon } from '@/common/getFileIcon';
 
 const SQUARE_SIZE = 180;
 
@@ -60,6 +60,7 @@ class FilesView extends React.Component<FilesViewProps> {
     }
     return (
       <AttachmentItem
+        fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
         name={name}
@@ -68,13 +69,18 @@ class FilesView extends React.Component<FilesViewProps> {
       />
     );
   }
+
+  async componentDidMount() {
+    await this.props.getCropImage();
+  }
+
   render() {
-    const { files, progresses } = this.props;
+    const { files, progresses, urlMap } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
-          const { item, previewUrl } = file;
+          const { item } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
           if (id < 0) {
             return this._renderItem(id, progresses, name);
@@ -86,12 +92,20 @@ class FilesView extends React.Component<FilesViewProps> {
           return (
             <JuiPreviewImage
               key={id}
-              width={size.width}
-              height={size.height}
+              placeholder={
+                <JuiFileWithoutPreview
+                  fileName={name}
+                  size={`${getFileSize(item.size)}`}
+                  iconType="image_preview"
+                  Actions={downloadBtn(downloadUrl)}
+                />
+              }
+              width={size.width || SQUARE_SIZE}
+              height={size.height || SQUARE_SIZE}
               forceSize={!singleImage}
               squareSize={SQUARE_SIZE}
               fileName={name}
-              url={previewUrl}
+              url={urlMap.get(id) || ''}
               Actions={downloadBtn(downloadUrl)}
             />
           );
