@@ -14,7 +14,7 @@ import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import GroupService, { TeamPermission } from 'sdk/service/group';
 import { NewGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
@@ -112,7 +112,7 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
       if (person.displayName) {
-        return `${person.displayName} (${t('me')})`;
+        return `${person.displayName} (${i18next.t('me')})`;
       }
       return '';
     }

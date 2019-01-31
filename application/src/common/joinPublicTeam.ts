@@ -3,7 +3,7 @@
  * @Date: 2019-01-16 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { goToConversation } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
 import { errorHelper } from 'sdk/error';
@@ -44,10 +44,10 @@ const joinTeam = (item: GroupModel | SortableModel<Group>) => (
 ) => {
   e && e.stopPropagation();
   Dialog.confirm({
-    title: t('joinTeamTitle'),
-    content: t('joinTeamContent', { teamName: item.displayName }),
-    okText: t('join'),
-    cancelText: t('Cancel'),
+    title: i18next.t('joinTeamTitle'),
+    content: i18next.t('joinTeamContent', { teamName: item.displayName }),
+    okText: i18next.t('join'),
+    cancelText: i18next.t('Cancel'),
     onOK: () =>
       goToConversation({
         id: item.id,

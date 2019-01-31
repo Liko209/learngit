@@ -5,7 +5,7 @@
  */
 import React, { ReactNode } from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { debounce } from 'lodash';
 import {
   JuiSearchBar,
@@ -184,7 +184,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
         variant="round"
         size="small"
       >
-        {t('join')}
+        {i18next.t('join')}
       </JuiButton>
     );
   }
@@ -206,7 +206,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           <JuiSearchTitle
             key={`showMore-${sectionIndex}`}
             isShowMore={type.hasMore}
-            showMore={t('showMore')}
+            showMore={i18next.t('showMore')}
             title={title}
             data-test-automation-id={`search-${title}`}
           />
@@ -398,7 +398,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             onClear={this.onClear}
             value={searchValue}
             onChange={this.onChange}
-            placeholder={t('search')}
+            placeholder={i18next.t('search')}
             showCloseBtn={!!searchValue}
           />
           {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}

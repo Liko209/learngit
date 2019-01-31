@@ -50,7 +50,7 @@ class TokenRoute extends Component<TokenRouteProps> {
       content = t('signInFailedContent');
     }
     if (isOffline) {
-      content = t('signInFailedContentNetwork');
+      content = t('Network Error');
     }
     if (content) {
       if (this._alert) {
@@ -77,6 +77,6 @@ class TokenRoute extends Component<TokenRouteProps> {
   }
 }
 
-const TokenRouteView = translate('login')(withRouter(TokenRoute));
+const TokenRouteView = translate('translations')(withRouter(TokenRoute));
 
 export { TokenRouteView };
