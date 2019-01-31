@@ -104,6 +104,12 @@ class NewGroupService extends EntityBaseService<Group>
       .isTeamAdmin(personId, permission);
   }
 
+  async deleteTeam(teamId: number): Promise<void> {
+    await this.getTeamController()
+      .getTeamActionController()
+      .deleteTeam(teamId);
+  }
+
   hasTeamAdmin(permission?: TeamPermission): boolean {
     return this.getTeamController()
       .getTeamPermissionController()

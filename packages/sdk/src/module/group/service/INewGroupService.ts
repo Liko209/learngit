@@ -39,6 +39,8 @@ interface INewGroupService {
     direction: QUERY_DIRECTION,
     hasMore: boolean,
   ): void;
+
+  deleteTeam(teamId: number): Promise<void>;
 }
 
 export { INewGroupService };
