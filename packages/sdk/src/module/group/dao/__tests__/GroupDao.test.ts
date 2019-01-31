@@ -1,11 +1,13 @@
 /*
- * @Author: Steve Chen (steve.chen@ringcentral.com)
- * @Date: 2018-02-24 22:40:56
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-30 14:09:00
+ * Copyright © RingCentral. All rights reserved.
  */
-import GroupDao from '..';
-import { setup } from '../../__tests__/utils';
-import { Group } from '../../../models';
-import { groupFactory } from '../../../__tests__/factories';
+
+import { GroupDao } from '../GroupDao';
+import { setup } from '../../../../dao/__tests__/utils';
+import { Group } from '../../entity';
+import { groupFactory } from '../../../../__tests__/factories';
 
 describe('GroupDao', () => {
   let groupDao: GroupDao;

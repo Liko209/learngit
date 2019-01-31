@@ -125,7 +125,7 @@ class TestRequestController implements IRequestController<Group> {
   post = jest.fn();
 }
 
-describe('TeamController', () => {
+describe('TeamActionController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
   let teamActionController: TeamActionController;
   let testPartialModifyController: IPartialModifyController<Group>;
@@ -503,6 +503,42 @@ describe('TeamController', () => {
       );
       await teamActionController.revokeAdmin(mockTeam.id, 2);
       expect(testRequestController.put).not.toBeCalled();
+    });
+  });
+
+  describe('archiveTeam()', () => {
+    it('should call requestController.put with correct team info.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        is_archived: false,
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await teamActionController.archiveTeam(mockTeam.id);
+      expect(testRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          is_archived: true,
+        }),
+      );
+    });
+  });
+
+  describe('deleteTeam()', () => {
+    it('should call requestController.put with correct team info.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        deactivated: false,
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await teamActionController.deleteTeam(mockTeam.id);
+      expect(testRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          deactivated: true,
+        }),
+      );
     });
   });
 });

@@ -6,7 +6,7 @@
 import { mainLogger } from 'foundation';
 import pick from 'lodash/pick';
 import { daoManager } from '../../dao';
-import GroupDao from '../../dao/group';
+import { GroupDao } from '../../module/group/dao';
 import PersonDao from '../../dao/person';
 
 import BaseService from '../../service/BaseService';

@@ -5,7 +5,7 @@
  */
 import { mainLogger } from 'foundation';
 import { daoManager, DeactivatedDao } from '../../dao';
-import GroupDao from '../../dao/group';
+import { GroupDao } from '../../module/group/dao';
 import GroupAPI from '../../api/glip/group';
 import notificationCenter, {
   NotificationEntityUpdatePayload,
@@ -136,41 +136,13 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 }
 
 async function doNotification(deactivatedData: Group[], groups: Group[]) {
-  const profileService: ProfileService = ProfileService.getInstance();
-  const profile = await profileService.getProfile();
   groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
-
-  const favIds = (profile && profile.favorite_group_ids) || [];
-  const archivedGroups = groups.filter((item: Group) => item.is_archived);
-  const deactivatedGroups = deactivatedData.concat(archivedGroups);
-  const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
+  const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     return group.id;
   });
   deactivatedGroupIds.length &&
     notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
-
-  const limit = await profileService.getMaxLeftRailGroup();
-
-  let addedTeams = groups.filter(
-    (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
-  );
-  addedTeams = await filterGroups(addedTeams, limit);
-
-  let addedGroups = groups.filter(
-    (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
-  );
-  addedGroups = await filterGroups(addedGroups, limit);
-
-  const addFavorites = groups.filter(
-    (item: Group) => favIds.indexOf(item.id) !== -1,
-  );
-  const result = addedTeams.concat(addedGroups).concat(addFavorites);
-  result.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, result);
-  // addedTeams.length > 0 &&
-  //   notificationCenter.emitEntityUpdate(ENTITY.TEAM_GROUPS, addedTeams);
-  // addedGroups.length > 0 &&
-  //   notificationCenter.emitEntityUpdate(ENTITY.PEOPLE_GROUPS, addedGroups);
-  // addFavorites.length > 0 && (await doFavoriteGroupsNotification(favIds));
+  groups.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, groups);
 }
 
 async function operateGroupDao(deactivatedData: Group[], normalData: Group[]) {

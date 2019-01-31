@@ -40,6 +40,10 @@ interface INewGroupService {
     hasMore: boolean,
   ): void;
 
+  archiveTeam(teamId: number): Promise<void>;
+
+  deleteTeam(teamId: number): Promise<void>;
+
   makeAdmin(teamId: number, member: number): Promise<void>;
 
   revokeAdmin(teamId: number, member: number): Promise<void>;
