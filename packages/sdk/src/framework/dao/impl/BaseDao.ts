@@ -10,8 +10,9 @@ import { Throw } from '../../../utils';
 import { errorHandler } from '../errors/handler';
 import { ERROR_CODES_DB } from '../../../error';
 import { IDao } from '../interface/IDao';
+import { IdModel } from '../../model';
 
-class BaseDao<T extends {}> implements IDao<T> {
+class BaseDao<T extends IdModel> implements IDao<T> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T>;
   private db: IDatabase;
@@ -69,11 +70,25 @@ class BaseDao<T extends {}> implements IDao<T> {
     }
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
+  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     try {
       await this.db.ensureDBOpened();
       const query = this.createQuery();
-      return await query.anyOf('id', ids).toArray();
+
+      let entities: T[] = await query.anyOf('id', ids).toArray();
+
+      if (order) {
+        const entitiesMap = new Map<number, T>();
+        entities.forEach((entity: T) => {
+          entitiesMap.set(entity.id, entity);
+        });
+        entities = [];
+        ids.forEach((id: number) => {
+          entities.push(entitiesMap.get(id)!);
+        });
+      }
+
+      return entities;
     } catch (err) {
       errorHandler(err);
       return [];

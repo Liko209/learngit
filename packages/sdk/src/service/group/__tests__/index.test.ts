@@ -16,11 +16,12 @@ import GroupService from '../index';
 import {
   daoManager,
   AccountDao,
-  GroupDao,
   ConfigDao,
   GroupConfigDao,
   QUERY_DIRECTION,
 } from '../../../dao';
+
+import { GroupDao } from '../../../module/group/dao';
 
 import { Group } from '../../../module/group/entity';
 import { Raw } from '../../../framework/model';
@@ -46,6 +47,7 @@ import {
 jest.mock('../../../dao');
 jest.mock('../handleData');
 jest.mock('../../../module/person');
+jest.mock('../../../module/group/dao');
 jest.mock('../../../service/profile');
 jest.mock('../../account/UserConfig');
 jest.mock('../../notificationCenter');

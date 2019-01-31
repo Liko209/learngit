@@ -80,17 +80,7 @@ class ItemServiceController {
       return [];
     }
 
-    const itemDao = daoManager.getDao(ItemDao);
-    const items = await itemDao.getItemsByIds(ids);
-
-    const itemMap: Map<number, Item> = new Map();
-    items.forEach((item: Item) => {
-      itemMap.set(item.id, item);
-    });
-
-    return ids.map((id: number) => {
-      return itemMap.get(id) as Item;
-    });
+    return await this._entitySourceController.batchGet(ids, true);
   }
 
   async createItem(item: Item) {
