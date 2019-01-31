@@ -62,8 +62,7 @@ class PostDao extends BaseDao<Post> {
     limit: number = Infinity,
   ): Promise<Post[]> {
     const fetchPostsFunc = async (ids: number[]) => {
-      const posts = await this.batchGet(ids);
-      return _.orderBy(posts, 'created_at', 'desc');
+      return await this.batchGet(ids, true);
     };
     return this.getPostViewDao().queryPostsByGroupId(
       fetchPostsFunc,
