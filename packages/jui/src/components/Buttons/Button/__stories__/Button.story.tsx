@@ -32,11 +32,13 @@ function getKnobs() {
     'primary',
   );
   const disabled = boolean('disabled', false);
+  const loading = boolean('loading', false);
   return {
     content,
     size,
     color,
     disabled,
+    loading,
   };
 }
 

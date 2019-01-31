@@ -3,11 +3,12 @@
  * @Date: 2018-09-27 14:03:38
  * Copyright © RingCentral. All rights reserved.
  */
-
+import React from 'react';
 import MuiCircularProgress, {
   CircularProgressProps as MuiCircularProgressProps,
 } from '@material-ui/core/CircularProgress';
 import styled from '../../foundation/styled-components';
+import { palette } from '../../foundation/utils';
 // import { Omit } from '../../foundation/utils/typeHelper';
 // import { grey } from '../../foundation/utils/styles';
 
@@ -23,11 +24,19 @@ import styled from '../../foundation/styled-components';
 //   `} ;
 // `;
 
-type JuiCircularProgressProps = MuiCircularProgressProps;
+type JuiCircularProgressProps = MuiCircularProgressProps & {
+  white?: boolean;
+};
 
 const JuiCircularProgress = styled<JuiCircularProgressProps>(
-  MuiCircularProgress,
-)``;
+  ({ white, ...rest }: JuiCircularProgressProps) => (
+    <MuiCircularProgress {...rest} />
+  ),
+)`
+  && {
+    color: ${({ white }) => (white ? 'white' : palette('primary', 'main'))};
+  }
+`;
 
 JuiCircularProgress.defaultProps = {
   size: 24,
