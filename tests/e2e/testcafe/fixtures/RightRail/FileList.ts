@@ -53,8 +53,9 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
   })
 
   await h(t).withLog('Then The files number is correct: 1', async () => {
-    await filesTab.waitUntilFilesItemExist();
+    await filesTab.waitUntilItemsListExist();
     await filesTab.countOnSubTitleShouldBe(1);
+    await filesTab.countInListShouldBe(1);
     await filesTab.nthItem(0).nameShouldBe('1.txt');
   });
 
@@ -70,8 +71,9 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
   })
 
   await h(t).withLog('Then The files number is correct: 2', async () => {
-    await filesTab.waitUntilFilesItemExist();
+    await filesTab.waitUntilItemsListExist();
     await filesTab.countOnSubTitleShouldBe(2);
+    await filesTab.countInListShouldBe(2);
   });
 
   await h(t).withLog('The new item is on the top of list', async () => {

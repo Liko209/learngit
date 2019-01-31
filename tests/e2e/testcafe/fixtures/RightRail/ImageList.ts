@@ -54,8 +54,9 @@ test(formalName('Check the upload image file and display on the right rail', ['S
   })
 
   await h(t).withLog('Then The images number is correct: 1', async () => {
-    await imagesTab.waitUntilImagesItemExist();
+    await imagesTab.waitUntilItemsListExist();
     await imagesTab.countOnSubTitleShouldBe(1);
+    await imagesTab.countInListShouldBe(1);
     await imagesTab.nthItem(0).nameShouldBe('1.png');
   });
 
@@ -66,8 +67,9 @@ test(formalName('Check the upload image file and display on the right rail', ['S
   });
 
   await h(t).withLog('Then The images number is correct: 2', async () => {
-    await imagesTab.waitUntilImagesItemExist();
+    await imagesTab.waitUntilItemsListExist();
     await imagesTab.countOnSubTitleShouldBe(2);
+    await imagesTab.countInListShouldBe(2);
   });
 
   await h(t).withLog('The new item is on the top of list', async () => {
