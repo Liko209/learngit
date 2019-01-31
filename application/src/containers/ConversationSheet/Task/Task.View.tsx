@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -35,7 +35,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle={t('download')}
+    tooltipTitle={i18next.t('download')}
   >
     download
   </JuiIconButton>
@@ -52,8 +52,8 @@ const FILE_COMPS = {
           key={id}
           previewUrl={previewUrl}
           fileName={name}
-          i18UnfoldLess={t('collapse')}
-          i18UnfoldMore={t('expand')}
+          i18UnfoldLess={i18next.t('collapse')}
+          i18UnfoldMore={i18next.t('expand')}
           Actions={downloadBtn(downloadUrl)}
           ImageActions={downloadBtn(downloadUrl)}
         />

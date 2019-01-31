@@ -4,37 +4,35 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
-import { Redirect, RouteComponentProps, withRouter } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Redirect, Route } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import { PrivateRouteViewProps } from './types';
 
-type RouteComponent =
-  | React.StatelessComponent<RouteComponentProps<{}>>
-  | React.ComponentClass<any>;
-
-type PrivateRouteProps = {
-  isAuthenticated: boolean;
-  component: RouteComponent;
-} & RouteComponentProps;
-
-const PrivateRoute = ({
-  location,
-  isAuthenticated,
-  component: Component,
-}: PrivateRouteProps) => {
-  if (isAuthenticated) {
-    // The location props should be instilled for component could be a container
-    return <Component location={location} />;
+@observer
+class PrivateRoute extends Component<PrivateRouteViewProps> {
+  render() {
+    const { isAuthenticated, component: Component, ...rest } = this.props;
+    return (
+      <Route
+        {...rest}
+        render={props =>
+          isAuthenticated ? (
+            <Component {...props} />
+          ) : (
+            <Redirect
+              to={{
+                pathname: '/unified-login',
+                state: { from: props.location },
+              }}
+            />
+          )
+        }
+      />
+    );
   }
+}
 
-  const redirectProps = {
-    to: {
-      pathname: '/unified-login',
-      state: { from: location },
-    },
-  };
-  return <Redirect {...redirectProps} />;
-};
-
-const PrivateRouteView = withRouter<PrivateRouteProps>(PrivateRoute);
+const PrivateRouteView = PrivateRoute;
 
 export { PrivateRouteView };

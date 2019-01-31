@@ -38,7 +38,6 @@ import handleData, {
   filterGroups,
   handleGroupMostRecentPostChanged,
   // handleFavoriteGroupsChanged,
-  handleHiddenGroupsChanged,
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
@@ -92,7 +91,6 @@ class GroupService extends BaseService<Group> {
       [SOCKET.GROUP]: handleData,
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
-      [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
       [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: deleteAllTeamInformation,
       [SERVICE.POST_SERVICE
         .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,

@@ -108,7 +108,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
       <div>
         <Form onSubmit={this.handleSubmit}>
           <Button type="submit" data-anchor="btnLogin">
-            {t('signIn')}
+            {t('SignIn')}
           </Button>
           {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>
             <option value="1210">RC US</option>
@@ -134,6 +134,6 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   }
 }
 
-const TranslatedUnifiedLogin = translate('login')(UnifiedLogin);
+const TranslatedUnifiedLogin = translate('translations')(UnifiedLogin);
 
 export { TranslatedUnifiedLogin as UnifiedLogin };
