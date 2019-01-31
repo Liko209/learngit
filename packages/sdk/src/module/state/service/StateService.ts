@@ -14,6 +14,7 @@ import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
+import { SectionUnread } from '../types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -104,6 +105,12 @@ class StateService extends EntityBaseService<GroupState>
     await this.getStateController()
       .getTotalUnreadController()
       .handleProfile(payload);
+  }
+
+  getSingleUnreadInfo(id: number): SectionUnread | undefined {
+    return this.getStateController()
+      .getTotalUnreadController()
+      .getSingleUnreadInfo(id);
   }
 }
 

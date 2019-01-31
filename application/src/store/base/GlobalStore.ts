@@ -9,7 +9,7 @@ import BaseStore from './BaseStore';
 import { ENTITY_NAME, GLOBAL_KEYS } from '../constants';
 import { GLOBAL_VALUES } from '../config';
 import { SERVICE, notificationCenter } from 'sdk/service';
-import { SectionUnread, GROUP_SECTION_TYPE } from 'sdk/module/state';
+import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 
 export default class GlobalStore extends BaseStore {
   private _data = observable.object<typeof GLOBAL_VALUES>(
@@ -25,23 +25,30 @@ export default class GlobalStore extends BaseStore {
 
   setTotalUnread = (sectionUnreadArray: SectionUnread[]) => {
     sectionUnreadArray.forEach((sectionUnread: SectionUnread) => {
+      let eventKey = undefined;
       switch (sectionUnread.section) {
-        case GROUP_SECTION_TYPE.ALL: {
-          this.set(GLOBAL_KEYS.TOTAL_UNREAD, sectionUnread);
+        case UMI_SECTION_TYPE.ALL: {
+          eventKey = GLOBAL_KEYS.TOTAL_UNREAD;
           break;
         }
-        case GROUP_SECTION_TYPE.FAVORITE: {
-          this.set(GLOBAL_KEYS.FAVORITE_UNREAD, sectionUnread);
+        case UMI_SECTION_TYPE.FAVORITE: {
+          eventKey = GLOBAL_KEYS.FAVORITE_UNREAD;
           break;
         }
-        case GROUP_SECTION_TYPE.DIRECT_MESSAGE: {
-          this.set(GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD, sectionUnread);
+        case UMI_SECTION_TYPE.DIRECT_MESSAGE: {
+          eventKey = GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD;
           break;
         }
-        case GROUP_SECTION_TYPE.TEAM: {
-          this.set(GLOBAL_KEYS.TEAM_UNREAD, sectionUnread);
+        case UMI_SECTION_TYPE.TEAM: {
+          eventKey = GLOBAL_KEYS.TEAM_UNREAD;
           break;
         }
+      }
+      if (eventKey) {
+        this.set(eventKey, {
+          unreadCount: sectionUnread.unreadCount,
+          mentionCount: sectionUnread.mentionCount,
+        });
       }
     });
   }

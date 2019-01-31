@@ -6,6 +6,6 @@
 
 import { IStateService, StateService } from './service';
 import { SectionUnread } from './types';
-import { GROUP_SECTION_TYPE } from './constants';
+import { UMI_SECTION_TYPE } from './constants';
 
-export { IStateService, StateService, SectionUnread, GROUP_SECTION_TYPE };
+export { IStateService, StateService, SectionUnread, UMI_SECTION_TYPE };

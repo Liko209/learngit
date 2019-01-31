@@ -8,6 +8,7 @@ import { GroupState, MyState, State } from '../entity';
 import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
+import { SectionUnread } from '../types';
 
 interface IStateService {
   updateReadStatus(groupId: number, isUnread: boolean): Promise<void>;
@@ -33,6 +34,8 @@ interface IStateService {
   handleProfileChangeForTotalUnread(
     payload: NotificationEntityPayload<Profile>,
   ): Promise<void>;
+
+  getSingleUnreadInfo(id: number): SectionUnread | undefined;
 }
 
 export { IStateService };

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TASK_DATA_TYPE, GROUP_SECTION_TYPE } from './constants';
+import { TASK_DATA_TYPE, UMI_SECTION_TYPE } from './constants';
 import { Group } from '../group/entity';
 import { State, GroupState } from './entity';
 import { Profile } from '../profile/entity';
@@ -36,7 +36,7 @@ type ProfileEntityHandleTask = {
 };
 
 type SectionUnread = {
-  section: GROUP_SECTION_TYPE;
+  section: UMI_SECTION_TYPE;
   unreadCount: number;
   mentionCount: number;
   isTeam?: boolean;

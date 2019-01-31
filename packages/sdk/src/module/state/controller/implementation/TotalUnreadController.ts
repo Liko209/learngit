@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GROUP_SECTION_TYPE, TASK_DATA_TYPE } from '../../constants';
+import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../constants';
 import {
   SectionUnread,
   GroupStateHandleTask,
@@ -51,25 +51,29 @@ class TotalUnreadController {
   async reset() {
     this._groupSectionUnread = new Map<number, SectionUnread>();
     this._totalUnread = {
-      section: GROUP_SECTION_TYPE.ALL,
+      section: UMI_SECTION_TYPE.ALL,
       unreadCount: 0,
       mentionCount: 0,
     };
     this._favoriteUnread = {
-      section: GROUP_SECTION_TYPE.FAVORITE,
+      section: UMI_SECTION_TYPE.FAVORITE,
       unreadCount: 0,
       mentionCount: 0,
     };
     this._directMessageUnread = {
-      section: GROUP_SECTION_TYPE.DIRECT_MESSAGE,
+      section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
       unreadCount: 0,
       mentionCount: 0,
     };
     this._teamUnread = {
-      section: GROUP_SECTION_TYPE.TEAM,
+      section: UMI_SECTION_TYPE.TEAM,
       unreadCount: 0,
       mentionCount: 0,
     };
+  }
+
+  getSingleUnreadInfo(id: number): SectionUnread | undefined {
+    return this._groupSectionUnread.get(id);
   }
 
   handleGroupState(groupStates: GroupState[]): void {
@@ -221,7 +225,7 @@ class TotalUnreadController {
         return;
       }
       if (isAdd) {
-        if (groupUnread.section !== GROUP_SECTION_TYPE.FAVORITE) {
+        if (groupUnread.section !== UMI_SECTION_TYPE.FAVORITE) {
           this._updateTotalUnread(
             groupUnread.section,
             -groupUnread.unreadCount,
@@ -229,15 +233,15 @@ class TotalUnreadController {
             groupUnread.isTeam || false,
           );
           this._updateTotalUnread(
-            GROUP_SECTION_TYPE.FAVORITE,
+            UMI_SECTION_TYPE.FAVORITE,
             groupUnread.unreadCount,
             groupUnread.mentionCount,
             groupUnread.isTeam || false,
           );
-          groupUnread.section = GROUP_SECTION_TYPE.FAVORITE;
+          groupUnread.section = UMI_SECTION_TYPE.FAVORITE;
         }
       } else {
-        if (groupUnread.section === GROUP_SECTION_TYPE.FAVORITE) {
+        if (groupUnread.section === UMI_SECTION_TYPE.FAVORITE) {
           this._updateTotalUnread(
             groupUnread.section,
             -groupUnread.unreadCount,
@@ -246,20 +250,20 @@ class TotalUnreadController {
           );
           if (!groupUnread.isTeam) {
             this._updateTotalUnread(
-              GROUP_SECTION_TYPE.DIRECT_MESSAGE,
+              UMI_SECTION_TYPE.DIRECT_MESSAGE,
               groupUnread.unreadCount,
               groupUnread.mentionCount,
               groupUnread.isTeam || false,
             );
-            groupUnread.section = GROUP_SECTION_TYPE.DIRECT_MESSAGE;
+            groupUnread.section = UMI_SECTION_TYPE.DIRECT_MESSAGE;
           } else {
             this._updateTotalUnread(
-              GROUP_SECTION_TYPE.TEAM,
+              UMI_SECTION_TYPE.TEAM,
               groupUnread.unreadCount,
               groupUnread.mentionCount,
               groupUnread.isTeam || false,
             );
-            groupUnread.section = GROUP_SECTION_TYPE.TEAM;
+            groupUnread.section = UMI_SECTION_TYPE.TEAM;
           }
         }
       }
@@ -297,7 +301,7 @@ class TotalUnreadController {
   }
 
   private async _addNewGroupUnread(group: Group): Promise<void> {
-    let section: GROUP_SECTION_TYPE;
+    let section: UMI_SECTION_TYPE;
     let unreadCount: number = 0;
     let mentionCount: number = 0;
 
@@ -308,11 +312,11 @@ class TotalUnreadController {
     }
 
     if (this._favoriteGroupIds.includes(group.id)) {
-      section = GROUP_SECTION_TYPE.FAVORITE;
+      section = UMI_SECTION_TYPE.FAVORITE;
     } else if (!group.is_team) {
-      section = GROUP_SECTION_TYPE.DIRECT_MESSAGE;
+      section = UMI_SECTION_TYPE.DIRECT_MESSAGE;
     } else {
-      section = GROUP_SECTION_TYPE.TEAM;
+      section = UMI_SECTION_TYPE.TEAM;
     }
     this._updateTotalUnread(
       section,
@@ -330,26 +334,26 @@ class TotalUnreadController {
   }
 
   private _updateTotalUnread(
-    section: GROUP_SECTION_TYPE,
+    section: UMI_SECTION_TYPE,
     unreadUpdate: number,
     mentionUpdate: number,
     isTeam: boolean,
   ): void {
     let target = undefined;
     switch (section) {
-      case GROUP_SECTION_TYPE.FAVORITE: {
+      case UMI_SECTION_TYPE.FAVORITE: {
         target = this._favoriteUnread;
         break;
       }
-      case GROUP_SECTION_TYPE.DIRECT_MESSAGE: {
+      case UMI_SECTION_TYPE.DIRECT_MESSAGE: {
         target = this._directMessageUnread;
         break;
       }
-      case GROUP_SECTION_TYPE.TEAM: {
+      case UMI_SECTION_TYPE.TEAM: {
         target = this._teamUnread;
         break;
       }
-      case GROUP_SECTION_TYPE.ALL: {
+      case UMI_SECTION_TYPE.ALL: {
         target = this._totalUnread;
         break;
       }
