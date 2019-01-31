@@ -24,31 +24,41 @@ class PostDao extends BaseDao<Post> {
   }
 
   async put(item: Post | Post[]): Promise<void> {
-    await Promise.all([
-      super.put(item),
-      Array.isArray(item)
-        ? this._bulkPutPostView(item)
-        : this._putPostView(item),
-    ]);
+    await this.doInTransaction(async () => {
+      await Promise.all([
+        super.put(item),
+        Array.isArray(item)
+          ? this._bulkPutPostView(item)
+          : this._putPostView(item),
+      ]);
+    });
   }
 
   async bulkPut(array: Post[]): Promise<void> {
-    await Promise.all([super.bulkPut(array), this._bulkPutPostView(array)]);
+    await this.doInTransaction(async () => {
+      await Promise.all([super.bulkPut(array), this._bulkPutPostView(array)]);
+    });
   }
 
   async clear(): Promise<void> {
-    await Promise.all([super.clear(), this.getPostViewDao().clear()]);
+    await this.doInTransaction(async () => {
+      await Promise.all([super.clear(), this.getPostViewDao().clear()]);
+    });
   }
 
   async delete(key: number): Promise<void> {
-    await Promise.all([super.delete(key), this.getPostViewDao().delete(key)]);
+    await this.doInTransaction(async () => {
+      await Promise.all([super.delete(key), this.getPostViewDao().delete(key)]);
+    });
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
-    await Promise.all([
-      super.bulkDelete(keys),
-      this.getPostViewDao().bulkDelete(keys),
-    ]);
+    await this.doInTransaction(async () => {
+      await Promise.all([
+        super.bulkDelete(keys),
+        this.getPostViewDao().bulkDelete(keys),
+      ]);
+    });
   }
 
   async queryPostsByGroupId(
@@ -90,6 +100,20 @@ class PostDao extends BaseDao<Post> {
   async queryPreInsertPost(): Promise<Post[]> {
     const query = this.createQuery();
     return query.lessThan('id', 0).toArray();
+  }
+
+  async doInTransaction(func: () => {}): Promise<void> {
+    await this.getDb().ensureDBOpened();
+    await this.getDb().getTransaction(
+      'rw',
+      [
+        this.getDb().getCollection<PostDao>(PostDao.COLLECTION_NAME),
+        this.getDb().getCollection<PostViewDao>(PostViewDao.COLLECTION_NAME),
+      ],
+      async () => {
+        await func();
+      },
+    );
   }
 
   async groupPostCount(groupId: number): Promise<number> {

@@ -35,7 +35,7 @@ function getFileType(item: FileItemModel): ExtendFileItem {
 }
 
 function image(item: FileItemModel) {
-  const { thumbs, type, versionUrl, name } = item;
+  const { type, versionUrl, name } = item;
   const image = {
     isImage: false,
     previewUrl: '',
@@ -53,24 +53,10 @@ function image(item: FileItemModel) {
     t = t.toLowerCase();
   }
 
-  isImage =
-    FileItemUtils.isSupportPreview({ type: t }) ||
-    (type ? type.includes('image/') : false);
+  isImage = FileItemUtils.isSupportPreview({ type: t }) || t.includes('image/');
   if (isImage) {
     image.isImage = true;
     image.previewUrl = versionUrl || '';
-    return image;
-  }
-
-  // The thumbnail will blur
-  if (thumbs) {
-    for (const key in thumbs) {
-      const value = thumbs[key];
-      if (typeof value === 'string' && value.indexOf('http') > -1) {
-        image.isImage = true;
-        image.previewUrl = thumbs[key];
-      }
-    }
   }
   return image;
 }

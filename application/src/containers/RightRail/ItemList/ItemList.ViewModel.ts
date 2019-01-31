@@ -201,6 +201,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       this._getFilterFunc(),
     );
 
+    if (this._sortableDataHandler) {
+      this._sortableDataHandler.dispose();
+    }
+
     this._sortableDataHandler = new FetchSortableDataListHandler(dataProvider, {
       isMatchFunc,
       transformFunc,
@@ -210,7 +214,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       hasMoreDown: true,
       hasMoreUp: true,
     });
-    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
