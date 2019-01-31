@@ -5,6 +5,8 @@
  */
 
 // import React from 'react';
+
+import MuiMenuItem from '@material-ui/core/MenuItem';
 import styled from '../../../foundation/styled-components';
 import {
   spacing,
@@ -43,20 +45,27 @@ const JuiProfileDialogContentMemberList = styled('ul')`
   padding: 0;
   margin: 0;
   flex: 1;
+  /*resolve virtual list height is fixed*/
+  > div > .ReactVirtualized__List {
+    height: auto !important;
+    max-height: 300px !important;
+  }
 `;
 
-const JuiProfileDialogContentMemberListItem = styled('li')`
-  display: flex;
-  height: ${height(12)};
-  background-color: ${palette('common', 'white')};
-  align-items: center;
-  padding: ${spacing(0, 4, 0, 8)};
-  &:hover {
-    background-color: ${grey('100')};
+const JuiProfileDialogContentMemberListItem = styled(MuiMenuItem)`
+  && {
+    display: flex;
+    height: ${height(12)};
+    background-color: ${palette('common', 'white')};
+    align-items: center;
+    padding: ${spacing(0, 4, 0, 8)};
+    &:hover {
+      background-color: ${grey('100')};
+    }
+    /* &:nth-last-child(1) {
+      margin-bottom: ${spacing(10)};
+    } */
   }
-  /* &:nth-last-child(1) {
-    margin-bottom: ${spacing(10)};
-  } */
 `;
 
 const JuiProfileDialogContentMemberListItemName = styled('p')`

@@ -10,6 +10,8 @@ type MemberListProps = {
 
 type MemberListViewProps = MemberListProps & {
   memberIds: number[];
+  loadMore: () => {};
+  onScrollEvent: (event: { scrollTop: number }) => {};
 };
 
 export { MemberListProps, MemberListViewProps };
