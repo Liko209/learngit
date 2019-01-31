@@ -32,7 +32,7 @@ import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { TypeDictionary } from '../../../utils';
 import { FEATURE_TYPE, FEATURE_STATUS, TeamPermission } from '../../group';
 import CompanyService from '../../company';
-import PostService from '../../post';
+import { NewPostService } from '../../../module/post';
 import { Api } from '../../../api';
 import notificationCenter from '../../notificationCenter';
 import { serviceOk, serviceErr } from '../../ServiceResult';
@@ -50,7 +50,7 @@ jest.mock('../../../service/profile');
 jest.mock('../../account/UserConfig');
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/company');
-jest.mock('../../../service/post');
+jest.mock('../../../module/post');
 jest.mock('../../../api/glip/group');
 
 const profileService = new ProfileService();
@@ -77,10 +77,10 @@ describe('GroupService', () => {
   const groupDao = new GroupDao(null);
   const configDao = new ConfigDao(null);
   const groupConfigDao = new GroupConfigDao(null);
-  const postService = new PostService();
+  const postService = new NewPostService();
 
   beforeEach(() => {
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
   });
 
   it('getGroupsByType()', async () => {

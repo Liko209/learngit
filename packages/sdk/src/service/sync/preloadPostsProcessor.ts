@@ -5,7 +5,7 @@
  */
 import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
-import PostService from '../../service/post';
+import { NewPostService } from '../../module/post';
 import { baseHandleData } from '../post/handleData';
 import { mainLogger } from 'foundation';
 import { StateService } from '../../module/state';
@@ -36,7 +36,7 @@ class PreloadPostsProcessor implements IProcessor {
         direction: DEFAULT_DIRECTION,
         groupId: this._group.id,
       };
-      const postService: PostService = PostService.getInstance();
+      const postService: NewPostService = NewPostService.getInstance();
       const requestResult = await postService.getPostsFromRemote(params);
       requestResult.posts.length &&
         (await baseHandleData(requestResult.posts, true));

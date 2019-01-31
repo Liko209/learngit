@@ -127,6 +127,14 @@ class NewPostService extends EntityBaseService<Post> {
       .getPostActionController()
       .deletePostsByGroupIds(groupIds, shouldNotify);
   }
+
+  async getPostsFromRemote({}) {
+    // TODO waiting for stage code
+    return {
+      posts: [],
+      items: [],
+    };
+  }
 }
 
 export { NewPostService };
