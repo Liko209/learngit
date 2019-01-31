@@ -130,6 +130,12 @@ class NewGroupService extends EntityBaseService<Group>
       hasMore,
     );
   }
+
+  async archiveTeam(teamId: number) {
+    await this.getTeamController()
+      .getTeamActionController()
+      .archiveTeam(teamId);
+  }
 }
 
 export { NewGroupService };

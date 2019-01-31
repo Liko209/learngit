@@ -373,9 +373,30 @@ describe('TeamController', () => {
       );
     });
   });
+
+  describe('archiveTeam()', () => {
+    it('should call requestController.put with correct team info.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        is_archived: false,
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await teamActionController.archiveTeam(mockTeam.id);
+      expect(testRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          _id: mockTeam.id,
+          is_archived: true,
+        }),
+      );
+    });
+  });
+
   describe('deleteTeam()', () => {
     it('should call requestController.put with correct team info.', async () => {
       const mockTeam = groupFactory.build({
+        is_team: true,
         deactivated: false,
       });
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(

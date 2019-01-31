@@ -135,6 +135,21 @@ class TeamActionController {
     );
   }
 
+  async archiveTeam(teamId: number) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          is_archived: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._getTeamRequestController().put(updateEntity);
+      },
+    );
+  }
+
   async deleteTeam(teamId: number): Promise<void> {
     await this.partialModifyController.updatePartially(
       teamId,
