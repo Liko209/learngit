@@ -3,7 +3,7 @@
  * @Date: 2019-01-19 21:41:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   // AutoSizer,
   InfiniteLoader,
@@ -23,7 +23,7 @@ type JuiVirtualListProps = {
   threshold?: number;
 };
 
-class JuiVirtualList extends Component<JuiVirtualListProps> {
+class JuiVirtualList extends PureComponent<JuiVirtualListProps> {
   static defaultProps = {
     isLoading: false,
     threshold: 1,

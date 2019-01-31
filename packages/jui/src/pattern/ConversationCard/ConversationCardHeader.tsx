@@ -68,7 +68,7 @@ type ConversationCardHeaderProps = {
   notification?: React.ReactNode;
 };
 
-class JuiConversationCardHeader extends React.Component<
+class JuiConversationCardHeader extends React.PureComponent<
   ConversationCardHeaderProps,
   { headerItemMaxWidth: null | number }
 > {

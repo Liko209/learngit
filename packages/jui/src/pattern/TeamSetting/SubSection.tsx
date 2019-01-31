@@ -55,15 +55,15 @@ type JuiTeamSettingSubSectionListItemProps = ListItemProps & {
   label: string | JSX.Element;
   children: JSX.Element | JSX.Element[];
 };
-const JuiTeamSettingSubSectionListItem = (
-  props: JuiTeamSettingSubSectionListItemProps,
-) => (
-  <StyledListItem dense={true}>
-    <StyledListItemText>{props.label}</StyledListItemText>
-    <StyledListItemSecondaryAction>
-      {props.children}
-    </StyledListItemSecondaryAction>
-  </StyledListItem>
+const JuiTeamSettingSubSectionListItem = React.memo(
+  (props: JuiTeamSettingSubSectionListItemProps) => (
+    <StyledListItem dense={true}>
+      <StyledListItemText>{props.label}</StyledListItemText>
+      <StyledListItemSecondaryAction>
+        {props.children}
+      </StyledListItemSecondaryAction>
+    </StyledListItem>
+  ),
 );
 
 export {

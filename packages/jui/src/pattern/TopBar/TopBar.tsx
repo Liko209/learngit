@@ -29,7 +29,7 @@ type States = {
   isShowSearchBar: boolean;
 };
 
-class JuiTopBar extends React.Component<Props, States> {
+class JuiTopBar extends React.PureComponent<Props, States> {
   constructor(props: Props) {
     super(props);
     this.state = {

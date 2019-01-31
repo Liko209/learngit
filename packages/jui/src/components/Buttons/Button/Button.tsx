@@ -145,6 +145,6 @@ JuiButtonComponent.defaultProps = {
   disabled: false,
 };
 
-const JuiButton = styled(JuiButtonComponent)``;
+const JuiButton = styled(React.memo(JuiButtonComponent))``;
 
 export { JuiButton, JuiButtonProps, JuiButtonColor };

@@ -88,13 +88,13 @@ const TitleAndStatusWrapper = styled('div')`
   overflow: hidden;
 `;
 
-type IJuiConversationPageHeader = React.Component<
+type IJuiConversationPageHeader = React.PureComponent<
   JuiConversationPageHeaderProps
 > &
   Dependencies;
 
 class JuiConversationPageHeader
-  extends React.Component<
+  extends React.PureComponent<
     JuiConversationPageHeaderProps,
     { showTooltip: boolean }
   >
