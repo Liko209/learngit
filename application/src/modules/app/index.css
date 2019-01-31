@@ -36,3 +36,7 @@ input::-webkit-contacts-auto-fill-button {
 .ReactVirtualized__List {
   outline: 0;
 }
+
+.rc-image-loader.image-preview:before {
+  color: #b2e3f4 !important;
+}

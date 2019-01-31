@@ -6,6 +6,9 @@
 import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import * as Jui from './style';
 import { FileName } from './FileName';
+import styled from '../../../foundation/styled-components';
+import { grey } from '../../../foundation/utils';
+import { JuiIconography } from '../../../foundation/Iconography';
 import {
   getThumbnailSize,
   ThumbnailInfo,
@@ -25,6 +28,21 @@ type JuiPreviewImageProps = {
   url: string;
   placeholder?: JSX.Element;
 } & SizeType;
+
+const LoaderComponent = styled.div`
+  display: flex;
+  background: ${grey('100')};
+  justify-content: center;
+  align-items: center;
+`;
+
+const MyLoader = (props: any) => (
+  <LoaderComponent {...props}>
+    <JuiIconography fontSize="large" className="rc-image-loader">
+      image_preview
+    </JuiIconography>
+  </LoaderComponent>
+);
 
 class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
@@ -92,7 +110,9 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
         {!this._loaded && !hasImageSize && placeholder}
         {!this._loaded && hasImageSize && (
           <Jui.ImageCard width={this.props.width} height={this.props.height}>
-            <div />
+            <MyLoader
+              style={{ width: this.props.width, height: this.props.height }}
+            />
           </Jui.ImageCard>
         )}
         <Jui.ImageCard width={width} height={height}>
