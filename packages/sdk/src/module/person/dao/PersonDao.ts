@@ -1,10 +1,12 @@
 /*
- * @Author: Steve Chen (steve.chen@ringcentral.com)
- * @Date: 2018-02-23 23:58:00
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-01-31 13:45:00
+ * Copyright © RingCentral. All rights reserved.
  */
+
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-import { BaseDao } from '../../framework/dao';
-import { Person } from '../../module/person/entity';
+import { BaseDao } from '../../../framework/dao';
+import { Person } from '../entity';
 import { IDatabase } from 'foundation';
 
 class PersonDao extends BaseDao<Person> {
@@ -77,4 +79,4 @@ class PersonDao extends BaseDao<Person> {
   }
 }
 
-export default PersonDao;
+export { PersonDao };

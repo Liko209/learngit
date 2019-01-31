@@ -2,12 +2,11 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-24 00:04:37
  */
-import PersonDao from '../';
-import { setup } from '../../__tests__/utils';
-import { extractDisplayNames } from '../../../__tests__/utils';
+import { PersonDao } from '../PersonDao';
+import { setup } from '../../../../dao/__tests__/utils';
 import _ from 'lodash';
-import { Person } from '../../../models';
-import { personFactory } from '../../../__tests__/factories';
+import { Person } from '../../entity';
+import { personFactory } from '../../../../__tests__/factories';
 import Factory from 'factory.ts';
 
 describe('PersonDao', () => {

@@ -28,17 +28,6 @@ describe('Item Dao', () => {
     expect(matchedItem).toMatchObject(item);
   });
 
-  it('getItemsByIds()', async () => {
-    const items = [
-      itemFactory.build({ id: 1 }),
-      itemFactory.build({ id: 2 }),
-      itemFactory.build({ id: 3 }),
-      itemFactory.build({ id: 4 }),
-    ];
-    await itemDao.bulkPut(items);
-    expect(itemDao.getItemsByIds([1, 2, 3, 4])).resolves.toEqual(items);
-  });
-
   function buildTestItems(): Item[] {
     const items: Item[] = [
       itemFactory.build({

@@ -5,10 +5,12 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import { ResultOk } from 'foundation';
 import AccountService from '..';
-import { daoManager, AccountDao, PersonDao } from '../../../dao';
+import { daoManager, AccountDao } from '../../../dao';
+import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
 
 jest.mock('../../../dao');
+jest.mock('../../../module/person/dao');
 jest.mock('../../../api');
 
 describe('AccountService', () => {
