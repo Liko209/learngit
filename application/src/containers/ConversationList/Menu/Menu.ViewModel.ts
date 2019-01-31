@@ -15,10 +15,11 @@ import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 
-const { GroupService } = service;
+const { GroupService, ProfileService } = service;
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _groupService: service.GroupService = GroupService.getInstance();
+  private _profileService: service.ProfileService = ProfileService.getInstance();
   @computed
   get personId() {
     return this.props.personId;
@@ -84,7 +85,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   closeConversation = (shouldSkipNextTime: boolean) => {
-    return this._groupService.hideConversation(
+    return this._profileService.hideConversation(
       this.groupId,
       true,
       shouldSkipNextTime,

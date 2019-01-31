@@ -120,14 +120,6 @@ describe('GroupService', () => {
     expect(result3).toEqual(mock);
   });
 
-  it('getLastNGroups()', async () => {
-    const mock = [{ id: 1 }, { id: 2 }];
-    daoManager.getDao.mockReturnValue(groupDao);
-    groupDao.getLastNGroups.mockResolvedValue(mock);
-    const result = await groupService.getLastNGroups(1);
-    expect(result).toEqual(mock);
-  });
-
   it('getGroupsByIds()', async () => {
     const mock = { id: 1 };
     daoManager.getDao.mockReturnValue(groupDao);
@@ -138,15 +130,6 @@ describe('GroupService', () => {
 
     const result2 = await groupService.getGroupsByIds([1]);
     expect(result2).toEqual([mock]);
-  });
-
-  it('getGroupById()', async () => {
-    const mock = { id: 1 };
-    daoManager.getDao.mockReturnValue(groupDao);
-    groupDao.get.mockResolvedValue(mock);
-
-    const result = await groupService.getGroupById(1);
-    expect(result).toEqual(mock);
   });
 
   describe('getLocalGroup()', () => {
@@ -236,30 +219,6 @@ describe('GroupService', () => {
     expect(result1).toHaveProperty('data', mock);
   });
 
-  describe('getLatestGroup()', () => {
-    it('should query form groupDao.getLatestGroup when configDao not record LAST_CLICKED_GROUP', async () => {
-      const mock = { id: 1 };
-      daoManager.getDao.mockReturnValueOnce(groupDao);
-      groupDao.getLatestGroup.mockResolvedValueOnce(mock);
-      daoManager.getKVDao.mockReturnValueOnce(configDao);
-      configDao.get.mockReturnValueOnce(undefined);
-      const result = await groupService.getLatestGroup();
-      expect(result).toEqual(mock);
-      expect(groupDao.getLatestGroup).toBeCalled();
-    });
-    it('should call getById when configDao exist LAST_CLICKED_GROUP', async () => {
-      const mockGroupId = 1;
-      daoManager.getDao.mockReturnValueOnce(groupDao);
-      daoManager.getKVDao.mockReturnValueOnce(configDao);
-      configDao.get.mockReturnValueOnce(mockGroupId);
-      const spyGetById = jest
-        .spyOn(groupService, 'getById')
-        .mockReturnValueOnce(groupFactory.build());
-      await groupService.getLatestGroup();
-      expect(spyGetById).toBeCalledWith(mockGroupId);
-    });
-  });
-
   it('getPermissions(group_id)', async () => {
     const mock = [1, 2, 4, 8];
     const group = groupFactory.build({
@@ -273,28 +232,7 @@ describe('GroupService', () => {
     expect(result).toEqual(mock);
   });
 
-  it('hasPermission(group_id, type)', async () => {
-    const group_id = 6037741574;
-    const type = PERMISSION_ENUM.TEAM_PIN_POST;
-    jest.spyOn(groupService, 'getById');
-    daoManager.getKVDao.mockReturnValueOnce(accountDao);
-    groupService.getById.mockResolvedValue({
-      created_at: 1511918848032,
-      creator_id: 1394810883,
-      description: 'Fiji Core',
-      permissions: {
-        admin: { uids: [731217923], level: 31 },
-        user: { uids: [], level: 15 },
-      },
-      id: 6037741574,
-    });
-    jest.spyOn(daoManager, 'get');
-    daoManager.get.mockReturnValueOnce(1394810883);
-    const result = await groupService.hasPermissionWithGroupId(group_id, type);
-    expect(result).toBe(true);
-  });
-
-  it('updateGroupPartialData(object) is update success', async () => {
+  it.only('updateGroupPartialData(object) is update success', async () => {
     const result = await groupService.updateGroupPartialData({
       id: 1,
       abc: '123',
@@ -400,7 +338,7 @@ describe('GroupService', () => {
       GroupAPI.pinPost.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
-            {
+          {
               status: 403,
               headers: {},
             } as BaseResponse,
@@ -618,26 +556,6 @@ describe('GroupService', () => {
       filterGroups.mockResolvedValue(mock);
       const groups = await groupService.getLeftRailGroups();
       expect(groups.length).toBe(4);
-    });
-  });
-
-  describe('hideConversation()', () => {
-    it('hideConversation, success', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(
-        serviceOk({
-          id: 1,
-          hide_group_123: true,
-        }),
-      );
-      const result = await groupService.hideConversation(1, false, true);
-      expect(result.isOk()).toBeTruthy();
-    });
-    it('hideConversation, network not available', async () => {
-      profileService.hideConversation.mockResolvedValueOnce(
-        serviceErr(ERROR_CODES_SDK.GENERAL, ''),
-      );
-      const result = await groupService.hideConversation(1, false, true);
-      expect(result.isErr()).toBeTruthy();
     });
   });
 
@@ -1033,10 +951,10 @@ describe('GroupService', () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'error'),
-            {
-              status: 500,
-              headers: {},
-            } as BaseResponse,
+          {
+                status: 500,
+                headers: {},
+              } as BaseResponse,
         ),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);
@@ -1109,21 +1027,21 @@ describe('GroupService', () => {
 
     it('should have message permission when the user is not in group', async () => {
       const group = { id: 10, members: [1, 2, 3] };
-      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      jest.spyOn(groupService, 'getById').mockResolvedValueOnce(group);
       const res = await groupService.buildGroupFeatureMap(group.id);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
     });
 
     it('should not have message permission when the user is not in group', async () => {
       const group = { id: 10, members: [4, 5, 6] };
-      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      jest.spyOn(groupService, 'getById').mockResolvedValueOnce(group);
       const res = await groupService.buildGroupFeatureMap(group.id);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
     });
 
     it('should has no call permission for group', async () => {
       const group = { id: 10, members: [1, 2, 3] };
-      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      jest.spyOn(groupService, 'getById').mockResolvedValueOnce(group);
       const res = await groupService.buildGroupFeatureMap(group.id);
       expect(res.get(FEATURE_TYPE.CALL)).toBe(FEATURE_STATUS.INVISIBLE);
     });
@@ -1176,7 +1094,7 @@ describe('GroupService', () => {
 
     it('should return email address combined with group abbreviation, company domian, env domain', async () => {
       const group = { id: 1, email_friendly_abbreviation: 'group' };
-      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      jest.spyOn(groupService, 'getById').mockResolvedValueOnce(group);
 
       const res = await groupService.getGroupEmail(group.id);
       expect(res).toBe(
@@ -1188,7 +1106,7 @@ describe('GroupService', () => {
 
     it('should return email address combined with group id, company domian, env domain', async () => {
       const group = { id: 1 };
-      jest.spyOn(groupService, 'getGroupById').mockResolvedValueOnce(group);
+      jest.spyOn(groupService, 'getById').mockResolvedValueOnce(group);
 
       const res = await groupService.getGroupEmail(group.id);
       expect(res).toBe(`${group.id}@${companyReplyDomain}.${envDomain}`);
@@ -1237,45 +1155,6 @@ describe('GroupService', () => {
       expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(groupConfigDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
-    });
-  });
-  describe('hasPermissionWithGroupId()', () => {
-    it('should return false when groupInfo not found', async () => {
-      const spy = jest
-        .spyOn(groupService, 'getById')
-        .mockResolvedValue(undefined);
-      // groupService.getById.mockReturnValue(null);
-      expect(
-        await groupService.hasPermissionWithGroupId(
-          1,
-          PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
-        ),
-      ).toBeFalsy();
-      expect(
-        await groupService.hasPermissionWithGroupId(
-          1,
-          PERMISSION_ENUM.TEAM_ADD_MEMBER,
-        ),
-      ).toBeFalsy();
-      expect(
-        await groupService.hasPermissionWithGroupId(
-          1,
-          PERMISSION_ENUM.TEAM_ADMIN,
-        ),
-      ).toBeFalsy();
-      expect(
-        await groupService.hasPermissionWithGroupId(
-          1,
-          PERMISSION_ENUM.TEAM_PIN_POST,
-        ),
-      ).toBeFalsy();
-      expect(
-        await groupService.hasPermissionWithGroupId(
-          1,
-          PERMISSION_ENUM.TEAM_POST,
-        ),
-      ).toBeFalsy();
-      spy.mockClear();
     });
   });
   describe('reorderFavoriteGroups()', () => {

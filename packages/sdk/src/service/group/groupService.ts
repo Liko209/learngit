@@ -4,16 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  daoManager,
-  ConfigDao,
-  GroupConfigDao,
-  QUERY_DIRECTION,
-} from '../../dao';
+import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../dao';
 import AccountDao from '../../dao/account';
 import { GroupDao } from '../../module/group/dao';
 import { Raw, SortableModel } from '../../framework/model';
-import { Profile } from '../../module/profile/entity';
 import { GroupApiType } from '../../models';
 import {
   ACCOUNT_USER_ID,
@@ -43,7 +37,6 @@ import handleData, {
 import Permission from './permission';
 import { mainLogger, err, ok, Result, JError } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
-import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
@@ -60,7 +53,6 @@ import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
-import { ServiceResult } from '../ServiceResult';
 import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 import { Person } from '../../module/person/entity';
 
@@ -182,22 +174,6 @@ class GroupService extends BaseService<Group> {
       ? result
       : result.slice(0, result.length > 50 ? 50 : result.length);
   }
-  // this function should refactor with getGroupsByType
-  // we should support to get group by paging
-  async getLastNGroups(n: number): Promise<Group[]> {
-    mainLogger.debug(`get last ${n} groups`);
-    let result: Group[] = [];
-    if (this.isCacheInitialized()) {
-      result = await this.getEntitiesFromCache((item: Group) =>
-        this.isValid(item),
-      );
-      result = this._getFromSortedByMostRectPost(result, 0, n);
-    } else {
-      const dao = daoManager.getDao(GroupDao);
-      result = await dao.getLastNGroups(n);
-    }
-    return result;
-  }
 
   private _getFromSortedByMostRectPost(
     groups: Group[],
@@ -221,11 +197,6 @@ class GroupService extends BaseService<Group> {
       return groups.filter(group => group !== null) as Group[];
     }
     return [];
-  }
-
-  async getGroupById(id: number) {
-    console.warn('getGroupById() is deprecated use getById() instead.');
-    return super.getById(id);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -271,16 +242,6 @@ class GroupService extends BaseService<Group> {
       },
       Err: (error: JError) => err(error),
     });
-  }
-
-  async getLatestGroup(): Promise<Group | null> {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const groupId = configDao.get(LAST_CLICKED_GROUP);
-    if (groupId) {
-      return this.getById(groupId);
-    }
-    const groupDao = daoManager.getDao(GroupDao);
-    return groupDao.getLatestGroup();
   }
 
   canPinPost(postId: number, group: Group): boolean {
@@ -341,18 +302,6 @@ class GroupService extends BaseService<Group> {
     const companyId = accountDao.get(ACCOUNT_COMPANY_ID);
     const permission = new Permission(group, userId, companyId);
     return permission.getPermissions();
-  }
-
-  async hasPermissionWithGroupId(
-    group_id: number,
-    type: PERMISSION_ENUM,
-  ): Promise<boolean> {
-    const groupInfo = await this.getById(group_id);
-    if (groupInfo) {
-      const permissionList = this.getPermissions(groupInfo);
-      return permissionList.includes(type);
-    }
-    return false;
   }
 
   hasPermissionWithGroup(group: Group, type: PERMISSION_ENUM): boolean {
@@ -449,19 +398,6 @@ class GroupService extends BaseService<Group> {
     return result;
   }
 
-  async hideConversation(
-    groupId: number,
-    hidden: boolean,
-    shouldUpdateSkipConfirmation: boolean,
-  ): Promise<ServiceResult<Profile>> {
-    const profileService: ProfileService = ProfileService.getInstance();
-    return profileService.hideConversation(
-      groupId,
-      hidden,
-      shouldUpdateSkipConfirmation,
-    );
-  }
-
   /**
    * TODO Mark the group as no more post.
    */
@@ -539,7 +475,7 @@ class GroupService extends BaseService<Group> {
     const actionMap = new Map<FEATURE_TYPE, FEATURE_STATUS>();
     actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE); // can not make call in group
 
-    const group = await this.getGroupById(groupId);
+    const group = await this.getById(groupId);
     actionMap.set(
       FEATURE_TYPE.MESSAGE,
       group ? this._checkGroupMessageStatus(group) : FEATURE_STATUS.INVISIBLE,
@@ -819,7 +755,7 @@ class GroupService extends BaseService<Group> {
   }
 
   async getGroupEmail(groupId: number) {
-    const group = await this.getGroupById(groupId);
+    const group = await this.getById(groupId);
     let email = '';
     if (group) {
       const companyService: CompanyService = CompanyService.getInstance();
