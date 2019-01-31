@@ -39,6 +39,7 @@ describe('MemberListViewModel', () => {
   describe('memberIds', () => {
     it('should be get correct memberIds when scrolling [JPT-405]', () => {
       const getSortedGroupMembersIds = jest.fn();
+      // @ts-ignore
       vm._memberListHandler = {
         getSortedGroupMembersIds,
       };
