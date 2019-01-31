@@ -20,7 +20,6 @@ import handleData, {
   handlePartialData,
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
-  handleHiddenGroupsChanged,
   saveDataAndDoNotification,
   calculateDeltaData,
 } from '../handleData';
@@ -565,23 +564,6 @@ describe('getUniqMostRecentPostsByGroup', () => {
     expect(groupedPosts.length).toEqual(2);
     expect(groupedPosts[0].id).toEqual(2);
     expect(groupedPosts[1].id).toEqual(3);
-  });
-});
-
-describe('handleHiddenGroupsChanged', () => {
-  it('handleHiddenGroupsChanged, more hidden', async () => {
-    daoManager
-      .getDao(GroupDao)
-      .queryGroupsByIds.mockReturnValueOnce([
-        { id: 1, is_team: true },
-        { id: 2, is_team: false },
-      ]);
-    await handleHiddenGroupsChanged([], [1, 2]);
-    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
-  });
-  it('handleHiddenGroupsChanged, less hidden', async () => {
-    await handleHiddenGroupsChanged([1, 2], []);
-    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
   });
 });
 
