@@ -42,7 +42,6 @@ type TabConfig = {
     desc?: boolean;
   };
   offlinePrompt: string;
-  tryAgainPrompt: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
@@ -57,7 +56,6 @@ const TAB_CONFIG: TabConfig[] = [
       image: PinnedEmptyImage,
     },
     offlinePrompt: 'networkErrorPinnedPrompt',
-    tryAgainPrompt: 'tryAgainPinnedPrompt',
   },
   {
     title: 'files',
@@ -73,7 +71,6 @@ const TAB_CONFIG: TabConfig[] = [
       desc: true,
     },
     offlinePrompt: 'networkErrorFilesPrompt',
-    tryAgainPrompt: 'tryAgainFilesPrompt',
   },
   {
     title: 'images',
@@ -89,7 +86,6 @@ const TAB_CONFIG: TabConfig[] = [
       desc: true,
     },
     offlinePrompt: 'networkErrorImagesPrompt',
-    tryAgainPrompt: 'tryAgainImagesPrompt',
   },
   {
     title: 'tasks',
@@ -102,7 +98,6 @@ const TAB_CONFIG: TabConfig[] = [
       image: TasksEmptyImage,
     },
     offlinePrompt: 'networkErrorTasksPrompt',
-    tryAgainPrompt: 'tryAgainTasksPrompt',
   },
   {
     title: 'links',
@@ -118,7 +113,6 @@ const TAB_CONFIG: TabConfig[] = [
       desc: true,
     },
     offlinePrompt: 'networkErrorLinksPrompt',
-    tryAgainPrompt: 'tryAgainLinksPrompt',
   },
   {
     title: 'notes',
@@ -134,7 +128,6 @@ const TAB_CONFIG: TabConfig[] = [
       desc: true,
     },
     offlinePrompt: 'networkErrorNotesPrompt',
-    tryAgainPrompt: 'tryAgainNotesPrompt',
   },
   {
     title: 'events',
@@ -150,7 +143,6 @@ const TAB_CONFIG: TabConfig[] = [
       image: EventsEmptyImage,
     },
     offlinePrompt: 'networkErrorEventsPrompt',
-    tryAgainPrompt: 'tryAgainEventsPrompt',
   },
   {
     title: 'integrations',
@@ -163,7 +155,6 @@ const TAB_CONFIG: TabConfig[] = [
       image: IntegrationsEmptyImage,
     },
     offlinePrompt: 'networkErrorIntegrationsPrompt',
-    tryAgainPrompt: 'tryAgainIntegrationsPrompt',
   },
 ];
 
