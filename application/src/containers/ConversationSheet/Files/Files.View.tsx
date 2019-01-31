@@ -92,14 +92,6 @@ class FilesView extends React.Component<FilesViewProps> {
           return (
             <JuiPreviewImage
               key={id}
-              placeholder={
-                <JuiFileWithoutPreview
-                  fileName={name}
-                  size={`${getFileSize(item.size)}`}
-                  iconType="image_preview"
-                  Actions={downloadBtn(downloadUrl)}
-                />
-              }
               width={size.width || SQUARE_SIZE}
               height={size.height || SQUARE_SIZE}
               forceSize={!singleImage}

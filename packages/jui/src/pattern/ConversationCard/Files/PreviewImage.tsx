@@ -3,7 +3,14 @@
  * @Date: 2018-10-26 10:35:16
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, RefObject, createRef, CSSProperties } from 'react';
+import React, {
+  Component,
+  RefObject,
+  createRef,
+  CSSProperties,
+  memo,
+  ReactNode,
+} from 'react';
 import * as Jui from './style';
 import { FileName } from './FileName';
 import styled from '../../../foundation/styled-components';
@@ -26,7 +33,6 @@ type JuiPreviewImageProps = {
   forceSize?: boolean;
   squareSize?: number;
   url: string;
-  placeholder?: JSX.Element;
 } & SizeType;
 
 const LoaderComponent = styled.div`
@@ -44,8 +50,15 @@ const MyLoader = (props: any) => (
   </LoaderComponent>
 );
 
+const JuiImageLoadingPlaceholder = memo((props: SizeType) => (
+  <Jui.ImageCard width={props.width} height={props.height}>
+    <MyLoader style={{ width: props.width, height: props.height }} />
+  </Jui.ImageCard>
+));
+
 class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
+  private _placeholder: ReactNode;
   private _imageInfo: ThumbnailInfo = {
     width: 0,
     height: 0,
@@ -81,8 +94,17 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   componentWillUnmount() {
     this._mounted = false;
   }
+  private get placeholder() {
+    if (!this._placeholder) {
+      const { width, height } = this.props;
+      this._placeholder = (
+        <JuiImageLoadingPlaceholder width={width} height={height} />
+      );
+    }
+    return this._placeholder;
+  }
   render() {
-    const { Actions, fileName, forceSize, url, placeholder } = this.props;
+    const { Actions, fileName, forceSize, url } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     const imageStyle: CSSProperties = { position: 'absolute', display: 'none' };
@@ -104,17 +126,9 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
       width = 0;
       height = 0;
     }
-    const hasImageSize = this.props.width > 0 && this.props.height > 0;
     return (
       <>
-        {!this._loaded && !hasImageSize && placeholder}
-        {!this._loaded && hasImageSize && (
-          <Jui.ImageCard width={this.props.width} height={this.props.height}>
-            <MyLoader
-              style={{ width: this.props.width, height: this.props.height }}
-            />
-          </Jui.ImageCard>
-        )}
+        {!this._loaded && this.placeholder}
         <Jui.ImageCard width={width} height={height}>
           <img
             style={imageStyle}
