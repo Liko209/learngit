@@ -214,7 +214,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       hasMoreDown: true,
       hasMoreUp: true,
     });
-    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
