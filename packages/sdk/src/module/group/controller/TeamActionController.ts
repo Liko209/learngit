@@ -150,28 +150,6 @@ class TeamActionController {
     );
   }
 
-  async makeAdmin(teamId: number, member: number) {
-    await this.partialModifyController.updatePartially(
-      teamId,
-      (partialEntity, originalEntity: Group) => {
-        const {
-          permissions: { admin: { uids: adminUids = [] } = {} } = {},
-        } = originalEntity;
-        const result = _.merge(partialEntity, {
-          permissions: {
-            admin: {
-              uids: _.union(adminUids, [member]),
-            },
-          },
-        });
-        return result;
-      },
-      async (updateEntity: Group) => {
-        return await this._getTeamRequestController().put(updateEntity);
-      },
-    );
-  }
-
   async deleteTeam(teamId: number): Promise<void> {
     await this.partialModifyController.updatePartially(
       teamId,
@@ -187,21 +165,32 @@ class TeamActionController {
     );
   }
 
-  async revokeAdmin(teamId: number, member: number) {
+  async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
     await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity: Group) => {
         const {
           permissions: { admin: { uids: adminUids = [] } = {} } = {},
         } = originalEntity;
-        const result = _.merge(partialEntity, {
-          permissions: {
-            admin: {
-              uids: _.difference(adminUids, [member]),
+        let finalPartialEntity = partialEntity;
+        if (isMake) {
+          finalPartialEntity = _.merge(partialEntity, {
+            permissions: {
+              admin: {
+                uids: _.union(adminUids, [member]),
+              },
             },
-          },
-        });
-        return result;
+          });
+        } else {
+          finalPartialEntity = _.merge(partialEntity, {
+            permissions: {
+              admin: {
+                uids: _.difference(adminUids, [member]),
+              },
+            },
+          });
+        }
+        return finalPartialEntity;
       },
       async (updateEntity: Group) => {
         return await this._getTeamRequestController().put(updateEntity);

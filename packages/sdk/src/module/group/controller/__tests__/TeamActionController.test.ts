@@ -377,7 +377,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeAdmin(mockTeam.id, 2);
+      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -405,7 +405,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeAdmin(mockTeam.id, 2);
+      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -433,7 +433,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeAdmin(mockTeam.id, 2);
+      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
       expect(testRequestController.put).not.toBeCalled();
     });
   });
@@ -445,7 +445,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.revokeAdmin(mockTeam.id, 2);
+      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -473,7 +473,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.revokeAdmin(mockTeam.id, 2);
+      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -501,7 +501,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.revokeAdmin(mockTeam.id, 2);
+      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
       expect(testRequestController.put).not.toBeCalled();
     });
   });

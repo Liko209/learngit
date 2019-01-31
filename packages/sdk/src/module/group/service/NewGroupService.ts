@@ -140,13 +140,13 @@ class NewGroupService extends EntityBaseService<Group>
   async makeAdmin(teamId: number, member: number) {
     return this.getTeamController()
       .getTeamActionController()
-      .makeAdmin(teamId, member);
+      .makeOrRevokeAdmin(teamId, member, true);
   }
 
   async revokeAdmin(teamId: number, member: number) {
     return this.getTeamController()
       .getTeamActionController()
-      .revokeAdmin(teamId, member);
+      .makeOrRevokeAdmin(teamId, member, false);
   }
 }
 
