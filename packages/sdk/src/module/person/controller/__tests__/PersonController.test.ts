@@ -5,7 +5,8 @@
  */
 
 import { PersonController } from '../PersonController';
-import { daoManager, PersonDao, AuthDao } from '../../../../dao';
+import { daoManager, AuthDao } from '../../../../dao';
+import { PersonDao } from '../../dao';
 import { Person, PHONE_NUMBER_TYPE } from '../../entity';
 import { UserConfig } from '../../../../service/account/UserConfig';
 import { personFactory } from '../../../../__tests__/factories';

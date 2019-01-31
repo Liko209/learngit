@@ -17,7 +17,8 @@ import { transform } from '../utils';
 
 import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
 import handleData, { hiddenGroupsChange } from './handleData';
-import { daoManager, PersonDao } from '../../dao';
+import { daoManager } from '../../dao';
+import { PersonDao } from '../../module/person/dao';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
