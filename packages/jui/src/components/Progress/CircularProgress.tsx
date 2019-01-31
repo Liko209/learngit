@@ -9,20 +9,6 @@ import MuiCircularProgress, {
 } from '@material-ui/core/CircularProgress';
 import styled from '../../foundation/styled-components';
 import { palette } from '../../foundation/utils';
-// import { Omit } from '../../foundation/utils/typeHelper';
-// import { grey } from '../../foundation/utils/styles';
-
-// type Color = 'primary' | 'secondary' | 'inherit' | 'grey';
-
-// type JuiCircularProgressProps = Omit<MuiCircularProgressProps, 'color'> & {
-//   color?: Color;
-// };
-
-// const JuiCircularProgress = styled<JuiCircularProgressProps>(MuiCircularProgress)`
-//   ${({ color }: JuiCircularProgressProps) => color === 'grey' && `
-//     color: ${grey('100')};
-//   `} ;
-// `;
 
 type JuiCircularProgressProps = MuiCircularProgressProps & {
   white?: boolean;

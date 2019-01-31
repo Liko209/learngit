@@ -32,7 +32,6 @@ type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   disabled?: boolean;
   color?: JuiButtonColor;
   loading?: boolean;
-  success?: boolean;
 };
 
 const ColorMap: {
