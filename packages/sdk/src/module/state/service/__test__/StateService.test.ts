@@ -7,6 +7,8 @@
 import { StateService } from '../StateService';
 import { State } from '../../entity';
 import { Group } from '../../../group/entity';
+import { Profile } from '../../../profile/entity';
+import { NotificationEntityPayload } from '../../../../service/notificationCenter';
 
 describe('StateService', () => {
   const stateService = new StateService();
@@ -18,6 +20,9 @@ describe('StateService', () => {
   const mockGetMyStateId = jest.fn();
   const mockHandleState = jest.fn();
   const mockHandleGroupCursor = jest.fn();
+  const mockHandleGroup = jest.fn();
+  const mockHandleProfile = jest.fn();
+  const mockGetSingleUnreadInfo = jest.fn();
 
   beforeAll(() => {
     const mockStateActionController = jest.fn().mockReturnValue({
@@ -34,10 +39,16 @@ describe('StateService', () => {
       getMyState: mockGetMyState,
       getMyStateId: mockGetMyStateId,
     });
+    const mockTotalUnreadController = jest.fn().mockReturnValue({
+      handleGroup: mockHandleGroup,
+      handleProfile: mockHandleProfile,
+      getSingleUnreadInfo: mockGetSingleUnreadInfo,
+    });
     stateService['getStateController'] = jest.fn().mockReturnValue({
       getStateActionController: mockStateActionController,
       getStateDataHandleController: mockStateDataHandleController,
       getStateFetchDataController: mockStateFetchDataController,
+      getTotalUnreadController: mockTotalUnreadController,
     });
   });
 
@@ -101,6 +112,30 @@ describe('StateService', () => {
       const groups: Partial<Group>[] = [];
       await stateService.handleGroupCursor(groups);
       expect(mockHandleGroupCursor).toBeCalledWith(groups);
+    });
+  });
+
+  describe('handleGroupChangeForTotalUnread()', () => {
+    it('should call with correct params', async () => {
+      const payload = {} as NotificationEntityPayload<Group>;
+      await stateService.handleGroupChangeForTotalUnread(payload);
+      expect(mockHandleGroup).toBeCalledWith(payload);
+    });
+  });
+
+  describe('handleProfileChangeForTotalUnread()', () => {
+    it('should call with correct params', async () => {
+      const payload = {} as NotificationEntityPayload<Profile>;
+      await stateService.handleProfileChangeForTotalUnread(payload);
+      expect(mockHandleProfile).toBeCalledWith(payload);
+    });
+  });
+
+  describe('getSingleUnreadInfo()', () => {
+    it('should call with correct params', async () => {
+      const id: number = 55668833;
+      await stateService.getSingleUnreadInfo(id);
+      expect(mockGetSingleUnreadInfo).toBeCalledWith(id);
     });
   });
 });
