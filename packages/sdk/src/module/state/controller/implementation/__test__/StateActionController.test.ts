@@ -9,11 +9,14 @@ import { IRequestController } from '../../../../../framework/controller/interfac
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { DeactivatedDao } from '../../../../../dao';
-import PostService from '../../../../../service/post';
+import { NewPostService } from '../../../../post/service/PostService';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 
+jest.mock('../../../../post/service/PostService');
+jest.mock('../StateFetchDataController');
+jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 class MockRequestController implements IRequestController {
   get = jest.fn();
   put = jest.fn();
@@ -42,10 +45,6 @@ class MockPartialModifyController implements IPartialModifyController {
   getRollbackPartialEntity = jest.fn();
   getMergedEntity = jest.fn();
 }
-
-jest.mock('../../../../../service/post');
-jest.mock('../StateFetchDataController');
-jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 
 describe('StateActionController', () => {
   let stateActionController: StateActionController;
@@ -78,7 +77,7 @@ describe('StateActionController', () => {
       stateActionController['_getLastPostOfGroup'] = jest
         .fn()
         .mockReturnValue(null);
-      PostService.getInstance = jest.fn().mockReturnValue({
+      NewPostService.getInstance = jest.fn().mockReturnValue({
         getNewestPostIdOfGroup: jest.fn().mockReturnValue(11223344),
       });
       mockStateFetchDataController.getMyStateId = jest
@@ -89,7 +88,7 @@ describe('StateActionController', () => {
         groupId,
       );
       expect(
-        PostService.getInstance<PostService>().getNewestPostIdOfGroup,
+        NewPostService.getInstance<NewPostService>().getNewestPostIdOfGroup,
       ).toBeCalledWith(groupId);
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
@@ -106,7 +105,7 @@ describe('StateActionController', () => {
       stateActionController['_getLastPostOfGroup'] = jest.fn().mockReturnValue({
         id: 123,
       });
-      PostService.getInstance = jest.fn().mockReturnValue({
+      NewPostService.getInstance = jest.fn().mockReturnValue({
         getNewestPostIdOfGroup: jest.fn().mockReturnValue(11223344),
       });
       mockStateFetchDataController.getMyStateId = jest
@@ -117,7 +116,7 @@ describe('StateActionController', () => {
         groupId,
       );
       expect(
-        PostService.getInstance<PostService>().getNewestPostIdOfGroup,
+        NewPostService.getInstance<NewPostService>().getNewestPostIdOfGroup,
       ).toBeCalledTimes(0);
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();

@@ -25,7 +25,6 @@ class StateActionController {
     if (!lastPostId) {
       const postService = NewPostService.getInstance<NewPostService>();
       lastPostId = await postService.getNewestPostIdOfGroup(groupId);
-      lastPostId = 1;
     }
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (lastPostId && myStateId > 0) {
