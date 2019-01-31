@@ -8,9 +8,9 @@ import { GroupState, State } from '../../entity/State';
 import { Post } from '../../../post/entity';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { NewPostService } from '../../../post';
 import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
+import { NewPostService } from '../../../post';
 
 class StateActionController {
   constructor(
@@ -23,7 +23,7 @@ class StateActionController {
     const lastPost = await this._getLastPostOfGroup(groupId);
     let lastPostId = lastPost && lastPost.id;
     if (!lastPostId) {
-      const postService: NewPostService = NewPostService.getInstance();
+      const postService = NewPostService.getInstance<NewPostService>();
       lastPostId = await postService.getNewestPostIdOfGroup(groupId);
       lastPostId = 1;
     }

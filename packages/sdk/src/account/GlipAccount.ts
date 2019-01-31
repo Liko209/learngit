@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractAccount } from '../framework';
-import { NewPostService } from '../module/post';
 import GroupService from '../service/group';
 import CompanyService from '../service/company';
 import { PersonService } from '../module/person';
@@ -14,6 +13,7 @@ import SearchService from '../service/search';
 import { TelephonyService } from '../module/telephony';
 import { ItemService } from '../module/item';
 import { StateService } from '../module/state';
+import { NewPostService } from '../module/post';
 
 class GlipAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {

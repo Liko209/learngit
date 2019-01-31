@@ -15,7 +15,9 @@ import ProfileService from '../../../service/profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service';
-import { handleDataFromSexio } from '../../../service/post/handleData';
+import { IRequestRemotePostAndSave } from '../entity/Post';
+import { Raw } from '../../../framework/model';
+
 class NewPostService extends EntityBaseService<Post> {
   static serviceName = 'NewPostService';
   postController: PostController;
@@ -24,10 +26,9 @@ class NewPostService extends EntityBaseService<Post> {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });
-
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.POST]: handleDataFromSexio,
+        [SOCKET.POST]: this.handleSexioData,
       }),
     );
   }
@@ -110,6 +111,24 @@ class NewPostService extends EntityBaseService<Post> {
       .groupHasPostInLocal(groupId);
   }
 
+  async getRemotePostsByGroupIdAndSave(
+    params: IRequestRemotePostAndSave,
+  ): Promise<IPostResult> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getRemotePostsByGroupIdAndSave(params);
+  }
+
+  async getPostCountByGroupId(groupId: number): Promise<number> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getPostCountByGroupId(groupId);
+  }
+
+  async getPostFromLocal(postId: number): Promise<Post | null> {
+    return this.getEntitySource().getEntityLocally(postId);
+  }
+
   async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
     return this.getPostController()
       .getPostFetchController()
@@ -128,12 +147,16 @@ class NewPostService extends EntityBaseService<Post> {
       .deletePostsByGroupIds(groupIds, shouldNotify);
   }
 
-  async getPostsFromRemote({}) {
-    // TODO waiting for stage code
-    return {
-      posts: [],
-      items: [],
-    };
+  handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+    this.getPostController()
+      .getPostDataController()
+      .handleIndexPosts(data, maxPostsExceed);
+  }
+
+  handleSexioData = async (data: Raw<Post>[]) => {
+    this.getPostController()
+      .getPostDataController()
+      .handleSexioPosts(data);
   }
 }
 

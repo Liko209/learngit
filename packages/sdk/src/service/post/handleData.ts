@@ -7,7 +7,6 @@ import { daoManager } from '../../dao';
 import PostDao from '../../dao/post';
 import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../service/group';
-import IncomingPostHandler from '../../service/post/incomingPostHandler';
 import { transform, baseHandleData as utilsBaseHandleData } from '../utils';
 import { Raw } from '../../framework/model';
 import { Group } from '../../module/group/entity';
@@ -91,48 +90,6 @@ export async function handleDeactivatedAndNormalPosts(
   return posts;
 }
 
-export async function handleDataFromSexio(data: Raw<Post>[]): Promise<void> {
-  if (data.length === 0) {
-    return;
-  }
-  const transformedData: Post[] = transformData(data);
-  // handle edited posts not in local db
-  const validPosts: Post[] = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    transformedData,
-  );
-  await handlePreInsertPosts(validPosts);
-  if (validPosts.length) {
-    await handleDeactivatedAndNormalPosts(validPosts, true);
-  }
-}
-
-export async function handleDataFromIndex(
-  data: Raw<Post>[],
-  maxPostsExceed: boolean,
-): Promise<void> {
-  if (data.length === 0) {
-    return;
-  }
-  const transformedData = transformData(data);
-
-  // handle max exceeded
-  const exceedPostsHandled = await IncomingPostHandler.handelGroupPostsDiscontinuousCasuedByOverThreshold(
-    transformedData,
-    maxPostsExceed,
-  );
-  await handlePreInsertPosts(exceedPostsHandled);
-
-  // handle discontinuous by modified
-  const result = await IncomingPostHandler.handleGroupPostsDiscontinuousCausedByModificationTimeChange(
-    exceedPostsHandled,
-  );
-  handleDeactivatedAndNormalPosts(result, true);
-}
-
-export default async function (data: Raw<Post>[], maxPostsExceed: boolean) {
-  return handleDataFromIndex(data, maxPostsExceed);
-}
-
 /**
  * @param data
  * @param needTransformed
@@ -146,22 +103,4 @@ export function baseHandleData(
     | Raw<Post>[]
     | Raw<Post>);
   return handleDeactivatedAndNormalPosts(transformedData, save);
-}
-
-export async function handlePreInsertPosts(posts: Post[] = []) {
-  if (!posts || !posts.length) {
-    return [];
-  }
-  const ids: number[] = [];
-  posts.map(async (post: Post) => {
-    if (post.id < 0) {
-      ids.push(post.version);
-    }
-  });
-
-  if (ids.length) {
-    const postDao = daoManager.getDao(PostDao);
-    await postDao.bulkDelete(ids);
-  }
-  return ids;
 }

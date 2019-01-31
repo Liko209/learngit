@@ -5,7 +5,6 @@
  */
 import { service } from 'sdk';
 import { JServerError, ERROR_CODES_SERVER } from 'sdk/error';
-import { GroupService as NGroupService } from 'sdk/module/group';
 import { Notification } from '@/containers/Notification';
 import { getGlobalValue } from '../../../../../../store/utils';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
@@ -15,10 +14,6 @@ jest.mock('@/containers/Notification');
 
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
-
-jest.mock('sdk/module/group', () => ({
-  GroupService: jest.fn(),
-}));
 
 const searchBarViewModel = new SearchBarViewModel();
 const { GroupService } = service;

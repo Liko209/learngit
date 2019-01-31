@@ -51,6 +51,10 @@ class PostDao extends BaseDao<Post> {
     ]);
   }
 
+  async queryPostIdsByGroupId(groupId: number) {
+    return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
+  }
+
   async queryPostsByGroupId(
     groupId: number,
     anchorPostId?: number,
@@ -91,6 +95,11 @@ class PostDao extends BaseDao<Post> {
   async queryPreInsertPost(): Promise<Post[]> {
     const query = this.createQuery();
     return query.lessThan('id', 0).toArray();
+  }
+
+  async groupPostCount(groupId: number): Promise<number> {
+    const query = this.createQuery();
+    return query.equal('group_id', groupId).count();
   }
 
   private async _putPostView(item: Post) {

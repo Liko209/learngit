@@ -34,6 +34,7 @@ import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
 import { NewPostService } from './module/post';
 import { PermissionService } from './module/permission';
+import { NewGroupService } from './module/group';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -76,6 +77,7 @@ const registerConfigs = {
     { name: ProgressService.name, value: ProgressService },
     { name: NewPostService.name, value: NewPostService },
     { name: PermissionService.name, value: PermissionService },
+    { name: NewGroupService.name, value: NewGroupService },
     {
       name: ConfigService.name,
       value: ConfigService,

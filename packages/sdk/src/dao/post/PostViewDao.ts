@@ -32,7 +32,7 @@ class PostViewDao extends BaseDao<PostView> {
       }
     }
     // 1. Get ids from post lookup table via group id
-    let postIds = await this._queryPostIdsByGroupId(groupId);
+    let postIds = await this.queryPostIdsByGroupId(groupId);
 
     // 2. If post id > 0, calculate the startIndex & endIndex via direction, else limit is the endIndex
     postIds = this._slicePostIds(postIds, anchorPostId, direction, limit);
@@ -47,7 +47,7 @@ class PostViewDao extends BaseDao<PostView> {
     return posts;
   }
 
-  private async _queryPostIdsByGroupId(groupId: number): Promise<number[]> {
+  async queryPostIdsByGroupId(groupId: number): Promise<number[]> {
     const query = this.createQuery().equal('group_id', groupId);
     const postViews = await query.toArray();
     return _.orderBy(postViews, 'created_at', 'desc').map(

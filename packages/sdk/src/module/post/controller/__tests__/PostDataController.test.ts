@@ -5,15 +5,18 @@
  */
 
 import { ItemService } from '../../../item';
-import { PostDao, daoManager } from '../../../../dao';
-import { ItemDao } from '../../../item/dao';
+import { PostDao, ItemDao, daoManager, DeactivatedDao } from '../../../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PROGRESS_STATUS } from '../../../progress';
 import { PostDataController } from '../PostDataController';
 import { Item } from '../../../item/entity';
 import { Post } from '../../entity';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
+import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
+import _ from 'lodash';
 
+jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../item');
 jest.mock('../../../../dao');
 jest.mock('../../../../framework/controller');
@@ -40,9 +43,16 @@ class MockPreInsertController<T extends ExtendedBaseModel>
 describe('PostDataController', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
-  const itemDao = new ItemDao(null);
+  const deactivatedDao = new DeactivatedDao(null);
   const preInsertController = new MockPreInsertController();
-  const postDataController = new PostDataController(preInsertController, null);
+  const mockEntitySourceController: EntitySourceController = new EntitySourceController(
+    {} as IEntityPersistentController,
+    {} as DeactivatedDao,
+  );
+  const postDataController = new PostDataController(
+    preInsertController,
+    mockEntitySourceController,
+  );
 
   function clearMocks() {
     jest.clearAllMocks();
@@ -57,8 +67,8 @@ describe('PostDataController', () => {
       if (arg === PostDao) {
         return postDao;
       }
-      if (arg === ItemDao) {
-        return itemDao;
+      if (arg === DeactivatedDao) {
+        return deactivatedDao;
       }
     });
   }
@@ -68,21 +78,6 @@ describe('PostDataController', () => {
       clearMocks();
       setup();
     });
-
-    it('should do nothing if data is null', async () => {
-      const result = await postDataController.handleFetchedPosts(
-        null,
-        false,
-        (posts: Post[], items: Item[]) => {},
-      );
-      const filterAndSavePosts = jest.spyOn(
-        postDataController,
-        'filterAndSavePosts',
-      );
-      expect(filterAndSavePosts).not.toBeCalled();
-      expect(itemService.handleIncomingData).not.toBeCalled();
-    });
-
     it('should go through data handle process if data is not null', async () => {
       const data = {
         posts: [{ id: 3, group_id: 1 }, { id: 4, group_id: 2 }],
@@ -95,6 +90,306 @@ describe('PostDataController', () => {
         (posts: Post[], items: Item[]) => {},
       );
       expect(itemService.handleIncomingData).toBeCalled();
+    });
+  });
+
+  describe('handleIndexPosts()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      jest
+        .spyOn(mockEntitySourceController, 'bulkDelete')
+        .mockResolvedValueOnce({});
+    });
+
+    it('should return [] when [maxPostsExceed=true | posts.length=0]', async () => {
+      const result = await postDataController.handleIndexPosts([], true);
+      expect(result).toEqual([]);
+    });
+
+    it('should return all data if not modified and deactivated posts', async () => {
+      const mock = [];
+      for (let i = 1; i < 60; i += 1) {
+        mock.push({ id: i, group_id: Math.random() > 0.5 ? 1 : 2 });
+      }
+      let result = await postDataController.handleIndexPosts(mock, true);
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(mock);
+    });
+
+    it('should delete group which post length >= 50 posts when maxPostsExceed=true', async () => {
+      const posts = [];
+      const deleteIds = [];
+      for (let i = 1; i < 60; i += 1) {
+        posts.push({ id: i, group_id: 1 });
+        if (i < 50) {
+          deleteIds.push(i);
+        }
+      }
+      for (let i = 61; i < 100; i += 1) {
+        posts.push({ id: i, group_id: 2 });
+      }
+      postDao.queryPostIdsByGroupId.mockResolvedValue(deleteIds);
+      let result = await postDataController.handleIndexPosts(posts, true);
+      expect(mockEntitySourceController.bulkDelete).toBeCalledWith(deleteIds);
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts);
+    });
+
+    it('should delete all group post length >= 50 posts when maxPostsExceed=true', async () => {
+      const posts = [];
+      const deleteGroupOneIds = [];
+      const deleteGroupTwoIds = [];
+      for (let i = 1; i < 60; i += 1) {
+        posts.push({ id: i, group_id: 1 });
+        if (i < 50) {
+          deleteGroupOneIds.push(i);
+        }
+      }
+      for (let i = 61; i < 130; i += 1) {
+        posts.push({ id: i, group_id: 2 });
+        deleteGroupTwoIds.push(i);
+      }
+      postDao.queryPostIdsByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return deleteGroupOneIds;
+        }
+        if (arg === 2) {
+          return deleteGroupTwoIds;
+        }
+      });
+      let result = await postDataController.handleIndexPosts(posts, true);
+      expect(mockEntitySourceController.bulkDelete).toBeCalledWith(
+        deleteGroupOneIds.concat(deleteGroupTwoIds),
+      );
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts);
+    });
+
+    it('should not call mockEntitySourceController.bulkDelete when maxPostsExceed=true but post length < 50', async () => {
+      const posts = [];
+      for (let i = 1; i < 30; i += 1) {
+        posts.push({ id: i, group_id: 1 });
+      }
+      for (let i = 61; i < 30; i += 1) {
+        posts.push({ id: i, group_id: 2 });
+      }
+      let result = await postDataController.handleIndexPosts(posts, true);
+      expect(mockEntitySourceController.bulkDelete).not.toBeCalled();
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts);
+    });
+
+    it('should delete older posts when maxPostsExceed=true but post length < 50', async () => {
+      const posts = [];
+      for (let i = 1; i < 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockResolvedValue(posts[10]);
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, posts.length));
+    });
+
+    it('should not delete when [maxPostsExceed=true | posts.length < 50 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i < 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockResolvedValue(posts[0]);
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts);
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length = 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i < 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockResolvedValue(posts[0]);
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts);
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it('should delete when [maxPostsExceed=true | posts.length < 50 | group.length > 1 | not any posts older than oldest post in db]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      for (let i = 31; i <= 60; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 2,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      postDao.queryOldestPostByGroupId.mockImplementation(arg => {
+        if (arg === 1) {
+          return posts[9];
+        }
+        if (arg === 2) {
+          return posts[39];
+        }
+      });
+
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
+    });
+
+    it.only('should filter deactivated posts when [maxPostsExceed=true | has deactivated posts]', async () => {
+      const posts = [];
+      for (let i = 1; i <= 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i,
+          deactivated: i % 4 === 0 ? true : false,
+        });
+      }
+      deactivatedDao.bulkPut.mockResolvedValueOnce({});
+      postDao.bulkDelete.mockResolvedValueOnce({});
+      let result = await postDataController.handleIndexPosts(posts, true);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.filter((post: Post) => !post.deactivated));
+    });
+  });
+
+  describe('handleIndexPosts()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      jest
+        .spyOn(mockEntitySourceController, 'bulkDelete')
+        .mockResolvedValueOnce({});
     });
   });
 
