@@ -98,8 +98,12 @@ export class RightRail extends BaseWebComponent {
     return this.getComponent(TasksTab);
   }
 
-  get linkTab() {
+  get linksTab() {
     return this.getComponent(LinksTab);
+  }
+
+  get notesTab() {
+    return this.getComponent(NotesTab);
   }
 }
 

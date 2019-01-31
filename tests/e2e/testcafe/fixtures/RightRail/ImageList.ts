@@ -5,7 +5,6 @@
  */
 
 
-import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';

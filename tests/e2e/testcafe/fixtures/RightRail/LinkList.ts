@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
@@ -43,7 +42,7 @@ test(formalName('Send message for link and display on the right rail', ['Skye', 
     await conversationPage.sendMessage(message[0]);
   });
 
-  const linkTab = rightRail.linkTab;
+  const linkTab = rightRail.linksTab;
   await h(t).withLog('And I click Links Tab', async () => {
     await rightRail.openMore();
     await rightRail.linksEntry.enter();
