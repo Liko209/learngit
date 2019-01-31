@@ -8,13 +8,11 @@ import { TabConfig } from './config';
 
 type LoadStatus = {
   firstLoaded: boolean;
-  loadError: boolean;
   loading: boolean;
 };
 
 const InitLoadStatus: LoadStatus = {
   firstLoaded: false,
-  loadError: false,
   loading: false,
 };
 

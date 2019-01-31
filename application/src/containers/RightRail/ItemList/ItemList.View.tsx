@@ -20,7 +20,6 @@ import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
-  JuiRightRailContentLoadError,
 } from 'jui/pattern/RightShelf';
 import { debounce } from 'lodash';
 const LOAD_DELAY = 300;
@@ -92,13 +91,9 @@ class ItemListView extends React.Component<ViewProps & Props>
     return <JuiRightRailLoadingMore />;
   }
 
-  private _handleRetry = async () => {
-    return await this.loadMore(0, 0);
-  }
-
   render() {
     const { totalCount, ids, loadStatus, tabConfig } = this.props;
-    const { loading, firstLoaded, loadError } = loadStatus;
+    const { loading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
     return (
       <JuiRightShelfContent>
@@ -107,7 +102,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             {i18next.t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
-        {firstLoaded && !loadError && (
+        {firstLoaded && (
           <ReactResizeDetector handleWidth={true} handleHeight={true}>
             {(width: number = 0, height: number = HEADER_HEIGHT) => (
               <JuiVirtualList
@@ -120,14 +115,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             )}
           </ReactResizeDetector>
         )}
-        {loading && !firstLoaded && !loadError && this.firstLoader()}
-        {loadError && (
-          <JuiRightRailContentLoadError
-            tip={i18next.t('rightShelfTryAgainPrompt')}
-            linkText={i18next.t('tryAgain')}
-            onClick={this._handleRetry}
-          />
-        )}
+        {loading && !firstLoaded && this.firstLoader()}
       </JuiRightShelfContent>
     );
   }
