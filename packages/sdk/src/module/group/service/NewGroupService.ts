@@ -11,7 +11,7 @@ import { TeamSetting, PermissionFlags } from '../types';
 import { PERMISSION_ENUM } from '../constants';
 import { INewGroupService } from './INewGroupService';
 import { daoManager, QUERY_DIRECTION } from '../../../dao';
-import GroupDao from '../../../dao/group';
+import { GroupDao } from '../../../module/group/dao';
 import { Api } from '../../../api';
 import { GroupConfigController } from '../controller/GroupConfigController';
 
