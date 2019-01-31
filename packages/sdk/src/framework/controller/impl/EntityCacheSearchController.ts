@@ -39,7 +39,7 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   }
 
   async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    return this.entityCacheController.getEntities(filterFunc);
+    return await this.entityCacheController.getEntities(filterFunc);
   }
 
   async searchEntities(
@@ -92,8 +92,23 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
       : false;
   }
 
-  protected getTermsFromSearchKey(searchKey: string) {
+  isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
+  }
+
+  isInitialized(): boolean {
+    return this.entityCacheController.isInitialized();
   }
 }
 

@@ -9,7 +9,7 @@ import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { RTC_ACCOUNT_STATE } from '../api/types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions } from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
 import {
   REGISTRATION_ERROR_CODE,
@@ -177,7 +177,10 @@ class RTCRegistrationManager extends EventEmitter2
     );
   }
 
-  public createOutgoingCallSession(phoneNumber: string, options: any): any {
+  public createOutgoingCallSession(
+    phoneNumber: string,
+    options: RTCCallOptions,
+  ): any {
     return this._userAgent.makeCall(phoneNumber, options);
   }
 

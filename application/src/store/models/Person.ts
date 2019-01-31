@@ -6,6 +6,7 @@ import {
   PhoneNumberModel,
   HeadShotModel,
   SanitizedExtensionModel,
+  PhoneNumberInfo,
 } from 'sdk/module/person/entity';
 import Base from './Base';
 import {
@@ -14,7 +15,7 @@ import {
   handleOneOfName,
   phoneNumberDefaultFormat,
 } from '../helper';
-import PersonService, { PhoneNumberInfo } from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 
 export default class PersonModel extends Base<Person> {
   @observable

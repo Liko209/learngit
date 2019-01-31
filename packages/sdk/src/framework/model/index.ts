@@ -6,5 +6,7 @@
 
 import { IdModel } from './Model';
 import { Raw } from './Raw';
+import { IPagination } from './IPagination';
+import { SortableModel } from './SortableModel';
 
-export { IdModel, Raw };
+export { IdModel, Raw, IPagination, SortableModel };

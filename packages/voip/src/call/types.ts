@@ -7,6 +7,7 @@ enum CALL_SESSION_STATE {
   CONFIRMED = 'callsessionstate.confirmed',
   DISCONNECTED = 'callsessionstate.disconnected',
   ERROR = 'callsessionstate.error',
+  PROGRESS = 'callsessionstate.progress',
 }
 
 enum CALL_FSM_NOTIFY {

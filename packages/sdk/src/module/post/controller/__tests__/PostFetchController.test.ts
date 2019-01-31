@@ -6,7 +6,8 @@
 
 import { postFactory, itemFactory } from '../../../../__tests__/factories';
 import { ItemService } from '../../../item';
-import { PostDao, ItemDao, daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { ItemDao } from '../../../item/dao';
+import { PostDao, daoManager, QUERY_DIRECTION } from '../../../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PostFetchController } from '../PostFetchController';
@@ -14,14 +15,13 @@ import { PROGRESS_STATUS } from '../../../progress';
 import PostAPI from '../../../../api/glip/post';
 import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import { NewGroupService } from '../../../../module/group';
+import { NewGroupService } from '../../../../module/group/service';
 import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../item');
 jest.mock('../../../../api/glip/post');
-jest.mock('../../../../module/group');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -46,12 +46,16 @@ describe('PostFetchController()', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
-  const groupService = new NewGroupService();
+  // const groupService = new NewGroupService();
   const preInsertController = new MockPreInsertController();
   const postFetchController = new PostFetchController(
     preInsertController,
     null,
   );
+  const groupService = {
+    hasMorePostInRemote: jest.fn(),
+    updateHasMore: jest.fn(),
+  };
 
   function clearMocks() {
     jest.clearAllMocks();

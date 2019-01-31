@@ -9,10 +9,9 @@ import { SERVICE } from '../eventKey';
 import { IndexDataModel } from '../../api/glip/user';
 import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
-import GroupDao from '../../dao/group';
-import PersonDao from '../../dao/person';
+import { GroupDao } from '../../module/group/dao';
+import { PersonDao } from '../../module/person/dao';
 import PostDao from '../../dao/post';
-import ItemDao from '../../dao/item';
 import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';
 import { FileItemDao } from '../../module/item/module/file/dao/FileItemDao';
 import { NoteItemDao } from '../../module/item/module/note/dao/NoteItemDao';
@@ -28,6 +27,7 @@ import {
 import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
+import { ItemDao } from '../../module/item/dao';
 import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 
 type SyncListener = {

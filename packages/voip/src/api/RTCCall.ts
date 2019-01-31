@@ -8,9 +8,15 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
+import {
+  kRTCAnonymous,
+  kRTCHangupInvalidCallInterval,
+} from '../account/constants';
+
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTCCallInfo,
+  RTCCallOptions,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
@@ -33,6 +39,9 @@ class RTCCall {
   private _isIncomingCall: boolean;
   private _isRecording: boolean = false;
   private _isMute: boolean = false;
+  private _options: RTCCallOptions = {};
+  private _isAnonymous: boolean = false;
+  private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
 
   constructor(
     isIncoming: boolean,
@@ -40,10 +49,17 @@ class RTCCall {
     session: any,
     account: IRTCAccount,
     delegate: IRTCCallDelegate | null,
+    options?: RTCCallOptions,
   ) {
     this._account = account;
     if (delegate != null) {
       this._delegate = delegate;
+    }
+    if (options) {
+      this._options = options;
+      if (this._options.fromNumber === kRTCAnonymous) {
+        this._isAnonymous = true;
+      }
     }
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
@@ -54,10 +70,21 @@ class RTCCall {
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
       this.setCallSession(session);
     } else {
+      this._addHangupTimer();
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
     this._prepare();
+  }
+
+  isAnonymous() {
+    return this._isAnonymous;
+  }
+
+  private _addHangupTimer(): void {
+    this._hangupInvalidCallTimer = setTimeout(() => {
+      this.hangup();
+    },                                        kRTCHangupInvalidCallInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -178,6 +205,9 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.ERROR, () => {
       this._onSessionError();
     });
+    this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
+      this._onSessionProgress(response);
+    });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
       (
@@ -204,6 +234,10 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      if (this._hangupInvalidCallTimer) {
+        clearTimeout(this._hangupInvalidCallTimer);
+        this._hangupInvalidCallTimer = null;
+      }
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -338,6 +372,13 @@ class RTCCall {
   private _onSessionError() {
     this._fsm.sessionError();
   }
+
+  private _onSessionProgress(response: any) {
+    if (response.status_code === 183 && this._hangupInvalidCallTimer) {
+      clearTimeout(this._hangupInvalidCallTimer);
+      this._hangupInvalidCallTimer = null;
+    }
+  }
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();
@@ -408,6 +449,7 @@ class RTCCall {
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,
+      this._options,
     );
     this.setCallSession(session);
   }

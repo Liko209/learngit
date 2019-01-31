@@ -21,11 +21,10 @@ import CompanyService from './service/company';
 import ConfigService from './service/config';
 import GroupService from './service/group';
 import { ItemService } from './module/item';
-import PersonService from './service/person';
+import { PersonService } from './module/person';
 import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';
-import SearchService from './service/search';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
@@ -74,7 +73,6 @@ const registerConfigs = {
     { name: PersonService.name, value: PersonService },
     { name: PresenceService.name, value: PresenceService },
     { name: ProfileService.name, value: ProfileService },
-    { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
     { name: NewPostService.name, value: NewPostService },

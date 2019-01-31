@@ -5,13 +5,9 @@
  */
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { writeFileSync } from 'fs';
-import { getLogger } from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
 
-const logger = getLogger(__filename);
-logger.level = 'info';
 
 dotenv.config();
 
@@ -22,6 +18,11 @@ const SITE_ENV = process.env.SITE_ENV || 'XMN-UP';
 const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
 const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
 const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
+
+const ENABLE_MOCK_SERVER = (process.env.ENABLE_MOCK_SERVER === 'true');
+const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+const MOCK_ENV = process.env.MOCK_ENV || 'XMN-MOCK';
+const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/login/api/login';
 
 const ENV_OPTS = {
   'XMN-UP': {
@@ -85,16 +86,6 @@ const RUNNER_OPTS = {
   MAX_RESOLUTION,
 }
 
-// create electron configuration file
-const electronRunConfig = {
-  mainWindowUrl: process.env.MAIN_WINDOW_URL || SITE_URL,
-  electronPath: process.env.ELECTRON_PATH || '/Applications/Jupiter.app/Contents/MacOS/Jupiter'
-};
-const testcafeElectronRcFilename = '.testcafe-electron-rc';
-const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
-writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
-logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
-
 // beat dashboard configuration
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
 const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.rcch.ringcentral.com:8000/api/v1";
@@ -120,4 +111,9 @@ export {
   DASHBOARD_URL,
   RUN_NAME,
   BrandTire,
+
+  ENABLE_MOCK_SERVER,
+  MOCK_SERVER_URL,
+  MOCK_ENV,
+  MOCK_AUTH_URL,
 };

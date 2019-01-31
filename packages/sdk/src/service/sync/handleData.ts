@@ -15,7 +15,6 @@ import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
-import personHandleData from '../person/handleData';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
@@ -27,6 +26,7 @@ import { Profile } from '../../module/profile/entity';
 import { ItemService } from '../../module/item';
 import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
+import { PersonService } from '../../module/person';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -70,7 +70,9 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     // featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(transProfile))
-    .then(() => personHandleData(people))
+    .then(() =>
+      PersonService.getInstance<PersonService>().handleIncomingData(people),
+    )
     .then(() => groupHandleData(public_teams))
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))

@@ -11,7 +11,8 @@ import {
 } from '../../../../../framework/controller';
 import { FileUploadController } from '../controller/FileUploadController';
 import { Api } from '../../../../../api';
-import { daoManager, ItemDao } from '../../../../../dao';
+import { daoManager } from '../../../../../dao';
+import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
 import { IItemService } from '../../../service/IItemService';
 import { FileActionController } from './FileActionController';

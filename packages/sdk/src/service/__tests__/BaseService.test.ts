@@ -1,8 +1,7 @@
 /// <reference path="../../__tests__/types.d.ts" />
 import { daoManager } from '../../dao';
 import BaseService from '../BaseService';
-import BaseDao from '../../dao/base/BaseDao';
-import Query from '../../dao/base/Query';
+import { BaseDao, Query } from '../../framework/dao';
 import { container } from '../../container';
 import notificationCenter from '../notificationCenter';
 import { SOCKET } from '../eventKey';
@@ -18,8 +17,7 @@ import {
   ERROR_CODES_NETWORK,
 } from 'foundation/src';
 
-jest.mock('../../dao/base/BaseDao');
-jest.mock('../../dao/base/Query');
+jest.mock('../../framework/dao');
 
 class MyDao extends BaseDao<{}> {}
 const fakeApi = {

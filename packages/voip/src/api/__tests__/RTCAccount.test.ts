@@ -13,6 +13,8 @@ import {
   RTC_CALL_ACTION,
   RTCCallOptions,
 } from '../types';
+
+import { kRTCAnonymous } from '../../account/constants';
 import { REGISTRATION_FSM_STATE } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { rtcNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
@@ -198,6 +200,41 @@ describe('RTCAccount', async () => {
     setImmediate(() => {
       expect(account.callCount()).toBe(0);
       done();
+    });
+  });
+
+  describe('makeAnonymousCall()', () => {
+    it('Should call createOutgoingCallSession api with options include anonymous when have been called without options param [JPT-976]', done => {
+      setupAccount();
+      const listener = new MockCallListener();
+      jest.spyOn(account, 'createOutgoingCallSession');
+      const call = account.makeAnonymousCall('123', listener);
+      const isAnonymous: boolean = call.isAnonymous();
+      call.onAccountReady();
+      setImmediate(() => {
+        expect(account.createOutgoingCallSession).toHaveBeenCalledWith('123', {
+          fromNumber: kRTCAnonymous,
+        });
+        expect(isAnonymous).toBeTruthy();
+        done();
+      });
+    });
+
+    it('Should call createOutgoingCallSession api with options include anonymous when have been called with options param [JPT-976]', done => {
+      setupAccount();
+      const listener = new MockCallListener();
+      jest.spyOn(account, 'createOutgoingCallSession');
+      const options: RTCCallOptions = { fromNumber: '234' };
+      const call = account.makeAnonymousCall('123', listener, options);
+      const isAnonymous: boolean = call.isAnonymous();
+      call.onAccountReady();
+      setImmediate(() => {
+        expect(account.createOutgoingCallSession).toHaveBeenCalledWith('123', {
+          fromNumber: kRTCAnonymous,
+        });
+        expect(isAnonymous).toBeTruthy();
+        done();
+      });
     });
   });
 });

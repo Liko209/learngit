@@ -15,7 +15,8 @@ import {
 } from '../../../utils';
 import { Progress } from '../../progress';
 import { Post } from '../../post/entity';
-import { ItemDao, daoManager } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { ItemDao } from '../dao';
 import { SOCKET, ENTITY } from '../../../service/eventKey';
 import { FileItemService } from '../module/file';
 import { Api } from '../../../api';

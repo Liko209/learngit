@@ -7,7 +7,7 @@
 import { action, observable, computed, runInAction, comparer } from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import { PersonService } from 'sdk/service';
+import { PersonService } from 'sdk/module/person';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';

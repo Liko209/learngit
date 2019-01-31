@@ -10,7 +10,8 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { TeamSetting, PermissionFlags } from '../types';
 import { PERMISSION_ENUM } from '../constants';
 import { INewGroupService } from './INewGroupService';
-import { daoManager, GroupDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { GroupDao } from '../../../module/group/dao';
 import { Api } from '../../../api';
 import { GroupConfigController } from '../controller/GroupConfigController';
 
@@ -103,6 +104,18 @@ class NewGroupService extends EntityBaseService<Group>
       .isTeamAdmin(personId, permission);
   }
 
+  async deleteTeam(teamId: number): Promise<void> {
+    await this.getTeamController()
+      .getTeamActionController()
+      .deleteTeam(teamId);
+  }
+
+  hasTeamAdmin(permission?: TeamPermission): boolean {
+    return this.getTeamController()
+      .getTeamPermissionController()
+      .hasTeamAdmin(permission);
+  }
+
   async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
     return this.getGroupConfigController().hasMorePostInRemote(
       groupId,
@@ -116,6 +129,12 @@ class NewGroupService extends EntityBaseService<Group>
       direction,
       hasMore,
     );
+  }
+
+  async archiveTeam(teamId: number) {
+    await this.getTeamController()
+      .getTeamActionController()
+      .archiveTeam(teamId);
   }
 }
 

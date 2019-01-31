@@ -67,7 +67,7 @@ const case4: CaseTye = {
     const ratio = height / width;
     return (
       (height > MAX_WIDTHHEIGHT || width > MAX_WIDTHHEIGHT) &&
-      (ratio > 1 / 5 && ratio < 2)
+      (ratio > 1 / 5 && ratio <= 2)
     );
   },
   calculate(width: number, height: number, result: ThumbnailInfo) {

@@ -7,7 +7,7 @@ import {
   JNetworkError,
   ERROR_CODES_NETWORK,
 } from 'foundation';
-import PersonService from '../../person';
+import { PersonService } from '../../../module/person';
 import ProfileService from '../../profile';
 import { UserConfig } from '../../account/UserConfig';
 import GroupAPI from '../../../api/glip/group';
@@ -16,13 +16,16 @@ import GroupService from '../index';
 import {
   daoManager,
   AccountDao,
-  GroupDao,
   ConfigDao,
   GroupConfigDao,
   QUERY_DIRECTION,
 } from '../../../dao';
 
-import { Group, Raw, Person } from '../../../models';
+import { GroupDao } from '../../../module/group/dao';
+
+import { Group } from '../../../module/group/entity';
+import { Raw } from '../../../framework/model';
+import { Person } from '../../../module/person/entity';
 import handleData, { filterGroups } from '../handleData';
 import { groupFactory } from '../../../__tests__/factories';
 import Permission from '../permission';
@@ -43,7 +46,8 @@ import {
 
 jest.mock('../../../dao');
 jest.mock('../handleData');
-jest.mock('../../../service/person');
+jest.mock('../../../module/person');
+jest.mock('../../../module/group/dao');
 jest.mock('../../../service/profile');
 jest.mock('../../account/UserConfig');
 jest.mock('../../notificationCenter');
@@ -639,7 +643,6 @@ describe('GroupService', () => {
 
   describe('doFuzzySearch', () => {
     function prepareGroupsForSearch() {
-      personService.enableCache();
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
 
       const person1: Person = {
@@ -674,7 +677,7 @@ describe('GroupService', () => {
         display_name: 'tu1 tu1',
       };
 
-      personService.getEntityFromCache = jest
+      personService.getById = jest
         .fn()
         .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
 

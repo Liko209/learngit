@@ -6,7 +6,7 @@
 import { getEntity } from '../../../store/utils';
 import { AvatarViewModel } from '../Avatar.ViewModel';
 jest.mock('../../../store/utils');
-
+jest.mock('sdk/api');
 const avatarViewModel = new AvatarViewModel();
 
 describe('AvatarVM', () => {

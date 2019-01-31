@@ -5,11 +5,9 @@
  */
 
 import { PostController } from '../PostController';
-import { Post } from '../../../../models';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
-import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager, PostDao, ConfigDao } from '../../../../dao';
+import { daoManager, PostDao, ConfigDao } from '../../../../dao';
 import {
   buildEntitySourceController,
   buildRequestController,

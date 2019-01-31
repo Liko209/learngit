@@ -14,9 +14,11 @@ import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
 import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { transform } from '../utils';
-import PersonService from '../person';
+
 import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
 import handleData, { hiddenGroupsChange } from './handleData';
+import { daoManager } from '../../dao';
+import { PersonDao } from '../../module/person/dao';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -153,9 +155,8 @@ class ProfileService extends BaseService<Profile> {
 
     const currentId = UserConfig.getCurrentUserId();
     const profileId = this.getCurrentProfileId();
-
-    const personService = PersonService.getInstance<PersonService>();
-    const result = await personService.getById(currentId);
+    const personDao = daoManager.getDao(PersonDao);
+    const result = await personDao.get(currentId);
 
     if (result) {
       const { me_group_id } = result;

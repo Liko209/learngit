@@ -1,8 +1,9 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import notificationCenter from '../../notificationCenter';
-import { daoManager, GroupDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { GroupDao } from '../../../module/group/dao';
 import GroupAPI from '../../../api/glip/group';
-import PersonService from '../../../service/person';
+import { PersonService } from '../../../module/person';
 import ProfileService from '../../../service/profile';
 import { UserConfig } from '../../../service/account';
 import { Group } from '../../../module/group/entity';
@@ -13,6 +14,7 @@ import { toArrayOf } from '../../../__tests__/utils';
 import { StateService } from '../../../module/state';
 import { EVENT_TYPES } from '../..';
 import { ApiResultOk } from '../../../api/ApiResult';
+import { ENTITY } from '../../../service/eventKey';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
@@ -25,7 +27,9 @@ import handleData, {
   calculateDeltaData,
 } from '../handleData';
 
-jest.mock('../../../service/person');
+jest.mock('../../../api');
+jest.mock('../../../framework/controller');
+
 jest.mock('../../../service/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
@@ -135,7 +139,8 @@ describe('handleData()', () => {
   });
 
   it('passing an array', async () => {
-    expect.assertions(6);
+    expect.assertions(7);
+    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       {
@@ -153,7 +158,9 @@ describe('handleData()', () => {
         },
       },
       { _id: 2, members: [1, 2], deactivated: false },
-      { _id: 3, deactivated: false },
+      { _id: 3, members: [2], deactivated: false },
+      { _id: 4, deactivated: false },
+      { _id: 5, is_archived: true },
     ]);
     await handleData(groups);
     // expect getTransformData function
@@ -165,9 +172,12 @@ describe('handleData()', () => {
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
-    // expect checkIncompleteGroupsMembers function
-    // const personService: PersonService = PersonService.getInstance();
-    // expect(personService.getPersonsByIds).toHaveBeenCalled();
+    expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
+      { id: 2, members: [1, 2], deactivated: false },
+      { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
+      { id: 4, deactivated: false },
+      { id: 5, is_archived: true },
+    ]);
   });
 });
 

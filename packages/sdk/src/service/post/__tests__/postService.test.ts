@@ -3,10 +3,10 @@ import _ from 'lodash';
 import {
   daoManager,
   PostDao,
-  ItemDao,
   GroupConfigDao,
   AccountDao,
 } from '../../../dao';
+import { ItemDao } from '../../../module/item/dao';
 import PostAPI from '../../../api/glip/post';
 import { baseHandleData } from '../handleData';
 import PostService from '../index';
@@ -32,6 +32,7 @@ import { ItemService } from '../../../module/item';
 import { ProgressService, PROGRESS_STATUS } from '../../../module/progress';
 
 jest.mock('../../../dao');
+jest.mock('../../../module/item/dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
 jest.mock('../postServiceHandler');

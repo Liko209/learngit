@@ -23,6 +23,8 @@ interface INewGroupService {
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
 
+  hasTeamAdmin(permission?: TeamPermission): boolean;
+
   updateTeamSetting(teamId: number, teamSetting: TeamSetting): Promise<void>;
 
   getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags;
@@ -37,6 +39,10 @@ interface INewGroupService {
     direction: QUERY_DIRECTION,
     hasMore: boolean,
   ): void;
+
+  archiveTeam(teamId: number): Promise<void>;
+
+  deleteTeam(teamId: number): Promise<void>;
 }
 
 export { INewGroupService };

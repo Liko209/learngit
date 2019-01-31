@@ -10,6 +10,8 @@ import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
 import { UserConfig } from '../../../service/account/UserConfig';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../../../module/person/dao';
 
 const mockPersonService = {
   getById: jest.fn().mockImplementation(() => {
@@ -19,7 +21,7 @@ const mockPersonService = {
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
 jest.mock('../../../service/account/UserConfig');
-jest.mock('../../../service/person', () => {
+jest.mock('../../../module/person', () => {
   class MockPersonService {
     static getInstance() {
       return mockPersonService;
@@ -148,10 +150,10 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
       jest
         .spyOn<ProfileService, any>(profileService, '_doDefaultPartialNotify')
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
@@ -210,7 +212,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn(profileService, 'updatePartialModel2Db')
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
       jest
         .spyOn(profileService, 'getCurrentProfileId')
         .mockReturnValueOnce(profile.id);
@@ -277,6 +279,10 @@ describe('ProfileService', () => {
       };
       setupMock(profile, apiReturnedProfile);
 
+      jest
+        .spyOn(daoManager.getDao(PersonDao), 'get')
+        .mockResolvedValueOnce({ me_group_id: 2 });
+
       const result = await profileService.markMeConversationAsFav();
 
       if (result.isOk()) {
@@ -299,6 +305,11 @@ describe('ProfileService', () => {
         me_tab: true,
       };
       setupMock(profile, returnValue);
+
+      jest
+        .spyOn(daoManager.getDao(PersonDao), 'get')
+        .mockResolvedValueOnce({ me_group_id: 99 });
+
       const result = await profileService.markMeConversationAsFav();
 
       if (result.isOk()) {
@@ -313,7 +324,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
-        .mockImplementation(() => { });
+        .mockImplementation(() => {});
 
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(
@@ -394,7 +405,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
-        .mockImplementation(() => { });
+        .mockImplementation(() => {});
 
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(
@@ -465,7 +476,7 @@ describe('ProfileService', () => {
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
-        .mockImplementation(() => { });
+        .mockImplementation(() => {});
       ProfileAPI.putDataById.mockResolvedValueOnce(
         new ApiResultOk(apiReturnProfile, {
           status: 200,
@@ -525,7 +536,7 @@ describe('ProfileService', () => {
       expect(result).toBe(20);
     });
     it('should return default value 20 because of key max_leftrail_group_tabs2 in profile', async () => {
-      profileService.getProfile = jest.fn().mockImplementationOnce(() => { });
+      profileService.getProfile = jest.fn().mockImplementationOnce(() => {});
       const result = await profileService.getMaxLeftRailGroup();
       expect(result).toBe(20);
     });
