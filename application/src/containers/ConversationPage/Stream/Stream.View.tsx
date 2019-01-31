@@ -427,6 +427,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
+    this._setUmiDisplay(true);
   }
 
   private _setPostRef = (postRef: any) => {
