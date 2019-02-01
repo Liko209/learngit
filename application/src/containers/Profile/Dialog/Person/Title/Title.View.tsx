@@ -26,7 +26,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
     return (
       <>
         <JuiDialogTitleWithActionLeft>
-          {t('profile')}
+          {t('Profile')}
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
           <Favorite id={id} size="medium" />

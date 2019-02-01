@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
@@ -16,7 +16,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/contacts',
     icon: 'contacts',
-    title: t('Contacts'),
+    title: i18next.t('Contacts'),
     placement: 'bottom',
   }),
 };
