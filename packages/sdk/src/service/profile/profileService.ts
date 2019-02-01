@@ -16,13 +16,9 @@ import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { transform } from '../utils';
 
 import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
-<<<<<<< HEAD
-import handleData, { hiddenGroupsChange } from './handleData';
+import handleData from './handleData';
 import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
-=======
-import handleData from './handleData';
->>>>>>> stage/1.0.0.190124
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();

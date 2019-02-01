@@ -13,14 +13,8 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
-<<<<<<< HEAD
-import { t } from 'i18next';
-import { TeamPermission } from 'sdk/service/group';
-=======
 import i18next from 'i18next';
-import GroupService, { TeamPermission } from 'sdk/service/group';
-import { NewGroupService } from 'sdk/module/group';
->>>>>>> stage/1.0.0.190124
+import { TeamPermission } from 'sdk/service/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { UserConfig } from 'sdk/service/account';
 import { NewGroupService } from 'sdk/module/group';
