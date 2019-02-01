@@ -15,7 +15,7 @@ import {
   JuiEventCollapse,
   JuiEventCollapseContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardFooter';
-import { getDurationTime, getDurationTimeText } from '../helper';
+import { getDurationTime } from '../helper';
 import { EventUpdateViewProps } from './types';
 
 type Props = WithNamespaces & EventUpdateViewProps;
@@ -27,20 +27,6 @@ class EventUpdate extends React.Component<Props> {
     return getDurationTime(
       !value.start ? start : value.start,
       !value.end ? end : value.end,
-    );
-  }
-
-  private _getTimeText = (value: any) => {
-    const { event } = this.props;
-    const { repeat, repeatEndingAfter, repeatEnding, repeatEndingOn } = event;
-    return (
-      repeatEndingAfter &&
-      getDurationTimeText(
-        value.repeat || repeat,
-        value.repeat_ending_after || repeatEndingAfter,
-        value.repeat_ending_on || repeatEndingOn,
-        value.repeat_ending || repeatEnding,
-      )
     );
   }
 
@@ -58,17 +44,22 @@ class EventUpdate extends React.Component<Props> {
   private _getLocation = (value: any) => value.location;
 
   render() {
-    const { event, activityData, t } = this.props;
-    const { color, text } = event;
+    const {
+      event,
+      activityData,
+      oldTimeText,
+      newTimeText,
+      color,
+      t,
+    } = this.props;
+    const { text } = event;
     const { old_values, new_values } = activityData;
 
     const oldTime = this._getDurationTime(old_values);
-    const oldTimeText = this._getTimeText(old_values);
     const oldLocation = this._getLocation(old_values);
     const hasOldTime = this._isShowTime(old_values);
 
     const newTime = this._getDurationTime(new_values);
-    const newTimeText = this._getTimeText(new_values);
     const newLocation = this._getLocation(new_values);
     const hasNewTime = this._isShowTime(new_values);
 
@@ -93,7 +84,11 @@ class EventUpdate extends React.Component<Props> {
           )
         }
       >
-        {hasNewTime && <JuiTimeMessage time={`${newTime} ${newTimeText}`} />}
+        {hasNewTime && (
+          <JuiEventContent title={t('due')}>
+            <JuiTimeMessage time={`${newTime} ${newTimeText}`} />
+          </JuiEventContent>
+        )}
         {newLocation && (
           <JuiEventContent title={t('locationTitle')}>
             <JuiEventLocation location={newLocation} />

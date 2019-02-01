@@ -16,6 +16,10 @@ module.exports = [
   //   handler: "staleWhileRevalidate"
   // },
   // {
+  //   urlPattern: new RegExp("https://glpdevxmn.asialab.glip.net:31337"),
+  //   handler: "staleWhileRevalidate"
+  // },
+  // {
   //   urlPattern: new RegExp("https://cache.glip.com"),
   //   handler: "staleWhileRevalidate"
   // },
@@ -27,4 +31,8 @@ module.exports = [
   //   urlPattern: new RegExp("https://fonts.gstatic.com/s/materialicons"),
   //   handler: "staleWhileRevalidate"
   // }
+  {
+    urlPattern: new RegExp("https://i.icomoon.io/public/6483cc0f53/Jupiter/*"),
+    handler: "cacheFirst"
+  }
 ];

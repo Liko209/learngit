@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as Runtime from 'allure-js-commons/runtime';
 import * as Allure from 'allure-js-commons';
-import { identity } from 'lodash';
-import { IStep, IConsoleLog } from '../models'
+import { identity, findKey } from 'lodash';
+import { IStep, IConsoleLog } from '../models';
+import { BrandTire } from "../../config";
 
 const testStatusEnum = {
   passed: 'passed',
@@ -55,7 +56,10 @@ export class AllureHelper {
   startCase(caseName, startTime, userAgent, accountType) {
     this.allureReporter.startCase(caseName, startTime);
     this.allure.addArgument('User Agent', userAgent);
-    this.allure.addArgument('Account Type', accountType);
+    this.allure.addArgument('Account Type', findKey(BrandTire, (value) => value === accountType) || accountType);
+    this.allure.addEnvironment('Site Url', process.env['SITE_URL'] || 'http://localhost:3000');
+    this.allure.addEnvironment('Site Env', process.env['SITE_ENV'] || 'XMN-UP');
+    this.allure.addEnvironment('Branch', process.env['BRANCH'] || 'develop');
   }
 
   endCase(status, testInfo, endTime) {
@@ -74,7 +78,7 @@ export class AllureHelper {
     this.allure.addArgument(argument, value);
   }
 
-  writeReport(consoleLog: IConsoleLog, accountType: string) {
+  writeReport(consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     this.configure();
     const testRun = this.t['testRun'];
     const {
@@ -101,10 +105,11 @@ export class AllureHelper {
     this.startSuite(fixtureName, fixtureStartTime);
     this.startCase(testCaseName, testCaseStartTime, userAgent, accountType);
     this.writeSteps(steps);
-    if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot On Fail');
-    this.addAttachment(consoleLog.consoleLogPath, 'Console Full Log');
-    this.addAttachment(consoleLog.warnConsoleLogPath, `Console Warning Log, Number: ${consoleLog.warnConsoleLogNumber}`);
-    this.addAttachment(consoleLog.errorConsoleLogPath, `Console Error Log, Number: ${consoleLog.errorConsoleLogNumber}`);
+    if (failScreenShotPath) this.addAttachment(failScreenShotPath, 'Screenshot on Failure');
+    this.addAttachment(consoleLog.consoleLogPath, 'Console Log Full');
+    this.addAttachment(consoleLog.warnConsoleLogPath, `Console Log Warning(${consoleLog.warnConsoleLogNumber})`);
+    this.addAttachment(consoleLog.errorConsoleLogPath, `Console Log Error(${consoleLog.errorConsoleLogNumber})`);
+    this.addAttachment(rcDataPath, 'RC Data')
     this.endCase(testStatus, testInfo, Date.now());
     this.endSuite(Date.now());
   }

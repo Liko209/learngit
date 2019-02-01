@@ -13,10 +13,13 @@ import { daoManager, AuthDao } from '../../dao';
 import { IPagination } from '../../types';
 import {
   Person,
-  SortableModel,
+  HeadShotModel,
   PhoneNumberModel,
   SanitizedExtensionModel,
-} from '../../models';
+} from '../../module/person/entity';
+
+import { SortableModel } from '../../models';
+
 import {
   CALL_ID_USAGE_TYPE,
   PHONE_NUMBER_TYPE,
@@ -25,7 +28,8 @@ import {
 } from './types';
 import { SOCKET } from '../eventKey';
 import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
-import { AccountService } from '../account/accountService';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../utils';
+import { UserConfig } from '../account/UserConfig';
 
 const PersonFlags = {
   deactivated: 2,
@@ -35,6 +39,10 @@ const PersonFlags = {
 };
 
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
+const HEADSHOT_THUMB_WIDTH = 'width';
+const HEADSHOT_THUMB_HEIGHT = 'height';
+const HEADSHOT_THUMB_SIZE_LIMIT = 500;
+const SIZE = 'size';
 
 class PersonService extends BaseService<Person> {
   static serviceName = 'PersonService';
@@ -92,7 +100,11 @@ class PersonService extends BaseService<Person> {
     return personDao.getAllCount();
   }
 
-  getHeadShot(uid: number, headShotVersion: string, size: number) {
+  private _getHeadShotByVersion(
+    uid: number,
+    headShotVersion: string,
+    size: number,
+  ) {
     const authDao = daoManager.getKVDao(AuthDao);
     const token = authDao.get(AUTH_GLIP_TOKEN);
     const glipToken = token && token.replace(/\"/g, '');
@@ -105,6 +117,76 @@ class PersonService extends BaseService<Person> {
       });
     }
     return '';
+  }
+
+  private _getHighestResolutionHeadshotUrlFromThumbs(
+    thumbs: { key: string; value: string }[],
+    stored_file_id?: string,
+  ): string {
+    const keys = Object.keys(thumbs);
+    let maxKey = keys[0];
+    let maxWidth: number = 0;
+    let firstKey: string = '';
+    for (let i = 0; i < keys.length; i++) {
+      if (
+        keys[i].startsWith(HEADSHOT_THUMB_WIDTH) ||
+        keys[i].startsWith(HEADSHOT_THUMB_HEIGHT)
+      ) {
+        continue;
+      }
+      if (stored_file_id && !keys[i].startsWith(stored_file_id)) {
+        continue;
+      }
+
+      if (firstKey === '') {
+        firstKey = keys[i];
+      }
+
+      const index = keys[i].indexOf(SIZE);
+      if (index !== -1) {
+        const sizeString = keys[i].substr(index + SIZE.length + 1);
+        const sizeWidth = Number(sizeString);
+        if (sizeWidth < HEADSHOT_THUMB_SIZE_LIMIT) {
+          if (sizeWidth > maxWidth) {
+            maxWidth = sizeWidth;
+            maxKey = keys[i];
+          }
+        }
+      }
+    }
+    let url = thumbs[firstKey];
+    if (maxWidth !== 0) {
+      url = thumbs[maxKey];
+    }
+    return url;
+  }
+
+  getHeadShotWithSize(
+    uid: number,
+    headshot_version: string,
+    headshot: HeadShotModel,
+    size: number,
+  ) {
+    let url: string | null = null;
+    if (headshot_version) {
+      url = this._getHeadShotByVersion(uid, headshot_version, size);
+    } else if (headshot) {
+      if (typeof headshot === 'string') {
+        url = headshot;
+      } else {
+        if (headshot.thumbs) {
+          url = this._getHighestResolutionHeadshotUrlFromThumbs(
+            headshot.thumbs,
+            headshot.stored_file_id,
+          );
+        }
+        if (!url) {
+          url = headshot.url;
+        }
+      }
+    }
+
+    return url;
   }
 
   async getPersonsByGroupId(groupId: number): Promise<Person[]> {
@@ -160,12 +242,16 @@ class PersonService extends BaseService<Person> {
     terms: string[];
     sortableModels: SortableModel<Person>[];
   } | null> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_PERSON,
+      logId,
+    );
     let currentUserId: number | null = null;
     if (excludeSelf) {
-      const accountService: AccountService = AccountService.getInstance();
-      currentUserId = accountService.getCurrentUserId();
+      currentUserId = UserConfig.getCurrentUserId();
     }
-    return this.searchEntitiesFromCache(
+    const result = await this.searchEntitiesFromCache(
       (person: Person, terms: string[]) => {
         do {
           if (
@@ -240,6 +326,8 @@ class PersonService extends BaseService<Person> {
         return 0;
       },
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    return result;
   }
 
   getName(person: Person) {
@@ -312,8 +400,7 @@ class PersonService extends BaseService<Person> {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const accountService: AccountService = AccountService.getInstance();
-    const isCoWorker = accountService.getCurrentCompanyId() === companyId;
+    const isCoWorker = UserConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,

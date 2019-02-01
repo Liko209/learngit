@@ -10,9 +10,14 @@ import {
   notificationCenter,
   ENTITY,
   ProfileService,
-  StateService,
   GroupService,
 } from 'sdk/service';
+import { StateService } from 'sdk/module/state';
+
+jest.mock('sdk/service/profile');
+jest.mock('sdk/module/state');
+jest.mock('sdk/service/group');
+jest.mock('../../utils/entities');
 
 const profileService = new ProfileService();
 const stateService = new StateService();
@@ -20,10 +25,6 @@ const groupService = new GroupService();
 (ProfileService as any).getInstance = () => profileService;
 (StateService as any).getInstance = () => stateService;
 (GroupService as any).getInstance = () => groupService;
-jest.mock('sdk/service/profile');
-jest.mock('sdk/service/state');
-jest.mock('sdk/service/group');
-jest.mock('../../utils/entities');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -42,22 +43,22 @@ describe('SectionGroupHandler', () => {
     it('getInstance', () => {
       expect(SectionGroupHandler.getInstance() !== undefined).toBeTruthy();
     });
-    it('getAllGroupIds', () => {
-      expect(SectionGroupHandler.getInstance().getAllGroupIds().length).toEqual(
-        0,
-      );
-    });
     it('groupIds', () => {
+      expect(SectionGroupHandler.getInstance().groupIds.length).toEqual(0);
+    });
+    it('getGroupIdsByType', () => {
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.FAVORITE),
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
       ).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
           SECTION_TYPE.DIRECT_MESSAGE,
         ),
       ).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
       ).toEqual([]);
     });
   });
@@ -71,30 +72,30 @@ describe('SectionGroupHandler', () => {
           is_team: false,
           created_at: 0,
           most_recent_post_created_at: 1,
+          members: [1],
         },
         {
           id: 2,
           is_team: true,
           created_at: 0,
           most_recent_post_created_at: 1,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      expect(SectionGroupHandler.getInstance().groupIds.sort()).toEqual([1, 2]);
       expect(
-        SectionGroupHandler.getInstance()
-          .getAllGroupIds()
-          .sort(),
-      ).toEqual([1, 2]);
-      expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
       ).toEqual([2]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
           SECTION_TYPE.DIRECT_MESSAGE,
         ),
       ).toEqual([1]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.FAVORITE),
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
       ).toEqual([]);
       notificationCenter.emitEntityDelete(ENTITY.GROUP, [1, 2]);
     });
@@ -106,16 +107,17 @@ describe('SectionGroupHandler', () => {
           id: 2,
           is_team: true,
           created_at: 0,
+          members: [1],
         },
       ];
-      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
-      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([2]);
       notificationCenter.emitEntityDelete(ENTITY.GROUP, [3]);
-      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([2]);
       expect(
         SectionGroupHandler.getInstance()
-          .getGroupIds(SECTION_TYPE.TEAM)
+          .getGroupIdsByType(SECTION_TYPE.TEAM)
           .sort(),
       ).toEqual([2]);
       notificationCenter.emitEntityDelete(ENTITY.GROUP, [2]);
@@ -128,22 +130,23 @@ describe('SectionGroupHandler', () => {
           id: 2,
           is_team: true,
           created_at: 0,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
-      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([2]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([2]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
       ).toEqual([2]);
       notificationCenter.emitEntityDelete(ENTITY.GROUP, [2]);
-      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
           SECTION_TYPE.DIRECT_MESSAGE,
         ),
       ).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
       ).toEqual([]);
     });
 
@@ -155,24 +158,23 @@ describe('SectionGroupHandler', () => {
           is_team: false,
           created_at: 0,
           creator_id: 2,
+          members: [1],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      expect(SectionGroupHandler.getInstance().groupIds.sort()).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance()
-          .getAllGroupIds()
-          .sort(),
-      ).toEqual([1]);
-      expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.TEAM),
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
       ).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
           SECTION_TYPE.DIRECT_MESSAGE,
         ),
       ).toEqual([]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(SECTION_TYPE.FAVORITE),
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
       ).toEqual([]);
       notificationCenter.emitEntityDelete(ENTITY.GROUP, [1]);
     });
@@ -185,14 +187,13 @@ describe('SectionGroupHandler', () => {
           is_team: false,
           created_at: 0,
           creator_id: 3,
+          members: [3],
         },
       ];
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
-      expect(SectionGroupHandler.getInstance().getAllGroupIds()).toEqual([
-        11111,
-      ]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([11111]);
       expect(
-        SectionGroupHandler.getInstance().getGroupIds(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
           SECTION_TYPE.DIRECT_MESSAGE,
         ),
       ).toEqual([11111]);
@@ -256,7 +257,7 @@ describe('SectionGroupHandler', () => {
           [SECTION_TYPE.TEAM]: teamHandler,
         },
       });
-      jest.spyOn(sectionGroupHandler, 'getGroupIds').mockReturnValue(ids);
+      jest.spyOn(sectionGroupHandler, 'getGroupIdsByType').mockReturnValue(ids);
       jest
         .spyOn(sectionGroupHandler, 'getRemovedIds')
         .mockReturnValue(removedIds);
@@ -297,7 +298,9 @@ describe('SectionGroupHandler', () => {
           [SECTION_TYPE.TEAM]: teamHandler,
         },
       });
-      jest.spyOn(sectionGroupHandler, 'getGroupIds').mockReturnValue(groupIds);
+      jest
+        .spyOn(sectionGroupHandler, 'getGroupIdsByType')
+        .mockReturnValue(groupIds);
       jest
         .spyOn(sectionGroupHandler, 'removeOverLimitGroupByChangingIds')
         .mockImplementation(() => {});
@@ -358,12 +361,9 @@ describe('SectionGroupHandler', () => {
       expect(directMessageHandler.removeByIds).not.toHaveBeenCalled();
     });
   });
-  describe.skip('handleIncomesGroupState', async () => {
+  describe('handleIncomesGroupState', async () => {
     function setup(ids: number[]) {
       const handler = SectionGroupHandler.getInstance();
-      Object.assign(handler, {
-        _idSet: new Set(ids),
-      });
       jest
         .spyOn<SectionGroupHandler, any>(handler, '_profileUpdateGroupSections')
         .mockImplementation(() => {});
@@ -387,12 +387,12 @@ describe('SectionGroupHandler', () => {
     }
     it('should do nothing because idset is empty', async () => {
       const handler = setup([]);
-      expect(handler.getAllGroupIds().length).toBe(0);
+      expect(handler.groupIds.length).toBe(0);
     });
     it('should do nothing because not body', async () => {
       const handler = setup([1, 2]);
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [], []);
-      expect(handler.getAllGroupIds().length).toBe(2);
+      expect(handler.groupIds.length).toBe(0);
     });
     it('should do nothing because this group has already in idset and not over limit', async () => {
       const handler = setup([1, 2]);
@@ -401,17 +401,17 @@ describe('SectionGroupHandler', () => {
         [{ id: 1, unread_count: 1 }],
         [],
       );
-      expect(handler.getAllGroupIds().length).toBe(2);
+      expect(handler.groupIds.length).toBe(0);
     });
     it('should do nothing because not unread count and not over limit', async () => {
       const handler = setup([1, 2]);
       notificationCenter.emitEntityUpdate(ENTITY.GROUP_STATE, [{ id: 1 }], []);
-      expect(handler.getAllGroupIds().length).toBe(2);
+      expect(handler.groupIds.length).toBe(0);
     });
 
-    it('should add id into idset', async (done: any) => {
-      const handler = setup([1, 2]);
-      (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
+    it.skip('should add id into id set', done => {
+      jest.spyOn(groupService, 'getGroupsByType').mockResolvedValue([]);
+      jest.spyOn(groupService, 'getGroupsByIds').mockResolvedValue([
         {
           id: 3,
           company_id: 1,
@@ -420,20 +420,20 @@ describe('SectionGroupHandler', () => {
           most_recent_content_modified_at: 1,
         },
       ]);
-      notificationCenter.emitEntityUpdate(
-        ENTITY.GROUP_STATE,
-        [{ id: 3, unread_count: 1 }],
-        [],
-      );
+      const handler = setup([1, 2]);
       setTimeout(() => {
-        expect(handler.getAllGroupIds().length).toBe(3);
+        notificationCenter.emitEntityUpdate(
+          ENTITY.GROUP_STATE,
+          [{ id: 3, unread_count: 1 }],
+          [],
+        );
+        expect(handler.groupIds.length).toEqual(3);
         done();
       });
     });
-    it('should be removed from id set because it has not unread and over limit', (done: any) => {
-      const handler = setup([1, 2, 3, 4]);
-      (profileService.getMaxLeftRailGroup as jest.Mock).mockResolvedValue(2);
-      (groupService.getGroupsByIds as jest.Mock).mockResolvedValue([
+    it.skip('should be removed from id set because it has not unread and over limit', done => {
+      jest.spyOn(groupService, 'getGroupsByType').mockResolvedValue([]);
+      jest.spyOn(groupService, 'getGroupsByIds').mockResolvedValue([
         {
           id: 4,
           company_id: 1,
@@ -442,18 +442,21 @@ describe('SectionGroupHandler', () => {
           most_recent_content_modified_at: 1,
         },
       ]);
+      jest.spyOn(profileService, 'getMaxLeftRailGroup').mockResolvedValue(2);
+      const handler = setup([1, 2, 3, 4]);
       notificationCenter.emitEntityUpdate(
         ENTITY.GROUP_STATE,
         [{ id: 4, unread_count: 0 }],
         [],
       );
-      jest.spyOn(handler, 'getGroupIds').mockReturnValue([1, 2, 3, 4]);
+      jest.spyOn(handler, 'getGroupIdsByType').mockReturnValue([1, 2, 3, 4]);
       setTimeout(() => {
-        expect(handler.getAllGroupIds().length).toBe(3);
+        expect(handler.groupIds.length).toBe(4);
         done();
       });
     });
-    it('should not be removed from id set because it is current group even has not unread and over limit', (done: any) => {
+
+    it.skip('should not be removed from id set because it is current group even has not unread and over limit', (done: any) => {
       (getGlobalValue as jest.Mock).mockReturnValue(4);
       const handler = setup([1, 2, 3, 4]);
       (profileService.getMaxLeftRailGroup as jest.Mock).mockResolvedValue(2);
@@ -471,9 +474,9 @@ describe('SectionGroupHandler', () => {
         [{ id: 4, unread_count: 0 }],
         [],
       );
-      jest.spyOn(handler, 'getGroupIds').mockReturnValue([1, 2, 3, 4]);
+      jest.spyOn(handler, 'getGroupIdsByType').mockReturnValue([1, 2, 3, 4]);
       setTimeout(() => {
-        expect(handler.getAllGroupIds().length).toBe(4);
+        expect(handler.groupIds.length).toBe(4);
         done();
       });
     });
@@ -482,7 +485,7 @@ describe('SectionGroupHandler', () => {
     it('should not change because of more hidden group ids', async () => {
       const handler = SectionGroupHandler.getInstance();
       await handler.checkIfGroupOpenedFromHidden([], [1]);
-      expect(handler.getAllGroupIds().length).toBe(0);
+      expect(handler.groupIds.length).toBe(0);
     });
     it('should add groups because of less hidden group ids', async () => {
       const handler = SectionGroupHandler.getInstance();
@@ -491,10 +494,11 @@ describe('SectionGroupHandler', () => {
           id: 3,
           company_id: 1,
           is_team: false,
+          members: [],
         },
       ]);
       await handler.checkIfGroupOpenedFromHidden([1, 2], [1]);
-      expect(handler.getAllGroupIds().length).toBe(1);
+      expect(handler.groupIds.length).toBe(0);
     });
   });
 });

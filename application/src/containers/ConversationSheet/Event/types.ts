@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import EventItemModel from '@/store/models/EventItem';
+import { Palette } from 'jui/foundation/theme/theme';
 
 type ActivityData = {
   [index: string]: any;
@@ -19,11 +20,15 @@ type EventUpdateProps = {
 
 type EventViewProps = {
   event: EventItemModel;
+  color?: [keyof Palette, string];
 };
 
 type EventUpdateViewProps = {
   activityData: ActivityData;
   event: EventItemModel;
+  oldTimeText: string;
+  newTimeText: string;
+  color?: [keyof Palette, string];
 };
 
 export { EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps };

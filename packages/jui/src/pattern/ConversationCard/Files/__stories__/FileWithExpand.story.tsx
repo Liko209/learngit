@@ -18,12 +18,13 @@ storiesOf('Pattern/ConversationCard', module)
     return (
       <div>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -31,21 +32,23 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -53,21 +56,23 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -75,21 +80,23 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -97,21 +104,23 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
             <div>
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             </div>
           }
@@ -119,10 +128,11 @@ storiesOf('Pattern/ConversationCard', module)
           <JuiPreviewImage
             url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
             fileName={fileName}
-            ratio={0.5}
+            width={360}
+            height={202}
             Actions={
               <JuiIconButton variant="plain" tooltipTitle="download">
-                get_app
+                download
               </JuiIconButton>
             }
           />

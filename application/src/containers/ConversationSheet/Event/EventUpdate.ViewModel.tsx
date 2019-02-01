@@ -5,12 +5,15 @@
  */
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item, Post } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
+import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { EventUpdateViewProps, EventUpdateProps } from './types';
 import EventItemModel from '@/store/models/EventItem';
+import { getDurationTimeText } from '../helper';
+import { accentColor } from '@/common/AccentColor';
 
 class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   implements EventUpdateViewProps {
@@ -35,8 +38,44 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
   }
 
   @computed
+  get color() {
+    return accentColor[this.event.color];
+  }
+
+  @computed
   get activityData() {
     return this.post.activityData || {};
+  }
+
+  getTimeText(value: any, event: EventItemModel) {
+    const {
+      repeat,
+      repeatEndingAfter,
+      repeatEnding,
+      repeatEndingOn,
+    } = this.event;
+    return (
+      (repeatEndingAfter &&
+        getDurationTimeText(
+          value.repeat || repeat,
+          value.repeat_ending_after || repeatEndingAfter,
+          value.repeat_ending_on || repeatEndingOn,
+          value.repeat_ending || repeatEnding,
+        )) ||
+      ''
+    );
+  }
+
+  @computed
+  get oldTimeText() {
+    const { old_values } = this.activityData;
+    return this.getTimeText(old_values, this.event);
+  }
+
+  @computed
+  get newTimeText() {
+    const { new_values } = this.activityData;
+    return this.getTimeText(new_values, this.event);
   }
 }
 

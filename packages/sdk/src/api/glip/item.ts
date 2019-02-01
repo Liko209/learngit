@@ -6,21 +6,17 @@
 import { NETWORK_METHOD, NETWORK_VIA, Result } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
-import {
-  ItemFile,
-  Item,
-  BaseModel,
-  StoredFile,
-  Raw,
-  NoteItem,
-} from '../../models';
+import { IdModel, Raw } from '../../framework/model';
+
+import { ItemFile, Item, StoredFile, NoteItem } from '../../module/item/entity';
+
 import { RequestHolder } from '../requestHolder';
 import {
   AmazonFilePolicyRequestModel,
   AmazonFileUploadPolicyData,
 } from './types';
 
-interface IRightRailItemModel extends BaseModel {
+interface IRightRailItemModel extends IdModel {
   items: Raw<Item>[];
 }
 
@@ -35,6 +31,7 @@ const ITEMPATH = {
   [TypeDictionary.TYPE_ID_LINK]: 'link',
   [TypeDictionary.TYPE_ID_FILE]: 'file',
   [TypeDictionary.TYPE_ID_MEETING]: 'item',
+  [TypeDictionary.TYPE_ID_CONFERENCE]: 'conference',
   // [TypeDictionary.TYPE_ID_RC_VIDEO]: 'item',
   // [TypeDictionary.TYPE_ID_RC_SMS]: 'rc_sms',
   [TypeDictionary.TYPE_ID_RC_VOICEMAIL]: 'rc_voicemail',
@@ -120,6 +117,14 @@ class ItemAPI extends Api {
 
   static requestById(id: number) {
     return this.glipNetworkClient.get<Raw<ItemFile>>(getItemServerUrl(id));
+  }
+
+  static getItems(typeId: number, groupId: number, newerThan: number) {
+    return this.glipNetworkClient.get<Raw<Item>[]>('/items', {
+      type_id: typeId,
+      group_ids: groupId,
+      newer_than: newerThan,
+    });
   }
 
   static requestRightRailItems(groupId: number) {

@@ -31,6 +31,9 @@ import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
 
+const STREAM = 'stream';
+const INPUT = 'input';
+
 @observer
 class ConversationPageViewComponent extends Component<
   ConversationPageViewProps
@@ -40,6 +43,7 @@ class ConversationPageViewComponent extends Component<
   private _attachmentManagerRef: RefObject<
     AttachmentManagerViewComponent
   > = createRef();
+  private _folderDetectMap: { string: boolean } = {} as { string: boolean };
 
   @observable
   streamKey = 0;
@@ -80,6 +84,14 @@ class ConversationPageViewComponent extends Component<
     }
   }
 
+  private _preventStreamFolderDrop = () => {
+    this._folderDetectMap[STREAM] = true;
+  }
+
+  private _preventInputFolderDrop = () => {
+    this._folderDetectMap[INPUT] = true;
+  }
+
   render() {
     const { t, groupId, canPost } = this.props;
     const streamNode = (
@@ -104,6 +116,9 @@ class ConversationPageViewComponent extends Component<
             accepts={[NativeTypes.FILE]}
             onDrop={this._handleDropFileInStream}
             dropzoneClass={StreamDropZoneClasses}
+            detectedFolderDrop={this._preventStreamFolderDrop}
+            hasDroppedFolder={() => this._folderDetectMap[STREAM]}
+            clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
           >
             {streamNode}
           </JuiDropZone>
@@ -115,6 +130,9 @@ class ConversationPageViewComponent extends Component<
             accepts={[NativeTypes.FILE]}
             onDrop={this._handleDropFileInMessageInput}
             dropzoneClass={MessageInputDropZoneClasses}
+            detectedFolderDrop={this._preventInputFolderDrop}
+            hasDroppedFolder={() => this._folderDetectMap[INPUT]}
+            clearFolderDetection={() => delete this._folderDetectMap[INPUT]}
           >
             <MessageInput
               viewRef={this._messageInputRef}
@@ -132,7 +150,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  translate('Conversations')(ConversationPageViewComponent),
+  translate('translations')(ConversationPageViewComponent),
 );
 
 export { ConversationPageView };

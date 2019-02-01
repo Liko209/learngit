@@ -2,7 +2,7 @@ import { Delta, DeltaOperation, StringMap } from 'quill';
 
 const _preInline = {
   link: (attr: StringMap, insert: any) => {
-    return `[${attr.link}](${insert})`;
+    return `[${insert}](${attr.link})`;
   },
 };
 

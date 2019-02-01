@@ -52,6 +52,11 @@ const sortFunc: ISortFunc<any> = (
   second: ISortableModel,
 ) => first.sortValue - second.sortValue;
 
+const sortByDescFunc: ISortFunc<any> = (
+  first: ISortableModel,
+  second: ISortableModel,
+) => second.sortValue - first.sortValue;
+
 function buildReplacePayload(
   originalIds: number[],
   models: SimpleItem[],
@@ -136,17 +141,25 @@ function buildPayload(
   return payload;
 }
 
-function setup({ originalItems }: { originalItems: SimpleItem[] }) {
+function setup(
+  { originalItems }: { originalItems: SimpleItem[] },
+  customSortFunc?: ISortFunc<any>,
+) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
-  const listStore = new SortableListStore<SimpleItem>(sortFunc);
-  listStore.append(
+  const listStore = new SortableListStore<SimpleItem>(customSortFunc);
+  listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
     }),
   );
   const fetchSortableDataHandler = new FetchSortableDataListHandler(
     dataProvider,
-    { transformFunc, sortFunc, isMatchFunc: matchInRange, pageSize: 2 },
+    {
+      transformFunc,
+      sortFunc: customSortFunc,
+      isMatchFunc: matchInRange,
+      pageSize: 2,
+    },
     listStore,
   );
 
@@ -281,11 +294,12 @@ describe('FetchSortableDataListHandler', () => {
       },
     ],
     [
-      'when insert item between 3 and 5',
+      'when update 5 between 3 and 5',
       {
         originalItems: [buildItem(3), buildItem(5)],
         payload: buildPayload(EVENT_TYPES.UPDATE, [{ id: 5, value: 2 }]),
         expectedOrder: [5, 3],
+        callbackMuted: true,
         expectedCallbackResponse: {
           updated: [
             {
@@ -314,6 +328,7 @@ describe('FetchSortableDataListHandler', () => {
         originalItems: [buildItem(3), buildItem(5)],
         payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(1)]),
         expectedOrder: [3, 5],
+        callbackMuted: true,
         expectedCallbackResponse: {
           added: [],
         },
@@ -330,6 +345,7 @@ describe('FetchSortableDataListHandler', () => {
           buildItem(4),
         ],
         payload: buildReplacePayload([6], [{ id: 6, value: 9 }]),
+        callbackMuted: true,
         expectedOrder: [1, 2, 3, 4, 5],
         expectedCallbackResponse: {
           added: [],
@@ -352,6 +368,15 @@ describe('FetchSortableDataListHandler', () => {
           deleted: [1],
           added: [],
         },
+      },
+    ],
+    [
+      'when update item without update sort value',
+      {
+        originalItems: [buildItem(1), buildItem(2)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
+        expectedOrder: [1, 2],
+        callbackMuted: true,
       },
     ],
     /**
@@ -438,7 +463,13 @@ describe('FetchSortableDataListHandler', () => {
     'onDataChange()',
     (
       when: string,
-      { originalItems, payload, expectedOrder, expectedCallbackResponse }: any,
+      {
+        originalItems,
+        payload,
+        expectedOrder,
+        expectedCallbackResponse,
+        callbackMuted,
+      }: any,
     ) => {
       it(`should have correct order ${when}`, () => {
         const { fetchSortableDataHandler: fetchSortableDataHandler2 } = setup({
@@ -452,15 +483,32 @@ describe('FetchSortableDataListHandler', () => {
         ).toEqual(expectedOrder);
       });
 
+      it(`should have correct order which is ordered by custom sort func,  ${when}`, () => {
+        const { fetchSortableDataHandler: fetchSortableDataHandler2 } = setup(
+          {
+            originalItems,
+          },
+          sortByDescFunc,
+        );
+
+        fetchSortableDataHandler2.onDataChanged(payload);
+
+        expect(
+          fetchSortableDataHandler2.listStore.items.map(item => item.id),
+        ).toEqual(_.reverse(expectedOrder));
+      });
+
       it(`should notify callback ${when}`, () => {
         const { fetchSortableDataHandler } = setup({
           originalItems,
         });
         const dataChangeCallback = jest.fn();
         fetchSortableDataHandler.setUpDataChangeCallback(dataChangeCallback);
-
         fetchSortableDataHandler.onDataChanged(payload);
-
+        if (callbackMuted) {
+          return expect(dataChangeCallback).not.toHaveBeenCalled();
+        }
+        expect(dataChangeCallback).toHaveBeenCalled();
         expect(dataChangeCallback).toHaveBeenCalledWith(
           expect.objectContaining(expectedCallbackResponse),
         );
@@ -565,14 +613,14 @@ describe('FetchSortableDataListHandler', () => {
       };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
 
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);
 
       newGroup = { ...group, id: 789, most_recent_post_created_at: 1002 };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);

@@ -3,7 +3,7 @@
  * @Date: 2018-12-17 15:34:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { LinkItem } from 'sdk/models';
+import { LinkItem } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 
@@ -23,9 +23,15 @@ export default class LinkItemModel extends ItemModel {
   @observable
   data?: {
     provider_name: string;
+    favicon_url: string;
+    url: string;
   };
   @observable
   favicon: string;
+  @observable
+  createdAt: number;
+  @observable
+  creatorId: number;
 
   constructor(data: LinkItem) {
     super(data);
@@ -38,6 +44,8 @@ export default class LinkItemModel extends ItemModel {
       do_not_render,
       data: detail,
       favicon,
+      created_at,
+      creator_id,
     } = data;
     this.summary = summary || '';
     this.title = title || '';
@@ -47,11 +55,18 @@ export default class LinkItemModel extends ItemModel {
     this.doNotRender = do_not_render || false;
     this.data = detail;
     this.favicon = favicon;
+    this.createdAt = created_at;
+    this.creatorId = creator_id;
   }
 
   @computed
   get providerName() {
     return (this.data && this.data.provider_name) || '';
+  }
+
+  @computed
+  get faviconUrl() {
+    return (this.data && this.data.favicon_url) || '';
   }
 
   static fromJS(data: LinkItem) {

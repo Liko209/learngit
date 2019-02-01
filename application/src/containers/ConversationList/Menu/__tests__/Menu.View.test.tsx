@@ -1,9 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ErrorTypes } from 'sdk/utils';
 import { serviceErr } from 'sdk/service/ServiceResult';
 import { Notification } from '@/containers/Notification';
 import { MenuViewComponent } from '../Menu.View';
+import { ERROR_CODES_SDK } from 'sdk/error';
+import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('@/common/genDivAndDismiss');
 jest.mock('@/containers/Notification');
@@ -21,7 +22,7 @@ describe('MenuView', () => {
         groupId: 1,
         showClose: true,
         closeConversation: () =>
-          serviceErr(ErrorTypes.SERVICE, 'Failed to close conversation'),
+          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to close conversation'),
         shouldSkipCloseConfirmation: true,
         onClose: () => {},
       };
@@ -30,13 +31,13 @@ describe('MenuView', () => {
 
       wrapper
         .find('[data-test-automation-id="closeConversation"]')
-        .simulate('click');
+        .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
             message: 'SorryWeWereNotAbleToCloseTheConversation',
-            type: 'error',
+            type: ToastType.ERROR,
           }),
         );
         done();
@@ -48,18 +49,20 @@ describe('MenuView', () => {
         isFavorite: false,
         onClose: () => {},
         toggleFavorite: () =>
-          serviceErr(ErrorTypes.SERVICE, 'Failed to favorite conversation'),
+          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to favorite conversation'),
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
-      wrapper.find('[data-test-automation-id="favToggler"]').simulate('click');
+      wrapper
+        .find('[data-test-automation-id="favToggler"]')
+        .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
             message: 'markFavoriteServerErrorContent',
-            type: 'error',
+            type: ToastType.ERROR,
           }),
         );
         done();
@@ -71,18 +74,23 @@ describe('MenuView', () => {
         isFavorite: true,
         onClose: () => {},
         toggleFavorite: () =>
-          serviceErr(ErrorTypes.SERVICE, 'Failed to unFavorite conversation'),
+          serviceErr(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to unFavorite conversation',
+          ),
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
 
-      wrapper.find('[data-test-automation-id="favToggler"]').simulate('click');
+      wrapper
+        .find('[data-test-automation-id="favToggler"]')
+        .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
             message: 'markUnFavoriteServerErrorContent',
-            type: 'error',
+            type: ToastType.ERROR,
           }),
         );
         done();

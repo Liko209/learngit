@@ -20,7 +20,7 @@ import AuthService from './service/auth';
 import CompanyService from './service/company';
 import ConfigService from './service/config';
 import GroupService from './service/group';
-import ItemService from './service/item';
+import { ItemService } from './module/item';
 import PersonService from './service/person';
 import PostService from './service/post';
 import PresenceService from './service/presence';
@@ -29,10 +29,13 @@ import SearchService from './service/search';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
-import { SplitIO } from './service/splitio';
-import StateService from './service/state';
+import { StateService } from './module/state';
 import SyncService from './service/sync';
-import ProgressService from './module/progress';
+import { TelephonyService } from './module/telephony';
+import { ProgressService } from './module/progress';
+import { NewPostService } from './module/post';
+import { PermissionService } from './module/permission';
+import { NewGroupService } from './module/group';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -74,6 +77,9 @@ const registerConfigs = {
     { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
+    { name: NewPostService.name, value: NewPostService },
+    { name: PermissionService.name, value: PermissionService },
+    { name: NewGroupService.name, value: NewGroupService },
     {
       name: ConfigService.name,
       value: ConfigService,
@@ -86,6 +92,7 @@ const registerConfigs = {
     },
     { name: AccountService.name, value: AccountService },
     { name: SyncService.name, value: SyncService },
+    { name: TelephonyService.name, value: TelephonyService },
     { name: GroupConfigService.name, value: GroupConfigService },
 
     // Manager
@@ -118,7 +125,6 @@ const registerConfigs = {
     // TODO register as class instead
     { name: DaoManager.name, value: daoManager },
     { name: SocketManager.name, value: socketManager },
-    { name: SplitIO.name, value: new SplitIO() },
     { name: NetworkManager.name, value: networkManager },
   ],
 };

@@ -9,7 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Person } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 
 class AvatarNameViewModel extends StoreViewModel<Props> implements ViewProps {

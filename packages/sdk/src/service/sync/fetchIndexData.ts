@@ -4,27 +4,51 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseError } from 'foundation';
 import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
-import { progressBar } from '../../utils/progress';
-import { ApiResult } from '../../api/ApiResult';
+import { progressBar, IProgressEvent } from '../../utils/progress';
+import { ApiResult, ApiResultErr } from '../../api/ApiResult';
 import { IndexDataModel } from '../../api/glip/user';
+import { JError } from '../../error';
 
 interface IParams {
   newer_than?: string;
 }
 
-const fetchInitialData = async (currentTime: number) => {
+const requestConfig = {
+  onDownloadProgress(e: IProgressEvent) {
+    progressBar.update(e);
+  },
+};
+
+const withProgress = (
+  getDataFunction: (
+    params: object,
+    requestConfig?: object,
+    headers?: object,
+  ) => Promise<ApiResult<IndexDataModel, JError>>,
+) => async (params: object) => {
   progressBar.start();
-  let promise: Promise<ApiResult<IndexDataModel, BaseError>>;
+  let result: ApiResult<IndexDataModel, JError>;
   try {
-    promise = initialData({ _: currentTime });
+    result = await getDataFunction(params, requestConfig);
+  } catch (e) {
+    if (e instanceof ApiResultErr) {
+      result = e;
+    }
+    throw e;
   } finally {
     progressBar.stop();
   }
-  return promise;
+  return result;
+};
+
+const initialWithProgress = withProgress(initialData);
+const indexWithProgress = withProgress(indexData);
+
+const fetchInitialData = async (currentTime: number) => {
+  return initialWithProgress({ _: currentTime });
 };
 
 const fetchRemainingData = async (currentTime: number) => {
@@ -34,27 +58,10 @@ const fetchRemainingData = async (currentTime: number) => {
 // fetch plugins
 
 const fetchIndexData = async (timeStamp: string) => {
-  progressBar.start();
   const params: IParams = { newer_than: timeStamp };
 
   notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_EXIST);
-
-  const requestConfig = {
-    onDownloadProgress(e: any) {
-      progressBar.update(e);
-    },
-  };
-  let result: ApiResult<IndexDataModel, BaseError>;
-
-  try {
-    result = await indexData(params, requestConfig);
-  } catch (e) {
-    result = e;
-  } finally {
-    progressBar.stop();
-  }
-
-  return result;
+  return indexWithProgress(params);
 };
 
 export { fetchIndexData, fetchInitialData, fetchRemainingData };

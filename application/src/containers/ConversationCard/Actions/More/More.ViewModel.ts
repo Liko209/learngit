@@ -7,7 +7,8 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, MENU_LIST_ITEM_TYPE } from './types';
-import { Post, Group } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
+import { Group } from 'sdk/module/group/entity';
 import { TypeDictionary } from 'sdk/utils';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -80,17 +81,18 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   private get _isText() {
-    return !!this._post.text;
+    const { text } = this._post;
+    return !!text && text.trim().length > 0;
   }
 
-  @computed
-  private get _hasAttachments() {
-    return this._post.itemIds.length > 0;
-  }
+  // @computed
+  // private get _hasAttachments() {
+  //   return this._post.itemIds.length > 0;
+  // }
 
   @computed
   get showMoreAction() {
-    return this._isText || this._hasAttachments;
+    return this._isText;
   }
 }
 

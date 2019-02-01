@@ -15,17 +15,16 @@ import ProfileService from '../../service/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
 import { transform } from '../utils';
-import {
-  Group,
-  Post,
-  Raw,
-  Profile,
-  PartialWithKey,
-  GroupState,
-} from '../../models';
-import StateService from '../state';
+import { PartialWithKey, GroupState } from '../../models';
+
+import { Raw } from '../../framework/model';
+import { Group } from '../../module/group/entity';
+import { Post } from '../../module/post/entity';
+import { Profile } from '../../module/profile/entity';
+
+import { StateService } from '../../module/state';
 import { EVENT_TYPES } from '../constants';
-import AccountService from '../account';
+import { UserConfig } from '../account';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],
@@ -76,7 +75,7 @@ async function calculateDeltaData(
     if (remove) {
       for (const key in remove) {
         if (remove.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
-          result[key] = _.drop(originData[key], remove[key]);
+          result[key] = _.difference(originData[key], remove[key]);
         } else {
           // No a regular delta message if the remove field is not existed,
           // Force end the calculation and return
@@ -88,7 +87,7 @@ async function calculateDeltaData(
     if (add) {
       for (const key in add) {
         if (add.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
-          result[key] = _.concat([], originData[key], add[key]);
+          result[key] = _.uniq(_.concat([], originData[key], add[key]));
         } else {
           // No a regular delta message if the add field is not existed
           // Force end the calculation and return
@@ -139,20 +138,10 @@ async function getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
 async function doNotification(deactivatedData: Group[], groups: Group[]) {
   const profileService: ProfileService = ProfileService.getInstance();
   const profile = await profileService.getProfile();
-  const hiddenGroupIds = profile ? extractHiddenGroupIds(profile) : [];
-  const accountService: AccountService = AccountService.getInstance();
-  const currentUserId = accountService.getCurrentUserId();
-  const normalData = groups.filter(
-    (group: Group) =>
-      hiddenGroupIds.indexOf(group.id) === -1 &&
-      (group.members ? group.members.includes(currentUserId) : true),
-  );
-
-  normalData.length &&
-    notificationCenter.emit(SERVICE.GROUP_CURSOR, normalData);
+  groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
 
   const favIds = (profile && profile.favorite_group_ids) || [];
-  const archivedGroups = normalData.filter((item: Group) => item.is_archived);
+  const archivedGroups = groups.filter((item: Group) => item.is_archived);
   const deactivatedGroups = deactivatedData.concat(archivedGroups);
   const deactivatedGroupIds = _.map(deactivatedGroups, (group: Group) => {
     return group.id;
@@ -162,17 +151,17 @@ async function doNotification(deactivatedData: Group[], groups: Group[]) {
 
   const limit = await profileService.getMaxLeftRailGroup();
 
-  let addedTeams = normalData.filter(
+  let addedTeams = groups.filter(
     (item: Group) => item.is_team && favIds.indexOf(item.id) === -1,
   );
   addedTeams = await filterGroups(addedTeams, limit);
 
-  let addedGroups = normalData.filter(
+  let addedGroups = groups.filter(
     (item: Group) => !item.is_team && favIds.indexOf(item.id) === -1,
   );
   addedGroups = await filterGroups(addedGroups, limit);
 
-  const addFavorites = normalData.filter(
+  const addFavorites = groups.filter(
     (item: Group) => favIds.indexOf(item.id) !== -1,
   );
   const result = addedTeams.concat(addedGroups).concat(addFavorites);
@@ -290,29 +279,6 @@ async function handleFavoriteGroupsChanged(
   }
 }
 
-async function handleHiddenGroupsChanged(
-  localHiddenGroupIds: number[],
-  remoteHiddenGroupIds: number[],
-) {
-  const moreHiddenIds: number[] = _.difference(
-    remoteHiddenGroupIds,
-    localHiddenGroupIds,
-  );
-  const moreOpenIds: number[] = _.difference(
-    localHiddenGroupIds,
-    remoteHiddenGroupIds,
-  );
-  const dao = daoManager.getDao(GroupDao);
-  if (moreHiddenIds.length) {
-    const groups = await dao.queryGroupsByIds(moreHiddenIds);
-    doNotification(groups, []);
-  }
-  if (moreOpenIds.length) {
-    const groups = await dao.queryGroupsByIds(moreOpenIds);
-    doNotification([], groups);
-  }
-}
-
 function doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
   if (isPut) {
     const teams = groups.filter((item: Group) => item.is_team);
@@ -417,8 +383,7 @@ async function getUnreadGroupIds(groups: Group[]) {
  */
 async function filterGroups(groups: Group[], limit: number) {
   let sortedGroups = groups;
-  const accountService: AccountService = AccountService.getInstance();
-  const currentUserId = accountService.getCurrentUserId();
+  const currentUserId = UserConfig.getCurrentUserId();
   sortedGroups = groups.filter((model: Group) => {
     if (model.is_team) {
       return true;
@@ -479,11 +444,11 @@ async function handlePartialData(groups: Partial<Raw<Group>>[]) {
 export {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
-  handleHiddenGroupsChanged,
   saveDataAndDoNotification,
   filterGroups,
   sortFavoriteGroups,
   handlePartialData,
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
+  calculateDeltaData,
 };

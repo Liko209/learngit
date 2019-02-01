@@ -7,17 +7,16 @@
 import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
-import {
-  Raw,
-  Company,
-  Item,
-  Profile,
-  State,
-  Person,
-  Group,
-  Post,
-  RawPresence,
-} from '../../models';
+import { Raw } from '../../framework/model';
+import { Company } from '../../module/company/entity';
+import { Item } from '../../module/item/entity';
+import { State } from '../../module/state/entity';
+import { Person } from '../../module/person/entity';
+import { Group } from '../../module/group/entity';
+import { Post } from '../../module/post/entity';
+import { RawPresence } from '../../module/presence/entity';
+import { Profile } from '../../module/profile/entity';
+
 import { IFlag } from '../../component/featureFlag/interface';
 
 export type IndexDataModel = {
@@ -29,6 +28,7 @@ export type IndexDataModel = {
   presences?: RawPresence[];
   state?: Raw<State>;
   people?: Raw<Person>[];
+  public_teams?: Raw<Group>[];
   groups?: Raw<Group>[];
   teams?: Raw<Group>[];
   posts?: Raw<Post>[];

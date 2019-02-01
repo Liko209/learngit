@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -15,13 +15,17 @@ import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { Notification } from '@/containers/Notification';
+import { CreateTeam } from '@/containers/CreateTeam';
+import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type State = {
   message: string;
 };
-
-type NewMessageProps = WithNamespaces & ViewProps;
 
 const StyledSnackbarsContent = styled<any>(JuiSnackbarContent)`
   && {
@@ -36,8 +40,8 @@ const StyledTextWithLink = styled.div`
 `;
 
 @observer
-class NewMessage extends React.Component<NewMessageProps, State> {
-  constructor(props: NewMessageProps) {
+class NewMessage extends React.Component<ViewProps, State> {
+  constructor(props: ViewProps) {
     super(props);
     this.state = {
       message: '',
@@ -46,18 +50,16 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 
   sendNewMessage = async () => {
     const { message } = this.state;
-    const { history, newMessage, members } = this.props;
-    const result = await newMessage(members, message);
-    if (result) {
-      history.push(`/messages/${result.id}`);
-      this.onClose();
-    }
+    const { newMessage } = this.props;
+    newMessage(message);
+    this.onClose();
   }
 
-  onClose = () => {
-    const { updateNewMessageDialogState, inputReset } = this.props;
-    updateNewMessageDialogState();
-    inputReset();
+  onClose = () => portalManager.dismiss();
+
+  openCreateTeam = () => {
+    this.onClose();
+    CreateTeam.show();
   }
 
   handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +70,8 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     const message = 'SorryWeWereNotAbleToSendTheMessage';
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
@@ -77,14 +79,10 @@ class NewMessage extends React.Component<NewMessageProps, State> {
 
   render() {
     const {
-      t,
-      isOpen,
       emailError,
       emailErrorMsg,
       disabledOkBtn,
       handleSearchContactChange,
-      updateCreateTeamDialogState,
-      isOffline,
       serverError,
       errorEmail,
       errorUnknown,
@@ -94,34 +92,34 @@ class NewMessage extends React.Component<NewMessageProps, State> {
     }
     return (
       <JuiModal
-        open={isOpen}
+        open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        okBtnProps={{ disabled: isOffline || disabledOkBtn }}
-        title={t('New Message')}
+        okBtnProps={{ disabled: disabledOkBtn }}
+        title={i18next.t('New Message')}
         onCancel={this.onClose}
         onOK={this.sendNewMessage}
-        okText={t('Send')}
+        okText={i18next.t('Send')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('New Message Error')}
+              {i18next.t('New Message Error')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={t('Cancel')}
+        cancelText={i18next.t('Cancel')}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
-          placeholder={t('Search Contact Placeholder')}
+          label={i18next.t('Members')}
+          placeholder={i18next.t('Search Contact Placeholder')}
           error={emailError}
-          helperText={emailError && t(emailErrorMsg)}
+          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
         />
         <JuiTextarea
-          id={t('Type new message')}
-          label={t('Type new message')}
+          id={i18next.t('Type new message')}
+          label={i18next.t('Type new message')}
           fullWidth={true}
           inputProps={{
             maxLength: 10000,
@@ -131,9 +129,9 @@ class NewMessage extends React.Component<NewMessageProps, State> {
         />
         <StyledTextWithLink>
           <JuiTextWithLink
-            text={t('newMessageTip')}
-            linkText={t('newMessageTipLink')}
-            onClick={updateCreateTeamDialogState}
+            text={i18next.t('newMessageTip')}
+            linkText={i18next.t('newMessageTipLink')}
+            onClick={this.openCreateTeam}
           />
         </StyledTextWithLink>
       </JuiModal>
@@ -141,7 +139,7 @@ class NewMessage extends React.Component<NewMessageProps, State> {
   }
 }
 
-const NewMessageView = translate('team')(withRouter(NewMessage));
+const NewMessageView = withRouter(NewMessage);
 const NewMessageComponent = NewMessage;
 
 export { NewMessageView, NewMessageComponent };

@@ -9,7 +9,7 @@ import { AbstractViewModel } from '@/base';
 import { ProfileDialogGroupProps, ProfileDialogGroupViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 
 class ProfileDialogGroupViewModel
@@ -23,10 +23,6 @@ class ProfileDialogGroupViewModel
   @computed
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
-  }
-
-  dismiss() {
-    this.props.dismiss();
   }
 }
 

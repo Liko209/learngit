@@ -6,14 +6,20 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
-import { Header } from './header';
-import { LeftRail } from './LeftRail';
-import { RightRail } from './RightRail';
-import { ViewProfile, MiniProfile, ProfileDialog } from './ViewProfile';
+import { Header, joinTeamDialog } from './header';
+import { MiniProfile, ProfileDialog } from './ViewProfile';
+import { AddTeamMembers } from './AddTeamMembers';
+import { TeamSettingDialog } from './TeamSetting';
+import { LeaveTeamDialog } from './LeaveTeamDialog';
+import { h } from '../../../helpers';
+
 
 export class HomePage extends BaseWebComponent {
-  async ensureLoaded() {
-    await this.waitUntilExist(this.leftPanel, 60e3);
+  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
+    await this.waitUntilExist(this.leftPanel, timeout)
+    await this.waitForAllSpinnersToDisappear();
+    if (alwaysFocus)
+      await h(this.t).interceptHasFocus(true);
   }
 
   get self() {
@@ -24,13 +30,6 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(LeftPanel);
   }
 
-  get leftRail() {
-    return this.getComponent(LeftRail);
-  }
-
-  get rightRail() {
-    return this.getComponent(RightRail);
-  }
 
   get messageTab() {
     return this.getComponent(MessageTab);
@@ -42,7 +41,7 @@ export class HomePage extends BaseWebComponent {
 
   get addActionButton() {
     this.warnFlakySelector();
-    return this.self.find('button').child().withText('add_circle').parent().parent();
+    return this.self.find('button').child().withText('new_actions').parent().parent();
   }
 
   get addActionMenu() {
@@ -57,11 +56,6 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(SendNewMessageModal);
   }
 
-  // todo: delete after e2e/FIJI-2395 merge;
-  get viewProfile() {
-    return this.getComponent(ViewProfile);
-  }
-
   get miniProfile() {
     return this.getComponent(MiniProfile);
   }
@@ -69,12 +63,21 @@ export class HomePage extends BaseWebComponent {
   get profileDialog() {
     return this.getComponent(ProfileDialog);
   }
+
   get topBarAvatar() {
     return this.getSelectorByAutomationId('topBarAvatar');
   }
 
   get settingMenu() {
     return this.getComponent(SettingMenu);
+  }
+
+  get addTeamMemberDialog() {
+    return this.getComponent(AddTeamMembers);
+  }
+
+  get teamSettingDialog() {
+    return this.getComponent(TeamSettingDialog)
   }
 
   async openAddActionMenu() {
@@ -85,4 +88,11 @@ export class HomePage extends BaseWebComponent {
     await this.t.click(this.topBarAvatar);
   }
 
+  get joinTeamDialog() {
+    return this.getComponent(joinTeamDialog);
+  }
+
+  get leaveTeamDialog() {
+    return this.getComponent(LeaveTeamDialog);
+  }
 }

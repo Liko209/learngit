@@ -13,6 +13,9 @@ const mockData = {};
 const eventUpdateViewModel = new EventUpdateViewModel({ ids: [1], postId: 2 });
 
 describe('eventUpdateViewModel', () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
   it('computed _id', () => {
     expect(eventUpdateViewModel._id).toEqual(1);
   });
@@ -29,5 +32,15 @@ describe('eventUpdateViewModel', () => {
   it('computed event', () => {
     (getEntity as jest.Mock).mockReturnValue(mockData);
     expect(eventUpdateViewModel.event).toBe(mockData);
+  });
+
+  it('computed oldTimeText', () => {
+    jest.spyOn(eventUpdateViewModel, 'getTimeText').mockReturnValue('');
+    expect(eventUpdateViewModel.oldTimeText).toBe('');
+  });
+
+  it('computed newTimeText', () => {
+    jest.spyOn(eventUpdateViewModel, 'getTimeText').mockReturnValue('text');
+    expect(eventUpdateViewModel.newTimeText).toBe('text');
   });
 });

@@ -5,12 +5,11 @@
  */
 
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -22,7 +21,13 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 import { ContactSearch } from '@/containers/ContactSearch';
+import portalManager from '@/common/PortalManager';
+
 import { ViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 interface IState {
   items: JuiListToggleItemProps[];
@@ -47,23 +52,20 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return [
       {
         type: 'isPublic',
-        text: t('PublicTeam'),
+        text: i18next.t('PublicTeam'),
         checked: false,
       },
       {
         type: 'canPost',
-        text: t('MembersMayPostMessages'),
+        text: i18next.t('MembersMayPostMessages'),
         checked: true,
       },
     ];
   }
 
   static getDerivedStateFromProps(props: any, state: any) {
-    let items = [];
+    let items = CreateTeam.initItems;
 
-    if (props.isOpen) {
-      items = CreateTeam.initItems;
-    }
     if (state.items.length) {
       items = state.items;
     }
@@ -104,17 +106,14 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     }
   }
 
-  onClose = () => {
-    const { updateCreateTeamDialogState } = this.props;
-    updateCreateTeamDialogState();
-  }
+  onClose = () => portalManager.dismiss();
 
   renderServerUnknownError() {
     const message = 'WeWerentAbleToCreateTheTeamTryAgain';
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
@@ -123,8 +122,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   render() {
     const { items } = this.state;
     const {
-      t,
-      isOpen,
       nameError,
       emailError,
       emailErrorMsg,
@@ -133,7 +130,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       handleNameChange,
       handleDescChange,
       handleSearchContactChange,
-      isOffline,
       serverError,
       errorEmail,
       serverUnknownError,
@@ -143,47 +139,47 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     }
     return (
       <JuiModal
-        open={isOpen}
+        open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        okBtnProps={{ disabled: isOffline || disabledOkBtn }}
-        title={t('Create Team')}
+        okBtnProps={{ disabled: disabledOkBtn }}
+        title={i18next.t('CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
-        okText={t('Create')}
+        okText={i18next.t('Create')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('Create Team Error')}
+              {i18next.t('Create Team Error')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={t('Cancel')}
+        cancelText={i18next.t('Cancel')}
       >
         <JuiTextField
-          id={t('Team Name')}
-          label={t('Team Name')}
+          id={i18next.t('teamName')}
+          label={i18next.t('teamName')}
           fullWidth={true}
           error={nameError}
           inputProps={{
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
-          helperText={nameError && t(errorMsg)}
+          helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
-          placeholder={t('Search Contact Placeholder')}
+          label={i18next.t('Members')}
+          placeholder={i18next.t('Search Contact Placeholder')}
           error={emailError}
-          helperText={emailError && t(emailErrorMsg)}
+          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea
-          id={t('Team Description')}
-          label={t('Team Description')}
+          id={i18next.t('teamDescription')}
+          label={i18next.t('teamDescription')}
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
             maxLength: 1000,
@@ -200,8 +196,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           TypographyProps={{
             align: 'center',
           }}
-          text={t('tips')}
-          linkText={t('linkTips')}
+          text={t('YouAreAnAdminToThisTeam')}
+          linkText={t('LearnAboutTeamAdministration')}
           href=""
         /> */}
       </JuiModal>
@@ -209,7 +205,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
   }
 }
 
-const CreateTeamView = translate('team')(withRouter(CreateTeam));
+const CreateTeamView = withRouter(CreateTeam);
 const CreateTeamComponent = CreateTeam;
 
 export { CreateTeamView, CreateTeamComponent };

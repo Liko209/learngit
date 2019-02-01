@@ -6,7 +6,7 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
 import _ from 'lodash';
-import { BaseModel, Raw } from '../models';
+import { IdModel, Raw } from '../framework/model';
 
 export type NotificationEntityIds = {
   ids: number[];
@@ -60,7 +60,7 @@ export type NotificationEntityPayload<T> =
  * transform array to map structure
  * @param {array} entities
  */
-const transform2Map = <T extends BaseModel>(entities: T[]): Map<number, T> => {
+const transform2Map = <T extends IdModel>(entities: T[]): Map<number, T> => {
   const map = new Map<number, T>();
   entities.forEach((item: T) => {
     map.set(item.id, item);
@@ -68,7 +68,7 @@ const transform2Map = <T extends BaseModel>(entities: T[]): Map<number, T> => {
   return map;
 };
 
-const transformPartial2Map = <T extends BaseModel>(
+const transformPartial2Map = <T extends IdModel>(
   entities: Partial<Raw<T>>[],
 ): Map<number, Partial<Raw<T>>> => {
   const map = new Map<number, Partial<Raw<T>>>();
@@ -83,7 +83,7 @@ class NotificationCenter extends EventEmitter2 {
     super({ wildcard: true });
   }
 
-  emitEntityUpdate<T extends BaseModel>(
+  emitEntityUpdate<T extends IdModel>(
     key: string,
     entities: T[],
     partials?: Partial<Raw<T>>[],
@@ -173,7 +173,7 @@ class NotificationCenter extends EventEmitter2 {
 }
 
 const notificationCenter: NotificationCenter = new NotificationCenter();
-notificationCenter.setMaxListeners(20);
+notificationCenter.setMaxListeners(40);
 
 export { NotificationCenter };
 export default notificationCenter;

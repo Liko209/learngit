@@ -4,7 +4,7 @@
  */
 
 import { BaseDao } from '../base';
-import { Item } from '../../models';
+import { Item } from '../../module/item/entity';
 import { IDatabase } from 'foundation';
 
 class ItemDao extends BaseDao<Item> {
@@ -21,11 +21,6 @@ class ItemDao extends BaseDao<Item> {
         // .filter(item => !item.deactivated)
         .toArray()
     );
-  }
-
-  async getItemsByGroupId(groupId: number, limit?: number): Promise<Item[]> {
-    const query = this.createQuery().contain('group_ids', groupId);
-    return limit ? query.limit(limit).toArray() : query.toArray();
   }
 
   async isFileItemExist(

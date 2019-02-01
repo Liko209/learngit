@@ -10,22 +10,41 @@ import {
 } from '../../dao/account/constants';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
-import { Post, ItemFile, PostItemData } from '../../models';
 import { RawPostInfo } from './types';
-import ItemService from '../item';
 import { GlipTypeUtil, TypeDictionary } from '../../utils';
+import { Post, PostItemData } from '../../module/post/entity';
+import { ItemFile } from '../../module/item/entity';
+import { ItemService } from '../../module/item';
 
 // global_url_regex
 export type LinksArray = { url: string }[];
 class PostServiceHandler {
   static buildLinksInfo(params: RawPostInfo): LinksArray {
     const { text } = params;
-    let res: any;
+    let res: string[] = [];
+    let matchedUrl: string[] = [];
+    const urlArray: string[] = [];
     const links: LinksArray = [];
-
-    res = text.match(Markdown.global_url_regex);
+    res = res.concat(text);
     res &&
-      res.forEach((item: string) => {
+      res.forEach((item: string, index: number) => {
+        matchedUrl = res[index].match(/[^\(\)]+(?=\))/g) || [];
+        if (!matchedUrl.length) {
+          urlArray.push(item);
+        }
+      });
+    if (matchedUrl.length) {
+      for (const k of matchedUrl) {
+        if (k) {
+          urlArray.push(k);
+        }
+      }
+    }
+    const matchedNoneMdUrl = urlArray
+      .toString()
+      .match(Markdown.global_url_regex);
+    matchedNoneMdUrl &&
+      matchedNoneMdUrl.forEach((item: string) => {
         links.push({
           url: item,
         });

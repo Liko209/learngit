@@ -7,18 +7,22 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/models';
+import { Profile } from 'sdk/module/profile/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = FavoriteViewProps & WithNamespaces;
 
 @observer
 class FavoriteViewComponent extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
+  static defaultProps: Partial<Props> = {
+    size: 'small',
+  };
 
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;
@@ -31,8 +35,8 @@ class FavoriteViewComponent extends Component<Props> {
 
       Notification.flashToast({
         message,
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

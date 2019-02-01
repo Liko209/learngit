@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import notificationCenter from '../../service/notificationCenter';
-import { ENTITY, SERVICE } from '../../service/eventKey';
+import { ENTITY } from '../../service/eventKey';
 import { daoManager } from '../../dao';
 import ProfileDao from '../../dao/profile';
 import { transform } from '../../service/utils';
-import AccountService from '../account';
-import { Profile, Raw } from '../../models';
+import { UserConfig } from '../account/UserConfig';
+import { Profile } from '../../module/profile/entity';
+import { Raw } from '../../framework/model';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 
@@ -25,20 +26,6 @@ function extractHiddenGroupIds(profile: Profile): number[] {
     }
   });
   return result;
-}
-
-function hiddenGroupsChange(localProfile: Profile, newProfile: Profile) {
-  if (localProfile && newProfile) {
-    const localHiddenGroupIds = extractHiddenGroupIds(localProfile).sort();
-    const remoteHiddenGroupIds = extractHiddenGroupIds(newProfile).sort();
-    if (localHiddenGroupIds.toString() !== remoteHiddenGroupIds.toString()) {
-      notificationCenter.emit(
-        SERVICE.PROFILE_HIDDEN_GROUP,
-        localHiddenGroupIds,
-        remoteHiddenGroupIds,
-      );
-    }
-  }
 }
 
 const profileHandleData = async (
@@ -65,10 +52,7 @@ const handlePartialProfileUpdate = async (
       if (transformedData) {
         let localProfile: Profile | null = null;
         const profileDao = daoManager.getDao(ProfileDao);
-        const accountService: AccountService = AccountService.getInstance();
-        const profileId:
-          | number
-          | null = accountService.getCurrentUserProfileId();
+        const profileId: number | null = UserConfig.getCurrentUserProfileId();
         if (profileId) {
           localProfile = await profileDao.get(profileId);
           if (localProfile && key) {
@@ -82,10 +66,8 @@ const handlePartialProfileUpdate = async (
               [transformedData],
               [obj],
             );
-            hiddenGroupsChange(localProfile, transformedData);
             return transformedData;
           }
-          localProfile && hiddenGroupsChange(localProfile, transformedData);
         }
         await profileDao.put(transformedData);
         notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [transformedData]);
@@ -100,8 +82,4 @@ const handlePartialProfileUpdate = async (
 };
 
 export default profileHandleData;
-export {
-  extractHiddenGroupIds,
-  handlePartialProfileUpdate,
-  hiddenGroupsChange,
-};
+export { extractHiddenGroupIds, handlePartialProfileUpdate };

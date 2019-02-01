@@ -3,9 +3,10 @@
  * @Date: 2018-12-11 15:08:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
+import { getFileIcon } from '@/common/getFileIcon';
 
 enum FileType {
   image = 0,
@@ -24,18 +25,31 @@ export default class FileItemModel extends ItemModel {
   @observable name: string;
   @observable isDocument?: boolean;
   @observable isNew: boolean;
+  @observable creatorId: number;
   @observable versions: Item['versions'];
   @observable deactivated: Item['deactivated'];
+  @observable createdAt: number;
 
   constructor(data: Item) {
     super(data);
-    const { type, name, versions, is_document, is_new, deactivated } = data;
+    const {
+      type,
+      name,
+      versions,
+      is_document,
+      is_new,
+      deactivated,
+      creator_id,
+      created_at,
+    } = data;
     this.type = type;
     this.name = name;
     this.isDocument = is_document;
     this.isNew = is_new;
     this.versions = versions;
     this.deactivated = deactivated;
+    this.creatorId = creator_id;
+    this.createdAt = created_at;
   }
 
   hasVersions() {
@@ -87,6 +101,11 @@ export default class FileItemModel extends ItemModel {
   get origWidth() {
     if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_width');
+  }
+
+  @computed
+  get iconType() {
+    return getFileIcon(this.type);
   }
 
   static fromJS(data: Item) {

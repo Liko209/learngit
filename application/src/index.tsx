@@ -1,24 +1,10 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import App from '@/App';
-import { upgradeHandler } from '@/upgrade';
-import registerServiceWorker from '@/registerServiceWorker';
-import { initAll } from '@/init';
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-01-07 11:28:43
+ * Copyright © RingCentral. All rights reserved.
+ */
+import 'reflect-metadata';
+import { container } from 'framework';
+import { Application } from './Application';
 
-import '@/index.css';
-import '@/i18n';
-
-(async function () {
-  await initAll();
-
-  ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
-
-  registerServiceWorker(
-    (swURL: string) => {
-      upgradeHandler.setServiceWorkerURL(swURL);
-    },
-    () => {
-      upgradeHandler.onNewContentAvailable();
-    },
-  );
-})();
+container.get(Application).run();

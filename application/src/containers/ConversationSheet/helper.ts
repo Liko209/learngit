@@ -4,34 +4,42 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import moment from 'moment';
-import { t } from 'i18next';
-import FileItemModel, {
-  ExtendFileItem,
-  FileType,
-} from '@/store/models/FileItem';
+import i18next from 'i18next';
 
-import { getDateMessage } from '@/utils/date';
+import {
+  dateFormatter,
+  recentlyTwoDayAndOther,
+  getDateMessage,
+} from '@/utils/date';
 
 function getDateAndTime(timestamp: number) {
-  const getAMOrPM = moment(timestamp).format('h:mm A');
-  const date = getDateMessage(timestamp);
-
-  return `${date} ${t('at')} ${getAMOrPM}`;
+  const getAMOrPM = dateFormatter.localTime(moment(timestamp));
+  const date = recentlyTwoDayAndOther(timestamp);
+  return `${date} ${i18next.t('at')} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
   const startTime = getDateAndTime(startTimestamp);
-  let endTime = getDateAndTime(endTimestamp);
-  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
+  const endTime = getDateAndTime(endTimestamp);
 
-  if (isToday) {
-    endTime = endTime.replace(endTime.split(' ')[0], '');
+  const isSameDay = moment(startTimestamp).isSame(endTimestamp, 'day');
+
+  if (isSameDay) {
+    return `${startTime} - ${dateFormatter.localTime(moment(endTimestamp))}`;
   }
   return `${startTime} - ${endTime}`;
 }
 
+function getDurationDate(startTimestamp: number, endTimestamp: number) {
+  const startTime = recentlyTwoDayAndOther(startTimestamp);
+  const endTime = recentlyTwoDayAndOther(endTimestamp);
+  const isToday = startTime.split(' ')[0] === endTime.split(' ')[0];
+  const endTimeString = isToday ? '' : ` - ${endTime}`;
+  return `${startTime}${endTimeString}`;
+}
+
 function getI18Text(type: string, count: number) {
-  return t(type, { count, postProcess: 'interval' });
+  return i18next.t(type, { count, postProcess: 'interval' });
 }
 
 const REPEAT_TEXT = {
@@ -62,7 +70,7 @@ function getDurationTimeText(
     '';
 
   const date = repeatEndingOn
-    ? getDateMessage(repeatEndingOn, 'ddd, MMM D')
+    ? dateFormatter.exactDate(moment(repeatEndingOn))
     : '';
   const hideUntil = (repeat: string, repeatEnding: string) =>
     repeat === '' || // task not set repeat will be ''
@@ -73,103 +81,17 @@ function getDurationTimeText(
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
     repeatEnding === 'none' || repeatEnding === 'on';
-  const repeatText = ` ${t('until')} ${date}`;
+  const repeatText = ` ${i18next.t('until')} ${date}`;
 
-  return `${t(REPEAT_TEXT[repeat]) || ''} ${
+  return `${i18next.t(REPEAT_TEXT[repeat]) || ''} ${
     hideTimes(repeatEndingAfter, repeatEnding) ? '' : times
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
-}
-
-const IMAGE_TYPE = ['gif', 'jpeg', 'png', 'jpg'];
-
-const FILE_ICON_MAP = {
-  pdf: ['pdf'],
-  sheet: ['xlsx', 'xls'],
-  ppt: ['ppt', 'pptx', 'potx'],
-  ps: ['ps', 'psd'],
-};
-
-function getFileIcon(fileType: string) {
-  for (const key in FILE_ICON_MAP) {
-    if (FILE_ICON_MAP[key].includes(fileType)) {
-      return key;
-    }
-  }
-  return null;
-}
-
-function getFileType(item: FileItemModel): ExtendFileItem {
-  const fileType: ExtendFileItem = {
-    item,
-    type: -1,
-    previewUrl: '',
-  };
-
-  if (image(item).isImage) {
-    fileType.type = FileType.image;
-    fileType.previewUrl = image(item).previewUrl;
-    return fileType;
-  }
-
-  if (document(item).isDocument) {
-    fileType.type = FileType.document;
-    fileType.previewUrl = document(item).previewUrl;
-    return fileType;
-  }
-
-  fileType.type = FileType.others;
-  return fileType;
-}
-
-function image(item: FileItemModel) {
-  const { thumbs, type, versionUrl } = item;
-  const image = {
-    isImage: false,
-    previewUrl: '',
-  };
-
-  if (thumbs) {
-    for (const key in thumbs) {
-      const value = thumbs[key];
-      if (typeof value === 'string' && value.indexOf('http') > -1) {
-        image.isImage = true;
-        image.previewUrl = thumbs[key];
-      }
-    }
-  }
-
-  // In order to show image
-  // If upload doc and image together, image will not has thumbs
-  // FIXME: FIJI-2565
-  if (type) {
-    const isImage = IMAGE_TYPE.some(looper => type.includes(looper));
-    if (type.includes('image/') || isImage) {
-      image.isImage = true;
-      image.previewUrl = versionUrl || '';
-      return image;
-    }
-  }
-  return image;
-}
-
-function document(item: FileItemModel) {
-  const { pages } = item;
-  const doc = {
-    isDocument: false,
-    previewUrl: '',
-  };
-  if (pages && pages.length > 0) {
-    doc.isDocument = true;
-    doc.previewUrl = pages[0].url;
-  }
-  return doc;
 }
 
 export {
   getDateMessage,
   getDateAndTime,
   getDurationTime,
+  getDurationDate,
   getDurationTimeText,
-  getFileIcon,
-  getFileType,
 };

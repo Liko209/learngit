@@ -7,18 +7,23 @@
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
-import { PostService, ItemService } from 'sdk/service';
-import { PROGRESS_STATUS } from 'sdk/module';
-import { Post, Progress } from 'sdk/models';
+import { NewPostService } from 'sdk/module/post';
+import { ItemService } from 'sdk/module/item';
+import { Post } from 'sdk/module/post/entity';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
 import { Notification } from '@/containers/Notification';
 import ProgressModel from '@/store/models/Progress';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
-  private _postService: PostService = PostService.getInstance();
+  private _postService: NewPostService = NewPostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _timer: NodeJS.Timer;
   @observable
@@ -32,7 +37,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
           clearTimeout(this._timer);
           this._timer = setTimeout(() => {
             this.postStatus = this.postProgress;
-          },                       500);
+          },                       200);
         } else {
           this.postStatus = this.postProgress;
         }
@@ -71,8 +76,8 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     } else {
       Notification.flashToast({
         message: 'fileNoLongerExists',
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });

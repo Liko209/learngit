@@ -6,55 +6,74 @@
 
 import { PostController } from '../PostController';
 import { Post } from '../../../../models';
-import { PostActionController } from '../PostActionController';
+import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
 import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { BaseDao, daoManager } from '../../../../dao';
-import { ControllerBuilder } from '../../../../framework/controller/impl/ControllerBuilder';
+import { BaseDao, daoManager, PostDao, ConfigDao } from '../../../../dao';
+import {
+  buildEntitySourceController,
+  buildRequestController,
+  buildPartialModifyController,
+} from '../../../../framework/controller';
 
+import { SendPostController } from '../implementation/SendPostController';
+import { ProgressService } from '../../../progress';
+
+jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
+jest.mock('../../../../dao');
+jest.mock('../../../progress');
 
 describe('PostController', () => {
+  const progressService: ProgressService = new ProgressService();
+  const postDao: PostDao = new PostDao(null);
+  const configDao: ConfigDao = new ConfigDao(null);
+
+  beforeEach(() => {
+    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+    jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
+    jest.spyOn(daoManager, 'getKVDao').mockReturnValue(configDao);
+  });
+
   describe('getPostActionController()', () => {
-    beforeEach(() => {
+    afterAll(() => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {
-      const controllerBuilder = new ControllerBuilder<Post>();
-      const postController = new PostController(controllerBuilder);
-
-      const dao = new BaseDao('Post', new TestDatabase());
-      jest.spyOn(daoManager, 'getDao').mockImplementationOnce(() => {
-        return dao;
-      });
+      const postController = new PostController();
 
       Object.assign(Api, {
         glipNetworkClient: null,
       });
 
-      jest
-        .spyOn(controllerBuilder, 'buildPartialModifyController')
-        .mockImplementationOnce(() => {
-          return undefined;
-        });
+      buildPartialModifyController.mockImplementationOnce(() => {
+        return undefined;
+      });
 
-      jest
-        .spyOn(controllerBuilder, 'buildRequestController')
-        .mockImplementationOnce(() => {
-          return undefined;
-        });
+      buildRequestController.mockImplementationOnce(() => {
+        return undefined;
+      });
 
-      jest
-        .spyOn(controllerBuilder, 'buildEntitySourceController')
-        .mockImplementationOnce(() => {
-          return undefined;
-        });
+      buildEntitySourceController.mockImplementationOnce(() => {
+        return undefined;
+      });
 
       const result = postController.getPostActionController();
       expect(result instanceof PostActionController).toBe(true);
-      expect(controllerBuilder.buildEntitySourceController).toBeCalledTimes(1);
-      expect(controllerBuilder.buildPartialModifyController).toBeCalledTimes(1);
-      expect(controllerBuilder.buildRequestController).toBeCalledTimes(1);
+      expect(buildEntitySourceController).toBeCalledTimes(1);
+      expect(buildPartialModifyController).toBeCalledTimes(1);
+      expect(buildRequestController).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getSendPostController', () => {
+    it('getSendPostController should not be null/undefined', () => {
+      const postController = new PostController();
+      jest
+        .spyOn(postController, 'getPostActionController')
+        .mockReturnValueOnce(null);
+      const result = postController.getSendPostController();
+      expect(result instanceof SendPostController).toBe(true);
     });
   });
 });

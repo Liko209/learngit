@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { ISortableModel } from '@/store/base';
 import { ISeparatorHandler } from './ISeparatorHandler';
 import { NewSeparator, SeparatorType } from './types';

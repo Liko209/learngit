@@ -4,22 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 import { ViewProps } from './types';
 
 @observer
 class DeleteView extends React.Component<ViewProps> {
   private _handleDelete = () => {
     const { deletePost } = this.props;
-    JuiModal.confirm({
-      title: t('deletePostTitle'),
-      content: t('deletePostContent'),
-      okText: t('delete'),
+    Dialog.confirm({
+      title: i18next.t('deletePostTitle'),
+      content: i18next.t('deletePostContent'),
+      okText: i18next.t('delete'),
       okType: 'negative',
-      cancelText: t('Cancel'),
+      cancelText: i18next.t('Cancel'),
       onOK() {
         deletePost().catch((e: any) => {
           console.log(e);
@@ -35,7 +35,7 @@ class DeleteView extends React.Component<ViewProps> {
         disabled={disabled}
         icon="delete"
       >
-        {t('deletePost')}
+        {i18next.t('deletePost')}
       </JuiMenuItem>
     );
   }

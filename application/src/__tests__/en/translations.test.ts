@@ -165,7 +165,7 @@ describe('i18next-en', () => {
     expect(i18next.t('updated')).toEqual('updated');
     expect(i18next.t('created')).toEqual('created');
     expect(i18next.t('delete')).toEqual('Delete');
-    expect(i18next.t('deletePostTitle')).toEqual('Delete post');
+    expect(i18next.t('deletePostTitle')).toEqual('Delete Post?');
     expect(i18next.t('deletePostContent')).toEqual(
       'Are you sure you want to delete this post?',
     );
@@ -291,6 +291,15 @@ describe('i18next-en', () => {
     expect(i18next.t('SorryWeWereNotAbleToBookmarkThisMessage')).toEqual(
       "Sorry, we weren't able to bookmark this message. Try again.",
     );
+    expect(i18next.t('SorryWeWereNotAbleToLoadOlderMessages')).toEqual(
+      "Sorry, we weren't able to load older messages. Try again.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToLoadNewerMessages')).toEqual(
+      "Sorry, we weren't able to load newer messages. Try again.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToOpenThisProfile')).toEqual(
+      "Sorry, we weren't able to open this profile. Try again.",
+    );
     expect(i18next.t('messageLoadingErrorTip')).toEqual(
       "We weren't able to open this conversation.",
     );
@@ -300,12 +309,18 @@ describe('i18next-en', () => {
     expect(i18next.t('edit')).toEqual('Edit post');
     expect(i18next.t('AboutRingCentral')).toEqual('About RingCentral');
     expect(i18next.t('newActions')).toEqual('New actions');
+    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdate')).toEqual(
+      "Sorry, we weren't able to save the update.",
+    );
+    expect(i18next.t('SorryWeWereNotAbleToSaveTheUpdateTryAgain')).toEqual(
+      "Sorry, we weren't able to save the update. Try again.",
+    );
   });
 
   it('should check duplicate alert text JPT-455', () => {
     expect(i18next.t('updateFiles')).toEqual('Update File(s)?');
     expect(i18next.t('theFollowingFilesAlreadyExist')).toEqual(
-      'The following file(s) already exist',
+      'The following file(s) already exist.',
     );
     expect(
       i18next.t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne'),
@@ -319,4 +334,60 @@ describe('i18next-en', () => {
       'The file no longer exists.',
     );
   });
+
+  it('should check translation for error handle in cancel file upload', () => {
+    expect(i18next.t('notAbleToCancelUpload')).toEqual(
+      "Sorry, we weren't able to cancel the upload.",
+    );
+    expect(i18next.t('notAbleToCancelUploadTryAgain')).toEqual(
+      "Sorry, we weren't able to cancel the upload. Try again.",
+    );
+  });
+
+  expect(i18next.t('Team name required')).toEqual('Team name required');
+  expect(i18next.t('YouAreAnAdminToThisTeam')).toEqual(
+    'You are an admin to this team.',
+  );
+  expect(i18next.t('LearnAboutTeamAdministration')).toEqual(
+    'Learn about team administration.',
+  );
+  expect(i18next.t('Create')).toEqual('Create');
+
+  expect(i18next.t('Members')).toEqual('Members');
+
+  expect(i18next.t('alreadyTaken')).toEqual(
+    'The name is already taken, choose another one.',
+  );
+
+  expect(i18next.t('Invalid Email')).toEqual('Invalid Email');
+
+  expect(i18next.t('Search Contact Placeholder')).toEqual(
+    'Members (enter names or email addresses)',
+  );
+
+  expect(i18next.t('New Message')).toEqual('New Message');
+  expect(i18next.t('Send')).toEqual('Send');
+  expect(i18next.t('New Message Error')).toEqual(
+    'We are having trouble creating this new message. Please try again later.',
+  );
+  expect(i18next.t('Create Team Error')).toEqual(
+    'We are having trouble creating this team. Please try again later.',
+  );
+  expect(i18next.t('newMessageTip')).toEqual(
+    'Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ',
+  );
+  expect(i18next.t('newMessageTipLink')).toEqual('create a Team instead.');
+  expect(i18next.t('InvalidEmail')).toEqual('Invalid Email');
+
+  expect(i18next.t('collapseLine')).toEqual('Collapse');
+  expect(i18next.t('expandLine', { lineNumber: 3 })).toEqual(
+    'Expand (3 lines)',
+  );
+  const restLines = 1;
+  expect(i18next.t('DownloadToSeeTheRestLine', { restLines })).toEqual(
+    `Download to see the rest ${restLines} line`,
+  );
+  expect(
+    i18next.t('DownloadToSeeTheRestLine', { restLines: restLines + 1 }),
+  ).toEqual(`Download to see the rest ${restLines + 1} lines`);
 });

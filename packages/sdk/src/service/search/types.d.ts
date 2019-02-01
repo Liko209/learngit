@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Post, Item, Raw } from '../../models';
-
+import { Raw } from '../../framework/model';
+import { Post } from '../../module/post/entity';
+import { Item } from '../../module/item/entity';
 export type RequestId = Number;
 export type QueryString = String;
 export type ResponseId = Number;

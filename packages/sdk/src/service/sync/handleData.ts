@@ -10,24 +10,25 @@ import {
   SOCKET_SERVER_HOST,
   STATIC_HTTP_SERVER,
 } from '../../dao/config/constants';
-import { ErrorParser } from '../../utils/error';
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import groupHandleData from '../group/handleData';
-import itemHandleData from '../item/handleData';
 import notificationCenter from '../notificationCenter';
 import personHandleData from '../person/handleData';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
-import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
-import { Raw, Profile } from '../../models';
+import { Raw } from '../../framework/model';
+import { Profile } from '../../module/profile/entity';
+import { ItemService } from '../../module/item';
+import { StateService } from '../../module/state';
+import { ErrorParserHolder } from '../../error';
 
-const dispatchIncomingData = (data: IndexDataModel) => {
+const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
     user_id: userId,
     company_id: companyId,
@@ -40,6 +41,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     groups = [],
     teams = [],
     posts = [],
+    public_teams = [],
     max_posts_exceeded: maxPostsExceeded = false,
     client_config: clientConfig = {},
   } = data;
@@ -53,7 +55,6 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   if (profile && Object.keys(profile).length > 0) {
     transProfile = profile;
   }
-
   return Promise.all([
     accountHandleData({
       userId,
@@ -62,13 +63,14 @@ const dispatchIncomingData = (data: IndexDataModel) => {
       profileId: profile ? profile._id : undefined,
     }), // eslint-disable-line no-underscore-dangle, no-undefined
     companyHandleData(companies),
-    itemHandleData(items),
+    (ItemService.getInstance() as ItemService).handleIncomingData(items),
     presenceHandleData(presences),
-    stateHandleData(arrState),
+    (StateService.getInstance() as StateService).handleState(arrState),
     // featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(transProfile))
     .then(() => personHandleData(people))
+    .then(() => groupHandleData(public_teams))
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));
@@ -111,7 +113,7 @@ const handleData = async (
   } catch (error) {
     mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
     notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
-      error: ErrorParser.parse(error),
+      error: ErrorParserHolder.getErrorParser().parse(error),
     });
   }
 };

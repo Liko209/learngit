@@ -1,9 +1,10 @@
 import { ENTITY_NAME, HANDLER_TYPE } from './constants';
 import { BaseService, EVENT_TYPES } from 'sdk/service';
-import { BaseModel } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
 
 export type Entity = {
   id: number;
+  isMocked: boolean;
   data?: any;
   [name: string]: any;
 };

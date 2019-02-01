@@ -13,7 +13,7 @@ fixture('ConversationList/HighlightConversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open last conversation when login and group show in the top of conversation list', ['JPT-144', 'JPT-463', 'P2', 'ConversationList']),
+test(formalName('Open last conversation when login and group show in the top of conversation list', ['JPT-144', 'P2', 'ConversationList']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -21,6 +21,7 @@ test(formalName('Open last conversation when login and group show in the top of 
     const directMessageSection = app.homePage.messageTab.directMessagesSection;
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfile();
 
     let groupId;
     await h(t).withLog('Given I have an extension with a group chat', async () => {
@@ -30,13 +31,8 @@ test(formalName('Open last conversation when login and group show in the top of 
       });
     });
 
-    await h(t).withLog('And the conversation should not be hidden and not favorite', async () => {
-      await h(t).glip(loginUser).showGroups(loginUser.rcId, groupId);
-      await h(t).glip(loginUser).clearFavoriteGroups();
-    });
-
-    await h(t).withLog(`Given the group chat ${groupId} is last group selected`, async () => {
-      await h(t).glip(loginUser).setLastGroupId(loginUser.rcId, groupId)
+    await h(t).withLog(`And the group chat ${groupId} is last group selected`, async () => {
+      await h(t).glip(loginUser).setLastGroupId(groupId)
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -53,10 +49,6 @@ test(formalName('Open last conversation when login and group show in the top of 
         .filter(`[data-group-id="${groupId}"]`)
         .find('p').style;
       await t.expect(textStyle.color).eql('rgb(6, 132, 189)');
-    });
-
-    await h(t).withLog('And the group should display in the top of conversation list', async () => {
-      await directMessageSection.nthConversationEntry(0).groupIdShouldBe(groupId);
     });
 
     await h(t).withLog('And the content is shown on the conversation page', async () => {

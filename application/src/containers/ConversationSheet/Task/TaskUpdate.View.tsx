@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -41,8 +41,8 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   }
 
   render() {
-    const { task, activityData } = this.props;
-    const { color, text, complete } = task;
+    const { task, activityData, color } = this.props;
+    const { text, complete } = task;
     const { value, key, old_value } = activityData;
     return (
       <TaskUpdateViewCard
@@ -52,8 +52,8 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         Footer={
           key === 'assigned_to_ids' && old_value.length > 0 ? (
             <JuiEventCollapse
-              showText={t('showEventHistory')}
-              hideText={t('hideEventHistory')}
+              showText={i18next.t('showEventHistory')}
+              hideText={i18next.t('hideEventHistory')}
             >
               {
                 <JuiEventCollapseContent>
@@ -67,7 +67,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         }
       >
         {key === 'assigned_to_ids' ? (
-          <JuiTaskContent title={t('assignee')}>
+          <JuiTaskContent title={i18next.t('assignee')}>
             <JuiTaskAvatarNames>
               {this._getTaskAvatarNames(value)}
             </JuiTaskAvatarNames>

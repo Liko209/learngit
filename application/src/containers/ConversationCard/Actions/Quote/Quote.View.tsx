@@ -20,17 +20,13 @@ class QuoteViewComponent extends React.Component<Props> {
   render() {
     const { disabled } = this.props;
     return (
-      <JuiMenuItem
-        icon="feedback"
-        onClick={this._handleClick}
-        disabled={disabled}
-      >
+      <JuiMenuItem icon="quote" onClick={this._handleClick} disabled={disabled}>
         Quote
       </JuiMenuItem>
     );
   }
 }
 
-const QuoteView = translate('Conversations')(QuoteViewComponent);
+const QuoteView = translate('translations')(QuoteViewComponent);
 
 export { QuoteView };

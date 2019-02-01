@@ -1,7 +1,11 @@
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import { getFakeRequest, getFakeClient, getFakeResponse } from './utils';
+import {
+  NETWORK_REQUEST_EXECUTOR_STATUS,
+  NETWORK_FAIL_TYPE,
+  HTTP_STATUS_CODE,
+} from '../network';
 
-import { NETWORK_REQUEST_EXECUTOR_STATUS, NETWORK_FAIL_TYPE } from '../network';
 const networkExecutor = new NetworkRequestExecutor(
   getFakeRequest(),
   getFakeClient(),
@@ -37,6 +41,26 @@ describe('NetworkRequestExecutor', () => {
       const spy = jest.spyOn(networkExecutor, '_retry');
       networkExecutor.onFailure(response);
       expect(spy).toBeCalled();
+    });
+
+    it('should remove oauth token when token is invalid', () => {
+      networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
+      const oauthFailedResponse = getFakeResponse();
+      oauthFailedResponse.status = HTTP_STATUS_CODE.UNAUTHORIZED;
+      oauthFailedResponse.statusText = NETWORK_FAIL_TYPE.UNAUTHORIZED;
+      const request = getFakeRequest();
+      request.headers = {
+        Authorization: '111',
+      };
+      const responseListener = {
+        onAccessTokenInvalid: jest.fn(),
+      };
+      networkExecutor.request = request;
+      networkExecutor.responseListener = responseListener;
+      networkExecutor.onFailure(oauthFailedResponse);
+
+      expect(responseListener.onAccessTokenInvalid).toBeCalled();
+      expect(request.headers.Authorization).toBeUndefined();
     });
   });
 

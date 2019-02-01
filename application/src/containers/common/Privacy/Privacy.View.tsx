@@ -8,8 +8,12 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { PrivacyViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { ErrorTypes } from 'sdk/utils/';
 import { Notification } from '@/containers/Notification';
+import { errorHelper } from 'sdk/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = PrivacyViewProps & WithNamespaces;
 
@@ -17,8 +21,8 @@ class PrivacyViewComponent extends Component<Props> {
   flashToast = (message: string) => {
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
@@ -29,7 +33,7 @@ class PrivacyViewComponent extends Component<Props> {
     try {
       await handlePrivacy();
     } catch (error) {
-      if (error === ErrorTypes.API_NETWORK) {
+      if (errorHelper.isNetworkConnectionError(error)) {
         this.flashToast('teamNetError');
       } else {
         this.flashToast('markPrivateServerErrorForTeam');

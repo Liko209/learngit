@@ -23,7 +23,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
-    const format = 'hh:mm A';
+    const format = 'h:mm A';
 
     let groupId, postData, targetPost;
     await h(t).withLog('Given I have an extension with 1 team chat', async () => {
@@ -43,7 +43,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     );
 
     await h(t).withLog(`Then I enter a random conversation in teams section`, async () => {
-      const conversations = app.homePage.messageTab.teamsSection.conversations;
+      const conversations = app.homePage.messageTab.teamsSection.conversations
       const count = await conversations.count;
       const n = Math.floor(Math.random() * count);
       await app.homePage.messageTab.teamsSection.nthConversationEntry(n).enter();
@@ -51,7 +51,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await h(t).platform(loginUser).createPost({ text: postContent }, groupId)).data;
+      postData = await h(t).platform(loginUser).sendTextPost(postContent, groupId).then(res => res.data);
       targetPost = app.homePage.messageTab.conversationPage.postItemById(postData.id);
       await t.expect(targetPost.exists).ok(postData)
     });
@@ -67,7 +67,7 @@ test(formalName('Check send time for each message metadata.', ['JPT-43', 'P2', '
 test(formalName('When update user name, can sync dynamically in message metadata.',
   ['JPT-91', 'P2', 'ConversationStream']),
   async (t: TestController) => {
-    const postContent = `some random text post ${Date.now()}`;
+    const postContent = uuid();
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -88,18 +88,18 @@ test(formalName('When update user name, can sync dynamically in message metadata
     });
 
     await h(t).withLog(`When I send one post to current conversation`, async () => {
-      postData = (await h(t).glip(loginUser).sendPost(groupId, postContent)).data;
+      postData = await h(t).platform(loginUser).sendTextPost(postContent, groupId).then(res => res.data);
       targetPost = app.homePage.messageTab.conversationPage.posts.withAttribute('data-id', postData.id)
       await t.expect(targetPost.exists).ok();
     });
 
     await h(t).withLog(`And I modify user name through api,`, async () => {
-      await h(t).glip(loginUser).updatePerson(null, { first_name: changedName });
+      await h(t).glip(loginUser).updatePerson({ first_name: changedName });
     });
 
     await h(t).withLog(`Then I can find user name change to ${changedName}.`, async () => {
       await t.expect(targetPost.child().withText(changedName).exists).ok();
-      await h(t).glip(loginUser).updatePerson(null, { first_name: 'John' }); // reset first_name
+      await h(t).glip(loginUser).updatePerson({ first_name: 'John' }); // reset first_name
     }, true);
   },
 );
@@ -136,7 +136,7 @@ test(formalName('When update custom status, can sync dynamically in message meta
     const userStatusList = ['In a meeting', 'content of user modify']
     for (const userStatus of userStatusList) {
       await h(t).withLog(`When I modify user status "${userStatus}" through api`, async () => {
-        await h(t).glip(loginUser).updatePerson(null, { away_status: userStatus });
+        await h(t).glip(loginUser).updatePerson({ away_status: userStatus });
       });
 
       await h(t).withLog(`Then I can find user status display change to "${userStatus}"`, async () => {
@@ -145,7 +145,7 @@ test(formalName('When update custom status, can sync dynamically in message meta
     }
 
     await h(t).withLog(`When I delete user status through api request`, async () => {
-      await h(t).glip(loginUser).updatePerson(null, { away_status: null });
+      await h(t).glip(loginUser).updatePerson({ away_status: null });
     });
 
     await h(t).withLog(`Then I only can find username display without status`, async () => {

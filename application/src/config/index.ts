@@ -89,7 +89,7 @@ function set(object: object, property: string | string[], value: any) {
 
 class Config {
   private static _instance: Config;
-  private _config = {};
+  private _config: any = {};
   private _env = '';
 
   private constructor() {
@@ -103,13 +103,29 @@ class Config {
 
   loadEnvConfig() {
     const configService: service.ConfigService = ConfigService.getInstance();
-    const value = configService.getEnv() || 'XMN-UP';
+    const value = configService.getEnv() || this.defaultEnv();
     this._env = value;
     this._config = loadFileConfigs(value);
+    this._config.iconLink = this._selectIconLink(this._config.iconLinkSet);
+  }
+
+  private _selectIconLink(iconLinkSet: any) {
+    if (this.isProductionBuild) {
+      return iconLinkSet.production;
+    }
+    return iconLinkSet.development;
+  }
+
+  public isProductionBuild() {
+    return process.env.JUPITER_ENV === 'production';
+  }
+
+  public defaultEnv() {
+    return this.isProductionBuild() ? 'production' : 'GLP-DEV-XMN';
   }
 
   getEnv() {
-    return this._env || 'XMN-UP';
+    return this._env || this.defaultEnv();
   }
 
   getAllEnv() {
@@ -118,7 +134,7 @@ class Config {
       .map(arr => arr[1])
       .filter((env: string) => !env.startsWith('default'))
       .filter((env: string) => {
-        return process.env.JUPITER_ENV === 'production' || env !== 'production';
+        return this.isProductionBuild() || env !== 'production';
       })
       .value();
   }

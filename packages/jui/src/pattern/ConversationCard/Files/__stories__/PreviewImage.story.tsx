@@ -18,41 +18,45 @@ storiesOf('Pattern/ConversationCard', module)
       <div>
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-          ratio={2}
+          width={360}
+          height={202}
           fileName={fileName}
           Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
-              get_app
+              download
             </JuiIconButton>
           }
         />
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
-          ratio={0.5}
+          width={360}
+          height={202}
           Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
-              get_app
+              download
             </JuiIconButton>
           }
         />
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
-          ratio={0.5}
+          width={360}
+          height={202}
           Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
-              get_app
+              download
             </JuiIconButton>
           }
         />
         <JuiPreviewImage
           url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
           fileName={fileName}
-          ratio={1.2}
+          width={360}
+          height={202}
           Actions={
             <JuiIconButton variant="plain" tooltipTitle="download">
-              get_app
+              download
             </JuiIconButton>
           }
         />

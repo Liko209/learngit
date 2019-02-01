@@ -5,7 +5,8 @@
  */
 import { observable, computed } from 'mobx';
 import _ from 'lodash';
-import { Group, Profile } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Profile } from 'sdk/module/profile/entity';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
@@ -13,8 +14,9 @@ import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import Base from './Base';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import GroupService, { TeamPermission } from 'sdk/service/group';
+import { NewGroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
 
 export default class GroupModel extends Base<Group> {
@@ -32,6 +34,8 @@ export default class GroupModel extends Base<Group> {
   privacy?: string;
   @observable
   creatorId: number;
+  @observable
+  createdAt: number;
   @observable
   guestUserCompanyIds?: number[];
   @observable
@@ -68,6 +72,7 @@ export default class GroupModel extends Base<Group> {
       ? most_recent_post_created_at
       : created_at;
     this.creatorId = creator_id;
+    this.createdAt = created_at;
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
@@ -89,6 +94,11 @@ export default class GroupModel extends Base<Group> {
     return this.isThePersonAdmin(currentUserId);
   }
 
+  get isMember() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return this.members.indexOf(currentUserId) >= 0;
+  }
+
   @computed
   get displayName(): string {
     if (this.type === CONVERSATION_TYPES.TEAM) {
@@ -102,7 +112,7 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
       if (person.displayName) {
-        return `${person.displayName} (${t('me')})`;
+        return `${person.displayName} (${i18next.t('me')})`;
       }
       return '';
     }
@@ -183,6 +193,25 @@ export default class GroupModel extends Base<Group> {
     return this.type === CONVERSATION_TYPES.TEAM
       ? groupService.isTeamAdmin(personId, this.permissions)
       : false;
+  }
+
+  @computed
+  get isCurrentUserHasPermissionAddMember() {
+    if (!this.isMember) {
+      return false;
+    }
+    const groupService: NewGroupService = NewGroupService.getInstance();
+    const members = this.members || [];
+    const guestUserCompanyIds = this.guestUserCompanyIds || [];
+    return groupService.isCurrentUserHasPermission(
+      {
+        members,
+        is_team: this.isTeam,
+        guest_user_company_ids: guestUserCompanyIds,
+        permissions: this.permissions,
+      },
+      PERMISSION_ENUM.TEAM_ADD_MEMBER,
+    );
   }
 
   isThePersonGuest(personId: number) {

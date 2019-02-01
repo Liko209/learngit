@@ -7,7 +7,8 @@ import { daoManager, AccountDao, ACCOUNT_USER_ID } from '../../dao';
 import PersonDao from '../../dao/person';
 import { transform, baseHandleData } from '../../service/utils';
 import { ENTITY, SERVICE } from '../../service/eventKey';
-import { Person, Raw } from '../../models';
+import { Person } from '../../module/person/entity';
+import { Raw } from '../../framework/model';
 import notificationCenter from '../notificationCenter';
 
 const handleTeamRemovedIds = async (people: any[]) => {
@@ -28,7 +29,7 @@ const handleTeamRemovedIds = async (people: any[]) => {
       return false;
     });
     ids.length &&
-      notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM, ids);
+      notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM, ids);
   }
 };
 const personHandleData = async (persons: Raw<Person>[]) => {

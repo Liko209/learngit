@@ -1,11 +1,15 @@
-import * as _ from 'lodash';
 import 'testcafe';
+import * as _ from 'lodash';
+import * as fs from 'fs';
+import { UAParser } from 'ua-parser-js';
+
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog } from "../models";
-import { BeatsClient, Step, Test, Attachment } from 'bendapi';
 import { MiscUtils } from '../utils';
-import { getTmtId, parseFormalName } from '../../libs/filter';
+import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
+import { H } from '.';
+import { BeatsClient, Test, Step } from 'bendapi-ts';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -21,63 +25,68 @@ export class DashboardHelper {
 
   constructor(private t: TestController) { }
 
-  private async uploadAttachment(file: string, stepId: number, fileContentType: string = "multipart/form-data;") {
-    return await this.beatsClient.createAttachment({
-      file,
-      fileContentType,
-      contentType: "step",
-      objectId: stepId
-    } as Attachment);
+  private uploadAttachment(file: string, stepId: number, ) {
+    return this.beatsClient.createAttachment('step', stepId, fs.createReadStream(file));
   }
 
   private async createStepInDashboard(step: IStep, testId: number) {
-    const beatStep = await this.beatsClient.createStep({
-      name: step.message,
-      status: StatusMap[step.status],
-      startTime: (new Date(step.startTime)).toISOString(),
-      endTime: (new Date(step.endTime)).toISOString()
-    } as Step, testId);
+    const beatStep = new Step();
+    beatStep.test = testId;
+    beatStep.name = step.message;
+    beatStep.status = StatusMap[step.status];
+    beatStep.startTime = new Date(step.startTime);
+    beatStep.endTime = new Date(step.endTime);
+    const res = await this.beatsClient.createStep(beatStep);
+
     if (step.screenshotPath) {
-      await this.uploadAttachment(step.screenshotPath, beatStep.id);
+      await this.uploadAttachment(step.screenshotPath, res.body.id);
     }
     if (step.attachments) {
       for (const attachmentPath of step.attachments) {
-        await this.uploadAttachment(attachmentPath, beatStep.id);
+        await this.uploadAttachment(attachmentPath, res.body.id);
       }
     }
   }
 
-  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog, accountType: string) {
+  private async createTestInDashboard(runId: number, consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
     const tags = parseFormalName(testRun.test.name).tags;
-    const tmtId = getTmtId(tags);
-    // FIXME: remove user-agent from case name when dashboard is ready
-    const beatsTest = await this.beatsClient.createTest({
-      name: `${testRun.test.name}    (${testRun.browserConnection.browserInfo.userAgent})    (${_.findKey(BrandTire, (value) => value === accountType)})`,
-      status: StatusMap[status],
-      metadata: {
-        user_agent: testRun.browserConnection.browserInfo.userAgent,
-      },
-      tmtId: tmtId.toString(),
-      startTime: testRun.startTime,
-      endTime: new Date(Date.now()).toISOString()
-    } as any, runId);
+    const userAgent = new UAParser(await H.getUserAgent());
+
+    const beatsTest = new Test();
+    beatsTest.run = runId;
+    beatsTest.name = `${testRun.test.name}    (${(_.findKey(BrandTire, (value) => value === accountType)) || accountType})`;
+    beatsTest.status = StatusMap[status];
+    beatsTest.manualIds = getTmtIds(tags, 'JPT');
+    beatsTest.startTime = testRun.startTime;
+    beatsTest.endTime = new Date();
+
+    beatsTest.metadata = {
+      browser: userAgent.getBrowser().name,
+      browserVer: userAgent.getBrowser().version,
+      os: userAgent.getOS().name,
+      osVer: userAgent.getOS().version,
+      user_agent: testRun.browserConnection.browserInfo.userAgent,
+    }
+    const res = await this.beatsClient.createTest(beatsTest);
+
     for (const step of this.t.ctx.logs) {
-      await this.createStepInDashboard(step, beatsTest.id);
+      await this.createStepInDashboard(step, res.body.id);
     }
     // create a step to store test level data
-    logger.info(`add detail as an extra step to case ${beatsTest.id}`);
+    logger.info(`add detail as an extra step to case ${res.body.id}`);
     const detailStep = <IStep>{
       status,
-      message: `Test Detail, Warning Log Number: ${consoleLog.warnConsoleLogNumber}, Error Log Number: ${consoleLog.errorConsoleLogNumber}`,
+      message: `Test Detail: warning(${consoleLog.warnConsoleLogNumber}), error(${consoleLog.errorConsoleLogNumber})`,
       attachments: [],
     };
     detailStep.startTime = Date.now();
     detailStep.attachments.push(consoleLog.consoleLogPath);
     detailStep.attachments.push(consoleLog.warnConsoleLogPath);
     detailStep.attachments.push(consoleLog.errorConsoleLogPath);
+    detailStep.attachments.push(rcDataPath);
     if (status === Status.FAILED) {
       const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))
       detailStep.attachments.push(errorDetailPath);
@@ -88,14 +97,14 @@ export class DashboardHelper {
       }
     }
     detailStep.endTime = Date.now();
-    await this.createStepInDashboard(detailStep, beatsTest.id);
+    await this.createStepInDashboard(detailStep, res.body.id);
   }
 
-  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog, accountType: string) {
+  public async teardown(beatsClient: BeatsClient, runId: number, consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     this.beatsClient = beatsClient;
     const ts = Date.now();
     try {
-      await this.createTestInDashboard(runId, consoleLog, accountType);
+      await this.createTestInDashboard(runId, consoleLog, accountType, rcDataPath);
     } catch (error) {
       logger.error('fail to create test in dashboard', error);
     }

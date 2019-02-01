@@ -1,0 +1,39 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-01-02 15:59:33
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { TaskItemController } from '../controller/TaskItemController';
+import { TaskItem, SanitizedTaskItem } from '../entity';
+import { IItemService } from '../../../service/IItemService';
+import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { TaskItemDao } from '../dao/TaskItemDao';
+import { daoManager } from '../../../../../dao';
+
+class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
+  private _taskItemController: TaskItemController;
+
+  constructor(itemService: IItemService) {
+    super(daoManager.getDao<TaskItemDao>(TaskItemDao));
+  }
+
+  protected get taskItemController() {
+    if (!this._taskItemController) {
+      this._taskItemController = new TaskItemController();
+    }
+    return this._taskItemController;
+  }
+
+  toSanitizedItem(task: TaskItem) {
+    return {
+      ...super.toSanitizedItem(task),
+      complete: task.complete,
+      due: task.due,
+      assigned_to_ids: task.assigned_to_ids,
+      color: task.color,
+    } as SanitizedTaskItem;
+  }
+}
+
+export { TaskItemService };

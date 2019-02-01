@@ -3,22 +3,18 @@
  * @Date: 2018-10-29 10:00:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, action, observable } from 'mobx';
-import { TranslationFunction } from 'i18next';
+import { computed, observable } from 'mobx';
 import { ConversationInitialPostViewProps } from './types';
-import { service } from 'sdk';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import StoreViewModel from '@/store/ViewModel';
-
-const { GroupService } = service;
+import { dateFormatter } from '@/utils/date';
+import moment from 'moment';
 
 class ConversationInitialPostViewModel extends StoreViewModel<
   ConversationInitialPostViewProps
 > {
-  t: TranslationFunction;
-  private _groupService: service.GroupService = GroupService.getInstance();
   @observable
   creatorGroupId: number;
 
@@ -66,12 +62,10 @@ class ConversationInitialPostViewModel extends StoreViewModel<
     return this._group.isTeam;
   }
 
-  @action
-  async onReceiveProps() {
-    const result = await this._groupService.getGroupByPersonId(this.creator.id);
-    if (result.isOk()) {
-      this.creatorGroupId = result.data.id;
-    }
+  @computed
+  get createTime() {
+    const { createdAt } = this._group;
+    return dateFormatter.dateAndTime(moment(createdAt));
   }
 }
 

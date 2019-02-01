@@ -5,33 +5,94 @@
  */
 import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Item, Progress, Post } from 'sdk/models';
-import { getEntity } from '@/store/utils';
+import { Item } from 'sdk/module/item/entity';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
+import ProgressModel from '@/store/models/Progress';
+import { Post } from 'sdk/module/post/entity';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import i18next from 'i18next';
+import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
   PostService,
-  ItemService,
   notificationCenter,
   ENTITY,
   EVENT_TYPES,
 } from 'sdk/service';
+import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
-import { FilesViewProps, FileType } from './types';
-import { getFileType } from '../helper';
+import { FilesViewProps, FileType, ExtendFileItem } from './types';
+import { getFileType } from '@/common/getFileType';
 import PostModel from '@/store/models/Post';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { getThumbnail, RULE } from '@/common/getThumbnail';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
+  @observable
+  urlMap: Map<number, string> = new Map();
 
   constructor(props: FilesViewProps) {
     super(props);
     this._itemService = ItemService.getInstance();
     this._postService = PostService.getInstance();
-    notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+    const { ids } = props;
+    if (ids.some(looper => looper < 0)) {
+      notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+    }
+    this.autorun(this.getCropImage);
+  }
+
+  getCropImage = async () => {
+    const images = this.files[FileType.image];
+    const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
+    await Promise.all(
+      images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
+    );
+  }
+
+  private _fetchUrl = async (
+    { item }: ExtendFileItem,
+    rule: RULE,
+  ): Promise<string> => {
+    const { id, origWidth, origHeight, type, versionUrl } = item;
+    let url = '';
+    if (!type) {
+      return url;
+    }
+    // Notes
+    // 1. There is no thumbnail for the image just uploaded.
+    // 2. tif has thumbnail field.
+    // 3. git use original url.
+    if (FileItemUtils.isGifItem({ type }) && versionUrl) {
+      url = versionUrl;
+    } else if (
+      origWidth > 0 &&
+      origHeight > 0 &&
+      FileItemUtils.isSupportPreview({ type })
+    ) {
+      const thumbnail = await getThumbnail({
+        id,
+        origWidth,
+        origHeight,
+        rule,
+        squareSize: 180,
+      });
+      url = thumbnail.url;
+    }
+    if (url) {
+      this.urlMap.set(id, url);
+    }
+    return url;
   }
 
   private _handleItemChanged = (
@@ -65,8 +126,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.others]: [],
     };
     this.items.forEach((item: FileItemModel) => {
-      if (item.deactivated) return;
-
+      if (!item) {
+        return;
+      }
+      if (item.deactivated) {
+        return;
+      }
       const file = getFileType(item);
       files[file.type].push(file);
     });
@@ -112,8 +177,43 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
   }
 
+  private _getPostStatus() {
+    const progress = getEntity<Progress, ProgressModel>(
+      ENTITY_NAME.PROGRESS,
+      this._postId,
+    );
+    return progress.progressStatus;
+  }
+
   removeFile = async (id: number) => {
-    await this._postService.cancelUpload(this._postId, id);
+    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
+    if (status === 'offline') {
+      Notification.flashToast({
+        message: i18next.t('notAbleToCancelUpload'),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    } else {
+      try {
+        const postLoading =
+          this._getPostStatus() === PROGRESS_STATUS.INPROGRESS;
+        if (postLoading) {
+          await this._itemService.cancelUpload(id);
+        } else {
+          await this._postService.removeItemFromPost(this._postId, id);
+        }
+      } catch (e) {
+        Notification.flashToast({
+          message: i18next.t('notAbleToCancelUploadTryAgain'),
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        });
+      }
+    }
   }
 }
 

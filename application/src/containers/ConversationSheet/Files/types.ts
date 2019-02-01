@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FileType, ExtendFileItem } from '@/store/models/FileItem';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 
 type FilesProps = {
   ids: number[];
@@ -23,6 +23,8 @@ type FilesViewProps = {
   ids: number[];
   removeFile: (id: number) => void;
   dispose: () => void;
+  urlMap: Map<number, string>;
+  getCropImage: () => void;
 };
 
 export { FilesProps, FilesViewProps, FileType, ExtendFileItem };

@@ -8,9 +8,7 @@ import {
   AccountDao,
 } from '../../../dao';
 import PostAPI from '../../../api/glip/post';
-import itemHandleData from '../../item/handleData';
 import { baseHandleData } from '../handleData';
-import ItemService from '../../item';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
@@ -18,19 +16,24 @@ import GroupService from '../../group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { serviceErr, serviceOk } from '../../ServiceResult';
-import { BaseError } from '../../../utils';
 import notificationCenter from '../../notificationCenter';
 import { SERVICE, ENTITY } from '../../eventKey';
 import { Listener } from 'eventemitter2';
-import { err, ok, BaseResponse } from 'foundation';
+import {
+  err,
+  ok,
+  BaseResponse,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from 'foundation';
+import { JServerError, ERROR_CODES_SERVER } from '../../../error';
 import GroupConfigService from '../../groupConfig';
-import ProgressService, { PROGRESS_STATUS } from '../../../module/progress';
+import { ItemService } from '../../../module/item';
+import { ProgressService, PROGRESS_STATUS } from '../../../module/progress';
 
 jest.mock('../../../dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
-jest.mock('../../item/handleData');
-jest.mock('../../item');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
@@ -38,6 +41,7 @@ jest.mock('../../group');
 jest.mock('../../notificationCenter');
 jest.mock('../../groupConfig');
 jest.mock('../../../module/progress');
+jest.mock('../../../module/item');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -64,7 +68,6 @@ describe('PostService', () => {
     group_id: 4,
     from_group_id: 4,
   });
-
   function clearMocks() {
     jest.clearAllMocks();
     jest.resetAllMocks();
@@ -79,6 +82,7 @@ describe('PostService', () => {
     daoManager.getDao.mockReturnValueOnce(postDao);
     daoManager.getDao.mockReturnValueOnce(itemDao);
     daoManager.getDao.mockReturnValueOnce(groupConfigDao);
+    itemService.handleIncomingData = jest.fn();
   }
 
   beforeEach(() => {
@@ -231,235 +235,18 @@ describe('PostService', () => {
       });
     });
 
-    it('should return hasMore = true if request failed', async () => {
+    it('should throw if request failed', async () => {
       groupService.getById.mockResolvedValue({
         most_recent_post_created_at: 1,
       });
       PostAPI.requestPosts.mockRejectedValueOnce({});
-      const result = await postService.getPostsFromRemote({
-        groupId: 1,
-        postId: 1,
-        limit: 1,
-      });
-      expect(result.hasMore).toBe(true);
-    });
-  });
-
-  describe('getPostsByGroupId()', () => {
-    beforeEach(() => {
-      clearMocks();
-
-      jest.spyOn(postService, 'getPostsFromLocal');
-      jest.spyOn(postService, 'getPostsFromRemote');
-      jest.spyOn(postService, 'includeNewest').mockResolvedValue(true);
-      jest.spyOn(postService, 'isNewestSaved').mockResolvedValue(true);
-      jest.spyOn(postService, 'getById').mockResolvedValue({});
-      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
-      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
-    });
-
-    it('should save and not check newest if incoming includes newest', async () => {
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(baseHandleData.mock.calls[0][1]).toBe(true);
-      expect(postService.isNewestSaved).not.toHaveBeenCalled();
-    });
-
-    it('should save if newest is saved', async () => {
-      postService.includeNewest.mockResolvedValue(false);
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(baseHandleData.mock.calls[0][1]).toBe(true);
-      expect(postService.isNewestSaved).toHaveBeenCalled();
-    });
-    it('should not save if newest is not saved and incoming do not include newest', async () => {
-      postService.includeNewest.mockResolvedValue(false);
-      postService.isNewestSaved.mockResolvedValue(false);
-
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(baseHandleData.mock.calls[0][1]).toBe(false);
-    });
-
-    it('should return local data', async () => {
-      /**
-       * We have 2 posts total at local, 0 at remote.
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [],
-        items: [],
-        hasMore: false,
-      });
-
-      const resultEmpty = await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(postService.getPostsFromLocal).toHaveBeenCalledWith({
-        groupId: 1,
-        limit: 20,
-        direction: 'older',
-        postId: 0,
-      });
-      expect(resultEmpty).toEqual({
-        items: [],
-        posts: [{ id: 1 }, { id: 2 }],
-        hasMore: false,
-        limit: 20,
-      });
-    });
-
-    it('should return remote data', async () => {
-      /**
-       * 2 posts total, 2 at remote, 0 at local.
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [],
-        items: [],
-        hasMore: true,
-      });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 1 }, { _id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
-      itemHandleData.mockResolvedValue([]);
-
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-      expect(result).toEqual({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-        limit: 20,
-      });
-    });
-
-    it('should return local+remote data when localData + remoteData < pageSize', async () => {
-      /**
-       * 4 posts total, 2 at local, 2 at remote.
-       * When pageSize is 20, it should return all 4 posts.
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 3 }, { _id: 4 }],
-        items: [],
-        hasMore: false,
-      });
-      baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
-      itemHandleData.mockResolvedValue([]);
-      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
-
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-      expect(result).toEqual({
-        posts: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
-        items: [],
-        hasMore: false,
-        limit: 20,
-      });
-    });
-
-    it('should return local+remote data when localData + remoteData > pageSize', async () => {
-      /**
-       * 4 posts total, 2 of them at local, 2 at remote.
-       * When pageSize is 3, it should return 3 posts (2 local + 1 remote).
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 3 }],
-        items: [],
-        hasMore: false,
-      });
-      baseHandleData.mockResolvedValue([{ id: 3 }]);
-      itemHandleData.mockResolvedValue([]);
-
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 3,
-      });
-      expect(result).toEqual({
-        posts: [{ id: 1 }, { id: 2 }, { id: 3 }],
-        items: [],
-        hasMore: false,
-        limit: 3,
-      });
-    });
-
-    it('should error case', async () => {
-      postDao.queryPostsByGroupId.mockResolvedValue(null);
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-      expect(result).toEqual({
-        posts: [],
-        items: [],
-        hasMore: true,
-        limit: 20,
-      });
+      await expect(
+        postService.getPostsFromRemote({
+          groupId: 1,
+          postId: 1,
+          limit: 1,
+        }),
+      ).rejects.toBeDefined();
     });
   });
 
@@ -537,8 +324,10 @@ describe('PostService', () => {
           headers: {},
         } as BaseResponse),
       );
-      baseHandleData.mockImplementationOnce((data: any) => data);
-      itemHandleData.mockImplementationOnce((data: any) => data);
+
+      itemService.handleIncomingData.mockImplementationOnce(
+        (data: any) => data,
+      );
       const result = await postService.getPostsByIds([1, 2, 3, 4, 5]);
       expect(result.items).toEqual([
         { id: 100 },
@@ -679,7 +468,7 @@ describe('PostService', () => {
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
       expect(result.isOk()).toBe(true);
-      expect(result.data.likes).toEqual([101]);
+      expect(result.isOk() && result.data.likes).toEqual([101]);
       // expect(post.likes).toEqual([101]);
     });
 
@@ -687,7 +476,7 @@ describe('PostService', () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
       const result = await postService.likePost(100, 102, false);
-      expect(result.data.likes).toEqual([]);
+      expect(result.isOk() && result.data.likes).toEqual([]);
     });
     it('should return new post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
@@ -697,7 +486,7 @@ describe('PostService', () => {
         new ApiResultOk(data, { status: 200, headers: {} } as BaseResponse),
       );
       const result = await postService.likePost(100, 101, true);
-      expect(result.data.likes).toEqual([101]);
+      expect(result.isOk() && result.data.likes).toEqual([101]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
@@ -710,7 +499,7 @@ describe('PostService', () => {
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
-      expect(result.data.likes).toEqual([102]);
+      expect(result.isOk() && result.data.likes).toEqual([102]);
     });
 
     it('should return error when server error', async () => {
@@ -792,7 +581,9 @@ describe('PostService', () => {
 
   describe('bookMark Post', () => {
     it('book post should return serviceErr', async () => {
-      profileService.putFavoritePost.mockResolvedValueOnce(serviceErr(500, ''));
+      profileService.putFavoritePost.mockResolvedValueOnce(
+        serviceErr(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '500'),
+      );
       const result = await postService.bookmarkPost(1, true);
       expect(result.isErr()).toBe(true);
     });
@@ -862,10 +653,10 @@ describe('PostService', () => {
 
     it('should return null if error', async () => {
       PostAPI.requestPosts.mockRejectedValue(
-        new ApiResultErr(new BaseError(500, ''), {
-          status: 500,
-          headers: {},
-        } as BaseResponse),
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
+          { status: 500, headers: {} } as BaseResponse,
+        ),
       );
 
       await expect(postService.getNewestPostIdOfGroup(1)).resolves.toBe(null);
@@ -898,6 +689,7 @@ describe('PostService', () => {
     });
 
     afterEach(() => {
+      jest.clearAllMocks();
       jest.restoreAllMocks();
     });
 
@@ -944,23 +736,22 @@ describe('PostService', () => {
     const accountDao = new AccountDao(null);
     daoManager.getKVDao.mockReturnValue(accountDao);
     accountDao.get.mockReturnValue(1); // userId
+    // skip should be removed after 2000 ms workaround removed.
     it.skip('should get group success then send post', async () => {
       const g = { id: 44 };
-      groupService.getOrCreateGroupByMemberList.mockResolvedValue(g);
-
+      groupService.getOrCreateGroupByMemberList.mockResolvedValue(ok(g));
       const msg = '  text message  ';
       const spy = jest.spyOn(postService, 'sendPost');
       spy.mockResolvedValue([{ id: 10, data: 'good' }]);
       const result = await postService.newMessageWithPeopleIds([1, 2, 3], msg);
-
       expect(spy).toBeCalledWith({ groupId: g.id, text: msg });
-      expect(result).toEqual({ id: 44 });
+      expect(result.isOk()).toEqual({ id: 44 });
     });
 
     it('should not call send post when get group failed', async () => {
       const spy = jest.spyOn(postService, 'sendPost');
       groupService.getOrCreateGroupByMemberList.mockResolvedValue(
-        err(new BaseError(500, '')),
+        err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
       );
       const result = await postService.newMessageWithPeopleIds(
         [1, 2, 3],
@@ -976,274 +767,304 @@ describe('PostService', () => {
       jest.spyOn(postService, 'sendPost');
 
       let result = await postService.newMessageWithPeopleIds([1, 2, 3], '   ');
-      expect(result.data).toEqual({ id: 44 });
+      expect(result.isOk() && result.data).toEqual({ id: 44 });
       result = await postService.newMessageWithPeopleIds([1, 2, 3], '');
-      expect(result.data).toEqual({ id: 44 });
+      expect(result.isOk() && result.data).toEqual({ id: 44 });
 
       expect(postService.sendPost).not.toBeCalled();
     });
   });
 
-  describe('cancelUpload', async () => {
-    it('should call partial update once ', async () => {
+  describe('removeItemFromPost', () => {
+    const post1 = {
+      id: -1,
+      item_ids: [3],
+      text: '',
+    };
+
+    const post2 = {
+      id: -2,
+      item_ids: [1, 2],
+    };
+
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      daoManager.getDao.mockReturnValue(postDao);
+      itemService.deleteItemData = jest.fn();
+    });
+
+    it('should delete post when post is invalid  after remvoe item id ', async () => {
+      const spyDelete = jest.spyOn(postService, 'deletePost');
+      spyDelete.mockImplementation(() => {});
+      postDao.get = jest.fn().mockResolvedValue(post1);
+      await postService.removeItemFromPost(post1.id, post1.item_ids[0]);
+      expect(spyDelete).toBeCalledWith(post1.id);
+      expect(itemService.deleteItemData).toBeCalled();
+    });
+
+    it('should update post when post is valid after remvoe item id', async () => {
       jest
         .spyOn(postService, 'handlePartialUpdate')
         .mockImplementation(() => {});
-
-      await postService.cancelUpload(1, 1);
-
+      const spyDelete = jest.spyOn(postService, 'deletePost');
+      spyDelete.mockImplementation(() => {});
+      postDao.get = jest.fn().mockResolvedValue(post2);
+      await postService.removeItemFromPost(post2.id, post2.item_ids[0]);
+      expect(itemService.deleteItemData).toBeCalled();
+      expect(spyDelete).not.toBeCalled();
       expect(postService.handlePartialUpdate).toBeCalledTimes(1);
     });
   });
 
   // TODO: affect by other ut, if just run this describe is success, will fix this issue when do post service refactor
   // https://jira.ringcentral.com/browse/FIJI-2016
-  describe.skip('send post with pseudo items', () => {
-    beforeEach(() => {
-      clearMocks();
-      setup();
-      daoManager.getDao.mockReturnValue(postDao);
-      postDao.update.mockImplementation(() => {});
-    });
+  // describe.skip('send post with pseudo items', () => {
+  //   beforeEach(() => {
+  //     clearMocks();
+  //     setup();
+  //     daoManager.getDao.mockReturnValue(postDao);
+  //     postDao.update.mockImplementation(() => {});
+  //   });
 
-    it('should resend failed items and then send post', async (done: jest.DoneCallback) => {
-      const info = _.cloneDeep(postMockInfo);
-      info.item_ids = [-1, 3];
+  //   it('should resend failed items and then send post', async (done: jest.DoneCallback) => {
+  //     const info = _.cloneDeep(postMockInfo);
+  //     info.item_ids = [-1, 3];
 
-      postDao.get.mockResolvedValue(info);
+  //     postDao.get.mockResolvedValue(info);
 
-      const spyHandlePreInsertProcess = jest.spyOn(
-        postService,
-        '_handlePreInsertProcess',
-      );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
+  //     const spyHandlePreInsertProcess = jest.spyOn(
+  //       postService,
+  //       '_handlePreInsertProcess',
+  //     );
+  //     spyHandlePreInsertProcess.mockImplementation(() => {});
 
-      const spySendPostWithPreInsertItems = jest.spyOn(
-        postService,
-        '_sendPostWithPreInsertItems',
-      );
-      spySendPostWithPreInsertItems.mockImplementation(() => {});
+  //     const spySendPostWithPreInsertItems = jest.spyOn(
+  //       postService,
+  //       '_sendPostWithPreInsertItems',
+  //     );
+  //     spySendPostWithPreInsertItems.mockImplementation(() => {});
 
-      const spyCleanUploadingFiles = jest.spyOn(
-        postService,
-        '_cleanUploadingFiles',
-      );
-      spyCleanUploadingFiles.mockImplementation(() => {});
+  //     const spyCleanUploadingFiles = jest.spyOn(
+  //       postService,
+  //       '_cleanUploadingFiles',
+  //     );
+  //     spyCleanUploadingFiles.mockImplementation(() => {});
 
-      await postService.reSendPost(info.id);
-      setTimeout(() => {
-        expect(itemService.resendFailedItems).toBeCalledWith([-1]);
-        expect(spyHandlePreInsertProcess).toBeCalled();
-        expect(spySendPostWithPreInsertItems).toBeCalledWith(info);
-        expect(spyCleanUploadingFiles).not.toBeCalled();
-        done();
-      });
-    });
+  //     await postService.reSendPost(info.id);
+  //     setTimeout(() => {
+  //       expect(itemService.resendFailedItems).toBeCalledWith([-1]);
+  //       expect(spyHandlePreInsertProcess).toBeCalled();
+  //       expect(spySendPostWithPreInsertItems).toBeCalledWith(info);
+  //       expect(spyCleanUploadingFiles).not.toBeCalled();
+  //       done();
+  //     });
+  //   });
 
-    it('should delete post and end listening when post has no valid data', async (done: jest.DoneCallback) => {
-      const info = _.cloneDeep(postMockInfo);
-      info.item_ids = [-1];
-      info.text = '';
-      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
+  //   it('should delete post and end listening when post has no valid data', async (done: jest.DoneCallback) => {
+  //     const info = _.cloneDeep(postMockInfo);
+  //     info.item_ids = [-1];
+  //     info.text = '';
+  //     PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
-      const spyDeletePost = jest
-        .spyOn(postService, 'deletePost')
-        .mockImplementation(() => {});
+  //     const spyDeletePost = jest
+  //       .spyOn(postService, 'deletePost')
+  //       .mockImplementation(() => {});
 
-      const spyResendFailedItems = jest.spyOn(
-        postService,
-        '_resendFailedItems',
-      );
-      spyResendFailedItems.mockImplementation(() => {});
+  //     const spyResendFailedItems = jest.spyOn(
+  //       postService,
+  //       '_resendFailedItems',
+  //     );
+  //     spyResendFailedItems.mockImplementation(() => {});
 
-      const spyHandlePreInsertProcess = jest.spyOn(
-        postService,
-        '_handlePreInsertProcess',
-      );
+  //     const spyHandlePreInsertProcess = jest.spyOn(
+  //       postService,
+  //       '_handlePreInsertProcess',
+  //     );
 
-      const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
-      spyPartialUpdate.mockImplementation(() => {});
+  //     const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
+  //     spyPartialUpdate.mockImplementation(() => {});
 
-      spyHandlePreInsertProcess.mockImplementation(() => {});
-      const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
-      itemService.sendItemData.mockImplementationOnce(() => {});
-      notificationCenter.on.mockImplementationOnce(
-        (event: string | string[], listener: Listener) => {
-          listener({
-            status: PROGRESS_STATUS.CANCELED,
-            preInsertId: -1,
-            updatedId: -1,
-          });
-        },
-      );
+  //     spyHandlePreInsertProcess.mockImplementation(() => {});
+  //     const spySendPost = jest.spyOn(postService, '_sendPost');
+  //     spySendPost.mockImplementation(() => {});
+  //     itemService.sendItemData.mockImplementationOnce(() => {});
+  //     notificationCenter.on.mockImplementationOnce(
+  //       (event: string | string[], listener: Listener) => {
+  //         listener({
+  //           status: PROGRESS_STATUS.CANCELED,
+  //           preInsertId: -1,
+  //           updatedId: -1,
+  //         });
+  //       },
+  //     );
 
-      itemService.getItemsSendingStatus
-        .mockReturnValueOnce([PROGRESS_STATUS.INPROGRESS])
-        .mockReturnValueOnce([]);
+  //     itemService.getItemsSendingStatus
+  //       .mockReturnValueOnce([PROGRESS_STATUS.INPROGRESS])
+  //       .mockReturnValueOnce([]);
 
-      await postService.sendPost(info);
+  //     await postService.sendPost(info);
 
-      setTimeout(() => {
-        expect(spyPartialUpdate).toBeCalled();
-        expect(spyDeletePost).toBeCalledWith(info.id);
-        expect(spySendPost).not.toBeCalledTimes(1);
-        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
-        expect(notificationCenter.removeListener).toBeCalled();
-        expect(notificationCenter.on).toBeCalledWith(
-          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
-          expect.anything(),
-        );
-        expect(spyResendFailedItems).not.toBeCalled();
-        expect(itemService.cleanUploadingFiles).toBeCalled();
-        expect(itemService.sendItemData).toBeCalled();
-        done();
-      });
-    });
+  //     setTimeout(() => {
+  //       expect(spyPartialUpdate).toBeCalled();
+  //       expect(spyDeletePost).toBeCalledWith(info.id);
+  //       expect(spySendPost).not.toBeCalledTimes(1);
+  //       expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+  //       expect(notificationCenter.removeListener).toBeCalled();
+  //       expect(notificationCenter.on).toBeCalledWith(
+  //         SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+  //         expect.anything(),
+  //       );
+  //       expect(spyResendFailedItems).not.toBeCalled();
+  //       expect(itemService.cleanUploadingFiles).toBeCalled();
+  //       expect(itemService.sendItemData).toBeCalled();
+  //       done();
+  //     });
+  //   });
 
-    it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
-      const info = _.cloneDeep(postMockInfo);
-      info.item_ids = [-1, -2, -3, 1];
-      const itemData = {
-        version_map: {
-          '-1': 2,
-        },
-      };
-      info.item_data = itemData;
+  //   it('should send post after all file items has been send', async (done: jest.DoneCallback) => {
+  //     const info = _.cloneDeep(postMockInfo);
+  //     info.item_ids = [-1, -2, -3, 1];
+  //     const itemData = {
+  //       version_map: {
+  //         '-1': 2,
+  //       },
+  //     };
+  //     info.item_data = itemData;
 
-      const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
-      spyPartialUpdate.mockImplementation(() => {});
+  //     const spyPartialUpdate = jest.spyOn(postService, 'handlePartialUpdate');
+  //     spyPartialUpdate.mockImplementation(() => {});
 
-      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
+  //     PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
-      const spyResendFailedItems = jest.spyOn(
-        postService,
-        '_resendFailedItems',
-      );
-      spyResendFailedItems.mockImplementation(() => {});
+  //     const spyResendFailedItems = jest.spyOn(
+  //       postService,
+  //       '_resendFailedItems',
+  //     );
+  //     spyResendFailedItems.mockImplementation(() => {});
 
-      const spyHandlePreInsertProcess = jest.spyOn(
-        postService,
-        '_handlePreInsertProcess',
-      );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
-      const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
-      itemService.sendItemData.mockImplementationOnce(() => {});
-      notificationCenter.on.mockImplementationOnce(
-        (event: string | string[], listener: Listener) => {
-          listener({
-            status: PROGRESS_STATUS.SUCCESS,
-            preInsertId: -999,
-            updatedId: 1,
-          });
+  //     const spyHandlePreInsertProcess = jest.spyOn(
+  //       postService,
+  //       '_handlePreInsertProcess',
+  //     );
+  //     spyHandlePreInsertProcess.mockImplementation(() => {});
+  //     const spySendPost = jest.spyOn(postService, '_sendPost');
+  //     spySendPost.mockImplementation(() => {});
+  //     itemService.sendItemData.mockImplementationOnce(() => {});
+  //     notificationCenter.on.mockImplementationOnce(
+  //       (event: string | string[], listener: Listener) => {
+  //         listener({
+  //           status: PROGRESS_STATUS.SUCCESS,
+  //           preInsertId: -999,
+  //           updatedId: 1,
+  //         });
 
-          listener({
-            status: PROGRESS_STATUS.CANCELED,
-            preInsertId: -2,
-            updatedId: 1,
-          });
+  //         listener({
+  //           status: PROGRESS_STATUS.CANCELED,
+  //           preInsertId: -2,
+  //           updatedId: 1,
+  //         });
 
-          listener({
-            status: PROGRESS_STATUS.SUCCESS,
-            preInsertId: -3,
-            updatedId: 3,
-          });
+  //         listener({
+  //           status: PROGRESS_STATUS.SUCCESS,
+  //           preInsertId: -3,
+  //           updatedId: 3,
+  //         });
 
-          listener({
-            status: PROGRESS_STATUS.INPROGRESS,
-            preInsertId: -1,
-            updatedId: -1,
-          });
+  //         listener({
+  //           status: PROGRESS_STATUS.INPROGRESS,
+  //           preInsertId: -1,
+  //           updatedId: -1,
+  //         });
 
-          listener({
-            status: PROGRESS_STATUS.SUCCESS,
-            preInsertId: -1,
-            updatedId: 1,
-          });
-        },
-      );
+  //         listener({
+  //           status: PROGRESS_STATUS.SUCCESS,
+  //           preInsertId: -1,
+  //           updatedId: 1,
+  //         });
+  //       },
+  //     );
 
-      itemService.getItemsSendingStatus.mockImplementation(
-        (itemIds: number[]) => {
-          const status = itemIds.map((id: number) => {
-            return id < 0
-              ? PROGRESS_STATUS.INPROGRESS
-              : PROGRESS_STATUS.SUCCESS;
-          });
-          return Array.isArray(status) ? status : [status];
-        },
-      );
+  //     itemService.getItemsSendingStatus.mockImplementation(
+  //       (itemIds: number[]) => {
+  //         const status = itemIds.map((id: number) => {
+  //           return id < 0
+  //             ? PROGRESS_STATUS.INPROGRESS
+  //             : PROGRESS_STATUS.SUCCESS;
+  //         });
+  //         return Array.isArray(status) ? status : [status];
+  //       },
+  //     );
 
-      await postService.sendPost(info);
+  //     await postService.sendPost(info);
 
-      setTimeout(() => {
-        expect(spySendPost).toBeCalledTimes(1);
-        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
-        expect(notificationCenter.removeListener).toBeCalled();
-        expect(notificationCenter.on).toBeCalledWith(
-          SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
-          expect.anything(),
-        );
-        expect(itemService.deleteFileItemCache).toBeCalled();
-        expect(spyResendFailedItems).not.toBeCalled();
-        expect(itemService.cleanUploadingFiles).toBeCalled();
-        expect(itemService.sendItemData).toBeCalled();
-        expect(spyPartialUpdate).toBeCalledWith(
-          {
-            _id: -1,
-            id: -1,
-            item_ids: [1, 3, 1],
-          },
-          undefined,
-          expect.anything(),
-        );
-        done();
-      });
-    });
+  //     setTimeout(() => {
+  //       expect(spySendPost).toBeCalledTimes(1);
+  //       expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+  //       expect(notificationCenter.removeListener).toBeCalled();
+  //       expect(notificationCenter.on).toBeCalledWith(
+  //         SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+  //         expect.anything(),
+  //       );
+  //       expect(itemService.deleteFileItemCache).toBeCalled();
+  //       expect(spyResendFailedItems).not.toBeCalled();
+  //       expect(itemService.cleanUploadingFiles).toBeCalled();
+  //       expect(itemService.sendItemData).toBeCalled();
+  //       expect(spyPartialUpdate).toBeCalledWith(
+  //         {
+  //           _id: -1,
+  //           id: -1,
+  //           item_ids: [1, 3, 1],
+  //         },
+  //         undefined,
+  //         expect.anything(),
+  //       );
+  //       done();
+  //     });
+  //   });
 
-    it('should let post failed if send post with pseudo items and all items are failed', async () => {
-      const info = _.cloneDeep(postMockInfo);
-      info.item_ids = [-1, 3];
-      PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
+  //   it('should let post failed if send post with pseudo items and all items are failed', async done => {
+  //     const info = _.cloneDeep(postMockInfo);
+  //     info.item_ids = [-1, 3];
+  //     PostServiceHandler.buildPostInfo.mockResolvedValueOnce(info);
 
-      const spyResendFailedItems = jest.spyOn(
-        postService,
-        '_resendFailedItems',
-      );
-      spyResendFailedItems.mockImplementation(() => {});
+  //     const spyResendFailedItems = jest.spyOn(
+  //       postService,
+  //       '_resendFailedItems',
+  //     );
+  //     spyResendFailedItems.mockImplementation(() => {});
 
-      const spyHandlePreInsertProcess = jest.spyOn(
-        postService,
-        '_handlePreInsertProcess',
-      );
-      spyHandlePreInsertProcess.mockImplementation(() => {});
+  //     const spyHandlePreInsertProcess = jest.spyOn(
+  //       postService,
+  //       '_handlePreInsertProcess',
+  //     );
+  //     spyHandlePreInsertProcess.mockImplementation(() => {});
 
-      const spyHandleSendPostFail = jest.spyOn(
-        postService,
-        'handleSendPostFail',
-      );
-      spyHandleSendPostFail.mockImplementation(() => {});
+  //     const spyHandleSendPostFail = jest.spyOn(
+  //       postService,
+  //       'handleSendPostFail',
+  //     );
+  //     spyHandleSendPostFail.mockImplementation(() => {});
 
-      const spySendPost = jest.spyOn(postService, '_sendPost');
-      spySendPost.mockImplementation(() => {});
+  //     const spySendPost = jest.spyOn(postService, '_sendPost');
+  //     spySendPost.mockImplementation(() => {});
 
-      itemService.getItemsSendingStatus.mockReturnValue([PROGRESS_STATUS.FAIL]);
+  //     itemService.getItemsSendingStatus.mockReturnValue([PROGRESS_STATUS.FAIL]);
 
-      await postService.sendPost({ text: 'test' });
+  //     await postService.sendPost({ text: 'test' });
 
-      setTimeout(() => {
-        expect(spyHandleSendPostFail).toBeCalled();
-        expect(spySendPost).not.toBeCalled();
-        expect(spyHandlePreInsertProcess).toBeCalledWith(info);
-        expect(notificationCenter.removeListener).not.toBeCalled();
-        expect(notificationCenter.on).not.toBeCalled();
-        expect(spyResendFailedItems).toBeCalled(info.id);
-        expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
-        done();
-      });
-    });
-  });
+  //     setTimeout(() => {
+  //       expect(spyHandleSendPostFail).toBeCalled();
+  //       expect(spySendPost).not.toBeCalled();
+  //       expect(spyHandlePreInsertProcess).toBeCalledWith(info);
+  //       expect(notificationCenter.removeListener).not.toBeCalled();
+  //       expect(notificationCenter.on).not.toBeCalled();
+  //       expect(spyResendFailedItems).toBeCalledWith(info.id);
+  //       expect(itemService.cleanUploadingFiles).toBeCalledWith(info.group_id);
+  //       done();
+  //     });
+  //   });
+  // });
 
   describe('deletePostsByGroupIds', async () => {
     it('should delete posts from group', async () => {

@@ -3,7 +3,7 @@
  * @Date: 2018-02-24 23:26:14
  */
 import { BaseDao } from '../base';
-import { Company } from '../../models';
+import { Company } from '../../module/company/entity';
 import { IDatabase } from 'foundation';
 
 class CompanyDao extends BaseDao<Company> {

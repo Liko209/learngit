@@ -5,7 +5,8 @@
  */
 
 import { observable, computed, action } from 'mobx';
-import { Group, Person } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
+import { Person } from 'sdk/module/person/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -13,9 +14,9 @@ import PersonModel from '@/store/models/Person';
 import { ENTITY_NAME } from '@/store';
 import { AbstractViewModel } from '@/base';
 import { CONVERSATION_TYPES } from '@/constants';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import _ from 'lodash';
-type HeaderAction = { name: string; iconName: string; tooltip: string };
+
 class HeaderViewModel extends AbstractViewModel {
   @observable
   private _id: number;
@@ -35,16 +36,9 @@ class HeaderViewModel extends AbstractViewModel {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
     let title = group.displayName;
     if (group.type === CONVERSATION_TYPES.SMS) {
-      title += ` (${t('text')})`;
+      title += ` (${i18next.t('text')})`;
     }
     return title;
-  }
-
-  @computed
-  get actions() {
-    const actions: HeaderAction[] = [];
-    // hide not implemented button: audio conference, call, meeting, add member
-    return actions;
   }
 
   @computed

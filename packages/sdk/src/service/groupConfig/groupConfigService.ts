@@ -5,7 +5,7 @@
  */
 import { GroupConfig } from '../../models';
 import BaseService from '../../service/BaseService';
-import { ErrorParser } from '../../utils/error';
+import { ErrorParserHolder } from '../../error';
 import { daoManager, GroupConfigDao } from '../../dao';
 import notificationCenter from '../notificationCenter';
 import { ENTITY } from '../eventKey';
@@ -33,7 +33,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
       );
       return true;
     } catch (error) {
-      throw ErrorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
   }
   async saveAndDoNotify(params: GroupConfig) {
@@ -79,10 +79,31 @@ class GroupConfigService extends BaseService<GroupConfig> {
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
       const group = (await this.getById(id)) as GroupConfig;
-      return group.send_failure_post_ids || [];
+      return (group && group.send_failure_post_ids) || [];
     } catch (error) {
-      throw ErrorParser.parse(error);
+      throw ErrorParserHolder.getErrorParser().parse(error);
     }
+  }
+
+  async deletePostId(groupId: number, postId: number) {
+    const failIds = await this.getGroupSendFailurePostIds(groupId);
+    const index = failIds.indexOf(postId);
+    if (index > -1) {
+      failIds.splice(index, 1);
+      await this.updateGroupSendFailurePostIds({
+        id: groupId,
+        send_failure_post_ids: failIds,
+      });
+    }
+  }
+
+  async addPostId(groupId: number, postId: number) {
+    const failIds = await this.getGroupSendFailurePostIds(groupId);
+    const newIds = [...new Set([...failIds, postId])];
+    await this.updateGroupSendFailurePostIds({
+      id: groupId,
+      send_failure_post_ids: newIds,
+    });
   }
 }
 

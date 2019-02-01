@@ -25,7 +25,7 @@ const FileNameWrapper = styled('div')<{
   font-weight: 400;
   color: ${({ statusColor }) =>
     statusColor ? statusColor : palette('grey', '700')};
-  ${ellipsis};
+  ${ellipsis()};
   opacity: ${({ opacity }) => opacity};
   font-size: 0;
   & > span {
@@ -34,7 +34,7 @@ const FileNameWrapper = styled('div')<{
 `;
 
 const LeftName = styled.span`
-  ${ellipsis};
+  ${ellipsis()};
 `;
 
 const FileName = (Props: FileNameProps) => {

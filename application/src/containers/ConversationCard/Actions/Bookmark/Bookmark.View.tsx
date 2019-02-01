@@ -10,6 +10,10 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { BookmarkViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = BookmarkViewProps & WithNamespaces;
 
@@ -24,8 +28,8 @@ class BookmarkViewComponent extends Component<Props> {
         : 'SorryWeWereNotAbleToBookmarkThisMessage';
       Notification.flashToast({
         message,
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });
@@ -49,6 +53,6 @@ class BookmarkViewComponent extends Component<Props> {
   }
 }
 
-const BookmarkView = translate('Conversations')(BookmarkViewComponent);
+const BookmarkView = translate('translations')(BookmarkViewComponent);
 
 export { BookmarkView };

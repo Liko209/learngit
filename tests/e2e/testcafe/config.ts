@@ -6,7 +6,6 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { writeFileSync } from 'fs';
-import { v4 as uuid } from 'uuid';
 import { getLogger } from 'log4js';
 
 import { flattenGlobs, parseArgs, ConfigLoader } from './libs/utils';
@@ -51,7 +50,7 @@ ENV_OPTS.RC_PLATFORM_APP_SECRET = process.env.RC_PLATFORM_APP_SECRET || '';
 const TMPFILE_PATH = process.env.TMPFILE_PATH || '/tmp';
 
 const configLoader = new ConfigLoader(
-  (process.env.BRANCH || '').toLocaleLowerCase(),
+  (process.env.BRANCH || ''),
   (process.env.ACTION || '').toLocaleLowerCase(),
   CONFIGS_ROOT,
 );
@@ -61,7 +60,7 @@ configLoader.load();
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
-const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '10');
+const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '50');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
 const SHUFFLE_FIXTURES = process.env.SHUFFLE_FIXTURES === 'true';
 const FIXTURES = flattenGlobs(process.env.FIXTURES ? parseArgs(process.env.FIXTURES) : configLoader.fixtures, SHUFFLE_FIXTURES);
@@ -69,6 +68,7 @@ const BROWSERS = process.env.BROWSERS ? parseArgs(process.env.BROWSERS) : config
 const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TAGS) : configLoader.includeTags;
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
+const MAX_RESOLUTION = (process.env.MAX_RESOLUTION || '1280x720').split('x').map(n => parseInt(n, 10));
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -82,6 +82,7 @@ const RUNNER_OPTS = {
   EXCLUDE_TAGS,
   QUARANTINE_MODE,
   STOP_ON_FIRST_FAIL,
+  MAX_RESOLUTION,
 }
 
 // create electron configuration file
@@ -98,7 +99,7 @@ logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectro
 const DASHBOARD_API_KEY = process.env.DASHBOARD_API_KEY || "0abc8d1aa7f81eb3f501bc5147853161acbb860e";
 const DASHBOARD_URL = process.env.DASHBOARD_URL || "http://xia01-i01-dsb02.lab.rcch.ringcentral.com:8000/api/v1";
 const ENABLE_REMOTE_DASHBOARD = (process.env.ENABLE_REMOTE_DASHBOARD === 'true');
-const RUN_NAME = process.env.RUN_NAME || uuid();
+const RUN_NAME = process.env.RUN_NAME || `[Jupiter][Debug][${new Date().toLocaleString()}]`;
 
 enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",

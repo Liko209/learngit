@@ -3,22 +3,24 @@
  * @Date: 2018-12-17 15:28:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { NoteItem } from 'sdk/models';
+import { Item } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
 import ItemModel from './Item';
 
 export default class NoteItemModel extends ItemModel {
   @observable title: string;
   @observable summary: string;
+  @observable creatorId: number;
 
-  constructor(data: NoteItem) {
+  constructor(data: Item) {
     super(data);
-    const { title, summary } = data;
-    this.title = title;
-    this.summary = summary;
+    const { title, summary, creator_id } = data;
+    this.title = title!;
+    this.summary = summary!;
+    this.creatorId = creator_id;
   }
 
-  static fromJS(data: NoteItem) {
+  static fromJS(data: Item) {
     return new NoteItemModel(data);
   }
 }

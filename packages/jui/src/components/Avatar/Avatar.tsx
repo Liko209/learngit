@@ -69,10 +69,10 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar = (props: JuiAvatarProps) => {
-  const { presence, size } = props;
+  const { presence, style, size } = props;
 
   return presence ? (
-    <StyledWrapper size={size}>
+    <StyledWrapper size={size} style={style}>
       <StyledAvatar {...props} />
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
     </StyledWrapper>

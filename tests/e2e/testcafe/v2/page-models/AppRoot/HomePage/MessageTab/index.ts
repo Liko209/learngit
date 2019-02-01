@@ -3,12 +3,14 @@ import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
-import { MentionPage, BookmarkPage, ConversationPage } from "./ConversationPage";
-
+import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
+import { RightRail } from './RightRail';
+import { LeftRail } from './LeftRail';
 
 class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -39,7 +41,7 @@ class UnReadToggler extends BaseWebComponent {
 
   async isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return await this.self.child().withText('arrow_up').exists;
   }
 
   private async turn(on: boolean) {
@@ -137,26 +139,24 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.expect(this.isVisible).notOk();
   }
 
-  async getUmi() {
-    const umi = this.self.find('.umi');
-    if (await umi.exists == false) {
-      return 0;
-    }
-    const text = await umi.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    if (text == '99+') {
-      return 100;
-    }
-    return Number(text);
+  get umi() {
+    return this.getComponent(Umi, this.self.find(".umi"));
   }
 
-  async expectUmi(n: number, maxRetry = 5, interval = 5e3) {
+  async shouldBeUmiStyle() {
     await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
+      const textStyle = await this.self.find('p').style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
+    });
+  }
+
+  async shouldBeNormalStyle() {
+    await H.retryUntilPass(async () => {
+      const textStyle = await this.self.find('p').style;
+      const textFontWeight = textStyle['font-weight'];
+      assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
+    });
   }
 
   async openMoreMenu() {
@@ -171,11 +171,13 @@ class ConversationEntry extends BaseWebComponent {
   }
 
   get hasDraftMessage() {
-    return this.getSelectorByIcon('border_color').exists;
+    return this.getSelectorByIcon('draft').exists;
   }
 
   async enter() {
     await this.t.hover(this.self).click(this.self);
+    // whenever we enter
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -190,28 +192,6 @@ class ConversationListSection extends BaseWebComponent {
 
   get header() {
     return this.self.find('.conversation-list-section-header');
-  }
-
-  async getUmi() {
-    const umi = this.header.find('.umi');
-    if (!await umi.exists) {
-      return 0;
-    }
-    const text = await umi.innerText;
-    if (_.isEmpty(text)) {
-      return 0;
-    }
-    if (text == '99+') {
-      return 100;
-    }
-    return Number(text);
-  }
-
-  async expectHeaderUmi(n: number, maxRetry = 5, interval = 5e3) {
-    await H.retryUntilPass(async () => {
-      const umi = await this.getUmi();
-      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
-    }, maxRetry, interval);
   }
 
   get collapse() {
@@ -235,13 +215,13 @@ class ConversationListSection extends BaseWebComponent {
     return this.getComponent(ConversationEntry, this.conversations.find('p').withText(name).parent(0));
   }
 
-  async isExpand() {
+  get isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('keyboard_arrow_up').exists;
+    return this.self.child().withText('arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
-    const isExpand = await this.isExpand();
+    const isExpand = await this.isExpand;
     if (isExpand != expand) {
       await this.t.click(this.toggleButton);
     }
@@ -254,8 +234,35 @@ class ConversationListSection extends BaseWebComponent {
   async fold() {
     await this.toggle(false);
   }
+
+  get headerUmi() {
+    return this.getComponent(Umi, this.header.find(".umi"));
+  }
 }
 
+class ActionBarDeletePostModal extends BaseWebComponent {
+  get self() {
+    this.warnFlakySelector();
+    return this.getSelector('*[role="dialog"]');
+  }
+
+  get deleteButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').withText('Delete');
+  }
+  get cancelButton() {
+    this.warnFlakySelector();
+    return this.self.find('button').withText('Cancel');
+  }
+
+  async delete() {
+    await this.t.click(this.deleteButton);
+  }
+
+  async cancel() {
+    await this.t.click(this.cancelButton);
+  }
+}
 
 class CloseConversationModal extends BaseWebComponent {
   get self() {
@@ -279,39 +286,6 @@ class CloseConversationModal extends BaseWebComponent {
 
   async confirm() {
     await this.t.click(this.confirmButton);
-  }
-}
-
-class ProfileModal extends BaseWebComponent {
-  get self() {
-    this.warnFlakySelector();
-    return this.getSelector('*[role="dialog"]');
-  }
-
-  get closeButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').find('span').withText('close');
-  }
-
-  get messageButton() {
-    this.warnFlakySelector();
-    return this.self.find('span').find('span').withText('chat_bubble');
-  }
-  get privateButton() {
-    this.warnFlakySelector();
-    return this.self.find('.privacy');
-  }
-
-  async clickPrivacy() {
-    await this.t.click(this.privateButton);
-  }
-
-  async close() {
-    await this.t.click(this.closeButton);
-  }
-
-  async message() {
-    await this.t.click(this.messageButton);
   }
 }
 
@@ -343,15 +317,21 @@ export class MessageTab extends BaseWebComponent {
   get teamsSection() {
     return this.getSection('Teams');
   }
+
   get mentionsEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-mentions'));
   }
+
   get conversationPage() {
     return this.getComponent(ConversationPage);
   }
 
   get mentionPage() {
     return this.getComponent(MentionPage);
+  }
+
+  get duplicatePromptPage() {
+    return this.getComponent(DuplicatePromptPage);
   }
 
   get postListPage() {
@@ -374,11 +354,12 @@ export class MessageTab extends BaseWebComponent {
     return this.getComponent(CloseConversationModal);
   }
 
-  get profileModal() {
-    return this.getComponent(ProfileModal);
+  get deletePostModal() {
+    return this.getComponent(ActionBarDeletePostModal);
   }
 
-  get conversationListSections() {
+
+  get sections() {
     return this.getSelector('.conversation-list-section');
   }
 
@@ -391,5 +372,43 @@ export class MessageTab extends BaseWebComponent {
     const url = await h(this.t).href;
     const result = /messages\/(\d+)/.test(url);
     assert(result, `invalid url: ${url}`);
+  }
+
+  get leftRail() {
+    return this.getComponent(LeftRail);
+  }
+
+  get rightRail() {
+    return this.getComponent(RightRail);
+  }
+
+}
+
+class Umi extends BaseWebComponent {
+  async count() {
+    return await this.getNumber(this.self);
+  }
+
+  async shouldBeNumber(n: number, maxRetry = 5, interval = 3e3) {
+    await H.retryUntilPass(async () => {
+      const umi = await this.count();
+      assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);
+    }, maxRetry, interval);
+  }
+
+  async shouldBeAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(255, 136, 0)', `${umiBgColor} not eql specify: rgb(255, 136, 0)`)
+    });
+  }
+
+  async shouldBeNotAtMentionStyle() {
+    await H.retryUntilPass(async () => {
+      const umiStyle = await this.self.style;
+      const umiBgColor = umiStyle['background-color'];
+      assert.strictEqual(umiBgColor, 'rgb(158, 158, 158)', `${umiBgColor} not eql specify: rgb(158, 158, 158)`)
+    });
   }
 }

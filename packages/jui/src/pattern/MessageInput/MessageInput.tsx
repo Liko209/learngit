@@ -40,6 +40,9 @@ const GlobalStyle = createGlobalStyle<{}>`
     width: 100%;
     align-self: flex-end;
   }
+  .ql-container {
+    max-height: ${height(28.5)};
+  }
   .ql-snow {
     .mention {
       padding: ${spacing(0.5)};
@@ -55,7 +58,7 @@ const GlobalStyle = createGlobalStyle<{}>`
         ${typography('body1')};
         padding: ${spacing(2)};
         min-height: ${height(9)};
-        max-height: ${height(36.5)};
+        max-height: ${height(28.5)};
         height: auto;
         border-radius: ${spacing(1)};
         color: ${grey('700')};
@@ -110,6 +113,17 @@ class JuiMessageInput extends React.Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props) {
+    if (
+      this._inputRef.current &&
+      prevProps.modules !== this.props.modules &&
+      this.props.isEditMode
+    ) {
+      const quill = this._inputRef.current.getEditor();
+      quill.enable(false);
+      setTimeout(() => {
+        quill.enable(true);
+      },         0);
+    }
     if (prevProps.id !== this.props.id) {
       this.focusEditor();
     }

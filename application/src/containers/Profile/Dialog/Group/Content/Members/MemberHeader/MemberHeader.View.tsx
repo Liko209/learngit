@@ -6,15 +6,25 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { MemberHeaderViewProps } from './types';
-import { JuiProfileDialogContentMemberHeader } from 'jui/pattern/Profile/Dialog';
+import { MemberHeaderViewProps, MemberHeaderProps } from './types';
+import { JuiIconography } from 'jui/foundation/Iconography';
+import {
+  JuiProfileDialogContentMemberHeader,
+  JuiProfileDialogContentSummaryButtonInRight as ButtonInRight,
+} from 'jui/pattern/Profile/Dialog';
 
 @observer
 class MemberHeader extends React.Component<
-  WithNamespaces & MemberHeaderViewProps
+  WithNamespaces & MemberHeaderViewProps & MemberHeaderProps
 > {
   render() {
-    const { group, t, hasShadow } = this.props;
+    const {
+      group,
+      t,
+      hasShadow,
+      AddTeamMembers,
+      isCurrentUserHasPermissionAddMember,
+    } = this.props;
     const key = group.isTeam ? 'teamMembers' : 'groupMembers';
     return (
       <JuiProfileDialogContentMemberHeader
@@ -22,6 +32,12 @@ class MemberHeader extends React.Component<
         data-test-automation-id="profileDialogMemberHeader"
       >
         {`${t(key)} (${group.members && group.members.length})`}
+        {isCurrentUserHasPermissionAddMember ? (
+          <ButtonInRight onClick={AddTeamMembers}>
+            <JuiIconography fontSize="small">add_team</JuiIconography>
+            {t('AddTeamMembers')}
+          </ButtonInRight>
+        ) : null}
       </JuiProfileDialogContentMemberHeader>
     );
   }

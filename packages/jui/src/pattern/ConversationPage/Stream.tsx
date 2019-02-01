@@ -9,13 +9,14 @@ import styled from '../../foundation/styled-components';
 type JuiStreamProps = {
   className?: string;
   children?: React.ReactNode[] | React.ReactNode;
+  style?: React.CSSProperties;
 };
 
 const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  min-height: 100%;
 `;
 
 const JuiStream = (props: JuiStreamProps) => (

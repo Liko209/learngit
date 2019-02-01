@@ -6,22 +6,21 @@
 
 import { computed, observable } from 'mobx';
 import { service } from 'sdk';
-import { Group } from 'sdk/models';
+import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { IconButtonSize } from 'jui/components/Buttons';
 
-import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
+import { StoreViewModel } from '@/store/ViewModel';
 
-import { FavoriteProps, FavoriteViewProps } from './types';
+import { FavoriteProps } from './types';
 
 const { GroupService } = service;
 
-class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
-  implements FavoriteViewProps {
+class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
   private _groupService: service.GroupService = GroupService.getInstance();
+
   constructor(props: FavoriteProps) {
     super(props);
     this.autorun(this.getConversationId);
@@ -30,28 +29,20 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   @observable
   conversationId: number;
 
-  @computed
-  get id() {
-    return this.props.id; // personId || conversationId
-  }
-
-  @computed
-  get size(): IconButtonSize {
-    return this.props.size || 'small';
-  }
-
   getConversationId = async () => {
-    const type = GlipTypeUtil.extractTypeId(this.id);
+    const { id } = this.props;
+    const type = GlipTypeUtil.extractTypeId(id);
+
     if (
       type === TypeDictionary.TYPE_ID_GROUP ||
       type === TypeDictionary.TYPE_ID_TEAM
     ) {
-      this.conversationId = this.id;
+      this.conversationId = id;
       return;
     }
+
     if (type === TypeDictionary.TYPE_ID_PERSON) {
-      const group = await this._groupService.getLocalGroup([this.id]);
-      console.log('andy hu fav', this.id, group);
+      const group = await this._groupService.getLocalGroup([id]);
       if (group) {
         this.conversationId = group.id;
       } else {

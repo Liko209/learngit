@@ -4,18 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../../models';
+import { IdModel } from '../../model';
+import { IEntityPersistentController } from './IEntityPersistentController';
 
-interface IEntitySourceController<T extends BaseModel = BaseModel> {
-  getEntity(id: number): Promise<T | null>;
+interface IEntitySourceController<T extends IdModel = IdModel>
+  extends IEntityPersistentController<T> {
+  get(id: number): Promise<T | null>;
 
   getEntityLocally(id: number): Promise<T>;
 
-  bulkUpdate(partialModels: Partial<Raw<T>>[]): Promise<void>;
-
   getEntitiesLocally(ids: number[], includeDeactivated: boolean): Promise<T[]>;
-
-  getEntityNotificationKey(): string;
 }
 
 export { IEntitySourceController };

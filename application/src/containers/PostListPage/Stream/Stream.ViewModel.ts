@@ -12,7 +12,7 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDa
 import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
-import { Post } from 'sdk/models';
+import { Post } from 'sdk/module/post/entity';
 import { EVENT_TYPES, ENTITY, PostService } from 'sdk/service';
 import { transform2Map, getEntity } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -40,7 +40,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get ids() {
-    return this._sortableListHandler.sortableListStore.getIds();
+    return this._sortableListHandler.sortableListStore.getIds;
   }
 
   private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
@@ -81,7 +81,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
     const postsFromStore = idsInStore
       .map(id => getEntity(ENTITY_NAME.POST, id))
-      .filter((post: Post) => !post.deactivated);
+      .filter((post: PostModel) => !post.deactivated);
     try {
       if (idsOutOfStore.length) {
         const results = await postService.getPostsByIds(idsOutOfStore);
@@ -122,6 +122,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         .difference(postIds)
         .value();
       const postService: PostService = PostService.getInstance();
+      this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);
         this._sortableListHandler.onDataChanged({
@@ -140,7 +141,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           },
         });
       }
-      this._postIds = postIds;
     }
   }
 

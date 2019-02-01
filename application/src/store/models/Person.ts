@@ -1,7 +1,12 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { observable, computed } from 'mobx';
-import { Person, PhoneNumberModel, SanitizedExtensionModel } from 'sdk/models';
+import {
+  Person,
+  PhoneNumberModel,
+  HeadShotModel,
+  SanitizedExtensionModel,
+} from 'sdk/module/person/entity';
 import Base from './Base';
 import {
   isOnlyLetterOrNumbers,
@@ -19,9 +24,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   lastName: string;
   @observable
-  headshot?: {
-    url: string;
-  };
+  headshot?: HeadShotModel;
   @observable
   headshotVersion?: string;
   @observable

@@ -7,7 +7,10 @@ import React, { RefObject } from 'react';
 import MuiIconButton, {
   IconButtonProps as MuiIconButtonProps,
 } from '@material-ui/core/IconButton';
-import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../../foundation/Iconography';
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
 import { JuiArrowTip } from '../../Tooltip/ArrowTip';
@@ -30,7 +33,7 @@ type JuiIconButtonProps = {
   ariaLabel?: string;
   innerRef?: RefObject<HTMLElement>;
 } & Omit<MuiIconButtonProps, 'color'> &
-  Omit<MuiIconProps, 'color'>;
+  Omit<JuiIconographyProps, 'color'>;
 
 const iconSizes = {
   large: 6,
@@ -43,7 +46,7 @@ const WrappedMuiIcon = ({
   awake,
   color,
   ...rest
-}: JuiIconButtonProps) => <MuiIcon {...rest} />;
+}: JuiIconButtonProps) => <JuiIconography {...rest} />;
 const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -78,7 +81,7 @@ const WrappedMuiIconButton = ({
   />
 );
 
-const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
+const StyledIconButton = styled(WrappedMuiIconButton)`
   && {
     padding: 0;
     width: ${({ variant, size = 'medium', theme }) =>
@@ -123,7 +126,6 @@ const StyledIconButton = styled<StyledIconButtonProps>(WrappedMuiIconButton)`
     }
 
     &&.disabled {
-      pointer-events: ${({ alwaysEnableTooltip }) => alwaysEnableTooltip ? 'auto' : 'none'};
       ${StyledIcon} {
         color: ${({ theme }) =>
           palette('action', 'disabledBackground')({ theme })};
@@ -174,7 +176,6 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
         colorName={colorName}
         aria-label={ariaLabel}
         className={className}
-        alwaysEnableTooltip={alwaysEnableTooltip}
         {...rest}
       >
         <StyledIcon
@@ -189,10 +190,18 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
       </StyledIconButton>
     );
   };
-  if (!disableToolTip) {
-    return <JuiArrowTip title={tooltipTitle}>{renderToolTip()}</JuiArrowTip>;
+  let renderToolTipWrapper = renderToolTip;
+  if (alwaysEnableTooltip) {
+    renderToolTipWrapper = () => {
+      return <span>{renderToolTip()}</span>;
+    };
   }
-  return renderToolTip();
+  if (!disableToolTip) {
+    return (
+      <JuiArrowTip title={tooltipTitle}>{renderToolTipWrapper()}</JuiArrowTip>
+    );
+  }
+  return renderToolTipWrapper();
 };
 
 JuiIconButtonComponent.defaultProps = {

@@ -40,7 +40,11 @@ class MentionViewComponent extends Component<
           <JuiMentionPanelSection>
             {groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
               <JuiMentionPanelSectionHeader
-                title={t(searchTerm ? 'suggested people' : 'team members')}
+                title={t(
+                  searchTerm && searchTerm.trim()
+                    ? 'suggested people'
+                    : 'team members',
+                )}
               />
             )}
             {members.map(
@@ -65,6 +69,6 @@ class MentionViewComponent extends Component<
   }
 }
 
-const MentionView = translate('Conversations')(MentionViewComponent);
+const MentionView = translate('translations')(MentionViewComponent);
 
 export { MentionView };

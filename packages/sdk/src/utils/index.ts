@@ -3,3 +3,5 @@ export * from './mathUtils';
 export * from './error';
 export * from './glip-type-dictionary';
 export * from './serialize';
+export * from './performance';
+export { TimeUtils } from './TimeUtils';

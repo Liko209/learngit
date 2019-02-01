@@ -60,7 +60,17 @@ const schema: ISchema = {
     },
     8: { groupConfig: gen() },
     9: { item: gen('id', ['*group_ids', 'name']) },
-    10: { postView: gen('id', ['group_id', 'created_at']) },
+    10: {
+      fileItem: gen('id', ['*group_ids']),
+      taskItem: gen('id', ['*group_ids']),
+      noteItem: gen('id', ['*group_ids']),
+      eventItem: gen('id', ['*group_ids']),
+      linkItem: gen('id', ['*group_ids']),
+    },
+    11: { postView: gen('id', ['group_id', 'created_at']) },
+    12: {
+      conferenceItem: gen('id', ['*group_ids']),
+    },
   },
 };
 

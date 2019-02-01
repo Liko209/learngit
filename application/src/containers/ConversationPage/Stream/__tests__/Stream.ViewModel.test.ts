@@ -3,38 +3,67 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService, StateService } from 'sdk/service';
+
+/// <reference path="../../../../../__tests__/types.d.ts" />
+import { PostService, notificationCenter } from 'sdk/service';
+import { StateService } from 'sdk/module/state';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
-import { StreamItemType } from '../types';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
+import _ from 'lodash';
+import { id } from 'inversify';
+import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
+import { Notification } from '@/containers/Notification';
+import * as errorUtil from '@/utils/error';
 
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { ItemService } from 'sdk/module/item';
+import * as SCM from '../StreamController';
+import { NewPostService } from 'sdk/module/post';
+import { StreamProps, StreamItemType } from '../types';
+
+jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
+const postService = {
+  getPostsByGroupId: jest.fn(),
+};
+
 function setup(obj?: any) {
-  const vm = new StreamViewModel();
+  jest.spyOn(notificationCenter, 'on').mockImplementation();
+  const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
 }
 
 describe('StreamViewModel', () => {
-  let postService: PostService;
-
+  let itemService: ItemService;
+  const streamController = {
+    dispose: jest.fn(),
+    hasMore: jest.fn(),
+    enableNewMessageSep: jest.fn(),
+    disableNewMessageSep: jest.fn(),
+  };
   beforeEach(() => {
     jest.clearAllMocks();
-    postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    jest.resetAllMocks();
+    itemService = new ItemService();
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
   describe('loadInitialPosts()', () => {
     function setup(obj: any) {
-      const vm = new StreamViewModel();
+      const vm = new StreamViewModel(obj.props);
       jest.spyOn(vm, 'markAsRead').mockImplementation(() => {});
-      obj.props && vm.onReceiveProps(obj.props);
       return vm;
     }
 
@@ -42,20 +71,21 @@ describe('StreamViewModel', () => {
       const vm = setup({
         props: { groupId: 1 },
       });
-      (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
+      postService.getPostsByGroupId.mockResolvedValue({
         posts: [
-          { id: 1, item_ids: [], created_at: Date.now() + 1 },
-          { id: 2, item_ids: [], created_at: Date.now() + 2 },
-          { id: 3, item_ids: [], create_at: Date.now() + 3 },
+          { id: 1, item_ids: [], created_at: 10000 },
+          { id: 2, item_ids: [], created_at: 10001 },
+          { id: 3, item_ids: [], created_at: 20010 },
         ],
         items: [{ id: 1 }],
       });
       await vm.loadInitialPosts();
-      expect(vm.items).toEqual([
-        { type: StreamItemType.POST, value: 1 },
-        { type: StreamItemType.POST, value: 2 },
-        { type: StreamItemType.POST, value: 3 },
-      ]);
+      expect(
+        _(vm.items)
+          .flatMap('value')
+          .compact()
+          .value(),
+      ).toEqual([1, 2, 3]);
       expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
         ENTITY_NAME.ITEM,
         [{ id: 1 }],
@@ -66,12 +96,7 @@ describe('StreamViewModel', () => {
   describe('loadPostUntilFirstUnread()', () => {
     function setupLoadPostUntilFirstUnread(obj: any) {
       const vm = setup({
-        _newMessageSeparatorHandler: {
-          enable: jest.fn(),
-        },
-        _transformHandler: {
-          hasMore: jest.fn(),
-        },
+        streamController,
         _historyHandler: {
           getDistanceToFirstUnread: jest
             .fn()
@@ -91,9 +116,7 @@ describe('StreamViewModel', () => {
       const { vm, loadPosts } = setupLoadPostUntilFirstUnread({
         distanceToFirstUnread: 5,
       });
-
       await vm.loadPostUntilFirstUnread();
-
       expect(loadPosts).toHaveBeenCalledWith(QUERY_DIRECTION.OLDER, 6);
     });
 
@@ -108,51 +131,42 @@ describe('StreamViewModel', () => {
     });
   });
 
-  describe('onReceiveProps()', () => {
-    it('should do nothing when groupId not change', () => {
-      const vm = setup({
-        groupId: 1,
-      });
-      jest.spyOn(vm, 'dispose');
-      vm.onReceiveProps({ groupId: 1 } as any);
-      expect(vm.dispose).not.toHaveBeenCalled();
-    });
-  });
-
   describe('dispose()', () => {
-    it('should dispose transformHandler', () => {
-      const _transformHandler = {
-        dispose: jest.fn().mockName('vm._transformHandler.dispose'),
-      };
-      const vm = setup({ _transformHandler });
-
+    it('should dispose streamController', () => {
+      const vm = setup({ _streamController: { dispose: jest.fn() } });
       vm.dispose();
-
-      expect(_transformHandler.dispose).toHaveBeenCalled();
+      expect(vm._streamController.dispose).toHaveBeenCalled();
     });
   });
 
   describe('notEmpty', () => {
-    function setup(props: { hasMoreUp: boolean; items: any[] }) {
-      const vm = new StreamViewModel();
+    function setup(props: { hasMoreUp: boolean; id?: number }) {
+      const vm = new StreamViewModel({
+        groupId: 1,
+      } as StreamProps);
+
       Object.assign(vm, {
-        _transformHandler: { hasMore: () => props.hasMoreUp },
-        items: props.items,
+        _streamController: {
+          hasMoreUp: props.hasMoreUp,
+          items: props.id
+            ? [{ id: props.id, value: [props.id], type: StreamItemType.POST }]
+            : [],
+        },
       });
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false, items: [1] });
+      const vm = setup({ hasMoreUp: false, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be true when user has more unloaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: true, items: [] });
+      const vm = setup({ hasMoreUp: true, id: 1 });
       expect(vm.notEmpty).toBe(true);
     });
 
     it('should be false when user has no more messages and no loaded messages  [JPT-478]', () => {
-      const vm = setup({ hasMoreUp: false, items: [] });
+      const vm = setup({ hasMoreUp: false });
       expect(vm.notEmpty).toBe(false);
     });
   });
@@ -170,30 +184,35 @@ describe('StreamViewModel', () => {
   describe('updateHistoryHandler()', () => {
     it('should update historyHandler with arguments', () => {
       const mockUpdate = jest.fn();
-      const groupState = Math.random();
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
-        postIds,
         _historyHandler: { update: mockUpdate },
+        _streamController: {
+          postIds,
+          items: postIds.map(i => ({
+            id: i,
+            value: i,
+            type: StreamItemType.POST,
+          })),
+        },
       });
-      Object.defineProperty(vm, '_groupState', { value: groupState });
-      vm.updateHistoryHandler();
 
+      vm.updateHistoryHandler();
       expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toBeCalledWith(groupState, postIds);
+      expect(mockUpdate).toBeCalledWith(vm._groupState, postIds);
     });
   });
 
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
       const stateService = new StateService();
-      const spy = jest.spyOn(stateService, 'markAsRead');
+      const spy = jest.spyOn(stateService, 'updateReadStatus');
       StateService.getInstance = jest.fn().mockReturnValue(stateService);
       const groupId = 123123;
       const vm = setup({ groupId });
       vm.markAsRead();
 
-      expect(spy).toBeCalledWith(groupId);
+      expect(spy).toBeCalledWith(groupId, false);
 
       spy.mockRestore();
     });
@@ -202,7 +221,9 @@ describe('StreamViewModel', () => {
   describe('enableNewMessageSeparatorHandler()', () => {
     it('should enable newMessageSeparatorHandler', () => {
       const mockEnable = jest.fn();
-      const vm = setup({ _newMessageSeparatorHandler: { enable: mockEnable } });
+      const vm = setup({
+        _streamController: { enableNewMessageSep: mockEnable },
+      });
       vm.enableNewMessageSeparatorHandler();
 
       expect(mockEnable).toBeCalledTimes(1);
@@ -213,7 +234,7 @@ describe('StreamViewModel', () => {
     it('should disable newMessageSeparatorHandler', () => {
       const mockDisable = jest.fn();
       const vm = setup({
-        _newMessageSeparatorHandler: { disable: mockDisable },
+        _streamController: { disableNewMessageSep: mockDisable },
       });
 
       vm.disableNewMessageSeparatorHandler();
@@ -227,13 +248,11 @@ describe('StreamViewModel', () => {
       const autorun = jest.fn();
       const globalStore = { set: jest.fn(), get: jest.fn() };
       const dispose = jest.fn();
-
       const oldValue = {
         jumpToPostId: 121244,
         groupId: 123123123,
         _historyHandler: {},
-        _newMessageSeparatorHandler: {},
-        _transformHandler: { dispose },
+        _streamController: { dispose },
         _initialized: true,
       };
       const vm = setup({
@@ -257,35 +276,14 @@ describe('StreamViewModel', () => {
       );
       expect(globalStore.set).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
-
       spy.mockRestore();
     });
 
-    it('should reset property', () => {
-      const { vm, oldValue } = localSetup();
-      const groupId = 235;
-
-      expect(vm.jumpToPostId).toBe(oldValue.jumpToPostId);
-      expect(vm.groupId).toBe(oldValue.groupId);
-      expect(vm._initialized).toBe(true);
-
-      vm.initialize(groupId);
-
-      expect(vm.groupId).toBe(groupId);
-      expect(vm.jumpToPostId).not.toBe(oldValue.jumpToPostId);
-      expect(vm._historyHandler).not.toBe(oldValue._historyHandler);
-      expect(vm._newMessageSeparatorHandler).not.toBe(
-        oldValue._newMessageSeparatorHandler,
-      );
-      expect(vm._transformHandler).not.toBe(oldValue._transformHandler);
-      expect(vm._initialized).toBe(false);
-    });
-
-    it('should call autorun', () => {
-      const { vm, autorun } = localSetup();
-      vm.initialize(11);
-
-      expect(autorun).toBeCalledTimes(3);
+    // This should be removed in future since sync item mustn't be initiated in stream.
+    it('should sync group items when switch conversation', () => {
+      const { vm } = localSetup();
+      vm.initialize(12);
+      expect(itemService.requestSyncGroupItems).toBeCalled();
     });
   });
 
@@ -294,7 +292,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -311,7 +309,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -321,6 +319,55 @@ describe('StreamViewModel', () => {
       expect(fetchData).toBeCalledWith(QUERY_DIRECTION.OLDER, undefined);
       expect(posts).toEqual(data);
     });
+
+    it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn(() => true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      Notification.flashToast = jest.fn();
+
+      await vm.loadPrevPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        dismissible: false,
+        fullWidth: false,
+        message: 'SorryWeWereNotAbleToLoadOlderMessages',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
+      });
+    });
+
+    it('should use generalErrorHandler if error is not from backend or network error', async () => {
+      const fetchData = jest.fn(() => Promise.reject(new Error()));
+      const hasMore = jest.fn(() => true);
+      jest.spyOn(errorUtil, 'generalErrorHandler');
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      await vm.loadPrevPosts();
+
+      expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
+    });
   });
 
   describe('loadNextPosts()', () => {
@@ -328,7 +375,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -346,7 +393,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        _transformHandler: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -356,12 +403,45 @@ describe('StreamViewModel', () => {
       expect(fetchData).toBeCalledWith(QUERY_DIRECTION.NEWER, undefined);
       expect(posts).toEqual(data);
     });
+
+    it('should show error toast when server throw error while scroll down [JPT-695]', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn().mockReturnValue(true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      Notification.flashToast = jest.fn();
+
+      await vm.loadNextPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        dismissible: false,
+        fullWidth: false,
+        message: 'SorryWeWereNotAbleToLoadNewerMessages',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
+      });
+    });
   });
 
   describe('handleNewMessageSeparatorState()', () => {
-    let _newMessageSeparatorHandler: any;
+    let streamController: any;
     const globalStore = {
       set: jest.fn(),
+      get: jest.fn().mockReturnValue(1),
     };
     const atBottomEvent = {
       target: {
@@ -387,15 +467,19 @@ describe('StreamViewModel', () => {
     }
 
     function localSetup(args: object, initialized: boolean = true) {
-      _newMessageSeparatorHandler = {
-        disable: jest.fn(),
-        enable: jest.fn(),
+      jest.spyOn(SCM, 'StreamController').mockImplementation();
+      streamController = {
+        disableNewMessageSep: jest.fn(),
+        enableNewMessageSep: jest.fn(),
+        dispose: jest.fn(),
       };
-      return setup({
-        _newMessageSeparatorHandler,
+      const vm = setup({
+        _streamController: streamController,
         _initialized: initialized,
         ...args,
       });
+      vm.dispose();
+      return vm;
     }
 
     afterAll(() => {
@@ -408,7 +492,7 @@ describe('StreamViewModel', () => {
           GLOBAL_KEYS.SHOULD_SHOW_UMI,
           false,
         );
-        expect(_newMessageSeparatorHandler.disable).toBeCalled();
+        expect(streamController.disableNewMessageSep).toBeCalled();
       }
 
       function showUMIAndEnableMessageHandler() {
@@ -416,57 +500,52 @@ describe('StreamViewModel', () => {
           GLOBAL_KEYS.SHOULD_SHOW_UMI,
           true,
         );
-        expect(_newMessageSeparatorHandler.enable).toBeCalled();
+        expect(streamController.enableNewMessageSep).toBeCalled();
       }
 
-      it('should disable _newMessageSeparatorHandler when at bottom and document has focus', () => {
+      it('should disable newMessageSeparatorHandler when at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(atBottomEvent);
-
         hideUMIAndDisableMessageHandler();
       });
 
-      it('should enable _newMessageSeparatorHandler when at bottom and document without focus', () => {
+      it('should enable newMessageSeparatorHandler when at bottom and document without focus', () => {
         mockStoreManager();
         mockDocumentFocus(false);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(atBottomEvent);
-
         showUMIAndEnableMessageHandler();
       });
 
-      it('should enable _newMessageSeparatorHandler when not at bottom and document has focus', () => {
+      it('should enable newMessageSeparatorHandler when not at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(notAtBottomEvent);
-
         showUMIAndEnableMessageHandler();
       });
 
-      it('should enable _newMessageSeparatorHandler when not at bottom and document without focus', () => {
+      it('should enable newMessageSeparatorHandler when not at bottom and document without focus', () => {
         mockStoreManager();
         mockDocumentFocus(false);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(notAtBottomEvent);
-
         showUMIAndEnableMessageHandler();
       });
     });
 
     describe('when viewModel is not initialized', () => {
-      it('should enable _newMessageSeparatorHandler when at bottom and document has focus', () => {
+      it('should enable newMessageSeparatorHandler when at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({}, false);
         vm.handleNewMessageSeparatorState(atBottomEvent);
 
-        expect(_newMessageSeparatorHandler.enable).toBeCalled();
+        expect(streamController.enableNewMessageSep).toBeCalled();
       });
     });
-
     jest.restoreAllMocks();
   });
 });

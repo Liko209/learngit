@@ -8,6 +8,7 @@ import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton
 import { JuiFileWithExpand, JuiPreviewImage } from './';
 
 type Props = {
+  icon: string;
   fileName: string;
   previewUrl: string;
   Actions: JSX.Element;
@@ -43,10 +44,12 @@ class JuiExpandImage extends React.Component<Props, State> {
       ImageActions,
       i18UnfoldMore,
       i18UnfoldLess,
+      icon,
     } = this.props;
 
     return (
       <JuiFileWithExpand
+        icon={icon}
         fileName={fileName}
         expand={this.state.expand}
         Actions={
@@ -65,7 +68,8 @@ class JuiExpandImage extends React.Component<Props, State> {
         <JuiPreviewImage
           url={previewUrl}
           fileName={fileName}
-          ratio={1}
+          width={360}
+          height={202}
           Actions={
             <>
               {ImageActions}

@@ -2,9 +2,7 @@ import handleData from '../handleData';
 
 jest.mock('../../account/handleData', () => jest.fn().mockResolvedValue(true));
 jest.mock('../../company/handleData', () => jest.fn().mockResolvedValue(true));
-jest.mock('../../item/handleData', () => jest.fn().mockResolvedValue(true));
 jest.mock('../../presence/handleData', () => jest.fn().mockResolvedValue(true));
-jest.mock('../../state/handleData', () => jest.fn().mockResolvedValue(true));
 
 jest.mock('../../person/handleData', () => jest.fn().mockResolvedValue(true));
 jest.mock('../../group/handleData', () => jest.fn().mockResolvedValue(true));

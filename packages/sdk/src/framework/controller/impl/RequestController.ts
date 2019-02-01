@@ -4,15 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseModel, Raw } from '../../../models';
+import { IdModel, Raw } from '../../../framework/model';
 import { ErrorHandlingController } from './ErrorHandlingController';
 import { ApiResult } from '../../../api/ApiResult';
 import { transform } from '../../../service/utils';
-import { ErrorParser } from '../../../utils/error';
 import NetworkClient from '../../../api/NetworkClient';
 import { IRequestController } from '../interface/IRequestController';
 
-class RequestController<T extends BaseModel = BaseModel>
+class RequestController<T extends IdModel = IdModel>
   implements IRequestController<T> {
   constructor(
     public networkConfig: { basePath: string; networkClient: NetworkClient },
@@ -50,15 +49,11 @@ class RequestController<T extends BaseModel = BaseModel>
   }
 
   async post(data: Partial<T>) {
-    try {
-      const result = await this._post<T>(data);
-      const resultData = result.expect(
-        'request can not post the entity of data ',
-      );
-      return transform<T>(resultData);
-    } catch (e) {
-      throw ErrorParser.parse(e);
-    }
+    const result = await this._post<T>(data);
+    const resultData = result.expect(
+      'request can not post the entity of data ',
+    );
+    return transform<T>(resultData);
   }
 
   private async _get(id: number) {

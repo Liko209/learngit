@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileButtonViewProps } from './types';
-import { JuiModal } from '@/containers/Dialog';
+import { Dialog } from '@/containers/Dialog';
 import {
   ProfileDialogGroup,
   ProfileDialogPerson,
@@ -24,8 +24,8 @@ const MappingComponent = {
 class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
   private _onClickViewProfile = () => {
     const { id, typeId } = this.props;
-    JuiModal.open(MappingComponent[typeId], {
-      componentProps: { id },
+    const Profile = MappingComponent[typeId];
+    Dialog.simple(<Profile id={id} />, {
       size: 'medium',
     });
   }
@@ -38,7 +38,7 @@ class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
         variant="text"
         color="primary"
       >
-        {t('profile')}
+        {t('Profile')}
       </JuiButton>
     );
   }

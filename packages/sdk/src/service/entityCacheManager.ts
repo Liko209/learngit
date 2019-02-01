@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { BaseModel, Raw } from '../models';
+import { IdModel, Raw } from '../framework/model';
 import { CACHE_INITIAL_STATUS } from './constants';
 
-class EntityCacheManager<T extends BaseModel = BaseModel> {
+class EntityCacheManager<T extends IdModel = IdModel> {
   private _entities: { [id: number]: T } = {};
   private _initialStatus: CACHE_INITIAL_STATUS;
 
@@ -85,6 +85,9 @@ class EntityCacheManager<T extends BaseModel = BaseModel> {
         const oldEntity = this._entities[id];
         if (oldEntity) {
           this._updatePartial(oldEntity, partialModel);
+        } else {
+          const partialObject: Object = partialModel;
+          this._entities[id] = partialObject as T;
         }
       });
     } else {

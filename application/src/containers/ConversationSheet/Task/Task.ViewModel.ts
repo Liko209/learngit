@@ -11,8 +11,11 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import TaskItemModel from '@/store/models/TaskItem';
 import FileItemModel from '@/store/models/FileItem';
-import { Item } from 'sdk/models';
-import { getFileType } from '../helper';
+import { recentlyTwoDayAndOther } from '@/utils/date';
+import { Item } from 'sdk/module/item/entity';
+import { getFileType } from '@/common/getFileType';
+import { getDateAndTime } from '../helper';
+import { accentColor } from '@/common/AccentColor';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -23,6 +26,29 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get task() {
     return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+  }
+
+  @computed
+  get color() {
+    return accentColor[this.task.color];
+  }
+
+  @computed
+  get hasTime() {
+    const { start, due } = this.task;
+    return !!(start && due);
+  }
+
+  @computed
+  get startTime() {
+    const startTime = this.task.start;
+    return startTime ? recentlyTwoDayAndOther(startTime) : '';
+  }
+
+  @computed
+  get endTime() {
+    const endTime = this.task.due;
+    return endTime ? getDateAndTime(endTime) : '';
   }
 
   @computed

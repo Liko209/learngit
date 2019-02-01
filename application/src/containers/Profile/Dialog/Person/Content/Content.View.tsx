@@ -29,12 +29,14 @@ import {
   JuiProfileDialogContentFormLabel as FormLabel,
   JuiProfileDialogContentFormValue as FormValue,
   JuiProfileDialogContentFormCopy as FormCopy,
+  JuiProfileDialogContentFormLink as FormLink,
 } from 'jui/pattern/Profile/Dialog';
 import { Message } from '@/containers/common/Message';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/service/person';
 import { JuiIconButton } from 'jui/components/Buttons';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -79,7 +81,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
             value: aria || value,
           })}
         >
-          file_copy
+          copy
         </JuiIconButton>
       </FormCopy>
     );
@@ -111,13 +113,15 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderEmail(value: string) {
     const html = `<a href="mailto:${value}">${value}</a>`;
-    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
+    return <FormLink dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
   renderHomepage(value: string) {
     const html = Markdown(value);
-    return <FormValue dangerouslySetInnerHTML={{ __html: html }} />;
+    return <FormLink dangerouslySetInnerHTML={{ __html: html }} />;
   }
+
+  messageAfterClick = () => portalManager.dismiss();
 
   render() {
     const {
@@ -127,7 +131,6 @@ class ProfileDialogPersonContentViewComponent extends Component<
       company,
       extensionNumbers,
       directNumbers,
-      dismiss,
       isMe,
     } = this.props;
     return (
@@ -155,7 +158,11 @@ class ProfileDialogPersonContentViewComponent extends Component<
               {person.jobTitle}
             </Title>
             <Buttons>
-              <Message id={id} dismiss={dismiss} render={this.renderMessage} />
+              <Message
+                id={id}
+                afterClick={this.messageAfterClick}
+                render={this.renderMessage}
+              />
             </Buttons>
           </Right>
         </Summary>
@@ -171,7 +178,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                 })}
               {person.location &&
                 this.renderFormGroup({
-                  icon: 'places',
+                  icon: 'location',
                   label: t('location'),
                   value: person.location,
                 })}

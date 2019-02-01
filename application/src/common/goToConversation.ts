@@ -7,18 +7,29 @@ import history from '@/history';
 import { service } from 'sdk';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
-const getConversationId = async (id: number) => {
+type GoToConversationParams = {
+  id: number | number[];
+  message?: string;
+  beforeJump?: (id: number) => {};
+  hasBeforeJumpFun?: boolean;
+};
+
+const getConversationId = async (id: number | number[]) => {
   const { GroupService } = service;
   const groupService: service.GroupService = GroupService.getInstance();
-  const type = GlipTypeUtil.extractTypeId(id);
+  const type = Array.isArray(id)
+    ? TypeDictionary.TYPE_ID_PERSON
+    : GlipTypeUtil.extractTypeId(id);
   if (
     type === TypeDictionary.TYPE_ID_GROUP ||
     type === TypeDictionary.TYPE_ID_TEAM
   ) {
-    return id;
+    return id as number;
   }
   if (type === TypeDictionary.TYPE_ID_PERSON) {
-    const result = await groupService.getOrCreateGroupByMemberList([id]);
+    const result = await groupService.getOrCreateGroupByMemberList(
+      Array.isArray(id) ? id : [id],
+    );
     if (result.isOk()) {
       return result.data.id;
     }
@@ -26,21 +37,37 @@ const getConversationId = async (id: number) => {
   return null;
 };
 
-/**
- * @param id: groupId or personId for 1:1 conversation
- */
-async function goToConversation(id: number) {
+const goToConversationCallBackName = Symbol('goToConversationCallBackName');
+async function goToConversation(params: GoToConversationParams) {
+  const { id, beforeJump, hasBeforeJumpFun } = params;
   history.push('/messages/loading');
-  const conversationId = await getConversationId(id);
-  if (!conversationId) {
+  let beforeJumpFun;
+  if (beforeJump) {
+    beforeJumpFun = beforeJump;
+  } else {
+    beforeJumpFun = window[goToConversationCallBackName];
+    window[goToConversationCallBackName] = null;
+  }
+  try {
+    const conversationId = await getConversationId(id);
+    if (!conversationId) {
+      throw new Error('Conversation not found.');
+    }
+    (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
+    history.replace(`/messages/${conversationId}`);
+    return true;
+  } catch (err) {
+    if (beforeJump) {
+      window[goToConversationCallBackName] = beforeJump;
+      delete params.beforeJump;
+      params.hasBeforeJumpFun = true;
+    }
     history.replace('/messages/loading', {
-      id: conversationId,
+      params,
       error: true,
     });
     return false;
   }
-  history.replace(`/messages/${conversationId}`);
-  return true;
 }
 
-export { goToConversation, getConversationId };
+export { goToConversation, getConversationId, GoToConversationParams };

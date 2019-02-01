@@ -9,8 +9,11 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import ThumbUpOutlined from '@material-ui/icons/ThumbUpOutlined';
 import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 type Props = LikeViewProps & WithNamespaces;
 
 @observer
@@ -24,8 +27,8 @@ class LikeViewComponent extends Component<Props> {
         : 'SorryWeWereNotAbleToUnlikeTheMessage';
       Notification.flashToast({
         message,
-        type: 'error',
-        messageAlign: 'left',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
         dismissible: false,
       });
@@ -42,12 +45,12 @@ class LikeViewComponent extends Component<Props> {
         variant="plain"
         data-name="actionBarLike"
       >
-        {isLike ? 'thumb_up' : <ThumbUpOutlined />}
+        {isLike ? 'thumbup' : 'thumbup_border'}
       </JuiIconButton>
     );
   }
 }
 
-const LikeView = translate('Conversations')(LikeViewComponent);
+const LikeView = translate('translations')(LikeViewComponent);
 
 export { LikeView };

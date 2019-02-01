@@ -8,6 +8,8 @@ export * from './db';
 export * from './network';
 export * from './log';
 export * from './result';
+export * from './telephony';
+export * from './error';
 
 export { default as Foundation } from './Foundation';
 export { default as config } from './config';

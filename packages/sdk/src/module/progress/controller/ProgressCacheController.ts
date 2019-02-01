@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Progress } from '../../../models';
-import { mainLogger } from 'foundation/src';
+import { Progress } from '../entity';
+import { mainLogger } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 
@@ -15,8 +15,8 @@ class ProgressCacheController {
     this._progressCache = new Map();
   }
 
-  getProgress(id: number): Progress | undefined {
-    return this._progressCache.get(id);
+  getProgress(id: number): Progress | null {
+    return this._progressCache.get(id) || null;
   }
 
   addProgress(id: number, progress: Progress) {

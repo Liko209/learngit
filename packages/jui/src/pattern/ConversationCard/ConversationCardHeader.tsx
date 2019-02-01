@@ -37,7 +37,7 @@ const StyledTime = styled('div')`
   color: ${grey('500')};
   white-space: nowrap;
   ${typography('caption2')};
-  width: ${width(20)};
+  min-width: ${width(20)};
   text-align: right;
 `;
 const RightSection = styled('div')`
@@ -103,7 +103,11 @@ class JuiConversationCardHeader extends React.Component<
 
   componentDidMount() {
     this.setHeaderItemMaxWidth();
-    window.addEventListener('resize', this.setHeaderItemMaxWidth.bind(this));
+    window.addEventListener('resize', this.setHeaderItemMaxWidth);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
   componentDidUpdate() {

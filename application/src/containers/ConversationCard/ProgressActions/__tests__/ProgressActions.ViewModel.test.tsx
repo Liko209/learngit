@@ -4,14 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PostService, ItemService } from 'sdk/service';
+import { NewPostService } from 'sdk/module/post';
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 import { getEntity } from '../../../../store/utils';
 import { Notification } from '@/containers/Notification';
-import { PROGRESS_STATUS } from 'sdk/module';
+import { PROGRESS_STATUS } from 'sdk/module/progress';
+import { ItemService } from 'sdk/module/item';
 
 jest.mock('../../../../store/utils');
-jest.mock('sdk/service');
+jest.mock('sdk/module/post');
+jest.mock('sdk/module/item');
 jest.mock('@/containers/Notification');
 
 Notification.flashToast = jest.fn();
@@ -24,7 +26,7 @@ const itemService = {
   canResendFailedItems: jest.fn().mockReturnValue(true),
 };
 
-PostService.getInstance = jest.fn().mockReturnValue(postService);
+NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
 const mockPostData = {
@@ -70,7 +72,7 @@ describe('ProgressActionsViewModel', () => {
       expect(nvm.postProgress).toEqual(PROGRESS_STATUS.FAIL);
     });
 
-    it('should be get POST_STATUS.SUCCESS when postId > 0', () => {
+    it('should be get PROGRESS_STATUS.SUCCESS when postId > 0', () => {
       expect(pvm.postProgress).toEqual(PROGRESS_STATUS.SUCCESS);
     });
   });

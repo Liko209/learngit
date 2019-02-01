@@ -2,9 +2,8 @@ import * as _ from 'lodash'
 import 'testcafe';
 import { Selector } from 'testcafe';
 
-import { IUser } from '../models'
-import { h } from '../helpers'
 import * as assert from 'assert';
+import { H } from '../helpers'
 import { getLogger } from 'log4js';
 
 const logger = getLogger('BaseWebComponent');
@@ -31,6 +30,10 @@ export abstract class BaseWebComponent {
       .ok(`selector ${selector} is not visible within ${timeout} ms`, { timeout });
   }
 
+  // sandbox and helper
+  async clickAndTypeText(selector: Selector, text: string, options?: TypeActionOptions) {
+    return await this.t.click(selector).typeText(selector, text, options)
+  }
 
   // delegate testcafe method
   get exists() {
@@ -47,12 +50,6 @@ export abstract class BaseWebComponent {
 
   getAttribute(attributeName: string) {
     return this.self.getAttribute(attributeName);
-  }
-
-  // jupiter
-  async directLoginWithUser(url: string, user: IUser) {
-    const urlWithAuthCode = await h(this.t).jupiterHelper.getUrlWithAuthCode(url, user);
-    await this.t.navigateTo(urlWithAuthCode);
   }
 
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
@@ -82,16 +79,50 @@ export abstract class BaseWebComponent {
 
   getSelectorByIcon(icon: string, root: Selector = null): Selector {
     if (root) {
-      return root.find('.material-icons').withText(icon);
+      return root.find('.material-icons').withExactText(icon);
     } else {
-      return this.self.find('.material-icons').withText(icon);
+      return this.self.find('.material-icons').withExactText(icon);
     }
+  }
+
+  get spinners() {
+    return this.getSelector('div[role="progressbar"]');
+  }
+
+  async waitForAllSpinnersToDisappear(timeout: number = 30e3) {
+    try {
+      await H.retryUntilPass(async () => assert(await this.spinners.count > 0), 4);
+    } catch (e) {
+      // it's ok if spinner doesn't exist
+    }
+    finally {
+      await this.t.expect(this.spinners.count).eql(0, { timeout });
+    }
+  }
+
+  button(name: string) {
+    return this.self.find('button').withText(name);
   }
 
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
     logger.warn(`a flaky selector is found ${stack.split('\n')[2].trim()}`);
+  }
+
+  // Some specific scenarios
+  async getNumber(sel: Selector) {
+    if (await sel.exists == false) {
+      return 0;
+    }
+    const text = await sel.innerText;
+    if (_.isEmpty(text)) {
+      return 0;
+    }
+    if (text == '99+') {
+      return 100;
+    }
+    return Number(text);
   }
 
 }

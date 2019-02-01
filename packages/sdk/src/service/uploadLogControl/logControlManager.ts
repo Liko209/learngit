@@ -4,37 +4,34 @@
  */
 import notificationCenter from '../notificationCenter';
 import { SERVICE, WINDOW } from '../../service/eventKey';
-import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
-import LogUploadManager from './logUploadManager';
-import AccountService from '../account';
-
-const DEFAULT_EMAIL = 'service@glip.com';
+import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
+import { LogUploader } from './LogUploader';
 
 notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
   LogControlManager.instance().setNetworkState(onLine);
 });
 
 notificationCenter.on(SERVICE.LOGOUT, () => {
-  LogControlManager.instance().doUpload();
+  LogControlManager.instance().flush();
 });
 
 notificationCenter.on(WINDOW.BLUR, () => {
-  LogControlManager.instance().doUpload();
+  LogControlManager.instance().flush();
 });
 
-class LogControlManager {
+class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
+  private _isOnline: boolean;
   private _enabledLog: boolean;
   private _isDebugMode: boolean; // if in debug mode, should not upload log
-  private _isUploading: boolean;
-  private _isOnline: boolean;
+  private _onUploadAccessorChange: (accessible: boolean) => void;
   private constructor() {
-    this._isUploading = false;
     this._enabledLog = true;
     this._isDebugMode = true;
     this._isOnline = true;
-    logManager.setOverThresholdCallback(() => {
-      this.doUpload();
+    logManager.config({
+      uploadLogApi: new LogUploader(),
+      uploadAccessor: this,
     });
   }
 
@@ -51,63 +48,23 @@ class LogControlManager {
     this._updateLogSystemLevel();
   }
 
-  public enableLog(enable: boolean) {
-    this._enabledLog = enable;
-    this._updateLogSystemLevel();
-  }
-
   public async flush() {
-    this.doUpload();
+    logManager.flush();
   }
 
   public setNetworkState(isOnline: boolean) {
+    this._isOnline !== isOnline &&
+      this._onUploadAccessorChange &&
+      this._onUploadAccessorChange(isOnline);
     this._isOnline = isOnline;
   }
 
-  public async doUpload() {
-    if (!this._isOnline || this._isUploading || this._isDebugMode) {
-      return;
-    }
-
-    const logs = await logManager.getLogs();
-    if (this.logIsEmpty(logs)) {
-      return;
-    }
-    this._isUploading = true;
-    const userInfo = await this._getUserInfo();
-    try {
-      await LogUploadManager.instance().doUpload(userInfo, logs);
-    } catch (err) {
-      mainLogger.error(`doUpload: ${JSON.stringify(err)}`);
-    } finally {
-      logManager.clearLogs();
-      this._isUploading = false;
-    }
+  isAccessible(): boolean {
+    return this._isOnline;
   }
 
-  logIsEmpty(logs: any): boolean {
-    if (logs) {
-      const keys = Object.keys(logs);
-      for (let i = 0; i < keys.length; i += 1) {
-        if (Array.isArray(logs[keys[i]]) && logs[keys[i]].length !== 0) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  private async _getUserInfo() {
-    const accountService: AccountService = AccountService.getInstance();
-    const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
-    const id = accountService.getCurrentUserId();
-    const userId = id ? id.toString() : '';
-    const clientId = accountService.getClientId();
-    return {
-      email,
-      userId,
-      clientId,
-    };
+  subscribe(onChange: (accessible: boolean) => void): void {
+    this._onUploadAccessorChange = onChange;
   }
 
   private _updateLogSystemLevel() {

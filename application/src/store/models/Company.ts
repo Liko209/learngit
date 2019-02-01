@@ -1,5 +1,5 @@
 import { observable } from 'mobx';
-import { Company } from 'sdk/models';
+import { Company } from 'sdk/module/company/entity';
 import Base from './Base';
 
 export default class CompanyModel extends Base<Company> {
