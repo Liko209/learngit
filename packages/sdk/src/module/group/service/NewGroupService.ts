@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TeamController } from '../controller/TeamController';
+import { GroupController } from '../controller/GroupController';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { TeamSetting, PermissionFlags, CreateTeamOptions } from '../types';
+import { TeamSetting, PermissionFlags } from '../types';
 import { PERMISSION_ENUM } from '../constants';
 import { INewGroupService } from './INewGroupService';
 import { PostService } from '../../../service';
@@ -20,11 +20,12 @@ import { GroupConfigController } from '../controller/GroupConfigController';
 import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import handleData, {
   handleGroupMostRecentPostChanged,
-  handleHiddenGroupsChanged,
 } from '../service/handleData';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { SortableModel } from '../../../framework/model';
 import { Result } from 'foundation';
+import { buildPartialModifyController } from '../../../framework/controller';
+import { PartialModifyController } from '../../../framework/controller/impl/PartialModifyController';
 
 const deleteAllTeamInformation = async (ids: number[]) => {
   const postService: PostService = PostService.getInstance();
@@ -41,7 +42,8 @@ const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
 class GroupService extends EntityBaseService<Group>
   implements INewGroupService {
   static serviceName = 'GroupService';
-  teamController: TeamController;
+  partialModifyController: PartialModifyController<Group>;
+  groupController: GroupController;
   groupConfigController: GroupConfigController;
   constructor() {
     super(true, daoManager.getDao(GroupDao), {
@@ -52,8 +54,6 @@ class GroupService extends EntityBaseService<Group>
       SubscribeController.buildSubscriptionController({
         [SOCKET.GROUP]: handleData,
         [ENTITY.POST]: handleGroupMostRecentPostChanged,
-        // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
-        [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
         [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: deleteAllTeamInformation,
         [SERVICE.POST_SERVICE
           .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
@@ -61,14 +61,25 @@ class GroupService extends EntityBaseService<Group>
     );
   }
 
-  protected getTeamController() {
-    if (!this.teamController) {
-      this.teamController = new TeamController(
+  protected getPartialModifyController() {
+    if (!this.partialModifyController) {
+      this.partialModifyController = buildPartialModifyController<Group>(
         this.getEntitySource(),
-        this.getEntityCacheSearchController(),
       );
     }
-    return this.teamController;
+    return this.partialModifyController;
+  }
+
+  protected getGroupController() {
+    if (!this.groupController) {
+      this.groupController = new GroupController(
+        this,
+        this.getEntitySource(),
+        this.getEntityCacheSearchController(),
+        this.getPartialModifyController(),
+      );
+    }
+    return this.groupController;
   }
 
   protected getGroupConfigController() {
@@ -79,56 +90,54 @@ class GroupService extends EntityBaseService<Group>
   }
 
   isValid(group: Group): boolean {
-    return this.getTeamController()
-      .getGroupActionController()
-      .isValid(group);
+    return !group.is_archived && !group.deactivated && !!group.members;
   }
 
   isInTeam(userId: number, team: Group) {
-    return this.getTeamController()
-      .getTeamActionController()
+    return this.getGroupController()
+      .getGroupActionController()
       .isInTeam(userId, team);
   }
 
   canJoinTeam(team: Group) {
-    return this.getTeamController()
-      .getTeamActionController()
+    return this.getGroupController()
+      .getGroupActionController()
       .canJoinTeam(team);
   }
 
   async joinTeam(userId: number, teamId: number) {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .joinTeam(userId, teamId);
   }
 
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .updateTeamSetting(teamId, teamSetting);
   }
 
   getTeamUserPermissionFlags(teamPermission: TeamPermission): PermissionFlags {
-    return this.getTeamController()
+    return this.getGroupController()
       .getTeamPermissionController()
       .getTeamUserPermissionFlags(teamPermission);
   }
 
   async leaveTeam(userId: number, teamId: number) {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .leaveTeam(userId, teamId);
   }
 
   async addTeamMembers(members: number[], teamId: number) {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .addTeamMembers(members, teamId);
   }
 
   async removeTeamMembers(members: number[], teamId: number) {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .removeTeamMembers(members, teamId);
   }
 
@@ -136,25 +145,25 @@ class GroupService extends EntityBaseService<Group>
     teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
   ): boolean {
-    return this.getTeamController()
+    return this.getGroupController()
       .getTeamPermissionController()
       .isCurrentUserHasPermission(teamPermissionParams, type);
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
-    return this.getTeamController()
+    return this.getGroupController()
       .getTeamPermissionController()
       .isTeamAdmin(personId, permission);
   }
 
   async deleteTeam(teamId: number): Promise<void> {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .deleteTeam(teamId);
   }
 
   hasTeamAdmin(permission?: TeamPermission): boolean {
-    return this.getTeamController()
+    return this.getGroupController()
       .getTeamPermissionController()
       .hasTeamAdmin(permission);
   }
@@ -175,20 +184,20 @@ class GroupService extends EntityBaseService<Group>
   }
 
   async archiveTeam(teamId: number) {
-    await this.getTeamController()
-      .getTeamActionController()
+    await this.getGroupController()
+      .getGroupActionController()
       .archiveTeam(teamId);
   }
 
   async makeAdmin(teamId: number, member: number) {
-    return this.getTeamController()
-      .getTeamActionController()
+    return this.getGroupController()
+      .getGroupActionController()
       .makeOrRevokeAdmin(teamId, member, true);
   }
 
   async revokeAdmin(teamId: number, member: number) {
-    return this.getTeamController()
-      .getTeamActionController()
+    return this.getGroupController()
+      .getGroupActionController()
       .makeOrRevokeAdmin(teamId, member, false);
   }
 
@@ -197,49 +206,43 @@ class GroupService extends EntityBaseService<Group>
     offset: number = 0,
     _limit?: number,
   ): Promise<Group[]> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getGroupsByType(groupType, offset, _limit);
   }
 
   async getGroupsByIds(ids: number[]): Promise<Group[]> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getGroupsByIds(ids);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getLocalGroup(personIds);
   }
 
   async getGroupByPersonId(personId: number): Promise<Result<Group>> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getGroupByPersonId(personId);
   }
 
   async getOrCreateGroupByMemberList(
     members: number[],
   ): Promise<Result<Group>> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getOrCreateGroupByMemberList(members);
   }
 
   async requestRemoteGroupByMemberList(
     members: number[],
   ): Promise<Result<Group>> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .requestRemoteGroupByMemberList(members);
-  }
-
-  canPinPost(postId: number, group: Group): boolean {
-    return this.getTeamController()
-      .getGroupActionController()
-      .canPinPost(postId, group);
   }
 
   async pinPost(
@@ -247,32 +250,24 @@ class GroupService extends EntityBaseService<Group>
     groupId: number,
     toPin: boolean,
   ): Promise<void> {
-    await this.getTeamController()
+    await this.getGroupController()
       .getGroupActionController()
       .pinPost(postId, groupId, toPin);
   }
 
-  getPermissions(group: Group): PERMISSION_ENUM[] {
-    return this.getTeamController()
-      .getGroupActionController()
-      .getPermissions(group);
-  }
-
   async createTeam(
-    name: string,
     creator: number,
     memberIds: (number | string)[],
-    description: string,
-    options: CreateTeamOptions,
-  ): Promise<Result<Group>> {
-    return await this.getTeamController()
+    options: TeamSetting,
+  ): Promise<Group> {
+    return await this.getGroupController()
       .getGroupActionController()
-      .createTeam(name, creator, memberIds, description, options);
+      .createTeam(creator, memberIds, options);
   }
 
   async getLeftRailGroups(): Promise<Group[]> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getLeftRailGroups();
   }
 
@@ -280,14 +275,14 @@ class GroupService extends EntityBaseService<Group>
     id: number;
     privacy: string;
   }): Promise<void> {
-    await this.getTeamController()
+    await this.getGroupController()
       .getGroupActionController()
       .updateGroupPrivacy(params);
   }
 
   async isFavored(id: number, type: number): Promise<boolean> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .isFavored(id, type);
   }
 
@@ -298,8 +293,8 @@ class GroupService extends EntityBaseService<Group>
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .doFuzzySearchGroups(searchKey, fetchAllIfSearchKeyEmpty);
   }
 
@@ -310,14 +305,14 @@ class GroupService extends EntityBaseService<Group>
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .doFuzzySearchTeams(searchKey, fetchAllIfSearchKeyEmpty);
   }
 
   async getGroupEmail(groupId: number): Promise<string> {
-    return await this.getTeamController()
-      .getGroupActionController()
+    return await this.getGroupController()
+      .getGroupFetchDataController()
       .getGroupEmail(groupId);
   }
 
@@ -325,7 +320,7 @@ class GroupService extends EntityBaseService<Group>
     ids: number[],
     direction: QUERY_DIRECTION,
   ): Promise<void> {
-    return await this.getTeamController()
+    return await this.getGroupController()
       .getGroupActionController()
       .setAsTrue4HasMoreConfigByDirection(ids, direction);
   }
@@ -335,13 +330,13 @@ class GroupService extends EntityBaseService<Group>
     id: number;
     timestamp: number;
   }): Promise<boolean> {
-    return await this.getTeamController()
+    return await this.getGroupController()
       .getGroupActionController()
       .updateGroupLastAccessedTime(params);
   }
 
   async isGroupCanBeShown(groupId: number): Promise<boolean> {
-    return await this.getTeamController()
+    return await this.getGroupController()
       .getGroupActionController()
       .isGroupCanBeShown(groupId);
   }

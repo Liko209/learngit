@@ -1,25 +1,25 @@
 import { GroupService } from '../NewGroupService';
 import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
-import { TeamController } from '../../controller/TeamController';
-import { TeamActionController } from '../../controller/TeamActionController';
+import { GroupController } from '../../controller/GroupController';
+import { GroupActionController } from '../../controller/GroupActionController';
 import { TeamSetting } from '../../types';
 
-jest.mock('../../controller/TeamActionController', () => ({
-  TeamActionController: jest.fn(),
+jest.mock('../../controller/GroupActionController', () => ({
+  GroupActionController: jest.fn(),
 }));
-jest.mock('../../controller/TeamController', () => ({
-  TeamController: jest.fn(),
+jest.mock('../../controller/GroupController', () => ({
+  GroupController: jest.fn(),
 }));
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 
-jest.mock('../../controller/TeamActionController');
+jest.mock('../../controller/GroupActionController');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
 
 describe('GroupService', () => {
   let groupService: GroupService;
-  const mockTeamActionController = {
+  const mockGroupActionController = {
     joinTeam: jest.fn(),
     canJoinTeam: jest.fn(),
     getTeamSetting: jest.fn(),
@@ -36,18 +36,18 @@ describe('GroupService', () => {
 
   function setup() {
     groupService = new GroupService();
-    (TeamController as any).mockImplementation(() => {
+    (GroupController as any).mockImplementation(() => {
       return {
-        getTeamActionController: jest
+        getGroupActionController: jest
           .fn()
-          .mockReturnValue(mockTeamActionController),
+          .mockReturnValue(mockGroupActionController),
         getTeamPermissionController: jest
           .fn()
           .mockReturnValue(mockTeamPermissionController),
       };
     });
-    (TeamActionController as any).mockImplementation(() => {
-      return mockTeamActionController;
+    (GroupActionController as any).mockImplementation(() => {
+      return mockGroupActionController;
     });
   }
 
@@ -66,8 +66,8 @@ describe('GroupService', () => {
       const mockUserId = 13213;
       const mockTeam = groupFactory.build();
       const mockFn = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           isInTeam: mockFn,
@@ -85,8 +85,8 @@ describe('GroupService', () => {
     it('should call with correct params', async () => {
       const mockTeam = groupFactory.build();
       const mockFn = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           canJoinTeam: mockFn,
@@ -105,8 +105,8 @@ describe('GroupService', () => {
       const mockUserId = 13213;
       const mockTeamId = 44213;
       const mockJoinTeam = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           joinTeam: mockJoinTeam,
@@ -139,7 +139,7 @@ describe('GroupService', () => {
         },
       };
       await groupService.updateTeamSetting(mockTeamId, mockTeamSetting);
-      expect(mockTeamActionController.updateTeamSetting).toBeCalledWith(
+      expect(mockGroupActionController.updateTeamSetting).toBeCalledWith(
         mockTeamId,
         mockTeamSetting,
       );
@@ -155,8 +155,8 @@ describe('GroupService', () => {
       const mockUserId = 5683;
       const mockTeamId = 55668833;
       const mockLeaveTeam = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           leaveTeam: mockLeaveTeam,
@@ -175,8 +175,8 @@ describe('GroupService', () => {
       const mockMembers = [5683, 56833];
       const mockTeamId = 55668833;
       const mockAddTeamMembers = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           addTeamMembers: mockAddTeamMembers,
@@ -195,8 +195,8 @@ describe('GroupService', () => {
       const mockMembers = [5683, 56833];
       const mockTeamId = 55668833;
       const mockRemoveTeamMembers = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           removeTeamMembers: mockRemoveTeamMembers,
@@ -217,8 +217,8 @@ describe('GroupService', () => {
       };
       const mockPermissionType = PERMISSION_ENUM.TEAM_ADD_MEMBER;
       const mockIsCurrentUserHasPermission = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamPermissionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getTeamPermissionController = jest
         .fn()
         .mockReturnValue({
           isCurrentUserHasPermission: mockIsCurrentUserHasPermission,
@@ -243,8 +243,8 @@ describe('GroupService', () => {
       const mockPersonId = 5683;
       const mockPermission: TeamPermission = {};
       const mockIsTeamAdmin = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamPermissionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getTeamPermissionController = jest
         .fn()
         .mockReturnValue({
           isTeamAdmin: mockIsTeamAdmin,
@@ -264,8 +264,8 @@ describe('GroupService', () => {
         is_team: true,
       });
       const mockArchiveTeam = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           archiveTeam: mockArchiveTeam,
@@ -283,8 +283,8 @@ describe('GroupService', () => {
 
     it('should call with correct params', async () => {
       const makeOrRevokeAdmin = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           makeOrRevokeAdmin,
@@ -293,6 +293,7 @@ describe('GroupService', () => {
       expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, true);
     });
   });
+
   describe('revokeAdmin()', () => {
     beforeEach(() => {
       clearMocks();
@@ -301,8 +302,8 @@ describe('GroupService', () => {
 
     it('should call with correct params', async () => {
       const makeOrRevokeAdmin = jest.fn();
-      groupService['getTeamController']();
-      groupService.teamController.getTeamActionController = jest
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
         .fn()
         .mockReturnValue({
           makeOrRevokeAdmin,

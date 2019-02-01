@@ -12,7 +12,7 @@ import {
   DEFAULT_USER_PERMISSION_LEVEL,
 } from '../constants';
 import { TeamPermission, TeamPermissionParams } from '../entity';
-import { PermissionFlags } from '../types';
+import { PermissionFlags, TeamSetting } from '../types';
 import { UserConfig } from '../../../service/account/UserConfig';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
@@ -132,6 +132,24 @@ class TeamPermissionController {
       }
     }
     return permissionFlags;
+  }
+
+  processLinkTeamSetting(teamSetting: TeamSetting) {
+    const { permissionFlags: rawPermissionFlags = {} } = teamSetting;
+    const result: TeamSetting = {
+      ...teamSetting,
+      permissionFlags: rawPermissionFlags,
+    };
+    if (teamSetting.isPublic) {
+      // in dthor, when team is public, all member can add member
+      result.permissionFlags!.TEAM_ADD_MEMBER = true;
+    }
+    if (!rawPermissionFlags.TEAM_POST) {
+      // in dthor, when disabled TEAM_POST, disabled TEAM_ADD_INTEGRATIONS, TEAM_PIN_POST too
+      result.permissionFlags!.TEAM_ADD_INTEGRATIONS = false;
+      result.permissionFlags!.TEAM_PIN_POST = false;
+    }
+    return result;
   }
 
   mergePermissionFlagsWithLevel(

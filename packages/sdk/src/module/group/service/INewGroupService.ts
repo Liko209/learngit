@@ -1,6 +1,6 @@
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PERMISSION_ENUM } from '../constants';
-import { TeamSetting, PermissionFlags, CreateTeamOptions } from '../types';
+import { TeamSetting, PermissionFlags } from '../types';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { SortableModel } from '../../../framework/model';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
@@ -8,6 +8,8 @@ import { Result } from 'foundation';
 import _ from 'lodash';
 
 interface INewGroupService {
+  isValid(group: Group): boolean;
+
   isInTeam(userId: number, team: Group): boolean;
 
   canJoinTeam(team: Group): boolean;
@@ -68,19 +70,13 @@ interface INewGroupService {
 
   requestRemoteGroupByMemberList(members: number[]): Promise<Result<Group>>;
 
-  canPinPost(postId: number, group: Group): boolean;
-
   pinPost(postId: number, groupId: number, toPin: boolean): Promise<void>;
 
-  getPermissions(group: Group): PERMISSION_ENUM[];
-
   createTeam(
-    name: string,
     creator: number,
     memberIds: (number | string)[],
-    description: string,
-    options: CreateTeamOptions,
-  ): Promise<Result<Group>>;
+    options: TeamSetting,
+  ): Promise<Group>;
 
   getLeftRailGroups(): Promise<Group[]>;
 

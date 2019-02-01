@@ -19,7 +19,6 @@ import { Api } from '../../../api';
 
 class TeamController {
   private _actionController: TeamActionController;
-  private _groupActionController: GroupActionController;
   private _permissionController: TeamPermissionController;
 
   constructor(
@@ -40,25 +39,6 @@ class TeamController {
       );
     }
     return this._actionController;
-  }
-
-  getGroupActionController(): GroupActionController {
-    if (!this._groupActionController) {
-      const partialModifyController = buildPartialModifyController<Group>(
-        this.entitySourceController,
-      );
-
-      this._groupActionController = new GroupActionController(
-        this.entitySourceController,
-        partialModifyController,
-        this.entityCacheSearchController,
-        buildRequestController<Group>({
-          basePath: '/group',
-          networkClient: Api.glipNetworkClient,
-        }),
-      );
-    }
-    return this._groupActionController;
   }
 
   getTeamPermissionController(): TeamPermissionController {

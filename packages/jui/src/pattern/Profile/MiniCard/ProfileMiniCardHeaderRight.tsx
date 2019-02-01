@@ -9,7 +9,7 @@ import styled from '../../../foundation/styled-components';
 import { spacing, height } from '../../../foundation/utils/styles';
 
 type Props = {
-  children?: ReactChild[] | ReactChild;
+  children: ReactChild[] | ReactChild;
 };
 
 const Wrapper = styled('div')`

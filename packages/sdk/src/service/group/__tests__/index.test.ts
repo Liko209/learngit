@@ -219,19 +219,6 @@ describe.skip('GroupService', () => {
     expect(result1).toHaveProperty('data', mock);
   });
 
-  it('getPermissions(group_id)', async () => {
-    const mock = [1, 2, 4, 8];
-    const group = groupFactory.build({
-      permissions: {
-        admin: { uids: [731217923], level: 31 },
-        user: { uids: [], level: 15 },
-      },
-      id: 6037741574,
-    });
-    const result = await groupService.getPermissions(group);
-    expect(result).toEqual(mock);
-  });
-
   it.only('updateGroupPartialData(object) is update success', async () => {
     const result = await groupService.updateGroupPartialData({
       id: 1,

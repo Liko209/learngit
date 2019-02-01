@@ -1,27 +1,28 @@
+import { NetworkManager, OAuthTokenManager } from 'foundation';
 /*
  * @Author: Paynter Chen
  * @Date: 2019-01-02 09:32:43
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
-import { NetworkManager, OAuthTokenManager } from 'foundation';
+
 import { Api } from '../../../../api';
+import {
+  buildPartialModifyController,
+  buildRequestController,
+} from '../../../../framework/controller';
+import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
-import {
-  buildRequestController,
-  buildPartialModifyController,
-} from '../../../../framework/controller';
-import { Raw } from '../../../../framework/model';
 import { PERMISSION_ENUM } from '../../../../service';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { Group } from '../../entity/Group';
-import { TeamActionController } from '../TeamActionController';
+import { GroupService } from '../../service/NewGroupService';
+import { GroupActionController } from '../GroupActionController';
 import { TeamPermissionController } from '../TeamPermissionController';
 import { groupFactory } from './factory';
+
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
 
@@ -74,6 +75,7 @@ class TestEntitySourceController implements IEntitySourceController<Group> {
   getAll = jest.fn().mockReturnValue([]);
 
   getTotalCount = jest.fn().mockReturnValue(0);
+
   getEntityName = jest.fn().mockReturnValue('test');
 
   put = jest.fn();
@@ -127,9 +129,10 @@ class TestRequestController implements IRequestController<Group> {
 
 describe('TeamActionController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
-  let teamActionController: TeamActionController;
+  let groupActionController: GroupActionController;
   let testPartialModifyController: IPartialModifyController<Group>;
   let testRequestController: TestRequestController;
+  const groupService = new GroupService();
   beforeEach(() => {
     testEntitySourceController = new TestEntitySourceController();
     testPartialModifyController = new TestPartialModifyController(
@@ -148,9 +151,10 @@ describe('TeamActionController', () => {
       return testPartialModifyController;
     });
 
-    teamActionController = new TeamActionController(
-      testPartialModifyController,
+    groupActionController = new GroupActionController(
+      groupService,
       testEntitySourceController,
+      testPartialModifyController,
       new TeamPermissionController(),
     );
   });
@@ -162,7 +166,7 @@ describe('TeamActionController', () => {
         is_team: false,
         members: [userId, 3323],
       });
-      expect(teamActionController.isInTeam(userId, group)).toBeFalsy();
+      expect(groupActionController.isInTeam(userId, group)).toBeFalsy();
     });
     it('should return false when userId is not in members', async () => {
       const userId = 123;
@@ -170,7 +174,7 @@ describe('TeamActionController', () => {
         is_team: false,
         members: [3323],
       });
-      expect(teamActionController.isInTeam(userId, group)).toBeFalsy();
+      expect(groupActionController.isInTeam(userId, group)).toBeFalsy();
     });
     it('should isInTeam return true', async () => {
       const userId = 123;
@@ -178,7 +182,7 @@ describe('TeamActionController', () => {
         is_team: true,
         members: [userId, 3323],
       });
-      expect(teamActionController.isInTeam(userId, group)).toBeTruthy();
+      expect(groupActionController.isInTeam(userId, group)).toBeTruthy();
     });
   });
 
@@ -188,20 +192,20 @@ describe('TeamActionController', () => {
         is_team: true,
         privacy: 'private',
       });
-      expect(teamActionController.canJoinTeam(team)).toBeFalsy();
+      expect(groupActionController.canJoinTeam(team)).toBeFalsy();
     });
     it('should able join a team when privacy=protected', async () => {
       const team = groupFactory.build({
         is_team: true,
         privacy: 'protected',
       });
-      expect(teamActionController.canJoinTeam(team)).toBeTruthy();
+      expect(groupActionController.canJoinTeam(team)).toBeTruthy();
     });
   });
 
   describe('joinTeam()', () => {
     it('should call partial modify controller. [JPT-719]', async () => {
-      await teamActionController.joinTeam(123, 2);
+      await groupActionController.joinTeam(123, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
@@ -219,7 +223,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
-      await teamActionController.leaveTeam(5683, 2);
+      await groupActionController.leaveTeam(5683, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
@@ -238,7 +242,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
-      await teamActionController.addTeamMembers([123, 456], 2);
+      await groupActionController.addTeamMembers([123, 456], 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
@@ -257,7 +261,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockGroup,
       );
-      await teamActionController.removeTeamMembers([540524, 5683], 2);
+      await groupActionController.removeTeamMembers([540524, 5683], 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
       expect(testRequestController.put).toBeCalledWith({
         id: 2,
@@ -269,7 +273,7 @@ describe('TeamActionController', () => {
   describe('_requestUpdateTeamMembers()', () => {
     it('should call api with correct params. [JPT-719]', async () => {
       Api.init({}, new NetworkManager(new OAuthTokenManager()));
-      await teamActionController['_requestUpdateTeamMembers'](
+      await groupActionController['_requestUpdateTeamMembers'](
         2,
         [123],
         '/for_unit_test',
@@ -300,7 +304,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.updateTeamSetting(mockTeam.id, {
+      await groupActionController.updateTeamSetting(mockTeam.id, {
         name: 'team name',
         description: 'team desc',
         isPublic: true,
@@ -345,7 +349,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.updateTeamSetting(mockTeam.id, {
+      await groupActionController.updateTeamSetting(mockTeam.id, {
         permissionFlags: {
           TEAM_ADD_MEMBER: true,
         },
@@ -377,7 +381,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
+      await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -405,7 +409,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
+      await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -433,7 +437,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
+      await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
       expect(testRequestController.put).not.toBeCalled();
     });
   });
@@ -445,7 +449,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
+      await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -473,7 +477,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
+      await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
       expect(testRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
@@ -501,7 +505,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
+      await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
       expect(testRequestController.put).not.toBeCalled();
     });
   });
@@ -515,7 +519,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.archiveTeam(mockTeam.id);
+      await groupActionController.archiveTeam(mockTeam.id);
       expect(testRequestController.put).toBeCalledWith(
         _.merge({}, mockTeam, {
           is_archived: true,
@@ -533,7 +537,7 @@ describe('TeamActionController', () => {
       (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
         mockTeam,
       );
-      await teamActionController.deleteTeam(mockTeam.id);
+      await groupActionController.deleteTeam(mockTeam.id);
       expect(testRequestController.put).toBeCalledWith(
         _.merge({}, mockTeam, {
           deactivated: true,

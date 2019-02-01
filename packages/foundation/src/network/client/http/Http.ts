@@ -11,7 +11,7 @@ import {
   NETWORK_FAIL_TYPE,
 } from '../../network';
 import BaseClient from '../BaseClient';
-import HttpResponse from './HttpResponse';
+import HttpResponseBuilder from './HttpResponseBuilder';
 
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
@@ -55,7 +55,7 @@ class Http extends BaseClient {
       .then((res) => {
         delete this.tasks[request.id];
         const { data, status, statusText } = res;
-        const response = HttpResponse.builder
+        const response = HttpResponseBuilder.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText)
@@ -77,7 +77,7 @@ class Http extends BaseClient {
           status = 0;
           statusText = NETWORK_FAIL_TYPE.CANCELLED;
         }
-        const res = HttpResponse.builder
+        const res = HttpResponseBuilder.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText || message)
