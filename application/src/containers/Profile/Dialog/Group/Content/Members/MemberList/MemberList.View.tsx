@@ -13,6 +13,8 @@ import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 const ITEM_HEIGHT = 48;
+const LIST_WIDTH = 640;
+const LIST_HEIGHT = 1000;
 @observer
 class MemberList extends React.Component<WithNamespaces & MemberListViewProps> {
   componentWillUnmount() {
@@ -53,8 +55,8 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps> {
         <JuiVirtualList
           dataSource={this}
           isLoading={false}
-          width={640}
-          height={300}
+          width={LIST_WIDTH}
+          height={LIST_HEIGHT}
           data-test-automation-id="profileDialogMemberList"
         />
       </JuiProfileDialogContentMemberList>

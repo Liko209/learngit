@@ -5,8 +5,6 @@
  */
 
 // import React from 'react';
-
-import MuiMenuItem from '@material-ui/core/MenuItem';
 import styled from '../../../foundation/styled-components';
 import {
   spacing,
@@ -16,6 +14,7 @@ import {
   palette,
   ellipsis,
 } from '../../../foundation/utils/styles';
+import { JuiListItem } from '../../../components/Lists';
 
 const JuiProfileDialogContentMembers = styled('div')`
   padding: 0;
@@ -48,11 +47,11 @@ const JuiProfileDialogContentMemberList = styled('ul')`
   /*resolve virtual list height is fixed*/
   > div > .ReactVirtualized__List {
     height: auto !important;
-    max-height: 300px !important;
+    max-height: 100% !important;
   }
 `;
 
-const JuiProfileDialogContentMemberListItem = styled(MuiMenuItem)`
+const JuiProfileDialogContentMemberListItem = styled(JuiListItem)`
   && {
     display: flex;
     height: ${height(12)};
