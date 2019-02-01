@@ -6,7 +6,7 @@
 
 import React, { ReactChild } from 'react';
 import styled from '../../../foundation/styled-components';
-import { spacing } from '../../../foundation/utils/styles';
+import { spacing, height } from '../../../foundation/utils/styles';
 
 type Props = {
   children?: ReactChild[] | ReactChild;
@@ -15,6 +15,7 @@ type Props = {
 const Wrapper = styled('div')`
   display: inline-flex;
   margin-top: ${spacing(-1.5)};
+  height: ${height(8)};
   && > * {
     margin-right: ${spacing(-2.5)};
   }

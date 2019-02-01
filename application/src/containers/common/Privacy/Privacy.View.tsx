@@ -61,6 +61,7 @@ class PrivacyViewComponent extends Component<Props> {
         color="grey.500"
         className="privacy"
         disabled={!isAdmin}
+        alwaysEnableTooltip={true}
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
       >
