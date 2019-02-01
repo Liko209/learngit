@@ -6,8 +6,8 @@
 
 import React, { PureComponent, ComponentType } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import Resizable from 're-resizable';
-import { StyledPanel, StyledContent } from './StyledPanel';
+import Resizable, { ResizableProps } from 're-resizable';
+import styled from '../../styled-components';
 import { StyledMain } from './StyledMain';
 
 enum VISUAL_MODE {
@@ -44,6 +44,18 @@ type ResponsiveState = {
   prevVisual?: boolean;
 };
 
+const StyledResizable = styled<ResizableProps & any>(Resizable)`
+  overflow: hidden;
+  top: 0;
+  bottom: 0;
+  left: ${({ position }) => (position === 'left' ? 0 : 'auto')};
+  right: ${({ position }) => (position === 'right' ? 0 : 'auto')};
+  z-index: ${({ theme, absolute }: any) =>
+    absolute ? theme.zIndex.appBar + 1 : 'auto'};
+  display: ${({ show }) => (show ? 'flex' : 'none')};
+  flex: ${({ priority }) => `0 ${priority} auto`};
+`;
+
 class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   static DEFAULT_OPTIONS = {
     enable: {
@@ -70,6 +82,11 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     isShow: false,
     width: this.localWidth,
     prevVisual: this.props.visual,
+  };
+
+  enableResizable = {
+    ...Responsive.DEFAULT_OPTIONS.enable,
+    ...this.props.enable,
   };
 
   componentDidMount() {
@@ -102,6 +119,8 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     if (visual === false && prevVisual !== visual) {
       return {
         prevVisual: visual,
+        isShow: false,
+        width: 0,
       };
     }
     if (defaultWidth && prevVisual === false && visual === true) {
@@ -138,14 +157,17 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   onResize = (width: number) => {
-    this.localWidth = width;
-    this.setState({
-      width,
-    });
+    if (width) {
+      this.localWidth = width;
+      this.setState({
+        width,
+      });
+    }
   }
 
   handlerClickShowPanel = () => {
-    this.setState({ isShow: true });
+    const { minWidth } = this.props;
+    this.setState({ isShow: true, width: Number(minWidth) });
   }
 
   handlerClickHidePanel = () => {
@@ -196,35 +218,35 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       visual,
       priority,
     } = this.props;
-    if (this.isManualMode && !this.localShowState) {
-      return this.renderButton();
+    if (visual === undefined) {
+      return null;
     }
     return (
       <>
-        {(this.isManualMode || visual === false) && this.renderButton()}
-        {visual ? (
-          <Resizable
-            enable={{ ...Responsive.DEFAULT_OPTIONS.enable, ...enable }}
-            minWidth={minWidth}
-            maxWidth={maxWidth}
-            size={{
-              width,
-              height: 'auto',
-            }}
-            style={{
-              flex: `0 ${priority} auto`,
-            }}
-          >
-            {children}
+        {(this.isManualMode || !visual) && this.renderButton()}
+        <StyledResizable
+          enable={
+            visual ? this.enableResizable : Responsive.DEFAULT_OPTIONS.enable
+          }
+          minWidth={visual || isShow ? minWidth : 0}
+          maxWidth={maxWidth}
+          size={{
+            width,
+            height: '100%',
+          }}
+          style={{
+            position: !visual ? 'absolute' : 'relative',
+          }}
+          show={!this.isManualMode || this.localShowState}
+          priority={priority}
+          absolute={!visual}
+          position={enable.right ? 'left' : 'right'}
+        >
+          {children}
+          {visual && (
             <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
-          </Resizable>
-        ) : (
-          <StyledPanel position={enable.left ? 'right' : 'left'}>
-            <StyledContent width={isShow ? Number(minWidth) : 0}>
-              {children}
-            </StyledContent>
-          </StyledPanel>
-        )}
+          )}
+        </StyledResizable>
       </>
     );
   }
