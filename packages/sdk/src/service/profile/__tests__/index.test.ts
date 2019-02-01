@@ -10,7 +10,8 @@ import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
 import { UserConfig } from '../../../service/account/UserConfig';
-import { PersonDao, daoManager } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../../../module/person/dao';
 
 const mockPersonService = {
   getById: jest.fn().mockImplementation(() => {
