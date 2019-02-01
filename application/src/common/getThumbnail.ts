@@ -59,8 +59,14 @@ const getThumbnail = async ({
       break;
   }
   // fetch crop image url
-  const { width, height } = result;
+  let { width, height } = result;
   if (width > 0 && height > 0) {
+    // should adjust height or width according to server thumbnail policy.
+    if (origWidth < origHeight) {
+      height = Math.round((width / origWidth) * origHeight);
+    } else {
+      width = Math.round((height / origHeight) * origWidth);
+    }
     const itemService = ItemService.getInstance() as ItemService;
     result.url = await itemService.getThumbsUrlWithSize(id, width, height);
   }
