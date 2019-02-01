@@ -9,32 +9,38 @@ type Props = { delay: number };
 type States = { visible: boolean };
 
 function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
-  class ComponentWithDelay extends React.Component<Props, States> {
+  class ComponentWithDelay extends React.PureComponent<Props, States> {
+    private _timer: NodeJS.Timer;
     static defaultProps = {
       delay: 0,
     };
-
     state = {
       visible: false,
     };
 
-    timer: NodeJS.Timer;
+    constructor(props: Props) {
+      super(props);
+
+      this.setState({
+        visible: props.delay === 0,
+      });
+    }
 
     componentDidMount() {
-      this.timer = setTimeout(() => {
-        this.setState({ visible: true });
-      },                      this.props.delay);
+      this._timer = setTimeout(this._show, this.props.delay);
     }
 
     componentWillUnmount() {
-      clearTimeout(this.timer);
+      clearTimeout(this._timer);
     }
 
     render() {
       const { delay, ...rest } = this.props;
-      if (!this.state.visible) return null;
+      return this.state.visible ? <Component {...rest} /> : null;
+    }
 
-      return <Component {...rest} />;
+    private _show = () => {
+      this.setState({ visible: true });
     }
   }
   return ComponentWithDelay;
