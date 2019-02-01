@@ -50,7 +50,7 @@ const StyledResizable = styled<ResizableProps & any>(Resizable)`
   bottom: 0;
   left: ${({ position }) => (position === 'left' ? 0 : 'auto')};
   right: ${({ position }) => (position === 'right' ? 0 : 'auto')};
-  z-index: ${({ theme, absolute }: any) =>
+  z-index: ${({ theme, absolute }) =>
     absolute ? theme.zIndex.appBar + 1 : 'auto'};
   display: ${({ show }) => (show ? 'flex' : 'none')};
   flex: ${({ priority }) => `0 ${priority} auto`};
