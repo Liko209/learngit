@@ -46,6 +46,11 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
     return this._group.isAdmin;
   }
 
+  @computed
+  get isTeam() {
+    return this._group.isTeam || false;
+  }
+
   handlePrivacy = () => {
     const newData = this._group.privacy === 'private' ? 'protected' : 'private';
     return this._groupService.updateGroupPrivacy({

@@ -9,13 +9,19 @@ import { shallow } from 'enzyme';
 import { PrivacyView } from '../Privacy.View';
 import { Notification } from '@/containers/Notification';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
 jest.mock('@/containers/Notification');
 
 const someProps = {
-  t: (str: string) => { },
+  t: (str: string) => {},
   isPublic: true,
   isAdmin: true,
+  isTeam: true,
   id: 123,
   size: 'small',
 };
@@ -29,7 +35,7 @@ describe('PrivacyView', () => {
           throw new JServerError(ERROR_CODES_SERVER.GENERAL, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -50,7 +56,7 @@ describe('PrivacyView', () => {
           throw new JServerError(ERROR_CODES_SERVER.GENERAL, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -70,7 +76,7 @@ describe('PrivacyView', () => {
           throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -91,7 +97,7 @@ describe('PrivacyView', () => {
           throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
         },
       };
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       const wrapper = shallow(<PrivacyView {...props} />);
       wrapper.find(JuiIconButton).simulate('click');
       setTimeout(() => {
@@ -102,6 +108,15 @@ describe('PrivacyView', () => {
         );
         done();
       },         0);
+    });
+
+    it('should be not button when isTeam is false. [JPT-491]', () => {
+      const props: any = {
+        ...someProps,
+        isTeam: false,
+      };
+      const wrapper = shallow(<PrivacyView {...props} />);
+      expect(wrapper.find(JuiIconButton).length).toBe(0);
     });
   });
 });
