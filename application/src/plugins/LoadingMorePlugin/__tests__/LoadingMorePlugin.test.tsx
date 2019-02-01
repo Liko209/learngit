@@ -62,7 +62,7 @@ describe('LoadingMorePlugin', () => {
       const plugin = new LoadingMorePlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
       const wrapper = mount(<View />);
-      expect(wrapper.contains(JuiCircularProgress)).toBeTruthy();
+      expect(wrapper.text()).toBe('Hello World');
     });
   });
 
