@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { mount } from 'enzyme';
-import { JuiCircularProgress } from 'jui/components';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
 import {
   LoadingMorePlugin,
