@@ -12,7 +12,7 @@ import {
   transform,
 } from '../../../service/utils';
 import PostService from '../../post';
-import GroupService from '../../group';
+import GroupService from '../../../module/group';
 import PostDao from '../../../dao/post/index';
 import handleData, {
   baseHandleData,
@@ -22,6 +22,7 @@ import handleData, {
 
 jest.mock('../../post');
 jest.mock('../../group');
+jest.mock('sdk/group');
 const postService = new PostService();
 const groupService = new GroupService();
 PostService.getInstance = jest.fn().mockReturnValue(postService);

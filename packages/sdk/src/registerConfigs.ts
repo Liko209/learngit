@@ -19,7 +19,6 @@ import AccountService from './service/account';
 import AuthService from './service/auth';
 import CompanyService from './service/company';
 import ConfigService from './service/config';
-import GroupService from './service/group';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
 import PostService from './service/post';
@@ -34,7 +33,7 @@ import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
 import { NewPostService } from './module/post';
 import { PermissionService } from './module/permission';
-import { NewGroupService } from './module/group';
+import { GroupService } from './module/group';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -67,7 +66,7 @@ const registerConfigs = {
 
     // Services
     { name: PostService.name, value: PostService },
-    { name: GroupService.name, value: GroupService },
+    // { name: GroupService.name, value: GroupService },
     { name: CompanyService.name, value: CompanyService },
     { name: ItemService.name, value: ItemService },
     { name: PersonService.name, value: PersonService },
@@ -77,7 +76,7 @@ const registerConfigs = {
     { name: ProgressService.name, value: ProgressService },
     { name: NewPostService.name, value: NewPostService },
     { name: PermissionService.name, value: PermissionService },
-    { name: NewGroupService.name, value: NewGroupService },
+    { name: GroupService.name, value: GroupService },
     {
       name: ConfigService.name,
       value: ConfigService,

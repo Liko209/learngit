@@ -15,7 +15,7 @@ import { PROGRESS_STATUS } from '../../../progress';
 import PostAPI from '../../../../api/glip/post';
 import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import { NewGroupService } from '../../../../module/group/service';
+import { GroupService } from '../../../../module/group/service';
 import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
@@ -46,7 +46,7 @@ describe('PostFetchController()', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
-  // const groupService = new NewGroupService();
+  // const groupService = new GroupService();
   const preInsertController = new MockPreInsertController();
   const postFetchController = new PostFetchController(
     preInsertController,
@@ -66,7 +66,7 @@ describe('PostFetchController()', () => {
   function setup() {
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     itemService.handleIncomingData = jest.fn();
-    NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockImplementation(arg => {
       if (arg === PostDao) {
         return postDao;

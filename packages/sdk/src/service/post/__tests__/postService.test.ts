@@ -1,18 +1,13 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
-import {
-  daoManager,
-  PostDao,
-  GroupConfigDao,
-  AccountDao,
-} from '../../../dao';
+import { daoManager, PostDao, GroupConfigDao, AccountDao } from '../../../dao';
 import { ItemDao } from '../../../module/item/dao';
 import PostAPI from '../../../api/glip/post';
 import { baseHandleData } from '../handleData';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
-import GroupService from '../../group';
+import GroupService from '../../../module/group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { serviceErr, serviceOk } from '../../ServiceResult';
@@ -38,11 +33,12 @@ jest.mock('../../serviceManager');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
-jest.mock('../../group');
+jest.mock('../../../module/group');
 jest.mock('../../notificationCenter');
 jest.mock('../../groupConfig');
 jest.mock('../../../module/progress');
 jest.mock('../../../module/item');
+jest.mock('sdk/api');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();

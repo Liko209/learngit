@@ -5,7 +5,7 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import GroupService, { CreateTeamOptions } from 'sdk/service/group';
+import GroupService, { CreateTeamOptions } from 'sdk/module/group';
 import { UserConfig } from 'sdk/service/account';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';

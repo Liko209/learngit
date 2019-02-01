@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { err, ok } from 'foundation';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import {
   JNetworkError,
   ERROR_CODES_NETWORK,
@@ -21,8 +21,7 @@ jest.mock('sdk/service/account');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
-
-const { GroupService } = service;
+jest.mock('sdk/api');
 
 const groupService = {
   createTeam() {},

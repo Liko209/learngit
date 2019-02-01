@@ -5,7 +5,7 @@
  */
 
 import { Notification } from '@/containers/Notification';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
@@ -23,8 +23,8 @@ const mockGroupEntityData = {
 jest.mock('@/store/utils', () => ({
   getEntity: jest.fn(() => mockGroupEntityData),
 }));
+jest.mock('sdk/api');
 
-const { GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
 };

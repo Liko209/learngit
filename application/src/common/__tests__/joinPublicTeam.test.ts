@@ -7,7 +7,7 @@ import { JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import { getGlobalValue } from '../../store/utils';
 import { joinHander } from '../joinPublicTeam';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 jest.mock('../../store/utils');
 jest.mock('@/containers/Notification');
 jest.mock('@/containers/Dialog');
@@ -17,11 +17,11 @@ jest.mock('sdk/api');
 
 jest.mock('sdk/module/group');
 
-const groupService: NewGroupService = new NewGroupService();
+const groupService: GroupService = new GroupService();
 
 describe('joinHander()', () => {
   beforeEach(() => {
-    NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
   });
   it('should display flash toast notification has message {JoinTeamAuthorizedError} when join a public team then permission changed.[JPT-722]', async (done: jest.DoneCallback) => {
     groupService.joinTeam.mockRejectedValueOnce(

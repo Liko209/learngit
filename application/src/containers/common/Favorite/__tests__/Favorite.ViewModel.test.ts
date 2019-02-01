@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
@@ -27,7 +27,6 @@ const mockGlobalValue = {
   [GLOBAL_KEYS.CURRENT_USER_ID]: 1,
 };
 
-const { GroupService } = service;
 const groupService = {
   getLocalGroup: jest.fn().mockResolvedValue(mockServiceGroup),
   markGroupAsFavorite: jest.fn().mockResolvedValue(ServiceCommonErrorType.NONE),

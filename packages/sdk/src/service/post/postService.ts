@@ -10,7 +10,7 @@ import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
 import ProfileService from '../../service/profile';
-import GroupService from '../../service/group';
+import GroupService from '../../module/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post } from '../../module/post/entity';

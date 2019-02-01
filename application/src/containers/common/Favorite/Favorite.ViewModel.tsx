@@ -5,7 +5,7 @@
  */
 
 import { computed, observable } from 'mobx';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
@@ -17,10 +17,8 @@ import { GLOBAL_KEYS } from '@/store/constants';
 
 import { FavoriteProps } from './types';
 
-const { GroupService } = service;
-
 class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
-  private _groupService: service.GroupService = GroupService.getInstance();
+  private _groupService: GroupService = GroupService.getInstance();
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   @observable
   conversationId: number;

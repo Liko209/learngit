@@ -3,7 +3,7 @@
  * @Date: 2018-06-06 10:17:59
  * Copyright © RingCentral. All rights reserved.
  */
-import { TeamPermission } from './service/group';
+import { TeamPermission } from './module/group';
 import { ExtendedBaseModel } from './module/models';
 import { GroupCommon } from './module/group/entity';
 import { IdModel } from './framework/model';
