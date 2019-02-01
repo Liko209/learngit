@@ -11,6 +11,7 @@ import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
 import { RTC_ACCOUNT_STATE, RTCCallOptions } from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
+import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import {
   REGISTRATION_ERROR_CODE,
   REGISTRATION_EVENT,
@@ -52,6 +53,23 @@ class RTCRegistrationManager extends EventEmitter2
     this._initUserAgentListener();
   }
 
+  public onMakeOutgoingCallAction(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+    options: RTCCallOptions,
+  ) {
+    this.emit(
+      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
+      toNumber,
+      delegate,
+      options,
+    );
+  }
+
+  public onReceiveIncomingInviteAction(callSession: any) {
+    this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
+  }
+
   constructor() {
     super();
     this._fsm = new RTCRegistrationFSM(this);
@@ -59,7 +77,7 @@ class RTCRegistrationManager extends EventEmitter2
       (task: RTCRegisterAsyncTask, callback: any) => {
         switch (task.name) {
           case REGISTRATION_EVENT.PROVISION_READY: {
-            this._fsm.provisionReady(task.provData, task.provOptions);
+            this._fsm.provisionReady(task.data.provData, task.data.provOptions);
             break;
           }
           case REGISTRATION_EVENT.RE_REGISTER: {
@@ -84,6 +102,18 @@ class RTCRegistrationManager extends EventEmitter2
           }
           case REGISTRATION_EVENT.UA_UNREGISTERED: {
             this._fsm.unregister();
+            break;
+          }
+          case REGISTRATION_EVENT.MAKE_OUTGOING_CALL_TASK: {
+            this._fsm.makeOutgoingCall(
+              task.data.toNumber,
+              task.data.callDelegate,
+              task.data.callOptions,
+            );
+            break;
+          }
+          case REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK: {
+            this._fsm.receiveIncomingInvite(task.data.callSession);
             break;
           }
           default:
@@ -159,8 +189,10 @@ class RTCRegistrationManager extends EventEmitter2
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.PROVISION_READY,
-        provData: provisionData,
-        provOptions: provisionOptions,
+        data: {
+          provData: provisionData,
+          provOptions: provisionOptions,
+        },
       },
       () => {},
     );
@@ -168,6 +200,24 @@ class RTCRegistrationManager extends EventEmitter2
 
   public reRegister() {
     this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {});
+  }
+
+  public makeCall(
+    to: string,
+    delegate: IRTCCallDelegate,
+    options: RTCCallOptions,
+  ) {
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.MAKE_OUTGOING_CALL_TASK,
+        data: {
+          toNumber: to,
+          callDelegate: delegate,
+          callOptions: options,
+        },
+      },
+      () => {},
+    );
   }
 
   networkChangeToOnline() {
@@ -213,7 +263,13 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onUAReceiveInvite(session: any) {
-    this.emit(REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION, session);
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK,
+        data: { callSession: session },
+      },
+      () => {},
+    );
   }
 
   private _scheduleRegisterRetryTimer() {
