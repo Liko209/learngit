@@ -33,10 +33,7 @@ class TotalUnreadController {
   private _taskArray: DataHandleTask[];
   private _unreadInitialized: boolean;
   private _groupSectionUnread: Map<number, SectionUnread>;
-  private _totalUnread: SectionUnread;
-  private _favoriteUnread: SectionUnread;
-  private _directMessageUnread: SectionUnread;
-  private _teamUnread: SectionUnread;
+  private _totalUnreadMap: Map<UMI_SECTION_TYPE, SectionUnread>;
   private _favoriteGroupIds: number[];
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
@@ -48,26 +45,27 @@ class TotalUnreadController {
 
   async reset() {
     this._groupSectionUnread = new Map<number, SectionUnread>();
-    this._totalUnread = {
+    this._totalUnreadMap = new Map<UMI_SECTION_TYPE, SectionUnread>();
+    this._totalUnreadMap.set(UMI_SECTION_TYPE.ALL, {
       section: UMI_SECTION_TYPE.ALL,
       unreadCount: 0,
       mentionCount: 0,
-    };
-    this._favoriteUnread = {
+    });
+    this._totalUnreadMap.set(UMI_SECTION_TYPE.FAVORITE, {
       section: UMI_SECTION_TYPE.FAVORITE,
       unreadCount: 0,
       mentionCount: 0,
-    };
-    this._directMessageUnread = {
+    });
+    this._totalUnreadMap.set(UMI_SECTION_TYPE.DIRECT_MESSAGE, {
       section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
       unreadCount: 0,
       mentionCount: 0,
-    };
-    this._teamUnread = {
+    });
+    this._totalUnreadMap.set(UMI_SECTION_TYPE.TEAM, {
       section: UMI_SECTION_TYPE.TEAM,
       unreadCount: 0,
       mentionCount: 0,
-    };
+    });
   }
 
   getSingleUnreadInfo(id: number): SectionUnread | undefined {
@@ -328,47 +326,39 @@ class TotalUnreadController {
     mentionUpdate: number,
     isTeam: boolean,
   ): void {
-    let target = undefined;
-    switch (section) {
-      case UMI_SECTION_TYPE.FAVORITE: {
-        target = this._favoriteUnread;
-        break;
-      }
-      case UMI_SECTION_TYPE.DIRECT_MESSAGE: {
-        target = this._directMessageUnread;
-        break;
-      }
-      case UMI_SECTION_TYPE.TEAM: {
-        target = this._teamUnread;
-        break;
-      }
-      case UMI_SECTION_TYPE.ALL: {
-        target = this._totalUnread;
-        break;
-      }
+    let target = this._totalUnreadMap.get(section);
+    if (!target) {
+      target = {
+        section,
+        unreadCount: 0,
+        mentionCount: 0,
+      };
+      this._totalUnreadMap.set(section, target);
     }
-    if (target) {
-      if (isTeam) {
-        target.unreadCount += mentionUpdate;
-        target.mentionCount += mentionUpdate;
-        this._totalUnread.unreadCount += mentionUpdate;
-        this._totalUnread.mentionCount += mentionUpdate;
-      } else {
-        target.unreadCount += unreadUpdate;
-        target.mentionCount += mentionUpdate;
-        this._totalUnread.unreadCount += unreadUpdate;
-        this._totalUnread.mentionCount += mentionUpdate;
-      }
+    let totalUnread = this._totalUnreadMap.get(UMI_SECTION_TYPE.ALL);
+    if (!totalUnread) {
+      totalUnread = {
+        section: UMI_SECTION_TYPE.ALL,
+        unreadCount: 0,
+        mentionCount: 0,
+      };
+      this._totalUnreadMap.set(UMI_SECTION_TYPE.ALL, totalUnread);
+    }
+    if (isTeam) {
+      target.unreadCount += mentionUpdate;
+      target.mentionCount += mentionUpdate;
+      totalUnread.unreadCount += mentionUpdate;
+      totalUnread.mentionCount += mentionUpdate;
+    } else {
+      target.unreadCount += unreadUpdate;
+      target.mentionCount += mentionUpdate;
+      totalUnread.unreadCount += unreadUpdate;
+      totalUnread.mentionCount += mentionUpdate;
     }
   }
 
   private _doNotification() {
-    notificationCenter.emit(SERVICE.TOTAL_UNREAD, [
-      this._totalUnread,
-      this._favoriteUnread,
-      this._directMessageUnread,
-      this._teamUnread,
-    ]);
+    notificationCenter.emit(SERVICE.TOTAL_UNREAD, this._totalUnreadMap);
   }
 }
 

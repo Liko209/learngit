@@ -17,33 +17,27 @@ export default class GlobalStore extends BaseStore {
     {},
     { deep: false },
   );
+  private _eventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
 
   constructor() {
     super(ENTITY_NAME.GLOBAL);
+    this._eventKeyMap = new Map<UMI_SECTION_TYPE, GLOBAL_KEYS>();
+    this._eventKeyMap.set(UMI_SECTION_TYPE.ALL, GLOBAL_KEYS.TOTAL_UNREAD);
+    this._eventKeyMap.set(
+      UMI_SECTION_TYPE.FAVORITE,
+      GLOBAL_KEYS.FAVORITE_UNREAD,
+    );
+    this._eventKeyMap.set(
+      UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD,
+    );
+    this._eventKeyMap.set(UMI_SECTION_TYPE.TEAM, GLOBAL_KEYS.TEAM_UNREAD);
     notificationCenter.on(SERVICE.TOTAL_UNREAD, this.setTotalUnread);
   }
 
-  setTotalUnread = (sectionUnreadArray: SectionUnread[]) => {
-    sectionUnreadArray.forEach((sectionUnread: SectionUnread) => {
-      let eventKey = undefined;
-      switch (sectionUnread.section) {
-        case UMI_SECTION_TYPE.ALL: {
-          eventKey = GLOBAL_KEYS.TOTAL_UNREAD;
-          break;
-        }
-        case UMI_SECTION_TYPE.FAVORITE: {
-          eventKey = GLOBAL_KEYS.FAVORITE_UNREAD;
-          break;
-        }
-        case UMI_SECTION_TYPE.DIRECT_MESSAGE: {
-          eventKey = GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD;
-          break;
-        }
-        case UMI_SECTION_TYPE.TEAM: {
-          eventKey = GLOBAL_KEYS.TEAM_UNREAD;
-          break;
-        }
-      }
+  setTotalUnread = (totalUnreadMap: Map<UMI_SECTION_TYPE, SectionUnread>) => {
+    totalUnreadMap.forEach((sectionUnread: SectionUnread) => {
+      const eventKey = this._eventKeyMap.get(sectionUnread.section);
       if (eventKey) {
         this.set(eventKey, {
           unreadCount: sectionUnread.unreadCount,

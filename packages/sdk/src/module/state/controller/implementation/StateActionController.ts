@@ -5,10 +5,9 @@
  */
 
 import { GroupState, State } from '../../entity/State';
-import { Post } from '../../../post/entity';
+import { NewGroupService } from '../../../group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import PostService from '../../../../service/post';
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
@@ -23,12 +22,12 @@ class StateActionController {
   ) {}
 
   async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
-    const lastPost = await this._getLastPostOfGroup(groupId);
-    let lastPostId = lastPost && lastPost.id;
-    if (!lastPostId) {
-      const postService = PostService.getInstance<PostService>();
-      lastPostId = await postService.getNewestPostIdOfGroup(groupId);
+    const newGroupService: NewGroupService = NewGroupService.getInstance();
+    const group = await newGroupService.getById(groupId);
+    if (!group) {
+      return;
     }
+    const lastPostId = group.most_recent_post_id;
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (lastPostId && myStateId > 0) {
       await this._partialModifyController.updatePartially(
@@ -42,8 +41,8 @@ class StateActionController {
           }
           return {
             ...partialEntity,
-            read_through: lastPostId || undefined,
-            last_read_through: lastPostId || undefined,
+            read_through: lastPostId,
+            last_read_through: lastPostId,
             unread_count: 0,
             unread_mentions_count: 0,
             unread_deactivated_count: 0,
@@ -78,11 +77,6 @@ class StateActionController {
         return;
       }
     }
-  }
-
-  private async _getLastPostOfGroup(groupId: number): Promise<Post | null> {
-    const postService: PostService = PostService.getInstance();
-    return await postService.getLastPostOfGroup(groupId);
   }
 
   private _buildUpdateReadStatusParams(

@@ -49,48 +49,61 @@ describe('TotalUnreadController', () => {
   describe('reset()', () => {
     it('should reset all unread', () => {
       totalUnreadController['_groupSectionUnread'].set(5683, {
+        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
+        unreadCount: 16,
+        mentionCount: 16,
+      });
+      totalUnreadController['_totalUnreadMap'].set(UMI_SECTION_TYPE.ALL, {
+        section: UMI_SECTION_TYPE.FAVORITE,
+        unreadCount: 16,
+        mentionCount: 16,
+      });
+      totalUnreadController['_totalUnreadMap'].set(UMI_SECTION_TYPE.FAVORITE, {
         section: UMI_SECTION_TYPE.ALL,
         unreadCount: 16,
         mentionCount: 16,
       });
-      totalUnreadController['_totalUnread'] = {
-        section: UMI_SECTION_TYPE.FAVORITE,
-        unreadCount: 16,
-        mentionCount: 16,
-      };
-      totalUnreadController['_favoriteUnread'] = {
+      totalUnreadController['_totalUnreadMap'].set(
+        UMI_SECTION_TYPE.DIRECT_MESSAGE,
+        {
+          section: UMI_SECTION_TYPE.ALL,
+          unreadCount: 16,
+          mentionCount: 16,
+        },
+      );
+      totalUnreadController['_totalUnreadMap'].set(UMI_SECTION_TYPE.TEAM, {
         section: UMI_SECTION_TYPE.ALL,
         unreadCount: 16,
         mentionCount: 16,
-      };
-      totalUnreadController['_directMessageUnread'] = {
-        section: UMI_SECTION_TYPE.ALL,
-        unreadCount: 16,
-        mentionCount: 16,
-      };
-      totalUnreadController['_teamUnread'] = {
-        section: UMI_SECTION_TYPE.ALL,
-        unreadCount: 16,
-        mentionCount: 16,
-      };
+      });
       totalUnreadController.reset();
       expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
-      expect(totalUnreadController['_totalUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.ALL),
+      ).toEqual({
         section: UMI_SECTION_TYPE.ALL,
         unreadCount: 0,
         mentionCount: 0,
       });
-      expect(totalUnreadController['_favoriteUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
+      ).toEqual({
         section: UMI_SECTION_TYPE.FAVORITE,
         unreadCount: 0,
         mentionCount: 0,
       });
-      expect(totalUnreadController['_directMessageUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(
+          UMI_SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual({
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
         unreadCount: 0,
         mentionCount: 0,
       });
-      expect(totalUnreadController['_teamUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.TEAM),
+      ).toEqual({
         section: UMI_SECTION_TYPE.TEAM,
         unreadCount: 0,
         mentionCount: 0,
@@ -613,17 +626,22 @@ describe('TotalUnreadController', () => {
         mentionUpdate,
         isTeam,
       );
-      expect(totalUnreadController['_favoriteUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
+      ).toEqual({
         section: UMI_SECTION_TYPE.FAVORITE,
         unreadCount: mentionUpdate,
         mentionCount: mentionUpdate,
       });
-      expect(totalUnreadController['_totalUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.ALL),
+      ).toEqual({
         section: UMI_SECTION_TYPE.ALL,
         unreadCount: mentionUpdate,
         mentionCount: mentionUpdate,
       });
     });
+
     it('should update correct when isTeam === false', () => {
       const section = UMI_SECTION_TYPE.FAVORITE;
       const unreadUpdate = -5;
@@ -635,12 +653,16 @@ describe('TotalUnreadController', () => {
         mentionUpdate,
         isTeam,
       );
-      expect(totalUnreadController['_favoriteUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
+      ).toEqual({
         section: UMI_SECTION_TYPE.FAVORITE,
         unreadCount: unreadUpdate,
         mentionCount: mentionUpdate,
       });
-      expect(totalUnreadController['_totalUnread']).toEqual({
+      expect(
+        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.ALL),
+      ).toEqual({
         section: UMI_SECTION_TYPE.ALL,
         unreadCount: unreadUpdate,
         mentionCount: mentionUpdate,
@@ -652,12 +674,10 @@ describe('TotalUnreadController', () => {
     it('should do notification with correct params', () => {
       notificationCenter.emit = jest.fn();
       totalUnreadController['_doNotification']();
-      expect(notificationCenter.emit).toBeCalledWith(SERVICE.TOTAL_UNREAD, [
-        totalUnreadController['_totalUnread'],
-        totalUnreadController['_favoriteUnread'],
-        totalUnreadController['_directMessageUnread'],
-        totalUnreadController['_teamUnread'],
-      ]);
+      expect(notificationCenter.emit).toBeCalledWith(
+        SERVICE.TOTAL_UNREAD,
+        totalUnreadController['_totalUnreadMap'],
+      );
     });
   });
 });
