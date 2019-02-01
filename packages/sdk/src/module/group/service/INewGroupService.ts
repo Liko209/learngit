@@ -43,6 +43,10 @@ interface INewGroupService {
   archiveTeam(teamId: number): Promise<void>;
 
   deleteTeam(teamId: number): Promise<void>;
+
+  isValid(group: Group): boolean;
+
+  getFavoriteGroupIds(): Promise<number[]>;
 }
 
 export { INewGroupService };

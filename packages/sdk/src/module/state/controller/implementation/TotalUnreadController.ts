@@ -15,8 +15,6 @@ import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
 import { GroupState } from '../../entity';
 import { NewGroupService } from '../../../group';
-import { GroupService } from '../../../../service/group';
-import { ProfileService } from '../../../../service/profile';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { UserConfig } from '../../../../service/account';
 import notificationCenter, {
@@ -174,7 +172,7 @@ class TotalUnreadController {
           const groupUnread = this._groupSectionUnread.get(id);
           if (
             group.deactivated ||
-            true === group.is_archived ||
+            group.is_archived ||
             !group.members.includes(currentUserId)
           ) {
             if (groupUnread) {
@@ -273,24 +271,15 @@ class TotalUnreadController {
   private async _initializeTotalUnread(): Promise<void> {
     this.reset();
 
-    // todo instance
-    const newGroupService: NewGroupService = NewGroupService.getInstance();
-    const groupService: GroupService = GroupService.getInstance();
-    // todo get favorite group ids
-    const profileService: ProfileService = ProfileService.getInstance();
-    const profile = await profileService.getProfile();
-    this._favoriteGroupIds =
-      profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
-    const groups = await newGroupService.getEntitySource().getEntities();
+    const groupService: NewGroupService = NewGroupService.getInstance();
+    this._favoriteGroupIds = await groupService.getFavoriteGroupIds();
+    const groups = await groupService.getEntitySource().getEntities();
     await Promise.all(
       groups.map(async (group: Group) => {
-        // todo check group is valid
-        if (!groupService.isValid(group)) {
-          return;
-        }
-        // todo check current user is in group
-        const currentUserId = UserConfig.getCurrentUserId();
-        if (!group.members.includes(currentUserId)) {
+        if (
+          !groupService.isValid(group) ||
+          !group.members.includes(UserConfig.getCurrentUserId())
+        ) {
           return;
         }
         await this._addNewGroupUnread(group);

@@ -14,6 +14,7 @@ import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { GroupDao } from '../../../module/group/dao';
 import { Api } from '../../../api';
 import { GroupConfigController } from '../controller/GroupConfigController';
+import { ProfileService } from '../../../service/profile';
 
 class NewGroupService extends EntityBaseService<Group>
   implements INewGroupService {
@@ -135,6 +136,18 @@ class NewGroupService extends EntityBaseService<Group>
     await this.getTeamController()
       .getTeamActionController()
       .archiveTeam(teamId);
+  }
+
+  isValid(group: Group): boolean {
+    return !group.is_archived && !group.deactivated && group.members.length > 0;
+  }
+
+  async getFavoriteGroupIds(): Promise<number[]> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const profile = await profileService.getProfile();
+    return profile && profile.favorite_group_ids
+      ? profile.favorite_group_ids
+      : [];
   }
 }
 
