@@ -28,6 +28,8 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
+    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
@@ -37,6 +39,8 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
+    WEBPHONE_BASE_URL: 'http://webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
 
@@ -92,6 +96,11 @@ enum BrandTire {
   "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)"
 };
 
+const WebphoneConfig = {
+  TTL: 1800000,
+  reserved: false,
+}
+
 export {
   APP_ROOT,
   TMPFILE_PATH,
@@ -106,4 +115,5 @@ export {
   DASHBOARD_URL,
   RUN_NAME,
   BrandTire,
+  WebphoneConfig,
 };

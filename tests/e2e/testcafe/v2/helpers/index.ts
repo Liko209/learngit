@@ -14,6 +14,7 @@ import { H } from './utils';
 import { IUser, IStep } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
+import { WebphoneHelper } from './webphone-helper';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -48,6 +49,10 @@ class Helper {
 
   get allureHelper() {
     return new AllureHelper(this.t);
+  }
+
+  get webphoneHelper() {
+    return new WebphoneHelper(this.t);
   }
 
   /* delegate following method */
@@ -96,6 +101,10 @@ class Helper {
 
   platform(user: IUser) {
     return this.sdkHelper.sdkManager.platform(user);
+  }
+
+  webphone(user: IUser) {
+    return this.webphoneHelper.webphone(user);
   }
 
   // testcafe extend

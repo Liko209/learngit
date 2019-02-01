@@ -12,6 +12,7 @@ import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSetting';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { h } from '../../../helpers';
+import { TelephonyPOC } from './TelephonyPOC'
 
 
 export class HomePage extends BaseWebComponent {
@@ -94,5 +95,9 @@ export class HomePage extends BaseWebComponent {
 
   get leaveTeamDialog() {
     return this.getComponent(LeaveTeamDialog);
+  }
+
+  get telephonyPOCPage() {
+    return this.getComponent(TelephonyPOC);
   }
 }
