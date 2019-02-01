@@ -3,4 +3,4 @@
  * @Date: 2018-10-26 19:50:58
  * Copyright © RingCentral. All rights reserved.
  */
-export { default as idsToConversationSheet } from './idsToConversationSheet';
+export { IdsToConversationSheet } from './IdsToConversationSheet';
