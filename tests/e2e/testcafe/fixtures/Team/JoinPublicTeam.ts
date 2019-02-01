@@ -70,7 +70,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
 
   await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
-    // https://jira.ringcentral.com/browse/FIJI-2500
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500    
     await h(t).reload();
     await app.homePage.ensureLoaded();
     await search.typeText(publicTeamName, { replace: true, paste: true });
@@ -157,7 +157,7 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   await h(t).withLog(`When I search the public team A ${publicTeamName}`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
     await t.wait(3e3);
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500 
     await h(t).reload();
     await app.homePage.ensureLoaded();
     await search.typeText(publicTeamName, { replace: true, paste: true });
@@ -231,7 +231,7 @@ test.skip(formalName(`Joined team successful after clicking join button in confi
   const search = app.homePage.header.search;
   await h(t).withLog(`When I search the public team A ${publicTeamName}, and click Join button of team A`, async () => {
     await search.typeText(publicTeamName, { replace: true, paste: true });
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500    
     await h(t).reload();
     await app.homePage.ensureLoaded();
     await search.typeText(publicTeamName, { replace: true, paste: true });

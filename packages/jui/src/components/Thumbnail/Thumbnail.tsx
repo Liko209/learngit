@@ -13,6 +13,7 @@ type JuiThumbnailProps = {
   size?: 'small' | 'large';
   url?: string;
   iconType?: string;
+  style?: React.CSSProperties;
 };
 
 const WrappedMuiIcon = ({
@@ -41,12 +42,12 @@ const StyledModifyImage = styled<JuiThumbnailProps, 'span'>('span')`
 
 class JuiThumbnail extends React.Component<JuiThumbnailProps> {
   render() {
-    const { size, url, iconType } = this.props;
+    const { size, url, iconType, style } = this.props;
 
     return (
       <>
         {url ? (
-          <StyledModifyImage url={url} />
+          <StyledModifyImage url={url} style={style} />
         ) : (
           <StyledIcon size={size} {...this.props}>
             {iconType}

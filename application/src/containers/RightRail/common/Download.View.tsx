@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { JuiListItemSecondaryAction } from 'jui/components/Lists';
 import { JuiIconButton } from 'jui/components/Buttons';
 
@@ -21,7 +21,7 @@ const Download = React.memo(({ url }: Props) => {
         download={true}
         href={url}
         variant="plain"
-        tooltipTitle={t('download')}
+        tooltipTitle={i18next.t('download')}
       >
         download
       </JuiIconButton>

@@ -12,7 +12,7 @@ import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import {
@@ -189,7 +189,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
-        message: t('notAbleToCancelUpload'),
+        message: i18next.t('notAbleToCancelUpload'),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -206,7 +206,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         }
       } catch (e) {
         Notification.flashToast({
-          message: t('notAbleToCancelUploadTryAgain'),
+          message: i18next.t('notAbleToCancelUploadTryAgain'),
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

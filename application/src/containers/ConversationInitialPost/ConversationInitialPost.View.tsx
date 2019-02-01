@@ -129,7 +129,7 @@ class ConversationInitialPost extends React.Component<
   }
 }
 
-const ConversationInitialPostView = translate('Conversations')(
+const ConversationInitialPostView = translate('translations')(
   ConversationInitialPost,
 );
 

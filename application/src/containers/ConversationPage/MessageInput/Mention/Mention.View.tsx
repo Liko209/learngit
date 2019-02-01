@@ -69,6 +69,6 @@ class MentionViewComponent extends Component<
   }
 }
 
-const MentionView = translate('Conversations')(MentionViewComponent);
+const MentionView = translate('translations')(MentionViewComponent);
 
 export { MentionView };

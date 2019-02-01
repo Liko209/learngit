@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { container } from 'framework';
 // import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { MessageService } from '@/modules/message/service/MessageService';
@@ -26,7 +26,7 @@ const config: SubModuleConfig = {
     return {
       url: '/messages',
       icon: 'messages',
-      title: t('Messages'),
+      title: i18next.t('Messages'),
       umi: <MessageUmi />,
       placement: 'top',
     };
