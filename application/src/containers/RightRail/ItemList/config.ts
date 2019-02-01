@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ComponentType } from 'react';
+import { PinnedItem } from '../PinnedItem';
 import { FileItem } from '../FileItem';
-
 import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
@@ -48,7 +48,7 @@ const TAB_CONFIG: TabConfig[] = [
   {
     title: 'pinned',
     type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
-    item: FileItem,
+    item: PinnedItem,
     subheader: '',
     empty: {
       text: 'youHaveNothingPinnedYet',
