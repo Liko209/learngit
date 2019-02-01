@@ -3,7 +3,7 @@
  * @Date: 2018-03-08 11:15:48
  */
 import _ from 'lodash';
-import { daoManager, AccountDao, PostDao } from '../../dao';
+import { daoManager, AccountDao } from '../../dao';
 import {
   ACCOUNT_USER_ID,
   ACCOUNT_COMPANY_ID,
@@ -15,6 +15,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../utils';
 import { Post, PostItemData } from '../../module/post/entity';
 import { ItemFile } from '../../module/item/entity';
 import { ItemService } from '../../module/item';
+import { PostDao } from '../../module/post/dao';
 
 // global_url_regex
 export type LinksArray = { url: string }[];
