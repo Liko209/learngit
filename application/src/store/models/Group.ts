@@ -92,7 +92,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isMember() {
-    return this.members.indexOf(UserConfig.getCurrentUserId()) >= 0;
+    return (
+      this.members && this.members.indexOf(UserConfig.getCurrentUserId()) >= 0
+    );
   }
 
   @computed
