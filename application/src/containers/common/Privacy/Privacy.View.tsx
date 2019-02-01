@@ -50,7 +50,10 @@ class PrivacyViewComponent extends Component<Props> {
   }
 
   render() {
-    const { isPublic, size, t, isAdmin } = this.props;
+    const { isPublic, size, t, isAdmin, isTeam } = this.props;
+    if (!isTeam) {
+      return null;
+    }
     const tooltipKey = this.getTipText();
     return (
       <JuiIconButton
@@ -58,7 +61,6 @@ class PrivacyViewComponent extends Component<Props> {
         color="grey.500"
         className="privacy"
         disabled={!isAdmin}
-        alwaysEnableTooltip={true}
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
       >
