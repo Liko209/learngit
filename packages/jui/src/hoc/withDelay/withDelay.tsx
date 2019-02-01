@@ -14,16 +14,13 @@ function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
     static defaultProps = {
       delay: 0,
     };
-    state = {
-      visible: false,
-    };
 
     constructor(props: Props) {
       super(props);
 
-      this.setState({
+      this.state = {
         visible: props.delay === 0,
-      });
+      };
     }
 
     componentDidMount() {

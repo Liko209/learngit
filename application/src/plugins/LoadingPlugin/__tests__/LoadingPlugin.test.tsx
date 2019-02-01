@@ -3,11 +3,14 @@
  * @Date: 2018-09-18 10:07:45
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
 import { mount } from 'enzyme';
 import { JuiCircularProgress } from 'jui/components';
+import React from 'react';
+import { unwrapMemo } from '../../../__tests__/utils';
 import { AbstractViewModel } from '../../../base/AbstractViewModel';
-import { LoadingPlugin, loading } from '../LoadingPlugin';
+import { loading, LoadingPlugin } from '../LoadingPlugin';
+
+jest.useFakeTimers();
 
 function sleep(time: number) {
   return new Promise((resolve: Function) => {
@@ -38,8 +41,24 @@ describe('LoadingPlugin', () => {
     it('should wrap View with loading', () => {
       const plugin = new LoadingPlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-      const wrapper = mount(<View loading={true} />);
-      expect(wrapper.find(JuiCircularProgress)).toBeTruthy();
+
+      const wrapper = mount(unwrapMemo(<View loading={true} />));
+
+      jest.runAllTimers();
+
+      expect(wrapper.update().find(JuiCircularProgress)).toHaveLength(1);
+    });
+
+    it('should have delay before Progress is visible', () => {
+      const plugin = new LoadingPlugin();
+      const View = plugin.wrapView(() => <div>Hello World</div>);
+
+      const wrapper = mount(unwrapMemo(<View loading={true} />));
+
+      jest.advanceTimersByTime(90);
+      expect(wrapper.find(JuiCircularProgress)).toHaveLength(0);
+      jest.runAllTimers();
+      expect(wrapper.update().find(JuiCircularProgress)).toHaveLength(1);
     });
 
     it('should wrap View with CustomLoading view component', () => {
@@ -47,9 +66,16 @@ describe('LoadingPlugin', () => {
       const plugin = new LoadingPlugin({ CustomizedLoading });
       const View = plugin.wrapView(() => <div>Hello World</div>);
 
-      const wrapper = mount(<View loading={true} />);
+      const wrapper = mount(unwrapMemo(<View loading={true} />));
 
-      expect(wrapper.find(CustomizedLoading).text()).toBe('Custom Loading');
+      jest.runAllTimers();
+
+      expect(
+        wrapper
+          .update()
+          .find(CustomizedLoading)
+          .html(),
+      ).toBe('<span>Custom Loading</span>');
     });
   });
 
@@ -60,6 +86,7 @@ describe('LoadingPlugin', () => {
       expect.assertions(2);
       const promise = vm.sleep(1);
       expect(vm).toHaveProperty('loading', true);
+      jest.runAllTimers();
       await promise;
       expect(vm).toHaveProperty('loading', false);
     });
