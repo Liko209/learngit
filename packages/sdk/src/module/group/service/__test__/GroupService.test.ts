@@ -1,9 +1,10 @@
-import { GroupService } from '../NewGroupService';
 import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
-import { GroupController } from '../../controller/GroupController';
 import { GroupActionController } from '../../controller/GroupActionController';
+import { GroupController } from '../../controller/GroupController';
+import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamSetting } from '../../types';
+import { GroupService } from '../NewGroupService';
 
 jest.mock('../../controller/GroupActionController', () => ({
   GroupActionController: jest.fn(),
@@ -11,8 +12,6 @@ jest.mock('../../controller/GroupActionController', () => ({
 jest.mock('../../controller/GroupController', () => ({
   GroupController: jest.fn(),
 }));
-import { TeamPermission, TeamPermissionParams } from '../../entity';
-
 jest.mock('../../controller/GroupActionController');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
@@ -28,6 +27,12 @@ describe('GroupService', () => {
   const mockTeamPermissionController = {
     getTeamUserPermissionFlags: jest.fn(),
   };
+  const mockGroupFetchDataController = {
+    getTeamUserPermissionFlags: jest.fn(),
+  };
+  const mockHandleDataController = {
+    handleData: jest.fn(),
+  };
   function clearMocks() {
     jest.clearAllMocks();
     jest.resetModules();
@@ -35,7 +40,6 @@ describe('GroupService', () => {
   }
 
   function setup() {
-    groupService = new GroupService();
     (GroupController as any).mockImplementation(() => {
       return {
         getGroupActionController: jest
@@ -44,11 +48,18 @@ describe('GroupService', () => {
         getTeamPermissionController: jest
           .fn()
           .mockReturnValue(mockTeamPermissionController),
+        getGroupFetchDataController: jest
+          .fn()
+          .mockReturnValue(mockGroupFetchDataController),
+        getHandleDataController: jest
+          .fn()
+          .mockReturnValue(mockHandleDataController),
       };
     });
     (GroupActionController as any).mockImplementation(() => {
       return mockGroupActionController;
     });
+    groupService = new GroupService();
   }
 
   beforeEach(() => {

@@ -3,44 +3,26 @@
  * @Date: 2019-01-02 09:27:54
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { GroupController } from '../controller/GroupController';
-import { Group, TeamPermission, TeamPermissionParams } from '../entity';
-import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { SubscribeController } from '../../base/controller/SubscribeController';
-import { TeamSetting, PermissionFlags } from '../types';
-import { PERMISSION_ENUM } from '../constants';
-import { INewGroupService } from './INewGroupService';
-import { PostService } from '../../../service';
-import { daoManager, QUERY_DIRECTION } from '../../../dao';
-import { GroupDao } from '../../../module/group/dao';
-import GroupConfigDao from '../../../dao/groupConfig';
-import { Api } from '../../../api';
-import { GroupConfigController } from '../controller/GroupConfigController';
-import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
-import handleData, {
-  handleGroupMostRecentPostChanged,
-} from '../service/handleData';
-import { GROUP_QUERY_TYPE } from '../../../service/constants';
-import { SortableModel } from '../../../framework/model';
 import { Result } from 'foundation';
+
+import { Api } from '../../../api';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { PartialModifyController } from '../../../framework/controller/impl/PartialModifyController';
+import { Raw, SortableModel } from '../../../framework/model';
+import { EntityBaseService } from '../../../framework/service/EntityBaseService';
+import { GroupDao } from '../../../module/group/dao';
+import { GROUP_QUERY_TYPE } from '../../../service/constants';
+import { ENTITY, SERVICE, SOCKET } from '../../../service/eventKey';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { PERMISSION_ENUM } from '../constants';
+import { GroupConfigController } from '../controller/GroupConfigController';
+import { GroupController } from '../controller/GroupController';
+import { Group, TeamPermission, TeamPermissionParams } from '../entity';
+import { PermissionFlags, TeamSetting } from '../types';
+import { IGroupService } from './IGroupService';
 
-const deleteAllTeamInformation = async (ids: number[]) => {
-  const postService: PostService = PostService.getInstance();
-  await postService.deletePostsByGroupIds(ids, true);
-  const groupConfigDao = daoManager.getDao(GroupConfigDao);
-  groupConfigDao.bulkDelete(ids);
-};
-
-const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
-  const service: GroupService = GroupService.getInstance();
-  service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
-};
-
-class GroupService extends EntityBaseService<Group>
-  implements INewGroupService {
+class GroupService extends EntityBaseService<Group> implements IGroupService {
   static serviceName = 'GroupService';
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
@@ -52,11 +34,15 @@ class GroupService extends EntityBaseService<Group>
     });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.GROUP]: handleData,
-        [ENTITY.POST]: handleGroupMostRecentPostChanged,
-        [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: deleteAllTeamInformation,
-        [SERVICE.POST_SERVICE
-          .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,
+        [SOCKET.GROUP]: this.getGroupController().getHandleDataController()
+          .handleData,
+        [ENTITY.POST]: this.getGroupController().getHandleDataController()
+          .handleGroupMostRecentPostChanged,
+        [SERVICE.PERSON_SERVICE
+          .TEAMS_REMOVED_FROM]: this.getGroupController().getHandleDataController()
+          .deleteAllTeamInformation,
+        [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this
+          .setAsTrue4HasMoreConfigByDirection,
       }),
     );
   }
@@ -87,6 +73,12 @@ class GroupService extends EntityBaseService<Group>
       this.groupConfigController = new GroupConfigController();
     }
     return this.groupConfigController;
+  }
+
+  async handleData(groups: Raw<Group>[]): Promise<void> {
+    await this.getGroupController()
+      .getHandleDataController()
+      .handleData(groups);
   }
 
   isValid(group: Group): boolean {

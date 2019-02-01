@@ -27,6 +27,7 @@ import { ItemService } from '../../module/item';
 import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
+import { GroupService, IGroupService } from '../../module/group';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -72,7 +73,9 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
-    .then(() => groupHandleData(public_teams))
+    .then(() =>
+      GroupService.getInstance<GroupService>().handleData(public_teams),
+    )
     .then(() => groupHandleData(groups))
     .then(() => groupHandleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));

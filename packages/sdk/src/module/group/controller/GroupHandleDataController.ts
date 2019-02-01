@@ -4,27 +4,29 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { mainLogger } from 'foundation';
-import { daoManager, DeactivatedDao } from '../../../dao';
-import { GroupDao } from '../../../module/group/dao';
+import _ from 'lodash';
+
 import GroupAPI from '../../../api/glip/group';
+import { daoManager, DeactivatedDao } from '../../../dao';
+import GroupConfigDao from '../../../dao/groupConfig';
+import { Raw } from '../../../framework/model';
+import { GroupState, PartialWithKey } from '../../../models';
+import { GroupDao } from '../../../module/group/dao';
+import { PostService } from '../../../service';
+import { UserConfig } from '../../../service/account';
+import { EVENT_TYPES } from '../../../service/constants';
+import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
   NotificationEntityUpdatePayload,
 } from '../../../service/notificationCenter';
-import { ENTITY, SERVICE } from '../../../service/eventKey';
 import ProfileService from '../../../service/profile';
 import { extractHiddenGroupIds } from '../../../service/profile/handleData';
-import _ from 'lodash';
 import { transform } from '../../../service/utils';
-import { PartialWithKey, GroupState } from '../../../models';
-
-import { Raw } from '../../../framework/model';
-import { Group } from '../entity';
 import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
-
 import { StateService } from '../../state';
-import { EVENT_TYPES } from '../../../service/constants';
-import { UserConfig } from '../../../service/account';
+import { Group } from '../entity';
+
 class GroupHandleDataController {
   async getExistedAndTransformDataFromPartial(
     groups: Partial<Raw<Group>>[],
@@ -420,6 +422,13 @@ class GroupHandleDataController {
       groups,
     );
     await this.doNotification([], transformData);
+  }
+
+  async deleteAllTeamInformation(ids: number[]) {
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
   }
 }
 

@@ -1,16 +1,15 @@
+import { Api } from '../../../../api';
+import { daoManager } from '../../../../dao';
+import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
+import { BaseDao } from '../../../../framework/dao';
+import { GroupActionController } from '../GroupActionController';
 /*
  * @Author: Paynter Chen
  * @Date: 2019-01-02 09:34:27
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { GroupController } from '../GroupController';
-import { GroupActionController } from '../GroupActionController';
 import { TeamPermissionController } from '../TeamPermissionController';
-import { Api } from '../../../../api';
-import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
-import { daoManager } from '../../../../dao';
-import { BaseDao } from '../../../../framework/dao';
 
 jest.mock('../../../../api');
 

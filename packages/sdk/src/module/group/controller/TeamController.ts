@@ -3,19 +3,14 @@
  * @Date: 2019-01-02 09:28:33
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
+
+import { buildPartialModifyController } from '../../../framework/controller';
+import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Group } from '../entity';
 import { TeamActionController } from './TeamActionController';
-import { GroupActionController } from './GroupActionController';
 import { TeamPermissionController } from './TeamPermissionController';
-import {
-  buildPartialModifyController,
-  buildRequestController,
-} from '../../../framework/controller';
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
-import { Api } from '../../../api';
 
 class TeamController {
   private _actionController: TeamActionController;

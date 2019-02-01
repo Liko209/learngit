@@ -3,17 +3,17 @@
  * @Date: 2019-01-14 14:08:02
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
+
+import { UserConfig } from '../../../service/account/UserConfig';
 import {
-  MAX_PERMISSION_LEVEL,
-  PERMISSION_ENUM,
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
+  MAX_PERMISSION_LEVEL,
+  PERMISSION_ENUM,
 } from '../constants';
 import { TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags, TeamSetting } from '../types';
-import { UserConfig } from '../../../service/account/UserConfig';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
 

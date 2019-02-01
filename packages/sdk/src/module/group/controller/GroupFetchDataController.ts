@@ -31,11 +31,11 @@ import handleData, {
   filterGroups,
   sortFavoriteGroups,
 } from '../service/handleData';
-import { INewGroupService } from '../service/INewGroupService';
+import { IGroupService } from '../service/IGroupService';
 
 export class GroupFetchDataController {
   constructor(
-    public groupService: INewGroupService,
+    public groupService: IGroupService,
     public entitySourceController: IEntitySourceController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
     public entityCacheSearchController: IEntityCacheSearchController<Group>,

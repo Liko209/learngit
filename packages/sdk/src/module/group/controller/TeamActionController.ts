@@ -3,16 +3,16 @@
  * @Date: 2019-01-02 09:30:31
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
+
 import { Api } from '../../../api';
-import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { Group } from '../entity';
-import { TeamSetting, PermissionFlags } from '../types';
-import { TeamPermissionController } from './TeamPermissionController';
 import { buildRequestController } from '../../../framework/controller';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
+import { Group } from '../entity';
+import { PermissionFlags, TeamSetting } from '../types';
+import { TeamPermissionController } from './TeamPermissionController';
 
 class TeamActionController {
   teamRequestController: IRequestController<Group>;

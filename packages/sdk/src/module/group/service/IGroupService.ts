@@ -1,14 +1,17 @@
-import { Group, TeamPermission, TeamPermissionParams } from '../entity';
-import { PERMISSION_ENUM } from '../constants';
-import { TeamSetting, PermissionFlags } from '../types';
-import { QUERY_DIRECTION } from '../../../dao/constants';
-import { SortableModel } from '../../../framework/model';
-import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { Result } from 'foundation';
 import _ from 'lodash';
 
-interface INewGroupService {
+import { QUERY_DIRECTION } from '../../../dao/constants';
+import { Raw, SortableModel } from '../../../framework/model';
+import { GROUP_QUERY_TYPE } from '../../../service/constants';
+import { PERMISSION_ENUM } from '../constants';
+import { Group, TeamPermission, TeamPermissionParams } from '../entity';
+import { PermissionFlags, TeamSetting } from '../types';
+
+interface IGroupService {
   isValid(group: Group): boolean;
+
+  handleData(groups: Raw<Group>[]): Promise<void>;
 
   isInTeam(userId: number, team: Group): boolean;
 
@@ -115,4 +118,4 @@ interface INewGroupService {
   isGroupCanBeShown(groupId: number): Promise<boolean>;
 }
 
-export { INewGroupService };
+export { IGroupService };

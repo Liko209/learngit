@@ -1,26 +1,26 @@
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
-import { GroupDao } from '../dao';
-import { Raw } from '../../../framework/model';
-import { GroupApiType } from '../../../models';
-import ProfileService from '../../../service/profile';
-import GroupAPI from '../../../api/glip/group';
-
-import { transform } from '../../../service/utils';
-import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
-import { UserConfig } from '../../../service/account/UserConfig';
-import { TeamPermission, Group } from '../entity';
+
 import { Api } from '../../../api';
-import notificationCenter from '../../../service/notificationCenter';
-import PostService from '../../../service/post';
+import GroupAPI from '../../../api/glip/group';
+import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
 import { ErrorParserHolder } from '../../../error';
+import { buildRequestController } from '../../../framework/controller';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
-import { TeamSetting, PermissionFlags } from '../types';
+import { Raw } from '../../../framework/model';
+import { GroupApiType } from '../../../models';
+import { UserConfig } from '../../../service/account/UserConfig';
+import { ENTITY } from '../../../service/eventKey';
+import notificationCenter from '../../../service/notificationCenter';
+import PostService from '../../../service/post';
+import ProfileService from '../../../service/profile';
+import { transform } from '../../../service/utils';
+import { GroupDao } from '../dao';
+import { Group, TeamPermission } from '../entity';
+import { IGroupService } from '../service/IGroupService';
+import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
-import { buildRequestController } from '../../../framework/controller';
-import { INewGroupService } from '../service/INewGroupService';
 
 const deleteAllTeamInformation = async (ids: number[]) => {
   const postService: PostService = PostService.getInstance();
@@ -33,7 +33,7 @@ export class GroupActionController {
   teamRequestController: IRequestController<Group>;
   groupRequestController: IRequestController<Group>;
   constructor(
-    public groupService: INewGroupService,
+    public groupService: IGroupService,
     public entitySourceController: IEntitySourceController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
     public teamPermissionController: TeamPermissionController,

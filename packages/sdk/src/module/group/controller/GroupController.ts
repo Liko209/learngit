@@ -3,24 +3,26 @@
  * @Date: 2019-01-02 09:28:33
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
-import { Group } from '../entity';
-import { GroupActionController } from './GroupActionController';
-import { TeamPermissionController } from './TeamPermissionController';
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+
 import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
-import { GroupFetchDataController } from './GroupFetchDataController';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { INewGroupService } from '../service/INewGroupService';
+import { Group } from '../entity';
+import { IGroupService } from '../service/IGroupService';
+import { GroupActionController } from './GroupActionController';
+import { GroupFetchDataController } from './GroupFetchDataController';
+import { GroupHandleDataController } from './GroupHandleDataController';
+import { TeamPermissionController } from './TeamPermissionController';
 
 class GroupController {
   private _groupActionController: GroupActionController;
   private _groupFetchDataController: GroupFetchDataController;
   private _permissionController: TeamPermissionController;
+  groupHandleDataController: GroupHandleDataController;
 
   constructor(
-    public groupService: INewGroupService,
+    public groupService: IGroupService,
     public entitySourceController: IEntitySourceController<Group>,
     public entityCacheSearchController: IEntityCacheSearchController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
@@ -55,6 +57,13 @@ class GroupController {
       this._permissionController = new TeamPermissionController();
     }
     return this._permissionController;
+  }
+
+  getHandleDataController(): GroupHandleDataController {
+    if (!this.groupHandleDataController) {
+      this.groupHandleDataController = new GroupHandleDataController();
+    }
+    return this.groupHandleDataController;
   }
 }
 
