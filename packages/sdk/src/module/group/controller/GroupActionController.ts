@@ -325,16 +325,6 @@ export class GroupActionController {
     return result;
   }
 
-  async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
-    const profileService: ProfileService = ProfileService.getInstance();
-    profileService.reorderFavoriteGroups(oldIndex, newIndex);
-  }
-
-  async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
-    const profileService: ProfileService = ProfileService.getInstance();
-    return await profileService.markGroupAsFavorite(groupId, markAsFavorite);
-  }
-
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
     const group = transform<Group>(rawGroup);
     await handleData([rawGroup]);
@@ -653,7 +643,7 @@ export class GroupActionController {
     return true;
   }
 
-  async getGroupEmail(groupId: number) {
+  async getGroupEmail(groupId: number): Promise<string> {
     const group = await this.entitySourceController.get(groupId);
     let email = '';
     if (group) {
@@ -703,7 +693,7 @@ export class GroupActionController {
   async setAsTrue4HasMoreConfigByDirection(
     ids: number[],
     direction: QUERY_DIRECTION,
-  ) {
+  ): Promise<void> {
     if (!ids.length) {
       return;
     }

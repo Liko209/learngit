@@ -5,8 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { service } from 'sdk';
-import { GroupService } from 'sdk/module/group';
+import { ProfileService } from 'sdk/service/profile';
 import { Profile } from 'sdk/module/profile/entity';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
@@ -16,11 +15,8 @@ import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 
-const { ProfileService } = service;
-
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
-  private _groupService: GroupService = GroupService.getInstance();
-  private _profileService: service.ProfileService = ProfileService.getInstance();
+  private _profileService: ProfileService = ProfileService.getInstance();
   @computed
   get personId() {
     return this.props.personId;
@@ -79,7 +75,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleFavorite = () => {
-    return this._groupService.markGroupAsFavorite(
+    return this._profileService.markGroupAsFavorite(
       this.groupId,
       !this.isFavorite,
     );

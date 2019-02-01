@@ -22,7 +22,7 @@ import handleData, {
 
 jest.mock('../../post');
 jest.mock('../../group');
-jest.mock('sdk/group');
+jest.mock('sdk/module/group');
 const postService = new PostService();
 const groupService = new GroupService();
 PostService.getInstance = jest.fn().mockReturnValue(postService);

@@ -5,6 +5,7 @@
  */
 
 import { GroupService } from 'sdk/module/group';
+import { ProfileService } from 'sdk/service/profile';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
@@ -23,13 +24,19 @@ const mockEntityGroup = {
   members: [],
 };
 
-const mockGlobalValue = {
-  [GLOBAL_KEYS.CURRENT_USER_ID]: 1,
+const profileService = {
+  markGroupAsFavorite: jest.fn().mockResolvedValue(ServiceCommonErrorType.NONE),
 };
 
 const groupService = {
   getLocalGroup: jest.fn().mockResolvedValue(mockServiceGroup),
-  markGroupAsFavorite: jest.fn().mockResolvedValue(ServiceCommonErrorType.NONE),
+};
+
+GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+
+const mockGlobalValue = {
+  [GLOBAL_KEYS.CURRENT_USER_ID]: 1,
 };
 
 let props: FavoriteProps;
@@ -121,7 +128,7 @@ describe('FavoriteViewModel', () => {
 
   describe('handlerFavorite', () => {
     it('should be success when request service for handler favorite is success', async () => {
-      groupService.markGroupAsFavorite = jest
+      profileService.markGroupAsFavorite = jest
         .fn()
         .mockResolvedValue(ServiceCommonErrorType.NONE);
       GroupService.getInstance = jest.fn().mockReturnValue(groupService);
@@ -130,7 +137,7 @@ describe('FavoriteViewModel', () => {
     });
 
     it('should be throw a error when request service for handler favorite has error', async () => {
-      groupService.markGroupAsFavorite = jest
+      profileService.markGroupAsFavorite = jest
         .fn()
         .mockResolvedValue(ServiceCommonErrorType.SERVER_ERROR);
       GroupService.getInstance = jest.fn().mockReturnValue(groupService);

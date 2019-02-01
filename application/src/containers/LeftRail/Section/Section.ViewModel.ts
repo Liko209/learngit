@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable, action } from 'mobx';
-import { GroupService } from 'sdk/module/group';
+import { ProfileService } from 'sdk/service/profile';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
@@ -90,8 +90,10 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {
-    const groupService = GroupService.getInstance<GroupService>();
-    groupService.reorderFavoriteGroups(oldIndex, newIndex);
+    (ProfileService.getInstance() as ProfileService).reorderFavoriteGroups(
+      oldIndex,
+      newIndex,
+    );
   }
 
   @action

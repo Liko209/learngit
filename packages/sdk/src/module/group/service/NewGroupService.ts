@@ -242,8 +242,12 @@ class GroupService extends EntityBaseService<Group>
       .canPinPost(postId, group);
   }
 
-  async pinPost(postId: number, groupId: number, toPin: boolean) {
-    return await this.getTeamController()
+  async pinPost(
+    postId: number,
+    groupId: number,
+    toPin: boolean,
+  ): Promise<void> {
+    await this.getTeamController()
       .getGroupActionController()
       .pinPost(postId, groupId, toPin);
   }
@@ -266,18 +270,6 @@ class GroupService extends EntityBaseService<Group>
       .createTeam(name, creator, memberIds, description, options);
   }
 
-  async reorderFavoriteGroups(oldIndex: number, newIndex: number) {
-    return await this.getTeamController()
-      .getGroupActionController()
-      .reorderFavoriteGroups(oldIndex, newIndex);
-  }
-
-  async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
-    return await this.getTeamController()
-      .getGroupActionController()
-      .markGroupAsFavorite(groupId, markAsFavorite);
-  }
-
   async getLeftRailGroups(): Promise<Group[]> {
     return await this.getTeamController()
       .getGroupActionController()
@@ -288,7 +280,7 @@ class GroupService extends EntityBaseService<Group>
     id: number;
     privacy: string;
   }): Promise<void> {
-    return await this.getTeamController()
+    await this.getTeamController()
       .getGroupActionController()
       .updateGroupPrivacy(params);
   }
@@ -323,7 +315,7 @@ class GroupService extends EntityBaseService<Group>
       .doFuzzySearchTeams(searchKey, fetchAllIfSearchKeyEmpty);
   }
 
-  async getGroupEmail(groupId: number) {
+  async getGroupEmail(groupId: number): Promise<string> {
     return await this.getTeamController()
       .getGroupActionController()
       .getGroupEmail(groupId);
@@ -332,7 +324,7 @@ class GroupService extends EntityBaseService<Group>
   async setAsTrue4HasMoreConfigByDirection(
     ids: number[],
     direction: QUERY_DIRECTION,
-  ) {
+  ): Promise<void> {
     return await this.getTeamController()
       .getGroupActionController()
       .setAsTrue4HasMoreConfigByDirection(ids, direction);

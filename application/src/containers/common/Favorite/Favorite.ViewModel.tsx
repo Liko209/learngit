@@ -6,6 +6,7 @@
 
 import { computed, observable } from 'mobx';
 import { GroupService } from 'sdk/module/group';
+import { ProfileService } from 'sdk/service/profile';
 import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
@@ -87,7 +88,7 @@ class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
   }
 
   handlerFavorite = () => {
-    return this._groupService.markGroupAsFavorite(
+    return (ProfileService.getInstance() as ProfileService).markGroupAsFavorite(
       this.conversationId,
       !this.isFavorite,
     );

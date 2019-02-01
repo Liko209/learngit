@@ -1157,12 +1157,6 @@ describe.skip('GroupService', () => {
       expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
     });
   });
-  describe('reorderFavoriteGroups()', () => {
-    it('should call profileService with correct params', async () => {
-      await groupService.reorderFavoriteGroups(1, 2);
-      expect(profileService.reorderFavoriteGroups).toBeCalledWith(1, 2);
-    });
-  });
 
   describe('markGroupAsFavorite()', () => {
     it('should proxy to call profileService.markGroupAsFavorite', async () => {
