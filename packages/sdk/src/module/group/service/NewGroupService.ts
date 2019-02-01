@@ -149,6 +149,18 @@ class NewGroupService extends EntityBaseService<Group>
       ? profile.favorite_group_ids
       : [];
   }
+
+  async makeAdmin(teamId: number, member: number) {
+    return this.getTeamController()
+      .getTeamActionController()
+      .makeOrRevokeAdmin(teamId, member, true);
+  }
+
+  async revokeAdmin(teamId: number, member: number) {
+    return this.getTeamController()
+      .getTeamActionController()
+      .makeOrRevokeAdmin(teamId, member, false);
+  }
 }
 
 export { NewGroupService };

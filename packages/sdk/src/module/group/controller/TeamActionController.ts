@@ -165,6 +165,39 @@ class TeamActionController {
     );
   }
 
+  async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity: Group) => {
+        const {
+          permissions: { admin: { uids: adminUids = [] } = {} } = {},
+        } = originalEntity;
+        let finalPartialEntity = partialEntity;
+        if (isMake) {
+          finalPartialEntity = _.merge(partialEntity, {
+            permissions: {
+              admin: {
+                uids: _.union(adminUids, [member]),
+              },
+            },
+          });
+        } else {
+          finalPartialEntity = _.merge(partialEntity, {
+            permissions: {
+              admin: {
+                uids: _.difference(adminUids, [member]),
+              },
+            },
+          });
+        }
+        return finalPartialEntity;
+      },
+      async (updateEntity: Group) => {
+        return await this._getTeamRequestController().put(updateEntity);
+      },
+    );
+  }
+
   private _getTeamRequestController() {
     if (!this.teamRequestController) {
       this.teamRequestController = buildRequestController<Group>({
