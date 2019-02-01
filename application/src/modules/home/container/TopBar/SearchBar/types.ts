@@ -7,10 +7,10 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 
-enum SectionMap {
-  PEOPLE = 'People',
-  GROUPS = 'Groups',
-  TEAMS = 'Teams',
+enum SectionTypeMap {
+  PEOPLE,
+  GROUPS,
+  TEAMS,
 }
 
 type SearchSection<T> = {
@@ -56,5 +56,5 @@ export {
   SortableModel,
   Person,
   Group,
-  SectionMap,
+  SectionTypeMap,
 };

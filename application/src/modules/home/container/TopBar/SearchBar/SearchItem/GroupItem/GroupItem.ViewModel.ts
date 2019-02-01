@@ -13,10 +13,8 @@ import GroupModel from '@/store/models/Group';
 
 class GroupItemViewModel extends StoreViewModel<Props> {
   @computed
-  get groups() {
-    return this.props.ids.map((id: number) => {
-      return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
-    });
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 }
 

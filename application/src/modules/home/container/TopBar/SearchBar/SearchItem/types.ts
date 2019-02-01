@@ -6,20 +6,24 @@
 import PersonModel from '@/store/models/Person';
 
 type Props = {
-  ids: number[];
+  id: number;
+  sectionIndex: number;
+  cellIndex: number;
+  didChange: (sectionIndex: number, cellIndex: number) => void;
 };
 
-type ViewProps = {
-  persons: PersonModel[];
+type BaseViewProps = {
+  person: PersonModel;
   hasMore: boolean;
   title: string;
   terms: string[];
   onClick: (id: number) => (event: React.MouseEvent<HTMLElement>) => void;
   onMouseEnter: (sectionIndex: number, cellIndex: number) => () => void;
   onMouseLeave: (event: React.MouseEvent<HTMLElement>) => void;
-  sectionIndex: number;
-  selectIndex: number[];
   setSearchSection: (items: any) => void;
+  selectIndex: number[];
+  sectionIndex: number;
+  cellIndex: number;
 };
 
-export { Props, ViewProps, PersonModel };
+export { Props, BaseViewProps, PersonModel };

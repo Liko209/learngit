@@ -11,29 +11,27 @@ import {
   JuiSearchBar,
   JuiSearchList,
   JuiSearchInput,
+  JuiSearchTitle,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { goToConversation } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
-import { PersonItem } from './PersonItem';
-import { GroupItem } from './GroupItem';
+
+// import { PersonItem } from './PersonItem';
+// import { GroupItem } from './GroupItem';
 // import { MiniCard } from '@/containers/MiniCard';
 import {
   ViewProps,
+  SectionTypeMap,
   // SearchSection,
   // SortableModel,
   // Person,
   // Group,
-  SectionMap,
 } from './types';
 
-const SECTION_ITEM_COMPONENTS = {
-  [SectionMap.PEOPLE]: PersonItem,
-  [SectionMap.GROUPS]: GroupItem,
-  [SectionMap.TEAMS]: GroupItem,
-};
+import { SearchSectionsConfig } from './config';
 
 const SEARCH_DELAY = 100;
 
@@ -58,7 +56,7 @@ const defaultSection = {
 
 type SectionType = {
   data: any;
-  name: string;
+  name: number;
 };
 
 const InvalidIndexPath: number[] = [-1, -1];
@@ -162,11 +160,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await goToConversation({ id });
   }
 
-  searchItemClick = (name: string) => {
+  searchItemClick = (name: number) => {
     const HANDLE_MAP = {
-      [SectionMap.PEOPLE]: this._goToConversation,
-      [SectionMap.GROUPS]: this.handleJoinTeam,
-      [SectionMap.TEAMS]: this.handleJoinTeam,
+      [SectionTypeMap.PEOPLE]: this._goToConversation,
+      [SectionTypeMap.GROUPS]: this.handleJoinTeam,
+      [SectionTypeMap.TEAMS]: this.handleJoinTeam,
     };
     return HANDLE_MAP[name];
   }
@@ -265,6 +263,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     // }
   }
 
+  selectIndexChange = (sectionIndex: number, cellIndex: number) => {};
+
   addHighlight = (sectionIndex: number, cellIndex: number) => () => {
     this._setSelectIndex(sectionIndex, cellIndex);
   }
@@ -291,35 +291,50 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     const sections: SectionType[] = [
       {
         data: people,
-        name: SectionMap.PEOPLE,
+        name: SectionTypeMap.PEOPLE,
       },
       {
         data: groups,
-        name: SectionMap.GROUPS,
+        name: SectionTypeMap.GROUPS,
       },
       {
         data: teams,
-        name: SectionMap.TEAMS,
+        name: SectionTypeMap.TEAMS,
       },
     ];
 
     const cells: ReactNode[] = sections.map(
       ({ data, name }: SectionType, sectionIndex: number) => {
         const { ids, hasMore } = data;
-        const Component = SECTION_ITEM_COMPONENTS[name];
+        if (ids.length === 0) return null;
+
+        const { SearchItem, title } = SearchSectionsConfig[name];
+
         return (
-          <Component
-            selectIndex={selectIndex}
-            sectionIndex={sectionIndex}
-            onMouseEnter={this.addHighlight}
-            onMouseLeave={this.mouseLeaveItem}
-            hasMore={hasMore}
-            title={name}
-            onClick={this.searchItemClick(name)}
-            terms={terms}
-            ids={ids}
-            key={name}
-          />
+          <React.Fragment key={name}>
+            <JuiSearchTitle
+              isShowMore={hasMore}
+              showMore={t('showMore')}
+              title={t(title)}
+              data-test-automation-id={`search-${title}`}
+            />
+            {ids.map((id: number, cellIndex: number) => (
+              <SearchItem
+                cellIndex={cellIndex}
+                selectIndex={selectIndex}
+                sectionIndex={sectionIndex}
+                onMouseEnter={this.addHighlight}
+                onMouseLeave={this.mouseLeaveItem}
+                hasMore={hasMore}
+                title={title}
+                onClick={this.searchItemClick(name)}
+                didChange={this.selectIndexChange}
+                terms={terms}
+                id={id}
+                key={id}
+              />
+            ))}
+          </React.Fragment>
         );
       },
     );
