@@ -5,11 +5,11 @@
  */
 
 import { StateActionController } from '../StateActionController';
+import { NewGroupService } from '../../../../group';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { DeactivatedDao } from '../../../../../dao';
-import PostService from '../../../../../service/post';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
@@ -81,21 +81,17 @@ describe('StateActionController', () => {
     it('should mark as unread when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = true;
-      stateActionController['_getLastPostOfGroup'] = jest
-        .fn()
-        .mockReturnValue(null);
-      PostService.getInstance = jest.fn().mockReturnValue({
-        getNewestPostIdOfGroup: jest.fn().mockReturnValue(11223344),
+      NewGroupService.getInstance = jest.fn().mockReturnValue({
+        getById: jest.fn().mockReturnValue({
+          most_recent_post_id: 123,
+        }),
       });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
       await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(stateActionController['_getLastPostOfGroup']).toBeCalledWith(
-        groupId,
-      );
       expect(
-        PostService.getInstance<PostService>().getNewestPostIdOfGroup,
+        NewGroupService.getInstance<NewGroupService>().getById,
       ).toBeCalledWith(groupId);
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
@@ -109,22 +105,18 @@ describe('StateActionController', () => {
     it('should mark as read when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = false;
-      stateActionController['_getLastPostOfGroup'] = jest.fn().mockReturnValue({
-        id: 123,
-      });
-      PostService.getInstance = jest.fn().mockReturnValue({
-        getNewestPostIdOfGroup: jest.fn().mockReturnValue(11223344),
+      NewGroupService.getInstance = jest.fn().mockReturnValue({
+        getById: jest.fn().mockReturnValue({
+          most_recent_post_id: 123,
+        }),
       });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
       await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(stateActionController['_getLastPostOfGroup']).toBeCalledWith(
-        groupId,
-      );
       expect(
-        PostService.getInstance<PostService>().getNewestPostIdOfGroup,
-      ).toBeCalledTimes(0);
+        NewGroupService.getInstance<NewGroupService>().getById,
+      ).toBeCalledWith(groupId);
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
       expect(
