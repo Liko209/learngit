@@ -16,7 +16,7 @@ import { withInfoDecorator } from '../../../foundation/utils/decorators';
 storiesOf('Pattern/ConversationLoading', module)
   .addDecorator(withInfoDecorator(JuiConversationLoading, { inline: true }))
   .add('JuiConversationLoading', () => {
-    class Test extends React.Component {
+    class Test extends React.PureComponent {
       render() {
         return (
           <div>

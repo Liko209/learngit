@@ -3,7 +3,7 @@
  * @Date: 2018-09-11 15:41:45
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import { SwitchProps } from '@material-ui/core/Switch';
 // import MuiTooltip from '@material-ui/core/Tooltip';
 import { ToggleButton } from './styled';
@@ -17,7 +17,7 @@ type JuiToggleButtonProps = {
   disabled?: boolean;
 };
 
-const JuiToggleButton: React.SFC<SwitchProps> = (
+const JuiToggleButtonComponent: React.SFC<SwitchProps> = (
   props: JuiToggleButtonProps,
 ) => {
   const { disabled, onChange, checked, ...rest } = props;
@@ -43,5 +43,5 @@ const JuiToggleButton: React.SFC<SwitchProps> = (
     // </MuiTooltip>
   );
 };
-
+const JuiToggleButton = memo(JuiToggleButtonComponent);
 export { JuiToggleButton, JuiToggleButtonProps };

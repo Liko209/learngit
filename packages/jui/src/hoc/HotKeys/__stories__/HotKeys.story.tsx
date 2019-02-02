@@ -9,7 +9,7 @@ import { boolean } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
 import { HotKeys } from '../';
 
-class Test extends React.Component<{}, {}> {
+class Test extends React.PureComponent<{}, {}> {
   onEnter(e, combo) {
     console.log('---enter', e, combo);
   }
@@ -44,7 +44,7 @@ class Test extends React.Component<{}, {}> {
   }
 }
 
-class Test1 extends React.Component<{}, {}> {
+class Test1 extends React.PureComponent<{}, {}> {
   onEsc(e, combo) {
     console.log('---Test1 onEsc', e, combo);
   }

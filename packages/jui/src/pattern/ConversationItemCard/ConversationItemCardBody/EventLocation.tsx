@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 09:38:13
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey } from '../../../foundation/utils/styles';
 
@@ -16,9 +16,9 @@ const StyledEventLocation = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiEventLocation = (props: Props) => (
+const JuiEventLocation = memo((props: Props) => (
   <StyledEventLocation>{props.location}</StyledEventLocation>
-);
+));
 
 JuiEventLocation.displayName = 'JuiEventLocation';
 

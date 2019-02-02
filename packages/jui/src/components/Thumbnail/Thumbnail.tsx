@@ -40,7 +40,7 @@ const StyledModifyImage = styled<JuiThumbnailProps, 'span'>('span')`
   background-position: center;
 `;
 
-class JuiThumbnail extends React.Component<JuiThumbnailProps> {
+class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {
   render() {
     const { size, url, iconType, style } = this.props;
 

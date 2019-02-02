@@ -33,7 +33,7 @@ const StyledIcon = styled<JuiIconographyProps>(WrappedMuiIcon)`
   }}
 `;
 
-const JuiIconography: React.SFC<JuiIconographyProps> & {
+const JuiIconographyComponent: React.SFC<JuiIconographyProps> & {
   dependencies?: any[];
 } = (props: JuiIconographyProps) => {
   const { children, className, color } = props;
@@ -47,7 +47,8 @@ const JuiIconography: React.SFC<JuiIconographyProps> & {
   );
 };
 
-JuiIconography.displayName = 'JuiIconography';
-JuiIconography.dependencies = [MuiIcon];
+JuiIconographyComponent.displayName = 'JuiIconography';
+JuiIconographyComponent.dependencies = [MuiIcon];
 
+const JuiIconography = React.memo(JuiIconographyComponent);
 export { JuiIconographyProps, JuiIconography };

@@ -3,7 +3,7 @@
  * @Date: 2018-09-13 15:06:38
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import green from '@material-ui/core/colors/green';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -33,12 +33,12 @@ interface IProps {
   label: string;
   handleChange(event: React.ChangeEvent<{}>, checked: boolean): void;
 }
-const CheckboxLabel = (props: IProps) => {
+const CheckboxLabel = memo((props: IProps) => {
   return <CheckboxWithLabel {...props} />;
-};
+});
 
 @observer
-class CheckboxWithLabel extends React.Component {
+class CheckboxWithLabel extends React.PureComponent {
   @observable
   private _checked: boolean;
   private _handleChange: Function;
