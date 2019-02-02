@@ -20,7 +20,6 @@ export class WebphoneHelper {
       await session.init();
       this.sessions[sessionKey] = session;
     }
-    console.log("create new webphone session");
     return session;
   }
 

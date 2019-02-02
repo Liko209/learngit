@@ -23,10 +23,8 @@ export class WebphoneSession {
     this.password = password;
   }
 
-  async init(TTL = WebphoneConfig.TTL, reserved = WebphoneConfig.reserved) {
-    console.log(`init session with ${this.env}, ${this.phoneNumber}, ${this.extension}, ${this.password}`);
-    const session = await this.webphoneClient.createSession(this.env, this.phoneNumber, this.extension, this.password, TTL, reserved);
-    console.log(session);
+  async init(TTL = WebphoneConfig.TTL, reserve = WebphoneConfig.reserve) {
+    const session = await this.webphoneClient.createSession(this.env, this.phoneNumber, this.extension, this.password, "webphone", TTL, reserve);
     if (session._id) {
       this.phoneId = session._id;
       this.sessionId = session.sessionId;
@@ -56,9 +54,9 @@ export class WebphoneSession {
 
   async operate(action: string, destNumber?: string) {
     if (destNumber) {
-      await this.webphoneClient.remoteOperateSession(this.phoneId, this.sessionId, action, destNumber);
+      await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action, destNumber);
     } else {
-      await this.webphoneClient.localOperateSession(this.phoneId, this.sessionId, action);
+      await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action);
     }
   }
 }

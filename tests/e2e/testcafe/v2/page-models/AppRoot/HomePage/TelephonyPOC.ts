@@ -22,7 +22,13 @@ export class TelephonyPOC extends BaseWebComponent {
   }
 
   async clickDial() {
-    await this.t.setNativeDialogHandler(() => true).click(this.dialButton);
+    console.log("click dial button");
+    await this.t.setNativeDialogHandler((type, text, url) => {
+      console.log(`type ${type}`);
+      console.log(text);
+      console.log(url);
+      return true;
+    }).click(this.dialButton);
   }
 
 }

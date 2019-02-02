@@ -98,7 +98,7 @@ enum BrandTire {
 
 const WebphoneConfig = {
   TTL: 1800000,
-  reserved: false,
+  reserve: false,
 }
 
 export {

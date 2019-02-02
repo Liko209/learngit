@@ -27,23 +27,23 @@ test(formalName('Call another extension', ['P0', 'MakeCall']), async (t) => {
   });
 
 
-  await h(t).withLog(`When I enter extension and click dial button`, async () => {
-    await telephonyPOCPage.typeExtension(callee.extension);
-    const session = await h(t).webphone(callee);
-    await t.wait(5e3);
-    const response = await session.preOperate("answerCall", true);
-    console.log(response);
-    await telephonyPOCPage.clickDial();
-    await session.close();
-  });
-
-  // await h(t).withLog(`When I call this extension`, async () => {
+  // await h(t).withLog(`When I enter extension and click dial button`, async () => {
+  //   await telephonyPOCPage.typeExtension(callee.extension);
   //   const session = await h(t).webphone(callee);
+  //   console.log(session);
   //   await t.wait(5e3);
-  //   await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-  //   await t.wait(30e3);
+  //   await session.preOperate("answerCall", true);
+  //   await telephonyPOCPage.clickDial();
   //   // await session.close();
   // });
+
+  await h(t).withLog(`When I call this extension`, async () => {
+    const session = await h(t).webphone(callee);
+    await t.wait(5e3);
+    await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+    await t.wait(30e3);
+    await session.close();
+  });
   
 
   await h(t).withLog(`And the url should be`, async () => {
