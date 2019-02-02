@@ -110,10 +110,6 @@ class JuiConversationPageHeader
     this._handleMouseEnter = this._handleMouseEnter.bind(this);
   }
 
-  componentDidMount() {
-    this.checkShouldTooltipRender();
-  }
-
   private _handleMouseEnter() {
     this.checkShouldTooltipRender();
   }

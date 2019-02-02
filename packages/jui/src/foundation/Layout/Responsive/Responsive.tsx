@@ -48,12 +48,12 @@ const StyledResizable = styled<ResizableProps & any>(Resizable)`
   overflow: hidden;
   top: 0;
   bottom: 0;
-  left: ${({ position }) => (position === 'left' ? 0 : 'auto')};
-  right: ${({ position }) => (position === 'right' ? 0 : 'auto')};
-  z-index: ${({ theme, absolute }) =>
+  left: ${({ styled: { position } }) => (position === 'left' ? 0 : 'auto')};
+  right: ${({ styled: { position } }) => (position === 'right' ? 0 : 'auto')};
+  z-index: ${({ styled: { absolute }, theme }) =>
     absolute ? theme.zIndex.appBar + 1 : 'auto'};
-  display: ${({ show }) => (show ? 'flex' : 'none')};
-  flex: ${({ priority }) => `0 ${priority} auto`};
+  display: ${({ styled: { show } }) => (show ? 'flex' : 'none')};
+  flex: ${({ styled: { priority } }) => `0 ${priority} auto`};
 `;
 
 class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
@@ -237,10 +237,12 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
           style={{
             position: !visual ? 'absolute' : 'relative',
           }}
-          show={!this.isManualMode || this.localShowState}
-          priority={priority}
-          absolute={!visual}
-          position={enable.right ? 'left' : 'right'}
+          styled={{
+            priority,
+            absolute: !visual,
+            show: !this.isManualMode || this.localShowState,
+            position: enable.right ? 'left' : 'right',
+          }}
         >
           {children}
           {visual && (
