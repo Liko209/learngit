@@ -44,11 +44,6 @@ const JuiProfileDialogContentMemberList = styled('ul')`
   padding: 0;
   margin: 0;
   flex: 1;
-  /*resolve virtual list height is fixed*/
-  > div > .ReactVirtualized__List {
-    height: auto !important;
-    max-height: 100% !important;
-  }
 `;
 
 const JuiProfileDialogContentMemberListItem = styled(JuiListItem)`
