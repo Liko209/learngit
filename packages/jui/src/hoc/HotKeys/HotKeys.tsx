@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 15:49:51
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import Mousetrap from 'mousetrap';
 
 type ChildrenProps = {
@@ -33,7 +33,7 @@ type HotKeysProps = {
   };
 };
 
-class HotKeys extends Component<HotKeysProps, {}> {
+class HotKeys extends PureComponent<HotKeysProps, {}> {
   private _mousetrap: MousetrapInstance;
   constructor(props: HotKeysProps) {
     super(props);

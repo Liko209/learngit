@@ -9,7 +9,7 @@ type Props = { delay: number };
 type States = { visible: boolean };
 
 function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
-  class ComponentWithDelay extends React.Component<Props, States> {
+  class ComponentWithDelay extends React.PureComponent<Props, States> {
     static defaultProps = {
       delay: 0,
     };

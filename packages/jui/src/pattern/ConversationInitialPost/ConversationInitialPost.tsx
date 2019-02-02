@@ -14,8 +14,10 @@ type JuiConversationInitialPostProps = {
 
 const StyledDiv = styled.div``;
 
-const JuiConversationInitialPost = (props: JuiConversationInitialPostProps) => {
-  return <StyledDiv {...props} />;
-};
+const JuiConversationInitialPost = React.memo(
+  (props: JuiConversationInitialPostProps) => {
+    return <StyledDiv {...props} />;
+  },
+);
 
 export { JuiConversationInitialPost };

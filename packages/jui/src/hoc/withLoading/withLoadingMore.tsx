@@ -40,7 +40,7 @@ const withLoadingMore = (
     ? withDelay(CustomizedLoading)
     : null;
 
-  return class LoadingMoreComponent extends React.Component<
+  return class LoadingMoreComponent extends React.PureComponent<
     WithLoadingMoreProps
   > {
     render() {

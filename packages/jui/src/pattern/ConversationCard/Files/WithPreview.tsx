@@ -15,7 +15,7 @@ type JuiFileWithPreviewProps = {
   iconType?: string | null;
 };
 
-class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
+class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
   render() {
     const { size, fileName, url, Actions, iconType } = this.props;
 

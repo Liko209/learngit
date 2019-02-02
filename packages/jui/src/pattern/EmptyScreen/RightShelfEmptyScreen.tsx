@@ -45,7 +45,7 @@ const JuiFlexWrapper = styled.div`
   height: 100%;
 `;
 
-const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
+const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
   const { image, text, content, actions } = props;
 
   return (
@@ -64,6 +64,6 @@ const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
       </EmptyScreen.Actions>
     </Wrapper>
   );
-};
+});
 
 export { JuiRightShelfEmptyScreen, JuiFlexWrapper };

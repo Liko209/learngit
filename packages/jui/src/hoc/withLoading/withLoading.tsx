@@ -42,7 +42,7 @@ const withLoading = <
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
-  return ({ loading, variant, ...props }: WithLoadingProps) => {
+  return React.memo(({ loading, variant, ...props }: WithLoadingProps) => {
     const Loading = CustomizedLoading || MAP[variant || 'circular'];
     return (
       <>
@@ -58,7 +58,7 @@ const withLoading = <
         />
       </>
     );
-  };
+  });
 };
 
 export { withLoading, WithLoadingProps };
