@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
 import { JuiButton } from 'jui/components/Buttons';
@@ -77,7 +77,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
                 variant="round"
                 size="small"
               >
-                {t('join')}
+                {i18next.t('join')}
               </JuiButton>
             )
           }

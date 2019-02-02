@@ -12,7 +12,7 @@ import {
 } from '../../dao/account/constants';
 import { daoManager, AuthDao } from '../../dao';
 import AccountDao from '../../dao/account';
-import PersonDao from '../../dao/person';
+import { PersonDao } from '../../module/person/dao';
 import ConfigDao from '../../dao/config';
 import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';

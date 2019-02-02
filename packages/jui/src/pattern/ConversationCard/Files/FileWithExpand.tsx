@@ -12,6 +12,7 @@ import { spacing } from '../../../foundation/utils';
 import { Theme } from '../../../foundation/theme/theme';
 
 type JuiFileWithExpandProps = {
+  icon: string;
   fileName: string;
   fileNameColor?: ({ theme }: { theme: Theme }) => any;
   fileNameOpacity?: number;
@@ -42,13 +43,13 @@ const JuiFileWithExpand: React.SFC<JuiFileWithExpandProps> = (
     expand,
     fileNameColor,
     fileNameOpacity,
+    icon,
   } = props;
-
   return (
     <Jui.FileExpandItemWrapper>
       {!expand && (
         <Jui.FileExpandItem>
-          <Jui.FileIcon size="small">default-file</Jui.FileIcon>
+          <Jui.FileIcon size="small">{icon}</Jui.FileIcon>
           <NameWithActions>
             <FileName
               statusColor={fileNameColor}

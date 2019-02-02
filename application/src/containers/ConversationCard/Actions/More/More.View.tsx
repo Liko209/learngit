@@ -81,6 +81,6 @@ class More extends React.Component<MoreViewProps, { open: boolean }> {
   }
 }
 
-const MoreView = translate('Conversations')(More);
+const MoreView = translate('translations')(More);
 
 export { MoreView };

@@ -7,7 +7,6 @@ import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PersonService } from 'sdk/module/person';
 import GroupService from 'sdk/service/group';
-import { GroupService as NGroupService } from 'sdk/module/group';
 import {
   SectionType,
   SortableModel,
@@ -25,7 +24,6 @@ const MORE_SECTION_LENGTH = 3;
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   personService: PersonService;
   groupService: GroupService;
-  nGroupService: NGroupService;
   @observable value: string = '';
   @observable focus: boolean = false;
 
@@ -33,7 +31,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     super();
     this.personService = PersonService.getInstance<PersonService>();
     this.groupService = GroupService.getInstance();
-    this.nGroupService = new NGroupService();
   }
 
   updateFocus = (focus: boolean) => {

@@ -3,7 +3,6 @@ import { Selector } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
-import { SITE_ENV } from '../../config';
 
 export class JupiterHelper {
 
@@ -14,6 +13,14 @@ export class JupiterHelper {
   }
 
   constructor(private t: TestController) { }
+
+  get siteEnv(): string {
+    return this.t.ctx.__siteEnv;
+  }
+
+  set siteEnv(siteEnv: string) {
+    this.t.ctx.__siteEnv = siteEnv;
+  }
 
   get authUrl(): string {
     return this.t.ctx.__authUrl;
@@ -31,7 +38,16 @@ export class JupiterHelper {
     this.t.ctx.__appClientId = appClientId;
   }
 
-  async setup(authUrl: string, appClientId: string) {
+  get mockRequestId(): string {
+    return this.t.ctx.__mockRequestId;
+  }
+
+  set mockRequestId(mockRequestId: string) {
+    this.t.ctx.__mockRequestId = mockRequestId;
+  }
+
+  async setup(siteEnv: string, authUrl: string, appClientId: string) {
+    this.siteEnv = siteEnv;
     this.authUrl = authUrl;
     this.appClientId = appClientId;
   }
@@ -57,12 +73,17 @@ export class JupiterHelper {
     if (user.extension && user.company.number) {
       data['extension'] = user.extension;
     }
-    const response = await axios.post(this.authUrl, data);
+
+    const response = await axios.post(this.authUrl, data, {
+      headers: {
+        'x-mock-request-id': this.mockRequestId || 'no mock'
+      }
+    });
     return response.data.redirectUri;
   }
 
-  async directLoginWithUser(url: string, user: IUser, env: string = SITE_ENV) {
-    await this.selectEnvironment(url, env);
+  async directLoginWithUser(url: string, user: IUser) {
+    await this.selectEnvironment(url, this.siteEnv);
     const urlWithAuthCode = await this.getUrlWithAuthCode(url, user);
     await this.t.navigateTo(urlWithAuthCode);
   }

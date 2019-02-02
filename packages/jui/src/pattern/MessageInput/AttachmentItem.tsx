@@ -6,7 +6,7 @@
 import React, { PureComponent, MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
 
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   height,
   width,
@@ -39,6 +39,7 @@ type AttachmentItemProps = StatusProps &
     name: string;
     hideRemoveButton?: boolean;
     onClickDeleteButton?: (event: MouseEvent) => void;
+    fileIcon: string;
   };
 
 const StatusMap = {
@@ -103,7 +104,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     <IconWrapper>
       {typeof props.icon === 'string'
         ? !props.hideRemoveButton && (
-            <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
+            <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
               close
             </JuiIconButton>
           )
@@ -120,6 +121,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
       hideRemoveButton,
       onClickDeleteButton,
       progress,
+      fileIcon,
     } = this.props;
     const loading = status === ITEM_STATUS.LOADING;
     const action = (
@@ -135,6 +137,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
     return (
       <Wrapper>
         <JuiFileWithExpand
+          icon={fileIcon}
           fileNameColor={StatusMap[status]}
           fileNameOpacity={loading ? 0.26 : 1}
           fileName={name}

@@ -27,6 +27,6 @@ class QuoteViewComponent extends React.Component<Props> {
   }
 }
 
-const QuoteView = translate('Conversations')(QuoteViewComponent);
+const QuoteView = translate('translations')(QuoteViewComponent);
 
 export { QuoteView };

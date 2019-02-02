@@ -12,8 +12,11 @@ import { Group } from '../entity';
 import { TeamSetting, PermissionFlags } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
 import { buildRequestController } from '../../../framework/controller';
+import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 
 class TeamActionController {
+  teamRequestController: IRequestController<Group>;
+
   constructor(
     public partialModifyController: IPartialModifyController<Group>,
     public entitySourceController: IEntitySourceController<Group>,
@@ -127,12 +130,82 @@ class TeamActionController {
         );
       },
       async (updateEntity: Group) => {
-        return await buildRequestController<Group>({
-          basePath: '/team',
-          networkClient: Api.glipNetworkClient,
-        }).put(updateEntity);
+        return await this._getTeamRequestController().put(updateEntity);
       },
     );
+  }
+
+  async archiveTeam(teamId: number) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          is_archived: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._getTeamRequestController().put(updateEntity);
+      },
+    );
+  }
+
+  async deleteTeam(teamId: number): Promise<void> {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          deactivated: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._getTeamRequestController().put(updateEntity);
+      },
+    );
+  }
+
+  async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
+    await this.partialModifyController.updatePartially(
+      teamId,
+      (partialEntity, originalEntity: Group) => {
+        const {
+          permissions: { admin: { uids: adminUids = [] } = {} } = {},
+        } = originalEntity;
+        let finalPartialEntity = partialEntity;
+        if (isMake) {
+          finalPartialEntity = _.merge(partialEntity, {
+            permissions: {
+              admin: {
+                uids: _.union(adminUids, [member]),
+              },
+            },
+          });
+        } else {
+          finalPartialEntity = _.merge(partialEntity, {
+            permissions: {
+              admin: {
+                uids: _.difference(adminUids, [member]),
+              },
+            },
+          });
+        }
+        return finalPartialEntity;
+      },
+      async (updateEntity: Group) => {
+        return await this._getTeamRequestController().put(updateEntity);
+      },
+    );
+  }
+
+  private _getTeamRequestController() {
+    if (!this.teamRequestController) {
+      this.teamRequestController = buildRequestController<Group>({
+        basePath: '/team',
+        networkClient: Api.glipNetworkClient,
+      });
+    }
+    return this.teamRequestController;
   }
 
   private async _requestUpdateTeamMembers(

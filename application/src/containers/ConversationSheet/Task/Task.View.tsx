@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -25,6 +25,7 @@ import {
 import { AvatarName } from './AvatarName';
 import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
+import { getFileIcon } from '@/common/getFileIcon';
 
 type taskViewProps = WithNamespaces & ViewProps;
 
@@ -34,7 +35,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle={t('download')}
+    tooltipTitle={i18next.t('download')}
   >
     download
   </JuiIconButton>
@@ -43,15 +44,16 @@ const downloadBtn = (downloadUrl: string) => (
 const FILE_COMPS = {
   [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
     const { item, previewUrl } = file;
-    const { id, name, downloadUrl, deactivated } = item;
+    const { id, name, downloadUrl, deactivated, type } = item;
     return (
       !deactivated && (
         <JuiExpandImage
+          icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}
           fileName={name}
-          i18UnfoldLess={t('collapse')}
-          i18UnfoldMore={t('expand')}
+          i18UnfoldLess={i18next.t('collapse')}
+          i18UnfoldMore={i18next.t('expand')}
           Actions={downloadBtn(downloadUrl)}
           ImageActions={downloadBtn(downloadUrl)}
         />
@@ -60,10 +62,11 @@ const FILE_COMPS = {
   },
   [FileType.others]: (file: ExtendFileItem) => {
     const { item } = file;
-    const { name, downloadUrl, id, deactivated } = item;
+    const { name, downloadUrl, id, deactivated, type } = item;
     return (
       !deactivated && (
         <JuiFileWithExpand
+          icon={getFileIcon(type)}
           key={id}
           fileName={name}
           Actions={downloadBtn(downloadUrl)}

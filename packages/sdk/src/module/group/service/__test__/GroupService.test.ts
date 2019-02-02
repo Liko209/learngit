@@ -1,4 +1,4 @@
-import { GroupService } from '../GroupService';
+import { NewGroupService } from '../NewGroupService';
 import { PERMISSION_ENUM } from '../../constants';
 import { groupFactory } from '../../controller/__tests__/factory';
 import { TeamController } from '../../controller/TeamController';
@@ -18,7 +18,7 @@ jest.mock('sdk/api');
 jest.mock('sdk/dao');
 
 describe('GroupService', () => {
-  let groupService: GroupService;
+  let groupService: NewGroupService;
   const mockTeamActionController = {
     joinTeam: jest.fn(),
     canJoinTeam: jest.fn(),
@@ -35,7 +35,7 @@ describe('GroupService', () => {
   }
 
   function setup() {
-    groupService = new GroupService();
+    groupService = new NewGroupService();
     (TeamController as any).mockImplementation(() => {
       return {
         getTeamActionController: jest
@@ -251,6 +251,64 @@ describe('GroupService', () => {
         });
       groupService.isTeamAdmin(mockPersonId, mockPermission);
       expect(mockIsTeamAdmin).toBeCalledWith(mockPersonId, mockPermission);
+    });
+  });
+  describe('archiveTeam()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+      });
+      const mockArchiveTeam = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          archiveTeam: mockArchiveTeam,
+        });
+      await groupService.archiveTeam(mockTeam.id);
+      expect(mockArchiveTeam).toBeCalledWith(mockTeam.id);
+    });
+  });
+
+  describe('makeAdmin()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const makeOrRevokeAdmin = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          makeOrRevokeAdmin,
+        });
+      await groupService.makeAdmin(1, 2);
+      expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, true);
+    });
+  });
+  describe('revokeAdmin()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const makeOrRevokeAdmin = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          makeOrRevokeAdmin,
+        });
+      await groupService.revokeAdmin(1, 2);
+      expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, false);
     });
   });
 });
