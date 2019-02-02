@@ -17,8 +17,8 @@ class GroupItemView extends React.Component<ViewProps, {}> {
   onEnter = async (e: KeyboardEvent) => {
     const { hovered, canJoinTeam } = this.props;
     if (!hovered) return;
+
     if (canJoinTeam) {
-      console.log('-nello enter');
       await this.handleJoinTeam(e);
     } else {
       await this.goToConversation();
@@ -52,6 +52,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
       hovered,
     } = this.props;
     const { id, displayName, deactivated } = group;
+
     if (deactivated) return null;
 
     return (
