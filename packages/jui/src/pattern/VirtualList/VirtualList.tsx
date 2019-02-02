@@ -64,7 +64,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     const { isLoading, dataSource, width, height } = this.props;
     const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
-    const { renderEmptyContent, onScroll = () => {} } = dataSource;
+    const { renderEmptyContent, onScroll = undefined } = dataSource;
     return (
       <JuiVirtualListWrapper>
         {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
