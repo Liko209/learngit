@@ -129,16 +129,16 @@ class PostFetchController {
       params.post_id = postId;
     }
     const requestResult = await PostAPI.requestPosts(params);
-    if (requestResult.isOk()) {
-      const data = requestResult.data;
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        result.hasMore = result.posts.length === limit;
-      }
-      return result;
+
+    const data = requestResult.expect('Get Remote post failed');
+
+    if (data) {
+      result.posts = data.posts;
+      result.items = data.items;
+      result.hasMore = result.posts.length === limit;
     }
-    return null;
+
+    return result;
   }
 
   async getRemotePostsByGroupIdAndSave({

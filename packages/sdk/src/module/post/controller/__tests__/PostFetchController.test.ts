@@ -406,14 +406,23 @@ describe('PostFetchController()', () => {
     });
 
     it('should throw exception if failed to request', async () => {
-      PostAPI.requestPosts.mockRejectedValueOnce({});
+      PostAPI.requestPosts.mockResolvedValueOnce(
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
+            {
+              status: 403,
+              headers: {},
+            } as BaseResponse,
+        ),
+      );
+      expect.assertions(1);
       await expect(
         postFetchController.fetchPaginationPosts({
           groupId: 1,
           postId: 1,
           limit: 1,
         }),
-      ).rejects.toBeDefined();
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
   });
 
