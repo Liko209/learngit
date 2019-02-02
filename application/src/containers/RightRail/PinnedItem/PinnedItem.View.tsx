@@ -5,24 +5,18 @@
  */
 import React, { Component } from 'react';
 import { PinnedItemViewProps } from './types';
-import {
-  JuiListItemText,
-  JuiListItem,
-  JuiListItemIcon,
-} from 'jui/components/Lists';
-import { JuiIconWrapper, JuiNoteIcon } from 'jui/pattern/RightShelf';
+import { JuiPinnedCell } from 'jui/pattern/RightShelf/PinnedItem';
 
 class PinnedItemView extends Component<PinnedItemViewProps> {
   render() {
+    const { creatorName = '', createTime, textContent, items } = this.props;
     return (
-      <JuiListItem singleLine={true}>
-        <JuiListItemIcon>
-          <JuiIconWrapper>
-            <JuiNoteIcon />
-          </JuiIconWrapper>
-        </JuiListItemIcon>
-        <JuiListItemText primary="sddd" />
-      </JuiListItem>
+      <JuiPinnedCell
+        creator={creatorName}
+        createTime={createTime}
+        content={textContent}
+        items={items}
+      />
     );
   }
 }

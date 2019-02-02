@@ -18,6 +18,7 @@ import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
+import { PinnedList } from './PinnedList';
 
 type Props = {
   id: number;
@@ -73,6 +74,16 @@ class RightRailComponent extends React.Component<Props> {
     this.setState({ tabIndex: index });
   }
 
+  private _renderListView = (
+    type: RIGHT_RAIL_ITEM_TYPE,
+    id: number,
+    active: boolean,
+  ) => {
+    if (type === RIGHT_RAIL_ITEM_TYPE.PIN_POSTS) {
+      return <PinnedList groupId={id} />;
+    }
+    return <ItemList type={type} groupId={id} active={active} />;
+  }
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
@@ -102,11 +113,7 @@ class RightRailComponent extends React.Component<Props> {
                   title={t(title)}
                   automationId={`right-shelf-${title}`}
                 >
-                  <ItemList
-                    type={type}
-                    groupId={id}
-                    active={tabIndex === index}
-                  />
+                  {this._renderListView(type, id, tabIndex === index)}
                 </JuiTab>
               ),
             )}

@@ -3,7 +3,7 @@
  * @Date: 2019-02-02 09:10:22
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { JuiListItemText } from '../../../components/Lists';
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
@@ -70,7 +70,7 @@ const MoreWrapper = styled.div`
 
 const MAX_ITEM_LENGTH = 3;
 
-class JuiPinnedCell extends Component<JuiPinnedCellProps> {
+class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
   private _renderItems = () => {
     const { items = [] } = this.props;
     let array = items;

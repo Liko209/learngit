@@ -7,8 +7,9 @@
 import { buildContainer } from '@/base';
 import { PinnedItemView } from './PinnedItem.View';
 import { PinnedItemViewModel } from './PinnedItem.ViewModel';
+import { PinnedItemProps } from './types';
 
-const PinnedItem = buildContainer({
+const PinnedItem = buildContainer<PinnedItemProps>({
   View: PinnedItemView,
   ViewModel: PinnedItemViewModel,
 });

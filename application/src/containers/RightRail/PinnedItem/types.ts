@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PostModel from '@/store/models/Post';
+import { JuiPinnedItemProps } from 'jui/pattern/RightShelf/PinnedItem';
 
 type PinnedItemProps = {
   id: number;
@@ -11,6 +12,10 @@ type PinnedItemProps = {
 
 type PinnedItemViewProps = {
   post: PostModel;
+  creatorName: string;
+  createTime: string;
+  textContent: string;
+  items: JuiPinnedItemProps[];
 };
 
 export { PinnedItemProps, PinnedItemViewProps };
