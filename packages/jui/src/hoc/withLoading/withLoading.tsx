@@ -6,7 +6,7 @@
 import React, { ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiCircularProgress } from '../../components/Progress';
-import { JuiFade } from '../../components/Fade';
+import { withDelay } from '../withDelay';
 
 type WithLoadingProps = {
   loading: boolean;
@@ -34,7 +34,6 @@ const DefaultLoading = () => (
 );
 
 const MAP = { circular: DefaultLoading };
-const FADE_STYLE = { transitionDelay: '100ms' };
 
 const withLoading = <
   P extends { loading: boolean; style?: React.CSSProperties }
@@ -43,14 +42,12 @@ const withLoading = <
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
   return React.memo(({ loading, variant, ...props }: WithLoadingProps) => {
-    const Loading = CustomizedLoading || MAP[variant || 'circular'];
+    const LoadingWithDelay = withDelay(
+      CustomizedLoading || MAP[variant || 'circular'],
+    );
     return (
       <>
-        {loading && (
-          <JuiFade in={true} style={FADE_STYLE}>
-            <Loading />
-          </JuiFade>
-        )}
+        {loading ? <LoadingWithDelay delay={100} /> : null}
         <Component
           {...props}
           loading={loading}
