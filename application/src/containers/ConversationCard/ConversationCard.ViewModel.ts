@@ -113,11 +113,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
 
   @computed
   get showActivityStatus() {
-    return (
-      !!this.post.parentId ||
-      !!this.post.existItemIds.length ||
-      !!this.post.source
-    );
+    return !!(this.post.parentId || this.post.existItemIds.length);
   }
 }
 
