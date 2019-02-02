@@ -15,13 +15,13 @@ import { JuiIconWrapper, JuiNoteIcon } from 'jui/pattern/RightShelf';
 class PinnedItemView extends Component<PinnedItemViewProps> {
   render() {
     return (
-      <JuiListItem>
+      <JuiListItem singleLine={true}>
         <JuiListItemIcon>
           <JuiIconWrapper>
             <JuiNoteIcon />
           </JuiIconWrapper>
         </JuiListItemIcon>
-        <JuiListItemText primary="" secondary="" />
+        <JuiListItemText primary="sddd" />
       </JuiListItem>
     );
   }
