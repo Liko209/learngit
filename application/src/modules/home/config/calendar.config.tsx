@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { SubModuleConfig } from '../types';
 
 const config: SubModuleConfig = {
@@ -15,7 +15,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/calendar',
     icon: 'calendar',
-    title: t('Calendar'),
+    title: i18next.t('Calendar'),
     placement: 'bottom',
   }),
 };

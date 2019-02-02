@@ -107,6 +107,7 @@ export default class MultiEntityMapStore<
     }
   }
 
+  @action
   batchSet(entities: T[]) {
     entities.forEach((entity: T) => {
       const model = this._data[entity.id];
@@ -118,12 +119,14 @@ export default class MultiEntityMapStore<
     });
   }
 
+  @action
   batchReplace(entities: T[]) {
     entities.forEach((entity: T) => {
       this._replace(entity);
     });
   }
 
+  @action
   private _replace(entity: T) {
     if (entity && this._data[entity.id]) {
       this._partialUpdate(entity, entity.id);

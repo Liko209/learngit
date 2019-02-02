@@ -53,6 +53,6 @@ class BookmarkViewComponent extends Component<Props> {
   }
 }
 
-const BookmarkView = translate('Conversations')(BookmarkViewComponent);
+const BookmarkView = translate('translations')(BookmarkViewComponent);
 
 export { BookmarkView };

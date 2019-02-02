@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable } from 'mobx';
-import { TranslationFunction } from 'i18next';
 import { ConversationInitialPostViewProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -16,7 +15,6 @@ import moment from 'moment';
 class ConversationInitialPostViewModel extends StoreViewModel<
   ConversationInitialPostViewProps
 > {
-  t: TranslationFunction;
   @observable
   creatorGroupId: number;
 
