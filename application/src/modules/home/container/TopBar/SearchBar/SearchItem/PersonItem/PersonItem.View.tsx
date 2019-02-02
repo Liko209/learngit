@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-// import { t } from 'i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
 import { HotKeys } from 'jui/hoc/HotKeys';
