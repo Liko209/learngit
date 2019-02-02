@@ -106,7 +106,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       this.groupService.doFuzzySearchTeams(key),
     ]);
     const sectionCount = this.calculateSectionCount(persons, groups, teams);
-
     return {
       terms:
         (persons && persons.terms) ||

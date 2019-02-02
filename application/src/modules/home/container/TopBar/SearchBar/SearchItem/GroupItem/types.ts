@@ -8,9 +8,9 @@ import { Props, BaseViewProps } from '../types';
 
 type ViewProps = {
   group: GroupModel;
-  onClick: (
-    group: GroupModel,
-  ) => (event: React.MouseEvent<HTMLElement>) => void;
+  canJoinTeam: boolean;
+  isPrivate: boolean;
+  isJoined: boolean;
 } & BaseViewProps;
 
 export { Props, ViewProps, GroupModel };

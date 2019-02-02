@@ -44,13 +44,15 @@ const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
     content: t('joinTeamContent', { teamName: item.displayName }),
     okText: t('join'),
     cancelText: t('Cancel'),
-    onOK: () =>
+    onOK: () => {
+      console.log('nello dialog ok');
       goToConversation({
         id: item.id,
         async beforeJump(conversationId: number) {
           await joinHander(conversationId);
         },
-      }),
+      });
+    },
   });
 };
 

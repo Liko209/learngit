@@ -4,10 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '@/store/models/Person';
+import GroupModel from '@/store/models/Group';
 
 type Props = {
   id: number;
   sectionIndex: number;
+  selectIndex: number[];
   cellIndex: number;
   didChange: (sectionIndex: number, cellIndex: number) => void;
 };
@@ -17,13 +19,15 @@ type BaseViewProps = {
   hasMore: boolean;
   title: string;
   terms: string[];
-  onClick: (id: number) => (event: React.MouseEvent<HTMLElement>) => void;
+  goToConversation: (id: number) => void;
+  handleJoinTeam: (item: GroupModel) => void;
   onMouseEnter: (sectionIndex: number, cellIndex: number) => () => void;
   onMouseLeave: (event: React.MouseEvent<HTMLElement>) => void;
   setSearchSection: (items: any) => void;
   selectIndex: number[];
   sectionIndex: number;
   cellIndex: number;
+  hovered: boolean;
 };
 
 export { Props, BaseViewProps, PersonModel };

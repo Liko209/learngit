@@ -42,6 +42,8 @@ export default class GroupModel extends Base<Group> {
   permissions?: TeamPermission;
   @observable
   mostRecentPostId?: number;
+  @observable
+  deactivated: boolean;
 
   latestTime: number;
   private _nGroupService: NGroupService;
@@ -61,6 +63,7 @@ export default class GroupModel extends Base<Group> {
       creator_id,
       guest_user_company_ids,
       permissions,
+      deactivated,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -78,6 +81,7 @@ export default class GroupModel extends Base<Group> {
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
     this._nGroupService = new NGroupService();
+    this.deactivated = deactivated;
   }
 
   @computed

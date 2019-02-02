@@ -16,6 +16,30 @@ class GroupItemViewModel extends StoreViewModel<Props> {
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
+
+  @computed
+  get canJoinTeam() {
+    const { isMember, isTeam, privacy } = this.group;
+    return isTeam && privacy === 'protected' && !isMember;
+  }
+
+  @computed
+  get isPrivate() {
+    const { isTeam, privacy } = this.group;
+    return isTeam && privacy === 'private';
+  }
+
+  @computed
+  get isJoined() {
+    const { isTeam, privacy, isMember } = this.group;
+    return isTeam && privacy === 'protected' && isMember;
+  }
+
+  @computed
+  get hovered() {
+    const { sectionIndex, selectIndex, cellIndex } = this.props;
+    return sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
+  }
 }
 
 export { GroupItemViewModel };

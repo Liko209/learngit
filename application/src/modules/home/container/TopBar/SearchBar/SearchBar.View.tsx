@@ -15,21 +15,11 @@ import {
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { goToConversation } from '@/common/goToConversation';
-import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
+// import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
 
-// import { PersonItem } from './PersonItem';
-// import { GroupItem } from './GroupItem';
-// import { MiniCard } from '@/containers/MiniCard';
-import {
-  ViewProps,
-  SectionTypeMap,
-  // SearchSection,
-  // SortableModel,
-  // Person,
-  // Group,
-} from './types';
+import { ViewProps, SectionTypeMap } from './types';
 
 import { SearchSectionsConfig } from './config';
 
@@ -55,7 +45,7 @@ const defaultSection = {
 };
 
 type SectionType = {
-  data: any;
+  data: SearchItems;
   name: number;
 };
 
@@ -71,7 +61,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
   state = {
     terms: [],
-    focus: false,
     people: defaultSection,
     groups: defaultSection,
     teams: defaultSection,
@@ -97,13 +86,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   componentDidMount() {
-    visibilityChangeEvent(() => {
-      const { focus } = this.props;
-      if (focus) {
-        this.textInput.current!.blurTextInput();
-        this.onClose();
-      }
-    });
+    // visibilityChangeEvent(() => {
+    //   const { focus } = this.props;
+    //   if (focus) {
+    //     this.textInput.current!.blurTextInput();
+    //     this.onClose();
+    //   }
+    // });
   }
 
   private _resetData() {
@@ -154,32 +143,17 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  private _goToConversation = (id: number) => async () => {
+  private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
     await goToConversation({ id });
   }
 
-  searchItemClick = (name: number) => {
-    const HANDLE_MAP = {
-      [SectionTypeMap.PEOPLE]: this._goToConversation,
-      [SectionTypeMap.GROUPS]: this.handleJoinTeam,
-      [SectionTypeMap.TEAMS]: this.handleJoinTeam,
-    };
-    return HANDLE_MAP[name];
-  }
-
-  handleJoinTeam = (item: GroupModel) => async () => {
+  handleJoinTeam = async (item: GroupModel) => {
     const joinTeamByItem = joinTeam(item);
     this.onClear();
     this.onClose();
     await joinTeamByItem();
-  }
-
-  setSearchSection = (name: string) => (sections: any) => {
-    this.setState({
-      [name]: sections,
-    });
   }
 
   private _setSelectIndex(section: number, cellIndex: number) {
@@ -193,13 +167,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     return [people, groups, teams];
   }
 
-  private _findNextValidSectionLength<T>(
+  private _findNextValidSectionLength(
     section: number,
     offset: number,
   ): number[] {
     const data = this._getDataSections();
     for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as any).sortableModel;
+      const { length } = (data[i] as any).ids;
       if (length > 0) {
         return [i, length];
       }
@@ -230,8 +204,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     const [section, cell] = selectIndex;
     const data = this._getDataSections();
     const currentSection = section < 0 ? 0 : section;
-    const currentSectionLength = (data[currentSection] as any).sortableModel
-      .length;
+    const currentSectionLength = data[currentSection].ids.length;
     if (cell < currentSectionLength - 1) {
       this._setSelectIndex(currentSection, cell + 1);
     } else {
@@ -244,36 +217,36 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
   }
 
-  onEnter = async () => {
-    // const { people, groups, teams, selectIndex } = this.state;
-    // const [section, cell] = selectIndex;
-    // const searchItems = [
-    //   persons.sortableModel,
-    //   groups.sortableModel,
-    //   teams.sortableModel,
-    // ];
-    // if (section < 0 || cell < 0) {
-    //   return;
-    // }
-    // const selectItem = searchItems[section][cell] as SortableModel<
-    //   Person | Group
-    // >;
-    // if (selectItem) {
-    //   await this._goToConversation(selectItem.id);
-    // }
-  }
+  // if search item removed need update selectIndex
+  selectIndexChange = (sectionIndex: number, cellIndex: number) => {
+    const [section, cell] = this.state.selectIndex;
+    // remove current select item
+    if (sectionIndex === section && cell === cellIndex) {
+      this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
+      return;
+    }
 
-  selectIndexChange = (sectionIndex: number, cellIndex: number) => {};
+    // remove before current select item
+    if (
+      sectionIndex < section ||
+      (sectionIndex === section && cellIndex < cell)
+    ) {
+      this.onKeyUp();
+    }
+  }
 
   addHighlight = (sectionIndex: number, cellIndex: number) => () => {
     this._setSelectIndex(sectionIndex, cellIndex);
   }
 
   mouseLeaveItem = () => {
-    this._setSelectIndex(-1, -1);
+    this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
   }
 
-  onKeyEsc = () => this.onClose();
+  onKeyEsc = () => {
+    this.textInput.current!.blurTextInput();
+    this.onClose();
+  }
 
   searchBarBlur = () => {
     this.timer = setTimeout(() => {
@@ -327,7 +300,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
                 onMouseLeave={this.mouseLeaveItem}
                 hasMore={hasMore}
                 title={title}
-                onClick={this.searchItemClick(name)}
+                goToConversation={this._goToConversation}
+                handleJoinTeam={this.handleJoinTeam}
                 didChange={this.selectIndexChange}
                 terms={terms}
                 id={id}
@@ -349,7 +323,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       >
         <HotKeys
           keyMap={{
-            enter: this.onEnter,
+            // enter: this.onEnter,
             up: this.onKeyUp,
             down: this.onKeyDown,
             esc: this.onKeyEsc,

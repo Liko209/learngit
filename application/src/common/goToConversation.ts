@@ -39,6 +39,7 @@ const getConversationId = async (id: number | number[]) => {
 
 const goToConversationCallBackName = Symbol('goToConversationCallBackName');
 async function goToConversation(params: GoToConversationParams) {
+  console.log(params, '----nello params');
   const { id, beforeJump, hasBeforeJumpFun } = params;
   history.push('/messages/loading');
   let beforeJumpFun;

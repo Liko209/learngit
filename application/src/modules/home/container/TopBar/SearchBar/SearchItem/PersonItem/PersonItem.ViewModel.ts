@@ -24,8 +24,13 @@ class PersonItemViewModel extends StoreViewModel<Props> {
   @computed
   get person() {
     const { id } = this.props;
-    console.log(id, '-----nello id');
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
+  }
+
+  @computed
+  get hovered() {
+    const { sectionIndex, selectIndex, cellIndex } = this.props;
+    return sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
   }
 }
 
