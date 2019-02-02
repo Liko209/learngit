@@ -60,7 +60,7 @@ type State = {
   showLink: boolean;
 };
 
-class JuiStreamLoading extends React.Component<
+class JuiStreamLoading extends React.PureComponent<
   JuiConversationLoadingProps,
   State
 > {

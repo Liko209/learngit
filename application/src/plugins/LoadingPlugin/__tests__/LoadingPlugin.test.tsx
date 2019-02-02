@@ -25,6 +25,7 @@ class MyViewModel extends AbstractViewModel {
 }
 
 describe('LoadingPlugin', () => {
+  jest.spyOn(React, 'memo').mockImplementation(r => r);
   describe('install()', () => {
     it('should add loading property to vm', () => {
       const plugin = new LoadingPlugin();

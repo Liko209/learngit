@@ -24,7 +24,7 @@ const StyledAnchorWrapper = styled.div`
   display: inline-flex;
 `;
 
-class JuiPopperMenu extends React.Component<
+class JuiPopperMenu extends React.PureComponent<
   PopperMenuProps,
   { anchorEl: HTMLElement | null }
 > {
