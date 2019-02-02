@@ -77,6 +77,18 @@ const deleteAllTeamInformation = async (ids: number[]) => {
   await postService.deletePostsByGroupIds(ids, true);
   const groupConfigDao = daoManager.getDao(GroupConfigDao);
   groupConfigDao.bulkDelete(ids);
+  const groupService: GroupService = GroupService.getInstance();
+  const groups = await groupService.getGroupsByIds(ids);
+  const groupDao = daoManager.getDao(GroupDao);
+  const privateGroupIds = groups
+    .filter((group: Group) => {
+      return group.privacy === 'private';
+    })
+    .map((group: Group) => group.id);
+  if (privateGroupIds.length > 0) {
+    await groupDao.bulkDelete(privateGroupIds);
+    notificationCenter.emitEntityDelete(ENTITY.GROUP, privateGroupIds);
+  }
 };
 
 const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
