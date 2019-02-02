@@ -441,7 +441,7 @@ describe('PostFetchController()', () => {
       };
     }
 
-    it('should be true when request server error', async () => {
+    it('should throw exception when request server error', async () => {
       PostAPI.requestPosts.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
