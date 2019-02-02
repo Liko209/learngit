@@ -51,7 +51,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
       isJoined,
       hovered,
     } = this.props;
-    const { id, isTeam, displayName, deactivated } = group;
+    const { id, displayName, deactivated } = group;
     if (deactivated) return null;
 
     return (
@@ -70,8 +70,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
           terms={terms}
           data-test-automation-id={`search-${title}-item`}
           Actions={
-            isTeam &&
-            !isJoined && (
+            canJoinTeam && (
               <JuiButton
                 data-test-automation-id="joinButton"
                 variant="round"
