@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
@@ -72,26 +72,26 @@ class AvatarActionsView extends React.Component<ViewProps> {
         <JuiMenuList data-test-automation-id="avatarMenu">
           <JuiMenuItem
             onClick={this.handleViewYourProfile}
-            aria-label={t('viewYourProfile')}
+            aria-label={i18next.t('viewYourProfile')}
             data-test-automation-id="viewYourProfile"
           >
-            {t('Profile')}
+            {i18next.t('Profile')}
           </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
-              aria-label={t('AboutRingCentral')}
+              aria-label={i18next.t('AboutRingCentral')}
               data-test-automation-id="aboutPage"
             >
-              {t('AboutRingCentral')}
+              {i18next.t('AboutRingCentral')}
             </JuiMenuItem>
           )}
           <JuiMenuItem
             onClick={handleSignOut}
-            aria-label={t('signOut')}
+            aria-label={i18next.t('SignOut')}
             data-test-automation-id="signOut"
           >
-            {t('SignOut')}
+            {i18next.t('SignOut')}
           </JuiMenuItem>
         </JuiMenuList>
       </JuiAvatarActions>

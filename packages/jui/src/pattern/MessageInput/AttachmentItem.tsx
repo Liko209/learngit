@@ -6,7 +6,7 @@
 import React, { PureComponent, MouseEvent } from 'react';
 import styled from '../../foundation/styled-components';
 
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   height,
   width,
@@ -104,7 +104,7 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
     <IconWrapper>
       {typeof props.icon === 'string'
         ? !props.hideRemoveButton && (
-            <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
+            <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
               close
             </JuiIconButton>
           )

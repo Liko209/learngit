@@ -16,7 +16,7 @@ import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { transform } from '../utils';
 
 import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
-import handleData, { hiddenGroupsChange } from './handleData';
+import handleData from './handleData';
 import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
 
@@ -292,7 +292,6 @@ class ProfileService extends BaseService<Profile> {
           favorite_group_ids: favIds,
         };
       }
-      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
@@ -317,7 +316,6 @@ class ProfileService extends BaseService<Profile> {
         ...partialModel,
         [`hide_group_${groupId}`]: false,
       };
-      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
