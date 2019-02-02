@@ -426,7 +426,7 @@ describe('PostFetchController()', () => {
     });
   });
 
-  describe('getRemotePostsByGroupIdAndSave', () => {
+  describe('getRemotePostsByGroupIdAndSave()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -440,6 +440,7 @@ describe('PostFetchController()', () => {
         postId: 0,
       };
     }
+
     it('should be true when request server error', async () => {
       PostAPI.requestPosts.mockResolvedValueOnce(
         new ApiResultErr(
@@ -450,12 +451,11 @@ describe('PostFetchController()', () => {
             } as BaseResponse,
         ),
       );
-      const result = await postFetchController.getRemotePostsByGroupIdAndSave(
-        getParaMeters(true),
-      );
-      expect(result.success).toBeFalsy();
-      expect(result.hasMore).toBeTruthy();
+      await expect(
+        postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
+
     it('should not call updateHasMore when should not save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
