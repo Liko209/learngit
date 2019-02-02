@@ -2,7 +2,7 @@ import jenkins.model.*
 import java.net.URI
 import com.dabsquared.gitlabjenkins.cause.GitLabWebHookCause
 
-// glip emoji const
+// glip emoji const set
 final String SUCCESS_EMOJI = ':white_check_mark:'
 final String FAILURE_EMOJI = ':negative_squared_cross_mark:'
 final String ABORTED_EMOJI = ':no_entry:'
@@ -222,7 +222,7 @@ node(buildNode) {
                     branches: [[name: "${env.gitlabSourceNamespace}/${env.gitlabSourceBranch}"]],
                     extensions: [
                             [$class: 'PruneStaleBranch'],
-                            [$class: 'CleanCheckout'],
+                            [$class: 'CleanBeforeCheckout'],
                             [
                                     $class: 'PreBuildMerge',
                                     options: [
@@ -425,11 +425,15 @@ node(buildNode) {
                     "QUARANTINE_MODE=true",
                     "STOP_ON_FIRST_FAIL=true",
                     "SCREENSHOT_WEBP_QUALITY=80",
+                    "QUARANTINE_FAILED_THRESHOLD=4",
+                    "QUARANTINE_PASSED_THRESHOLD=1",
                     "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${env.gitlabSourceBranch}][${env.gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
                 sh 'env'
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
-                sh 'npm install --unsafe-perm'
+                sshagent (credentials: [scmCredentialId]) {
+                    sh 'npm install --unsafe-perm'
+                }
                 if ('true' == env.E2E_ENABLE_REMOTE_DASHBOARD){
                     sh 'npx ts-node create-run-id.ts'
                     report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl').trim()
