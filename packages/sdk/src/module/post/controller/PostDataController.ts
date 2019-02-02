@@ -3,7 +3,8 @@
  * @Date: 2019-01-22 09:41:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { Post, IRawPostResult } from '../entity';

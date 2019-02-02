@@ -1,7 +1,8 @@
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
 import IncomingPostHandler from '../incomingPostHandler';
 import { postFactory } from '../../../__tests__/factories';
+import { PostDao } from '../../../module/post/dao/PostDao';
 
 jest.mock('../../../dao', () => {
   const methods = {

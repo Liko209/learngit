@@ -5,7 +5,8 @@
  */
 
 import { ItemService } from '../../../item';
-import { PostDao, daoManager } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { ItemDao } from '../../../item/dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
@@ -16,6 +17,7 @@ import { Post } from '../../entity';
 
 jest.mock('../../../item');
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 
 class MockPreInsertController<T extends ExtendedBaseModel>

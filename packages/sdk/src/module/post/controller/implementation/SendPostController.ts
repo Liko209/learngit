@@ -5,7 +5,8 @@
  */
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, PostDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import SendPostControllerHelper from './SendPostControllerHelper';

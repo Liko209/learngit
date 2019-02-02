@@ -11,7 +11,7 @@ import { daoManager } from '../../dao';
 import ConfigDao from '../../dao/config';
 import { GroupDao } from '../../module/group/dao';
 import { PersonDao } from '../../module/person/dao';
-import PostDao from '../../dao/post';
+import { PostDao } from '../../module/post/dao';
 import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';
 import { FileItemDao } from '../../module/item/module/file/dao/FileItemDao';
 import { NoteItemDao } from '../../module/item/module/note/dao/NoteItemDao';
