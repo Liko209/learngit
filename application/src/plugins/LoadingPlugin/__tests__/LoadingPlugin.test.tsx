@@ -49,15 +49,18 @@ describe('LoadingPlugin', () => {
       expect(wrapper.update().find(JuiCircularProgress)).toHaveLength(1);
     });
 
-    it('should have delay before Progress is visible', () => {
+    it('should have delay before Progress is visible [JPT-169][JPT-170]', () => {
       const plugin = new LoadingPlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
 
       const wrapper = mount(unwrapMemo(<View loading={true} />));
 
+      // JPT-170 No progress animation when sync data <= 100 ms
       jest.advanceTimersByTime(90);
       expect(wrapper.find(JuiCircularProgress)).toHaveLength(0);
-      jest.runAllTimers();
+
+      // JPT-169 Display a progress animation when sync data more than 100ms
+      jest.advanceTimersByTime(20);
       expect(wrapper.update().find(JuiCircularProgress)).toHaveLength(1);
     });
 
