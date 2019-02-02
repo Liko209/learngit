@@ -25,5 +25,16 @@
   "PublicTeam": "公开的群组 (任何同事都可见)",
   "MembersMayPostMessages": "允许成员发消息",
   "at": "在",
-  "tomorrow": "明天"
+  "tomorrow": "明天",
+  "Create Team": "新建群组",
+  "Team Name": "群名",
+  "Team Description": "群公告",
+  "Team name required": "群名必填",
+  "tips": "你是这个群的管理员。",
+  "linkTips": "关于管理员权限",
+  "Create": "创建",
+  "Members": "组员",
+  "already taken": "该名字已经被使用, 请换一个。",
+  "Invalid Email": "邮箱不合法",
+  "Search Contact Placeholder": "组员 (请输入名字或者邮箱)"
 }

@@ -6,7 +6,7 @@
 import merge from 'lodash/merge';
 import NetworkClient, { INetworkRequests } from './NetworkClient';
 import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
-import { Throw, Aware } from '../utils';
+import { Throw } from '../utils';
 import { defaultConfig } from './defaultConfig';
 import { Raw } from '../framework/model';
 
@@ -55,10 +55,6 @@ class Api {
     // directly accessed by the ui layer. That should be refactor.
     // Move logics that access httpConfig into Api in the future.
     // tslint:disable-next-line:max-line-length
-    Aware(
-      ERROR_CODES_SDK.API_CONFIG_ERROR,
-      'httpConfig should be private. but it is directly accessed by the ui layer.',
-    );
     return this._httpConfig;
   }
 
@@ -70,7 +66,9 @@ class Api {
     name: HttpConfigType,
     type: IHandleType,
   ): NetworkClient {
-    if (!this._httpConfig) Throw(ERROR_CODES_SDK.API_NOT_INITIALIZED, 'Api not initialized');
+    if (!this._httpConfig) {
+      Throw(ERROR_CODES_SDK.API_NOT_INITIALIZED, 'Api not initialized');
+    }
 
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {

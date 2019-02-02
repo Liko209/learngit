@@ -103,7 +103,11 @@ class JuiConversationCardHeader extends React.Component<
 
   componentDidMount() {
     this.setHeaderItemMaxWidth();
-    window.addEventListener('resize', this.setHeaderItemMaxWidth.bind(this));
+    window.addEventListener('resize', this.setHeaderItemMaxWidth);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
   componentDidUpdate() {

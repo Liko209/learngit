@@ -120,7 +120,8 @@
     "tinycolor",
     "uids",
     "snackbars",
-    "dismissible"
+    "dismissible",
+    "moize"
   ],
   "flagWords": []
 }

@@ -6,16 +6,16 @@ import { LoadingMorePlugin } from '@/plugins';
 import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType } from '../types';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
-import { i18n } from 'i18next';
+import i18next from 'i18next';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 
 jest.mock('../../../ConversationSheet', () => ({}));
 
 const baseProps = {
-  i18n: {} as i18n,
+  i18n: {} as i18next.i18n,
   tReady: true,
   postIds: [],
-  t: () => 'a',
+  t: (): any => 'a',
   items: [],
   groupId: 1,
   setRowVisible: jest.fn().mockName('setRowVisible'),
