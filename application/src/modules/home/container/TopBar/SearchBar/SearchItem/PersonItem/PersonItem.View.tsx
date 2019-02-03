@@ -37,7 +37,9 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     } = this.props;
     const { id, userDisplayName, deactivated } = person;
 
-    if (deactivated) return null;
+    if (deactivated) {
+      return null;
+    }
 
     return (
       <HotKeys

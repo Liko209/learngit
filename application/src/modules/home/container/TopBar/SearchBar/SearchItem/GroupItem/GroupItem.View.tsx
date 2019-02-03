@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
 import { JuiButton } from 'jui/components/Buttons';
@@ -13,10 +13,15 @@ import { HotKeys } from 'jui/hoc/HotKeys';
 import { ViewProps } from './types';
 
 @observer
-class GroupItemView extends React.Component<ViewProps, {}> {
+class GroupItemComponent extends React.Component<
+  ViewProps & WithNamespaces,
+  {}
+> {
   onEnter = async (e: KeyboardEvent) => {
     const { hovered, canJoinTeam } = this.props;
-    if (!hovered) return;
+    if (!hovered) {
+      return;
+    }
 
     if (canJoinTeam) {
       await this.handleJoinTeam(e);
@@ -39,6 +44,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
 
   render() {
     const {
+      t,
       title,
       terms,
       group,
@@ -53,7 +59,9 @@ class GroupItemView extends React.Component<ViewProps, {}> {
     } = this.props;
     const { id, displayName, deactivated } = group;
 
-    if (deactivated) return null;
+    if (deactivated) {
+      return null;
+    }
 
     return (
       <HotKeys
@@ -77,7 +85,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
                 variant="round"
                 size="small"
               >
-                {i18next.t('join')}
+                {t('join')}
               </JuiButton>
             )
           }
@@ -88,5 +96,7 @@ class GroupItemView extends React.Component<ViewProps, {}> {
     );
   }
 }
+
+const GroupItemView = translate('translates')(GroupItemComponent);
 
 export { GroupItemView };
