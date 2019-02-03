@@ -65,7 +65,7 @@ beforeEach(() => {
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
 });
 
-describe.skip('GroupService', () => {
+describe('GroupService', () => {
   const groupService: GroupService = new GroupService();
 
   jest
@@ -219,7 +219,7 @@ describe.skip('GroupService', () => {
     expect(result1).toHaveProperty('data', mock);
   });
 
-  it.only('updateGroupPartialData(object) is update success', async () => {
+  it('updateGroupPartialData(object) is update success', async () => {
     const result = await groupService.updateGroupPartialData({
       id: 1,
       abc: '123',
@@ -325,7 +325,7 @@ describe.skip('GroupService', () => {
       GroupAPI.pinPost.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
-          {
+            {
               status: 403,
               headers: {},
             } as BaseResponse,
@@ -938,10 +938,10 @@ describe.skip('GroupService', () => {
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'error'),
-          {
-                status: 500,
-                headers: {},
-              } as BaseResponse,
+            {
+              status: 500,
+              headers: {},
+            } as BaseResponse,
         ),
       );
       const result = await groupService.requestRemoteGroupByMemberList([1, 2]);

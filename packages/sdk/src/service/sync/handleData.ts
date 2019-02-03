@@ -27,7 +27,7 @@ import { ItemService } from '../../module/item';
 import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
-import { GroupService, IGroupService } from '../../module/group';
+import { GroupService } from '../../module/group';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {

@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-02-02 16:16:43
+ * Copyright © RingCentral. All rights reserved.
+ */
 import _ from 'lodash';
 
 import { Api } from '../../../api';
@@ -17,7 +22,7 @@ import PostService from '../../../service/post';
 import ProfileService from '../../../service/profile';
 import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
-import { Group, TeamPermission } from '../entity';
+import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
@@ -287,7 +292,12 @@ export class GroupActionController {
     try {
       await this.partialModifyController.updatePartially(
         params.id || 0,
-        undefined,
+        (partialEntity, originEntity) => {
+          return {
+            ...partialEntity,
+            ...params,
+          };
+        },
         async (updatedModel: Group) => {
           return updatedModel;
         },
@@ -310,20 +320,6 @@ export class GroupActionController {
       async (updateEntity: Group) =>
         await this._getGroupRequestController().put(updateEntity),
     );
-
-    // const result = await this._updateGroup(params.id, {
-    //   privacy: params.privacy,
-    // });
-    // return result;
-  }
-
-  isTeamAdmin(personId: number, permission?: TeamPermission) {
-    if (permission) {
-      // for some old team, thy don't have permission, so all member are admin
-      const adminUserIds = this._getTeamAdmins(permission);
-      return adminUserIds.some((x: number) => x === personId);
-    }
-    return true;
   }
 
   // update partial group data, for last accessed time
@@ -383,10 +379,6 @@ export class GroupActionController {
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
-  }
-
-  private _getTeamAdmins(permission?: TeamPermission) {
-    return permission && permission.admin ? permission.admin.uids : [];
   }
 
   private _getGroupRequestController() {

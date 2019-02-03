@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-02-02 16:16:51
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { err, JError, mainLogger, ok, Result } from 'foundation';
 import _ from 'lodash';
 
@@ -27,11 +32,8 @@ import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { GroupDao } from '../dao';
 import { Group, TeamPermission } from '../entity';
-import handleData, {
-  filterGroups,
-  sortFavoriteGroups,
-} from '../service/handleData';
 import { IGroupService } from '../service/IGroupService';
+import { GroupHandleDataController } from './GroupHandleDataController';
 
 export class GroupFetchDataController {
   constructor(
@@ -39,6 +41,7 @@ export class GroupFetchDataController {
     public entitySourceController: IEntitySourceController<Group>,
     public partialModifyController: IPartialModifyController<Group>,
     public entityCacheSearchController: IEntityCacheSearchController<Group>,
+    public groupHandleDataController: GroupHandleDataController,
   ) {}
 
   async getGroupsByType(
@@ -91,7 +94,7 @@ export class GroupFetchDataController {
           userId,
         );
       }
-      result = await filterGroups(result, limit);
+      result = await this.groupHandleDataController.filterGroups(result, limit);
     }
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
@@ -102,7 +105,6 @@ export class GroupFetchDataController {
     if (ids.length) {
       const groups = await Promise.all(
         ids.map(async (id: number) => {
-          // const group = await this.getById(id);
           const group = await this.entitySourceController.get(id);
           return group;
         }),
@@ -150,7 +152,7 @@ export class GroupFetchDataController {
     return result.match({
       Ok: async (rawGroup: Raw<Group>) => {
         const group = transform<Group>(rawGroup);
-        await handleData([rawGroup]);
+        // await this.groupHandleDataController.handleData([rawGroup]);
         return ok(group);
       },
       Err: (error: JError) => err(error),
@@ -243,7 +245,6 @@ export class GroupFetchDataController {
       return null;
     };
 
-    // const result = await this.searchEntitiesFromCache(
     const result = await this.entityCacheSearchController.searchEntities(
       sortFunc,
       searchKey,
@@ -282,7 +283,6 @@ export class GroupFetchDataController {
     const kSortingRateWithFirstMatched: number = 1;
     const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
-    // const result = await this.searchEntitiesFromCache(
     const result = await this.entityCacheSearchController.searchEntities(
       async (team: Group, terms: string[]) => {
         let isMatched: boolean = false;
@@ -538,7 +538,10 @@ export class GroupFetchDataController {
       }
       const dao = daoManager.getDao(GroupDao);
       const result = await dao.queryGroupsByIds(favoriteGroupIds);
-      return sortFavoriteGroups(favoriteGroupIds, result);
+      return this.groupHandleDataController.sortFavoriteGroups(
+        favoriteGroupIds,
+        result,
+      );
     }
     return [];
   }

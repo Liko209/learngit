@@ -1,9 +1,9 @@
-import { NetworkManager, OAuthTokenManager } from 'foundation';
 /*
  * @Author: Paynter Chen
  * @Date: 2019-01-02 09:32:43
  * Copyright © RingCentral. All rights reserved.
  */
+import { NetworkManager, OAuthTokenManager } from 'foundation';
 import _ from 'lodash';
 
 import { Api } from '../../../../api';
@@ -11,10 +11,11 @@ import {
   buildPartialModifyController,
   buildRequestController,
 } from '../../../../framework/controller';
-import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
+import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
+import { TestPartialModifyController } from '../../../../framework/__mocks__/controller/TestPartialModifyController';
 import { PERMISSION_ENUM } from '../../../../service';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { Group } from '../../entity/Group';
@@ -32,95 +33,6 @@ const replaceArray = (value, srcValue) => {
   }
 };
 
-const delegate = (
-  getObject: Function,
-  methodName: string,
-  isAsync: boolean = true,
-) => {
-  return isAsync
-    ? jest.fn().mockImplementation(async (...args) => {
-      const object = getObject();
-      return await object[methodName].call(object, ...args);
-    })
-    : jest.fn().mockImplementation((...args) => {
-      const object = getObject();
-      return object[methodName].call(object, ...args);
-    });
-};
-
-class TestEntitySourceController implements IEntitySourceController<Group> {
-  locals: Group[];
-  remotes: Group[];
-  constructor() {
-    this.locals = groupFactory.buildList(2);
-    this.remotes = groupFactory.buildList(2);
-  }
-
-  get = jest.fn().mockImplementation(async (id: number) => {
-    return groupFactory.build({
-      id,
-    });
-  });
-
-  getEntityLocally = jest.fn().mockImplementation(async (id: number) => {
-    return groupFactory.build({
-      id,
-    });
-  });
-
-  getEntitiesLocally = jest.fn().mockResolvedValue(this.locals);
-
-  getEntityNotificationKey = jest.fn().mockReturnValue('test');
-
-  getAll = jest.fn().mockReturnValue([]);
-
-  getTotalCount = jest.fn().mockReturnValue(0);
-
-  getEntityName = jest.fn().mockReturnValue('test');
-
-  put = jest.fn();
-
-  bulkPut = jest.fn();
-
-  clear = jest.fn();
-
-  delete = jest.fn();
-
-  bulkDelete = jest.fn();
-
-  update = jest.fn();
-
-  bulkUpdate = jest.fn();
-
-  batchGet = jest.fn().mockImplementation(async (id: number) => {
-    return groupFactory.buildList(2);
-  });
-}
-
-class TestPartialModifyController implements IPartialModifyController<Group> {
-  public partialModifyController: IPartialModifyController<Group>;
-  constructor(public entitySourceController: IEntitySourceController<Group>) {
-    this.partialModifyController = new PartialModifyController(
-      entitySourceController,
-    );
-  }
-  updatePartially = delegate(
-    () => this.partialModifyController,
-    'updatePartially',
-    false,
-  );
-  getMergedEntity = delegate(
-    () => this.partialModifyController,
-    'getMergedEntity',
-    false,
-  );
-  getRollbackPartialEntity = delegate(
-    () => this.partialModifyController,
-    'getRollbackPartialEntity',
-    false,
-  );
-}
-
 class TestRequestController implements IRequestController<Group> {
   get = jest.fn();
   put = jest.fn();
@@ -134,9 +46,11 @@ describe('TeamActionController', () => {
   let testRequestController: TestRequestController;
   const groupService = new GroupService();
   beforeEach(() => {
-    testEntitySourceController = new TestEntitySourceController();
-    testPartialModifyController = new TestPartialModifyController(
-      testEntitySourceController,
+    testEntitySourceController = new TestEntitySourceController<Group>(
+      groupFactory,
+    );
+    testEntitySourceController.get.mockImplementation((id: number) =>
+      groupFactory.build({ id }),
     );
     testPartialModifyController = new TestPartialModifyController(
       testEntitySourceController,

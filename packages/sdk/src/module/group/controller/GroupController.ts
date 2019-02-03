@@ -47,6 +47,7 @@ class GroupController {
         this.entitySourceController,
         this.partialModifyController,
         this.entityCacheSearchController,
+        this.getHandleDataController(),
       );
     }
     return this._groupFetchDataController;

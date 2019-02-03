@@ -172,7 +172,7 @@ class GroupHandleDataController {
     return normalData;
   }
 
-  async handleData(groups: Raw<Group>[]) {
+  handleData = async (groups: Raw<Group>[]) => {
     if (groups.length === 0) {
       return;
     }

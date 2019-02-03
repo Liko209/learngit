@@ -4,13 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { versionHash } from '../../utils/mathUtils';
-import { daoManager } from '../../dao';
-import AccountDao from '../../dao/account';
-import { ACCOUNT_USER_ID } from '../../dao/account/constants';
+import { UserConfig } from '../account/UserConfig';
 
 class GroupServiceHandler {
   static buildNewGroupInfo(members: number[]) {
-    const userId = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
+    const userId = UserConfig.getCurrentUserId();
     return {
       members,
       creator_id: Number(userId),
