@@ -96,6 +96,10 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
     return '';
   }
 
+  didUpdate = () => {
+    this.props.didLoad();
+  }
+
   _infoOfItem = (id: number, result: JuiPinnedItemProps[]) => {
     const type = GlipTypeUtil.extractTypeId(id);
     const iconMapper = ITEM_ICON_MAP[type];

@@ -64,7 +64,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     );
   }
 
-  fixedCellHeight() {
+  fixedCellHeight(index: number) {
     return ITEM_HEIGHT;
   }
 

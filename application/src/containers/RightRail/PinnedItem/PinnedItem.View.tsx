@@ -8,6 +8,9 @@ import { PinnedItemViewProps } from './types';
 import { JuiPinnedCell } from 'jui/pattern/RightShelf/PinnedItem';
 
 class PinnedItemView extends Component<PinnedItemViewProps> {
+  componentDidUpdate() {
+    this.props.didUpdate();
+  }
   render() {
     const { creatorName = '', createTime, textContent, items } = this.props;
     return (

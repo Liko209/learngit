@@ -14,6 +14,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellWrapper,
+  JuiVirtualCellOnLoadFunc,
 } from 'jui/pattern/VirtualList';
 
 import {
@@ -38,12 +39,16 @@ class PinnedListView
     return totalCount;
   }
 
-  cellAtIndex = (index: number, style: CSSProperties) => {
+  cellAtIndex = (
+    index: number,
+    style: CSSProperties,
+    didLoad: JuiVirtualCellOnLoadFunc,
+  ) => {
     const { ids } = this.props;
     const id = ids[index];
     let content;
     if (id) {
-      content = <PinnedItem id={id} />;
+      content = <PinnedItem id={id} didLoad={didLoad} />;
     }
 
     return (
@@ -51,10 +56,6 @@ class PinnedListView
         {content}
       </JuiVirtualCellWrapper>
     );
-  }
-
-  fixedCellHeight() {
-    return 52;
   }
 
   renderEmptyContent = () => {

@@ -50,7 +50,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
       return <StaticCell title={text} style={s} key={index} />;
     }
 
-    fixedCellHeight(): number {
+    fixedCellHeight(index: number): number {
       return 44;
     }
   }
@@ -141,7 +141,7 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
       return await p;
     }
 
-    fixedCellHeight(): number {
+    fixedCellHeight(index: number): number {
       return 44;
     }
     render() {
@@ -285,7 +285,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
       return count;
     }
 
-    fixedCellHeight() {
+    fixedCellHeight(index: number) {
       return 52;
     }
 
