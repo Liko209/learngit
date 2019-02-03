@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import { JuiCircularProgress } from 'jui/components';
 import { AbstractViewModel } from '../../../base/AbstractViewModel';
 import { LoadingPlugin, loading } from '../LoadingPlugin';
@@ -38,7 +38,7 @@ describe('LoadingPlugin', () => {
     it('should wrap View with loading', () => {
       const plugin = new LoadingPlugin();
       const View = plugin.wrapView(() => <div>Hello World</div>);
-      const wrapper = mount(<View loading={true} />);
+      const wrapper = shallow(<View loading={true} />);
       expect(wrapper.find(JuiCircularProgress)).toBeTruthy();
     });
 

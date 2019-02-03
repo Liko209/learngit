@@ -7,6 +7,7 @@ import * as React from 'react';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
+import { JuiCircularProgress } from '../../Progress';
 import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
 import {
@@ -30,6 +31,7 @@ type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   variant?: Variant;
   disabled?: boolean;
   color?: JuiButtonColor;
+  loading?: boolean;
 };
 
 const ColorMap: {
@@ -43,8 +45,9 @@ const ColorMap: {
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
+
 const WrappedMuiButton = (props: JuiButtonProps) => {
-  const { variant, color, ...restProps } = props;
+  const { variant, color, children, loading, ...restProps } = props;
   let _variant = variant;
   if (_variant === 'round') {
     _variant = 'fab';
@@ -63,7 +66,13 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       TouchRippleProps={{ classes: touchRippleClasses }}
       variant={_variant}
       {...restProps}
-    />
+    >
+      {loading ? (
+        <JuiCircularProgress size={20} white={_variant === 'contained'} />
+      ) : (
+        children
+      )}
+    </MuiButton>
   );
 };
 
