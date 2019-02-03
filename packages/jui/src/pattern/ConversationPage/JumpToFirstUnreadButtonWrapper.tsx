@@ -1,4 +1,4 @@
-import React, { HTMLAttributes } from 'react';
+import React, { HTMLAttributes, memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
 
@@ -12,10 +12,13 @@ const StyledDiv = styled.div`
   text-align: center;
 `;
 
-const JuiJumpToFirstUnreadButtonWrapper = (
-  props: JuiJumpToFirstUnreadButtonWrapperProps,
-) => (
-  <StyledDiv {...props} data-test-automation-id="jump-to-first-unread-button" />
+const JuiJumpToFirstUnreadButtonWrapper = memo(
+  (props: JuiJumpToFirstUnreadButtonWrapperProps) => (
+    <StyledDiv
+      {...props}
+      data-test-automation-id="jump-to-first-unread-button"
+    />
+  ),
 );
 
 export {

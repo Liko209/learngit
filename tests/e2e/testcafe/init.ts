@@ -4,7 +4,11 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
+<<<<<<< HEAD
 import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
+=======
+import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+>>>>>>> hotfix/1.0.1.190201
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
@@ -24,10 +28,13 @@ const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
 fs.writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
 logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
 
+<<<<<<< HEAD
 
 // initialize mock client
 export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
 
+=======
+>>>>>>> hotfix/1.0.1.190201
 // initialize account pool client
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 

@@ -3,7 +3,7 @@
  * @Date: 2018-12-10 18:40:06
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent, MouseEvent } from 'react';
+import React, { PureComponent, MouseEvent, memo } from 'react';
 import styled from '../../foundation/styled-components';
 
 import i18next from 'i18next';
@@ -88,29 +88,33 @@ type AttachmentItemActionProps = StatusProps & {
   icon?: string | JSX.Element;
 };
 
-const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
-  props: AttachmentItemActionProps,
-) => (
-  <ActionWrapper
-    onClick={!props.hideRemoveButton ? props.onClick : undefined}
-    data-test-automation-id="attachment-action-button"
-  >
-    {typeof props.value !== 'undefined' &&
-      props.status === ITEM_STATUS.LOADING && (
-        <ProgressWrapper>
-          <JuiCircularProgress variant="static" size={24} value={props.value} />
-        </ProgressWrapper>
-      )}
-    <IconWrapper>
-      {typeof props.icon === 'string'
-        ? !props.hideRemoveButton && (
-            <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
-              close
-            </JuiIconButton>
-          )
-        : props.icon}
-    </IconWrapper>
-  </ActionWrapper>
+const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = memo(
+  (props: AttachmentItemActionProps) => (
+    <ActionWrapper
+      onClick={!props.hideRemoveButton ? props.onClick : undefined}
+      data-test-automation-id="attachment-action-button"
+    >
+      {typeof props.value !== 'undefined' &&
+        props.status === ITEM_STATUS.LOADING && (
+          <ProgressWrapper>
+            <JuiCircularProgress
+              variant="static"
+              size={24}
+              value={props.value}
+            />
+          </ProgressWrapper>
+        )}
+      <IconWrapper>
+        {typeof props.icon === 'string'
+          ? !props.hideRemoveButton && (
+              <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
+                close
+              </JuiIconButton>
+            )
+          : props.icon}
+      </IconWrapper>
+    </ActionWrapper>
+  ),
 );
 
 class AttachmentItem extends PureComponent<AttachmentItemProps> {

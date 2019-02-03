@@ -27,7 +27,7 @@ const TextField = styled(MuiTextField)`
 
 type Props = TextFieldProps;
 
-class JuiTextField extends React.Component<Props, {}> {
+class JuiTextField extends React.PureComponent<Props, {}> {
   constructor(props: Props) {
     super(props);
   }

@@ -296,9 +296,9 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { loading, loadInitialPostsError, t } = this.props;
+    const { loadInitialPostsError, t } = this.props;
 
-    return loading || loadInitialPostsError ? (
+    return loadInitialPostsError ? (
       <JuiStreamLoading
         showTip={!!loadInitialPostsError}
         tip={t('translations:messageLoadingErrorTip')}

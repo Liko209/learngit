@@ -110,6 +110,11 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
     const inEditModePostIds = getGlobalValue(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS);
     return inEditModePostIds.includes(this.id);
   }
+
+  @computed
+  get showActivityStatus() {
+    return !!(this.post.parentId || this.post.existItemIds.length);
+  }
 }
 
 export { ConversationCardViewModel };
