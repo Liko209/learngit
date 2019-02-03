@@ -12,6 +12,15 @@ import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
 
 class GroupItemViewModel extends StoreViewModel<Props> {
+  constructor(props: Props) {
+    super(props);
+    const { sectionIndex, cellIndex } = props;
+    this.reaction(
+      () => this.group,
+      () => this.props.didChange(sectionIndex, cellIndex),
+    );
+  }
+
   @computed
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);

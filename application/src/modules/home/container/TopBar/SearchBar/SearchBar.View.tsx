@@ -27,26 +27,14 @@ const SEARCH_DELAY = 100;
 
 type SearchItems = {
   ids: number[];
+  name: SectionTypeMap;
   hasMore: boolean;
 };
 
 type State = {
   terms: string[];
-  people: SearchItems;
-  groups: SearchItems;
-  teams: SearchItems;
+  data: SearchItems[];
   selectIndex: number[];
-  [x: string]: any;
-};
-
-const defaultSection = {
-  ids: [],
-  hasMore: false,
-};
-
-type SectionType = {
-  data: SearchItems;
-  name: number;
 };
 
 const InvalidIndexPath: number[] = [-1, -1];
@@ -61,9 +49,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
   state = {
     terms: [],
-    people: defaultSection,
-    groups: defaultSection,
-    teams: defaultSection,
+    data: [],
     selectIndex: InvalidIndexPath,
   };
 
@@ -75,11 +61,23 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       if (!ret) return;
 
       const { terms, people, groups, teams } = ret;
+      const data: SearchItems[] = [
+        {
+          ...people,
+          name: SectionTypeMap.PEOPLE,
+        },
+        {
+          ...groups,
+          name: SectionTypeMap.GROUPS,
+        },
+        {
+          ...teams,
+          name: SectionTypeMap.TEAMS,
+        },
+      ];
       this.setState({
         terms,
-        groups,
-        people,
-        teams,
+        data,
         selectIndex: InvalidIndexPath,
       });
     },                              SEARCH_DELAY);
@@ -98,9 +96,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _resetData() {
     this.setState({
       terms: [],
-      persons: defaultSection,
-      groups: defaultSection,
-      teams: defaultSection,
+      data: [],
       selectIndex: InvalidIndexPath,
     });
   }
@@ -162,18 +158,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  private _getDataSections = () => {
-    const { people, groups, teams } = this.state;
-    return [people, groups, teams];
-  }
-
   private _findNextValidSectionLength(
     section: number,
     offset: number,
   ): number[] {
-    const data = this._getDataSections();
+    const { data } = this.state;
     for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as any).ids;
+      const { length } = (data[i] as SearchItems).ids;
       if (length > 0) {
         return [i, length];
       }
@@ -202,9 +193,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   onKeyDown = () => {
     const { selectIndex } = this.state;
     const [section, cell] = selectIndex;
-    const data = this._getDataSections();
+    const { data } = this.state;
     const currentSection = section < 0 ? 0 : section;
-    const currentSectionLength = data[currentSection].ids.length;
+    const searchItem: SearchItems = data[currentSection];
+    const currentSectionLength = searchItem.ids.length;
     if (cell < currentSectionLength - 1) {
       this._setSelectIndex(currentSection, cell + 1);
     } else {
@@ -220,6 +212,14 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
     const [section, cell] = this.state.selectIndex;
+
+    let { data } = this.state;
+    data = data.slice(0);
+
+    const items: SearchItems = data[sectionIndex];
+    items.ids.splice(cellIndex, 1);
+    this.setState({ data });
+
     // remove current select item
     if (sectionIndex === section && cell === cellIndex) {
       this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
@@ -227,11 +227,8 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
 
     // remove before current select item
-    if (
-      sectionIndex < section ||
-      (sectionIndex === section && cellIndex < cell)
-    ) {
-      this.onKeyUp();
+    if (sectionIndex === section && cellIndex < cell) {
+      this._setSelectIndex(section, cell - 1);
     }
   }
 
@@ -259,26 +256,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   render() {
-    const { people, groups, teams, terms, selectIndex } = this.state;
+    const { data, terms, selectIndex } = this.state;
     const { searchValue, focus } = this.props;
-    const sections: SectionType[] = [
-      {
-        data: people,
-        name: SectionTypeMap.PEOPLE,
-      },
-      {
-        data: groups,
-        name: SectionTypeMap.GROUPS,
-      },
-      {
-        data: teams,
-        name: SectionTypeMap.TEAMS,
-      },
-    ];
-
-    const cells: ReactNode[] = sections.map(
-      ({ data, name }: SectionType, sectionIndex: number) => {
-        const { ids, hasMore } = data;
+    const cells: ReactNode[] = data.map(
+      ({ ids, name, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
 
         const { SearchItem, title } = SearchSectionsConfig[name];
