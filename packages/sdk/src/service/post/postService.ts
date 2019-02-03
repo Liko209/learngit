@@ -5,7 +5,8 @@
  */
 
 import _ from 'lodash';
-import { daoManager, PostDao, GroupConfigDao } from '../../dao';
+import { daoManager, GroupConfigDao } from '../../dao';
+import { PostDao } from '../../module/post/dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';

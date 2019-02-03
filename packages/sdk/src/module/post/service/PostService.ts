@@ -7,7 +7,8 @@
 import { PostController } from '../controller/PostController';
 import { Post, IPostQuery, IPostResult } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { PostDao } from '../../../module/post/dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';

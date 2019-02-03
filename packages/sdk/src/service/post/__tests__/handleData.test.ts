@@ -13,7 +13,7 @@ import {
 } from '../../../service/utils';
 import PostService from '../../post';
 import GroupService from '../../../module/group';
-import PostDao from '../../../dao/post/index';
+import { PostDao } from '../../../module/post/dao/PostDao';
 import handleData, {
   baseHandleData,
   handleDataFromSexio,

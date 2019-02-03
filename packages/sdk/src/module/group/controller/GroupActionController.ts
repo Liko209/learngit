@@ -27,13 +27,6 @@ import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
 
-const deleteAllTeamInformation = async (ids: number[]) => {
-  const postService: PostService = PostService.getInstance();
-  await postService.deletePostsByGroupIds(ids, true);
-  const groupConfigDao = daoManager.getDao(GroupConfigDao);
-  groupConfigDao.bulkDelete(ids);
-};
-
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
   groupRequestController: IRequestController<Group>;
@@ -341,7 +334,25 @@ export class GroupActionController {
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
     }
-    deleteAllTeamInformation(ids);
+    await this.deleteAllTeamInformation(ids);
+  }
+
+  async deleteAllTeamInformation(ids: number[]) {
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkDelete(ids);
+    const groups = await this.groupService.getGroupsByIds(ids);
+    const groupDao = daoManager.getDao(GroupDao);
+    const privateGroupIds = groups
+      .filter((group: Group) => {
+        return group.privacy === 'private';
+      })
+      .map((group: Group) => group.id);
+    if (privateGroupIds.length > 0) {
+      await groupDao.bulkDelete(privateGroupIds);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, privateGroupIds);
+    }
   }
 
   async setAsTrue4HasMoreConfigByDirection(

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { daoManager } from '../../dao';
-import PostDao from '../../dao/post';
+import { PostDao } from '../../module/post/dao';
 import { ENTITY } from '../../service/eventKey';
 import GroupService from '../../module/group';
 import IncomingPostHandler from '../../service/post/incomingPostHandler';

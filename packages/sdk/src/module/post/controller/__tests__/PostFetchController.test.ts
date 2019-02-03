@@ -7,7 +7,8 @@
 import { postFactory, itemFactory } from '../../../../__tests__/factories';
 import { ItemService } from '../../../item';
 import { ItemDao } from '../../../item/dao';
-import { PostDao, daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PostFetchController } from '../PostFetchController';
@@ -19,6 +20,7 @@ import { GroupService } from '../../../../module/group/service';
 import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../item');
 jest.mock('../../../../api/glip/post');
