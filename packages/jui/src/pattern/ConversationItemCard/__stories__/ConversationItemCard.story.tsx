@@ -27,7 +27,7 @@ const Wrapper = styled.div``;
 storiesOf('Pattern/ConversationItemCard', module)
   .addDecorator(withInfoDecorator(JuiConversationItemCard, { inline: true }))
   .add('JuiConversationItemCard', () => {
-    class ConversationItem extends React.Component<{}, { checked: boolean }> {
+    class ConversationItem extends React.PureComponent<{}, { checked: boolean }> {
       constructor(p) {
         super(p);
         this.state = {
@@ -75,7 +75,7 @@ storiesOf('Pattern/ConversationItemCard', module)
     const StyledCodeSnippetContainer = styled('div')`
       padding: 12px;
     `;
-    class CodeSnippet extends React.Component<{}> {
+    class CodeSnippet extends React.PureComponent<{}> {
       render() {
         return (
           <StyledCodeSnippetContainer>

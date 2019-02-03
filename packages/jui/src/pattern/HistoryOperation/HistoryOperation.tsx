@@ -29,7 +29,7 @@ const MenuListItemWrapper = styled.div`
   ${ellipsis()}
 `;
 
-export class JuiHistoryOperation extends React.Component<
+export class JuiHistoryOperation extends React.PureComponent<
   TowardsProps,
   { open: boolean; anchorEl: HTMLElement | null }
 > {

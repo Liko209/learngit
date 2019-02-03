@@ -158,7 +158,7 @@ storiesOf('Pattern/ConversationList', module)
         items: any[];
       };
 
-      class SortableDemo extends React.Component<{}, SortableDemoStates> {
+      class SortableDemo extends React.PureComponent<{}, SortableDemoStates> {
         constructor(props: {}) {
           super(props);
 

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
@@ -43,7 +42,7 @@ test(formalName('Send message for link and display on the right rail', ['Skye', 
     await conversationPage.sendMessage(message[0]);
   });
 
-  const linkTab = rightRail.linkTab;
+  const linkTab = rightRail.linksTab;
   await h(t).withLog('And I click Links Tab', async () => {
     await rightRail.openMore();
     await rightRail.linksEntry.enter();
@@ -52,7 +51,7 @@ test(formalName('Send message for link and display on the right rail', ['Skye', 
 
   await h(t).withLog('Then The links number is correct: 1', async () => {
     await linkTab.countOnSubTitleShouldBe(1);
-    await linkTab.linksCountsShouldBe(1);
+    await linkTab.countInListShouldBe(1);
   });
 
   await h(t).withLog('When I send second link', async () => {
@@ -61,11 +60,11 @@ test(formalName('Send message for link and display on the right rail', ['Skye', 
 
   await h(t).withLog('Then The links number is correct: 2', async () => {
     await linkTab.countOnSubTitleShouldBe(2);
-    await linkTab.linksCountsShouldBe(2);
+    await linkTab.countInListShouldBe(2);
   });
 
   const deletePostDialog = app.homePage.messageTab.deletePostModal;
-  await h(t).withLog('When I delete the post', async () => {
+  await h(t).withLog('When I delete the last post', async () => {
     await conversationPage.nthPostItem(-1).clickMoreItemOnActionBar();
     await conversationPage.nthPostItem(-1).actionBarMoreMenu.deletePost.enter();
     await deletePostDialog.delete();
@@ -73,6 +72,6 @@ test(formalName('Send message for link and display on the right rail', ['Skye', 
 
   await h(t).withLog('Then The links number is correct: 1', async () => {
     await linkTab.countOnSubTitleShouldBe(1);
-    await linkTab.linksCountsShouldBe(1);
+    await linkTab.countInListShouldBe(1);
   });
 });

@@ -3,7 +3,7 @@
  * @Date: 2018-09-27 13:53:47
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import MuiListItemText, {
   ListItemTextProps as MuiListItemTextProps,
 } from '@material-ui/core/ListItemText';
@@ -41,7 +41,7 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
   }
 `;
 
-const JuiListItemText = (props: JuiListItemTextProps) => {
+const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
   const { primary, primaryColor, secondary } = props;
   return (
     <StyledListItemText
@@ -56,6 +56,8 @@ const JuiListItemText = (props: JuiListItemTextProps) => {
   );
 };
 
-JuiListItemText.displayName = 'JuiListItemText';
+JuiListItemTextComponent.displayName = 'JuiListItemText';
+
+const JuiListItemText = memo(JuiListItemTextComponent);
 
 export { JuiListItemText, JuiListItemTextProps };
