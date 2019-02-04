@@ -20,6 +20,7 @@ import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import { ENTITY } from 'sdk/service';
 import { NewPostService } from 'sdk/module/post';
+import postCacheController from './cache/PostCacheController';
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
@@ -83,12 +84,19 @@ export class StreamController {
       entityName: ENTITY_NAME.POST,
       eventName: ENTITY.POST,
     };
+    const listHandler = postCacheController.get(this._groupId);
+    if (!listHandler) {
+      this._orderListHandler = new FetchSortableDataListHandler(
+        this.postDataProvider,
+        options,
+      );
+      this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
+      postCacheController.set(this._groupId, this._orderListHandler);
+    } else {
+      this._orderListHandler = listHandler;
+      this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
+    }
 
-    this._orderListHandler = new FetchSortableDataListHandler(
-      this.postDataProvider,
-      options,
-    );
-    this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
       undefined,
@@ -145,7 +153,7 @@ export class StreamController {
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.dispose();
+      this._orderListHandler.setUpDataChangeCallback(undefined);
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
@@ -182,7 +190,16 @@ export class StreamController {
   hasMore(direction: QUERY_DIRECTION) {
     return this._orderListHandler.hasMore(direction);
   }
+
   fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
     return this._orderListHandler.fetchData(direction, pageSize);
+  }
+
+  fetchInitialData(direction: QUERY_DIRECTION, pageSize?: number) {
+    if (this._orderListHandler.size === 0) {
+      return this._orderListHandler.fetchData(direction, pageSize);
+    }
+    this._orderListHandler.refreshData();
+    return this._orderListHandler.listStore.items;
   }
 }

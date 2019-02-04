@@ -158,7 +158,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       if (this.jumpToPostId) {
         await this._loadSiblingPosts(this.jumpToPostId);
       } else {
-        await this._loadPosts(QUERY_DIRECTION.OLDER);
+        await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
     } catch (err) {
       this._handleLoadInitialPostsError(err);

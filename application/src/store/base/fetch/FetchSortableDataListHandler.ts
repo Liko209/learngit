@@ -106,6 +106,16 @@ export class FetchSortableDataListHandler<
     return data;
   }
 
+  refreshData() {
+    const sortableResult: ISortableModel<T>[] = this.listStore.items;
+    this.handlePageData(sortableResult);
+    this._dataChangeCallBack &&
+      this._dataChangeCallBack({
+        added: sortableResult,
+        deleted: [],
+      });
+  }
+
   handleDataDeleted(payload: NotificationEntityDeletePayload) {
     let originalSortableIds: number[] = [];
 
