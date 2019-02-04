@@ -1,24 +1,25 @@
 import { getEntity } from '@/store/utils';
-import {
-  IFetchSortableDataProvider,
-  IFetchSortableDataListHandlerOptions,
-} from './../../../store/base/fetch/FetchSortableDataListHandler';
 import { OrdinaryPostWrapper } from './StreamItemAssemblyLine/Assembler/OrdinaryPostWrapper';
 import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
 import { StreamItem, TDeltaWithData, StreamItemType } from './types';
-import { FetchSortableDataListHandler } from '@/store/base/fetch';
+import {
+  FetchSortableDataListHandler,
+  IFetchSortableDataProvider,
+} from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { Post } from 'sdk/module/post/entity';
 import _ from 'lodash';
 import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
-import { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME, storeManager } from '@/store';
 
 import { GroupState } from 'sdk/models';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
+import { ENTITY } from 'sdk/service';
+import { NewPostService } from 'sdk/module/post';
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
@@ -26,7 +27,12 @@ const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   data: dataModel,
 });
 
+const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
+  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
+
 export class StreamController {
+  private _postService: NewPostService = NewPostService.getInstance();
+
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<StreamItem>;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -62,12 +68,24 @@ export class StreamController {
 
   constructor(
     private _groupId: number,
+    private _jumpToPostId: number,
     private _historyHandler: HistoryHandler,
-    postDataProvider: IFetchSortableDataProvider<Post>,
-    options: IFetchSortableDataListHandlerOptions<Post>,
   ) {
+    const options = {
+      transformFunc: (dataModel: Post) => ({
+        id: dataModel.id,
+        sortValue: dataModel.created_at,
+        data: dataModel,
+      }),
+      hasMoreUp: true,
+      hasMoreDown: !!this._jumpToPostId,
+      isMatchFunc: isMatchedFunc(this._groupId),
+      entityName: ENTITY_NAME.POST,
+      eventName: ENTITY.POST,
+    };
+
     this._orderListHandler = new FetchSortableDataListHandler(
-      postDataProvider,
+      this.postDataProvider,
       options,
     );
     this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
@@ -87,6 +105,24 @@ export class StreamController {
       new SingletonTagChecker(),
     ]);
   }
+
+  postDataProvider: IFetchSortableDataProvider<Post> = {
+    fetchData: async (direction, pageSize, anchor) => {
+      const {
+        posts,
+        hasMore,
+        items,
+      } = await this._postService.getPostsByGroupId({
+        direction,
+        groupId: this._groupId,
+        postId: anchor && anchor.id,
+        limit: pageSize,
+      });
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
+      return { hasMore, data: posts };
+    },
+  };
 
   @computed
   get items() {
