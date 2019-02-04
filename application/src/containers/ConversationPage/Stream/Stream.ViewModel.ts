@@ -134,8 +134,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
     this._streamController = new StreamController(
       props.groupId,
-      this.jumpToPostId,
       this._historyHandler,
+      this.jumpToPostId,
     );
   }
 

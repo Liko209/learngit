@@ -18,7 +18,6 @@ import { ENTITY_NAME, storeManager } from '@/store';
 import { GroupState } from 'sdk/models';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
-import { ENTITY } from 'sdk/service';
 import { NewPostService } from 'sdk/module/post';
 import postCacheController from './cache/PostCacheController';
 
@@ -27,9 +26,6 @@ const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   sortValue: dataModel.id,
   data: dataModel,
 });
-
-const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 export class StreamController {
   private _postService: NewPostService = NewPostService.getInstance();
@@ -69,33 +65,15 @@ export class StreamController {
 
   constructor(
     private _groupId: number,
-    private _jumpToPostId: number,
     private _historyHandler: HistoryHandler,
+    private _jumpToPostId?: number,
   ) {
-    const options = {
-      transformFunc: (dataModel: Post) => ({
-        id: dataModel.id,
-        sortValue: dataModel.created_at,
-        data: dataModel,
-      }),
-      hasMoreUp: true,
-      hasMoreDown: !!this._jumpToPostId,
-      isMatchFunc: isMatchedFunc(this._groupId),
-      entityName: ENTITY_NAME.POST,
-      eventName: ENTITY.POST,
-    };
-    const listHandler = postCacheController.get(this._groupId);
-    if (!listHandler) {
-      this._orderListHandler = new FetchSortableDataListHandler(
-        this.postDataProvider,
-        options,
-      );
-      this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
-      postCacheController.set(this._groupId, this._orderListHandler);
-    } else {
-      this._orderListHandler = listHandler;
-      this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
-    }
+    const listHandler = postCacheController.get(
+      this._groupId,
+      this._jumpToPostId,
+    );
+    this._orderListHandler = listHandler;
+    this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
 
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(

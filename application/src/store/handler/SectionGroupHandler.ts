@@ -29,6 +29,8 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
+import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
+import PrefetchPostProcessor from './PrefetchPostProcessor';
 
 const { GroupService, ProfileService } = service;
 
@@ -388,7 +390,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         performanceKey,
         logId,
       );
-      await this._handlersMap[sectionType].fetchData(direction);
+      const groups = await this._handlersMap[sectionType].fetchData(direction);
+      console.log(`===> ${sectionType}, count: ${groups.length}`);
+      if (sectionType === SECTION_TYPE.FAVORITE) {
+        const handler = new SequenceProcessorHandler(
+          'prefetchSequenceProcessorHandler',
+        );
+        groups.forEach((group: Group) => {
+          const processor = new PrefetchPostProcessor(group.id);
+          handler.addProcessor(processor);
+        });
+        handler.process();
+      }
       PerformanceTracerHolder.getPerformanceTracer().end(logId);
     }
   }
