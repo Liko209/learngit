@@ -5,10 +5,9 @@
  */
 
 import React, {
-  Component,
   MouseEvent,
   Fragment,
-  PureComponent,
+  Component,
   RefObject,
   createRef,
 } from 'react';
@@ -41,7 +40,7 @@ const MenuList = styled(JuiMenuList)`
 type Props = AttachmentViewProps;
 
 @withUploadFile
-class UploadArea extends PureComponent<any> {
+class UploadArea extends Component<any> {
   render() {
     return <div />;
   }

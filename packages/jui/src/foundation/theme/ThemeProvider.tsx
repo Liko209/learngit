@@ -3,7 +3,7 @@
  * @Date: 2018-08-30 08:39:11
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import createMuiTheme, {
   Theme as MuiTheme,
 } from '@material-ui/core/styles/createMuiTheme';
@@ -21,7 +21,7 @@ interface IThemeProviderPropsState {
   theme: MuiTheme | null;
 }
 
-class ThemeProvider extends Component<
+class ThemeProvider extends PureComponent<
   IThemeProviderProps,
   IThemeProviderPropsState
 > {
