@@ -97,7 +97,7 @@ class LogManager {
       ? mergeWith({}, this._defaultLoaderMap, customLoaderMap)
       : this._defaultLoaderMap;
     const decorators: ILogEntityDecorator[] = (loaderItems || []).map(
-      loaderItem => {
+      (loaderItem: LoaderItem) => {
         if (
           Object.prototype.toString.call(loaderItem.loader) ===
           '[object String]'

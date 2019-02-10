@@ -16,7 +16,7 @@ import { Raw, SortableModel } from '../../../framework/model';
 import { UserConfig } from '../../../service/account';
 import CompanyService from '../../../service/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
-import GroupServiceHandler from '../../../service/group/groupServiceHandler';
+import { versionHash } from '../../../utils/mathUtils';
 import ProfileService from '../../../service/profile';
 import { extractHiddenGroupIds } from '../../../service/profile/handleData';
 import { transform } from '../../../service/utils';
@@ -34,6 +34,16 @@ import { GroupDao } from '../dao';
 import { Group, TeamPermission } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
+
+function buildNewGroupInfo(members: number[]) {
+  const userId = UserConfig.getCurrentUserId();
+  return {
+    members,
+    creator_id: Number(userId),
+    is_new: true,
+    new_version: versionHash(),
+  };
+}
 
 export class GroupFetchDataController {
   constructor(
@@ -145,9 +155,7 @@ export class GroupFetchDataController {
     members: number[],
   ): Promise<Result<Group>> {
     const memberIds = this._addCurrentUserToMemList(members);
-    const info: Partial<Group> = GroupServiceHandler.buildNewGroupInfo(
-      memberIds,
-    );
+    const info: Partial<Group> = buildNewGroupInfo(memberIds);
     const result = await GroupAPI.requestNewGroup(info);
     return result.match({
       Ok: async (rawGroup: Raw<Group>) => {

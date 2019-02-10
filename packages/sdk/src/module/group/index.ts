@@ -1,5 +1,5 @@
-export { GroupService as default } from './service/NewGroupService';
-export { GroupService } from './service/NewGroupService';
+export { GroupService as default } from './service/GroupService';
+export { GroupService } from './service/GroupService';
 export { IGroupService } from './service/IGroupService';
 export { PERMISSION_ENUM } from './constants';
 export * from './entity';

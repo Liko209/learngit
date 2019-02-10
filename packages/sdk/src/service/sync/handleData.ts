@@ -13,7 +13,6 @@ import {
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
-import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
@@ -76,8 +75,8 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     .then(() =>
       GroupService.getInstance<GroupService>().handleData(public_teams),
     )
-    .then(() => groupHandleData(groups))
-    .then(() => groupHandleData(teams))
+    .then(() => GroupService.getInstance<GroupService>().handleData(groups))
+    .then(() => GroupService.getInstance<GroupService>().handleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 

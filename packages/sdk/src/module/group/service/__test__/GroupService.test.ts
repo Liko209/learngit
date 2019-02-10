@@ -4,7 +4,7 @@ import { GroupActionController } from '../../controller/GroupActionController';
 import { GroupController } from '../../controller/GroupController';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamSetting } from '../../types';
-import { GroupService } from '../NewGroupService';
+import { GroupService } from '../GroupService';
 
 jest.mock('../../controller/GroupActionController', () => ({
   GroupActionController: jest.fn(),

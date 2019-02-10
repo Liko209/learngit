@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { GroupService } from './NewGroupService';
+export { GroupService } from './GroupService';

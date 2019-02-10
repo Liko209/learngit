@@ -13,7 +13,7 @@ import { TeamPermissionController } from '../TeamPermissionController';
 
 jest.mock('../../../../api');
 
-describe('TeamController', () => {
+describe('GroupController', () => {
   describe('getTeamActionController()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
