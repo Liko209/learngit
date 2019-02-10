@@ -21,7 +21,6 @@ import handleData, {
 } from '../handleData';
 
 jest.mock('../../post');
-// jest.mock('../../group');
 jest.mock('sdk/module/group');
 const postService = new PostService();
 const groupService = new GroupService();

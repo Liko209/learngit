@@ -157,7 +157,6 @@ describe('GroupFetchDataController', () => {
 
   it('getGroupsByIds()', async () => {
     const mock = { id: 1 };
-    // daoManager.getDao.mockReturnValue(groupDao);
     testEntitySourceController.get.mockResolvedValue(mock);
 
     const result1 = await groupFetchDataController.getGroupsByIds([]);
@@ -270,7 +269,6 @@ describe('GroupFetchDataController', () => {
 
   describe('get left rail conversations', () => {
     it('get left rail conversations', async () => {
-      // jest.spyOn(groupService, 'isCacheInitialized').mockReturnValue(false);
       const mock = [{ id: 1 }, { id: 2 }];
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupsByIds.mockResolvedValue(mock);
@@ -332,8 +330,6 @@ describe('GroupFetchDataController', () => {
         .mockImplementation((person: Person) =>
           person.id > 12000 ? 'ben1' : 'tu1',
         );
-
-      // groupService.enableCache();
 
       const userId = mockUserId;
       // prepare one : one
@@ -597,7 +593,6 @@ describe('GroupFetchDataController', () => {
 
     function prepareGroupsForSearch() {
       UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
-      // groupService.enableCache();
 
       entityCacheController.put(team1);
       entityCacheController.put(team2);
@@ -624,7 +619,6 @@ describe('GroupFetchDataController', () => {
 
   describe('getOrCreateGroupByMemberList', () => {
     const groupDao = new GroupDao(null);
-    const groupService: GroupService = new GroupService();
 
     beforeEach(() => {
       UserConfig.getCurrentUserId.mockReturnValueOnce(3);

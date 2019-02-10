@@ -208,10 +208,6 @@ describe('GroupFetchDataController', () => {
     });
 
     it('should call dependency apis with correct data', async () => {
-      // jest
-      //   .spyOn(require('../../utils'), 'transform')
-      //   .mockImplementationOnce(source => source + 1);
-      // jest.spyOn(groupActionController.teamPermissionController, 'mergePermissionFlagsWithLevel').mockReturnValue(100);
       jest.spyOn(groupActionController, 'handleRawGroup');
       groupActionController.handleRawGroup.mockImplementationOnce(() => group);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
@@ -226,7 +222,6 @@ describe('GroupFetchDataController', () => {
         name: 'some team',
         description: 'abc',
       });
-      // expect(result.isOk()).toBeTruthy();
       expect(result).toEqual(group);
 
       expect(GroupAPI.createTeam).toHaveBeenCalledWith({
@@ -239,13 +234,6 @@ describe('GroupFetchDataController', () => {
           },
         },
       });
-      // expect(Permission.createPermissionsMask).toHaveBeenCalledWith({
-      //   TEAM_POST: false,
-      //   TEAM_ADD_MEMBER: false,
-      //   TEAM_ADD_INTEGRATIONS: false,
-      //   TEAM_PIN_POST: false,
-      //   TEAM_ADMIN: false,
-      // });
     });
 
     it('should return error object if duplicate name', async () => {
@@ -260,22 +248,12 @@ describe('GroupFetchDataController', () => {
         } as BaseResponse),
       );
 
-      // const result = await groupActionController.createTeam(
-      //   1323,
-      //   [],
-      //   {
-      //     name: 'some team',
-      //     description: 'abc',
-      //   },
-      // );
       expect(
         groupActionController.createTeam(1323, [], {
           name: 'some team',
           description: 'abc',
         }),
       ).rejects.toEqual(error);
-      // expect(result.isErr()).toBeTruthy();
-      // expect(result).toHaveProperty('error', error);
     });
   });
 

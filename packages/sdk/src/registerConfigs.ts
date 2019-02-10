@@ -54,7 +54,6 @@ const registerConfigs = {
 
     // Services
     { name: PostService.name, value: PostService },
-    // { name: GroupService.name, value: GroupService },
     { name: CompanyService.name, value: CompanyService },
     { name: ItemService.name, value: ItemService },
     { name: PersonService.name, value: PersonService },
