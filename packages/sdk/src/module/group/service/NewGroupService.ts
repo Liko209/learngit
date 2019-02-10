@@ -39,7 +39,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
         [ENTITY.POST]: this.getGroupController().getHandleDataController()
           .handleGroupMostRecentPostChanged,
         [SERVICE.PERSON_SERVICE
-          .TEAMS_REMOVED_FROM]: this.getGroupController().getHandleDataController()
+          .TEAMS_REMOVED_FROM]: this.getGroupController().getGroupActionController()
           .deleteAllTeamInformation,
         [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this
           .setAsTrue4HasMoreConfigByDirection,
@@ -331,6 +331,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return await this.getGroupController()
       .getGroupActionController()
       .isGroupCanBeShown(groupId);
+  }
+
+  async deleteGroupsConfig(ids: number[]): Promise<void> {
+    await this.getGroupConfigController().deleteGroupsConfig(ids);
   }
 }
 

@@ -116,6 +116,8 @@ interface IGroupService {
   }): Promise<boolean>;
 
   isGroupCanBeShown(groupId: number): Promise<boolean>;
+
+  deleteGroupsConfig(ids: number[]): Promise<void>;
 }
 
 export { IGroupService };

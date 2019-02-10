@@ -26,6 +26,11 @@ class GroupConfigController {
       [`has_more_${direction}`]: hasMore,
     });
   }
+
+  async deleteGroupsConfig(ids: number[]) {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    await groupConfigDao.bulkDelete(ids);
+  }
 }
 
 export { GroupConfigController };

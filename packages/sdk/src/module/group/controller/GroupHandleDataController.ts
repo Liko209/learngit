@@ -8,11 +8,9 @@ import _ from 'lodash';
 
 import GroupAPI from '../../../api/glip/group';
 import { daoManager, DeactivatedDao } from '../../../dao';
-import GroupConfigDao from '../../../dao/groupConfig';
 import { Raw } from '../../../framework/model';
 import { GroupState, PartialWithKey } from '../../../models';
 import { GroupDao } from '../../../module/group/dao';
-import { PostService } from '../../../service';
 import { UserConfig } from '../../../service/account';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
@@ -422,13 +420,6 @@ class GroupHandleDataController {
       groups,
     );
     await this.doNotification([], transformData);
-  }
-
-  async deleteAllTeamInformation(ids: number[]) {
-    const postService: PostService = PostService.getInstance();
-    await postService.deletePostsByGroupIds(ids, true);
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    groupConfigDao.bulkDelete(ids);
   }
 }
 

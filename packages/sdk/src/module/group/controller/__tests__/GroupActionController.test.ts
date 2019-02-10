@@ -297,7 +297,6 @@ describe('GroupFetchDataController', () => {
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
       await groupActionController.removeTeamsByIds([1], false);
       expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
-      expect(groupConfigDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(notificationCenter.emitEntityDelete).toBeCalledTimes(0);
     });
     it('should to notify', async () => {
@@ -305,7 +304,6 @@ describe('GroupFetchDataController', () => {
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);
       await groupActionController.removeTeamsByIds([1], true);
       expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
-      expect(groupConfigDao.bulkDelete).toHaveBeenCalledWith([1]);
       expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
     });
   });

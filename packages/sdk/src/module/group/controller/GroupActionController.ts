@@ -329,30 +329,27 @@ export class GroupActionController {
   }
 
   async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    if (_.isEmpty(ids)) {
+      return;
+    }
     const dao = daoManager.getDao(GroupDao);
     await dao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
     }
-    await this.deleteAllTeamInformation(ids);
   }
 
   async deleteAllTeamInformation(ids: number[]) {
     const postService: PostService = PostService.getInstance();
     await postService.deletePostsByGroupIds(ids, true);
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    groupConfigDao.bulkDelete(ids);
+    await this.groupService.deleteGroupsConfig(ids);
     const groups = await this.groupService.getGroupsByIds(ids);
-    const groupDao = daoManager.getDao(GroupDao);
     const privateGroupIds = groups
       .filter((group: Group) => {
         return group.privacy === 'private';
       })
       .map((group: Group) => group.id);
-    if (privateGroupIds.length > 0) {
-      await groupDao.bulkDelete(privateGroupIds);
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, privateGroupIds);
-    }
+    await this.removeTeamsByIds(privateGroupIds, true);
   }
 
   async setAsTrue4HasMoreConfigByDirection(
