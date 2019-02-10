@@ -26,9 +26,9 @@ import { StateService } from '../../state';
 import { Group } from '../entity';
 
 class GroupHandleDataController {
-  async getExistedAndTransformDataFromPartial(
+  getExistedAndTransformDataFromPartial = async (
     groups: Partial<Raw<Group>>[],
-  ): Promise<Group[]> {
+  ): Promise<Group[]> => {
     const groupDao = daoManager.getDao<GroupDao>(GroupDao);
 
     const transformedData: (Partial<Group> | null)[] = await Promise.all(
@@ -63,7 +63,9 @@ class GroupHandleDataController {
     ) as Group[];
   }
 
-  async calculateDeltaData(deltaGroup: Raw<Group>): Promise<Group | void> {
+  calculateDeltaData = async (
+    deltaGroup: Raw<Group>,
+  ): Promise<Group | void> => {
     const groupDao = daoManager.getDao<GroupDao>(GroupDao);
 
     const originData = await groupDao.get(deltaGroup._id);
@@ -105,7 +107,7 @@ class GroupHandleDataController {
     }
   }
 
-  async getTransformData(groups: Raw<Group>[]): Promise<Group[]> {
+  getTransformData = async (groups: Raw<Group>[]): Promise<Group[]> => {
     const transformedData: (Group | null)[] = await Promise.all(
       groups.map(async (item: Raw<Group>) => {
         let finalItem = item;
@@ -133,7 +135,7 @@ class GroupHandleDataController {
     ) as Group[];
   }
 
-  async doNotification(deactivatedData: Group[], groups: Group[]) {
+  doNotification = async (deactivatedData: Group[], groups: Group[]) => {
     groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
     const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
       return group.id;
@@ -143,7 +145,7 @@ class GroupHandleDataController {
     groups.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, groups);
   }
 
-  async operateGroupDao(deactivatedData: Group[], normalData: Group[]) {
+  operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {
     try {
       const dao = daoManager.getDao(GroupDao);
       if (deactivatedData.length) {
@@ -158,7 +160,7 @@ class GroupHandleDataController {
     }
   }
 
-  async saveDataAndDoNotification(groups: Group[]) {
+  saveDataAndDoNotification = async (groups: Group[]) => {
     const deactivatedData = groups.filter(
       (item: Group) => item && item.deactivated,
     );
@@ -190,7 +192,7 @@ class GroupHandleDataController {
     console.timeEnd(logLabel);
   }
 
-  async doFavoriteGroupsNotification(favIds: number[]) {
+  doFavoriteGroupsNotification = async (favIds: number[]) => {
     mainLogger.debug('-------doFavoriteGroupsNotification--------');
     const filteredFavIds = favIds.filter(
       id => typeof id === 'number' && !isNaN(id),
@@ -213,7 +215,7 @@ class GroupHandleDataController {
     notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
   }
 
-  sortFavoriteGroups(ids: number[], groups: Group[]): Group[] {
+  sortFavoriteGroups = (ids: number[], groups: Group[]): Group[] => {
     const result: Group[] = [];
     for (let i = 0; i < ids.length; i += 1) {
       for (let j = 0; j < groups.length; j += 1) {
@@ -226,7 +228,10 @@ class GroupHandleDataController {
     return result;
   }
 
-  async handleFavoriteGroupsChanged(oldProfile: Profile, newProfile: Profile) {
+  handleFavoriteGroupsChanged = async (
+    oldProfile: Profile,
+    newProfile: Profile,
+  ) => {
     mainLogger.debug('---------handleFavoriteGroupsChanged---------');
     if (oldProfile && newProfile) {
       const oldIds = oldProfile.favorite_group_ids || [];
@@ -252,7 +257,7 @@ class GroupHandleDataController {
     }
   }
 
-  doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
+  doNonFavoriteGroupsNotification = (groups: Group[], isPut: boolean) => {
     if (isPut) {
       const teams = groups.filter((item: Group) => item.is_team);
       teams.length &&
@@ -280,14 +285,14 @@ class GroupHandleDataController {
     }
   }
 
-  isNeedToUpdateMostRecent4Group(post: Post, group: Group): boolean {
+  isNeedToUpdateMostRecent4Group = (post: Post, group: Group): boolean => {
     return (
       !group.most_recent_post_created_at ||
       group.most_recent_post_created_at < post.created_at
     );
   }
 
-  getUniqMostRecentPostsByGroup(posts: Post[]): Post[] {
+  getUniqMostRecentPostsByGroup = (posts: Post[]): Post[] => {
     const groupedPosts = _.groupBy(posts, 'group_id');
 
     const uniqMaxPosts: Post[] = [];
@@ -302,10 +307,10 @@ class GroupHandleDataController {
     return uniqMaxPosts;
   }
 
-  async handleGroupMostRecentPostChanged({
+  handleGroupMostRecentPostChanged = async ({
     type,
     body,
-  }: NotificationEntityUpdatePayload<Post>) {
+  }: NotificationEntityUpdatePayload<Post>) => {
     if (type !== EVENT_TYPES.UPDATE || !body.entities) {
       return;
     }
@@ -341,15 +346,15 @@ class GroupHandleDataController {
       notificationCenter.emit(SERVICE.POST_SERVICE.NEW_POST_TO_GROUP, ids);
   }
 
-  getGroupTime(group: Group) {
+  getGroupTime = (group: Group) => {
     return group.most_recent_post_created_at || group.created_at;
   }
 
-  hasUnread(groupState: GroupState) {
+  hasUnread = (groupState: GroupState) => {
     return groupState.unread_count || groupState.unread_mentions_count;
   }
 
-  async getUnreadGroupIds(groups: Group[]) {
+  getUnreadGroupIds = async (groups: Group[]) => {
     const ids = _.map(groups, 'id');
     const stateService: StateService = StateService.getInstance();
     const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
@@ -360,7 +365,7 @@ class GroupHandleDataController {
    * extract out groups/teams which are latest than the oldest unread post
    * or just use default limit length
    */
-  async filterGroups(groups: Group[], limit: number) {
+  filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
     const currentUserId = UserConfig.getCurrentUserId();
     sortedGroups = groups.filter((model: Group) => {
@@ -412,7 +417,7 @@ class GroupHandleDataController {
     return sortedGroups;
   }
 
-  async handlePartialData(groups: Partial<Raw<Group>>[]) {
+  handlePartialData = async (groups: Partial<Raw<Group>>[]) => {
     if (groups.length === 0) {
       return;
     }
