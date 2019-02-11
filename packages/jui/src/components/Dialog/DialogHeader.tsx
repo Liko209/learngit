@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiDialogTitleProps, JuiDialogTitle } from './DialogTitle';
 import { spacing } from '../../foundation/utils/styles';
@@ -8,14 +8,14 @@ type JuiDialogHeaderProps = JuiDialogTitleProps & {
 };
 
 const JuiDialogHeader = styled(
-  ({ children, titleComp, className }: JuiDialogHeaderProps) => {
+  memo(({ children, titleComp, className }: JuiDialogHeaderProps) => {
     return (
       <div className={className}>
         {titleComp && titleComp.type === JuiDialogTitle && titleComp}
         {children}
       </div>
     );
-  },
+  }),
 )`
   & {
     padding: ${spacing(6)};

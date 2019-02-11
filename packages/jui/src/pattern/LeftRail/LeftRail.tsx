@@ -8,6 +8,7 @@ import styled from '../../foundation/styled-components';
 const JuiLeftRail = styled.div`
   position: relative;
   height: 100%;
+  width: 100%;
   overflow: hidden;
   border-right: 1px solid ${({ theme }) => theme.palette.divider};
   display: flex;

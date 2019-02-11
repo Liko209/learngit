@@ -17,6 +17,7 @@ type FavoriteViewProps = FavoriteProps & {
   getConversationId: () => void;
   conversationId: number;
   isFavorite: boolean;
+  isMember: boolean;
   handlerFavorite: () => Promise<ServiceResult<Profile>>;
 };
 

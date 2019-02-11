@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { spacing, shape, grey, palette } from '../../foundation/utils';
 import styled from '../../foundation/styled-components';
-import Collapse from '@material-ui/core/Collapse';
 
 type Props = {
   Like: React.ReactNode;
@@ -55,17 +54,15 @@ class JuiConversationCardFooter extends React.PureComponent<Props> {
   render() {
     const { Like, likeCount } = this.props;
     return (
-      <Collapse in={!!likeCount}>
-        <StyledConversationCardFooter>
-          <StyledIconWrapper
-            data-name="footerLikeButton"
-            onClick={this.likeButtonClickHandler}
-          >
-            {Like}
-            <span>{likeCount}</span>
-          </StyledIconWrapper>
-        </StyledConversationCardFooter>
-      </Collapse>
+      <StyledConversationCardFooter>
+        <StyledIconWrapper
+          data-name="footerLikeButton"
+          onClick={this.likeButtonClickHandler}
+        >
+          {Like}
+          <span>{likeCount}</span>
+        </StyledIconWrapper>
+      </StyledConversationCardFooter>
     );
   }
 }

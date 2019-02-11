@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import MuiDialogContent, {
   DialogContentProps as MuiDialogContentProps,
 } from '@material-ui/core/DialogContent';
@@ -27,8 +27,10 @@ const StyledDialogContent = styled(MuiDialogContent)`
   }
 `;
 
-const JuiDialogContentWithFill = (props: JuiDialogContentWithFillProps) => {
-  return <StyledDialogContent {...props} />;
-};
+const JuiDialogContentWithFill = memo(
+  (props: JuiDialogContentWithFillProps) => {
+    return <StyledDialogContent {...props} />;
+  },
+);
 
 export { JuiDialogContentWithFill, JuiDialogContentWithFillProps };

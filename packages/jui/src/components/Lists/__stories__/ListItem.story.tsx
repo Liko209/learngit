@@ -21,7 +21,7 @@ import {
 } from '../index';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
 
-class TwoLineItem extends React.Component {
+class TwoLineItem extends React.PureComponent {
   state = {
     isHover: false,
   };

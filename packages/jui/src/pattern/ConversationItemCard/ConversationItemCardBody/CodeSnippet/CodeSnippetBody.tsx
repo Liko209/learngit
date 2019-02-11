@@ -42,7 +42,7 @@ type JuiCodeSnippetBodyProps = {
   hoverActions: hoverAction[];
 };
 
-class JuiCodeSnippetBody extends React.Component<JuiCodeSnippetBodyProps> {
+class JuiCodeSnippetBody extends React.PureComponent<JuiCodeSnippetBodyProps> {
   render() {
     const { children, hoverActions } = this.props;
     return (

@@ -40,18 +40,6 @@ const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
-    // DAOs
-    // { name: AccountDao.name, value: AccountDao },
-    // { name: PostDao.name, value: PostDao },
-    // { name: GroupDao.name, value: GroupDao },
-    // { name: CompanyDao.name, value: CompanyDao },
-    // { name: ItemDao.name, value: ItemDao },
-    // { name: PersonDao.name, value: PersonDao },
-    // { name: ProfileDao.name, value: ProfileDao },
-    // { name: StateDao.name, value: StateDao },
-    // { name: ConfigDao.name, value: ConfigDao },
-    // { name: AuthDao.name, value: AuthDao },
-
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     {

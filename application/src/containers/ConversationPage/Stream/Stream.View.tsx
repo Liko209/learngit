@@ -296,9 +296,9 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { loading, loadInitialPostsError, t } = this.props;
+    const { loadInitialPostsError, t } = this.props;
 
-    return loading || loadInitialPostsError ? (
+    return loadInitialPostsError ? (
       <JuiStreamLoading
         showTip={!!loadInitialPostsError}
         tip={t('translations:messageLoadingErrorTip')}
@@ -452,6 +452,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
-const StreamView = translate(['Conversations', 'translations'])(view);
+const StreamView = translate('translations')(view);
 
 export { StreamView, StreamViewComponent };

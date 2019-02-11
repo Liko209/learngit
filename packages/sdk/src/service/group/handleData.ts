@@ -251,29 +251,6 @@ async function handleFavoriteGroupsChanged(
   }
 }
 
-async function handleHiddenGroupsChanged(
-  localHiddenGroupIds: number[],
-  remoteHiddenGroupIds: number[],
-) {
-  const moreHiddenIds: number[] = _.difference(
-    remoteHiddenGroupIds,
-    localHiddenGroupIds,
-  );
-  const moreOpenIds: number[] = _.difference(
-    localHiddenGroupIds,
-    remoteHiddenGroupIds,
-  );
-  const dao = daoManager.getDao(GroupDao);
-  if (moreHiddenIds.length) {
-    const groups = await dao.queryGroupsByIds(moreHiddenIds);
-    doNotification(groups, []);
-  }
-  if (moreOpenIds.length) {
-    const groups = await dao.queryGroupsByIds(moreOpenIds);
-    doNotification([], groups);
-  }
-}
-
 function doNonFavoriteGroupsNotification(groups: Group[], isPut: boolean) {
   if (isPut) {
     const teams = groups.filter((item: Group) => item.is_team);
@@ -439,7 +416,6 @@ async function handlePartialData(groups: Partial<Raw<Group>>[]) {
 export {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
-  handleHiddenGroupsChanged,
   saveDataAndDoNotification,
   filterGroups,
   sortFavoriteGroups,

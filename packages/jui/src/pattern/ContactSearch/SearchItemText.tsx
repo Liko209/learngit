@@ -3,7 +3,7 @@
  * @Date: 2018-10-12 09:41:42
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import ListItemText, {
   ListItemTextProps,
@@ -24,16 +24,16 @@ const StyledListItemText = styled(ListItemText)`
   }
 `;
 
-const JuiSearchItemText: React.SFC<ListItemTextProps> = (
-  props: ListItemTextProps,
-) => {
-  const { innerRef, ...rest } = props;
-  return (
-    <StyledListItemText
-      classes={{ primary: 'primary', secondary: 'secondary' }}
-      {...rest}
-    />
-  );
-};
+const JuiSearchItemText: React.SFC<ListItemTextProps> = memo(
+  (props: ListItemTextProps) => {
+    const { innerRef, ...rest } = props;
+    return (
+      <StyledListItemText
+        classes={{ primary: 'primary', secondary: 'secondary' }}
+        {...rest}
+      />
+    );
+  },
+);
 
 export { JuiSearchItemText };
