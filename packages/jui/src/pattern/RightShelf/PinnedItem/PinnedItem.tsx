@@ -18,7 +18,7 @@ class JuiPinnedItem extends Component<JuiPinnedItemProps> {
     const { icon, text } = this.props;
     let iconElement = icon;
     if (typeof icon === 'string') {
-      iconElement = <JuiIconography>{icon}</JuiIconography>;
+      iconElement = <JuiIconography fontSize="inherit">{icon}</JuiIconography>;
     }
     return (
       <Wrapper>

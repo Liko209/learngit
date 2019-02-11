@@ -13,6 +13,8 @@ const IconWrapper = styled.div`
     justify-content: center;
     width: ${width(4)};
     height: ${height(4)};
+    min-width: ${width(4)};
+    min-height: ${height(4)};
     margin: ${spacing(0, 2, 0, 0)};
     overflow: hidden;
     font-size: ${({ theme }) => theme.typography.subheading1.fontSize};
