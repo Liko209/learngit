@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 20:12:37
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { JuiCheckbox } from '../../../components/Checkbox';
 import { palette } from '../../../foundation/utils';
@@ -24,7 +24,7 @@ const StyledTaskCheckbox = styled(JuiCheckbox)`
   }
 `;
 
-const JuiTaskCheckbox = (props: Props) => {
+const JuiTaskCheckbox = memo((props: Props) => {
   return (
     <StyledTaskCheckbox
       classes={{
@@ -35,7 +35,7 @@ const JuiTaskCheckbox = (props: Props) => {
       {...props}
     />
   );
-};
+});
 
 JuiTaskCheckbox.displayName = 'JuiTaskCheckbox';
 

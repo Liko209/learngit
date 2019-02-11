@@ -39,9 +39,9 @@ type JuiTeamSettingButtonListItemTextProps = ListItemTextProps & {
 };
 
 const JuiTeamSettingButtonListItemText = styled(
-  ({ color, ...rest }: JuiTeamSettingButtonListItemTextProps) => (
+  React.memo(({ color, ...rest }: JuiTeamSettingButtonListItemTextProps) => (
     <MuiListItemText {...rest} />
-  ),
+  )),
 )`
   && {
     span {

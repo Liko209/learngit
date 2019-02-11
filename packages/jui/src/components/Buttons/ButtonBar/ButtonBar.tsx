@@ -48,13 +48,13 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
 `;
 
 type IButtonBar = React.SFC<JuiButtonBarProps>;
-const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
+const _JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
   return <StyledButtonBar {...rest}>{children}</StyledButtonBar>;
 };
 
-JuiButtonBar.defaultProps = {
+_JuiButtonBar.defaultProps = {
   overlapSize: 0,
   direction: 'horizontal',
 };
-
+const JuiButtonBar = React.memo(_JuiButtonBar);
 export { JuiButtonBar, JuiButtonBarProps };

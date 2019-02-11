@@ -79,21 +79,18 @@ const StyledConversationCard = styled<
   }
 `;
 
-const JuiConversationCard = ({
-  children,
-  Avatar,
-  mode,
-  ...rest
-}: ConversationCardProps) => (
-  <StyledConversationCard mode={mode} {...rest}>
-    {mode === 'navigation' ? (
-      <StyledNavigationButton variant="round">
-        Jump to conversation
-      </StyledNavigationButton>
-    ) : null}
-    <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
-    <StyledRightSection>{children}</StyledRightSection>
-  </StyledConversationCard>
+const JuiConversationCard = React.memo(
+  ({ children, Avatar, mode, ...rest }: ConversationCardProps) => (
+    <StyledConversationCard mode={mode} {...rest}>
+      {mode === 'navigation' ? (
+        <StyledNavigationButton variant="round">
+          Jump to conversation
+        </StyledNavigationButton>
+      ) : null}
+      <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
+      <StyledRightSection>{children}</StyledRightSection>
+    </StyledConversationCard>
+  ),
 );
 
 export { JuiConversationCard };
