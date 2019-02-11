@@ -16,6 +16,7 @@ enum WEBPHONE_SESSION_STATE {
   FAILED = 'failed',
   PROGRESS = 'progress',
   REINVITE_ACCEPTED = 'reinviteAccepted',
+  REINVITE_FAILED = 'reinviteFailed',
 }
 
 type ProvisionDataOptions = {
