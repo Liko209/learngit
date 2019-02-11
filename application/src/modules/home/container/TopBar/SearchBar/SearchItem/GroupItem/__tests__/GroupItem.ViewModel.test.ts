@@ -135,4 +135,33 @@ describe('GroupItemViewModel', () => {
       expect(groupItemViewModel.hovered).toBeFalsy();
     });
   });
+
+  describe('get shouldHidden', () => {
+    it('If delete the team or group should be hidden', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isTeam: true,
+        deactivated: true,
+      });
+      const groupItemViewModel = new GroupItemViewModel({} as Props);
+      expect(groupItemViewModel.shouldHidden).toBeTruthy();
+    });
+    it('If group or team is private and not include me should be hidden', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isTeam: true,
+        isMember: false,
+        privacy: 'private',
+      });
+      const groupItemViewModel = new GroupItemViewModel({} as Props);
+      expect(groupItemViewModel.shouldHidden).toBeTruthy();
+    });
+    it('If group or team is private and include me should not be hidden', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isTeam: true,
+        isMember: true,
+        privacy: 'private',
+      });
+      const groupItemViewModel = new GroupItemViewModel({} as Props);
+      expect(groupItemViewModel.shouldHidden).toBeFalsy();
+    });
+  });
 });

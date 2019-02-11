@@ -49,6 +49,12 @@ class GroupItemViewModel extends StoreViewModel<Props> {
     const { sectionIndex, selectIndex, cellIndex } = this.props;
     return sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
   }
+
+  @computed
+  get shouldHidden() {
+    const { isMember, deactivated } = this.group;
+    return deactivated || (!isMember && this.isPrivate);
+  }
 }
 
 export { GroupItemViewModel };

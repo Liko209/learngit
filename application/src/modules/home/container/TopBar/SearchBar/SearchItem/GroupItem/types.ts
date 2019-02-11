@@ -11,6 +11,7 @@ type ViewProps = {
   canJoinTeam: boolean;
   isPrivate: boolean;
   isJoined: boolean;
+  shouldHidden: boolean;
 } & BaseViewProps;
 
 export { Props, ViewProps, GroupModel };

@@ -56,10 +56,11 @@ class GroupItemComponent extends React.Component<
       isPrivate,
       isJoined,
       hovered,
+      shouldHidden,
     } = this.props;
-    const { id, displayName, deactivated } = group;
+    const { id, displayName } = group;
 
-    if (deactivated) {
+    if (shouldHidden) {
       return null;
     }
 
