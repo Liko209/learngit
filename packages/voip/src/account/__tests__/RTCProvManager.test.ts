@@ -116,6 +116,9 @@ describe('RTCProvManager', async () => {
       await provManager.acquireSipProv();
       expect(provManager.emit).toBeCalledTimes(2);
       expect(provManager._sendSipProvRequest).toBeCalled();
+      const newLocalProvInfo = localStorage.get('sip-info');
+      expect(newLocalProvInfo.sipInfo[0].username).toBe('345');
+      expect(provManager._sipProvisionInfo.sipInfo[0].username).toBe('345');
     });
   });
 
