@@ -9,74 +9,58 @@ import { ItemService } from '../../../item';
 import { ItemDao } from '../../../item/dao';
 import { daoManager, QUERY_DIRECTION } from '../../../../dao';
 import { PostDao } from '../../dao';
-import { ExtendedBaseModel } from '../../../models';
-import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { PostFetchController } from '../PostFetchController';
-import { PROGRESS_STATUS } from '../../../progress';
 import PostAPI from '../../../../api/glip/post';
 import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { NewGroupService } from '../../../../module/group/service';
-import { GROUP_QUERY_TYPE } from '../../../../service';
+import { Post } from '../../entity/Post';
+import { PostDataController } from '../PostDataController';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../item');
 jest.mock('../../../../api/glip/post');
+jest.mock('../../../../framework/controller/impl/EntitySourceController');
+jest.mock('../PostDataController');
 
-class MockPreInsertController<T extends ExtendedBaseModel>
-  implements IPreInsertController {
-  insert(entity: T): Promise<void> {
-    return;
-  }
-  delete(entity: T): void {
-    return;
-  }
-  bulkDelete(entities: T[]): Promise<void> {
-    return;
-  }
-  updateStatus(entity: T, status: PROGRESS_STATUS): void {
-    return;
-  }
-  isInPreInsert(version: number): boolean {
-    return;
-  }
+const postDao = new PostDao(null);
+const itemDao = new ItemDao(null);
+
+const entitySourceController = new EntitySourceController<Post>(null, null);
+const itemService = new ItemService();
+const groupService = {
+  hasMorePostInRemote: jest.fn(),
+  updateHasMore: jest.fn(),
+};
+
+function setup() {
+  ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+  itemService.handleIncomingData = jest.fn();
+  NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+  daoManager.getDao.mockImplementation(arg => {
+    if (arg === PostDao) {
+      return postDao;
+    }
+    if (arg === ItemDao) {
+      return itemDao;
+    }
+  });
 }
 
 describe('PostFetchController()', () => {
-  const itemService = new ItemService();
-  const postDao = new PostDao(null);
-  const itemDao = new ItemDao(null);
-  // const groupService = new NewGroupService();
-  const preInsertController = new MockPreInsertController();
+  const postDataController = new PostDataController(null, null);
   const postFetchController = new PostFetchController(
-    preInsertController,
-    null,
+    postDataController,
+    entitySourceController,
   );
-  const groupService = {
-    hasMorePostInRemote: jest.fn(),
-    updateHasMore: jest.fn(),
-  };
 
   function clearMocks() {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
-  }
-
-  function setup() {
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-    itemService.handleIncomingData = jest.fn();
-    NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
-    daoManager.getDao.mockImplementation(arg => {
-      if (arg === PostDao) {
-        return postDao;
-      }
-      if (arg === ItemDao) {
-        return itemDao;
-      }
-    });
   }
 
   afterAll(() => {
@@ -494,6 +478,98 @@ describe('PostFetchController()', () => {
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(1);
       expect(result.success).toBeTruthy();
       expect(result.hasMore).toBeFalsy();
+    });
+  });
+
+  describe('getPostsByIds', () => {
+    it('should return all posts if there are all exist in local', async () => {
+      setup();
+      itemService.getByPosts.mockResolvedValueOnce([]);
+      postFetchController.entitySourceController.batchGet.mockResolvedValueOnce(
+        [{ id: 1 }, { id: 2 }],
+      );
+      const result = await postFetchController.getPostsByIds([1, 2]);
+      expect(result.posts.length).toEqual(2);
+    });
+    it('should request posts if there are not all exist in local', async () => {
+      setup();
+      itemService.getByPosts.mockResolvedValueOnce([]);
+      postFetchController.entitySourceController.batchGet.mockResolvedValueOnce(
+        [{ id: 1 }],
+      );
+      const data = {
+        posts: [{ _id: 2 }],
+        items: [],
+      };
+      const mockNormal = new ApiResultOk(data, {
+        status: 200,
+        headers: {},
+      } as BaseResponse);
+      PostAPI.requestByIds.mockResolvedValueOnce(mockNormal);
+
+      postFetchController.postDataController.filterAndSavePosts.mockResolvedValueOnce(
+        [{ id: 2 }],
+      );
+      const result = await postFetchController.getPostsByIds([1, 2]);
+      expect(result.posts).toEqual([{ id: 1 }, { id: 2 }]);
+    });
+  });
+  describe('getLastPostOfGroup', async () => {
+    it('should return latest post when local group has posts', async () => {
+      const mockData = {
+        id: 1,
+        group_id: 2,
+      };
+      postDao.queryLastPostByGroupId.mockResolvedValueOnce(mockData);
+      const result = await postFetchController.getLastPostOfGroup(2);
+      expect(result).toEqual(mockData);
+    });
+    it('should return null when local group has not post', async () => {
+      postDao.queryLastPostByGroupId.mockResolvedValueOnce(null);
+      const result = await postFetchController.getLastPostOfGroup(2);
+      expect(result).toEqual(null);
+    });
+  });
+  describe('groupHasPostInLocal', () => {
+    it('should return true when local has post', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValueOnce([
+        { id: 1, group_id: 2 },
+      ]);
+      const result = await postFetchController.groupHasPostInLocal(2);
+      expect(result).toBeTruthy();
+    });
+    it('should return true when local has not post', async () => {
+      postDao.queryPostsByGroupId.mockResolvedValueOnce([]);
+      const result = await postFetchController.groupHasPostInLocal(2);
+      expect(result).toBeFalsy();
+    });
+  });
+
+  describe('getNewestPostIdOfGroup', () => {
+    it('should return post id when has post', async () => {
+      const data = { posts: [{ _id: 1, group_id: 2 }], items: [] };
+      jest
+        .spyOn(postFetchController, 'fetchPaginationPosts')
+        .mockReturnValueOnce(data);
+
+      const result = await postFetchController.getNewestPostIdOfGroup(2);
+      expect(result).toEqual(1);
+    });
+    it('should return null when has not post', async () => {
+      const data = { posts: [], items: [] };
+      jest
+        .spyOn(postFetchController, 'fetchPaginationPosts')
+        .mockReturnValueOnce(data);
+      const result = await postFetchController.getNewestPostIdOfGroup(2);
+      expect(result).toEqual(null);
+    });
+  });
+
+  describe('getPostCountByGroupId', () => {
+    it('should return correct post count by group id', async () => {
+      postDao.groupPostCount.mockResolvedValueOnce(2);
+      const result = await postFetchController.getPostCountByGroupId(2);
+      expect(result).toEqual(2);
     });
   });
 });

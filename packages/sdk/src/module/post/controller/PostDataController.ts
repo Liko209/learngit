@@ -173,19 +173,9 @@ class PostDataController {
         }),
       ),
     );
-    console.error('7================');
-    console.error('7================');
-    console.error(`7=======${posts}=========`);
-    console.error('7================');
-    console.error('7================');
     // check if post's owner group exist in local or not
     // seems we only need check normal posts, don't need to check deactivated data
     await this._ensureGroupExist(normalPosts);
-    console.error('8================');
-    console.error('8================');
-    console.error(`8=======${posts}=========`);
-    console.error('8================');
-    console.error('8================');
     return normalPosts;
   }
 
