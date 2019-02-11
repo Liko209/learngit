@@ -12,6 +12,7 @@ import { WEBPHONE_SESSION_STATE } from '../signaling/types';
 
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
+  private _holdFlag: number = 0;
   constructor() {
     super();
   }
@@ -39,6 +40,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
     });
+    this._session.on(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED, () => {
+      this._onSessionReinviteAccepted();
+    });
   }
 
   private _onSessionConfirmed() {
@@ -55,6 +59,19 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   private _onSessionProgress(response: any) {
     this.emit(CALL_SESSION_STATE.PROGRESS, response);
+  }
+
+  private _onSessionReinviteAccepted() {
+    switch (this._holdFlag) {
+      case 1: {
+        this._holdFlag = 0;
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
+      }
+      case 2: {
+        this._holdFlag = 0;
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.UNHOLD);
+      }
+    }
   }
 
   hangup() {
@@ -174,7 +191,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._session) {
       this._session.hold().then(
         () => {
-          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
+          this._holdFlag = 1;
         },
         () => {
           this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
@@ -187,10 +204,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._session) {
       this._session.unhold().then(
         () => {
-          this.emit(
-            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-            RTC_CALL_ACTION.UNHOLD,
-          );
+          this._holdFlag = 2;
         },
         () => {
           this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
