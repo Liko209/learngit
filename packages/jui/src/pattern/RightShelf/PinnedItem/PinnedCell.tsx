@@ -7,8 +7,7 @@ import React, { PureComponent } from 'react';
 import { JuiListItemText } from '../../../components/Lists';
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
-import { height, spacing, grey } from '../../../foundation/utils';
-import { Wrapper, IconWrapper } from './styles';
+import { height, width, spacing, grey } from '../../../foundation/utils';
 import { JuiPinnedItem, JuiPinnedItemProps } from './PinnedItem';
 
 type JuiPinnedCellProps = {
@@ -19,12 +18,32 @@ type JuiPinnedCellProps = {
   onClick?: () => void;
 };
 
+const HeadWrapper = styled.div`
+  height: ${height(5)};
+  display: flex;
+  align-items: center;
+`;
+
+const IconWrapper = styled.div`
+  && {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: ${width(4)};
+    height: ${height(4)};
+    margin: ${spacing(0, 1, 0, 1)};
+    overflow: hidden;
+    font-size: ${({ theme }) => theme.typography.subheading1.fontSize};
+  }
+`;
+
 const CellWrapper = styled.div`
   padding: ${spacing(2)};
 `;
 
 const ContentWrapper = styled.div`
-  padding-left: ${spacing(4)};
+  padding-left: ${spacing(6)};
+  overflow: hidden;
 `;
 
 type TextWrapperProps = {
@@ -93,16 +112,15 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
     const lineCount = items.length > 0 ? 2 : 1;
     return (
       <CellWrapper onClick={onClick}>
-        <Wrapper>
+        <HeadWrapper>
           <IconWrapper>
-            <JuiIconography>image_preview</JuiIconography>
+            <JuiIconography fontSize="inherit" color={['grey', '500']}>
+              pin
+            </JuiIconography>
           </IconWrapper>
-          <JuiListItemText
-            primary={creator}
-            primaryColor={['primary', '100']}
-          />
+          <JuiListItemText primary={creator} primaryColor={['grey', '900']} />
           <TimeWrapper>{createTime}</TimeWrapper>
-        </Wrapper>
+        </HeadWrapper>
         <ContentWrapper>
           {content && (
             <TextWrapper lineCount={lineCount}>{content}</TextWrapper>

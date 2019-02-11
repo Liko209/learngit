@@ -34,7 +34,7 @@ const ITEM_ICON_MAP = {
   [TypeDictionary.TYPE_ID_TASK]: 'tasks',
   [TypeDictionary.TYPE_ID_PAGE]: 'notes',
   [TypeDictionary.TYPE_ID_EVENT]: 'events',
-  [TypeDictionary.TYPE_ID_LINK]: 'links',
+  [TypeDictionary.TYPE_ID_LINK]: 'link',
 };
 
 const ITEM_TEXT_MAP = {
