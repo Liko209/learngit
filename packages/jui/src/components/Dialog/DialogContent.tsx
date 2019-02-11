@@ -30,7 +30,7 @@ const JuiDialogContent = styled(
 )`
   &.root {
     overflow-y: visible;
-    padding: ${({ fill }) => (fill ? spacing(0, 0, 6) : spacing(0, 6, 6))};
+    padding: ${({ fill }) => (fill ? spacing(0, 0, 3) : spacing(0, 6, 3))};
   }
   & .root {
     ${({ theme, fullWidth }) => fullWidthStyle(theme, fullWidth)};

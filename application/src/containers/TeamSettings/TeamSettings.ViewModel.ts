@@ -30,13 +30,31 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
   nameErrorMsg?: string = '';
 
+  @observable
+  saving: boolean = false;
+
   @computed
-  get allowMemberAddMember() {
+  get permissionFlags() {
     const groupService: NewGroupService = NewGroupService.getInstance();
     const permissionFlags = groupService.getTeamUserPermissionFlags(
       this._group.permissions || {},
     );
-    return !!permissionFlags.TEAM_ADD_MEMBER;
+    return permissionFlags;
+  }
+
+  @computed
+  get allowMemberAddMember() {
+    return !!this.permissionFlags.TEAM_ADD_MEMBER;
+  }
+
+  @computed
+  get allowMemberPost() {
+    return !!this.permissionFlags.TEAM_POST;
+  }
+
+  @computed
+  get allowMemberPin() {
+    return !!this.permissionFlags.TEAM_PIN_POST;
   }
 
   @computed
@@ -50,6 +68,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       name: this._group.displayName,
       description: this._group.description,
       allowMemberAddMember: this.allowMemberAddMember,
+      allowMemberPost: this.allowMemberPost,
+      allowMemberPin: this.allowMemberPin,
     };
   }
 
@@ -106,17 +126,24 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     this.nameErrorMsg = msg;
   }
 
+  @action
   save = async (params: TeamSettingTypes) => {
+    if (this.saving) {
+      return false;
+    }
     const name = params.name.trim();
     const description = params.description.trim();
     const groupService: NewGroupService = NewGroupService.getInstance();
     this.setNameError('');
+    this.saving = true;
     try {
       await groupService.updateTeamSetting(this.id, {
         name,
         description,
         permissionFlags: {
           TEAM_ADD_MEMBER: params.allowMemberAddMember,
+          TEAM_POST: params.allowMemberPost,
+          TEAM_PIN_POST: params.allowMemberPin,
         },
       });
       return true;
@@ -154,6 +181,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       generalErrorHandler(error);
       return true;
+    } finally {
+      this.saving = false;
     }
   }
 }

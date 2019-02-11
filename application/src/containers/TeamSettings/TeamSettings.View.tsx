@@ -34,6 +34,8 @@ type State = {
   name: string;
   description: string;
   allowMemberAddMember: boolean;
+  allowMemberPost: boolean;
+  allowMemberPin: boolean;
 };
 
 type TeamSettingsProps = WithNamespaces & ViewProps;
@@ -49,6 +51,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       name: props.initialData.name,
       description: props.initialData.description,
       allowMemberAddMember: props.initialData.allowMemberAddMember,
+      allowMemberPost: props.initialData.allowMemberPost,
+      allowMemberPin: props.initialData.allowMemberPin,
     };
   }
 
@@ -86,6 +90,25 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   ) => {
     this.setState({
       allowMemberAddMember: checked,
+    });
+  }
+
+  handleAllowMemberPostChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    this.setState({
+      allowMemberPost: checked,
+      allowMemberPin: checked,
+    });
+  }
+
+  handleAllowMemberPinChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    this.setState({
+      allowMemberPin: checked,
     });
   }
 
@@ -170,6 +193,28 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
               />
             </SubSectionListItem>
             <JuiDivider />
+            <SubSectionListItem
+              data-test-automation-id="memberPermissionItem"
+              label={t('postMessages')}
+            >
+              <JuiToggleButton
+                data-test-automation-id="allowPostToggle"
+                checked={this.state.allowMemberPost}
+                onChange={this.handleAllowMemberPostChange}
+              />
+            </SubSectionListItem>
+            <JuiDivider />
+            <SubSectionListItem
+              data-test-automation-id="memberPermissionItem"
+              label={t('pinPosts')}
+            >
+              <JuiToggleButton
+                data-test-automation-id="allowPinToggle"
+                checked={this.state.allowMemberPin}
+                disabled={!this.state.allowMemberPost}
+                onChange={this.handleAllowMemberPinChange}
+              />
+            </SubSectionListItem>
           </SubSectionList>
         </SubSection>
       </>
@@ -196,7 +241,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   render() {
-    const { isAdmin, t } = this.props;
+    const { isAdmin, saving, t } = this.props;
     const disabledOkBtn =
       !this.state.name || this.state.name.trim().length <= 0;
     return (
@@ -205,7 +250,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        okBtnProps={{ disabled: disabledOkBtn }}
+        okBtnProps={{ disabled: disabledOkBtn, loading: saving }}
         title={t('Settings')}
         onCancel={this.handleClose}
         onOK={this.handleOk}
