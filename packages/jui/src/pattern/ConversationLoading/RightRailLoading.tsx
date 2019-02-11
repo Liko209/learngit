@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   border-left: 1px solid ${palette('common', 'black', 1)};
 `;
 
-const RightRailLoading = (props: ThemeProps) => {
+const RightRailLoading = React.memo((props: ThemeProps) => {
   const {
     theme: {
       size: { width, height },
@@ -63,7 +63,7 @@ const RightRailLoading = (props: ThemeProps) => {
       </ReactContentLoader>
     </Wrapper>
   );
-};
+});
 
 const JuiRightRailLoading = withTheme(RightRailLoading);
 

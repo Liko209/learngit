@@ -3,7 +3,7 @@
  * @Date: 2018-09-17 13:24:34
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import MuiList, { ListProps } from '@material-ui/core/List';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
@@ -59,7 +59,7 @@ type Props = {
   listItemTextProps?: ListItemTextProps;
 };
 
-class JuiListToggleButton extends Component<Props, {}> {
+class JuiListToggleButton extends PureComponent<Props, {}> {
   handleChange(
     item: JuiListToggleItemProps,
     event: React.ChangeEvent<HTMLInputElement>,

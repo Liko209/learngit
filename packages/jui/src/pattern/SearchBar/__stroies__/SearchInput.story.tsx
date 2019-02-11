@@ -19,7 +19,7 @@ storiesOf('Pattern/SearchBar', module)
   .add('SearchInput', () => {
     const focus = boolean('focus', false);
 
-    class Test extends React.Component {
+    class Test extends React.PureComponent {
       state = {
         value: '',
       };

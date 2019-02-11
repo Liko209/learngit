@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:34:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
@@ -130,49 +130,49 @@ const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 
-const JuiConversationListItem: IConversationListItem = (
-  props: JuiConversationListItemProps,
-) => {
-  const {
-    title,
-    indicator,
-    presence,
-    umi,
-    onClick,
-    onMoreClick,
-    component,
-    selected,
-    innerRef,
-    umiHint,
-    children,
-    ...rest
-  } = props;
+const JuiConversationListItem: IConversationListItem = memo(
+  (props: JuiConversationListItemProps) => {
+    const {
+      title,
+      indicator,
+      presence,
+      umi,
+      onClick,
+      onMoreClick,
+      component,
+      selected,
+      innerRef,
+      umiHint,
+      children,
+      ...rest
+    } = props;
 
-  const fontWeight = umiHint ? 'bold' : 'normal';
-  return (
-    <StyledListItem
-      onClick={onClick}
-      component={component}
-      selected={selected}
-      classes={{ selected: 'selected' }}
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      {...rest}
-    >
-      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-      <ItemText disableTooltip={true} style={{ fontWeight }}>
-        {title}
-      </ItemText>
-      {umi}
-      <StyledRightWrapper>
-        {indicator}
-        <StyledIconographyMore onClick={onMoreClick}>
-          more_vert
-        </StyledIconographyMore>
-      </StyledRightWrapper>
-      {children}
-    </StyledListItem>
-  );
-};
+    const fontWeight = umiHint ? 'bold' : 'normal';
+    return (
+      <StyledListItem
+        onClick={onClick}
+        component={component}
+        selected={selected}
+        classes={{ selected: 'selected' }}
+        TouchRippleProps={{ classes: touchRippleClasses }}
+        {...rest}
+      >
+        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+        <ItemText disableTooltip={true} style={{ fontWeight }}>
+          {title}
+        </ItemText>
+        {umi}
+        <StyledRightWrapper>
+          {indicator}
+          <StyledIconographyMore onClick={onMoreClick}>
+            more_vert
+          </StyledIconographyMore>
+        </StyledRightWrapper>
+        {children}
+      </StyledListItem>
+    );
+  },
+);
 
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
 

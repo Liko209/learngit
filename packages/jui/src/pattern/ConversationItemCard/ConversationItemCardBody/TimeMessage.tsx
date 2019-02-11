@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 14:58:05
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey } from '../../../foundation/utils/styles';
 
@@ -17,9 +17,9 @@ const StyledTimeMessage = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiTimeMessage = (props: Props) => (
+const JuiTimeMessage = memo((props: Props) => (
   <StyledTimeMessage>{props.time}</StyledTimeMessage>
-);
+));
 
 JuiTimeMessage.displayName = 'JuiTimeMessage';
 

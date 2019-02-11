@@ -114,7 +114,7 @@ type JuiConversationItemCardProps = {
   showHeaderActions?: boolean;
 } & React.DOMAttributes<{}>;
 
-class JuiConversationItemCard extends React.Component<
+class JuiConversationItemCard extends React.PureComponent<
   JuiConversationItemCardProps
 > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {

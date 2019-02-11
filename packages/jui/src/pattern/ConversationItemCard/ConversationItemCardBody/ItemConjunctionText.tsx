@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
@@ -20,9 +20,9 @@ const StyledWrapper = styled.div`
   color: ${grey('900')};
 `;
 
-const JuiItemConjunctionText = ({ description, ...rest }: Props) => (
+const JuiItemConjunctionText = memo(({ description, ...rest }: Props) => (
   <StyledWrapper {...rest}>{description}</StyledWrapper>
-);
+));
 
 JuiItemConjunctionText.displayName = 'JuiItemConjunctionText';
 
