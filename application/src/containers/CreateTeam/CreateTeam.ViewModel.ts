@@ -73,7 +73,7 @@ class CreateTeamViewModel extends AbstractViewModel {
     description: string,
     options: CreateTeamOptions,
   ) => {
-    const { isPublic, canPost } = options;
+    const { isPublic, canPost, canAddMember } = options;
     const groupService: GroupService = GroupService.getInstance();
     const creatorId = Number(UserConfig.getCurrentUserId());
     const result = await groupService.createTeam(
@@ -84,6 +84,7 @@ class CreateTeamViewModel extends AbstractViewModel {
       {
         isPublic,
         canPost,
+        canAddMember,
       },
     );
     if (result.isErr()) {

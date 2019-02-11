@@ -58,6 +58,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       {
         type: 'canPost',
         text: i18next.t('MembersMayPostMessages'),
+
+        checked: true,
+      },
+      {
+        type: 'canAddMember',
+        text: i18next.t('MembersMayAddOtherMembers'),
         checked: true,
       },
     ];
@@ -96,9 +102,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
+    const canAddMember = items.filter(item => item.type === 'canAddMember')[0]
+      .checked;
     const result = await create(teamName, members, description, {
       isPublic,
       canPost,
+      canAddMember,
     });
     if (result.isOk()) {
       this.onClose();
