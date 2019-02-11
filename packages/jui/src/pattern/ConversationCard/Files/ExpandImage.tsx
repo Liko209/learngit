@@ -21,7 +21,7 @@ type State = {
   expand: boolean;
 };
 
-class JuiExpandImage extends React.Component<Props, State> {
+class JuiExpandImage extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {

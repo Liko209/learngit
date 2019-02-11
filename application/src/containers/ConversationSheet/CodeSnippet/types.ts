@@ -6,4 +6,5 @@ export type CodeSnippetViewModelProps = {
 
 export type CodeSnippetViewProps = {
   postItem: CodeSnippetItem;
+  body: string;
 };

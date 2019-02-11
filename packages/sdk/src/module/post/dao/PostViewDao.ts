@@ -3,11 +3,11 @@
  * @Date: 2019-01-10 17:20:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../../framework/dao';
 import { IDatabase, mainLogger } from 'foundation';
 import _ from 'lodash';
-import { Post, PostView } from '../../module/post/entity';
-import { QUERY_DIRECTION } from '../constants';
+import { BaseDao } from '../../../framework/dao';
+import { Post, PostView } from '../entity';
+import { QUERY_DIRECTION } from '../../../dao/constants';
 
 class PostViewDao extends BaseDao<PostView> {
   static COLLECTION_NAME = 'postView';

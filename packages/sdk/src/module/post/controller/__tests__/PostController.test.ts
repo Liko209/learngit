@@ -7,7 +7,8 @@
 import { PostController } from '../PostController';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
-import { daoManager, PostDao, ConfigDao } from '../../../../dao';
+import { daoManager, ConfigDao } from '../../../../dao';
+import { PostDao } from '../../dao';
 import {
   buildEntitySourceController,
   buildRequestController,
@@ -20,6 +21,7 @@ import { ProgressService } from '../../../progress';
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../progress');
 
 describe('PostController', () => {

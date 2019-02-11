@@ -17,7 +17,7 @@ type JuiSearchInputProps = {
   showCloseBtn: boolean;
 };
 
-class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
+class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
   private _inputDom = createRef<HTMLInputElement>();
 
   constructor(props: JuiSearchInputProps) {

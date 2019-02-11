@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { ButtonBaseProps as MuiButtonBaseProps } from '@material-ui/core/ButtonBase';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
@@ -13,7 +13,7 @@ type JuiSnackbarActionProps = MuiButtonBaseProps & {
 };
 
 const JuiSnackbarAction = styled(
-  ({ children, variant, ...rest }: JuiSnackbarActionProps) => {
+  memo(({ children, variant, ...rest }: JuiSnackbarActionProps) => {
     if (variant === 'icon') {
       const style = children === 'close' ? CLOSE_ICON_SIZE_FIX : undefined;
 
@@ -27,7 +27,7 @@ const JuiSnackbarAction = styled(
     }
 
     return <StyledTextButton {...rest}>{children}</StyledTextButton>;
-  },
+  }),
 )``;
 
 JuiSnackbarAction.displayName = 'JuiSnackbarAction';

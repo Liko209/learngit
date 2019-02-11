@@ -2,14 +2,14 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-05 15:31:40
  */
-import PostDao from '..';
-import { setup } from '../../__tests__/utils';
+import { PostDao } from '../index';
+import { setup } from '../../../../dao/__tests__/utils';
 import _ from 'lodash';
-import { postFactory } from '../../../__tests__/factories';
-import { QUERY_DIRECTION } from '../../constants';
-import { daoManager } from '../..';
+import { postFactory } from '../../../../__tests__/factories';
+import { QUERY_DIRECTION } from '../../../../dao/constants';
+import { daoManager } from '../../../../dao';
 import { PostViewDao } from '../PostViewDao';
-import { Post } from '../../../module/post/entity';
+import { Post } from '../../entity';
 
 const posts: Post[] = [
   postFactory.build({

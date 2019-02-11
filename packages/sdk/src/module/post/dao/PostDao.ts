@@ -1,13 +1,15 @@
 /*
- * @Author: Steve Chen (steve.chen@ringcentral.com)
- * @Date: 2018-02-24 23:23:08
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2019-02-01 10:29:07
+ * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../../framework/dao';
-import { PostViewDao } from './PostViewDao';
-import { Post } from '../../module/post/entity';
+
 import { IDatabase } from 'foundation';
-import { QUERY_DIRECTION } from '../constants';
-import { daoManager } from '..';
+import { BaseDao } from '../../../framework/dao';
+import { PostViewDao } from './PostViewDao';
+import { Post } from '../entity';
+import { QUERY_DIRECTION } from '../../../dao/constants';
+import { daoManager } from '../../../dao';
 import _ from 'lodash';
 
 class PostDao extends BaseDao<Post> {
@@ -142,5 +144,5 @@ class PostDao extends BaseDao<Post> {
   }
 }
 
-export default PostDao;
+export { PostDao };
 export { PostViewDao } from './PostViewDao';

@@ -11,7 +11,7 @@ export type JuiGridProps = MuiGridProps;
 
 export const JuiGrid: React.SFC<JuiGridProps> & {
   dependencies?: any[];
-} = props => <MuiGrid {...props} />;
+} = React.memo(props => <MuiGrid {...props} />);
 
 JuiGrid.displayName = 'JuiGrid';
 JuiGrid.dependencies = [JuiGrid];

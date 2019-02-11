@@ -56,7 +56,7 @@ class ConversationInitialPost extends React.Component<
         {isTeam ? (
           <StyledTitle>
             {this._name}
-            <StyledSpan>&nbsp;{t('createTeam')}&nbsp;</StyledSpan>
+            <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
             <StyledTeamName>{displayName}</StyledTeamName>
             <StyledSpan>
               &nbsp;{t('on')} {createTime}
@@ -129,7 +129,7 @@ class ConversationInitialPost extends React.Component<
   }
 }
 
-const ConversationInitialPostView = translate('Conversations')(
+const ConversationInitialPostView = translate('translations')(
   ConversationInitialPost,
 );
 

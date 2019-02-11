@@ -3,7 +3,7 @@
  * @Date: 2018-12-12 16:03:43
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
@@ -23,12 +23,12 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
 `;
 
-const JuiEventContent = (props: Props) => (
+const JuiEventContent = memo((props: Props) => (
   <StyledWrapper>
     {props.title && <StyledTitle>{props.title}</StyledTitle>}
     {props.children}
   </StyledWrapper>
-);
+));
 
 JuiEventContent.displayName = 'JuiEventContent';
 

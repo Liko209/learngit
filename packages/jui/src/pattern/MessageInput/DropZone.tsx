@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { CSSProperties, Component } from 'react';
+import React, { CSSProperties, PureComponent } from 'react';
 import { withTheme } from 'styled-components';
 import {
   DropTarget,
@@ -21,7 +21,7 @@ type JuiDropZoneProps = {
   dropzoneClass?: CSSProperties;
 };
 
-class TargetBox extends Component<
+class TargetBox extends PureComponent<
   ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
 > {
   private _checkFolder = (event: React.DragEvent) => {

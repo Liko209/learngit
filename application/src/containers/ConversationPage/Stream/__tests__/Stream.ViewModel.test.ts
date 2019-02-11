@@ -184,7 +184,6 @@ describe('StreamViewModel', () => {
   describe('updateHistoryHandler()', () => {
     it('should update historyHandler with arguments', () => {
       const mockUpdate = jest.fn();
-      const groupState = Math.random();
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
         _historyHandler: { update: mockUpdate },
@@ -198,13 +197,9 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Object.defineProperty(vm, '_groupState', {
-        value: groupState,
-      });
-
       vm.updateHistoryHandler();
       expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toBeCalledWith(groupState, postIds);
+      expect(mockUpdate).toBeCalledWith(vm._groupState, postIds);
     });
   });
 
