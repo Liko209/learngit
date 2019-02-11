@@ -5,7 +5,8 @@
  */
 
 import { ItemService } from '../../../item';
-import { PostDao, ItemDao, daoManager, DeactivatedDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PROGRESS_STATUS } from '../../../progress';
@@ -19,6 +20,7 @@ import _ from 'lodash';
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../item');
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 
 class MockPreInsertController<T extends ExtendedBaseModel>

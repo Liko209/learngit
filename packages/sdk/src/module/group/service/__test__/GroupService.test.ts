@@ -253,7 +253,7 @@ describe('GroupService', () => {
       expect(mockIsTeamAdmin).toBeCalledWith(mockPersonId, mockPermission);
     });
   });
-  describe('deleteTeam()', () => {
+  describe('archiveTeam()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -263,15 +263,52 @@ describe('GroupService', () => {
       const mockTeam = groupFactory.build({
         is_team: true,
       });
-      const mockDeleteTeam = jest.fn();
+      const mockArchiveTeam = jest.fn();
       groupService['getTeamController']();
       groupService.teamController.getTeamActionController = jest
         .fn()
         .mockReturnValue({
-          deleteTeam: mockDeleteTeam,
+          archiveTeam: mockArchiveTeam,
         });
-      await groupService.deleteTeam(mockTeam.id);
-      expect(mockDeleteTeam).toBeCalledWith(mockTeam.id);
+      await groupService.archiveTeam(mockTeam.id);
+      expect(mockArchiveTeam).toBeCalledWith(mockTeam.id);
+    });
+  });
+
+  describe('makeAdmin()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const makeOrRevokeAdmin = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          makeOrRevokeAdmin,
+        });
+      await groupService.makeAdmin(1, 2);
+      expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, true);
+    });
+  });
+  describe('revokeAdmin()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const makeOrRevokeAdmin = jest.fn();
+      groupService['getTeamController']();
+      groupService.teamController.getTeamActionController = jest
+        .fn()
+        .mockReturnValue({
+          makeOrRevokeAdmin,
+        });
+      await groupService.revokeAdmin(1, 2);
+      expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, false);
     });
   });
 });

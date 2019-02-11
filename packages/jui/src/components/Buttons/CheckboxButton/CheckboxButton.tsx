@@ -127,7 +127,7 @@ const WrapperForTooltip = styled<JuiCheckboxButtonProps, 'div'>('div')`
   font-size: 0;
 `;
 
-class JuiCheckboxButton extends React.Component<
+class JuiCheckboxButton extends React.PureComponent<
   JuiCheckboxButtonProps,
   { checked: boolean }
 > {

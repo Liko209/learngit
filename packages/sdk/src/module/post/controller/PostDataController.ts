@@ -5,7 +5,8 @@
  */
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
 import {

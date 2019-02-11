@@ -1,6 +1,0 @@
-{
-  "signIn": "Sign in",
-  "signInFailedTitle": "Sign In Failed",
-  "signInFailedContent": "We are having trouble signing you in. Please try again later.",
-  "signInFailedContentNetwork": "Network disconnected. Please try again when the network is resumed."
-}

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
 import portalManager from '@/common/PortalManager';
 
@@ -18,8 +18,8 @@ function modal(config: BaseType) {
   const BaseModal = (props: BaseType) => {
     const { isAlert, ...newConfig } = props;
     const defaultBtnText = {
-      okText: t('OK'),
-      cancelText: t('Cancel'),
+      okText: i18next.t('OK'),
+      cancelText: i18next.t('Cancel'),
     };
 
     if (isAlert) {

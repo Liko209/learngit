@@ -3,9 +3,14 @@
  * @Date: 2018-10-26 10:35:16
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import * as Jui from './style';
 import { FileName } from './FileName';
+import React, {
+  PureComponent,
+  RefObject,
+  createRef,
+  CSSProperties,
+} from 'react';
 import {
   getThumbnailSize,
   ThumbnailInfo,
@@ -26,7 +31,7 @@ type JuiPreviewImageProps = {
   placeholder?: JSX.Element;
 } & SizeType;
 
-class JuiPreviewImage extends Component<JuiPreviewImageProps> {
+class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
   private _imageInfo: ThumbnailInfo = {
     width: 0,
@@ -86,9 +91,15 @@ class JuiPreviewImage extends Component<JuiPreviewImageProps> {
       width = 0;
       height = 0;
     }
+    const hasImageSize = this.props.width > 0 && this.props.height > 0;
     return (
       <>
-        {!this._loaded && placeholder}
+        {!this._loaded && !hasImageSize && placeholder}
+        {!this._loaded && hasImageSize && (
+          <Jui.ImageCard width={this.props.width} height={this.props.height}>
+            <div />
+          </Jui.ImageCard>
+        )}
         <Jui.ImageCard width={width} height={height}>
           <img
             style={imageStyle}

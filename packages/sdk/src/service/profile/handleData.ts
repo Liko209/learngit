@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import notificationCenter from '../../service/notificationCenter';
-import { ENTITY, SERVICE } from '../../service/eventKey';
+import { ENTITY } from '../../service/eventKey';
 import { daoManager } from '../../dao';
 import ProfileDao from '../../dao/profile';
 import { transform } from '../../service/utils';
@@ -26,20 +26,6 @@ function extractHiddenGroupIds(profile: Profile): number[] {
     }
   });
   return result;
-}
-
-function hiddenGroupsChange(localProfile: Profile, newProfile: Profile) {
-  if (localProfile && newProfile) {
-    const localHiddenGroupIds = extractHiddenGroupIds(localProfile).sort();
-    const remoteHiddenGroupIds = extractHiddenGroupIds(newProfile).sort();
-    if (localHiddenGroupIds.toString() !== remoteHiddenGroupIds.toString()) {
-      notificationCenter.emit(
-        SERVICE.PROFILE_HIDDEN_GROUP,
-        localHiddenGroupIds,
-        remoteHiddenGroupIds,
-      );
-    }
-  }
 }
 
 const profileHandleData = async (
@@ -80,10 +66,8 @@ const handlePartialProfileUpdate = async (
               [transformedData],
               [obj],
             );
-            hiddenGroupsChange(localProfile, transformedData);
             return transformedData;
           }
-          localProfile && hiddenGroupsChange(localProfile, transformedData);
         }
         await profileDao.put(transformedData);
         notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [transformedData]);
@@ -98,8 +82,4 @@ const handlePartialProfileUpdate = async (
 };
 
 export default profileHandleData;
-export {
-  extractHiddenGroupIds,
-  handlePartialProfileUpdate,
-  hiddenGroupsChange,
-};
+export { extractHiddenGroupIds, handlePartialProfileUpdate };

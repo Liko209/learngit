@@ -13,7 +13,8 @@ import {
   buildEntitySourceController,
   buildPartialModifyController,
 } from '../../../framework/controller';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
 import { ProgressService } from '../../progress';

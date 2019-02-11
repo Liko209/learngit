@@ -14,6 +14,7 @@ import { toArrayOf } from '../../../__tests__/utils';
 import { StateService } from '../../../module/state';
 import { EVENT_TYPES } from '../..';
 import { ApiResultOk } from '../../../api/ApiResult';
+import { ENTITY } from '../../../service/eventKey';
 import handleData, {
   handleFavoriteGroupsChanged,
   handleGroupMostRecentPostChanged,
@@ -21,7 +22,6 @@ import handleData, {
   handlePartialData,
   isNeedToUpdateMostRecent4Group,
   getUniqMostRecentPostsByGroup,
-  handleHiddenGroupsChanged,
   saveDataAndDoNotification,
   calculateDeltaData,
 } from '../handleData';
@@ -138,7 +138,8 @@ describe('handleData()', () => {
   });
 
   it('passing an array', async () => {
-    expect.assertions(6);
+    expect.assertions(7);
+    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
     daoManager.getDao(GroupDao).get.mockReturnValue(1);
     const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
       {
@@ -156,7 +157,9 @@ describe('handleData()', () => {
         },
       },
       { _id: 2, members: [1, 2], deactivated: false },
-      { _id: 3, deactivated: false },
+      { _id: 3, members: [2], deactivated: false },
+      { _id: 4, deactivated: false },
+      { _id: 5, is_archived: true },
     ]);
     await handleData(groups);
     // expect getTransformData function
@@ -168,9 +171,12 @@ describe('handleData()', () => {
     expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
-    // expect checkIncompleteGroupsMembers function
-    // const personService: PersonService = PersonService.getInstance();
-    // expect(personService.getPersonsByIds).toHaveBeenCalled();
+    expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
+      { id: 2, members: [1, 2], deactivated: false },
+      { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
+      { id: 4, deactivated: false },
+      { id: 5, is_archived: true },
+    ]);
   });
 });
 
@@ -568,23 +574,6 @@ describe('getUniqMostRecentPostsByGroup', () => {
     expect(groupedPosts.length).toEqual(2);
     expect(groupedPosts[0].id).toEqual(2);
     expect(groupedPosts[1].id).toEqual(3);
-  });
-});
-
-describe('handleHiddenGroupsChanged', () => {
-  it('handleHiddenGroupsChanged, more hidden', async () => {
-    daoManager
-      .getDao(GroupDao)
-      .queryGroupsByIds.mockReturnValueOnce([
-        { id: 1, is_team: true },
-        { id: 2, is_team: false },
-      ]);
-    await handleHiddenGroupsChanged([], [1, 2]);
-    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
-  });
-  it('handleHiddenGroupsChanged, less hidden', async () => {
-    await handleHiddenGroupsChanged([1, 2], []);
-    expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(0);
   });
 });
 

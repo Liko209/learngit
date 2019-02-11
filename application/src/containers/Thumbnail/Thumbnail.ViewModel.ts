@@ -76,16 +76,14 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   private _getThumbsUrlWithSize = async () => {
-    const { origWidth, origHeight } = this.file;
-    if (origWidth && origHeight) {
-      const { width, height } = this._size;
-      const itemService = ItemService.getInstance() as ItemService;
-      this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
-        this._id,
-        width,
-        height,
-      );
-    }
+    const itemService = ItemService.getInstance() as ItemService;
+
+    const { width, height } = this._size;
+    this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
+      this._id,
+      width,
+      height,
+    );
   }
 
   @computed

@@ -29,6 +29,6 @@ class ActionsViewComponent extends Component<Props> {
   }
 }
 
-const ActionsView = translate('Conversations')(ActionsViewComponent);
+const ActionsView = translate('translations')(ActionsViewComponent);
 
 export { ActionsView };

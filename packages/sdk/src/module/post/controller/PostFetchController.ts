@@ -7,7 +7,8 @@
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../../../module/post/dao';
 import { mainLogger } from 'foundation';
 import { ItemService } from '../../item';
 import { PostDataController } from './PostDataController';

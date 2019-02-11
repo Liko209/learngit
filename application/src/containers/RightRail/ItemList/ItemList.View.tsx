@@ -5,7 +5,7 @@
  */
 import React, { CSSProperties } from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { ITEM_HEIGHT } from './config';
@@ -20,7 +20,6 @@ import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
-  JuiRightRailContentLoadError,
 } from 'jui/pattern/RightShelf';
 import { debounce } from 'lodash';
 const LOAD_DELAY = 300;
@@ -92,22 +91,18 @@ class ItemListView extends React.Component<ViewProps & Props>
     return <JuiRightRailLoadingMore />;
   }
 
-  private _handleRetry = async () => {
-    return await this.loadMore(0, 0);
-  }
-
   render() {
     const { totalCount, ids, loadStatus, tabConfig } = this.props;
-    const { loading, firstLoaded, loadError } = loadStatus;
-    const { subheader, tryAgainPrompt } = tabConfig;
+    const { loading, firstLoaded } = loadStatus;
+    const { subheader } = tabConfig;
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {t(subheader)} ({totalCount})
+            {i18next.t(subheader)} ({totalCount})
           </JuiListSubheader>
         )}
-        {firstLoaded && !loadError && (
+        {firstLoaded && (
           <ReactResizeDetector handleWidth={true} handleHeight={true}>
             {(width: number = 0, height: number = HEADER_HEIGHT) => (
               <JuiVirtualList
@@ -120,14 +115,7 @@ class ItemListView extends React.Component<ViewProps & Props>
             )}
           </ReactResizeDetector>
         )}
-        {loading && !firstLoaded && !loadError && this.firstLoader()}
-        {loadError && (
-          <JuiRightRailContentLoadError
-            tip={t(tryAgainPrompt)}
-            linkText={t('tryAgain')}
-            onClick={this._handleRetry}
-          />
-        )}
+        {loading && !firstLoaded && this.firstLoader()}
       </JuiRightShelfContent>
     );
   }

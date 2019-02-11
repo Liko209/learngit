@@ -33,6 +33,9 @@ class BaseDao<T extends IdModel> implements IDao<T> {
   getEntityName(): string {
     return this.modelName;
   }
+  protected getDb(): IDatabase {
+    return this.db;
+  }
 
   async put(item: T | T[]): Promise<void> {
     try {

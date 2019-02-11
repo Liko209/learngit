@@ -3,27 +3,27 @@
  * @Date: 2018-09-17 14:01:06
  * Copyright © RingCentral. All rights reserved.
  */
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import React, { Component } from 'react';
-import { observable, action } from 'mobx';
-import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { ConversationPost } from '@/containers/ConversationPost';
-import VisibilitySensor from 'react-visibility-sensor';
-import { JuiStream } from 'jui/pattern/ConversationPage';
-import { JuiLozengeButton } from 'jui/components/Buttons';
-import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
-import { toTitleCase } from '@/utils/string';
-import { scrollToComponent, nextTick, getScrollParent } from './helper';
-import { TimeNodeDivider } from '../TimeNodeDivider';
-import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
-import { StreamViewProps, StreamItem, StreamItemType } from './types';
-import storeManager from '@/store/base/StoreManager';
-import { GLOBAL_KEYS } from '@/store/constants';
-import { extractView } from 'jui/hoc/extractView';
-import { mainLogger } from 'sdk';
 import RO from 'resize-observer-polyfill';
+import storeManager from '@/store/base/StoreManager';
+import VisibilitySensor from 'react-visibility-sensor';
+import { action, observable } from 'mobx';
+import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
+import { ConversationPost } from '@/containers/ConversationPost';
+import { extractView } from 'jui/hoc/extractView';
+import { getScrollParent, nextTick, scrollToComponent } from './helper';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { JuiLozengeButton } from 'jui/components/Buttons';
+import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
+import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
+import { mainLogger } from 'sdk';
+import { observer } from 'mobx-react';
+import { StreamItem, StreamItemType, StreamViewProps } from './types';
+import { TimeNodeDivider } from '../TimeNodeDivider';
+import { toTitleCase } from '@/utils/string';
+import { translate, WithNamespaces } from 'react-i18next';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -44,7 +44,8 @@ class StreamViewComponent extends Component<Props> {
   private _ro: ResizeObserver[] = [];
   private _globalStore = storeManager.getGlobalStore();
   private _listLastWidth = 0;
-
+  @observable
+  private _hideList = true;
   state = { _jumpToPostId: 0 };
 
   @observable private _jumpToFirstUnreadLoading = false;
@@ -67,6 +68,10 @@ class StreamViewComponent extends Component<Props> {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
     this._ro.forEach(i => i.disconnect());
+    this._detachScrollHandlerToContainer();
+  }
+
+  private _detachScrollHandlerToContainer() {
     if (this._listRef.current) {
       getScrollParent(this._listRef.current).removeEventListener(
         'scroll',
@@ -92,8 +97,6 @@ class StreamViewComponent extends Component<Props> {
     const currSize = postIds.length;
     const prevLastPost = _(prevPostIds).last();
     const currentLastPost = _(postIds).last();
-    this._isAtBottom = this.props.atBottom();
-    this._isAtTop = this.props.atTop();
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
         storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
@@ -293,9 +296,9 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { loading, loadInitialPostsError, t } = this.props;
+    const { loadInitialPostsError, t } = this.props;
 
-    return loading || loadInitialPostsError ? (
+    return loadInitialPostsError ? (
       <JuiStreamLoading
         showTip={!!loadInitialPostsError}
         tip={t('translations:messageLoadingErrorTip')}
@@ -303,7 +306,7 @@ class StreamViewComponent extends Component<Props> {
         onClick={this._loadInitialPosts}
       />
     ) : (
-      <JuiStream>
+      <JuiStream style={{ visibility: this._hideList ? 'hidden' : 'visible' }}>
         {this._renderJumpToFirstUnreadButton()}
         {this._renderInitialPost()}
         <section ref={this._listRef}>{this._renderStreamItems()}</section>
@@ -311,7 +314,7 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action
+  @action.bound
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, updateHistoryHandler, markAsRead } = this.props;
     const { _jumpToPostId } = this.state;
@@ -319,14 +322,23 @@ class StreamViewComponent extends Component<Props> {
     if (!this._listRef.current) {
       return; // the current component is unmounted
     }
+    this._attachScrollHandlerToContainer();
+    this._stickToBottom();
     _jumpToPostId
       ? await this.scrollToPost(_jumpToPostId)
       : await this.scrollToBottom();
-
-    this._stickToBottom();
     this._visibilitySensorEnabled = true;
     updateHistoryHandler();
     markAsRead();
+    setTimeout(() => {
+      this._hideList = false;
+    },         0);
+  }
+
+  private _attachScrollHandlerToContainer() {
+    if (!this._listRef.current) {
+      return;
+    }
     getScrollParent(this._listRef.current).addEventListener(
       'scroll',
       this._recordPosition,
@@ -414,10 +426,10 @@ class StreamViewComponent extends Component<Props> {
     return scrollToComponent(scrollToPostEl, options);
   }
 
-  private _recordPosition = debounce(() => {
+  private _recordPosition = () => {
     this._isAtBottom = this.props.atBottom();
     this._isAtTop = this.props.atTop();
-  },                                 500);
+  }
 
   private _focusHandler = () => {
     const { atBottom, markAsRead } = this.props;
@@ -427,6 +439,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
+    this._setUmiDisplay(true);
   }
 
   private _setPostRef = (postRef: any) => {
@@ -439,6 +452,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
-const StreamView = translate(['Conversations', 'translations'])(view);
+const StreamView = translate('translations')(view);
 
 export { StreamView, StreamViewComponent };

@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { hot } from 'react-hot-loader';
+import { hot } from 'react-hot-loader/root';
 import { container } from 'framework';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import ThemeProvider from '@/containers/ThemeProvider';
@@ -81,7 +81,7 @@ class App extends React.Component {
     this._upgradeHandler.upgradeIfAvailable();
   }
 }
-const HotApp = hot(module)(App);
+const HotApp = hot(App);
 
 export { HotApp as App };
 export default HotApp;

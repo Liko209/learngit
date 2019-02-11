@@ -8,13 +8,13 @@ interface INewGroupService {
 
   canJoinTeam(team: Group): boolean;
 
-  joinTeam(userId: number, teamId: number): void;
+  joinTeam(userId: number, teamId: number): Promise<void>;
 
-  leaveTeam(userId: number, teamId: number): void;
+  leaveTeam(userId: number, teamId: number): Promise<void>;
 
-  addTeamMembers(members: number[], teamId: number): void;
+  addTeamMembers(members: number[], teamId: number): Promise<void>;
 
-  removeTeamMembers(members: number[], teamId: number): void;
+  removeTeamMembers(members: number[], teamId: number): Promise<void>;
 
   isCurrentUserHasPermission(
     teamPermissionParams: TeamPermissionParams,
@@ -40,7 +40,13 @@ interface INewGroupService {
     hasMore: boolean,
   ): void;
 
+  archiveTeam(teamId: number): Promise<void>;
+
   deleteTeam(teamId: number): Promise<void>;
+
+  makeAdmin(teamId: number, member: number): Promise<void>;
+
+  revokeAdmin(teamId: number, member: number): Promise<void>;
 }
 
 export { INewGroupService };

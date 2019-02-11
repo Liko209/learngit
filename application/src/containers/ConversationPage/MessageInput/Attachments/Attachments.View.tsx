@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { t } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import {
@@ -16,10 +16,13 @@ import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { getFileIcon } from '@/common/getFileIcon';
 
 @observer
-class AttachmentsView extends Component<AttachmentsViewProps> {
+class AttachmentsViewComponent extends Component<
+  AttachmentsViewProps & WithNamespaces
+> {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
+      const { t } = this.props;
       return (
         <JuiDuplicateAlert
           title={t('updateFiles')}
@@ -65,5 +68,7 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
     );
   }
 }
+
+const AttachmentsView = translate('translations')(AttachmentsViewComponent);
 
 export { AttachmentsView };

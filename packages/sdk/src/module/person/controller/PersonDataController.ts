@@ -5,7 +5,8 @@
  */
 
 import { Person } from '../entity';
-import { daoManager, PersonDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../dao';
 import { Raw } from '../../../framework/model';
 import { UserConfig } from '../../../service/account/UserConfig';
 import { transform, baseHandleData } from '../../../service/utils';

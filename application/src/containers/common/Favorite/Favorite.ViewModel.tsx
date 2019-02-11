@@ -9,10 +9,11 @@ import { service } from 'sdk';
 import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { StoreViewModel } from '@/store/ViewModel';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 import { FavoriteProps } from './types';
 
@@ -20,29 +21,36 @@ const { GroupService } = service;
 
 class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
   private _groupService: service.GroupService = GroupService.getInstance();
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  @observable
+  conversationId: number;
 
   constructor(props: FavoriteProps) {
     super(props);
     this.autorun(this.getConversationId);
   }
 
-  @observable
-  conversationId: number;
+  @computed
+  private get _id() {
+    return this.props.id;
+  }
+
+  @computed
+  private get _type() {
+    return GlipTypeUtil.extractTypeId(this._id);
+  }
 
   getConversationId = async () => {
-    const { id } = this.props;
-    const type = GlipTypeUtil.extractTypeId(id);
-
     if (
-      type === TypeDictionary.TYPE_ID_GROUP ||
-      type === TypeDictionary.TYPE_ID_TEAM
+      this._type === TypeDictionary.TYPE_ID_GROUP ||
+      this._type === TypeDictionary.TYPE_ID_TEAM
     ) {
-      this.conversationId = id;
+      this.conversationId = this._id;
       return;
     }
 
-    if (type === TypeDictionary.TYPE_ID_PERSON) {
-      const group = await this._groupService.getLocalGroup([id]);
+    if (this._type === TypeDictionary.TYPE_ID_PERSON) {
+      const group = await this._groupService.getLocalGroup([this._id]);
       if (group) {
         this.conversationId = group.id;
       } else {
@@ -60,6 +68,16 @@ class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
       );
     }
     return null;
+  }
+
+  @computed
+  get isMember() {
+    if (this._group) {
+      return (
+        this._group.members && this._group.members.includes(this._currentUserId)
+      );
+    }
+    return false;
   }
 
   @computed
