@@ -5,7 +5,7 @@ import { GroupDao } from '../../../module/group/dao';
 import GroupAPI from '../../../api/glip/group';
 import { PersonService } from '../../../module/person';
 import ProfileService from '../../../service/profile';
-import { UserConfig } from '../../../service/account';
+import { UserConfig } from '../../../service/account/UserConfig';
 import { Group } from '../../../module/group/entity';
 import { Post } from '../../../module/post/entity';
 import { Profile } from '../../../module/profile/entity';
@@ -31,7 +31,7 @@ jest.mock('../../../api');
 jest.mock('../../../framework/controller');
 
 jest.mock('../../../service/profile');
-jest.mock('../../../service/account');
+jest.mock('../../../service/account/UserConfig');
 jest.mock('../../notificationCenter');
 jest.mock('../../../module/state');
 jest.mock('../../../dao', () => {

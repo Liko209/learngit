@@ -24,7 +24,7 @@ import { Profile } from '../../module/profile/entity';
 
 import { StateService } from '../../module/state';
 import { EVENT_TYPES } from '../constants';
-import { UserConfig } from '../account';
+import { UserConfig } from '../account/UserConfig';
 
 async function getExistedAndTransformDataFromPartial(
   groups: Partial<Raw<Group>>[],

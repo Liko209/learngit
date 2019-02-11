@@ -48,7 +48,7 @@ import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
-import { UserConfig } from '../account';
+import { UserConfig } from '../account/UserConfig';
 import { PersonService } from '../../module/person';
 import { compareName } from '../../utils/helper';
 import {

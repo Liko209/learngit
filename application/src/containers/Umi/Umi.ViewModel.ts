@@ -29,26 +29,47 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
   @computed
   private get _unreadInfo() {
-    if (this.props.type === UMI_SECTION_TYPE.SINGLE) {
-      if (!this.props.id) {
-        return { unreadCount: 0, important: false };
-      }
-      const groupState: GroupStateModel = getEntity(
-        ENTITY_NAME.GROUP_STATE,
-        this.props.id,
-      );
-      const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
-      const unreadCount =
-        (group.isTeam
-          ? groupState.unreadMentionsCount
-          : groupState.unreadCount) || 0;
-      return { unreadCount, important: !!groupState.unreadMentionsCount };
-    }
-
     let unreadInfo = {
       unreadCount: 0,
       mentionCount: 0,
     };
+
+    if (this.props.type === UMI_SECTION_TYPE.SINGLE) {
+      unreadInfo = this._getSingleUnreadInfo();
+    } else {
+      unreadInfo = this._getSectionUnreadInfo();
+    }
+
+    return {
+      unreadCount: unreadInfo.unreadCount,
+      important: !!unreadInfo.mentionCount,
+    };
+  }
+
+  private _getSingleUnreadInfo() {
+    if (!this.props.id) {
+      return { unreadCount: 0, mentionCount: 0 };
+    }
+
+    const groupState: GroupStateModel = getEntity(
+      ENTITY_NAME.GROUP_STATE,
+      this.props.id,
+    );
+    const group: GroupModel = getEntity(ENTITY_NAME.GROUP, this.props.id);
+    const unreadCount =
+      (group.isTeam
+        ? groupState.unreadMentionsCount
+        : groupState.unreadCount) || 0;
+
+    return { unreadCount, mentionCount: groupState.unreadMentionsCount || 0 };
+  }
+
+  private _getSectionUnreadInfo() {
+    let unreadInfo = {
+      unreadCount: 0,
+      mentionCount: 0,
+    };
+
     if (this.props.type === UMI_SECTION_TYPE.FAVORITE) {
       unreadInfo = getGlobalValue(GLOBAL_KEYS.FAVORITE_UNREAD);
     } else if (this.props.type === UMI_SECTION_TYPE.DIRECT_MESSAGE) {
@@ -59,6 +80,13 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       unreadInfo = getGlobalValue(GLOBAL_KEYS.TOTAL_UNREAD);
     }
 
+    return this._removeCurrentUmiFromSection(unreadInfo);
+  }
+
+  private _removeCurrentUmiFromSection(unreadInfo: {
+    unreadCount: number;
+    mentionCount: number;
+  }) {
     untracked(() => {
       const shouldShowUMI = getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI);
       if (!shouldShowUMI) {
@@ -78,11 +106,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
         }
       }
     });
-
-    return {
-      unreadCount: unreadInfo.unreadCount,
-      important: unreadInfo.mentionCount > 0,
-    };
+    return unreadInfo;
   }
 
   updateAppUmi() {
