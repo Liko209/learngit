@@ -35,9 +35,9 @@ function getUnicode(
     }
     return convertMapData[key].toString();
   });
-  console.log(
-    `originKey: ${originKey}, markdownKey: ${markdownKey}, unicode: ${unicode}`,
-  );
+  // console.log(
+  //   `originKey: ${originKey}, markdownKey: ${markdownKey}, unicode: ${unicode}`,
+  // );
   return unicode;
 }
 

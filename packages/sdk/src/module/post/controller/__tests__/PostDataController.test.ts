@@ -5,7 +5,7 @@
  */
 
 import { ItemService } from '../../../item';
-import { daoManager } from '../../../../dao';
+import { daoManager, DeactivatedDao } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
