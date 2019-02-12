@@ -104,6 +104,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  get isAllHandsTeam() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
+      .isCompanyTeam;
+  }
+
+  @computed
   get notEmpty() {
     return this.items.length > 0 || this.hasMoreUp;
   }

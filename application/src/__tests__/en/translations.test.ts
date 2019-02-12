@@ -390,4 +390,12 @@ describe('i18next-en', () => {
   expect(
     i18next.t('DownloadToSeeTheRestLine', { restLines: restLines + 1 }),
   ).toEqual(`Download to see the rest ${restLines + 1} lines`);
+  expect(
+    i18next.t('directMessageDescription', { displayName: 'Dan Abramov' }),
+  ).toEqual(
+    'This is the beginning of your direct message history with Dan Abramov',
+  );
+  expect(i18next.t('allHandsTeamDescription')).toEqual(
+    'Welcome to your company team. All of your co-workers will automatically be added here when they join RingCentral.',
+  );
 });

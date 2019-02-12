@@ -14,7 +14,6 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-// import { Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
@@ -49,11 +48,21 @@ class ConversationInitialPost extends React.Component<
   }
 
   private get _conversationInitialPostHeader() {
-    const { isTeam, displayName, groupDescription, t, createTime } = this.props;
+    const {
+      isTeam,
+      displayName,
+      groupDescription,
+      t,
+      createTime,
+      isAllHandsTeam,
+    } = this.props;
 
-    return (
-      <JuiConversationInitialPostHeader>
-        {isTeam ? (
+    const groupCreateInfo = () => {
+      if (isTeam) {
+        if (isAllHandsTeam) {
+          return null;
+        }
+        return (
           <StyledTitle>
             {this._name}
             <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
@@ -62,14 +71,35 @@ class ConversationInitialPost extends React.Component<
               &nbsp;{t('on')} {createTime}
             </StyledSpan>
           </StyledTitle>
-        ) : (
-          <StyledSpan>
-            {t('directMessageDescription', { displayName })}
-          </StyledSpan>
-        )}
-        {isTeam && groupDescription ? (
-          <StyledDescription>{groupDescription}</StyledDescription>
-        ) : null}
+        );
+      }
+      return (
+        <StyledSpan>
+          {t('directMessageDescription', { displayName })}
+        </StyledSpan>
+      );
+    };
+
+    const teamDescription = () => {
+      if (isTeam) {
+        if (groupDescription) {
+          return <StyledDescription>{groupDescription}</StyledDescription>;
+        }
+        if (isAllHandsTeam) {
+          return (
+            <StyledDescription>
+              {t('allHandsTeamDescription')}
+            </StyledDescription>
+          );
+        }
+      }
+      return null;
+    };
+
+    return (
+      <JuiConversationInitialPostHeader>
+        {groupCreateInfo()}
+        {teamDescription()}
       </JuiConversationInitialPostHeader>
     );
   }
