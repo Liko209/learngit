@@ -30,6 +30,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
   type CellProps = {
     title: string;
     onLoad?: () => void;
+    style: CSSProperties;
   };
 
   const StaticCell = ({ title, ...rest }: CellProps) => (
@@ -81,7 +82,12 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     render() {
       return (
         <div style={style}>
-          <JuiVirtualList ref={this._listRef} dataSource={dataSource} />
+          <JuiVirtualList
+            ref={this._listRef}
+            dataSource={dataSource}
+            width={400}
+            height={400}
+          />
         </div>
       );
     }
@@ -149,14 +155,20 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
     fixedCellHeight(): number {
       return 44;
     }
+
+    moreLoader() {
+      return <div>Loading ...</div>;
+    }
+
     render() {
-      const cellCount = this.countOfCell();
       return (
         <div style={style}>
           <JuiVirtualList
             dataSource={this}
             threshold={10}
             isLoading={this.state.isLoading}
+            width={400}
+            height={400}
           />
         </div>
       );
@@ -196,7 +208,7 @@ storiesOf('Pattern/VirtualList', module).add('Empty VirtualList', () => {
   };
   return (
     <div style={style}>
-      <JuiVirtualList dataSource={source} />
+      <JuiVirtualList dataSource={source} width={400} height={400} />
     </div>
   );
 });
@@ -268,7 +280,7 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
   };
   return (
     <div style={style}>
-      <JuiVirtualList dataSource={source} />
+      <JuiVirtualList dataSource={source} width={400} height={400} />
     </div>
   );
 });
@@ -353,7 +365,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
   };
   const Comp = () => (
     <div style={style}>
-      <JuiVirtualList dataSource={source} />
+      <JuiVirtualList dataSource={source} width={400} height={400} />
     </div>
   );
   return <Comp />;
