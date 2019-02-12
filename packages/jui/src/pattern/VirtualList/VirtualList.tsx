@@ -100,22 +100,25 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
 
   render() {
     const { isLoading, dataSource, width, height } = this.props;
-    const cellCount = dataSource.countOfCell();
+    const {
+      renderEmptyContent,
+      countOfCell,
+      overscanCount,
+      fixedCellHeight,
+    } = dataSource;
+    const cellCount = countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
-    const { renderEmptyContent, overscanCount } = dataSource;
 
     const props: ListProps = {
       rowCount,
       width,
       height,
-      noRowsRenderer: dataSource.renderEmptyContent,
     } as ListProps;
 
     if (overscanCount) {
       props.overscanRowCount = overscanCount();
     }
 
-    const { fixedCellHeight } = dataSource;
     if (fixedCellHeight) {
       props.rowRenderer = this.rowRenderer;
       props.rowHeight = this._rowHeight;
