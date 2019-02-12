@@ -101,7 +101,7 @@ describe('MessageInputViewModel', () => {
           .spyOn(messageInputViewModel, '_sendPost')
           .mockImplementation(() => {});
         markdownFromDeltaGen('test')();
-        expect(messageInputViewModel.draft).toBe('');
+        expect(messageInputViewModel.draftText).toBe('');
         expect(sendPost).toBeCalled();
       });
 
@@ -144,7 +144,7 @@ describe('MessageInputViewModel', () => {
     });
     describe('get draft', () => {
       it('should call groupConfigService.getDraft if group draft has not been get from local', () => {
-        messageInputViewModel.draft;
+        messageInputViewModel.draftText;
         expect(groupConfigService.getDraft).toHaveBeenCalled();
       });
 

@@ -92,13 +92,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @action
   contentChange = (draft: string) => {
     this.error = '';
-    this.draft = this._isEmpty(draft) ? '' : draft;
+    this.draftText = this._isEmpty(draft) ? '' : draft;
   }
 
   @action
   cellWillChange = (newGroupId: number, oldGroupId: number) => {
     const draft = this._memoryDraftMap.get(oldGroupId);
-    const draftText = draft && draft.text ? draft.text : '';
+    const draftText =
+      draft && draft.text && !this._isEmpty(draft.text) ? draft.text : '';
     const itemIds = (draft && draft.itemIds) || [];
 
     this._groupConfigService.updateDraft({
@@ -111,9 +112,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   forceSaveDraft = () => {
-    const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    const draftText = this._isEmpty(this.draftText) ? '' : this.draftText;
     this._groupConfigService.updateDraft({
-      draft: { text: draft },
+      draft: { text: draftText },
       id: this._oldId,
     });
   }
@@ -124,7 +125,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @computed
-  get draft() {
+  get draftText() {
     if (this._memoryDraftMap.has(this.id)) {
       const draftInfo = this._memoryDraftMap.get(this.id);
       return (draftInfo && draftInfo.text) || '';
@@ -138,8 +139,15 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     draft && this._memoryDraftMap.set(this.id, draft);
   }
 
-  set draft(draft: string) {
-    this._memoryDraftMap.set(this.id, { text: draft });
+  set draftText(draft: string) {
+    if (this._memoryDraftMap.has(this.id)) {
+      const draftInMemory = this._memoryDraftMap.get(
+        this.id,
+      ) as GroupDraftModel;
+      draftInMemory.text = draft;
+    } else {
+      this._memoryDraftMap.set(this.id, { text: draft });
+    }
   }
 
   @computed
