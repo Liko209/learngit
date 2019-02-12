@@ -12,6 +12,8 @@ interface IVirtualListDataSource {
 
   cellAtIndex(params: JuiVirtualCellProps): JSX.Element;
 
+  observeCell?: () => boolean;
+
   fixedCellHeight?: (index: number) => number;
 
   overscanCount?: () => number;
