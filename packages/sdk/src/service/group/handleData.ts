@@ -11,7 +11,7 @@ import notificationCenter, {
   NotificationEntityUpdatePayload,
 } from '../notificationCenter';
 import { ENTITY, SERVICE } from '../../service/eventKey';
-import ProfileService from '../../service/profile';
+import { ProfileService } from '../../module/profile';
 import { extractHiddenGroupIds } from '../profile/handleData';
 import _ from 'lodash';
 import { transform } from '../utils';

@@ -9,7 +9,7 @@ import GroupService from '../service/group';
 import CompanyService from '../service/company';
 import { PersonService } from '../module/person';
 import PresenceService from '../service/presence';
-import ProfileService from '../service/profile';
+import { ProfileService } from '../module/profile';
 import { TelephonyService } from '../module/telephony';
 import { ItemService } from '../module/item';
 import { StateService } from '../module/state';
@@ -28,13 +28,6 @@ class GlipAccount extends AbstractAccount {
       TelephonyService.name,
     ]);
   }
-
-  // updateAccountInfo(){
-  //   this.updateServices();
-  // }
-  // updateServices(){
-  //   emitServicesChange();
-  // }
 }
 
 export { GlipAccount };

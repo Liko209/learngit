@@ -1,6 +1,7 @@
 import { service } from 'sdk';
 import { ItemService } from 'sdk/module/item';
 import { StateService } from 'sdk/module/state';
+import { ProfileService } from 'sdk/module/profile';
 import { ProgressService } from 'sdk/module/progress';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 import { PersonService } from 'sdk/module/person';
@@ -11,7 +12,6 @@ const {
   GroupConfigService,
   PostService,
   PresenceService,
-  ProfileService,
   ENTITY,
 } = service;
 

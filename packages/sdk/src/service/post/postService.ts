@@ -10,7 +10,7 @@ import { PostDao } from '../../module/post/dao';
 import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
-import ProfileService from '../../service/profile';
+import { ProfileService } from '../../module/profile';
 import GroupService from '../../service/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';

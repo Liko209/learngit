@@ -13,7 +13,6 @@ import {
 import AccountDao from '../../dao/account';
 import { GroupDao } from '../../module/group/dao';
 import { Raw, SortableModel } from '../../framework/model';
-import { Profile } from '../../module/profile/entity';
 import { GroupApiType } from '../../models';
 import {
   ACCOUNT_USER_ID,
@@ -22,7 +21,7 @@ import {
 
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
-import ProfileService from '../../service/profile';
+import { ProfileService } from '../../module/profile';
 import CompanyService from '../../service/company';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
@@ -60,7 +59,6 @@ import { isValidEmailAddress } from '../../utils/regexUtils';
 import { Api } from '../../api';
 import notificationCenter from '../notificationCenter';
 import PostService from '../post';
-import { ServiceResult } from '../ServiceResult';
 import { JSdkError, ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
 import { Person } from '../../module/person/entity';
 
@@ -125,6 +123,7 @@ class GroupService extends BaseService<Group> {
       );
       const hiddenIds = extractHiddenGroupIds(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
+
       if (this.isCacheInitialized()) {
         return await this.getMultiEntitiesFromCache(
           favoriteGroupIds,
@@ -236,7 +235,6 @@ class GroupService extends BaseService<Group> {
   }
 
   async getGroupById(id: number) {
-    console.warn('getGroupById() is deprecated use getById() instead.');
     return super.getById(id);
   }
 
@@ -465,7 +463,7 @@ class GroupService extends BaseService<Group> {
     groupId: number,
     hidden: boolean,
     shouldUpdateSkipConfirmation: boolean,
-  ): Promise<ServiceResult<Profile>> {
+  ) {
     const profileService: ProfileService = ProfileService.getInstance();
     return profileService.hideConversation(
       groupId,
