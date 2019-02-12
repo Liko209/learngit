@@ -100,15 +100,15 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { items } = this.state;
     const { teamName, description, members } = this.props;
     const { history, create } = this.props;
-    const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
-    const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const canAddMember = items.filter(item => item.type === 'canAddMember')[0]
-      .checked;
-    const result = await create(teamName, members, description, {
-      isPublic,
-      canPost,
-      canAddMember,
-    });
+    const result = await create(
+      teamName,
+      members,
+      description,
+      items.reduce((options, option) => {
+        options[option.type] = option.checked;
+        return options;
+      },           {}),
+    );
     if (result.isOk()) {
       this.onClose();
       history.push(`/messages/${result.data.id}`);
