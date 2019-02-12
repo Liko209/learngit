@@ -211,6 +211,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       this._session.hold().then(
         () => {},
         () => {
+          this._holdFlag = 0;
           this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
         },
       );
@@ -218,11 +219,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   unhold() {
-    this._holdFlag = 2;
     if (this._session) {
+      this._holdFlag = 2;
       this._session.unhold().then(
         () => {},
         () => {
+          this._holdFlag = 0;
           this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
         },
       );

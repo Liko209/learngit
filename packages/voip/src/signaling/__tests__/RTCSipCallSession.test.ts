@@ -7,6 +7,8 @@
 import { RTCSipCallSession } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import { CALL_FSM_NOTIFY } from '../../call/types';
+import { RTC_CALL_ACTION } from '../../api/types';
 
 describe('sip call session', () => {
   class VirtualSession extends EventEmitter2 {
@@ -25,10 +27,21 @@ describe('sip call session', () => {
     emitSessionError() {
       this.emit(WEBPHONE_SESSION_STATE.FAILED);
     }
+
+    emitSessionReinviteAccepted() {
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED);
+    }
+
+    emitSessionReinviteFailed() {
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED);
+    }
+
     terminate() {}
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();
+    hold = jest.fn();
+    unhold = jest.fn();
     accept() {}
     reject() {}
     toVoicemail() {}
@@ -86,6 +99,101 @@ describe('sip call session', () => {
       vsession.startRecord.mockResolvedValue(null);
       sipcallsession.startRecord();
       expect(vsession.startRecord).toHaveBeenCalled();
+    });
+  });
+
+  let sipcallsession = null;
+  let vsession = null;
+  function initSession() {
+    sipcallsession = new RTCSipCallSession();
+    vsession = new VirtualSession();
+    sipcallsession.setSession(vsession);
+    jest.spyOn(sipcallsession, 'emit');
+  }
+
+  describe('hold()', () => {
+    it('should emit hold succeed action when hold success', done => {
+      initSession();
+      vsession.hold.mockResolvedValue(null);
+      sipcallsession.hold();
+      vsession.emitSessionReinviteAccepted();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.HOLD,
+        );
+        done();
+      });
+    });
+
+    it('should emit hold failed action when hold failed by return promise reject', done => {
+      initSession();
+      vsession.hold.mockRejectedValue(null);
+      sipcallsession.hold();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        done();
+      });
+    });
+
+    it('should emit hold failed action when hold failed by server', done => {
+      initSession();
+      vsession.hold.mockResolvedValue(null);
+      sipcallsession.hold();
+      vsession.emitSessionReinviteFailed();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        done();
+      });
+    });
+  });
+
+  describe('unhold()', () => {
+    it('should emit unhold succeed action when unhold success', done => {
+      initSession();
+      vsession.unhold.mockResolvedValue(null);
+      sipcallsession.unhold();
+      vsession.emitSessionReinviteAccepted();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.UNHOLD,
+        );
+        done();
+      });
+    });
+
+    it('should emit unhold failed action when unhold failed by return promise reject', done => {
+      initSession();
+      vsession.unhold.mockRejectedValue(null);
+      sipcallsession.unhold();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.UNHOLD,
+        );
+        done();
+      });
+    });
+
+    it('should emit unhold failed action when unhold failed by server', done => {
+      initSession();
+      vsession.unhold.mockResolvedValue(null);
+      sipcallsession.unhold();
+      vsession.emitSessionReinviteFailed();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.UNHOLD,
+        );
+        done();
+      });
     });
   });
 
