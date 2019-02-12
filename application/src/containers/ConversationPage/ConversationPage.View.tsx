@@ -56,7 +56,8 @@ class ConversationPageViewComponent extends Component<
     if (stream.props.hasMoreDown) {
       return this.remountStream();
     }
-    return stream.scrollToBottom();
+    return;
+    // return stream.scrollToBottom();
   }
 
   @action.bound

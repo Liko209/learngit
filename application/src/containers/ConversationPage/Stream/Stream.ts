@@ -7,7 +7,7 @@ import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { buildContainer } from '@/base';
 import { StreamView } from './Stream.View';
 import { StreamViewModel } from './Stream.ViewModel';
-import { LoadingMorePlugin, LoadingPlugin } from '@/plugins';
+import { LoadingPlugin } from '@/plugins';
 import { StreamProps } from './types';
 
 const Stream = buildContainer<StreamProps>({
@@ -15,11 +15,6 @@ const Stream = buildContainer<StreamProps>({
   ViewModel: StreamViewModel,
   plugins() {
     return {
-      loadingMorePlugin: new LoadingMorePlugin({
-        thresholdUp: 600,
-        initialScrollTop: 99999,
-        stickTo: 'bottom',
-      }),
       loadingPlugin: new LoadingPlugin({
         CustomizedLoading: JuiStreamLoading,
       }),

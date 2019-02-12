@@ -15,13 +15,7 @@ import { Group } from 'sdk/module/group/entity';
 import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
-import {
-  onScrollToTop,
-  onScroll,
-  loading,
-  loadingTop,
-  loadingBottom,
-} from '@/plugins/InfiniteListPlugin';
+import { onScroll, loading } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps } from './types';
@@ -29,7 +23,6 @@ import { StreamProps } from './types';
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
-import { onScrollToBottom } from '@/plugins';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -128,7 +121,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   constructor(props: StreamProps) {
     super(props);
-
+    this.loadPrevPosts = this.loadPrevPosts.bind(this);
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
@@ -154,6 +147,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       options,
     );
   }
+
   postDataProvider: IFetchSortableDataProvider<Post> = {
     fetchData: async (direction, pageSize, anchor) => {
       const {
@@ -198,9 +192,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToTop
-  @loadingTop
-  @action
   async loadPrevPosts() {
     try {
       const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
@@ -211,9 +202,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToBottom
-  @loadingBottom
-  @action
   async loadNextPosts() {
     try {
       const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
@@ -266,6 +254,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
   }
 
+  @action
   private async _loadPosts(
     direction: QUERY_DIRECTION,
     limit?: number,

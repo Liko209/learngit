@@ -64,24 +64,28 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     style,
   }: ListRowProps) => {
     const { dataSource } = this.props;
-    return (
-      <CellMeasurer
-        cache={this.cache}
-        columnIndex={0}
-        key={key}
-        rowIndex={index}
-        parent={parent}
-      >
-        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
-          const cell = dataSource.cellAtIndex({
-            index,
-            style,
-            onLoad: measure,
-          });
-          return cell;
-        }}
-      </CellMeasurer>
-    );
+    const cellCount = dataSource.countOfCell();
+    if (index < cellCount) {
+      return (
+        <CellMeasurer
+          cache={this.cache}
+          columnIndex={0}
+          key={key}
+          rowIndex={index}
+          parent={parent}
+        >
+          {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
+            const cell = dataSource.cellAtIndex({
+              index,
+              style,
+              onLoad: measure,
+            });
+            return cell;
+          }}
+        </CellMeasurer>
+      );
+    }
+    return null;
   }
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
