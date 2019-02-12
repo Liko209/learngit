@@ -15,7 +15,7 @@ type PrivacyViewProps = PrivacyProps & {
   isPublic: boolean;
   isAdmin: boolean;
   isTeam: boolean;
-  handlePrivacy: () => Promise<boolean>;
+  handlePrivacy: () => Promise<void>;
 };
 
 export { PrivacyProps, PrivacyViewProps };

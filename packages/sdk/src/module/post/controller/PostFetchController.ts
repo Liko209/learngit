@@ -16,7 +16,7 @@ import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
-import { NewGroupService } from '../../../module/group';
+import { GroupService } from '../../../module/group';
 import { IRequestRemotePostAndSave } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
@@ -78,7 +78,7 @@ class PostFetchController {
     }
 
     if (result.posts.length < limit) {
-      const groupService: NewGroupService = NewGroupService.getInstance();
+      const groupService: GroupService = GroupService.getInstance();
       const shouldFetch = await groupService.hasMorePostInRemote(
         groupId,
         direction,
@@ -172,7 +172,7 @@ class PostFetchController {
         shouldSaveToDb,
       );
       if (shouldSaveToDb) {
-        const groupService: NewGroupService = NewGroupService.getInstance();
+        const groupService: GroupService = GroupService.getInstance();
         groupService.updateHasMore(groupId, direction, handledResult.hasMore);
       }
       Object.assign(result, handledResult);

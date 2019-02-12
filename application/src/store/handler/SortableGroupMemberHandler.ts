@@ -11,7 +11,7 @@ import {
 } from '@/store/base/fetch';
 
 import { PersonService } from 'sdk/module/person';
-import GroupService from 'sdk/service/group';
+import GroupService from 'sdk/module/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';

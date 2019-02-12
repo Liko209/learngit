@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
@@ -14,7 +14,6 @@ jest.mock('../../../../store/utils');
 const mockGroup = {
   id: 123,
 };
-const { GroupService } = service;
 const groupService = {
   getLocalGroup: jest.fn().mockResolvedValue(mockGroup),
   updateGroupPrivacy: jest
