@@ -17,7 +17,7 @@ import {
 import { kRTCAnonymous } from '../../account/constants';
 import { REGISTRATION_FSM_STATE } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
-import { rtcNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
+import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 
 class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
@@ -57,7 +57,7 @@ describe('networkChangeToOnline()', () => {
     const mockListener = new MockAccountListener();
     const account = new RTCAccount(mockListener);
     jest.spyOn(account, '_onNetworkChange').mockClear();
-    rtcNetworkNotificationCenter._onOnline();
+    RTCNetworkNotificationCenter.instance()._onOnline();
     expect(account._onNetworkChange).toHaveBeenCalledWith({
       state: 'online',
     });
