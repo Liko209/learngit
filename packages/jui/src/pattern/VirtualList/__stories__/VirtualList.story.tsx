@@ -8,7 +8,6 @@ import React, {
   createRef,
   CSSProperties,
   PureComponent,
-  ChangeEvent,
 } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
@@ -16,7 +15,6 @@ import uuid from 'uuid';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
-  JuiVirtualCellOnLoadFunc,
   JuiVirtualCellProps,
 } from '..';
 import { FileItem } from './FileItem';
@@ -24,7 +22,6 @@ import { FileItemProps } from './types';
 
 storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
   let count = number('cell count', 1000);
-  const cellIndex = number('scroll to cell', -1);
   if (count < 0) {
     count = 1000;
   }
@@ -88,109 +85,6 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     render() {
       return (
         <div style={style}>
-          <JuiVirtualList
-            ref={this._listRef}
-            dataSource={dataSource}
-            width={400}
-            height={400}
-          />
-        </div>
-      );
-    }
-  }
-  return <Content />;
-});
-
-storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
-  let count = number('cell count', 1000);
-  if (count < 0) {
-    count = 1000;
-  }
-  const part = ['Hello', 'This is title', 'A long text'];
-  function generateURL() {
-    const size = Math.round(10 + Math.random() * 10) * 10;
-    const url = `https://via.placeholder.com/${size}`;
-    return url;
-  }
-  const data: string[] = [];
-  for (let i = 0; i < count; ++i) {
-    data.push(generateURL());
-  }
-
-  type CellProps = {
-    title: string;
-    url: string;
-    onLoad?: () => void;
-    style: CSSProperties;
-  };
-
-  const DynamicCell = ({ title, url, onLoad, ...rest }: CellProps) => (
-    <div {...rest}>
-      {title}
-      <img src={url} onLoad={onLoad} />
-    </div>
-  );
-
-  class DataSource implements IVirtualListDataSource {
-    private _list: string[];
-    constructor(data: string[]) {
-      this._list = data;
-    }
-
-    countOfCell() {
-      return this._list.length;
-    }
-
-    overscanCount() {
-      return 10;
-    }
-
-    cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
-      const text = `${index + 1}`;
-      const s = {
-        ...style,
-        borderBottom: '1px dashed',
-      };
-      return (
-        <DynamicCell
-          title={text}
-          style={s}
-          url={this._list[index]}
-          onLoad={onLoad}
-          key={index}
-        />
-      );
-    }
-  }
-
-  const dataSource = new DataSource(data);
-
-  const style: CSSProperties = {
-    width: 400,
-    height: 600,
-    border: '1px solid',
-    display: 'flex',
-    flexDirection: 'column',
-  };
-  class Content extends PureComponent {
-    private _listRef: RefObject<JuiVirtualList> = createRef();
-    state = { cellIndex: -1 };
-    _handleCellIndexChange = (event: ChangeEvent<HTMLInputElement>) => {
-      const cellIndex = event.currentTarget.value;
-      this.setState({ cellIndex });
-      const { current } = this._listRef;
-      if (current) {
-        current.scrollToCell(parseInt(cellIndex, 10));
-      }
-    }
-    render() {
-      const { cellIndex } = this.state;
-      return (
-        <div style={style}>
-          <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
-            Scroll to index:
-            <input value={cellIndex} onChange={this._handleCellIndexChange} />
-          </div>
           <JuiVirtualList
             ref={this._listRef}
             dataSource={dataSource}

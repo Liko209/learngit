@@ -63,6 +63,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     parent,
     style,
   }: ListRowProps) => {
+    const { dataSource } = this.props;
     return (
       <CellMeasurer
         cache={this.cache}
@@ -71,8 +72,14 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         rowIndex={index}
         parent={parent}
       >
-        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) =>
-          this.props.dataSource.cellAtIndex({ index, style, onLoad: measure })}
+        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
+          const cell = dataSource.cellAtIndex({
+            index,
+            style,
+            onLoad: measure,
+          });
+          return cell;
+        }}
       </CellMeasurer>
     );
   }
@@ -80,7 +87,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
     const { isLoading, dataSource } = this.props;
     if (!isLoading && dataSource.loadMore) {
-      return await dataSource.loadMore!(startIndex, stopIndex);
+      return await dataSource.loadMore(startIndex, stopIndex);
     }
   }
 
@@ -100,7 +107,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
 
     return (
       <div key={cellCount} style={style}>
-        {dataSource.moreLoader!()}
+        {dataSource.moreLoader && dataSource.moreLoader()}
       </div>
     );
   }
