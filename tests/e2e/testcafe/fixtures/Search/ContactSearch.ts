@@ -76,7 +76,11 @@ test(formalName('Check search result will change when changing a team to public/
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
+
+
   }, true);
+
+
 
   await t.debug();
 
