@@ -15,7 +15,10 @@ import {
 import getDecorators from 'inversify-inject-decorators';
 import { Jupiter } from './Jupiter';
 
-const container = new Container({ defaultScope: 'Singleton' });
+const container = new Container({
+  defaultScope: 'Singleton',
+  skipBaseClassChecks: true,
+});
 container.bind<Jupiter>(Jupiter).to(Jupiter);
 
 const {
