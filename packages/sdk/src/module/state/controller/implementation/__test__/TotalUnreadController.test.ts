@@ -14,7 +14,8 @@ import { Group } from '../../../../group/entity';
 import { Profile } from '../../../../profile/entity';
 import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../../constants';
 import { GroupState } from '../../../entity';
-import { NewGroupService } from '../../../../group';
+import { GroupService } from '../../../../group';
+import { ProfileService } from '../../../../../service/profile';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { DeactivatedDao } from '../../../../../dao';
 import { NotificationEntityPayload } from '../../../../../service/notificationCenter';
@@ -492,8 +493,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       UserConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
-      NewGroupService.getInstance = jest.fn().mockReturnValue({
-        getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
+      GroupService.getInstance = jest.fn().mockReturnValue({
         getEntitySource: jest.fn().mockReturnValue({
           getEntities: jest
             .fn()
@@ -509,18 +509,20 @@ describe('TotalUnreadController', () => {
           .mockReturnValueOnce(true)
           .mockReturnValueOnce(false),
       });
+      ProfileService.getInstance = jest.fn().mockReturnValue({
+        getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
+      });
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
       expect(
-        NewGroupService.getInstance<NewGroupService>().getFavoriteGroupIds,
+        ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
       ).toBeCalledTimes(1);
       expect(
-        NewGroupService.getInstance<NewGroupService>().getEntitySource()
-          .getEntities,
+        GroupService.getInstance<GroupService>().getEntitySource().getEntities,
       ).toBeCalledTimes(1);
-      expect(
-        NewGroupService.getInstance<NewGroupService>().isValid,
-      ).toBeCalledTimes(3);
+      expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
+        3,
+      );
       expect(UserConfig.getCurrentUserId).toBeCalledTimes(2);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({

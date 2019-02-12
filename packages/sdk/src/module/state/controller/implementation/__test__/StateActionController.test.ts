@@ -5,7 +5,7 @@
  */
 
 import { StateActionController } from '../StateActionController';
-import { NewGroupService } from '../../../../group';
+import { GroupService } from '../../../../group';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
@@ -81,7 +81,7 @@ describe('StateActionController', () => {
     it('should mark as unread when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = true;
-      NewGroupService.getInstance = jest.fn().mockReturnValue({
+      GroupService.getInstance = jest.fn().mockReturnValue({
         getById: jest.fn().mockReturnValue({
           most_recent_post_id: 123,
         }),
@@ -90,9 +90,9 @@ describe('StateActionController', () => {
         .fn()
         .mockReturnValue(5683);
       await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(
-        NewGroupService.getInstance<NewGroupService>().getById,
-      ).toBeCalledWith(groupId);
+      expect(GroupService.getInstance<GroupService>().getById).toBeCalledWith(
+        groupId,
+      );
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
       expect(
@@ -105,7 +105,7 @@ describe('StateActionController', () => {
     it('should mark as read when (lastPostId && myStateId > 0)', async () => {
       const groupId: number = 55668833;
       const isUnread: boolean = false;
-      NewGroupService.getInstance = jest.fn().mockReturnValue({
+      GroupService.getInstance = jest.fn().mockReturnValue({
         getById: jest.fn().mockReturnValue({
           most_recent_post_id: 123,
         }),
@@ -114,9 +114,9 @@ describe('StateActionController', () => {
         .fn()
         .mockReturnValue(5683);
       await stateActionController.updateReadStatus(groupId, isUnread);
-      expect(
-        NewGroupService.getInstance<NewGroupService>().getById,
-      ).toBeCalledWith(groupId);
+      expect(GroupService.getInstance<GroupService>().getById).toBeCalledWith(
+        groupId,
+      );
       expect(mockStateFetchDataController.getMyStateId).toBeCalled();
       expect(mockPartialModifyController.updatePartially).toBeCalled();
       expect(

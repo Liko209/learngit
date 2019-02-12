@@ -5,7 +5,7 @@
  */
 
 import { GroupState, State } from '../../entity/State';
-import { NewGroupService } from '../../../group';
+import { GroupService } from '../../../group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { StateFetchDataController } from './StateFetchDataController';
@@ -22,8 +22,8 @@ class StateActionController {
   ) {}
 
   async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
-    const newGroupService: NewGroupService = NewGroupService.getInstance();
-    const group = await newGroupService.getById(groupId);
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getById(groupId);
     if (!group) {
       return;
     }

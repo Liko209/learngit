@@ -14,7 +14,8 @@ import {
 import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
 import { GroupState } from '../../entity';
-import { NewGroupService } from '../../../group';
+import { GroupService } from '../../../group';
+import { ProfileService } from '../../../../service/profile';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { UserConfig } from '../../../../service/account/UserConfig';
 import notificationCenter, {
@@ -269,9 +270,10 @@ class TotalUnreadController {
   private async _initializeTotalUnread(): Promise<void> {
     this.reset();
 
-    const groupService: NewGroupService = NewGroupService.getInstance();
-    this._favoriteGroupIds = await groupService.getFavoriteGroupIds();
+    const groupService: GroupService = GroupService.getInstance();
+    const profileService: ProfileService = ProfileService.getInstance();
     const groups = await groupService.getEntitySource().getEntities();
+    this._favoriteGroupIds = await profileService.getFavoriteGroupIds();
     await Promise.all(
       groups.map(async (group: Group) => {
         if (
