@@ -5,7 +5,7 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import GroupService, { CreateTeamOptions } from 'sdk/service/group';
+import GroupService, { TeamSetting, Group } from 'sdk/module/group';
 import { UserConfig } from 'sdk/service/account';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
@@ -67,29 +67,15 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 
   @action
-  create = async (
-    name: string,
-    memberIds: (number | string)[],
-    description: string,
-    options: CreateTeamOptions,
-  ) => {
-    const { isPublic, canPost } = options;
+  create = async (memberIds: (number | string)[], options: TeamSetting): Promise<Group | null> => {
     const groupService: GroupService = GroupService.getInstance();
     const creatorId = Number(UserConfig.getCurrentUserId());
-    const result = await groupService.createTeam(
-      name,
-      creatorId,
-      memberIds,
-      description,
-      {
-        isPublic,
-        canPost,
-      },
-    );
-    if (result.isErr()) {
-      this.createErrorHandler(result.error);
+    try {
+      return await groupService.createTeam(creatorId, memberIds, options);
+    } catch (error) {
+      this.createErrorHandler(error);
+      return null;
     }
-    return result;
   }
 
   createErrorHandler(error: JError) {

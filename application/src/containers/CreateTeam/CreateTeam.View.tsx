@@ -114,13 +114,18 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const result = await create(teamName, members, description, {
+    const newTeam = await create(members, {
       isPublic,
-      canPost,
+      description,
+      name: teamName,
+      permissionFlags: {
+        TEAM_ADD_MEMBER: !!isPublic,
+        TEAM_POST: canPost,
+      },
     });
-    if (result.isOk()) {
+    if (newTeam) {
       this.onClose();
-      history.push(`/messages/${result.data.id}`);
+      history.push(`/messages/${newTeam.id}`);
     }
   }
 

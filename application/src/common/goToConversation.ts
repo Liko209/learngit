@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import history from '@/history';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 type GoToConversationParams = {
@@ -15,8 +15,7 @@ type GoToConversationParams = {
 };
 
 const getConversationId = async (id: number | number[]) => {
-  const { GroupService } = service;
-  const groupService: service.GroupService = GroupService.getInstance();
+  const groupService: GroupService = GroupService.getInstance();
   const type = Array.isArray(id)
     ? TypeDictionary.TYPE_ID_PERSON
     : GlipTypeUtil.extractTypeId(id);
