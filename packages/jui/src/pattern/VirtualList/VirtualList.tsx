@@ -16,7 +16,11 @@ import {
 } from 'react-virtualized';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { IVirtualListDataSource } from './VirtualListDataSource';
-import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
+import {
+  JuiVirtualCellOnLoadFunc,
+  JuiObservedCellWrapper,
+  JuiVirtualCellProps,
+} from './VirtualCell';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
@@ -64,6 +68,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     style,
   }: ListRowProps) => {
     const { dataSource } = this.props;
+    const observeCell = dataSource.observeCell && dataSource.observeCell();
     return (
       <CellMeasurer
         cache={this.cache}
@@ -73,12 +78,17 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         parent={parent}
       >
         {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
-          const cell = dataSource.cellAtIndex({
+          const props: JuiVirtualCellProps = {
             index,
             style,
             onLoad: measure,
-          });
-          return cell;
+          };
+          const cell = dataSource.cellAtIndex(props);
+          return observeCell ? (
+            <JuiObservedCellWrapper {...props}>{cell}</JuiObservedCellWrapper>
+          ) : (
+            cell
+          );
         }}
       </CellMeasurer>
     );
