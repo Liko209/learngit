@@ -11,9 +11,25 @@ import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_ACTION } from '../../api/types';
 
 describe('sip call session', () => {
+  class SessionDescriptionHandler {
+    private _directionFlag: boolean = true;
+
+    setDirectionFlag(flag: boolean) {
+      this._directionFlag = flag;
+    }
+
+    getDirection(): string {
+      if (this._directionFlag) {
+        return 'sendonly';
+      }
+      return 'sendrecv';
+    }
+  }
   class VirtualSession extends EventEmitter2 {
+    public sessionDescriptionHandler: SessionDescriptionHandler;
     constructor() {
       super();
+      this.sessionDescriptionHandler = new SessionDescriptionHandler();
     }
 
     emitSessionConfirmed() {
@@ -29,11 +45,11 @@ describe('sip call session', () => {
     }
 
     emitSessionReinviteAccepted() {
-      this.emit(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED);
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED, this);
     }
 
     emitSessionReinviteFailed() {
-      this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED);
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
     }
 
     terminate() {}
@@ -157,6 +173,7 @@ describe('sip call session', () => {
   describe('unhold()', () => {
     it('should emit unhold succeed action when unhold success', done => {
       initSession();
+      vsession.sessionDescriptionHandler.setDirectionFlag(false);
       vsession.unhold.mockResolvedValue(null);
       sipcallsession.unhold();
       vsession.emitSessionReinviteAccepted();
@@ -171,6 +188,7 @@ describe('sip call session', () => {
 
     it('should emit unhold failed action when unhold failed by return promise reject', done => {
       initSession();
+      vsession.sessionDescriptionHandler.setDirectionFlag(false);
       vsession.unhold.mockRejectedValue(null);
       sipcallsession.unhold();
       setImmediate(() => {
@@ -184,6 +202,7 @@ describe('sip call session', () => {
 
     it('should emit unhold failed action when unhold failed by server', done => {
       initSession();
+      vsession.sessionDescriptionHandler.setDirectionFlag(false);
       vsession.unhold.mockResolvedValue(null);
       sipcallsession.unhold();
       vsession.emitSessionReinviteFailed();

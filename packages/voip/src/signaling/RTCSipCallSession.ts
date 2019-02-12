@@ -12,7 +12,6 @@ import { WEBPHONE_SESSION_STATE } from '../signaling/types';
 
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
-  private _holdFlag: number = 0;
   constructor() {
     super();
   }
@@ -40,11 +39,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
     });
-    this._session.on(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED, () => {
-      this._onSessionReinviteAccepted();
-    });
-    this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, () => {
-      this._onSessionReinviteFailed();
+    this._session.on(
+      WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED,
+      (session: any) => {
+        this._onSessionReinviteAccepted(session);
+      },
+    );
+    this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
+      this._onSessionReinviteFailed(session);
     });
   }
 
@@ -64,32 +66,20 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this.emit(CALL_SESSION_STATE.PROGRESS, response);
   }
 
-  private _onSessionReinviteAccepted() {
-    switch (this._holdFlag) {
-      case 1: {
-        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
-        break;
-      }
-      case 2: {
-        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.UNHOLD);
-        break;
-      }
+  private _onSessionReinviteAccepted(session: any) {
+    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
+      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
+    } else {
+      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.UNHOLD);
     }
-    this._holdFlag = 0;
   }
 
-  private _onSessionReinviteFailed() {
-    switch (this._holdFlag) {
-      case 1: {
-        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
-        break;
-      }
-      case 2: {
-        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
-        break;
-      }
+  private _onSessionReinviteFailed(session: any) {
+    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
+      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
+    } else {
+      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
     }
-    this._holdFlag = 0;
   }
 
   hangup() {
@@ -207,27 +197,17 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hold() {
     if (this._session) {
-      this._holdFlag = 1;
-      this._session.hold().then(
-        () => {},
-        () => {
-          this._holdFlag = 0;
-          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
-        },
-      );
+      this._session.hold().catch(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
+      });
     }
   }
 
   unhold() {
     if (this._session) {
-      this._holdFlag = 2;
-      this._session.unhold().then(
-        () => {},
-        () => {
-          this._holdFlag = 0;
-          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
-        },
-      );
+      this._session.unhold().catch(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
+      });
     }
   }
 
