@@ -17,6 +17,7 @@ import {
   IVirtualListDataSource,
   JuiVirtualCellOnLoadFunc,
   JuiVirtualCellProps,
+  JuiVirtualListRowsRenderInfo,
 } from '..';
 import { FileItem } from './FileItem';
 import { FileItemProps } from './types';
@@ -53,7 +54,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     }
 
     cellAtIndex({ index, style }: JuiVirtualCellProps) {
-      const text = `${this._list[index]}-${index + 1}`;
+      const text = `${this._list[index]}-${index}`;
       const s = {
         ...style,
         borderBottom: '1px dashed',
@@ -74,8 +75,13 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     border: '1px solid',
     display: 'flex',
   };
-  class Content extends PureComponent {
+  type States = {
+    visibleRange: { startIndex: number; stopIndex: number };
+  };
+  class Content extends PureComponent<{}, States> {
     private _listRef: RefObject<JuiVirtualList> = createRef();
+    state = { visibleRange: { startIndex: -1, stopIndex: -1 } };
+
     componentDidMount() {
       setTimeout(() => {
         const { current } = this._listRef;
@@ -84,7 +90,17 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
         }
       },         100);
     }
-    render() {
+
+    private _handleBeforeRowsRendered = ({ startIndex, stopIndex }) => {
+      this.setState({
+        visibleRange: {
+          startIndex,
+          stopIndex,
+        },
+      });
+    }
+
+    private _renderVirtualList() {
       return (
         <div style={style}>
           <JuiVirtualList
@@ -92,8 +108,28 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
             dataSource={dataSource}
             width={400}
             height={400}
+            onBeforeRowsRendered={this._handleBeforeRowsRendered}
           />
         </div>
+      );
+    }
+
+    private _renderVisibleRange() {
+      const { visibleRange } = this.state;
+      const { startIndex, stopIndex } = visibleRange;
+      return (
+        <div>
+          Visible Range: {startIndex}-{stopIndex}
+        </div>
+      );
+    }
+
+    render() {
+      return (
+        <>
+          {this._renderVirtualList()}
+          {this._renderVisibleRange()}
+        </>
       );
     }
   }
@@ -142,7 +178,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
 
     cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
-      const text = `${index + 1}`;
+      const text = `${index}`;
       const s = {
         ...style,
         borderBottom: '1px dashed',
@@ -225,7 +261,7 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
     }
 
     cellAtIndex = ({ index, style }: JuiVirtualCellProps) => {
-      const text = `${this._list[index]}-${index + 1}`;
+      const text = `${this._list[index]}-${index}`;
       return (
         <div key={index} style={style}>
           <StaticCell title={text} />
