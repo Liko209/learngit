@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -41,6 +41,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 
 @observer
 class CreateTeam extends React.Component<ViewProps, IState> {
+  teamNameRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
@@ -73,6 +76,21 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return {
       items,
     };
+  }
+
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.teamNameRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
   }
 
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
@@ -165,6 +183,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
+          inputRef={this.teamNameRef}
           helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />
