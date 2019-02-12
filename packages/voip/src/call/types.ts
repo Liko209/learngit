@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 enum CALL_SESSION_STATE {
+  ACCEPTED = 'callsessionstate.accepted',
   CONFIRMED = 'callsessionstate.confirmed',
   DISCONNECTED = 'callsessionstate.disconnected',
   ERROR = 'callsessionstate.error',

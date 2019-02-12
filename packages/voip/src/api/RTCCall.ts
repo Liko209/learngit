@@ -196,6 +196,9 @@ class RTCCall {
 
   private _prepare(): void {
     // listen session
+    this._callSession.on(CALL_SESSION_STATE.ACCEPTED, () => {
+      this._onSessionAccepted();
+    });
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
       this._onSessionConfirmed();
     });
@@ -361,6 +364,9 @@ class RTCCall {
   }
 
   // session listener
+  private _onSessionAccepted() {
+    this._fsm.sessionAccepted();
+  }
   private _onSessionConfirmed() {
     this._fsm.sessionConfirmed();
   }

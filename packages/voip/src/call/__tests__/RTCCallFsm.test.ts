@@ -238,7 +238,7 @@ describe('Call FSM UT', async () => {
       const listener = new MockCallFsmLisener(fsm);
       jest.spyOn(listener, 'onEnterConnected');
       fsm.accountReady();
-      fsm.sessionConfirmed();
+      fsm.sessionAccepted();
       setImmediate(() => {
         expect(fsm.state()).toBe('connected');
         expect(listener.onEnterConnected).toBeCalled();
@@ -322,7 +322,7 @@ describe('Call FSM UT', async () => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onFlipAction');
         callFsm.accountReady();
-        callFsm.sessionConfirmed();
+        callFsm.sessionAccepted();
         callFsm.flip(5);
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
@@ -337,7 +337,7 @@ describe('Call FSM UT', async () => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onStartRecordAction');
         callFsm.accountReady();
-        callFsm.sessionConfirmed();
+        callFsm.sessionAccepted();
         callFsm.startRecord();
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
@@ -352,7 +352,7 @@ describe('Call FSM UT', async () => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onStopRecordAction');
         callFsm.accountReady();
-        callFsm.sessionConfirmed();
+        callFsm.sessionAccepted();
         callFsm.stopRecord();
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
@@ -416,7 +416,7 @@ describe('Call FSM UT', async () => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onTransferAction');
         callFsm.accountReady();
-        callFsm.sessionConfirmed();
+        callFsm.sessionAccepted();
         callFsm.transfer('123');
         setImmediate(() => {
           expect(callFsm.onTransferAction).toBeCalled();
@@ -431,7 +431,7 @@ describe('Call FSM UT', async () => {
       const callFsm = new RTCCallFsm();
       jest.spyOn(callFsm, 'onParkAction');
       callFsm.accountReady();
-      callFsm.sessionConfirmed();
+      callFsm.sessionAccepted();
       callFsm.park();
       setImmediate(() => {
         expect(callFsm.state()).toBe('connected');

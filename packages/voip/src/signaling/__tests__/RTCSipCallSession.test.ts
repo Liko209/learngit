@@ -15,6 +15,10 @@ describe('sip call session', () => {
     }
 
     emitSessionConfirmed() {
+      this.emit(WEBPHONE_SESSION_STATE.CONFIRMED);
+    }
+
+    emitSessionAccepted() {
       this.emit(WEBPHONE_SESSION_STATE.ACCEPTED);
     }
 
@@ -161,6 +165,15 @@ describe('sip call session', () => {
       jest.spyOn(sipcallsession, '_onSessionConfirmed');
       vsession.emitSessionConfirmed();
       expect(sipcallsession._onSessionConfirmed).toHaveBeenCalled();
+    });
+
+    it('should _onSessionAccepted be called when VirtualSession emit Accepted', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      jest.spyOn(sipcallsession, '_onSessionAccepted');
+      vsession.emitSessionAccepted();
+      expect(sipcallsession._onSessionAccepted).toHaveBeenCalled();
     });
 
     it('should _onSessionDisconnected be called when VirtualSession emit Disconnected JPT-578', () => {

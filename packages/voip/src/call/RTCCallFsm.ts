@@ -25,6 +25,7 @@ const CallFsmEvent = {
   DTMF: 'dtmfEvent',
   ACCOUNT_READY: 'accountReadyEvent',
   ACCOUNT_NOT_READY: 'accountNotReadyEvent',
+  SESSION_ACCEPTED: 'sessionAcceptedEvent',
   SESSION_CONFIRMED: 'sessionConfirmedEvent',
   SESSION_DISCONNECTED: 'sessionDisconnectedEvent',
   SESSION_ERROR: 'sessionErrorEvent',
@@ -105,6 +106,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
         }
         case CallFsmEvent.ACCOUNT_NOT_READY: {
           this._onAccountNotReady();
+          break;
+        }
+        case CallFsmEvent.SESSION_ACCEPTED: {
+          this._onSessionAccepted();
           break;
         }
         case CallFsmEvent.SESSION_CONFIRMED: {
@@ -235,6 +240,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   public accountNotReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_NOT_READY }, () => {});
+  }
+
+  public sessionAccepted() {
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_ACCEPTED }, () => {});
   }
 
   public sessionConfirmed() {
@@ -394,6 +403,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onAccountNotReady() {
     this._callFsmTable.accountNotReady();
+  }
+
+  private _onSessionAccepted() {
+    this._callFsmTable.sessionAccepted();
   }
 
   private _onSessionConfirmed() {

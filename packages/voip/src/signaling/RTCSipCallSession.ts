@@ -28,6 +28,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       return;
     }
     this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, () => {
+      this._onSessionAccepted();
+    });
+    this._session.on(WEBPHONE_SESSION_STATE.CONFIRMED, () => {
       this._onSessionConfirmed();
     });
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
@@ -39,6 +42,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
     });
+  }
+
+  private _onSessionAccepted() {
+    this.emit(CALL_SESSION_STATE.ACCEPTED);
   }
 
   private _onSessionConfirmed() {
