@@ -8,6 +8,7 @@ import React, {
   createRef,
   CSSProperties,
   PureComponent,
+  ChangeEvent,
 } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
@@ -102,7 +103,6 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
 
 storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   let count = number('cell count', 1000);
-  const cellIndex = number('scroll to cell', -1);
   if (count < 0) {
     count = 1000;
   }
@@ -141,6 +141,10 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
       return this._list.length;
     }
 
+    overscanCount() {
+      return 10;
+    }
+
     cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
       const text = `${index + 1}`;
       const s = {
@@ -161,25 +165,32 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
 
   const dataSource = new DataSource(data);
 
-  const style = {
+  const style: CSSProperties = {
     width: 400,
-    height: 400,
+    height: 600,
     border: '1px solid',
     display: 'flex',
+    flexDirection: 'column',
   };
   class Content extends PureComponent {
     private _listRef: RefObject<JuiVirtualList> = createRef();
-    componentDidMount() {
-      setTimeout(() => {
-        const { current } = this._listRef;
-        if (current) {
-          // current.scrollToCell(cellIndex);
-        }
-      },         100);
+    state = { cellIndex: -1 };
+    _handleCellIndexChange = (event: ChangeEvent<HTMLInputElement>) => {
+      const cellIndex = event.currentTarget.value;
+      this.setState({ cellIndex });
+      const { current } = this._listRef;
+      if (current) {
+        current.scrollToCell(parseInt(cellIndex, 10));
+      }
     }
     render() {
+      const { cellIndex } = this.state;
       return (
         <div style={style}>
+          <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
+            Scroll to index:
+            <input value={cellIndex} onChange={this._handleCellIndexChange} />
+          </div>
           <JuiVirtualList
             ref={this._listRef}
             dataSource={dataSource}
