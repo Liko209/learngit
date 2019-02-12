@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observable } from 'mobx';
-import { GroupConfig } from 'sdk/models';
+import { GroupConfig, GroupDraftModel } from 'sdk/models';
 import Base from './Base';
 
 export default class GroupConfigModel extends Base<GroupConfig> {
   @observable
-  draft?: string;
+  draft?: GroupDraftModel;
   @observable
   sendFailurePostIds?: number[];
 

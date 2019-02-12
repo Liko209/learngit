@@ -22,6 +22,7 @@ import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
 import { NewPostService } from 'sdk/module/post';
+import { GroupDraftModel } from 'sdk/models';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -39,7 +40,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private _groupConfigService: GroupConfigService;
 
   @observable
-  private _memoryDraftMap: Map<number, string> = new Map();
+  private _memoryDraftMap: Map<number, GroupDraftModel> = new Map();
 
   @computed
   get id() {
@@ -91,24 +92,29 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @action
   contentChange = (draft: string) => {
     this.error = '';
-    this.draft = this._isEmpty(draft) ? '' : draft;
+    this.draftText = this._isEmpty(draft) ? '' : draft;
   }
 
   @action
   cellWillChange = (newGroupId: number, oldGroupId: number) => {
-    const draft = this._isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
-      ? ''
-      : this._memoryDraftMap.get(oldGroupId) || '';
+    const draft = this._memoryDraftMap.get(oldGroupId);
+    const draftText =
+      draft && draft.text && !this._isEmpty(draft.text) ? draft.text : '';
+    const itemIds = (draft && draft.itemIds) || [];
+
     this._groupConfigService.updateDraft({
-      draft,
+      draft: {
+        itemIds,
+        text: draftText,
+      },
       id: oldGroupId,
     });
   }
 
   forceSaveDraft = () => {
-    const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    const draftText = this._isEmpty(this.draftText) ? '' : this.draftText;
     this._groupConfigService.updateDraft({
-      draft,
+      draft: { text: draftText },
       id: this._oldId,
     });
   }
@@ -119,9 +125,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   @computed
-  get draft() {
+  get draftText() {
     if (this._memoryDraftMap.has(this.id)) {
-      return this._memoryDraftMap.get(this.id) || '';
+      const draftInfo = this._memoryDraftMap.get(this.id);
+      return (draftInfo && draftInfo.text) || '';
     }
     this.getDraftFromLocal();
     return '';
@@ -129,11 +136,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   async getDraftFromLocal() {
     const draft = await this._groupConfigService.getDraft(this.id);
-    this._memoryDraftMap.set(this.id, draft);
+    draft && this._memoryDraftMap.set(this.id, draft);
   }
 
-  set draft(draft: string) {
-    this._memoryDraftMap.set(this.id, draft);
+  set draftText(draft: string) {
+    if (this._memoryDraftMap.has(this.id)) {
+      const draftInMemory = this._memoryDraftMap.get(
+        this.id,
+      ) as GroupDraftModel;
+      draftInMemory.text = draft;
+    } else {
+      this._memoryDraftMap.set(this.id, { text: draft });
+    }
   }
 
   @computed

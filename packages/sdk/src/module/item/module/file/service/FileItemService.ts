@@ -118,6 +118,10 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
       height,
     );
   }
+
+  hasUploadingFiles() {
+    return this.fileUploadController.hasUploadingFiles();
+  }
 }
 
 export { FileItemService };
