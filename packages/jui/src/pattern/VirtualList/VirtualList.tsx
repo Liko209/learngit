@@ -38,12 +38,18 @@ type JuiVirtualListProps = {
 class JuiVirtualList extends Component<JuiVirtualListProps> {
   static MIN_CELL_HEIGHT: number = 44;
   private _cache: CellMeasurerCache;
+  private _listRef: List;
 
   static defaultProps = {
     isLoading: false,
     threshold: 1,
     onBeforeRowsRendered: noop,
   };
+
+  private _registerList = (callback: (ref: List) => void) => (ref: List) => {
+    this._listRef = ref;
+    callback && callback(ref);
+  }
 
   private _rowHeight = ({ index }: Index) =>
     this.props.dataSource.fixedCellHeight!(index)
@@ -67,6 +73,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     parent,
     style,
   }: ListRowProps) => {
+    const { dataSource } = this.props;
     return (
       <CellMeasurer
         cache={this.cache}
@@ -75,16 +82,22 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         rowIndex={index}
         parent={parent}
       >
-        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) =>
-          this.props.dataSource.cellAtIndex({ index, style, onLoad: measure })}
+        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
+          const cell = dataSource.cellAtIndex({
+            index,
+            style,
+            onLoad: measure,
+          });
+          return cell;
+        }}
       </CellMeasurer>
     );
   }
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
     const { isLoading, dataSource } = this.props;
-    if (!isLoading) {
-      return await dataSource.loadMore!(startIndex, stopIndex);
+    if (!isLoading && dataSource.loadMore) {
+      return await dataSource.loadMore(startIndex, stopIndex);
     }
   }
 
@@ -105,9 +118,17 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
 
     return (
       <div key={cellCount} style={style}>
-        {dataSource.moreLoader!()}
+        {dataSource.moreLoader && dataSource.moreLoader()}
       </div>
     );
+  }
+
+  scrollToCell = (index: number) => {
+    if (Number.isInteger(index)) {
+      // This is trick for virtual list.
+      this._listRef.scrollToRow(index);
+      window.requestAnimationFrame(() => this._listRef.scrollToRow(index));
+    }
   }
 
   render() {
@@ -153,7 +174,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
           >
             {({ onRowsRendered, registerChild }) => (
               <List
-                ref={registerChild}
+                ref={this._registerList(registerChild)}
                 onRowsRendered={(info: JuiVirtualListRowsRenderInfo) => {
                   onBeforeRowsRendered(info);
                   onRowsRendered(info);
