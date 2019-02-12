@@ -47,12 +47,21 @@ const DESC_MAX_LENGTH = 1000;
 class TeamSettings extends React.Component<TeamSettingsProps, State> {
   constructor(props: TeamSettingsProps) {
     super(props);
+    const {
+      initialData: {
+        name,
+        description,
+        allowMemberAddMember,
+        allowMemberPost,
+        allowMemberPin,
+      },
+    } = props;
     this.state = {
-      name: props.initialData.name,
-      description: props.initialData.description,
-      allowMemberAddMember: props.initialData.allowMemberAddMember,
-      allowMemberPost: props.initialData.allowMemberPost,
-      allowMemberPin: props.initialData.allowMemberPin,
+      name,
+      description,
+      allowMemberAddMember,
+      allowMemberPost,
+      allowMemberPin,
     };
   }
 
