@@ -48,60 +48,52 @@ class ConversationInitialPost extends React.Component<
   }
 
   private get _conversationInitialPostHeader() {
-    const {
-      isTeam,
-      displayName,
-      groupDescription,
-      t,
-      createTime,
-      isAllHandsTeam,
-    } = this.props;
+    return (
+      <JuiConversationInitialPostHeader>
+        {this._groupCreateInfo()}
+        {this._teamDescription()}
+      </JuiConversationInitialPostHeader>
+    );
+  }
 
-    const groupCreateInfo = () => {
-      if (isTeam) {
-        if (isAllHandsTeam) {
-          return null;
-        }
-        return (
-          <StyledTitle>
-            {this._name}
-            <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
-            <StyledTeamName>{displayName}</StyledTeamName>
-            <StyledSpan>
-              &nbsp;{t('on')} {createTime}
-            </StyledSpan>
-          </StyledTitle>
-        );
-      }
+  private _groupCreateInfo() {
+    const { isTeam, displayName, t, createTime, isAllHandsTeam } = this.props;
+    if (!isTeam) {
       return (
         <StyledSpan>
           {t('directMessageDescription', { displayName })}
         </StyledSpan>
       );
-    };
+    }
 
-    const teamDescription = () => {
-      if (isTeam) {
-        if (groupDescription) {
-          return <StyledDescription>{groupDescription}</StyledDescription>;
-        }
-        if (isAllHandsTeam) {
-          return (
-            <StyledDescription>
-              {t('allHandsTeamDescription')}
-            </StyledDescription>
-          );
-        }
-      }
-      return null;
-    };
+    if (!isAllHandsTeam) {
+      return (
+        <StyledTitle>
+          {this._name}
+          <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
+          <StyledTeamName>{displayName}</StyledTeamName>
+          <StyledSpan>
+            &nbsp;{t('on')} {createTime}
+          </StyledSpan>
+        </StyledTitle>
+      );
+    }
 
-    return (
-      <JuiConversationInitialPostHeader>
-        {groupCreateInfo()}
-        {teamDescription()}
-      </JuiConversationInitialPostHeader>
-    );
+    return null;
+  }
+
+  private _teamDescription() {
+    const { isTeam, groupDescription, t, isAllHandsTeam } = this.props;
+    if (!isTeam) return null;
+    if (groupDescription) {
+      return <StyledDescription>{groupDescription}</StyledDescription>;
+    }
+    if (isAllHandsTeam) {
+      return (
+        <StyledDescription>{t('allHandsTeamDescription')}</StyledDescription>
+      );
+    }
+    return null;
   }
 
   private get _handleShareFile() {
