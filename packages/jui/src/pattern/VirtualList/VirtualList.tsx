@@ -30,7 +30,11 @@ type JuiVirtualListProps = {
   threshold?: number;
 };
 
-class JuiVirtualList extends Component<JuiVirtualListProps> {
+type State = {
+  stickToBottom: boolean;
+};
+
+class JuiVirtualList extends Component<JuiVirtualListProps, State> {
   static MIN_CELL_HEIGHT: number = 44;
   private _cache: CellMeasurerCache;
   private _listRef: List;
@@ -39,6 +43,13 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     isLoading: false,
     threshold: 1,
   };
+
+  constructor(props: JuiVirtualListProps) {
+    super(props);
+    const { stickToBottom } = props.dataSource;
+    const flag = stickToBottom ? stickToBottom() : false;
+    this.state = { stickToBottom: flag };
+  }
 
   private _registerList = (callback: (ref: List) => void) => (ref: List) => {
     this._listRef = ref;
@@ -94,6 +105,19 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     );
   }
 
+  private _handleScroll = (info: {
+    clientHeight: number;
+    scrollHeight: number;
+    scrollTop: number;
+  }) => {
+    const { clientHeight, scrollHeight, scrollTop } = info;
+    const scrolledToBottom = clientHeight + scrollTop === scrollHeight;
+    const { isLoading } = this.props;
+    if (!isLoading) {
+      this.setState({ stickToBottom: scrolledToBottom });
+    }
+  }
+
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
     const { isLoading, dataSource } = this.props;
     if (!isLoading && dataSource.loadMore) {
@@ -132,6 +156,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
 
   render() {
     const { isLoading, dataSource, width, height } = this.props;
+    const { stickToBottom } = this.state;
     const { renderEmptyContent, overscanCount, fixedCellHeight } = dataSource;
     const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
@@ -140,10 +165,15 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       rowCount,
       width,
       height,
+      onScroll: this._handleScroll,
     } as ListProps;
 
     if (overscanCount) {
       props.overscanRowCount = overscanCount();
+    }
+
+    if (stickToBottom) {
+      props.scrollToIndex = cellCount - 1;
     }
 
     if (fixedCellHeight) {

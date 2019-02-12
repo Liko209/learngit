@@ -21,7 +21,7 @@ interface IVirtualListDataSource {
   // for loading data
   loadMore?: (startIndex: number, endIndex: number) => Promise<any>;
 
-  isRowLoaded?: (params: number) => boolean;
+  stickToBottom?: () => boolean;
 
   // empty content
   renderEmptyContent?: () => JSX.Element;

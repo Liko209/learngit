@@ -25,13 +25,15 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     count = 1000;
   }
   const observeCell = boolean('observe cell', false);
+  const stickToBottom = boolean('stick to bottom', false);
   function generateURL() {
     const size = Math.round(10 + Math.random() * 10) * 10;
     const url = `https://via.placeholder.com/${size}`;
     return url;
   }
+  const initCount = 40;
   const data: string[] = [];
-  for (let i = 0; i < count; ++i) {
+  for (let i = 0; i < initCount; ++i) {
     data.push(generateURL());
   }
 
@@ -73,10 +75,18 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
   }
 
+  let dataSourceLoading = false;
+
   class DataSource implements IVirtualListDataSource {
     private _list: string[];
     constructor(data: string[]) {
       this._list = data;
+    }
+
+    addRandomCell = (count: number = 1) => {
+      for (let i = 0; i < count; ++i) {
+        this._list.push(generateURL());
+      }
     }
 
     countOfCell() {
@@ -84,12 +94,32 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
 
     overscanCount() {
-      return 10;
+      return 0;
     }
 
     observeCell() {
       return observeCell;
     }
+
+    stickToBottom() {
+      return stickToBottom;
+    }
+
+    loadMore = async () => {
+      if (this._list.length >= count) {
+        return;
+      }
+      dataSourceLoading = true;
+      return new Promise((resolve: any) => {
+        setTimeout(() => {
+          this.addRandomCell(20);
+          dataSourceLoading = false;
+          resolve();
+        },         1000);
+      });
+    }
+
+    moreLoader = () => <div>Loading ...</div>;
 
     cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
       const text = `${index + 1}`;
@@ -120,8 +150,9 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   };
   class Content extends PureComponent {
     private _listRef: RefObject<JuiVirtualList> = createRef();
-    state = { cellIndex: -1 };
-    _handleCellIndexChange = (event: ChangeEvent<HTMLInputElement>) => {
+    state = { cellIndex: -1, loading: false };
+
+    private _handleCellIndexChange = (event: ChangeEvent<HTMLInputElement>) => {
       const cellIndex = event.currentTarget.value;
       this.setState({ cellIndex });
       const { current } = this._listRef;
@@ -129,8 +160,22 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
         current.scrollToCell(parseInt(cellIndex, 10));
       }
     }
+
+    private _handleAddCell = () => {
+      dataSource.addRandomCell();
+      window.requestAnimationFrame(() => this._listRef.current.forceUpdate());
+    }
+
+    private _simulateLoadData = () => {
+      this.setState({ loading: true });
+      setTimeout(() => {
+        dataSource.addRandomCell(20);
+        this.setState({ loading: false });
+      },         500);
+    }
+
     render() {
-      const { cellIndex } = this.state;
+      const { cellIndex, loading } = this.state;
       return (
         <div style={style}>
           <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
@@ -141,8 +186,13 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
             ref={this._listRef}
             dataSource={dataSource}
             width={400}
-            height={550}
+            height={500}
+            isLoading={loading || dataSourceLoading}
           />
+          <div>
+            <button onClick={this._handleAddCell}>Add cell</button>
+            <button onClick={this._simulateLoadData}>Load more data</button>
+          </div>
         </div>
       );
     }
