@@ -74,5 +74,7 @@ interface IItemService {
     width: number,
     height: number,
   ): Promise<string>;
+
+  hasUploadingFiles(): boolean;
 }
 export { IItemService };

@@ -1263,4 +1263,46 @@ describe('fileUploadController', () => {
       expect(uploadingFiles.get(2)).not.toBeUndefined();
     });
   });
+
+  describe('hasUploadingFiles', () => {
+    let progressCaches = undefined;
+    const groupId = 1;
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      progressCaches = new Map();
+    });
+
+    function setFileCache(itemFile: any) {
+      progressCaches.set(-1, {
+        itemFile,
+        progress: { rate: { loaded: 10 } },
+      } as ItemFileUploadStatus);
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+    }
+
+    it('should return false when has no file cache', () => {
+      expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
+    });
+
+    it('should return true when has files in uploading', () => {
+      setFileCache({
+        group_ids: [groupId],
+        versions: [{ size: 1, stored_file_id: 0 }],
+      });
+
+      expect(fileUploadController.hasUploadingFiles()).toBeTruthy();
+    });
+
+    it('should return false when has no file in uploading', () => {
+      setFileCache({
+        group_ids: [groupId],
+        versions: [{ size: 1, stored_file_id: 999 }],
+      });
+
+      expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
+    });
+  });
 });

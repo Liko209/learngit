@@ -780,6 +780,25 @@ class FileUploadController {
     }
     return type;
   }
+
+  hasUploadingFiles() {
+    let hasUploading = false;
+    const uploadingFiles = Array.from(this._progressCaches.values());
+    for (let i = 0; i < uploadingFiles.length; i++) {
+      const fileStatus = uploadingFiles[i];
+      if (fileStatus.itemFile && !this._isFileUploaded(fileStatus.itemFile)) {
+        hasUploading = true;
+        break;
+      }
+    }
+    return hasUploading;
+  }
+
+  private _isFileUploaded(itemFile: ItemFile) {
+    return (
+      itemFile.versions.length > 0 && itemFile.versions[0].stored_file_id > 0
+    );
+  }
 }
 
 export { FileUploadController, ItemFileUploadStatus };

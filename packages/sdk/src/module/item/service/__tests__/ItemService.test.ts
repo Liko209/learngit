@@ -237,6 +237,14 @@ describe('ItemService', () => {
         ]);
       });
     });
+
+    describe('hasUploadingFiles', () => {
+      it('should call file item service', () => {
+        fileItemService.hasUploadingFiles = jest.fn().mockReturnValue(true);
+        expect(itemService.hasUploadingFiles()).toBeTruthy();
+        expect(fileItemService.hasUploadingFiles).toBeCalled();
+      });
+    });
   });
 
   describe('getItems()', () => {

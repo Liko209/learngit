@@ -338,4 +338,17 @@ describe('FileItemService', () => {
       });
     });
   });
+
+  describe('hasUploadingFiles', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call fileUploadController to get result', () => {
+      fileUploadController.hasUploadingFiles = jest.fn().mockReturnValue(true);
+      expect(fileItemService.hasUploadingFiles()).toBeTruthy();
+      expect(fileUploadController.hasUploadingFiles).toBeCalled();
+    });
+  });
 });

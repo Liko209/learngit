@@ -254,6 +254,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
     return this.fileService.getThumbsUrlWithSize(itemId, width, height);
   }
+
+  hasUploadingFiles() {
+    return this.fileService.hasUploadingFiles();
+  }
 }
 
 export { ItemService };

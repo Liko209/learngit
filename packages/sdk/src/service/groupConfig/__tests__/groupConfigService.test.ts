@@ -34,20 +34,20 @@ describe('GroupConfigService', () => {
           hasBeenCalled = true;
         });
       groupConfigDao.get.mockResolvedValueOnce({ id: 2 });
-      await groupConfigService.updateDraft({ id: 2, draft: '' });
+      await groupConfigService.updateDraft({ id: 2, draft: { text: '' } });
       expect(hasBeenCalled).toBeTruthy();
     });
   });
   describe('getDraft', () => {
-    it('should return empty string when there is groupConfig in DB', async () => {
+    it('should return undefined when there is no groupConfig in DB', async () => {
       groupConfigDao.get.mockResolvedValueOnce(null);
       const result = await groupConfigService.getDraft(1);
-      expect(result).toEqual('');
+      expect(result).toBeUndefined();
     });
-    it('should return empty string when there is draft in groupConfig', async () => {
+    it('should return undefined when there is no draft in groupConfig', async () => {
       groupConfigDao.get.mockResolvedValueOnce({ id: 1 });
       const result = await groupConfigService.getDraft(1);
-      expect(result).toEqual('');
+      expect(result).toBeUndefined();
     });
     it('should return draft', async () => {
       groupConfigDao.get.mockResolvedValueOnce({ id: 1, draft: '123' });
