@@ -120,6 +120,10 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.getCallByUuid(uuid);
   }
 
+  logout() {
+    this._regManager.logout();
+  }
+
   createOutgoingCallSession(toNum: string, options: RTCCallOptions): any {
     return this._regManager.createOutgoingCallSession(toNum, options);
   }
@@ -141,6 +145,11 @@ class RTCAccount implements IRTCAccount {
         this._onAccountStateChanged(state);
       },
     );
+
+    this._regManager.on(REGISTRATION_EVENT.LOGOUT_ACTION, () => {
+      this._onLogoutAction();
+    });
+
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
@@ -162,6 +171,11 @@ class RTCAccount implements IRTCAccount {
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
     }
+  }
+
+  private _onLogoutAction() {
+    this._callManager.endAllCalls();
+    this._provManager.clearProvInfo();
   }
 
   private _onReceiveInvite(session: any) {

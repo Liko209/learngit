@@ -42,6 +42,8 @@ enum REGISTRATION_EVENT {
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
+  LOGOUT = 'logout',
+  LOGOUT_ACTION = 'logoutAction',
 }
 
 enum REGISTRATION_FSM_STATE {

@@ -8,6 +8,7 @@ interface IRTCRegistrationFsmDependency {
   onProvisionReadyAction(provisionData: any, options: any): void;
   onReRegisterAction(): void;
   onNetworkChangeToOnlineAction(): void;
+  onUnregisterAction(): void;
 }
 
 export { IRTCRegistrationFsmDependency };
