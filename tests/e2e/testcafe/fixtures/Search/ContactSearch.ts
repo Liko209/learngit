@@ -23,7 +23,6 @@ test(formalName('Check search result will change when changing a team to public/
 
   // teams should share same search keyword so that we can just
   const searchKeyword = `Team-${uuid()}`;
-  // according to JPT-1067 we need to create 4 teams with different permission and member
   const publicTeamWithoutMe = <IGroup>{
     privacy: 'protected', isPublic: true, type: 'Team',
     name: `${searchKeyword} PublicTeamWithoutMe`,
@@ -76,13 +75,32 @@ test(formalName('Check search result will change when changing a team to public/
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
-
-
   }, true);
 
+  await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
+    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHasPrivateLabel();
+  });
+
+  await h(t).withLog(`And team "${publicTeamWithoutMe.name}" should has a join button`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHasJoinButton();
+  });
+
+  const teamsBecomePrivate = [publicTeamWithMe, publicTeamWithoutMe];
+  await h(t).withLog(`When teams ${groupsToString(teamsBecomePrivate)} become private`, async () => {
+
+  });
+
+  const teamsBecomePublic = [privateTeamWithMe, privateTeamWithoutMe];
+  await h(t).withLog(`And teams ${groupsToString(teamsBecomePublic)} become public`, async () => {
+
+  });
 
 
-  await t.debug();
+  searchResults = [privateTeamWithMe, privateTeamWithoutMe,]
+  await h(t).withLog(`Then I should find following teams in search result`, async () => {
+
+  });
+
 
 });
 

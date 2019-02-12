@@ -95,7 +95,7 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
-  itemEntryByCid(cid: string) {
+  getSearchItemByCid(cid: string) {
     const root = this.getSelectorByAutomationId("search-item-avatar", this.allResultItems)
       .find('div').withAttribute('cid').filter(`[cid="${cid}"]`).parent('.search-items');
     return this.getComponent(SearchItem, root);
@@ -138,9 +138,20 @@ class SearchItem extends BaseWebComponent {
   }
 
   get joinButton() {
-    return this.getSelectorByAutomationId('joinButton', this.self);
+    return this.getSelectorByAutomationId('search-item-joined', this.self);
   }
 
+  get privateLabel() {
+    return this.getSelectorByAutomationId('search-item-private', this.self);
+  }
+
+  async shouldHasPrivateLabel() {
+    await this.t.expect(this.privateLabel.visible).ok();
+  }
+
+  async shouldNotHasPrivateLabel() {
+    await this.t.expect(this.privateLabel.visible).notOk();
+  }
 
   async shouldHasJoinButton() {
     await this.t.expect(this.joinButton.visible).ok();

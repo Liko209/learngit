@@ -74,20 +74,20 @@ test.skip(formalName(`Display Join button for public team which login user doesn
     await h(t).reload();
     await app.homePage.ensureLoaded();
     await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+    await t.hover(search.getSearchItemByCid(publicTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
+    await search.getSearchItemByCid(publicTeamId).shouldHasJoinButton();
   })
 
   await h(t).withLog(`When I search and hover the joined team B ${joinedTeamName}`, async () => {
     await search.typeSearchKeyword(joinedTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(joinedTeamId).self);
+    await t.hover(search.getSearchItemByCid(joinedTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.itemEntryByCid(joinedTeamId).shouldNotHasJoinButton();
+    await search.getSearchItemByCid(joinedTeamId).shouldNotHasJoinButton();
   });
 
   let peopleCount, groupCount;
@@ -164,13 +164,13 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
     await t.wait(3e3); // wait search result show;
   });
   await h(t).withLog(`And I click join button of the public team A`, async () => {
-    await t.hover(search.itemEntryByCid(publicTeamId).self)
+    await t.hover(search.getSearchItemByCid(publicTeamId).self)
 
-    await search.itemEntryByCid(publicTeamId).join();
+    await search.getSearchItemByCid(publicTeamId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(search.itemEntryByCid(publicTeamId).exists).notOk();
+    await t.expect(search.getSearchItemByCid(publicTeamId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
@@ -236,7 +236,7 @@ test.skip(formalName(`Joined team successful after clicking join button in confi
     await app.homePage.ensureLoaded();
     await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
     await t.wait(3e3); // wait search result show;
-    await search.itemEntryByCid(publicTeamId).join();
+    await search.getSearchItemByCid(publicTeamId).join();
   });
 
 
