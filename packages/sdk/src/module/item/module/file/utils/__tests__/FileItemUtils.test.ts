@@ -64,6 +64,13 @@ describe('FileItemUtils', () => {
     it('should return true when type is mime and include is image', () => {
       expect(FileItemUtils.isImageItem(itemC)).toBeTruthy();
     });
+
+    it('should return true when type include tif and tiff and ai and psd', () => {
+      const images = ['tif', 'tiff', 'ai', 'psd'];
+      images.forEach((type: string) => {
+        expect(FileItemUtils.isImageItem({ type })).toBeTruthy();
+      });
+    });
   });
 
   describe('getUrl', () => {
