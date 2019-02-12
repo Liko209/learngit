@@ -75,51 +75,7 @@ class RTCRegistrationManager extends EventEmitter2
     this._fsm = new RTCRegistrationFSM(this);
     this._eventQueue = async.queue(
       (task: RTCRegisterAsyncTask, callback: any) => {
-        switch (task.name) {
-          case REGISTRATION_EVENT.PROVISION_READY: {
-            this._fsm.provisionReady(task.data.provData, task.data.provOptions);
-            break;
-          }
-          case REGISTRATION_EVENT.RE_REGISTER: {
-            this._fsm.reRegister();
-            break;
-          }
-          case REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE: {
-            this._fsm.networkChangeToOnline();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
-            this._fsm.regSuccess();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_REGISTER_FAILED: {
-            this._fsm.regFailed();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_REGISTER_TIMEOUT: {
-            this._fsm.regTimeout();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_UNREGISTERED: {
-            this._fsm.unregister();
-            break;
-          }
-          case REGISTRATION_EVENT.MAKE_OUTGOING_CALL_TASK: {
-            this._fsm.makeOutgoingCall(
-              task.data.toNumber,
-              task.data.callDelegate,
-              task.data.callOptions,
-            );
-            break;
-          }
-          case REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK: {
-            this._fsm.receiveIncomingInvite(task.data.callSession);
-            break;
-          }
-          default:
-            break;
-        }
-        callback();
+        callback(task.data);
       },
     );
     this._initFsmObserve();
@@ -194,12 +150,16 @@ class RTCRegistrationManager extends EventEmitter2
           provOptions: provisionOptions,
         },
       },
-      () => {},
+      (data?: any) => {
+        this._fsm.provisionReady(data.provData, data.provOptions);
+      },
     );
   }
 
   public reRegister() {
-    this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {});
+    this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {
+      this._fsm.reRegister();
+    });
   }
 
   public makeCall(
@@ -216,14 +176,22 @@ class RTCRegistrationManager extends EventEmitter2
           callOptions: options,
         },
       },
-      () => {},
+      (data?: any) => {
+        this._fsm.makeOutgoingCall(
+          data.toNumber,
+          data.callDelegate,
+          data.callOptions,
+        );
+      },
     );
   }
 
   networkChangeToOnline() {
     this._eventQueue.push(
       { name: REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE },
-      () => {},
+      () => {
+        this._fsm.networkChangeToOnline();
+      },
     );
   }
 
@@ -237,27 +205,32 @@ class RTCRegistrationManager extends EventEmitter2
   private _onUARegSuccess() {
     this._eventQueue.push(
       { name: REGISTRATION_EVENT.UA_REGISTER_SUCCESS },
-      () => {},
+      () => {
+        this._fsm.regSuccess();
+      },
     );
   }
 
   private _onUADeRegister() {
-    this._eventQueue.push(
-      { name: REGISTRATION_EVENT.UA_UNREGISTERED },
-      () => {},
-    );
+    this._eventQueue.push({ name: REGISTRATION_EVENT.UA_UNREGISTERED }, () => {
+      this._fsm.unregister();
+    });
   }
 
   private _onUARegFailed(response: any, cause: any) {
     if (REGISTRATION_ERROR_CODE.TIME_OUT === cause) {
       this._eventQueue.push(
         { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
-        () => {},
+        () => {
+          this._fsm.regTimeout();
+        },
       );
     } else {
       this._eventQueue.push(
         { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
-        () => {},
+        () => {
+          this._fsm.regFailed();
+        },
       );
     }
   }
@@ -268,7 +241,9 @@ class RTCRegistrationManager extends EventEmitter2
         name: REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK,
         data: { callSession: session },
       },
-      () => {},
+      (data?: any) => {
+        this._fsm.receiveIncomingInvite(data.callSession);
+      },
     );
   }
 
