@@ -17,7 +17,7 @@ interface IVirtualListDataSource {
     onLoad?: JuiVirtualCellOnLoadFunc,
   ): ReactElement<P & JuiVirtualCellProps> | null;
 
-  fixedCellHeight?: () => number;
+  fixedCellHeight?: (index: number) => number;
 
   overscanCount?: () => number;
 
