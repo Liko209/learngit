@@ -1,5 +1,6 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from "testcafe";
+import { IGroup } from '../../../models';
 
 export class Header extends BaseWebComponent {
   get self() {
@@ -54,7 +55,7 @@ class Search extends BaseWebComponent {
     return this.getSelectorByAutomationId('search-input');
   }
 
-  async typeText(text: string, options?: TypeActionOptions) {
+  async typeSearchKeyword(text: string, options?: TypeActionOptions) {
     await this.t.typeText(this.inputArea, text, options)
   }
 
@@ -99,6 +100,11 @@ class Search extends BaseWebComponent {
       .find('div').withAttribute('cid').filter(`[cid="${cid}"]`).parent('.search-items');
     return this.getComponent(SearchItem, root);
   }
+
+  async dropDownListShouldContainTeam(team: IGroup, timeout: number = 5e3) {
+    await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
+  }
+
 }
 
 class SearchItem extends BaseWebComponent {
@@ -196,10 +202,10 @@ export class joinTeamDialog extends BaseWebComponent {
     return this.getSelector('h2', this.self).withText('Join team?')
   }
 
-  get exists () {
+  get exists() {
     return this.title.exists;
   }
-  
+
   get content() {
     return this.self.find('p').withText("You are not currently a member of the");
   }
@@ -210,7 +216,8 @@ export class joinTeamDialog extends BaseWebComponent {
   }
 
   get joinButton() {
-    return this.self.find('button').withText('Join'); }
+    return this.self.find('button').withText('Join');
+  }
 
   get cancelButton() {
     return this.self.find('button').withText('Cancel');

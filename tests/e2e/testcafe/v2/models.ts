@@ -31,6 +31,8 @@ export interface IGroup {
   owner?: IUser;
   members: IUser[];
   type: string;
+  privacy?: string;
+  isPublic?: boolean;
 }
 
 export interface ICredential {
