@@ -80,6 +80,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._mediaElement) {
       return;
     }
+    if (
+      !this._session ||
+      !this._session.sessionDescriptionHandler ||
+      !this._session.sessionDescriptionHandler.peerConnection
+    ) {
+      return;
+    }
     const pc = this._session.sessionDescriptionHandler.peerConnection;
     let remote_stream: MediaStream;
     const receivers = pc.getReceivers && pc.getReceivers();

@@ -6,24 +6,27 @@
 
 import { RTCSipCallSession } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
-import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import {
+  WEBPHONE_SESSION_STATE,
+  WEBPHONE_SESSION_EVENT,
+} from '../../signaling/types';
 
 describe('sip call session', () => {
   class VirtualSession extends EventEmitter2 {
     constructor() {
       super();
     }
-
     emitSessionConfirmed() {
       this.emit(WEBPHONE_SESSION_STATE.ACCEPTED);
     }
-
     emitSessionDisconnected() {
       this.emit(WEBPHONE_SESSION_STATE.BYE);
     }
-
     emitSessionError() {
       this.emit(WEBPHONE_SESSION_STATE.FAILED);
+    }
+    emitTrackAdded() {
+      this.emit(WEBPHONE_SESSION_EVENT.ADD_TRACK);
     }
     terminate() {}
     flip = jest.fn();
@@ -179,6 +182,15 @@ describe('sip call session', () => {
       jest.spyOn(sipcallsession, '_onSessionError');
       vsession.emitSessionError();
       expect(sipcallsession._onSessionError).toHaveBeenCalled();
+    });
+
+    it('should _onSessionTrackAdded be called when webphone session emet trackAdded', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      jest.spyOn(sipcallsession, '_onSessionTrackAdded');
+      vsession.emitTrackAdded();
+      expect(sipcallsession._onSessionTrackAdded).toHaveBeenCalled();
     });
   });
 });
