@@ -40,9 +40,7 @@ describe('TeamSettingsViewModel', () => {
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
-        permissionFlags: expect.objectContaining({
-          TEAM_ADD_MEMBER: true,
-        }),
+        permissionFlags: expect.anything(),
       });
       expect(result).toBe(true);
     });
@@ -67,9 +65,7 @@ describe('TeamSettingsViewModel', () => {
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
-        permissionFlags: expect.objectContaining({
-          TEAM_ADD_MEMBER: true,
-        }),
+        permissionFlags: expect.anything(),
       });
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
@@ -99,9 +95,7 @@ describe('TeamSettingsViewModel', () => {
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
-        permissionFlags: expect.objectContaining({
-          TEAM_ADD_MEMBER: true,
-        }),
+        permissionFlags: expect.anything(),
       });
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
