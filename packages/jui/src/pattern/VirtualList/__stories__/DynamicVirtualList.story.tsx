@@ -89,7 +89,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
 
     cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
-      const text = `${index + 1}`;
+      const text = `${index}`;
       const s = {
         ...style,
         borderBottom: '1px dashed',
