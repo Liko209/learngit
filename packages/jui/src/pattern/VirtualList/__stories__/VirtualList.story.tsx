@@ -16,6 +16,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellOnLoadFunc,
+  JuiVirtualCellProps,
 } from '..';
 import { FileItem } from './FileItem';
 import { FileItemProps } from './types';
@@ -51,7 +52,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
       return this._list.length;
     }
 
-    cellAtIndex(index: number, style: CSSProperties) {
+    cellAtIndex({ index, style }: JuiVirtualCellProps) {
       const text = `${this._list[index]}-${index + 1}`;
       const s = {
         ...style,
@@ -140,11 +141,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
       return this._list.length;
     }
 
-    cellAtIndex(
-      index: number,
-      style: CSSProperties,
-      didLoad: JuiVirtualCellOnLoadFunc,
-    ) {
+    cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
       const text = `${index + 1}`;
       const s = {
         ...style,
@@ -155,7 +152,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
           title={text}
           style={s}
           url={this._list[index]}
-          onLoad={didLoad}
+          onLoad={onLoad}
           key={index}
         />
       );
@@ -227,7 +224,7 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
       return this._list.length;
     }
 
-    cellAtIndex = (index: number, style: CSSProperties) => {
+    cellAtIndex = ({ index, style }: JuiVirtualCellProps) => {
       const text = `${this._list[index]}-${index + 1}`;
       return (
         <div key={index} style={style}>
@@ -326,7 +323,7 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
       return 10000;
     }
 
-    cellAtIndex(index: number, style: CSSProperties) {
+    cellAtIndex({ index, style }: JuiVirtualCellProps) {
       const text = this._list[index];
       const placeHolderStyle = {
         display: 'flex',
@@ -407,7 +404,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
       return 52;
     }
 
-    cellAtIndex(index: number, style: CSSProperties) {
+    cellAtIndex({ index, style }: JuiVirtualCellProps) {
       const item = this._list[index];
       const placeHolderStyle = {
         display: 'flex',

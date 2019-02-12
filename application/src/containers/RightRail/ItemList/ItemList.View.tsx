@@ -3,7 +3,7 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { ViewProps, Props } from './types';
@@ -13,6 +13,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellWrapper,
+  JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
 
@@ -48,7 +49,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     return loading ? ids.length + 1 : ids.length;
   }
 
-  cellAtIndex = (index: number, style: CSSProperties) => {
+  cellAtIndex = ({ index, style }: JuiVirtualCellProps) => {
     const { ids, tabConfig } = this.props;
     const Component: any = tabConfig.item;
     const id = ids[index];

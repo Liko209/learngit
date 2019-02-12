@@ -8,10 +8,10 @@ import styled from '../../foundation/styled-components';
 
 type JuiVirtualCellOnLoadFunc = () => void;
 
-// cell must apply the `style` to it-self
 type JuiVirtualCellProps = {
-  onLoad: JuiVirtualCellOnLoadFunc;
+  onLoad?: JuiVirtualCellOnLoadFunc;
   style: CSSProperties;
+  index: number;
 };
 
 const JuiVirtualCellWrapper = styled.div``;

@@ -65,7 +65,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         parent={parent}
       >
         {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) =>
-          this.props.dataSource.cellAtIndex(index, style, measure)}
+          this.props.dataSource.cellAtIndex({ index, style, onLoad: measure })}
       </CellMeasurer>
     );
   }
@@ -88,7 +88,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     const { dataSource } = this.props;
     const cellCount = dataSource.countOfCell();
     if (index < cellCount) {
-      return dataSource.cellAtIndex(index, style);
+      return dataSource.cellAtIndex({ index, style });
     }
 
     return (
