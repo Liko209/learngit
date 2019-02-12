@@ -12,6 +12,8 @@ const SupportPreviewImageExtensions = new Set([
   'jpeg',
   'bmp',
   'gif',
+  'tif',
+  'tiff',
   // 'giphy', // todo: Unrealized support preivew giphy
   // 'tif', // use thumbs url
   // Unable to parse the following suffix file.
@@ -23,7 +25,14 @@ const SupportPreviewImageExtensions = new Set([
   // 'heic', // Chrome and Firefox and Safari not support. Apple macOS Mojave dynamic wallpaper.
 ]);
 
-const ResizableExtensions = new Set(['bmp', 'jpg', 'jpeg', 'png']);
+const ResizableExtensions = new Set([
+  'bmp',
+  'jpg',
+  'jpeg',
+  'png',
+  'tif',
+  'tiff',
+]);
 
 const ImageFileExtensions = new Set([
   'jpg',

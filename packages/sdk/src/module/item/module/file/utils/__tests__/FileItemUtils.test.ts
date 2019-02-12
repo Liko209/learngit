@@ -13,7 +13,7 @@ import {
 
 describe('FileItemUtils', () => {
   describe('isSupportPreview', () => {
-    it('should return true when is support preview ', () => {
+    it('should return true when is support preview', () => {
       SupportPreviewImageExtensions.forEach((element: string) => {
         expect(FileItemUtils.isSupportPreview({ type: element })).toBeTruthy();
       });
@@ -25,14 +25,21 @@ describe('FileItemUtils', () => {
   });
 
   describe('isImageResizable', () => {
-    it('should return true when is support resize ', () => {
+    it('should return true when is support resize', () => {
       ResizableExtensions.forEach((element: string) => {
         expect(FileItemUtils.isImageResizable({ type: element })).toBeTruthy();
       });
     });
 
-    it('should return false when is not support resize ', () => {
+    it('should return false when is not support resize', () => {
       expect(FileItemUtils.isImageResizable({ type: 'gg' })).toBeFalsy();
+    });
+
+    it('should return true when type is tif and tiff', () => {
+      const types = ['tif', 'tiff'];
+      types.forEach((type: string) => {
+        expect(FileItemUtils.isImageResizable({ type })).toBeTruthy();
+      });
     });
   });
 
