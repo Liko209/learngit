@@ -43,7 +43,6 @@ class JuiObservedCellWrapper extends PureComponent<JuiVirtualCellProps> {
   componentWillUnmount() {
     if (this._observer) {
       this._observer.disconnect();
-      this._observer = undefined;
     }
   }
 
