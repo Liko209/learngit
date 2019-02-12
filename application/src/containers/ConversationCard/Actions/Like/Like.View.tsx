@@ -51,6 +51,6 @@ class LikeViewComponent extends Component<Props> {
   }
 }
 
-const LikeView = translate('Conversations')(LikeViewComponent);
+const LikeView = translate('translations')(LikeViewComponent);
 
 export { LikeView };

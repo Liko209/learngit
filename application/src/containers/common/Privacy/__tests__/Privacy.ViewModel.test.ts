@@ -68,6 +68,23 @@ describe('Privacy view model', () => {
     });
   });
 
+  describe('isTeam', () => {
+    it('should be true when group props isTeam set to true', () => {
+      mockEntity.isTeam = true;
+      expect(vm.isTeam).toBe(true);
+    });
+
+    it('should be false when group props isTeam set to false', () => {
+      mockEntity.isTeam = false;
+      expect(vm.isTeam).toBe(false);
+    });
+
+    it('should be false when group props isTeam set to undefined', () => {
+      mockEntity.isTeam = undefined;
+      expect(vm.isTeam).toBe(false);
+    });
+  });
+
   describe('privacy', () => {
     it('should return error when service error', async () => {
       try {

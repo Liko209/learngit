@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:36:36
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { height, width, palette } from '../../foundation/utils';
 import { Palette } from '../../foundation/theme/theme';
@@ -92,13 +92,13 @@ const StyledDiv = styled<JuiPresenceProps, 'div'>('div')`
   background: ${palette('common', 'white')};
 `;
 
-const JuiPresence = (props: JuiPresenceProps) => {
+const JuiPresence = memo((props: JuiPresenceProps) => {
   return (
     <StyledPresence {...props}>
       {props.presence === PRESENCE.DND ? <StyledDiv {...props} /> : null}
     </StyledPresence>
   );
-};
+});
 
 export { JuiPresence };
 export default JuiPresence;

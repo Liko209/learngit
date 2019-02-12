@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -52,12 +52,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return [
       {
         type: 'isPublic',
-        text: t('PublicTeam'),
+        text: i18next.t('PublicTeam'),
         checked: false,
       },
       {
         type: 'canPost',
-        text: t('MembersMayPostMessages'),
+        text: i18next.t('MembersMayPostMessages'),
         checked: true,
       },
     ];
@@ -143,43 +143,43 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={t('CreateTeam')}
+        title={i18next.t('CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
-        okText={t('Create')}
+        okText={i18next.t('Create')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('Create Team Error')}
+              {i18next.t('Create Team Error')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={t('Cancel')}
+        cancelText={i18next.t('Cancel')}
       >
         <JuiTextField
-          id={t('teamName')}
-          label={t('teamName')}
+          id={i18next.t('teamName')}
+          label={i18next.t('teamName')}
           fullWidth={true}
           error={nameError}
           inputProps={{
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
-          helperText={nameError && t(errorMsg)}
+          helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
-          placeholder={t('Search Contact Placeholder')}
+          label={i18next.t('Members')}
+          placeholder={i18next.t('Search Contact Placeholder')}
           error={emailError}
-          helperText={emailError && t(emailErrorMsg)}
+          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea
-          id={t('teamDescription')}
-          label={t('teamDescription')}
+          id={i18next.t('teamDescription')}
+          label={i18next.t('teamDescription')}
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
             maxLength: 1000,

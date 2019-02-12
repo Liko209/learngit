@@ -14,12 +14,6 @@ class ItemDao extends BaseDao<Item> {
     super(ItemDao.COLLECTION_NAME, db);
   }
 
-  async getItemsByIds(ids: number[]): Promise<Item[]> {
-    return this.createQuery()
-      .anyOf('id', ids)
-      .toArray();
-  }
-
   async isFileItemExist(
     groupId: number,
     fileName: string,

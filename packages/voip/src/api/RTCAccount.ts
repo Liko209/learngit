@@ -22,7 +22,7 @@ import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { rtcNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
+import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 import { Listener } from 'eventemitter2';
 
@@ -60,7 +60,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   destroy() {
-    rtcNetworkNotificationCenter.removeListener(
+    RTCNetworkNotificationCenter.instance().removeListener(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
     );
@@ -159,7 +159,7 @@ class RTCAccount implements IRTCAccount {
       this._onNewProv(info);
     });
 
-    rtcNetworkNotificationCenter.on(
+    RTCNetworkNotificationCenter.instance().on(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
     );

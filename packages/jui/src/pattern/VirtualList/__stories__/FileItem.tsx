@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
   JuiListItemText,
   JuiListItem,
@@ -15,7 +15,7 @@ import { JuiIconButton } from '../../../components/Buttons';
 import { JuiThumbnail } from '../../../components/Thumbnail';
 import { FileItemProps } from './types';
 
-class FileItem extends Component<FileItemProps> {
+class FileItem extends PureComponent<FileItemProps> {
   state = {
     isHover: false,
   };

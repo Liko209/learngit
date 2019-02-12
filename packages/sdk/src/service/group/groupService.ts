@@ -11,7 +11,7 @@ import {
   QUERY_DIRECTION,
 } from '../../dao';
 import AccountDao from '../../dao/account';
-import GroupDao from '../../dao/group';
+import { GroupDao } from '../../module/group/dao';
 import { Raw, SortableModel } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
 import { GroupApiType } from '../../models';
@@ -38,7 +38,6 @@ import handleData, {
   filterGroups,
   handleGroupMostRecentPostChanged,
   // handleFavoriteGroupsChanged,
-  handleHiddenGroupsChanged,
   sortFavoriteGroups,
 } from './handleData';
 import Permission from './permission';
@@ -78,6 +77,18 @@ const deleteAllTeamInformation = async (ids: number[]) => {
   await postService.deletePostsByGroupIds(ids, true);
   const groupConfigDao = daoManager.getDao(GroupConfigDao);
   groupConfigDao.bulkDelete(ids);
+  const groupService: GroupService = GroupService.getInstance();
+  const groups = await groupService.getGroupsByIds(ids);
+  const groupDao = daoManager.getDao(GroupDao);
+  const privateGroupIds = groups
+    .filter((group: Group) => {
+      return group.privacy === 'private';
+    })
+    .map((group: Group) => group.id);
+  if (privateGroupIds.length > 0) {
+    await groupDao.bulkDelete(privateGroupIds);
+    notificationCenter.emitEntityDelete(ENTITY.GROUP, privateGroupIds);
+  }
 };
 
 const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
@@ -93,7 +104,6 @@ class GroupService extends BaseService<Group> {
       [SOCKET.GROUP]: handleData,
       [ENTITY.POST]: handleGroupMostRecentPostChanged,
       // [SERVICE.PROFILE_FAVORITE]: handleFavoriteGroupsChanged,
-      [SERVICE.PROFILE_HIDDEN_GROUP]: handleHiddenGroupsChanged,
       [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: deleteAllTeamInformation,
       [SERVICE.POST_SERVICE
         .MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: setAsTrue4HasMoreConfigByDirection,

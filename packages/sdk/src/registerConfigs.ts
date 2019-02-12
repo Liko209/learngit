@@ -25,7 +25,6 @@ import { PersonService } from './module/person';
 import PostService from './service/post';
 import PresenceService from './service/presence';
 import ProfileService from './service/profile';
-import SearchService from './service/search';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
@@ -41,18 +40,6 @@ const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
-    // DAOs
-    // { name: AccountDao.name, value: AccountDao },
-    // { name: PostDao.name, value: PostDao },
-    // { name: GroupDao.name, value: GroupDao },
-    // { name: CompanyDao.name, value: CompanyDao },
-    // { name: ItemDao.name, value: ItemDao },
-    // { name: PersonDao.name, value: PersonDao },
-    // { name: ProfileDao.name, value: ProfileDao },
-    // { name: StateDao.name, value: StateDao },
-    // { name: ConfigDao.name, value: ConfigDao },
-    // { name: AuthDao.name, value: AuthDao },
-
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     {
@@ -74,7 +61,6 @@ const registerConfigs = {
     { name: PersonService.name, value: PersonService },
     { name: PresenceService.name, value: PresenceService },
     { name: ProfileService.name, value: ProfileService },
-    { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
     { name: NewPostService.name, value: NewPostService },

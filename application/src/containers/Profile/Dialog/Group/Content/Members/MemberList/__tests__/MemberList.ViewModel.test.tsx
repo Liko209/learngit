@@ -38,22 +38,27 @@ describe('MemberListViewModel', () => {
 
   describe('memberIds', () => {
     it('should be get correct memberIds when scrolling [JPT-405]', () => {
+      const getSortedGroupMembersIds = jest.fn();
+      // @ts-ignore
+      vm._memberListHandler = {
+        getSortedGroupMembersIds,
+      };
       // first page
       const firstPageMemberIds = mockData.slice(0, 20);
-      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(firstPageMemberIds);
+      getSortedGroupMembersIds.mockReturnValue(firstPageMemberIds);
       expect(vm.memberIds).toMatchObject(firstPageMemberIds);
       // second page
-      vm.toBottom(); // next page
+      vm.loadMore(); // next page
       const secondPageMemberIds = mockData.slice(20, 40);
-      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(secondPageMemberIds);
+      getSortedGroupMembersIds.mockReturnValue(secondPageMemberIds);
       expect(vm.memberIds).toMatchObject(secondPageMemberIds);
       // third page
-      vm.toBottom(); // next page
+      vm.loadMore(); // next page
       const thirdPageMemberIds = mockData.slice(40, 50);
-      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(thirdPageMemberIds);
+      getSortedGroupMembersIds.mockReturnValue(thirdPageMemberIds);
       expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
       // fourth page
-      vm.toBottom(); // next page
+      vm.loadMore(); // next page
     });
   });
 });

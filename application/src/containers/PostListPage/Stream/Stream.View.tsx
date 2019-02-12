@@ -29,6 +29,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 
-const StreamView = translate('Conversations')(StreamViewComponent);
+const StreamView = translate('translations')(StreamViewComponent);
 
 export { StreamView };

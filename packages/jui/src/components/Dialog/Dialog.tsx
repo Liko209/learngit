@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import MuiDialog, {
   DialogProps as MuiDialogProps,
 } from '@material-ui/core/Dialog';
@@ -9,32 +9,34 @@ type JuiDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
 };
 
-const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
-  switch (size) {
-    case 'small':
-      restProps.maxWidth = 'xs';
-      break;
-    case 'medium':
-      restProps.maxWidth = 'sm';
-      break;
-    case 'large':
-      restProps.maxWidth = 'md';
-      break;
-    case 'fullScreen':
-      restProps.maxWidth = false;
-      restProps.fullScreen = true;
-      break;
-  }
-  const classes = {
-    root: 'root',
-    paper: 'paper',
-    paperScrollPaper: 'paperScrollPaper',
-    paperWidthXs: 'sm',
-    paperWidthSm: 'md',
-    paperWidthMd: 'lg',
-  };
-  return <MuiDialog classes={classes} {...restProps} />;
-})`
+const JuiDialog = styled(
+  memo(({ size = 'small', ...restProps }: JuiDialogProps) => {
+    switch (size) {
+      case 'small':
+        restProps.maxWidth = 'xs';
+        break;
+      case 'medium':
+        restProps.maxWidth = 'sm';
+        break;
+      case 'large':
+        restProps.maxWidth = 'md';
+        break;
+      case 'fullScreen':
+        restProps.maxWidth = false;
+        restProps.fullScreen = true;
+        break;
+    }
+    const classes = {
+      root: 'root',
+      paper: 'paper',
+      paperScrollPaper: 'paperScrollPaper',
+      paperWidthXs: 'sm',
+      paperWidthSm: 'md',
+      paperWidthMd: 'lg',
+    };
+    return <MuiDialog classes={classes} {...restProps} />;
+  }),
+)`
   &.root {
     padding: 0;
     min-height: 120px;
@@ -65,5 +67,4 @@ const JuiDialog = styled(({ size = 'small', ...restProps }: JuiDialogProps) => {
     max-width: 100%;
   }
 `;
-
 export { JuiDialog, JuiDialogProps };

@@ -26,7 +26,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
       () => this.props.groupId,
       async (groupId: number) => {
         const group = await this._groupService.getById(groupId);
-        if (!group) {
+        if (!group || !this._groupService.isValid(group!)) {
           history.replace('/messages/loading', {
             id: groupId,
             error: true,

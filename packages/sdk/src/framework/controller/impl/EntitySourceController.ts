@@ -55,8 +55,8 @@ class EntitySourceController<T extends IdModel = IdModel>
     return result;
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
-    return await this.entityPersistentController.batchGet(ids);
+  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+    return await this.entityPersistentController.batchGet(ids, order);
   }
 
   getEntityName(): string {

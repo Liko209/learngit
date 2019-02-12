@@ -12,7 +12,8 @@ import {
   HeadShotModel,
 } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, PersonDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw, SortableModel } from '../../../framework/model';

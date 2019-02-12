@@ -365,7 +365,7 @@ describe('ItemService', () => {
 
   describe('getByPosts', () => {
     const itemDao = {
-      getItemsByIds: jest.fn(),
+      batchGet: jest.fn(),
     };
 
     const entitySourceController = {

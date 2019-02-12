@@ -3,7 +3,7 @@
  * @Date: 2018-8-23 10:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent } from 'react';
+import React, { PureComponent, memo } from 'react';
 import MuiList from '@material-ui/core/List/index';
 import MuiListItem from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
@@ -19,9 +19,9 @@ const MinWidth = 72;
 type LeftNavProps = {
   expand: boolean;
 } & DrawerProps;
-const CustomLeftNav: React.SFC<LeftNavProps> = ({ expand, ...props }) => {
+const CustomLeftNav: React.SFC<LeftNavProps> = memo(({ expand, ...props }) => {
   return <MuiDrawer {...props} />;
-};
+});
 
 const Left = styled<LeftNavProps>(CustomLeftNav)`
   && {
