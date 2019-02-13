@@ -86,7 +86,7 @@ describe('StreamView', () => {
             // @ts-ignore
             {self._renderJumpToFirstUnreadButton()}
             // @ts-ignore
-            {self._renderInitialPost()}
+            {!this.props.hasMoreUp && self._renderInitialPost()}
             // @ts-ignore
             {self.props.items.map(self._renderStreamItem.bind(this))}
           </>
