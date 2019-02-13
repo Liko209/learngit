@@ -67,6 +67,10 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
     return this.fileUploadController.getUploadItems(groupId);
   }
 
+  async setUploadItems(groupId: number, itemIds: number[]) {
+    return await this.fileUploadController.setUploadItems(groupId, itemIds);
+  }
+
   async hasValidItemFile(itemId: number) {
     return await this.fileUploadController.hasValidItemFile(itemId);
   }
