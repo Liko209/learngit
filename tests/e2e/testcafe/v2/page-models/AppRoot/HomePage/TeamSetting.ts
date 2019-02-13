@@ -171,4 +171,25 @@ export class TeamSettingDialog extends BaseWebComponent {
   async notAllowMemberPostMessage() {
     await this.toggle(this.allowPostMessageCheckbox, false);
   }
+
+  get allowPinPostToggle() {
+    return this.getSelectorByAutomationId('allowPinToggle', this.memberPermissionList);
+  }
+
+  get allowPinPostText() {
+    return this.allowPostMessageToggle.parent('li').textContent;
+  }
+
+  get allowPinPostCheckbox() {
+    return this.checkboxOf(this.allowPinPostToggle);
+  }
+
+  async allowMemberPinPost() {
+    await this.toggle(this.allowPinPostCheckbox, true);
+  }
+
+  async notAllowMemberPinPost() {
+    await this.toggle(this.allowPinPostCheckbox, false);
+  }
+  
 }
