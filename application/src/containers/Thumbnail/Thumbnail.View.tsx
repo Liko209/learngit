@@ -12,6 +12,10 @@ import { ViewProps } from './types';
 
 @observer
 class ThumbnailView extends React.Component<ViewProps> {
+  private _DefaultImage = (
+    <JuiIconography fontSize="large">image_preview</JuiIconography>
+  );
+
   render() {
     const {
       fileTypeOrUrl: { icon, url },
@@ -20,12 +24,7 @@ class ThumbnailView extends React.Component<ViewProps> {
     return (
       <>
         {type === 'image' ? (
-          <PreloadImg
-            url={url}
-            placeholder={
-              <JuiIconography fontSize="large">image_preview</JuiIconography>
-            }
-          >
+          <PreloadImg url={url} placeholder={this._DefaultImage}>
             <JuiThumbnail url={url} />
           </PreloadImg>
         ) : (

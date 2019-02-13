@@ -35,18 +35,24 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
     },                            DELAY_SHOW_PLACEHOLDER_TIME);
   }
 
+  componentWillUnMount() {
+    this.clearDelayTimer();
+  }
+
   handleLoad = () => {
     const { url } = this.props;
 
     this.setState({ loaded: true });
     if (url) cacheUrl[url] = true;
-    if (this._delayTimer) {
-      clearTimeout(this._delayTimer);
-    }
+    this.clearDelayTimer();
   }
 
   handleError = () => {
     this.setState({ isError: true, loaded: true });
+    this.clearDelayTimer();
+  }
+
+  clearDelayTimer = () => {
     if (this._delayTimer) {
       clearTimeout(this._delayTimer);
     }
