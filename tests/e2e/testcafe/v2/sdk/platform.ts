@@ -65,6 +65,14 @@ export class RcPlatformSdk {
     });
   }
 
+  async createTeam(data: object) {
+    const url = 'restapi/v1.0/glip/teams';
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  // deprecated
   async createAndGetGroupId(data: object) {
     return await this.createGroup(data).then(res => res.data.id);
   }

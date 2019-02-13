@@ -9,23 +9,21 @@ class ScenarioHelper {
     private sdkHelper: SdkHelper,
   ) { }
 
-  public async createGroups(groups: IGroup[]): Promise<void> {
-    for (const group of groups) {
-      await this.createGroup(group);
+  public async createTeams(teams: IGroup[]): Promise<void> {
+    for (const team of teams) {
+      await this.createTeam(team);
     }
   }
 
-  public async createGroup(group: IGroup): Promise<void> {
-    assert(group.owner && group.members && group.type, "require owner, members and type");
-    const platform = await this.sdkHelper.sdkManager.getPlatform(group.owner);
-    const res = await platform.createGroup({
-      type: group.type,
-      name: group.name,
-      members: group.members.map(user => user.rcId),
-      privacy: group.privacy,
-      isPublic: group.isPublic,
+  public async createTeam(team: IGroup): Promise<void> {
+    assert(team.owner && team.members, "require owner, members");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(team.owner);
+    const res = await platform.createTeam({
+      name: team.name,
+      members: team.members.map(user => { return { id: user.rcId }; }),
+      public: team.isPublic,
     });
-    group.glipId = res.data.id;
+    team.glipId = res.data.id;
   }
 }
 

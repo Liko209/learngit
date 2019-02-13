@@ -24,25 +24,25 @@ test(formalName('Check search result will change when changing a team to public/
   // teams should share same search keyword so that we can just
   const searchKeyword = `Team-${uuid()}`;
   const publicTeamWithoutMe = <IGroup>{
-    privacy: 'protected', isPublic: true, type: 'Team',
+    type: 'Team', isPublic: true,
     name: `${searchKeyword} PublicTeamWithoutMe`,
     owner: anotherUser,
     members: [anotherUser],
   };
   const publicTeamWithMe = <IGroup>{
-    privacy: 'protected', isPublic: true, type: 'Team',
+    type: 'Team', isPublic: true,
     name: `${searchKeyword} PublicTeamWithMe`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
   const privateTeamWithoutMe = <IGroup>{
-    privacy: 'private', isPublic: false, type: 'Team',
+    type: 'Team', isPublic: false,
     name: `${searchKeyword} PrivateTeamWithoutMe`,
     owner: anotherUser,
     members: [anotherUser],
   };
   const privateTeamWithMe = <IGroup>{
-    privacy: 'private', isPublic: false, type: 'Team',
+    type: 'Team', isPublic: false,
     name: `${searchKeyword} PrivateTeamWithMe`,
     owner: anotherUser,
     members: [me, anotherUser],
@@ -52,7 +52,7 @@ test(formalName('Check search result will change when changing a team to public/
   await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
   for (const team of [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe]) {
     await h(t).withLog(`And there is a team named "${team.name}"`, async () => {
-      await h(t).scenarioHelper.createGroup(team);
+      await h(t).scenarioHelper.createTeam(team);
     });
   }
 
@@ -89,7 +89,9 @@ test(formalName('Check search result will change when changing a team to public/
   await h(t).withLog(`When teams ${groupsToString(teamsBecomePrivate)} become private`, async () => {
 
 
+
   });
+
 
   const teamsBecomePublic = [privateTeamWithMe, privateTeamWithoutMe];
   await h(t).withLog(`And teams ${groupsToString(teamsBecomePublic)} become public`, async () => {
