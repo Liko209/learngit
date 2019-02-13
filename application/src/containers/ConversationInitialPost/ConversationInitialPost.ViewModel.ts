@@ -29,6 +29,11 @@ class ConversationInitialPostViewModel extends StoreViewModel<
   }
 
   @computed
+  get isAllHandsTeam() {
+    return this._group.isCompanyTeam;
+  }
+
+  @computed
   get displayName() {
     const arr = String(this._group.displayName).split(',');
     if (arr.length > 1) {

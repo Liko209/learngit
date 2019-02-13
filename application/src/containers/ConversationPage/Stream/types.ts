@@ -73,7 +73,6 @@ type StreamViewProps = {
   firstHistoryUnreadPostId?: number;
   loadInitialPostsError?: Error;
   loading?: boolean;
-  isAllHandsTeam: boolean;
 };
 
 type StreamSnapshot = {

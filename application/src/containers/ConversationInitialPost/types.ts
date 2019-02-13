@@ -10,7 +10,6 @@ import { WithNamespaces } from 'react-i18next';
 type ConversationInitialPostProps = {
   id: number; // group id
   notEmpty: boolean;
-  isAllHandsTeam: boolean;
 };
 
 type ConversationInitialPostViewProps = WithNamespaces & {
@@ -20,6 +19,7 @@ type ConversationInitialPostViewProps = WithNamespaces & {
   creator: PersonModel;
   isTeam: boolean;
   createTime: number;
+  isAllHandsTeam: boolean;
 } & ConversationInitialPostProps;
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };
