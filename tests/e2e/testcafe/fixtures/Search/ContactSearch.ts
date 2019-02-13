@@ -51,7 +51,7 @@ test(formalName('Check search result will change when changing a team to public/
   // background
   await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
   for (const team of [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe]) {
-    await h(t).withLog(`And there is a team named"${team.name}"`, async () => {
+    await h(t).withLog(`And there is a team named "${team.name}"`, async () => {
       await h(t).scenarioHelper.createGroup(team);
     });
   }
@@ -81,8 +81,8 @@ test(formalName('Check search result will change when changing a team to public/
     await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHasPrivateLabel();
   });
 
-  await h(t).withLog(`And team "${publicTeamWithoutMe.name}" should has a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHasJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should has a join button`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHasJoinButton();
   });
 
   const teamsBecomePrivate = [publicTeamWithMe, publicTeamWithoutMe];

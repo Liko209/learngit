@@ -96,8 +96,8 @@ class Search extends BaseWebComponent {
   }
 
   getSearchItemByCid(cid: string) {
-    const root = this.getSelectorByAutomationId("search-item-avatar", this.allResultItems)
-      .find('div').withAttribute('cid').filter(`[cid="${cid}"]`).parent('.search-items');
+    this.warnFlakySelector();
+    const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');
     return this.getComponent(SearchItem, root);
   }
 
