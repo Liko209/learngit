@@ -327,7 +327,8 @@ class PuppeteerUtils {
     let initDto = BrowserInitDto.of()
       .env(process.env.JUPITER_ENV)
       .appKey(process.env.JUPITER_APP_KEY)
-      .appSecret(process.env.JUPITER_APP_SECRET);
+      .appSecret(process.env.JUPITER_APP_SECRET)
+      .useInitialCache(true);
 
     let requestId = await client.registerBrowser(initDto);
 
