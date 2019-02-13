@@ -55,7 +55,7 @@ class PostDataController {
       await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
       posts = await this.handleIndexModifiedPosts(posts);
-      return await this.filterAndSavePosts(posts);
+      return await this.filterAndSavePosts(posts, true);
     }
     return [];
   }
