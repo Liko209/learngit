@@ -35,6 +35,13 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
     },                            DELAY_SHOW_PLACEHOLDER_TIME);
   }
 
+  clearDelayTimer = () => {
+    this.setState({ showPlaceholder: true });
+    if (this._delayTimer) {
+      clearTimeout(this._delayTimer);
+    }
+  }
+
   componentWillUnMount() {
     this.clearDelayTimer();
   }
@@ -50,12 +57,6 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
   handleError = () => {
     this.setState({ isError: true, loaded: true });
     this.clearDelayTimer();
-  }
-
-  clearDelayTimer = () => {
-    if (this._delayTimer) {
-      clearTimeout(this._delayTimer);
-    }
   }
 
   render() {
