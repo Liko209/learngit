@@ -26,6 +26,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   margin-top: ${spacing(1)};
+  cursor: pointer;
 `;
 
 export { Wrapper, IconWrapper };

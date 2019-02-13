@@ -24,7 +24,9 @@ import { Header } from './Header';
 import { MessageInput } from './MessageInput';
 import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
 import { ConversationPageViewProps } from './types';
-import { action, observable } from 'mobx';
+import { action, observable, reaction } from 'mobx';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 import { StreamViewComponent } from './Stream/Stream.View';
 import { Stream } from './Stream';
@@ -47,7 +49,18 @@ class ConversationPageViewComponent extends Component<
 
   @observable
   streamKey = 0;
-
+  constructor(props: ConversationPageViewProps) {
+    super(props);
+    reaction(
+      () => getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID),
+      () => {
+        const id = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+        if (id !== 0) {
+          this.remountStream();
+        }
+      },
+    );
+  }
   sendHandler = () => {
     const stream = this._streamRef.current;
     if (!stream) {
