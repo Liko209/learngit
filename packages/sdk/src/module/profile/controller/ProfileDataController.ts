@@ -9,6 +9,12 @@ import { UserConfig } from '../../../service/account/UserConfig';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
+import { Raw } from '../../../framework/model/Raw';
+import notificationCenter from '../../../service/notificationCenter';
+import { mainLogger } from 'foundation';
+import { ENTITY } from '../../../service/eventKey';
+import _ from 'lodash';
+import { transform } from '../../../service/utils';
 
 const DEFAULT_LEFTRAIL_GROUP: number = 20;
 
@@ -16,6 +22,20 @@ class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
   ) {}
+
+  async profileHandleData(
+    profile: Raw<Profile> | null,
+  ): Promise<Profile | null> {
+    let result: Profile | null = null;
+    if (profile) {
+      if (_.isArray(profile)) {
+        result = await this._handleProfile(profile[0]);
+      } else {
+        result = await this._handleProfile(profile);
+      }
+    }
+    return result;
+  }
 
   getCurrentProfileId(): number {
     return UserConfig.getCurrentUserProfileId();
@@ -51,6 +71,25 @@ class ProfileDataController {
       return profile[key];
     }
     return false;
+  }
+
+  private async _handleProfile(profile: Raw<Profile>): Promise<Profile | null> {
+    try {
+      if (profile) {
+        const transformedData: Profile = transform(profile);
+        if (transformedData) {
+          await this.entitySourceController.put(transformedData);
+          notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
+            transformedData,
+          ]);
+          return transformedData;
+        }
+      }
+      return null;
+    } catch (e) {
+      mainLogger.warn(`handleProfile error:${e}`);
+      return null;
+    }
   }
 }
 

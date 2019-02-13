@@ -13,7 +13,6 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET, SERVICE } from '../../../service';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
-import profileHandleData from '../../../service/profile/handleData';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -36,7 +35,9 @@ class ProfileService extends EntityBaseService<Profile>
   }
 
   handleIncomingData = async (profile: Raw<Profile> | null) => {
-    profileHandleData(profile);
+    this.getProfileController()
+      .getProfileDataController()
+      .profileHandleData(profile);
   }
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
     this.getProfileController()

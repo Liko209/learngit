@@ -17,7 +17,6 @@ import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
-import profileHandleData from '../profile/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
@@ -27,6 +26,7 @@ import { ItemService } from '../../module/item';
 import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
+import { ProfileService } from '../../module/profile';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -68,7 +68,11 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     (StateService.getInstance() as StateService).handleState(arrState),
     // featureFlag.handleData(clientConfig),
   ])
-    .then(() => profileHandleData(transProfile))
+    .then(() =>
+      ProfileService.getInstance<ProfileService>().handleIncomingData(
+        transProfile,
+      ),
+    )
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )

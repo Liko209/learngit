@@ -21,7 +21,7 @@ import {
 
 import BaseService from '../../service/BaseService';
 import GroupServiceHandler from '../../service/group/groupServiceHandler';
-import { ProfileService } from '../../module/profile';
+import { ProfileService, extractHiddenGroupIds } from '../../module/profile';
 import CompanyService from '../../service/company';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../constants';
 
@@ -43,7 +43,6 @@ import Permission from './permission';
 import { mainLogger, err, ok, Result, JError } from 'foundation';
 import { SOCKET, SERVICE, ENTITY } from '../eventKey';
 import { LAST_CLICKED_GROUP } from '../../dao/config/constants';
-import { extractHiddenGroupIds } from '../profile/handleData';
 import TypeDictionary from '../../utils/glip-type-dictionary/types';
 import _ from 'lodash';
 import { UserConfig } from '../account';
