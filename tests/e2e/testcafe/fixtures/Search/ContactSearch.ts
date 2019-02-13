@@ -101,13 +101,13 @@ test(formalName('Check search result will change when changing a team to public/
     }
   });
 
-  // rename vars to keep consistency with current state
+  // rename to keep consistency with current state
   [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe] =
     [privateTeamWithMe, privateTeamWithoutMe, publicTeamWithMe, publicTeamWithoutMe];
 
-  // start assertion
-  // Here you will find that when PrivateTeamWithout me become PublicTeamWithoutMe, it would be show in test result.
-  // This is by design due to technical limitation! You have to type chars in search input to trigger search result update.
+  // Note
+  // Here you will find that when PrivateTeamWithoutMe become PublicTeamWithoutMe, it won't be showed in test result.
+  // This is by design due to technical limitation. You have to type keyworad again in search input to trigger search result update.
   // Thus here only 2 items in result list.
   searchResults = [publicTeamWithMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
@@ -125,7 +125,15 @@ test(formalName('Check search result will change when changing a team to public/
     await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
   });
 
+  // The reason of this step please refer to previous note
+  await h(t).withLog(`When I search with keyword "${searchKeyword}" again to ensure search result up-to-date`, async () => {
+    await searchBar.typeSearchKeyword(searchKeyword, { replace: true });
+  });
+
   // update configuration of teams
+  const teamsToLeave = [publicTeamWithMe, privateTeamWithMe];
+
+
 
 
 
