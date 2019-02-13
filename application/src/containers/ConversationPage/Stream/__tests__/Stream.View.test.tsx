@@ -88,7 +88,7 @@ describe('StreamView', () => {
             // @ts-ignore
             {self._renderInitialPost()}
             // @ts-ignore
-            {} {self.props.items.map(self._renderStreamItem.bind(this))}
+            {self.props.items.map(self._renderStreamItem.bind(this))}
           </>
         );
       });

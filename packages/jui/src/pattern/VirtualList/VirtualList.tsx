@@ -137,6 +137,10 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     }
   }
 
+  scrollToPosition = (scrollTop: number) => {
+    this._listRef.scrollToPosition(scrollTop);
+  }
+
   render() {
     const { isLoading, dataSource, width, height } = this.props;
     const { renderEmptyContent, overscanCount, fixedCellHeight } = dataSource;
