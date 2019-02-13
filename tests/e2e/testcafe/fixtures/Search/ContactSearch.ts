@@ -21,7 +21,7 @@ test(formalName('Check search result will change when changing a team to public/
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
 
-  // teams should share same search keyword so that we can just
+  // teams should share same search keyword so that search result will only be subset of those team
   const searchKeyword = `Team-${uuid()}`;
   let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
@@ -48,7 +48,7 @@ test(formalName('Check search result will change when changing a team to public/
     members: [me, anotherUser],
   };
 
-  // background
+  // background: get an account and prepare teams
   await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
   for (const team of [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe]) {
     await h(t).withLog(`And there is a team named "${team.name}"`, async () => {
@@ -80,11 +80,11 @@ test(formalName('Check search result will change when changing a team to public/
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHasPrivateLabel();
+    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
-  await h(t).withLog(`And team "${publicTeamWithMe.name}" should has a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHasJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
   });
 
   // update configuration of teams
@@ -116,11 +116,11 @@ test(formalName('Check search result will change when changing a team to public/
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHasPrivateLabel();
+    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
-  await h(t).withLog(`And team "${publicTeamWithMe.name}" should has a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHasJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
   });
 
   // update configuration of teams

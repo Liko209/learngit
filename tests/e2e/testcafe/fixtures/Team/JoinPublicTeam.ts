@@ -78,7 +78,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.getSearchItemByCid(publicTeamId).shouldHasJoinButton();
+    await search.getSearchItemByCid(publicTeamId).shouldHaveJoinButton();
   })
 
   await h(t).withLog(`When I search and hover the joined team B ${joinedTeamName}`, async () => {
@@ -87,7 +87,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.getSearchItemByCid(joinedTeamId).shouldNotHasJoinButton();
+    await search.getSearchItemByCid(joinedTeamId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
@@ -109,7 +109,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
   for (let i of _.range(groupCount)) {
@@ -119,7 +119,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
 });

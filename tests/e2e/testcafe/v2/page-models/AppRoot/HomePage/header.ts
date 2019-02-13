@@ -145,19 +145,19 @@ class SearchItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('search-item-private', this.self);
   }
 
-  async shouldHasPrivateLabel() {
+  async shouldHavePrivateLabel() {
     await this.t.expect(this.privateLabel.visible).ok();
   }
 
-  async shouldNotHasPrivateLabel() {
+  async shouldNotHavePrivateLabel() {
     await this.t.expect(this.privateLabel.visible).notOk();
   }
 
-  async shouldHasJoinButton() {
+  async shouldHaveJoinButton() {
     await this.t.expect(this.joinButton.visible).ok();
   }
 
-  async shouldNotHasJoinButton() {
+  async shouldNotHaveJoinButton() {
     await this.t.expect(this.joinButton.visible).notOk();
   }
 
