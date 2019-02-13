@@ -5,6 +5,7 @@
  */
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
+jest.mock('sdk/api');
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {
     it('should return falsy for shouldSkipCloseConfirmation as default', () => {
