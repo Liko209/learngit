@@ -64,14 +64,28 @@ class ItemActionController {
 
   async deleteItem(itemId: number, itemService: IItemService) {
     if (itemId > 0) {
-      const requestController = this._buildItemRequestController(
-        itemPathMap.get(GlipTypeUtil.extractTypeId(itemId)) as string,
-      );
-      const partialData = {
-        id: itemId,
-        deactivated: true,
+      const preHandlePartial = (
+        partialItem: Partial<Raw<Item>>,
+        originalItem: Item,
+      ): Partial<Raw<Item>> => {
+        return {
+          ...partialItem,
+          deactivated: true,
+        };
       };
-      await requestController.put(partialData);
+
+      const doUpdateModel = async (updateItem: Item) => {
+        const requestController = this._buildItemRequestController(
+          itemPathMap.get(GlipTypeUtil.extractTypeId(itemId)) as string,
+        );
+        return await requestController.put(updateItem);
+      };
+
+      await this._partialModifyController.updatePartially(
+        itemId,
+        preHandlePartial,
+        doUpdateModel,
+      );
     } else {
       await itemService.deleteLocalItem(itemId);
       notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
