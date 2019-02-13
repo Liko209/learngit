@@ -106,7 +106,10 @@ test(formalName('Check search result will change when changing a team to public/
     [privateTeamWithMe, privateTeamWithoutMe, publicTeamWithMe, publicTeamWithoutMe];
 
   // start assertion
-  searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
+  // Here you will find that when PrivateTeamWithout me become PublicTeamWithoutMe, it would be show in test result.
+  // This is by design due to technical limitation! You have to type chars in search input to trigger search result update.
+  // Thus here only 2 items in result list.
+  searchResults = [publicTeamWithMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
@@ -123,6 +126,7 @@ test(formalName('Check search result will change when changing a team to public/
   });
 
   // update configuration of teams
+
 
 
 });
