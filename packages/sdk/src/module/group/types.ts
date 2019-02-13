@@ -3,8 +3,6 @@ type TeamSetting = {
   name?: string;
   description?: string;
   isPublic?: boolean;
-  canPost?: boolean;
-  canAddMember?: boolean;
   permissionFlags?: PermissionFlags;
 };
 type PermissionKeys = keyof typeof PERMISSION_ENUM;
