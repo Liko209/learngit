@@ -9,12 +9,7 @@ import { daoManager } from '../../../dao';
 import { PostDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
-import {
-  ENTITY,
-  GroupService,
-  notificationCenter,
-  SERVICE,
-} from '../../../service';
+import { ENTITY, notificationCenter, SERVICE } from '../../../service';
 import { baseHandleData, transform } from '../../../service/utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../item';
@@ -22,6 +17,7 @@ import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
 
 const TAG = 'PostDataController';
+import { GroupService } from '../../group';
 
 class PostDataController {
   constructor(

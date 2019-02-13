@@ -3,12 +3,12 @@ import { ItemService } from 'sdk/module/item';
 import { NewPostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { ProgressService } from 'sdk/module/progress';
+import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 import { PersonService } from 'sdk/module/person';
 import { PermissionService } from 'sdk/module/permission';
 const {
   CompanyService,
-  GroupService,
   GroupConfigService,
   PresenceService,
   ProfileService,

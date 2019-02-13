@@ -14,9 +14,10 @@ import { PostFetchController } from '../PostFetchController';
 import PostAPI from '../../../../api/glip/post';
 import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import { NewGroupService } from '../../../../module/group/service';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
+import { GroupService } from '../../../../module/group/service';
+import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -39,7 +40,7 @@ const groupService = {
 function setup() {
   ItemService.getInstance = jest.fn().mockReturnValue(itemService);
   itemService.handleIncomingData = jest.fn();
-  NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
   daoManager.getDao.mockImplementation(arg => {
     if (arg === PostDao) {
       return postDao;
@@ -52,6 +53,7 @@ function setup() {
 
 describe('PostFetchController()', () => {
   const postDataController = new PostDataController(null, null);
+  // const groupService = new GroupService();
   const postFetchController = new PostFetchController(
     postDataController,
     entitySourceController,
@@ -396,18 +398,27 @@ describe('PostFetchController()', () => {
     });
 
     it('should throw exception if failed to request', async () => {
-      PostAPI.requestPosts.mockRejectedValueOnce({});
+      PostAPI.requestPosts.mockResolvedValueOnce(
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
+            {
+              status: 403,
+              headers: {},
+            } as BaseResponse,
+        ),
+      );
+      expect.assertions(1);
       await expect(
         postFetchController.fetchPaginationPosts({
           groupId: 1,
           postId: 1,
           limit: 1,
         }),
-      ).rejects.toBeDefined();
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
   });
 
-  describe('getRemotePostsByGroupIdAndSave', () => {
+  describe('getRemotePostsByGroupIdAndSave()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -421,7 +432,8 @@ describe('PostFetchController()', () => {
         postId: 0,
       };
     }
-    it('should be true when request server error', async () => {
+
+    it('should throw exception when request server error', async () => {
       PostAPI.requestPosts.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
@@ -431,13 +443,16 @@ describe('PostFetchController()', () => {
             } as BaseResponse,
         ),
       );
-      const result = await postFetchController.getRemotePostsByGroupIdAndSave(
-        getParaMeters(true),
-      );
-      expect(result.success).toBeFalsy();
-      expect(result.hasMore).toBeTruthy();
+      await expect(
+        postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
+<<<<<<< HEAD
     it.skip('should not call updateHasMore when should not save', async () => {
+=======
+
+    it('should not call updateHasMore when should not save', async () => {
+>>>>>>> develop
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],

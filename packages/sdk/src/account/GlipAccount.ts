@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractAccount } from '../framework';
-import GroupService from '../service/group';
+import GroupService from '../module/group';
 import CompanyService from '../service/company';
 import { PersonService } from '../module/person';
 import PresenceService from '../service/presence';

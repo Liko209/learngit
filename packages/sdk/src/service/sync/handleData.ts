@@ -13,7 +13,6 @@ import {
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
-import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
 import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
@@ -27,6 +26,7 @@ import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
 import { NewPostService } from '../../module/post';
+import { GroupService } from '../../module/group';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -72,9 +72,11 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
-    .then(() => groupHandleData(public_teams))
-    .then(() => groupHandleData(groups))
-    .then(() => groupHandleData(teams))
+    .then(() =>
+      GroupService.getInstance<GroupService>().handleData(public_teams),
+    )
+    .then(() => GroupService.getInstance<GroupService>().handleData(groups))
+    .then(() => GroupService.getInstance<GroupService>().handleData(teams))
     .then(() =>
       NewPostService.getInstance<NewPostService>().handleIndexData(
         posts,

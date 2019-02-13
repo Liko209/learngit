@@ -4,7 +4,6 @@ export { default as AccountService } from './account';
 export { default as AuthService } from './auth';
 export { default as ConfigService } from './config';
 export { default as CompanyService } from './company';
-export { default as GroupService } from './group';
 export { default as GroupConfigService } from './groupConfig';
 export { default as PresenceService } from './presence';
 export { default as ProfileService } from './profile';

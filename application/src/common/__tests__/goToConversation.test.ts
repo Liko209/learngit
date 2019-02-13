@@ -5,6 +5,7 @@
  */
 import history from '@/history';
 import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
@@ -13,11 +14,9 @@ import { NewPostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
 jest.mock('@/history');
-jest.mock('sdk/service/group');
+jest.mock('sdk/module/group');
 jest.mock('sdk/utils');
 jest.mock('@/containers/Notification');
-
-const { GroupService } = service;
 
 const postService = new NewPostService();
 NewPostService.getInstance = jest.fn().mockReturnValue(postService);
