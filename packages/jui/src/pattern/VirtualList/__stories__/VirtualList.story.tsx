@@ -16,6 +16,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellProps,
+  JuiVirtualListRowsRenderInfo,
 } from '..';
 import { FileItem } from './FileItem';
 import { FileItemProps } from './types';
@@ -26,9 +27,10 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     count = 1000;
   }
   const part = ['Hello', 'This is title', 'A long text'];
-  const data: string[] = Array(count)
+  const data: string[] = Array(Math.ceil(count / 3))
     .fill(part)
     .flat();
+  data.length = count;
 
   type CellProps = {
     title: string;
@@ -133,10 +135,15 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
 });
 
 storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
-  let count = number('cell count', 1000);
-  if (count < 0) {
-    count = 1000;
+  let total = number('total item count', 1000);
+  const overscan = number('overscan', 10);
+  const threshold = number('threshold', 15);
+  const dataLoadTime = number('data load time', 100);
+
+  if (total < 0) {
+    total = 1000;
   }
+
   const part = ['Hello', 'This is title', 'A long text'];
 
   type CellProps = {
@@ -154,11 +161,29 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
     border: '1px solid',
     display: 'flex',
   };
-  class Content extends PureComponent implements IVirtualListDataSource {
+
+  type IndexRange = { startIndex: number; stopIndex: number };
+
+  type States = {
+    isLoading: boolean;
+    visibleRange: IndexRange;
+    renderedRange: IndexRange;
+    loadedRange: IndexRange;
+  };
+
+  class Content extends PureComponent<{}, States>
+    implements IVirtualListDataSource {
     private _list: string[] = Array(5)
       .fill(part)
       .flat();
-    state = { isLoading: false };
+
+    state: States = {
+      isLoading: false,
+      visibleRange: { startIndex: 0, stopIndex: -1 },
+      renderedRange: { startIndex: 0, stopIndex: -1 },
+      loadedRange: { startIndex: 0, stopIndex: -1 },
+    };
+
     countOfCell = () => {
       return this._list.length;
     }
@@ -172,19 +197,27 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
       );
     }
 
-    isRowLoaded = (index: number) => {
-      return index < this._list.length;
-    }
+    loadMore = async (startIndex: number, stopIndex: number) => {
+      const maxIndex = total - 1;
+      if (this.countOfCell() >= total) return;
 
-    loadMore = async (startIndex: number, endIndex: number) => {
       this.setState({ isLoading: true });
       const p = new Promise((resolve: any) => {
         setTimeout(() => {
-          const array: string[] = Array(endIndex - startIndex).fill('XXX');
+          const actualStopIndex = Math.min(stopIndex, maxIndex);
+          const array: string[] = Array(actualStopIndex - startIndex + 1).fill(
+            'XXX',
+          );
           this._list = this._list.concat(array);
           resolve();
-          this.setState({ isLoading: false });
-        },         1000);
+          this.setState({
+            loadedRange: {
+              ...this.state.loadedRange,
+              stopIndex: actualStopIndex,
+            },
+            isLoading: false,
+          });
+        },         dataLoadTime);
       });
       return await p;
     }
@@ -197,17 +230,70 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
       return <div>Loading ...</div>;
     }
 
-    render() {
+    private _handleBeforeRowsRendered = ({
+      startIndex,
+      stopIndex,
+      overscanStartIndex,
+      overscanStopIndex,
+    }: JuiVirtualListRowsRenderInfo) => {
+      this.setState({
+        visibleRange: { startIndex, stopIndex },
+        renderedRange: {
+          startIndex: overscanStartIndex,
+          stopIndex: overscanStopIndex,
+        },
+      });
+    }
+
+    private _renderVirtualList() {
       return (
         <div style={style}>
           <JuiVirtualList
             dataSource={this}
-            threshold={10}
+            threshold={threshold}
+            overscan={overscan}
             isLoading={this.state.isLoading}
+            onBeforeRowsRendered={this._handleBeforeRowsRendered}
             width={400}
             height={400}
           />
         </div>
+      );
+    }
+
+    private _renderLog() {
+      const { visibleRange, renderedRange, loadedRange } = this.state;
+      const renderRange = (name: string, range: IndexRange) => {
+        return (
+          <tr>
+            <td>{name}</td>
+            <td>
+              {range.startIndex}-{range.stopIndex}
+            </td>
+            <td>{range.stopIndex - range.startIndex + 1}</td>
+          </tr>
+        );
+      };
+      return (
+        <table>
+          <tr>
+            <td>Type</td>
+            <td>Range</td>
+            <td>Count</td>
+          </tr>
+          {renderRange('visible', visibleRange)}
+          {renderRange('rendered', renderedRange)}
+          {renderRange('loaded', loadedRange)}
+        </table>
+      );
+    }
+
+    render() {
+      return (
+        <>
+          {this._renderVirtualList()}
+          {this._renderLog()}
+        </>
       );
     }
   }
@@ -251,15 +337,17 @@ storiesOf('Pattern/VirtualList', module).add('Empty VirtualList', () => {
 });
 
 storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
+  const count = number('cell count', 100);
+
   class DataSource implements IVirtualListDataSource {
     private _list: string[] = [];
     constructor() {
-      for (let i = 0; i < 100; ++i) {
+      for (let i = 0; i < count; ++i) {
         this._list.push(uuid.v4());
       }
     }
     countOfCell() {
-      return 10000;
+      return count;
     }
 
     cellAtIndex({ index, style }: JuiVirtualCellProps) {
@@ -285,10 +373,6 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
       );
     }
 
-    overscanCount() {
-      return 10;
-    }
-
     loadMore = (startIndex: number, stopIndex: number) => {
       for (let i = startIndex; i < stopIndex; ++i) {
         this._list.push('');
@@ -301,10 +385,6 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
           resolve();
         },         1000);
       });
-    }
-
-    isRowLoaded = (index: number) => {
-      return this._list.length > index;
     }
   }
 
@@ -323,11 +403,12 @@ storiesOf('Pattern/VirtualList', module).add('Load VirtualList', () => {
 });
 
 storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
-  const count = number('cell count', 10000);
+  const count = number('cell count', 100);
+
   class DataSource implements IVirtualListDataSource {
     private _list: FileItemProps[] = [];
     constructor() {
-      for (let i = 0; i < 100; ++i) {
+      for (let i = 0; i < count; ++i) {
         const item: FileItemProps = {
           name: uuid.v4(),
           subtitle: Math.random().toString(16),
@@ -335,6 +416,7 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
         this._list.push(item);
       }
     }
+
     countOfCell() {
       return count;
     }
@@ -366,10 +448,6 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
       );
     }
 
-    overscanCount() {
-      return 20;
-    }
-
     loadMore = (startIndex: number, stopIndex: number) => {
       for (let i = startIndex; i < stopIndex; ++i) {
         this._list.push({} as FileItemProps);
@@ -386,10 +464,6 @@ storiesOf('Pattern/VirtualList', module).add('Right Shelf Files', () => {
           resolve();
         },         10);
       });
-    }
-
-    isRowLoaded = (index: number) => {
-      return this._list.length > index;
     }
   }
 

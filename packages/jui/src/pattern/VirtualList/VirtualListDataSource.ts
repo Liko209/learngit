@@ -16,8 +16,6 @@ interface IVirtualListDataSource {
 
   fixedCellHeight?: (index: number) => number;
 
-  overscanCount?: () => number;
-
   // for loading data
   loadMore?: (startIndex: number, endIndex: number) => Promise<any>;
 
