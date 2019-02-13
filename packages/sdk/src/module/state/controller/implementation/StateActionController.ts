@@ -11,7 +11,6 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
-import { NewPostService } from '../../../post';
 import { mainLogger } from 'foundation';
 
 class StateActionController {
