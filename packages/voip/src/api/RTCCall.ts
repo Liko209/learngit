@@ -326,6 +326,14 @@ class RTCCall {
         this._isRecording = false;
         break;
       }
+      case RTC_CALL_ACTION.HOLD: {
+        this._fsm.holdSuccess();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._fsm.unholdSuccess();
+        break;
+      }
       default:
         break;
     }
@@ -383,17 +391,17 @@ class RTCCall {
 
   private _onSessionReinviteAccepted(session: any) {
     if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
-      this._fsm.holdSuccess();
+      this._onCallActionSuccess(RTC_CALL_ACTION.HOLD);
     } else {
-      this._fsm.unholdSuccess();
+      this._onCallActionSuccess(RTC_CALL_ACTION.UNHOLD);
     }
   }
 
   private _onSessionReinviteFailed(session: any) {
     if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
-      this._fsm.holdFailed();
+      this._onCallActionFailed(RTC_CALL_ACTION.HOLD);
     } else {
-      this._fsm.unholdFailed();
+      this._onCallActionFailed(RTC_CALL_ACTION.UNHOLD);
     }
   }
   // fsm listener
