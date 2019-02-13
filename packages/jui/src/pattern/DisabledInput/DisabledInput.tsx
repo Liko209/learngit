@@ -26,9 +26,9 @@ const StyledDisableInput = styled('div')`
 
 class JuiDisabledInput extends PureComponent<Props> {
   render() {
-    const { text } = this.props;
+    const { text, ...rest } = this.props;
 
-    return <StyledDisableInput>{text}</StyledDisableInput>;
+    return <StyledDisableInput {...rest}>{text}</StyledDisableInput>;
   }
 }
 

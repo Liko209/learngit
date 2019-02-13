@@ -3,16 +3,21 @@ import { LOG_LEVEL, LOG_TAGS } from './constants';
 import { ILogger, ILogEntityDecorator, LogConfig } from './types';
 import { configManager } from './config';
 import mergeWith from 'lodash/mergeWith';
-import { MessageDecorator, SessionDecorator, TruncationDecorator, TimestampDecorator } from './decorators';
+import {
+  MessageDecorator,
+  SessionDecorator,
+  TruncationDecorator,
+  TimestampDecorator,
+} from './decorators';
 import { LogConsumer, LogPersistence } from './consumer';
 
 type LoaderMap = {
-  [name: string]: ILogEntityDecorator,
+  [name: string]: ILogEntityDecorator;
 };
 
 type LoaderItem = {
-  loader: string | ILogEntityDecorator,
-  options?: object,
+  loader: string | ILogEntityDecorator;
+  options?: object;
 };
 class LogManager {
   private static _instance: LogManager;
@@ -59,6 +64,14 @@ class LogManager {
         this.flush();
       });
     }
+    if (process.env.NODE_ENV === 'test') {
+      configManager.mergeConfig({
+        enabled: false,
+        browser: {
+          enabled: false,
+        },
+      });
+    }
   }
 
   static get Instance() {
@@ -80,15 +93,23 @@ class LogManager {
   }
 
   configDecorators(loaderItems: LoaderItem[], customLoaderMap?: LoaderMap) {
-    const loaderMap = customLoaderMap ? mergeWith({}, this._defaultLoaderMap, customLoaderMap) : this._defaultLoaderMap;
-    const decorators: ILogEntityDecorator[] = (loaderItems || []).map((loaderItem) => {
-      if (Object.prototype.toString.call(loaderItem.loader) === '[object String]') {
-        const loader: ILogEntityDecorator = loaderMap[loaderItem.loader as string];
-        loader.options = loaderItem.options || {};
-        return loader;
-      }
-      return loaderItem.loader as ILogEntityDecorator;
-    });
+    const loaderMap = customLoaderMap
+      ? mergeWith({}, this._defaultLoaderMap, customLoaderMap)
+      : this._defaultLoaderMap;
+    const decorators: ILogEntityDecorator[] = (loaderItems || []).map(
+      (loaderItem: LoaderItem) => {
+        if (
+          Object.prototype.toString.call(loaderItem.loader) ===
+          '[object String]'
+        ) {
+          const loader: ILogEntityDecorator =
+            loaderMap[loaderItem.loader as string];
+          loader.options = loaderItem.options || {};
+          return loader;
+        }
+        return loaderItem.loader as ILogEntityDecorator;
+      },
+    );
     configManager.mergeConfig({
       decorators,
     });
@@ -124,7 +145,6 @@ class LogManager {
     this.getMainLogger().fatal(message);
     this.flush();
   }
-
 }
 
 export default LogManager;

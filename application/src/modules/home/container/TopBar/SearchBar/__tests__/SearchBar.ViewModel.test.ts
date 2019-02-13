@@ -3,7 +3,7 @@
  * @Date: 2018-11-26 20:32:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import { getGlobalValue } from '../../../../../../store/utils';
@@ -16,7 +16,6 @@ jest.mock('sdk/api');
 jest.mock('sdk/dao');
 
 const searchBarViewModel = new SearchBarViewModel();
-const { GroupService } = service;
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;

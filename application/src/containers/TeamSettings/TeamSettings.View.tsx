@@ -231,20 +231,20 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   renderButtonList() {
-    const { t, isAdmin } = this.props;
+    const { t, isAdmin, isCompanyTeam } = this.props;
     return (
       <ButtonList>
         <ButtonListItem
           data-test-automation-id="leaveTeamButton"
           color="semantic.negative"
           onClick={this.handleLeaveTeamClick}
-          hide={isAdmin}
+          hide={isAdmin || isCompanyTeam}
         >
           <ButtonListItemText color="semantic.negative">
             {t('leaveTeam')}
           </ButtonListItemText>
         </ButtonListItem>
-        {isAdmin ? null : <JuiDivider />}
+        {isAdmin || isCompanyTeam ? null : <JuiDivider />}
       </ButtonList>
     );
   }
