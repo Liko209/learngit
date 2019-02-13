@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, AccountDao, PostDao } from '../../../dao';
+import { daoManager, AccountDao } from '../../../dao';
+import { PostDao } from '../../../module/post/dao/PostDao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
@@ -12,6 +13,7 @@ import { ItemService } from '../../../module/item';
 import { number } from '@storybook/addon-knobs';
 
 jest.mock('../../../dao');
+jest.mock('../../../module/post/dao/PostDao');
 jest.mock('../../../utils/mathUtils');
 jest.mock('../../../module/item');
 

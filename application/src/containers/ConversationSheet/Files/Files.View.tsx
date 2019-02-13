@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
@@ -29,7 +29,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle={t('download')}
+    tooltipTitle={i18next.t('download')}
   >
     download
   </JuiIconButton>

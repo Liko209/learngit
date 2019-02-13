@@ -5,9 +5,9 @@
  */
 
 import PreloadPostsForGroupHandler from '../preloadPostsForGroupHandler';
-import GroupService from '../../../service/group';
+import GroupService from '../../../module/group';
 
-jest.mock('../../../service/group');
+jest.mock('../../../module/group');
 
 describe('PreloadPostsForGroupHandler', () => {
   const groupService = new GroupService();

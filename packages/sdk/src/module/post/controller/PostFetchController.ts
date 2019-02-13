@@ -8,14 +8,15 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
 import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../../../module/post/dao';
 import { mainLogger } from 'foundation';
 import { ItemService } from '../../item';
 import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
-import { NewGroupService } from '../../../module/group';
+import { GroupService } from '../../../module/group';
 import { IRequestRemotePostAndSave } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
@@ -77,7 +78,7 @@ class PostFetchController {
     }
 
     if (result.posts.length < limit) {
-      const groupService: NewGroupService = NewGroupService.getInstance();
+      const groupService: GroupService = GroupService.getInstance();
       const shouldFetch = await groupService.hasMorePostInRemote(
         groupId,
         direction,
@@ -129,16 +130,16 @@ class PostFetchController {
       params.post_id = postId;
     }
     const requestResult = await PostAPI.requestPosts(params);
-    if (requestResult.isOk()) {
-      const data = requestResult.data;
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        result.hasMore = result.posts.length === limit;
-      }
-      return result;
+
+    const data = requestResult.expect('Get Remote post failed');
+
+    if (data) {
+      result.posts = data.posts;
+      result.items = data.items;
+      result.hasMore = result.posts.length === limit;
     }
-    return null;
+
+    return result;
   }
 
   async getRemotePostsByGroupIdAndSave({
@@ -171,7 +172,7 @@ class PostFetchController {
         shouldSaveToDb,
       );
       if (shouldSaveToDb) {
-        const groupService: NewGroupService = NewGroupService.getInstance();
+        const groupService: GroupService = GroupService.getInstance();
         groupService.updateHasMore(groupId, direction, handledResult.hasMore);
       }
       Object.assign(result, handledResult);

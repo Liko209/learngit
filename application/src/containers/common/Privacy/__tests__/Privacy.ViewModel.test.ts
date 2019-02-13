@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
@@ -14,7 +14,6 @@ jest.mock('../../../../store/utils');
 const mockGroup = {
   id: 123,
 };
-const { GroupService } = service;
 const groupService = {
   getLocalGroup: jest.fn().mockResolvedValue(mockGroup),
   updateGroupPrivacy: jest
@@ -65,6 +64,23 @@ describe('Privacy view model', () => {
       expect(vm.isAdmin).toBe(true);
       mockEntity.isAdmin = false;
       expect(vm.isAdmin).toBe(false);
+    });
+  });
+
+  describe('isTeam', () => {
+    it('should be true when group props isTeam set to true', () => {
+      mockEntity.isTeam = true;
+      expect(vm.isTeam).toBe(true);
+    });
+
+    it('should be false when group props isTeam set to false', () => {
+      mockEntity.isTeam = false;
+      expect(vm.isTeam).toBe(false);
+    });
+
+    it('should be false when group props isTeam set to undefined', () => {
+      mockEntity.isTeam = undefined;
+      expect(vm.isTeam).toBe(false);
     });
   });
 

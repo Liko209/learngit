@@ -117,6 +117,6 @@ class MessageInputViewComponent extends Component<
 const view = extractView<WithNamespaces & MessageInputViewProps>(
   MessageInputViewComponent,
 );
-const MessageInputView = translate('Conversations')(view);
+const MessageInputView = translate('translations')(view);
 
 export { MessageInputView, MessageInputViewComponent };

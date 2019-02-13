@@ -60,7 +60,7 @@ const Textarea = styled<Textarea>(WrapperTextField)`
   }
 `;
 
-class JuiTextarea extends React.Component<Props, State> {
+class JuiTextarea extends React.PureComponent<Props, State> {
   // static displayName = 'JuiTextarea';
   // static dependencies = [MuiTextField];
   constructor(props: Props) {

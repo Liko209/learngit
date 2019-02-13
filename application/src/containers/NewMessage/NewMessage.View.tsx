@@ -3,8 +3,8 @@
  * @Date: 2018-11-22 09:55:58
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { t } from 'i18next';
+import React, { createRef } from 'react';
+import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -41,11 +41,29 @@ const StyledTextWithLink = styled.div`
 
 @observer
 class NewMessage extends React.Component<ViewProps, State> {
+  messageRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
       message: '',
     };
+  }
+
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.messageRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
   }
 
   sendNewMessage = async () => {
@@ -96,30 +114,31 @@ class NewMessage extends React.Component<ViewProps, State> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={t('New Message')}
+        title={i18next.t('New Message')}
         onCancel={this.onClose}
         onOK={this.sendNewMessage}
-        okText={t('Send')}
+        okText={i18next.t('Send')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('New Message Error')}
+              {i18next.t('New Message Error')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={t('Cancel')}
+        cancelText={i18next.t('Cancel')}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
-          placeholder={t('Search Contact Placeholder')}
+          label={i18next.t('Members')}
+          placeholder={i18next.t('Search Contact Placeholder')}
           error={emailError}
-          helperText={emailError && t(emailErrorMsg)}
+          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
+          messageRef={this.messageRef}
         />
         <JuiTextarea
-          id={t('Type new message')}
-          label={t('Type new message')}
+          id={i18next.t('Type new message')}
+          label={i18next.t('Type new message')}
           fullWidth={true}
           inputProps={{
             maxLength: 10000,
@@ -129,8 +148,8 @@ class NewMessage extends React.Component<ViewProps, State> {
         />
         <StyledTextWithLink>
           <JuiTextWithLink
-            text={t('newMessageTip')}
-            linkText={t('newMessageTipLink')}
+            text={i18next.t('newMessageTip')}
+            linkText={i18next.t('newMessageTipLink')}
             onClick={this.openCreateTeam}
           />
         </StyledTextWithLink>

@@ -5,13 +5,13 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { i18n } from 'i18next';
+import i18next from 'i18next';
 import { BannerType } from '../types';
 import { NetworkBannerView } from '../NetworkBanner.View';
 
 const baseProps = {
-  t: () => 'a',
-  i18n: {} as i18n,
+  t: (): any => 'a',
+  i18n: {} as i18next.i18n,
   tReady: true,
 };
 

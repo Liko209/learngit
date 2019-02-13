@@ -11,7 +11,7 @@ import {
   Switch,
   withRouter,
 } from 'react-router-dom';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   JuiResponsiveLayout,
   VISUAL_MODE,
@@ -118,8 +118,8 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
             render={() => (
               <JuiConversationLoading
                 showTip={messageError}
-                tip={t('messageLoadingErrorTip')}
-                linkText={t('tryAgain')}
+                tip={i18next.t('messageLoadingErrorTip')}
+                linkText={i18next.t('tryAgain')}
                 onClick={this.retryMessage}
               />
             )}

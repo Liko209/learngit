@@ -7,7 +7,8 @@
 import { postFactory, itemFactory } from '../../../../__tests__/factories';
 import { ItemService } from '../../../item';
 import { ItemDao } from '../../../item/dao';
-import { PostDao, daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PostFetchController } from '../PostFetchController';
@@ -15,10 +16,11 @@ import { PROGRESS_STATUS } from '../../../progress';
 import PostAPI from '../../../../api/glip/post';
 import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import { NewGroupService } from '../../../../module/group/service';
+import { GroupService } from '../../../../module/group/service';
 import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../item');
 jest.mock('../../../../api/glip/post');
@@ -46,7 +48,7 @@ describe('PostFetchController()', () => {
   const itemService = new ItemService();
   const postDao = new PostDao(null);
   const itemDao = new ItemDao(null);
-  // const groupService = new NewGroupService();
+  // const groupService = new GroupService();
   const preInsertController = new MockPreInsertController();
   const postFetchController = new PostFetchController(
     preInsertController,
@@ -66,7 +68,7 @@ describe('PostFetchController()', () => {
   function setup() {
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     itemService.handleIncomingData = jest.fn();
-    NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     daoManager.getDao.mockImplementation(arg => {
       if (arg === PostDao) {
         return postDao;
@@ -410,18 +412,27 @@ describe('PostFetchController()', () => {
     });
 
     it('should throw exception if failed to request', async () => {
-      PostAPI.requestPosts.mockRejectedValueOnce({});
+      PostAPI.requestPosts.mockResolvedValueOnce(
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
+            {
+              status: 403,
+              headers: {},
+            } as BaseResponse,
+        ),
+      );
+      expect.assertions(1);
       await expect(
         postFetchController.fetchPaginationPosts({
           groupId: 1,
           postId: 1,
           limit: 1,
         }),
-      ).rejects.toBeDefined();
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
   });
 
-  describe('getRemotePostsByGroupIdAndSave', () => {
+  describe('getRemotePostsByGroupIdAndSave()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -435,7 +446,8 @@ describe('PostFetchController()', () => {
         postId: 0,
       };
     }
-    it('should be true when request server error', async () => {
+
+    it('should throw exception when request server error', async () => {
       PostAPI.requestPosts.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
@@ -445,12 +457,11 @@ describe('PostFetchController()', () => {
             } as BaseResponse,
         ),
       );
-      const result = await postFetchController.getRemotePostsByGroupIdAndSave(
-        getParaMeters(true),
-      );
-      expect(result.success).toBeFalsy();
-      expect(result.hasMore).toBeTruthy();
+      await expect(
+        postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
+
     it('should not call updateHasMore when should not save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],

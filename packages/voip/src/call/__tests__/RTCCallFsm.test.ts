@@ -3,7 +3,6 @@
  * @Date: 2018-12-29 16:07:54
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../__tests__/types.d.ts" />
 import { RTCCallFsm } from '../RTCCallFsm';
 import { CALL_FSM_NOTIFY } from '../types';
 

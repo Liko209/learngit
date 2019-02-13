@@ -46,7 +46,7 @@ const StyledContainer = styled.div`
   margin-top: 1rem;
 `;
 
-class TypographyShow extends React.Component<{ variant: string }> {
+class TypographyShow extends React.PureComponent<{ variant: string }> {
   text: React.RefObject<any>;
   state: any;
   constructor(props) {

@@ -3,7 +3,12 @@
  * @Date: 2019-01-02 15:02:09
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, RefObject, createRef, CSSProperties } from 'react';
+import React, {
+  RefObject,
+  createRef,
+  CSSProperties,
+  PureComponent,
+} from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
 import uuid from 'uuid';
@@ -63,7 +68,7 @@ storiesOf('Pattern/VirtualList', module).add('Static VirtualList', () => {
     border: '1px solid',
     display: 'flex',
   };
-  class Content extends Component {
+  class Content extends PureComponent {
     private _listRef: RefObject<JuiVirtualList> = createRef();
     componentDidMount() {
       setTimeout(() => {
@@ -106,7 +111,7 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
     border: '1px solid',
     display: 'flex',
   };
-  class Content extends Component implements IVirtualListDataSource {
+  class Content extends PureComponent implements IVirtualListDataSource {
     private _list: string[] = Array(5)
       .fill(part)
       .flat();

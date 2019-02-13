@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
@@ -30,7 +30,7 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
 `;
 
-const JuiItemContent = (props: Props) => {
+const JuiItemContent = memo((props: Props) => {
   const { children, title } = props;
   return (
     <StyledWrapper>
@@ -38,7 +38,7 @@ const JuiItemContent = (props: Props) => {
       <StyledChildrenWrapper>{children}</StyledChildrenWrapper>
     </StyledWrapper>
   );
-};
+});
 
 JuiItemContent.displayName = 'JuiItemContent';
 

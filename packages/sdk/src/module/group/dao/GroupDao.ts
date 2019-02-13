@@ -90,20 +90,6 @@ class GroupDao extends BaseDao<Group> {
       .first();
   }
 
-  async getLatestGroup(): Promise<Group | null> {
-    return this.createQuery()
-      .orderBy('most_recent_post_created_at', true)
-      .filter((item: Group) => !item.is_archived && !item.is_team)
-      .first();
-  }
-
-  async getLastNGroups(n: number): Promise<Group[]> {
-    return this.createQuery()
-      .orderBy('most_recent_post_created_at', true)
-      .filter((item: Group) => !item.is_archived)
-      .limit(n)
-      .toArray();
-  }
 }
 
 export { GroupDao };

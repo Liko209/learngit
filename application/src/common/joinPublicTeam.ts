@@ -3,11 +3,11 @@
  * @Date: 2019-01-16 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { goToConversation } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
 import { errorHelper } from 'sdk/error';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
@@ -20,7 +20,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 
 const joinHander = async (conversationId: number) => {
-  const nGroupService: NewGroupService = NewGroupService.getInstance();
+  const nGroupService: GroupService = GroupService.getInstance();
   const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   try {
     await nGroupService.joinTeam(useId, conversationId);
@@ -44,10 +44,10 @@ const joinTeam = (item: GroupModel | SortableModel<Group>) => (
 ) => {
   e && e.stopPropagation();
   Dialog.confirm({
-    title: t('joinTeamTitle'),
-    content: t('joinTeamContent', { teamName: item.displayName }),
-    okText: t('join'),
-    cancelText: t('Cancel'),
+    title: i18next.t('joinTeamTitle'),
+    content: i18next.t('joinTeamContent', { teamName: item.displayName }),
+    okText: i18next.t('join'),
+    cancelText: i18next.t('Cancel'),
     onOK: () =>
       goToConversation({
         id: item.id,

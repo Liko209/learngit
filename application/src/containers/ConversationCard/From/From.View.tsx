@@ -32,6 +32,6 @@ class FromViewComponent extends Component<Props> {
   }
 }
 
-const FromView = translate('Conversations')(FromViewComponent);
+const FromView = translate('translations')(FromViewComponent);
 
 export { FromView };
