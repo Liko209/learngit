@@ -30,7 +30,7 @@ function clearMocks() {
 
 describe('', () => {
   const itemService = {
-    deleteItem: jest.fn(),
+    deleteLocalItem: jest.fn(),
   };
   const requestController = new RequestController<Item>(null);
   const partialUpdateController = new PartialModifyController<Item>(null);
