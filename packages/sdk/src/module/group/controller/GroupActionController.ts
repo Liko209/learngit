@@ -240,11 +240,8 @@ export class GroupActionController {
   async createTeam(
     creator: number,
     memberIds: (number | string)[],
-    options: TeamSetting = {},
+    teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const teamSetting = this.teamPermissionController.processLinkTeamSetting(
-      options,
-    );
     const {
       isPublic = false,
       name,
