@@ -34,13 +34,6 @@ describe('FileItemUtils', () => {
     it('should return false when is not support resize', () => {
       expect(FileItemUtils.isImageResizable({ type: 'gg' })).toBeFalsy();
     });
-
-    it('should return true when type is tif and tiff', () => {
-      const types = ['tif', 'tiff'];
-      types.forEach((type: string) => {
-        expect(FileItemUtils.isImageResizable({ type })).toBeTruthy();
-      });
-    });
   });
 
   describe('isGifItem', () => {
@@ -72,8 +65,18 @@ describe('FileItemUtils', () => {
       expect(FileItemUtils.isImageItem(itemC)).toBeTruthy();
     });
 
-    it('should return true when type include tif and tiff and ai and psd', () => {
-      const images = ['tif', 'tiff', 'ai', 'psd'];
+    it('[JPT-1100] Image should be listed under Image tab', () => {
+      const images = [
+        'tif',
+        'tiff',
+        'ai',
+        'psd',
+        'bmp',
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+      ];
       images.forEach((type: string) => {
         expect(FileItemUtils.isImageItem({ type })).toBeTruthy();
       });
