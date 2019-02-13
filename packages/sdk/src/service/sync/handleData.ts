@@ -49,6 +49,7 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
   const arrState: any[] = [];
   if (state && Object.keys(state).length > 0) {
     arrState.push(state);
+    arrState[0].__from_index = true;
   }
 
   let transProfile: Raw<Profile> | null = null;

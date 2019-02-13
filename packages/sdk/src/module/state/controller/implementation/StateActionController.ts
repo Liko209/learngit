@@ -5,27 +5,30 @@
  */
 
 import { GroupState, State } from '../../entity/State';
-import { Post } from '../../../post/entity';
+import { GroupService } from '../../../group';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { StateFetchDataController } from './StateFetchDataController';
+import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
 import { NewPostService } from '../../../post';
+import { mainLogger } from 'foundation';
 
 class StateActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<GroupState>,
     private _requestController: IRequestController<State>,
     private _stateFetchDataController: StateFetchDataController,
+    private _totalUnreadController: TotalUnreadController,
   ) {}
 
   async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
-    const lastPost = await this._getLastPostOfGroup(groupId);
-    let lastPostId = lastPost && lastPost.id;
-    if (!lastPostId) {
-      const postService = NewPostService.getInstance<NewPostService>();
-      lastPostId = await postService.getNewestPostIdOfGroup(groupId);
+    const groupService: GroupService = GroupService.getInstance();
+    const group = await groupService.getById(groupId);
+    if (!group) {
+      return;
     }
+    const lastPostId = group.most_recent_post_id;
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (lastPostId && myStateId > 0) {
       await this._partialModifyController.updatePartially(
@@ -39,8 +42,8 @@ class StateActionController {
           }
           return {
             ...partialEntity,
-            read_through: lastPostId || undefined,
-            last_read_through: lastPostId || undefined,
+            read_through: lastPostId,
+            last_read_through: lastPostId,
             unread_count: 0,
             unread_mentions_count: 0,
             unread_deactivated_count: 0,
@@ -48,9 +51,15 @@ class StateActionController {
           };
         },
         async (updatedEntity: GroupState) => {
-          return await this._requestController.put(
-            this._buildUpdateReadStatusParams(myStateId, updatedEntity),
-          );
+          this._totalUnreadController.handleGroupState([updatedEntity]);
+          try {
+            return await this._requestController.put(
+              this._buildUpdateReadStatusParams(myStateId, updatedEntity),
+            );
+          } catch (e) {
+            mainLogger.error('updateReadStatus: send request failed');
+            return updatedEntity;
+          }
         },
       );
     }
@@ -59,16 +68,16 @@ class StateActionController {
   async updateLastGroup(groupId: number): Promise<void> {
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (myStateId > 0) {
-      await this._requestController.put({
-        id: myStateId,
-        last_group_id: groupId,
-      });
+      try {
+        await this._requestController.put({
+          id: myStateId,
+          last_group_id: groupId,
+        });
+      } catch (e) {
+        mainLogger.error('updateLastGroup failed');
+        return;
+      }
     }
-  }
-
-  private async _getLastPostOfGroup(groupId: number): Promise<Post | null> {
-    const postService: NewPostService = NewPostService.getInstance();
-    return await postService.getLastPostOfGroup(groupId);
   }
 
   private _buildUpdateReadStatusParams(
