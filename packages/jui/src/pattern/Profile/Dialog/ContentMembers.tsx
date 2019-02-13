@@ -14,6 +14,7 @@ import {
   palette,
   ellipsis,
 } from '../../../foundation/utils/styles';
+import { JuiListItem } from '../../../components/Lists';
 
 const JuiProfileDialogContentMembers = styled('div')`
   padding: 0;
@@ -45,18 +46,20 @@ const JuiProfileDialogContentMemberList = styled('ul')`
   flex: 1;
 `;
 
-const JuiProfileDialogContentMemberListItem = styled('li')`
-  display: flex;
-  height: ${height(12)};
-  background-color: ${palette('common', 'white')};
-  align-items: center;
-  padding: ${spacing(0, 4, 0, 8)};
-  &:hover {
-    background-color: ${grey('100')};
+const JuiProfileDialogContentMemberListItem = styled(JuiListItem)`
+  && {
+    display: flex;
+    height: ${height(12)};
+    background-color: ${palette('common', 'white')};
+    align-items: center;
+    padding: ${spacing(0, 4, 0, 8)};
+    &:hover {
+      background-color: ${grey('100')};
+    }
+    /* &:nth-last-child(1) {
+      margin-bottom: ${spacing(10)};
+    } */
   }
-  /* &:nth-last-child(1) {
-    margin-bottom: ${spacing(10)};
-  } */
 `;
 
 const JuiProfileDialogContentMemberListItemName = styled('p')`

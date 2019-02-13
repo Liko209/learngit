@@ -11,7 +11,8 @@ import { Post, IRawPostResult } from '../entity';
 import { Raw } from '../../../framework/model';
 import { baseHandleData, transform } from '../../../service/utils';
 import { ItemService } from '../../item';
-import { ENTITY, GroupService } from '../../../service';
+import { ENTITY } from '../../../service';
+import { GroupService } from '../../group';
 import _ from 'lodash';
 
 class PostDataController {
