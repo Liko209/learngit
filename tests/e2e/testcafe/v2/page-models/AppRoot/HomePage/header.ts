@@ -101,7 +101,7 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, root);
   }
 
-  async dropDownListShouldContainTeam(team: IGroup, timeout: number = 5e3) {
+  async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
     await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
   }
 

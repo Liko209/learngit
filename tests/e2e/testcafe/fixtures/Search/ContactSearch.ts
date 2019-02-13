@@ -23,25 +23,25 @@ test(formalName('Check search result will change when changing a team to public/
 
   // teams should share same search keyword so that we can just
   const searchKeyword = `Team-${uuid()}`;
-  const publicTeamWithoutMe = <IGroup>{
+  let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
     name: `${searchKeyword} PublicTeamWithoutMe`,
     owner: anotherUser,
     members: [anotherUser],
   };
-  const publicTeamWithMe = <IGroup>{
+  let publicTeamWithMe = <IGroup>{
     type: 'Team', isPublic: true,
     name: `${searchKeyword} PublicTeamWithMe`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
-  const privateTeamWithoutMe = <IGroup>{
+  let privateTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: false,
     name: `${searchKeyword} PrivateTeamWithoutMe`,
     owner: anotherUser,
     members: [anotherUser],
   };
-  const privateTeamWithMe = <IGroup>{
+  let privateTeamWithMe = <IGroup>{
     type: 'Team', isPublic: false,
     name: `${searchKeyword} PrivateTeamWithMe`,
     owner: anotherUser,
@@ -70,8 +70,10 @@ test(formalName('Check search result will change when changing a team to public/
     await searchBar.typeSearchKeyword(searchKeyword);
   });
 
+  // start assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
+    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
@@ -85,24 +87,43 @@ test(formalName('Check search result will change when changing a team to public/
     await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHasJoinButton();
   });
 
+  // update configuration of teams
   const teamsBecomePrivate = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`When teams ${groupsToString(teamsBecomePrivate)} become private`, async () => {
-
-
-
+    for (const team of teamsBecomePrivate) {
+      await h(t).scenarioHelper.updateTeam(team, { isPublic: false });
+    }
   });
-
 
   const teamsBecomePublic = [privateTeamWithMe, privateTeamWithoutMe];
   await h(t).withLog(`And teams ${groupsToString(teamsBecomePublic)} become public`, async () => {
-
+    for (const team of teamsBecomePublic) {
+      await h(t).scenarioHelper.updateTeam(team, { isPublic: true });
+    }
   });
 
+  // rename vars to keep consistency with current state
+  [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe] =
+    [privateTeamWithMe, privateTeamWithoutMe, publicTeamWithMe, publicTeamWithoutMe];
 
-  searchResults = [privateTeamWithMe, privateTeamWithoutMe,]
-  await h(t).withLog(`Then I should find following teams in search result`, async () => {
+  // start assertion
+  searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
+  await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
+    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
+    for (const team of searchResults) {
+      await searchBar.dropDownListShouldContainTeam(team);
+    }
+  }, true);
 
+  await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
+    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHasPrivateLabel();
   });
+
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should has a join button`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHasJoinButton();
+  });
+
+  // update configuration of teams
 
 
 });

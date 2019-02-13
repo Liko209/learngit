@@ -33,6 +33,7 @@ export interface IGroup {
   type: string;
   privacy?: string;
   isPublic?: boolean;
+  description?: string;
 }
 
 export interface ICredential {
