@@ -11,7 +11,7 @@ import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { TeamSettingTypes } from './types';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { generalErrorHandler } from '@/utils/error';
 import {
@@ -32,7 +32,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @computed
   get allowMemberAddMember() {
-    const groupService: NewGroupService = NewGroupService.getInstance();
+    const groupService: GroupService = GroupService.getInstance();
     const permissionFlags = groupService.getTeamUserPermissionFlags(
       this._group.permissions || {},
     );
@@ -69,7 +69,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   leaveTeam = async () => {
-    const groupService: NewGroupService = NewGroupService.getInstance();
+    const groupService: GroupService = GroupService.getInstance();
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     try {
@@ -109,7 +109,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   save = async (params: TeamSettingTypes) => {
     const name = params.name.trim();
     const description = params.description.trim();
-    const groupService: NewGroupService = NewGroupService.getInstance();
+    const groupService: GroupService = GroupService.getInstance();
     this.setNameError('');
     try {
       await groupService.updateTeamSetting(this.id, {

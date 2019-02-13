@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { err, ok } from 'foundation';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import {
   JNetworkError,
   ERROR_CODES_NETWORK,
@@ -21,8 +21,7 @@ jest.mock('sdk/service/account');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
-
-const { GroupService } = service;
+jest.mock('sdk/api');
 
 const groupService = {
   createTeam() {},
@@ -54,15 +53,15 @@ describe('CreateTeamVM', () => {
     const memberIds = [1, 2];
     const description = 'description';
     const options = {
+      name,
+      description,
       isPublic: true,
       canPost: true,
     };
-    await createTeamVM.create(name, memberIds, description, options);
+    await createTeamVM.create(memberIds, options);
     expect(groupService.createTeam).toHaveBeenCalledWith(
-      name,
       creatorId,
       memberIds,
-      description,
       options,
     );
   });
@@ -81,15 +80,12 @@ describe('CreateTeamVM', () => {
     const memberIds = [1, 2];
     const description = 'description';
     const options = {
+      name,
+      description,
       isPublic: true,
       canPost: true,
     };
-    const result = await createTeamVM.create(
-      name,
-      memberIds,
-      description,
-      options,
-    );
+    const result = await createTeamVM.create(memberIds, options);
     if (result.isErr()) {
       expect(result.error.code).toBe(ERROR_CODES_SERVER.ALREADY_TAKEN);
     } else {
@@ -109,15 +105,12 @@ describe('CreateTeamVM', () => {
     const memberIds = [1, 2];
     const description = 'description';
     const options = {
+      name,
+      description,
       isPublic: true,
       canPost: true,
     };
-    const result = await createTeamVM.create(
-      name,
-      memberIds,
-      description,
-      options,
-    );
+    const result = await createTeamVM.create(memberIds, options);
     expect(result.isErr()).toBe(true);
   });
 

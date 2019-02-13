@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -41,6 +41,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 
 @observer
 class CreateTeam extends React.Component<ViewProps, IState> {
+  teamNameRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
@@ -75,6 +78,21 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     };
   }
 
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.teamNameRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
+  }
+
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
     const newItems = this.state.items.map((oldItem: JuiListToggleItemProps) => {
       if (oldItem.text === item.text) {
@@ -96,13 +114,18 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { history, create } = this.props;
     const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
     const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const result = await create(teamName, members, description, {
+    const newTeam = await create(members, {
       isPublic,
-      canPost,
+      description,
+      name: teamName,
+      permissionFlags: {
+        TEAM_ADD_MEMBER: !!isPublic,
+        TEAM_POST: canPost,
+      },
     });
-    if (result.isOk()) {
+    if (newTeam) {
       this.onClose();
-      history.push(`/messages/${result.data.id}`);
+      history.push(`/messages/${newTeam.id}`);
     }
   }
 
@@ -165,6 +188,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
+          inputRef={this.teamNameRef}
           helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />

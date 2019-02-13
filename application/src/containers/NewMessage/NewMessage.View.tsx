@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 09:55:58
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -41,11 +41,29 @@ const StyledTextWithLink = styled.div`
 
 @observer
 class NewMessage extends React.Component<ViewProps, State> {
+  messageRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
       message: '',
     };
+  }
+
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.messageRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
   }
 
   sendNewMessage = async () => {
@@ -116,6 +134,7 @@ class NewMessage extends React.Component<ViewProps, State> {
           error={emailError}
           helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
+          messageRef={this.messageRef}
         />
         <JuiTextarea
           id={i18next.t('Type new message')}
