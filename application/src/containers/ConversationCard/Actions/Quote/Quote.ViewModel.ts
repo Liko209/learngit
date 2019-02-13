@@ -84,7 +84,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
 
   updateDraft = (draft: string) => {
     notificationCenter.emit(UI_NOTIFICATION_KEY.QUOTE, {
-      quote: draft,
+      quote: { text: draft },
       groupId: this._groupId,
     });
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
