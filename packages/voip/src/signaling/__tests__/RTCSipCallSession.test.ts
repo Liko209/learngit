@@ -13,8 +13,10 @@ import {
 
 describe('sip call session', () => {
   class VirtualSession extends EventEmitter2 {
+    private sessionDescriptionHandler: EventEmitter2;
     constructor() {
       super();
+      this.sessionDescriptionHandler = new EventEmitter2();
     }
     emitSessionConfirmed() {
       this.emit(WEBPHONE_SESSION_STATE.ACCEPTED);
@@ -25,8 +27,14 @@ describe('sip call session', () => {
     emitSessionError() {
       this.emit(WEBPHONE_SESSION_STATE.FAILED);
     }
+    emitSdhCreated() {
+      this.emit(WEBPHONE_SESSION_EVENT.SDH_CREATED);
+    }
     emitTrackAdded() {
-      this.emit(WEBPHONE_SESSION_EVENT.ADD_TRACK);
+      this.sessionDescriptionHandler.emit(
+        WEBPHONE_SESSION_EVENT.ADD_TRACK,
+        null,
+      );
     }
     terminate() {}
     flip = jest.fn();
@@ -189,6 +197,7 @@ describe('sip call session', () => {
       const vsession = new VirtualSession();
       sipcallsession.setSession(vsession);
       jest.spyOn(sipcallsession, '_onSessionTrackAdded');
+      vsession.emitSdhCreated();
       vsession.emitTrackAdded();
       expect(sipcallsession._onSessionTrackAdded).toHaveBeenCalled();
     });

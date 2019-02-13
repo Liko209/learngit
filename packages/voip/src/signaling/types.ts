@@ -18,7 +18,8 @@ enum WEBPHONE_SESSION_STATE {
 }
 
 enum WEBPHONE_SESSION_EVENT {
-  ADD_TRACK = 'trackAdded',
+  SDH_CREATED = 'SessionDescriptionHandler-created',
+  ADD_TRACK = 'addTrack',
 }
 
 type ProvisionDataOptions = {
