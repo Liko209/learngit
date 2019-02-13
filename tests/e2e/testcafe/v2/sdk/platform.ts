@@ -79,6 +79,33 @@ export class RcPlatformSdk {
     });
   }
 
+  async leaveTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/leave`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
+  async joinTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/join`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+  async addTeamMember(data: object, chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/add`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  async removeTeamMember(data: object, chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/remove`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
   // deprecated
   async createAndGetGroupId(data: object) {
     return await this.createGroup(data).then(res => res.data.id);

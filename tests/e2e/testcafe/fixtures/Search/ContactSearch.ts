@@ -69,7 +69,7 @@ test(formalName('Check search result will change when changing a team to public/
     await searchBar.typeSearchKeyword(searchKeyword);
   });
 
-  // start assertion
+  // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
@@ -101,14 +101,16 @@ test(formalName('Check search result will change when changing a team to public/
     }
   });
 
-  // rename to keep consistency with current state
+  // swap to keep consistency with current state
   [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe] =
     [privateTeamWithMe, privateTeamWithoutMe, publicTeamWithMe, publicTeamWithoutMe];
 
   // Note
   // Here you will find that when PrivateTeamWithoutMe become PublicTeamWithoutMe, it won't be showed in test result.
-  // This is by design due to technical limitation. You have to type keyworad again in search input to trigger search result update.
+  // This is by design due to technical limitation. You have to type keyword again in search input to trigger search result update.
   // Thus here only 2 items in result list.
+
+  // assertion
   searchResults = [publicTeamWithMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
@@ -128,15 +130,43 @@ test(formalName('Check search result will change when changing a team to public/
   // The reason of this step please refer to previous note
   await h(t).withLog(`When I search with keyword "${searchKeyword}" again to ensure search result up-to-date`, async () => {
     await searchBar.typeSearchKeyword(searchKeyword, { replace: true });
-  });
+  }, true);
 
   // update configuration of teams
-  const teamsToLeave = [publicTeamWithMe, privateTeamWithMe];
+  const teamsToBeRemovedFrom = [publicTeamWithMe, privateTeamWithMe];
+  await h(t).withLog(`And leave teams ${groupsToString(teamsToBeRemovedFrom)}`, async () => {
+    for (const team of teamsToBeRemovedFrom) {
+      await h(t).scenarioHelper.removeMemberFromTeam(team, [me]);
+    }
+  });
 
+  const teamsToBeAddedTo = [publicTeamWithoutMe, privateTeamWithoutMe];
+  await h(t).withLog(`And join teams ${groupsToString(teamsToBeAddedTo)}`, async () => {
+    for (const team of teamsToBeAddedTo) {
+      await h(t).scenarioHelper.addMemberToTeam(team, [me]);
+    }
+  });
 
+  // swap to keep consistency with current state
+  [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe, privateTeamWithoutMe] =
+    [publicTeamWithoutMe, publicTeamWithMe, privateTeamWithoutMe, privateTeamWithMe];
 
+  // assertion
+  searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
+  await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
+    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
+    for (const team of searchResults) {
+      await searchBar.dropDownListShouldContainTeam(team);
+    }
+  }, true);
 
+  await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
+    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+  });
 
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
+  });
 });
 
 
