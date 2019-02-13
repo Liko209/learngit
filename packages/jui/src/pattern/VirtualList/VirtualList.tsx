@@ -87,7 +87,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
             style,
             onLoad: () => {
               this._cache.clear(index, 0);
-              this._listRef.recomputeRowHeights(index);
+              measure();
             },
           };
           const cell = dataSource.cellAtIndex(props);
