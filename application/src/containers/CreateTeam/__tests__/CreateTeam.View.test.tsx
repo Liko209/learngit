@@ -76,10 +76,8 @@ describe('CreateTeamView', () => {
         name: props.teamName,
         description: props.description,
         isPublic: false,
-        canPost: true,
-        canAddMember: true,
         permissionFlags: {
-          TEAM_ADD_MEMBER: false,
+          TEAM_ADD_MEMBER: true,
           TEAM_POST: true,
         },
       };

@@ -13,7 +13,6 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { TeamSetting } from 'sdk/module/group';
 import { JuiSnackbarContent } from 'jui/components/Banners';
 import { Notification } from '@/containers/Notification';
 import {
@@ -83,7 +82,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       items,
     };
   }
-
   componentDidMount() {
     // because of modal is dynamic append body
     // so must be delay focus
@@ -119,18 +117,23 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { teamName, description, members } = this.props;
     const { history, create } = this.props;
 
-    const teamSetting = items.reduce(
-      (options, option) => {
-        options[option.type] = option.checked;
-        return options;
+    const uiSetting = items.reduce((options, option) => {
+      options[option.type] = option.checked;
+      return options;
+    },                             {}) as {
+      isPublic: boolean;
+      canAddMember: boolean;
+      canPost: boolean;
+    };
+
+    const teamSetting = {
+      description,
+      name: teamName,
+      isPublic: uiSetting.isPublic,
+      permissionFlags: {
+        TEAM_ADD_MEMBER: uiSetting.canAddMember,
+        TEAM_POST: uiSetting.canPost,
       },
-      {} as TeamSetting,
-    );
-    teamSetting.name = teamName;
-    teamSetting.description = description;
-    teamSetting.permissionFlags = {
-      TEAM_ADD_MEMBER: !!teamSetting.isPublic,
-      TEAM_POST: teamSetting.canPost,
     };
 
     const newTeam = await create(members, teamSetting);
