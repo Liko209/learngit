@@ -108,7 +108,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ENTITY_NAME.PROFILE,
       'hiddenGroupIds',
     );
-    const newIds = (hiddenGroupIds && hiddenGroupIds.get()) || [];
+    const newIds = hiddenGroupIds || [];
     this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
     this._hiddenGroupIds = newIds;
     this._removeGroupsIfExistedInHiddenGroups();
