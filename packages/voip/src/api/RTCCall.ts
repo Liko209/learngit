@@ -209,6 +209,15 @@ class RTCCall {
       this._onSessionProgress(response);
     });
     this._callSession.on(
+      CALL_SESSION_STATE.REINVITE_ACCEPTED,
+      (session: any) => {
+        this._onSessionReinviteAccepted(session);
+      },
+    );
+    this._callSession.on(CALL_SESSION_STATE.REINVITE_FAILED, (session: any) => {
+      this._onSessionReinviteFailed(session);
+    });
+    this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
       (
         callAction: RTC_CALL_ACTION,
@@ -317,14 +326,6 @@ class RTCCall {
         this._isRecording = false;
         break;
       }
-      case RTC_CALL_ACTION.HOLD: {
-        this._fsm.holdSuccess();
-        break;
-      }
-      case RTC_CALL_ACTION.UNHOLD: {
-        this._fsm.unholdSuccess();
-        break;
-      }
       default:
         break;
     }
@@ -377,6 +378,22 @@ class RTCCall {
     if (response.status_code === 183 && this._hangupInvalidCallTimer) {
       clearTimeout(this._hangupInvalidCallTimer);
       this._hangupInvalidCallTimer = null;
+    }
+  }
+
+  private _onSessionReinviteAccepted(session: any) {
+    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
+      this._fsm.holdSuccess();
+    } else {
+      this._fsm.unholdSuccess();
+    }
+  }
+
+  private _onSessionReinviteFailed(session: any) {
+    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
+      this._fsm.holdFailed();
+    } else {
+      this._fsm.unholdFailed();
     }
   }
   // fsm listener

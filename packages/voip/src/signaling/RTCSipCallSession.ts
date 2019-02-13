@@ -67,19 +67,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _onSessionReinviteAccepted(session: any) {
-    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
-      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
-    } else {
-      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.UNHOLD);
-    }
+    this.emit(CALL_SESSION_STATE.REINVITE_ACCEPTED, session);
   }
 
   private _onSessionReinviteFailed(session: any) {
-    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
-      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
-    } else {
-      this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
-    }
+    this.emit(CALL_SESSION_STATE.REINVITE_FAILED, session);
   }
 
   hangup() {

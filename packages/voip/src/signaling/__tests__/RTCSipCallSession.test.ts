@@ -7,7 +7,7 @@
 import { RTCSipCallSession } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
-import { CALL_FSM_NOTIFY } from '../../call/types';
+import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_ACTION } from '../../api/types';
 
 describe('sip call session', () => {
@@ -135,8 +135,8 @@ describe('sip call session', () => {
       vsession.emitSessionReinviteAccepted();
       setImmediate(() => {
         expect(sipcallsession.emit).toHaveBeenCalledWith(
-          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.HOLD,
+          CALL_SESSION_STATE.REINVITE_ACCEPTED,
+          vsession,
         );
         done();
       });
@@ -162,8 +162,8 @@ describe('sip call session', () => {
       vsession.emitSessionReinviteFailed();
       setImmediate(() => {
         expect(sipcallsession.emit).toHaveBeenCalledWith(
-          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-          RTC_CALL_ACTION.HOLD,
+          CALL_SESSION_STATE.REINVITE_FAILED,
+          vsession,
         );
         done();
       });
@@ -179,8 +179,8 @@ describe('sip call session', () => {
       vsession.emitSessionReinviteAccepted();
       setImmediate(() => {
         expect(sipcallsession.emit).toHaveBeenCalledWith(
-          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.UNHOLD,
+          CALL_SESSION_STATE.REINVITE_ACCEPTED,
+          vsession,
         );
         done();
       });
@@ -208,8 +208,8 @@ describe('sip call session', () => {
       vsession.emitSessionReinviteFailed();
       setImmediate(() => {
         expect(sipcallsession.emit).toHaveBeenCalledWith(
-          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-          RTC_CALL_ACTION.UNHOLD,
+          CALL_SESSION_STATE.REINVITE_FAILED,
+          vsession,
         );
         done();
       });
