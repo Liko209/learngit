@@ -324,10 +324,6 @@ test.only(formalName('Check \"Allow members to add other members\" can be turn o
     await openCreateTeamModal();
   });
 
-  await h(t).withLog('Then I should see "Allow members to add other members" toggle is on', async () => {
-
-  });
-
   const anotherUserName = await h(t).glip(adminUser).getPerson(anotherUser.rcId).then(res => res.data.display_name);
   await h(t).withLog('And I create a team that allow user to add other member', async () => {
     await createTeamModal.typeTeamName(allowToAddUserTeamName);
@@ -378,7 +374,4 @@ test.only(formalName('Check \"Allow members to add other members\" can be turn o
   await h(t).withLog('Then I should not see "Add team members" button', async () => {
     await t.expect(app.homePage.profileDialog.addMembersIcon.exists).notOk();
   });
-
-
-  await t.debug();
 });
