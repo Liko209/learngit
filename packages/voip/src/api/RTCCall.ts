@@ -23,6 +23,11 @@ import {
 } from './types';
 import { v4 as uuid } from 'uuid';
 
+enum SDH_DIRECTION {
+  OUT = 'sendonly',
+  IN = 'sendrecv',
+}
+
 class RTCCall {
   private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
   private _callInfo: RTCCallInfo = {
@@ -389,21 +394,23 @@ class RTCCall {
     }
   }
 
-  private _onSessionReinviteAccepted(session: any) {
-    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
-      this._onCallActionSuccess(RTC_CALL_ACTION.HOLD);
-    } else {
-      this._onCallActionSuccess(RTC_CALL_ACTION.UNHOLD);
+  private _getSessionReinviteAction(session: any): RTC_CALL_ACTION {
+    if (
+      SDH_DIRECTION.OUT === session.sessionDescriptionHandler.getDirection()
+    ) {
+      return RTC_CALL_ACTION.HOLD;
     }
+    return RTC_CALL_ACTION.UNHOLD;
+  }
+
+  private _onSessionReinviteAccepted(session: any) {
+    this._onCallActionSuccess(this._getSessionReinviteAction(session));
   }
 
   private _onSessionReinviteFailed(session: any) {
-    if ('sendonly' === session.sessionDescriptionHandler.getDirection()) {
-      this._onCallActionFailed(RTC_CALL_ACTION.HOLD);
-    } else {
-      this._onCallActionFailed(RTC_CALL_ACTION.UNHOLD);
-    }
+    this._onCallActionFailed(this._getSessionReinviteAction(session));
   }
+
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();
