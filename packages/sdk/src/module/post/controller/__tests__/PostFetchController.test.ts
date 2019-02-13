@@ -447,12 +447,7 @@ describe('PostFetchController()', () => {
         postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
       ).rejects.toBeInstanceOf(JNetworkError);
     });
-<<<<<<< HEAD
     it.skip('should not call updateHasMore when should not save', async () => {
-=======
-
-    it('should not call updateHasMore when should not save', async () => {
->>>>>>> develop
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
