@@ -23,8 +23,7 @@ const ENTITY_SETTING = {
       ENTITY.PEOPLE_GROUPS,
       ENTITY.GROUP,
     ],
-    // service: () => GroupService.getInstance(),
-    service: (id: number) => {
+    service: () => {
       return {
         getById: async (id: number) => {
           try {
@@ -125,7 +124,7 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PROGRESS]: {
     event: [ENTITY.PROGRESS],
-    service: (id: number) => {
+    service: () => {
       return {
         getById: (id: number) =>
           (<ProgressService>ProgressService.getInstance()).getByIdSync(id),

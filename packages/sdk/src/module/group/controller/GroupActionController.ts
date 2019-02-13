@@ -344,8 +344,10 @@ export class GroupActionController {
     const postService: PostService = PostService.getInstance();
     await postService.deletePostsByGroupIds(ids, true);
     await this.groupService.deleteGroupsConfig(ids);
-    const dao = daoManager.getDao(GroupDao);
-    const groups = await dao.batchGet(ids);
+    const groups = await this.entitySourceController.getEntitiesLocally(
+      ids,
+      false,
+    );
     const privateGroupIds = groups
       .filter((group: Group) => {
         return group.privacy === 'private';
