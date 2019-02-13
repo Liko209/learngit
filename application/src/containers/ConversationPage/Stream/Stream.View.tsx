@@ -20,7 +20,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellProps,
-} from 'jui/src/pattern/VirtualList';
+} from 'jui/pattern/VirtualList';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { observer } from 'mobx-react';
 import { StreamItem, StreamItemType, StreamViewProps } from './types';

@@ -86,7 +86,6 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
             index,
             style,
             onLoad: () => {
-              console.log('andy hu measure now', index);
               this._cache.clear(index, 0);
               this._listRef.recomputeRowHeights(index);
             },
