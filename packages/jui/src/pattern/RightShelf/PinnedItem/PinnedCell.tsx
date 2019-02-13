@@ -7,7 +7,14 @@ import React, { PureComponent } from 'react';
 import { JuiListItemText } from '../../../components/Lists';
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
-import { height, width, spacing, grey } from '../../../foundation/utils';
+import {
+  height,
+  width,
+  spacing,
+  grey,
+  ellipsis,
+  lineClamp,
+} from '../../../foundation/utils';
 import { JuiPinnedItem, JuiPinnedItemProps } from './PinnedItem';
 
 type JuiPinnedCellProps = {
@@ -55,23 +62,7 @@ const TextWrapper = styled.div<TextWrapperProps>`
   overflow: hidden;
   position: relative;
   line-height: ${height(5)};
-  max-height: ${({ lineCount }) => height(5 * lineCount)};
-  margin-right: -1em;
-  padding-right: 1em;
-  &:before {
-    content: "...";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-  }
-  &:after {
-    content: "";
-    position: absolute;
-    right: 0;
-    width: 1em;
-    height: 1em;
-    margin-top: 0.2em;
-  }
+  ${({ lineCount }) => (lineCount === 1 ? ellipsis() : lineClamp(2, 10))};
   font-size: ${({ theme }) => theme.typography.button.fontSize};
 `;
 
@@ -82,7 +73,6 @@ const TimeWrapper = styled.div`
 
 const MoreWrapper = styled.div`
   color: ${grey('900')};
-  text-align: center;
   margin-top: ${spacing(1)};
   font-size: ${({ theme }) => theme.typography.button.fontSize};
 `;
@@ -109,7 +99,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
   }
   render() {
     const { creator, createTime, items = [], onClick, content } = this.props;
-    const lineCount = items.length > 0 ? 2 : 1;
+    const lineCount = items.length > 0 ? 1 : 2;
     return (
       <CellWrapper onClick={onClick}>
         <HeadWrapper>

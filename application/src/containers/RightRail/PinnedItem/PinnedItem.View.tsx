@@ -11,10 +11,14 @@ class PinnedItemView extends Component<PinnedItemViewProps> {
   componentDidUpdate() {
     this.props.didUpdate();
   }
+  xx = () => {
+    console.log('---nello');
+  }
   render() {
     const { creatorName = '', createTime, textContent, items } = this.props;
     return (
       <JuiPinnedCell
+        onClick={this.xx}
         creator={creatorName}
         createTime={createTime}
         content={textContent}
