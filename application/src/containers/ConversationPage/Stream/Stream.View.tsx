@@ -219,7 +219,7 @@ class StreamViewComponent extends Component<Props>
       const list = this._listRef.current;
       const { _jumpToPostId } = this.state;
       if (!_jumpToPostId) {
-        return list.scrollToPosition(99999);
+        // return list.scrollToPosition(99999);
       }
       const targetItemFilter = (item: StreamItem, id: number) => {
         return !!(item.value && item.value.includes(id));
