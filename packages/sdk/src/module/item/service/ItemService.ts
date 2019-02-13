@@ -151,6 +151,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this.fileService.getUploadItems(groupId);
   }
 
+  async setUploadItems(groupId: number, itemIds: number[]) {
+    return await this.fileService.setUploadItems(groupId, itemIds);
+  }
+
   async canResendFailedItems(itemIds: number[]) {
     const fileItemsIds = itemIds.filter(
       id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,

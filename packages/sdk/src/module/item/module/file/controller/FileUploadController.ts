@@ -20,6 +20,7 @@ import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { UserConfig } from '../../../../../service/account/UserConfig';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { IItemService } from '../../../service/IItemService';
 import {
@@ -45,6 +46,7 @@ class FileUploadController {
     private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<Item>,
     private _fileRequestController: IRequestController<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async sendItemFile(
@@ -275,6 +277,14 @@ class FileUploadController {
 
   getUploadItems(groupId: number): ItemFile[] {
     return this._uploadingFiles.get(groupId) || [];
+  }
+
+  async setUploadItems(groupId: number, itemIds: number[]) {
+    const items = await this._entitySourceController.getEntitiesLocally(
+      itemIds,
+      false,
+    );
+    this._uploadingFiles.set(groupId, items);
   }
 
   getUploadProgress(itemId: number): Progress | undefined {
