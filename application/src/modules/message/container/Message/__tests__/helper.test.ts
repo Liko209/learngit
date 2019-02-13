@@ -43,7 +43,7 @@ function resetMockedServices() {
     async getById() {
       return {};
     },
-    updateGroupLastAccessedTime: jest.fn(),
+    updateGroupLastAccessedTime: jest.fn().mockResolvedValue(''),
     async isGroupCanBeShown(id: number) {
       return this.valid && !(await mockedProfileService.isConversationHidden());
     },
