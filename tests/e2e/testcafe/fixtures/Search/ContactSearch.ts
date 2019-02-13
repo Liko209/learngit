@@ -4,13 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
-import { SITE_URL, BrandTire, SITE_ENV } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 
 
 fixture('Contact Search')
@@ -22,7 +21,7 @@ test(formalName('Check search result will change when changing a team to public/
   const anotherUser = h(t).rcData.mainCompany.users[6];
 
   // teams should share same search keyword so that search result will only be subset of those team
-  const searchKeyword = `Team-${uuid()}`;
+  const searchKeyword = `Team-${H.uuid()}`;
   let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
     name: `${searchKeyword} PublicTeamWithoutMe`,
