@@ -14,6 +14,7 @@ import {
   CellMeasurerCache,
   ListProps,
 } from 'react-virtualized';
+import { noop } from '../../foundation/utils';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { IVirtualListDataSource } from './VirtualListDataSource';
 import {
@@ -22,12 +23,20 @@ import {
   JuiVirtualCellProps,
 } from './VirtualCell';
 
+type JuiVirtualListRowsRenderInfo = {
+  overscanStartIndex: number;
+  overscanStopIndex: number;
+  startIndex: number;
+  stopIndex: number;
+};
+
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
   isLoading: boolean;
   width: number;
   height: number;
-  threshold?: number;
+  threshold: number;
+  onBeforeRowsRendered: (info: JuiVirtualListRowsRenderInfo) => void;
 };
 
 type State = {
@@ -42,6 +51,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps, State> {
   static defaultProps = {
     isLoading: false,
     threshold: 1,
+    onBeforeRowsRendered: noop,
   };
 
   constructor(props: JuiVirtualListProps) {
@@ -135,6 +145,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps, State> {
   rowRenderer = ({ index, style }: ListRowProps) => {
     const { dataSource } = this.props;
     const cellCount = dataSource.countOfCell();
+
     if (index < cellCount) {
       return dataSource.cellAtIndex({ index, style });
     }
@@ -155,7 +166,13 @@ class JuiVirtualList extends Component<JuiVirtualListProps, State> {
   }
 
   render() {
-    const { isLoading, dataSource, width, height } = this.props;
+    const {
+      isLoading,
+      dataSource,
+      width,
+      height,
+      onBeforeRowsRendered,
+    } = this.props;
     const { stickToBottom } = this.state;
     const { renderEmptyContent, overscanCount, fixedCellHeight } = dataSource;
     const cellCount = dataSource.countOfCell();
@@ -198,7 +215,10 @@ class JuiVirtualList extends Component<JuiVirtualListProps, State> {
             {({ onRowsRendered, registerChild }) => (
               <List
                 ref={this._registerList(registerChild)}
-                onRowsRendered={onRowsRendered}
+                onRowsRendered={(info: JuiVirtualListRowsRenderInfo) => {
+                  onBeforeRowsRendered(info);
+                  onRowsRendered(info);
+                }}
                 {...props}
               />
             )}
@@ -209,4 +229,4 @@ class JuiVirtualList extends Component<JuiVirtualListProps, State> {
   }
 }
 
-export { JuiVirtualList, JuiVirtualListProps };
+export { JuiVirtualList, JuiVirtualListProps, JuiVirtualListRowsRenderInfo };
