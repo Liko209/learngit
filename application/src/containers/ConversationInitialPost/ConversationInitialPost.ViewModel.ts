@@ -29,7 +29,7 @@ class ConversationInitialPostViewModel extends StoreViewModel<
   }
 
   @computed
-  get isAllHandsTeam() {
+  get isCompanyTeam() {
     return this._group.isCompanyTeam;
   }
 

@@ -23,7 +23,7 @@ describe('ConversationInitialPostView', () => {
       tReady: {},
       isTeam: false,
       createTime: 1531726169129,
-      isAllHandsTeam: false,
+      isCompanyTeam: false,
     };
     it('should not render initialPostBody when notEmpty is true [JPT-478]', () => {
       const notEmpty = true;

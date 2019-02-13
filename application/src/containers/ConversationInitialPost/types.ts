@@ -19,7 +19,7 @@ type ConversationInitialPostViewProps = WithNamespaces & {
   creator: PersonModel;
   isTeam: boolean;
   createTime: number;
-  isAllHandsTeam: boolean;
+  isCompanyTeam: boolean;
 } & ConversationInitialPostProps;
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };

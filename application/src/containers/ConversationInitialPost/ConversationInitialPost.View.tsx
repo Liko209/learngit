@@ -57,7 +57,7 @@ class ConversationInitialPost extends React.Component<
   }
 
   private _groupCreateInfo() {
-    const { isTeam, displayName, t, createTime, isAllHandsTeam } = this.props;
+    const { isTeam, displayName, t, createTime, isCompanyTeam } = this.props;
     if (!isTeam) {
       return (
         <StyledSpan>
@@ -66,7 +66,7 @@ class ConversationInitialPost extends React.Component<
       );
     }
 
-    if (!isAllHandsTeam) {
+    if (!isCompanyTeam) {
       return (
         <StyledTitle>
           {this._name}
@@ -83,12 +83,12 @@ class ConversationInitialPost extends React.Component<
   }
 
   private _teamDescription() {
-    const { isTeam, groupDescription, t, isAllHandsTeam } = this.props;
+    const { isTeam, groupDescription, t, isCompanyTeam } = this.props;
     if (!isTeam) return null;
     if (groupDescription) {
       return <StyledDescription>{groupDescription}</StyledDescription>;
     }
-    if (isAllHandsTeam) {
+    if (isCompanyTeam) {
       return (
         <StyledDescription>{t('allHandsTeamDescription')}</StyledDescription>
       );
