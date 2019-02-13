@@ -7,7 +7,6 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import storeManager from '@/store/base/StoreManager';
-import VisibilitySensor from 'react-visibility-sensor';
 import { action, observable } from 'mobx';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
@@ -28,7 +27,6 @@ import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
 import { translate, WithNamespaces } from 'react-i18next';
 
-const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
 
 type Props = WithNamespaces & StreamViewProps;
@@ -37,10 +35,9 @@ type StreamItemPost = StreamItem & { value: number[] };
 @observer
 class StreamViewComponent extends Component<Props>
   implements IVirtualListDataSource {
-  private _postRefs: Map<number, any> = new Map();
   private _timeout: NodeJS.Timeout | null;
   private _globalStore = storeManager.getGlobalStore();
-  @observable private _hideList = true;
+  private _listRef = React.createRef<JuiVirtualList>();
   @observable private _isLoading = false;
   state = { _jumpToPostId: 0 };
 
@@ -58,15 +55,21 @@ class StreamViewComponent extends Component<Props>
   data source methods
    */
   countOfCell() {
-    return this.props.items.length;
+    const { hasMoreUp } = this.props;
+    return this.props.items.length + (hasMoreUp ? 0 : 1);
   }
 
   cellAtIndex(params: JuiVirtualCellProps) {
+    const { hasMoreUp } = this.props;
     const { index } = params;
-    const streamItem = this.props.items[index];
-    if (!streamItem || !streamItem.id) {
-      debugger;
+    if (hasMoreUp) {
+      const streamItem = this.props.items[index];
+      return this._renderStreamItem(streamItem);
     }
+    if (index === 0) {
+      return this._renderInitialPost();
+    }
+    const streamItem = this.props.items[index - 1];
     return this._renderStreamItem(streamItem);
   }
 
@@ -103,7 +106,6 @@ class StreamViewComponent extends Component<Props>
   private _renderPost(streamItem: StreamItemPost) {
     return streamItem.value.map((postId: number) => (
       <ConversationPost
-        ref={this._setPostRef}
         id={postId}
         key={`ConversationPost${postId}`}
         highlight={postId === this.state._jumpToPostId}
@@ -141,16 +143,8 @@ class StreamViewComponent extends Component<Props>
   }
 
   private _renderInitialPost() {
-    const { groupId, notEmpty, hasMoreUp } = this.props;
-
-    return hasMoreUp ? null : (
-      <VisibilitySensor
-        offset={VISIBILITY_SENSOR_OFFSET}
-        onChange={this._handleFirstUnreadPostVisibilityChange}
-      >
-        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
-      </VisibilitySensor>
-    );
+    const { groupId, notEmpty } = this.props;
+    return <ConversationInitialPost notEmpty={notEmpty} id={groupId} />;
   }
 
   private _renderJumpToFirstUnreadButton() {
@@ -194,13 +188,13 @@ class StreamViewComponent extends Component<Props>
         onClick={this._loadInitialPosts}
       />
     ) : (
-      <JuiStream style={{ visibility: this._hideList ? 'hidden' : 'visible' }}>
+      <JuiStream>
         {this._renderJumpToFirstUnreadButton()}
-        {this._renderInitialPost()}
         <ReactResizeDetector handleWidth={true} handleHeight={true}>
           {(width: number = 0, height: number) => (
             <JuiVirtualList
               dataSource={this}
+              ref={this._listRef}
               isLoading={this._isLoading}
               width={width}
               height={height}
@@ -217,18 +211,23 @@ class StreamViewComponent extends Component<Props>
     await loadInitialPosts();
     updateHistoryHandler();
     markAsRead();
-    setTimeout(() => {
-      this._hideList = false;
-    },         0);
+    this.jumpToInitialPosition();
   }
 
-  @action
-  private _handleFirstUnreadPostVisibilityChange = (isVisible: boolean) => {
-    if (isVisible) {
-      this._firstHistoryUnreadPostViewed = true;
-      this.props.clearHistoryUnread();
-    } else if (this._firstHistoryUnreadPostViewed === null) {
-      this._firstHistoryUnreadPostViewed = false;
+  async jumpToInitialPosition() {
+    if (this._listRef.current) {
+      const list = this._listRef.current;
+      const { _jumpToPostId } = this.state;
+      if (!_jumpToPostId) {
+        return list.scrollToPosition(99999);
+      }
+      const targetItemFilter = (item: StreamItem, id: number) => {
+        return !!(item.value && item.value.includes(id));
+      };
+      const index = this.props.items.findIndex((item: StreamItem) =>
+        targetItemFilter(item, _jumpToPostId),
+      );
+      list.scrollToCell(index);
     }
   }
 
@@ -267,11 +266,6 @@ class StreamViewComponent extends Component<Props>
   private _blurHandler = () => {
     this.props.enableNewMessageSeparatorHandler();
     this._setUmiDisplay(true);
-  }
-
-  private _setPostRef = (postRef: any) => {
-    if (!postRef) return;
-    this._postRefs.set(postRef.props.id, postRef);
   }
 
   private _setUmiDisplay(value: boolean) {
