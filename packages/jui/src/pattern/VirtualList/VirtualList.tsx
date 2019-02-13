@@ -157,6 +157,14 @@ class JuiVirtualList extends Component<JuiVirtualListProps, State> {
     );
   }
 
+  reload() {
+    this.forceUpdate();
+    if (this.state.stickToBottom) {
+      const count = this.props.dataSource.countOfCell();
+      this.scrollToCell(count - 1);
+    }
+  }
+
   scrollToCell = (index: number) => {
     if (Number.isInteger(index)) {
       // This is trick for virtual list.

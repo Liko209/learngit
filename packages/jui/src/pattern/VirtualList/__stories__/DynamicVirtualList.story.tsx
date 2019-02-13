@@ -24,6 +24,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   if (count < 0) {
     count = 1000;
   }
+  const initialScrollToIndex = number('initial scroll to index', 300);
   const observeCell = boolean('observe cell', false);
   const stickToBottom = boolean('stick to bottom', false);
   function generateURL() {
@@ -83,8 +84,8 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
       this._list = data;
     }
 
-    addRandomCell = (count: number = 1) => {
-      for (let i = 0; i < count; ++i) {
+    addRandomCell = (n: number = 1) => {
+      for (let i = 0; i < n; ++i) {
         this._list.push(generateURL());
       }
     }
@@ -150,20 +151,20 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   };
   class Content extends PureComponent {
     private _listRef: RefObject<JuiVirtualList> = createRef();
-    state = { cellIndex: -1, loading: false };
+    state = { cellIndex: initialScrollToIndex, loading: false };
 
     private _handleCellIndexChange = (event: ChangeEvent<HTMLInputElement>) => {
-      const cellIndex = event.currentTarget.value;
+      const cellIndex = parseInt(event.currentTarget.value, 10);
       this.setState({ cellIndex });
       const { current } = this._listRef;
       if (current) {
-        current.scrollToCell(parseInt(cellIndex, 10));
+        current.scrollToCell(cellIndex);
       }
     }
 
     private _handleAddCell = () => {
-      dataSource.addRandomCell();
-      window.requestAnimationFrame(() => this._listRef.current.forceUpdate());
+      dataSource.addRandomCell(1);
+      window.requestAnimationFrame(() => this._listRef.current.reload());
     }
 
     private _simulateLoadData = () => {
@@ -180,7 +181,11 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
         <div style={style}>
           <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
             Scroll to index:
-            <input value={cellIndex} onChange={this._handleCellIndexChange} />
+            <input
+              value={cellIndex}
+              type="number"
+              onChange={this._handleCellIndexChange}
+            />
           </div>
           <JuiVirtualList
             ref={this._listRef}
