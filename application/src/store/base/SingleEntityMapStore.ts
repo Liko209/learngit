@@ -61,10 +61,12 @@ export default class SingleEntityMapStore<
 
   get(property: keyof K) {
     if (!this.init) {
+      this.init = true;
       this.getByService().then((data: any) => {
         if (data) {
           this.batchSet(data);
-          this.init = true;
+        } else {
+          this.init = false;
         }
       });
     }

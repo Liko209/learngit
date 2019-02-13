@@ -1,8 +1,8 @@
 /*
-* @Author: Chris Zhan (chris.zhan@ringcentral.com)
-* @Date: 2018-05-10 10:55:24
-* Copyright © RingCentral. All rights reserved.
-*/
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2018-05-10 10:55:24
+ * Copyright © RingCentral. All rights reserved.
+ */
 import faker from 'faker';
 import { EVENT_TYPES } from 'sdk/service';
 import BaseStore from '../BaseStore';
@@ -196,10 +196,11 @@ describe('get()', () => {
 
   it('should init if this.init is not true', () => {
     instance.init = false;
-    instance.get('id');
     expect(instance.init).toBe(false);
+    instance.get('id');
     expect(instance.getByService).toHaveBeenCalledTimes(1);
     expect(instance.data.get).toHaveBeenCalledTimes(1);
+    expect(instance.init).toBe(true);
   });
 });
 

@@ -71,6 +71,10 @@ class EntitySourceController<T extends IdModel = IdModel>
     return await this.entityPersistentController.getTotalCount();
   }
 
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    return await this.entityPersistentController.getEntities(filterFunc);
+  }
+
   getEntityNotificationKey(): string {
     return this.entityPersistentController.getEntityNotificationKey();
   }
