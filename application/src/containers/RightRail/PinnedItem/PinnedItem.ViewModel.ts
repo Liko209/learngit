@@ -84,7 +84,7 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
 
   @computed
   get textContent() {
-    return this.post.text;
+    return this.post.text && this.post.text.replace(/<[^>]+>/gi, '');
   }
 
   @computed
