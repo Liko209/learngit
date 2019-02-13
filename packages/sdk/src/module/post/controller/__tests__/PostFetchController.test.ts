@@ -412,18 +412,27 @@ describe('PostFetchController()', () => {
     });
 
     it('should throw exception if failed to request', async () => {
-      PostAPI.requestPosts.mockRejectedValueOnce({});
+      PostAPI.requestPosts.mockResolvedValueOnce(
+        new ApiResultErr(
+          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
+            {
+              status: 403,
+              headers: {},
+            } as BaseResponse,
+        ),
+      );
+      expect.assertions(1);
       await expect(
         postFetchController.fetchPaginationPosts({
           groupId: 1,
           postId: 1,
           limit: 1,
         }),
-      ).rejects.toBeDefined();
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
   });
 
-  describe('getRemotePostsByGroupIdAndSave', () => {
+  describe('getRemotePostsByGroupIdAndSave()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -437,7 +446,8 @@ describe('PostFetchController()', () => {
         postId: 0,
       };
     }
-    it('should be true when request server error', async () => {
+
+    it('should throw exception when request server error', async () => {
       PostAPI.requestPosts.mockResolvedValueOnce(
         new ApiResultErr(
           new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
@@ -447,12 +457,11 @@ describe('PostFetchController()', () => {
             } as BaseResponse,
         ),
       );
-      const result = await postFetchController.getRemotePostsByGroupIdAndSave(
-        getParaMeters(true),
-      );
-      expect(result.success).toBeFalsy();
-      expect(result.hasMore).toBeTruthy();
+      await expect(
+        postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
+      ).rejects.toBeInstanceOf(JNetworkError);
     });
+
     it('should not call updateHasMore when should not save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
