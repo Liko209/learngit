@@ -88,6 +88,7 @@ test(formalName('Check search result will change when changing a team to public/
   const teamsBecomePrivate = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`When teams ${groupsToString(teamsBecomePrivate)} become private`, async () => {
 
+
   });
 
   const teamsBecomePublic = [privateTeamWithMe, privateTeamWithoutMe];
