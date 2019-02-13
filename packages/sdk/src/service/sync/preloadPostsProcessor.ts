@@ -9,7 +9,7 @@ import { NewPostService } from '../../module/post';
 import { mainLogger } from 'foundation';
 import { StateService } from '../../module/state';
 import { QUERY_DIRECTION } from '../../dao/constants';
-import { NewGroupService } from '../../module/group';
+import { GroupService } from '../../module/group';
 import { IRequestRemotePostAndSave } from '../../module/post/entity/Post';
 
 const DEFAULT_DIRECTION: QUERY_DIRECTION = QUERY_DIRECTION.OLDER;
@@ -66,7 +66,7 @@ class PreloadPostsProcessor implements IProcessor {
     const state = await stateService.getById(this._group.id);
 
     const postService: NewPostService = NewPostService.getInstance();
-    const groupService: NewGroupService = NewGroupService.getInstance();
+    const groupService: GroupService = GroupService.getInstance();
     if (this._isFavorite || !this._group.is_team) {
       // if unread count < one page, load one page
       limit = ONE_PAGE;

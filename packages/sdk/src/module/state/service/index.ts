@@ -4,4 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { StateService } from './StateService';
+import { IStateService } from './IStateService';
+import { StateService } from './StateService';
+
+export { IStateService, StateService };

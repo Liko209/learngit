@@ -3,14 +3,15 @@
  * @Date: 2019-01-14 14:30:55
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { TeamPermissionController } from '../TeamPermissionController';
-import { TeamPermission, TeamPermissionParams } from '../../entity';
-import {
-  PERMISSION_ENUM,
-  DEFAULT_USER_PERMISSION_LEVEL,
-} from '../../constants';
 import { UserConfig } from 'sdk/service/account/UserConfig';
+
+import {
+  DEFAULT_USER_PERMISSION_LEVEL,
+  PERMISSION_ENUM,
+} from '../../constants';
+import { TeamPermission, TeamPermissionParams } from '../../entity';
+import { TeamPermissionController } from '../TeamPermissionController';
+
 jest.mock('sdk/service/account/UserConfig');
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;

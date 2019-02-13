@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { GroupService } from 'sdk/service';
+import { GroupService } from 'sdk/module/group';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
 import { getEntity } from '@/store/utils';

@@ -3,24 +3,23 @@
  * @Date: 2019-01-02 09:34:27
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { TeamController } from '../TeamController';
-import { TeamActionController } from '../TeamActionController';
-import { TeamPermissionController } from '../TeamPermissionController';
 import { Api } from '../../../../api';
-import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 import { daoManager } from '../../../../dao';
+import { TestDatabase } from '../../../../framework/controller/__tests__/TestTypes';
 import { BaseDao } from '../../../../framework/dao';
+import { GroupActionController } from '../GroupActionController';
+import { GroupController } from '../GroupController';
+import { TeamPermissionController } from '../TeamPermissionController';
 
 jest.mock('../../../../api');
 
-describe('TeamController', () => {
+describe('GroupController', () => {
   describe('getTeamActionController()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
     it('should call partial modify controller', async () => {
-      const teamController = new TeamController(undefined);
+      const teamController = new GroupController(undefined);
 
       const dao = new BaseDao('Post', new TestDatabase());
       jest.spyOn(daoManager, 'getDao').mockImplementationOnce(() => {
@@ -31,8 +30,8 @@ describe('TeamController', () => {
         glipNetworkClient: null,
       });
 
-      const result = teamController.getTeamActionController();
-      expect(result instanceof TeamActionController).toBe(true);
+      const result = teamController.getGroupActionController();
+      expect(result instanceof GroupActionController).toBe(true);
     });
   });
   describe('getTeamPermissionController()', () => {
@@ -40,7 +39,7 @@ describe('TeamController', () => {
       jest.clearAllMocks();
     });
     it('should get TeamPermissionController', () => {
-      const teamController = new TeamController(undefined);
+      const teamController = new GroupController(undefined);
       const result = teamController.getTeamPermissionController();
       expect(result instanceof TeamPermissionController).toBe(true);
     });

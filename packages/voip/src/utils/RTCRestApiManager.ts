@@ -8,9 +8,19 @@ import { ITelephonyNetworkDelegate } from 'foundation/src/telephony/ITelephonyNe
 import { IResponse } from 'foundation/src/network/network';
 
 class RTCRestApiManager {
+  private static _singleton: RTCRestApiManager | null = null;
   private _httpClientDelegate: ITelephonyNetworkDelegate = null as any;
 
-  constructor() {}
+  public static instance() {
+    if (!RTCRestApiManager._singleton) {
+      RTCRestApiManager._singleton = new RTCRestApiManager();
+    }
+    return RTCRestApiManager._singleton;
+  }
+
+  public static destroy() {
+    RTCRestApiManager._singleton = null;
+  }
 
   public setNetworkDelegate(delegate: ITelephonyNetworkDelegate): void {
     this._httpClientDelegate = delegate;
@@ -32,6 +42,4 @@ class RTCRestApiManager {
   }
 }
 
-const rtcRestApiManager: RTCRestApiManager = new RTCRestApiManager();
-
-export { rtcRestApiManager };
+export { RTCRestApiManager };

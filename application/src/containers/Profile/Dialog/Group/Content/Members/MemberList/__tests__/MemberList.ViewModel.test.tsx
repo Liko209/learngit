@@ -48,17 +48,17 @@ describe('MemberListViewModel', () => {
       getSortedGroupMembersIds.mockReturnValue(firstPageMemberIds);
       expect(vm.memberIds).toMatchObject(firstPageMemberIds);
       // second page
-      vm.toBottom(); // next page
+      vm.loadMore(); // next page
       const secondPageMemberIds = mockData.slice(20, 40);
       getSortedGroupMembersIds.mockReturnValue(secondPageMemberIds);
       expect(vm.memberIds).toMatchObject(secondPageMemberIds);
       // third page
-      vm.toBottom(); // next page
+      vm.loadMore(); // next page
       const thirdPageMemberIds = mockData.slice(40, 50);
       getSortedGroupMembersIds.mockReturnValue(thirdPageMemberIds);
       expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
       // fourth page
-      vm.toBottom(); // next page
+      vm.loadMore(); // next page
     });
   });
 });
