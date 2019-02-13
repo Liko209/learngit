@@ -151,4 +151,24 @@ export class TeamSettingDialog extends BaseWebComponent {
   async clickLeaveTeamButton() {
     await this.t.click(this.leaveTeamButton);
   }
+
+  get allowPostMessageToggle() {
+    return this.getSelectorByAutomationId('allowPostToggle', this.memberPermissionList);
+  }
+
+  get allowPostMessageText() {
+    return this.allowPostMessageToggle.parent('li').textContent;
+  }
+
+  get allowPostMessageCheckbox() {
+    return this.checkboxOf(this.allowPostMessageToggle);
+  }
+
+  async allowMemberPostMessage() {
+    await this.toggle(this.allowPostMessageCheckbox, true);
+  }
+
+  async notAllowMemberPostMessage() {
+    await this.toggle(this.allowPostMessageCheckbox, false);
+  }
 }
