@@ -70,7 +70,7 @@ class PostDataController {
       let posts = this.transformData(data);
       posts = await this.handleSexioModifiedPosts(posts);
       await this.preInsertController.bulkDelete(posts);
-      await this.filterAndSavePosts(posts);
+      await this.filterAndSavePosts(posts, true);
     }
   }
 

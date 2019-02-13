@@ -17,7 +17,7 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { Raw } from '../../../../framework/model';
 import { UserConfig } from '../../../../service/account/UserConfig';
 import notificationCenter from '../../../../service/notificationCenter';
-import PostService from '../../../../service/post';
+import { NewPostService } from '../../../post';
 import ProfileService from '../../../../service/profile';
 import { PersonService } from '../../../person';
 import { GroupDao } from '../../dao';
@@ -36,7 +36,7 @@ jest.mock('../../../../service/profile');
 jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../service/company');
-jest.mock('../../../../service/post');
+jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 
@@ -59,7 +59,7 @@ describe('GroupFetchDataController', () => {
 
   const groupDao = new GroupDao(null);
   const groupConfigDao = new GroupConfigDao(null);
-  const postService = new PostService();
+  const postService = new NewPostService();
   const mockUserId = 1;
 
   beforeEach(() => {
@@ -68,7 +68,7 @@ describe('GroupFetchDataController', () => {
     UserConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,

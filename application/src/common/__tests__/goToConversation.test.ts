@@ -17,6 +17,7 @@ jest.mock('@/history');
 jest.mock('sdk/module/group');
 jest.mock('sdk/utils');
 jest.mock('@/containers/Notification');
+const {} = service;
 
 const postService = new NewPostService();
 NewPostService.getInstance = jest.fn().mockReturnValue(postService);
