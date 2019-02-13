@@ -3,7 +3,7 @@
  * @Date: 2018-12-25 11:12:46
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupConfig, GroupDraftModel } from '../../models';
+import { GroupConfig } from '../../models';
 import BaseService from '../../service/BaseService';
 import { ErrorParserHolder } from '../../error';
 import { daoManager, GroupConfigDao } from '../../dao';
@@ -54,12 +54,13 @@ class GroupConfigService extends BaseService<GroupConfig> {
   // update partial groupConfig data, for message draft
   async updateDraft(params: {
     id: number;
-    draft: GroupDraftModel;
+    draft?: string;
+    attachmentItemIds?: string;
   }): Promise<boolean> {
     return this.saveAndDoNotify(params);
   }
 
-  async getDraft(groupId: number): Promise<GroupDraftModel | undefined> {
+  async getDraft(groupId: number): Promise<string> {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
     const config: GroupConfig | null = groupId
       ? await groupConfigDao.get(groupId)
@@ -67,7 +68,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
     if (config && config.draft) {
       return config.draft;
     }
-    return undefined;
+    return '';
   }
 
   // update partial group data, for send failure post ids
