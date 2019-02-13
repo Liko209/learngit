@@ -24,8 +24,8 @@ import {
 import { v4 as uuid } from 'uuid';
 
 enum SDH_DIRECTION {
-  OUT = 'sendonly',
-  IN = 'sendrecv',
+  SEND_ONLY = 'sendonly',
+  SEND_RECV = 'sendrecv',
 }
 
 class RTCCall {
@@ -396,7 +396,8 @@ class RTCCall {
 
   private _getSessionReinviteAction(session: any): RTC_CALL_ACTION {
     if (
-      SDH_DIRECTION.OUT === session.sessionDescriptionHandler.getDirection()
+      SDH_DIRECTION.SEND_ONLY ===
+      session.sessionDescriptionHandler.getDirection()
     ) {
       return RTC_CALL_ACTION.HOLD;
     }
