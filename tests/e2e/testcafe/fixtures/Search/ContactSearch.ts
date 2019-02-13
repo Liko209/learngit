@@ -134,14 +134,14 @@ test(formalName('Check search result will change when changing a team to public/
 
   // update configuration of teams
   const teamsToBeRemovedFrom = [publicTeamWithMe, privateTeamWithMe];
-  await h(t).withLog(`And leave teams ${groupsToString(teamsToBeRemovedFrom)}`, async () => {
+  await h(t).withLog(`And be removed from teams ${groupsToString(teamsToBeRemovedFrom)}`, async () => {
     for (const team of teamsToBeRemovedFrom) {
       await h(t).scenarioHelper.removeMemberFromTeam(team, [me]);
     }
   });
 
   const teamsToBeAddedTo = [publicTeamWithoutMe, privateTeamWithoutMe];
-  await h(t).withLog(`And join teams ${groupsToString(teamsToBeAddedTo)}`, async () => {
+  await h(t).withLog(`And be added to teams ${groupsToString(teamsToBeAddedTo)}`, async () => {
     for (const team of teamsToBeAddedTo) {
       await h(t).scenarioHelper.addMemberToTeam(team, [me]);
     }
