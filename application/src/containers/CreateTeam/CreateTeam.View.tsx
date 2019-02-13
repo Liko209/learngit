@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -13,7 +13,7 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-// import { JuiTextWithLink } from 'jui/components/TextWithLink';
+import { TeamSetting } from 'sdk/module/group';
 import { JuiSnackbarContent } from 'jui/components/Banners';
 import { Notification } from '@/containers/Notification';
 import {
@@ -41,6 +41,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 
 @observer
 class CreateTeam extends React.Component<ViewProps, IState> {
+  teamNameRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
@@ -81,6 +84,21 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     };
   }
 
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.teamNameRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
+  }
+
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
     const newItems = this.state.items.map((oldItem: JuiListToggleItemProps) => {
       if (oldItem.text === item.text) {
@@ -100,18 +118,25 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { items } = this.state;
     const { teamName, description, members } = this.props;
     const { history, create } = this.props;
-    const result = await create(
-      teamName,
-      members,
-      description,
-      items.reduce((options, option) => {
+
+    const teamSetting = items.reduce(
+      (options, option) => {
         options[option.type] = option.checked;
         return options;
-      },           {}),
+      },
+      {} as TeamSetting,
     );
-    if (result.isOk()) {
+    teamSetting.name = teamName;
+    teamSetting.description = description;
+    teamSetting.permissionFlags = {
+      TEAM_ADD_MEMBER: !!teamSetting.isPublic,
+      TEAM_POST: teamSetting.canPost,
+    };
+
+    const newTeam = await create(members, teamSetting);
+    if (newTeam) {
       this.onClose();
-      history.push(`/messages/${result.data.id}`);
+      history.push(`/messages/${newTeam.id}`);
     }
   }
 
@@ -174,6 +199,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
+          inputRef={this.teamNameRef}
           helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />

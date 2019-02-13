@@ -3,7 +3,7 @@
  * @Date: 2018-12-07 14:48:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupService } from 'sdk/service/group';
+import { GroupService } from 'sdk/module/group';
 import { ProfileService } from 'sdk/service/profile';
 import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
