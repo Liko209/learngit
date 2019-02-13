@@ -19,7 +19,6 @@ import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
-  JuiVirtualCellWrapper,
   JuiVirtualCellProps,
 } from 'jui/src/pattern/VirtualList';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
@@ -63,21 +62,21 @@ class StreamViewComponent extends Component<Props>
   }
 
   cellAtIndex(params: JuiVirtualCellProps) {
-    const { index, style } = params;
+    const { index } = params;
     const streamItem = this.props.items[index];
     if (!streamItem || !streamItem.id) {
       debugger;
     }
-    return (
-      <JuiVirtualCellWrapper key={streamItem.id} style={style}>
-        {this._renderStreamItem(streamItem)}
-      </JuiVirtualCellWrapper>
-    );
+    return this._renderStreamItem(streamItem);
+  }
+
+  observeCell() {
+    return true;
   }
 
   async loadMore() {
     this._isLoading = true;
-    await this.props.loadPrevPosts();
+    // await this.props.loadPrevPosts();
     this._isLoading = false;
   }
 

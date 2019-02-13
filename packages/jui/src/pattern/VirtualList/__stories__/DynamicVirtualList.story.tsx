@@ -45,9 +45,13 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   class DynamicCell extends PureComponent<CellProps> {
     state = { flag: false };
     private _toggle = () => {
-      const { onLoad } = this.props;
-      this.setState({ flag: !this.state.flag }, () => onLoad());
+      if (observeCell) {
+        this.setState({ flag: !this.state.flag });
+      } else {
+        this.setState({ flag: !this.state.flag }, this.props.onLoad);
+      }
     }
+
     render() {
       const { title, url, onLoad, ...rest } = this.props;
       const { flag } = this.state;
@@ -55,18 +59,17 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
         display: 'flex',
         flexDirection: 'column',
       };
-      return (
-        <div {...rest}>
-          <div style={cellContentWrapperStyle}>
-            {title}
-            <img src={url} onLoad={onLoad} />
-            <div>
-              <button onClick={this._toggle}>Toggle</button>
-              {flag && <div>This is some content...</div>}
-            </div>
+      const content = (
+        <div style={cellContentWrapperStyle}>
+          {title}
+          <img src={url} onLoad={onLoad} />
+          <div>
+            <button onClick={this._toggle}>Toggle</button>
+            <div>{flag && <span>This is some content...</span>}</div>
           </div>
         </div>
       );
+      return observeCell ? content : <div {...rest}>{content}</div>;
     }
   }
 

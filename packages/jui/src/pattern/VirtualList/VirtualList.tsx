@@ -16,7 +16,11 @@ import {
 } from 'react-virtualized';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { IVirtualListDataSource } from './VirtualListDataSource';
-import { JuiVirtualCellOnLoadFunc } from './VirtualCell';
+import {
+  JuiVirtualCellOnLoadFunc,
+  JuiObservedCellWrapper,
+  JuiVirtualCellProps,
+} from './VirtualCell';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
@@ -27,7 +31,7 @@ type JuiVirtualListProps = {
 };
 
 class JuiVirtualList extends Component<JuiVirtualListProps> {
-  static MIN_CELL_HEIGHT: number = 44;
+  static MIN_CELL_HEIGHT: number = 10;
   private _cache: CellMeasurerCache;
   private _listRef: List;
 
@@ -64,28 +68,38 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     style,
   }: ListRowProps) => {
     const { dataSource } = this.props;
+    const observeCell = dataSource.observeCell && dataSource.observeCell();
     const cellCount = dataSource.countOfCell();
-    if (index < cellCount) {
-      return (
-        <CellMeasurer
-          cache={this.cache}
-          columnIndex={0}
-          key={key}
-          rowIndex={index}
-          parent={parent}
-        >
-          {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
-            const cell = dataSource.cellAtIndex({
-              index,
-              style,
-              onLoad: measure,
-            });
-            return cell;
-          }}
-        </CellMeasurer>
-      );
+    if (index >= cellCount) {
+      return;
     }
-    return null;
+    return (
+      <CellMeasurer
+        cache={this.cache}
+        columnIndex={0}
+        key={key}
+        rowIndex={index}
+        parent={parent}
+      >
+        {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
+          const props: JuiVirtualCellProps = {
+            index,
+            style,
+            onLoad: () => {
+              console.log('andy hu measure now', index);
+              this._cache.clear(index, 0);
+              this._listRef.recomputeRowHeights(index);
+            },
+          };
+          const cell = dataSource.cellAtIndex(props);
+          return observeCell ? (
+            <JuiObservedCellWrapper {...props}>{cell}</JuiObservedCellWrapper>
+          ) : (
+            cell
+          );
+        }}
+      </CellMeasurer>
+    );
   }
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
