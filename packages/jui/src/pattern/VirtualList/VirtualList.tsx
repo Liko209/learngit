@@ -35,7 +35,9 @@ type JuiVirtualListProps = {
   isLoading: boolean;
   width: number;
   height: number;
+  overscan: number;
   threshold: number;
+  minimumBatchSize: number;
   onBeforeRowsRendered: (info: JuiVirtualListRowsRenderInfo) => void;
 };
 
@@ -46,7 +48,9 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
 
   static defaultProps = {
     isLoading: false,
-    threshold: 1,
+    threshold: 15,
+    overscan: 10,
+    minimumBatchSize: 10,
     onBeforeRowsRendered: noop,
   };
 
@@ -112,10 +116,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   isRowLoaded = ({ index }: Index) => {
-    const { dataSource, threshold } = this.props;
-    const cellCount = dataSource.countOfCell();
-    const loaded = index < cellCount - threshold!;
-    return loaded;
+    return index < this.props.dataSource.countOfCell();
   }
 
   rowRenderer = ({ index, style }: ListRowProps) => {
@@ -147,9 +148,12 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       dataSource,
       width,
       height,
+      threshold,
+      overscan,
+      minimumBatchSize,
       onBeforeRowsRendered,
     } = this.props;
-    const { renderEmptyContent, overscanCount, fixedCellHeight } = dataSource;
+    const { renderEmptyContent, fixedCellHeight } = dataSource;
     const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
 
@@ -159,8 +163,8 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       height,
     } as ListProps;
 
-    if (overscanCount) {
-      props.overscanRowCount = overscanCount();
+    if (overscan) {
+      props.overscanRowCount = overscan;
     }
 
     if (fixedCellHeight) {
@@ -178,9 +182,11 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
         {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
         {rowCount !== 0 && (
           <InfiniteLoader
-            rowCount={rowCount}
+            rowCount={Infinity}
             isRowLoaded={this.isRowLoaded}
             loadMoreRows={this.loadMore}
+            threshold={threshold}
+            minimumBatchSize={minimumBatchSize}
           >
             {({ onRowsRendered, registerChild }) => (
               <List

@@ -83,10 +83,6 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
       return this._list.length;
     }
 
-    overscanCount() {
-      return 10;
-    }
-
     observeCell() {
       return observeCell;
     }
