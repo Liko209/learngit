@@ -47,6 +47,7 @@ const ListItemText = styled(MuiListItemText)`
 type JuiListToggleItemProps = {
   text: string;
   checked: boolean;
+  disabled?: boolean;
   [propName: string]: any;
 };
 
@@ -79,6 +80,7 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
             <ListItemSecondaryAction>
               <JuiToggleButton
                 checked={toggleItem.checked}
+                disabled={toggleItem.disabled || false}
                 onChange={this.handleChange.bind(this, toggleItem)}
               />
             </ListItemSecondaryAction>
