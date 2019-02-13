@@ -35,13 +35,11 @@ class IndicatorViewModel extends AbstractViewModel
   @computed
   get hasDraft() {
     const draft = this.groupConfig.draft;
-    if (draft) {
-      return !!(
-        (draft.text && draft.text.length > 0) ||
-        (draft.itemIds && draft.itemIds.length > 0)
-      );
-    }
-    return false;
+    const draftItemIds = this.groupConfig.attachmentItemIds;
+    return !!(
+      (draftItemIds && draftItemIds.length > 0) ||
+      (draft && draft.length > 0)
+    );
   }
 
   @computed

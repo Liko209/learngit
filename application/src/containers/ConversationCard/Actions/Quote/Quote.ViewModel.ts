@@ -89,7 +89,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     });
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     groupConfigService.updateDraft({
-      draft: { text: draft },
+      draft,
       id: this._groupId,
     });
   }

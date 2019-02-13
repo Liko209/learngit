@@ -38,7 +38,7 @@ describe('IndicatorViewModel', () => {
 
     function setUpData(draft: any) {
       const mockGroupEntityData = {
-        draft,
+        ...draft,
         sendFailurePostIds: [1, 2],
       };
 
@@ -47,12 +47,12 @@ describe('IndicatorViewModel', () => {
     }
 
     it('should return true when has draft text', () => {
-      setUpData({ text: 'draft' });
+      setUpData({ draft: 'draft' });
       expect(indicatorViewModel.hasDraft).toBeTruthy();
     });
 
     it('should return true when has draft items', () => {
-      setUpData({ itemIds: [1] });
+      setUpData({ attachmentItemIds: [1] });
       expect(indicatorViewModel.hasDraft).toBeTruthy();
     });
 

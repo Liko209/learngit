@@ -36,17 +36,13 @@ export type GroupState = {
   __trigger_ids?: number[];
 };
 
-export type GroupDraftModel = {
-  text?: string;
-  itemIds?: number[];
-};
-
 export type GroupConfig = {
   id: number; // group id
   has_more_older?: boolean;
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
-  draft?: GroupDraftModel;
+  draft?: string;
+  attachment_item_ids?: number[];
   send_failure_post_ids?: number[];
   last_index_of_files?: number;
   last_index_of_tasks?: number;
