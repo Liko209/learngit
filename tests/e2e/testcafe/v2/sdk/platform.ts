@@ -21,6 +21,7 @@ export class RcPlatformSdk {
         await this.refresh();
         return true;
       }
+      logger.error('error response', err.response);
       return false;
     });
   }
