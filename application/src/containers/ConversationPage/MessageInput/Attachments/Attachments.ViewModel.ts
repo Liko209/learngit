@@ -42,8 +42,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
   @observable
   selectedFiles: SelectFile[] = [];
-  @observable
-  private _memoryDraftMap: Map<number, number[]> = new Map();
 
   constructor(props: AttachmentsProps) {
     super(props);
@@ -116,24 +114,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       .map((looper: SelectFile) => looper.data);
   }
 
-  async getDraftItemIds() {
-    if (!this._memoryDraftMap.has(this.id)) {
-      await this.getDraftFromLocal();
-    }
-
-    return this._memoryDraftMap.get(this.id) || [];
-  }
-
-  async getDraftFromLocal() {
-    const draft = await this._groupConfigService.getDraftAttachmentItemIds(
-      this.id,
-    );
-    this._memoryDraftMap.set(this.id, draft);
-  }
-
   reloadFiles = async () => {
     this.items.clear();
-    const draftItemIds = await this.getDraftItemIds();
+    const draftItemIds = await this._groupConfigService.getDraftAttachmentItemIds(
+      this.id,
+    );
     await this._itemService.setUploadItems(this.id, draftItemIds);
 
     const uploadItems = this._itemService.getUploadItems(this.id);
