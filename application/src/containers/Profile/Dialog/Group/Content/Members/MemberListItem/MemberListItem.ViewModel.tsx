@@ -5,9 +5,10 @@
  */
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { MemberListItemProps } from './types';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   @computed
@@ -26,8 +27,18 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   }
 
   @computed
+  get currentUserId() {
+    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  }
+
+  @computed
   private get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.cid);
+  }
+
+  @computed
+  get isCurrentUserAdmin() {
+    return this._group.isAdmin;
   }
 
   @computed
