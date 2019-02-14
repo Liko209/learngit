@@ -81,8 +81,7 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
     await t.useRole(roleMember);
     await app.homePage.ensureLoaded();
     await teamEntry.enter();
-    await t.expect(conversationPage.messageInputArea.exists).notOk();
-    await t.expect(conversationPage.self.find('div').withText(readOnlyText).exists).ok();
+    await conversationPage.shouldBeReadOnly();
+    await t.expect(conversationPage.readOnlyDiv.withText(readOnlyText).exists).ok();
   });
-
 });
