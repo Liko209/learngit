@@ -244,7 +244,6 @@ class RTCCall {
         clearTimeout(this._hangupInvalidCallTimer);
         this._hangupInvalidCallTimer = null;
       }
-      // 开始获取stats
       this._callSession.getMediaStats((report: any, session: any) => {
         console.log('getStats', report);
         console.log('getStats', session);
