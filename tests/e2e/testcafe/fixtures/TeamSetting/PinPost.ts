@@ -17,7 +17,7 @@ fixture('TeamSetting/PinPost')
   .afterEach(teardownCase());
 
 
-test(formalName(`Turn on/off Post message toggle should/shouldn't be able to post the message`, ['P2', 'JPT-1102', 'PostMessage', 'Potar.He']), async t => {
+test(formalName(`Restrict non-admin team members from pinning posts in Team settings`, ['P2', 'JPT-1098', 'PinPost', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const memberUser = h(t).rcData.mainCompany.users[5];
