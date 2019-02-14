@@ -12,8 +12,12 @@ import {
   SelectFile,
   DidUploadFileCallback,
 } from './types';
-
-import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
+import {
+  notificationCenter,
+  ENTITY,
+  EVENT_TYPES,
+  GroupConfigService,
+} from 'sdk/service';
 
 import { ItemService } from 'sdk/module/item';
 import { NewPostService } from 'sdk/module/post';
@@ -33,15 +37,19 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   private _itemService: ItemService;
   private _postService: NewPostService;
   private _didUploadFileCallback?: DidUploadFileCallback;
+  private _groupConfigService: GroupConfigService;
   @observable
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
   @observable
   selectedFiles: SelectFile[] = [];
+  @observable
+  private _memoryDraftMap: Map<number, number[]> = new Map();
 
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
     this._postService = NewPostService.getInstance();
+    this._groupConfigService = GroupConfigService.getInstance();
     this.reaction(
       () => this.id,
       () => {
@@ -108,11 +116,33 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       .map((looper: SelectFile) => looper.data);
   }
 
-  reloadFiles = () => {
+  async getDraftItemIds() {
+    if (!this._memoryDraftMap.has(this.id)) {
+      await this.getDraftFromLocal();
+    }
+
+    return this._memoryDraftMap.get(this.id) || [];
+  }
+
+  async getDraftFromLocal() {
+    const draft = await this._groupConfigService.getDraftAttachmentItemIds(
+      this.id,
+    );
+    this._memoryDraftMap.set(this.id, draft);
+  }
+
+  // set draftItemIds(draft: number[]) {
+  //   this._memoryDraftMap.set(this.id, draft);
+  // }
+
+  reloadFiles = async () => {
     this.items.clear();
-    const result: ItemFile[] = this._itemService.getUploadItems(this.id);
-    if (result && result.length > 0) {
-      result.forEach((element: ItemFile) => {
+    const draftItemIds = await this.getDraftItemIds();
+    await this._itemService.setUploadItems(this.id, draftItemIds);
+
+    const uploadItems = this._itemService.getUploadItems(this.id);
+    if (uploadItems && uploadItems.length > 0) {
+      uploadItems.forEach((element: ItemFile) => {
         this.items.set(element.id, {
           item: element,
         } as AttachmentItem);
@@ -193,6 +223,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         } else {
           this.items.set(item.id, info);
         }
+        this.forceSaveDraftItems();
       }
       return item;
     } catch (e) {
@@ -257,6 +288,20 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       });
       this.items.clear();
     } catch (e) {}
+  }
+
+  forceSaveDraftItems = () => {
+    if (this.files && this.files.length > 0) {
+      const draftItemsIds: number[] = [];
+      this.files.forEach((file: ItemFile) => {
+        draftItemsIds.push(file.id);
+      });
+      this._memoryDraftMap.set(this.id, draftItemsIds);
+      this._groupConfigService.updateDraft({
+        attachment_item_ids: draftItemsIds,
+        id: this.id,
+      });
+    }
   }
 
   dispose = () => {

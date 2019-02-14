@@ -55,7 +55,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
   async updateDraft(params: {
     id: number;
     draft?: string;
-    attachmentItemIds?: string;
+    attachment_item_ids?: number[];
   }): Promise<boolean> {
     return this.saveAndDoNotify(params);
   }
@@ -69,6 +69,17 @@ class GroupConfigService extends BaseService<GroupConfig> {
       return config.draft;
     }
     return '';
+  }
+
+  async getDraftAttachmentItemIds(groupId: number): Promise<number[]> {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    const config: GroupConfig | null = groupId
+      ? await groupConfigDao.get(groupId)
+      : null;
+    if (config && config.attachment_item_ids) {
+      return config.attachment_item_ids;
+    }
+    return [];
   }
 
   // update partial group data, for send failure post ids

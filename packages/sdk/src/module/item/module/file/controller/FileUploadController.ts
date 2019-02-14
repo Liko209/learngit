@@ -276,6 +276,7 @@ class FileUploadController {
   }
 
   getUploadItems(groupId: number): ItemFile[] {
+    console.log('_uploadingFiles', this._uploadingFiles, '222222');
     return this._uploadingFiles.get(groupId) || [];
   }
 
@@ -284,6 +285,7 @@ class FileUploadController {
       itemIds,
       false,
     );
+    console.log(itemIds, items, '222222222222');
     this._uploadingFiles.set(groupId, items);
   }
 

@@ -39,6 +39,7 @@ type AttachmentsViewProps = {
   reloadFiles: () => void;
   sendFilesOnlyPost: () => Promise<void>;
   dispose: () => void;
+  forceSaveDraftItems: () => void;
 };
 
 export {
