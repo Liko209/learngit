@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios';
 import * as _ from 'lodash';
 import { getLogger } from 'log4js';
+import Ringcentral from 'ringcentral-js-concise';
 
 import { MiscUtils } from "../utils";
 import { ICredential } from "../models";
@@ -8,6 +9,7 @@ import { ICredential } from "../models";
 const logger = getLogger(__filename);
 
 export class RcPlatformSdk {
+  private sdk: any;
 
   async retryRequestOnException(cb: () => Promise<any>) {
     return await MiscUtils.retryAsync(cb, async (err: AxiosError) => {
@@ -25,7 +27,9 @@ export class RcPlatformSdk {
     });
   }
 
-  constructor(private sdk: any, private credential: ICredential) { }
+  constructor(key, secret, url, private credential: ICredential) {
+    this.sdk = new Ringcentral(key, secret, url);
+  }
 
   get token() {
     return this.sdk._token;
