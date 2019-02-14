@@ -39,4 +39,49 @@ describe('CreateTeamView', () => {
       expect(Notification.flashToast).toHaveBeenCalled();
     });
   });
+
+  describe('createTeam()', () => {
+    it('should call create with correct teamSetting', () => {
+      const mockCreate = jest.fn();
+      const props: any = {
+        create: mockCreate,
+        teamName: 'teamName',
+        description: 'teamDescription',
+        members: 'teamMember',
+      };
+      const view = new CreateTeamComponent(props);
+      const items = [
+        {
+          type: 'isPublic',
+          text: 'PublicTeam',
+          checked: false,
+        },
+        {
+          type: 'canPost',
+          text: 'MembersMayPostMessages',
+
+          checked: true,
+        },
+        {
+          type: 'canAddMember',
+          text: 'MembersMayAddOtherMembers',
+          checked: true,
+        },
+      ];
+      Object.assign(view.state, { items });
+      view.createTeam();
+      expect(mockCreate).toBeCalled();
+
+      const expectResult = {
+        name: props.teamName,
+        description: props.description,
+        isPublic: false,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+          TEAM_POST: true,
+        },
+      };
+      expect(mockCreate).toBeCalledWith(props.members, expectResult);
+    });
+  });
 });
