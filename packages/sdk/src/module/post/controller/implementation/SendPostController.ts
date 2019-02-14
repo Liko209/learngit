@@ -5,7 +5,8 @@
  */
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, PostDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import SendPostControllerHelper from './SendPostControllerHelper';
@@ -22,6 +23,7 @@ import { IPreInsertController } from '../../../common/controller/interface/IPreI
 import { Raw } from '../../../../framework/model';
 import { UserConfig } from '../../../../service/account';
 import { PostControllerUtils } from './PostControllerUtils';
+import { PROGRESS_STATUS } from '../../../progress';
 
 type PostData = {
   id: number;
@@ -82,7 +84,7 @@ class SendPostController implements ISendPostController {
       this._cleanUploadingFiles(post.group_id, post.item_ids);
     }
 
-    await this.preInsertController.preInsert(post);
+    await this.preInsertController.insert(post);
 
     const sendPostAfterItemsReady = (result: PostItemsReadyCallbackType) => {
       Object.keys(result.obj).forEach((key: string) => {
@@ -93,7 +95,7 @@ class SendPostController implements ISendPostController {
           this.sendPostToServer(post);
         } else {
           // handle failed
-          this.handleSendPostFail(post.id, post.group_id);
+          this.handleSendPostFail(post, post.group_id);
         }
       } else {
         // delete post
@@ -139,49 +141,49 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPostToServer(post: Post): Promise<PostData[]> {
-    const preInsertId = post.id;
-    delete post.id;
+    const sendPost = _.cloneDeep(post);
+    delete sendPost.id;
     try {
       const result = await this.postActionController.requestController.post(
-        post,
+        sendPost,
       );
-      return this.handleSendPostSuccess(result, preInsertId);
+      return this.handleSendPostSuccess(result, post);
     } catch (e) {
-      this.handleSendPostFail(preInsertId, post.group_id);
+      this.handleSendPostFail(post, post.group_id);
       throw ErrorParserHolder.getErrorParser().parse(e);
     }
   }
 
   async handleSendPostSuccess(
     post: Post,
-    preInsertId: number,
+    originalPost: Post,
   ): Promise<PostData[]> {
     const obj: PostData = {
-      id: preInsertId,
+      id: originalPost.id,
       data: post,
     };
     const result = [obj];
     const replacePosts = new Map<number, Post>();
-    replacePosts.set(preInsertId, post);
+    replacePosts.set(originalPost.id, post);
 
     notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
     const dao = daoManager.getDao(PostDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
-    await groupConfigService.deletePostId(post.group_id, preInsertId);
+    await groupConfigService.deletePostId(post.group_id, originalPost.id);
 
     // 1. change status
     // 2. delete from db
-    await this.preInsertController.incomesStatusChange(preInsertId, true);
+    await this.preInsertController.delete(originalPost);
 
     await dao.put(post);
     return result;
   }
 
-  async handleSendPostFail(preInsertId: number, groupId: number) {
-    this.preInsertController.incomesStatusChange(preInsertId, false);
+  async handleSendPostFail(originalPost: Post, groupId: number) {
+    this.preInsertController.updateStatus(originalPost, PROGRESS_STATUS.FAIL);
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
-    await groupConfigService.addPostId(groupId, preInsertId);
+    await groupConfigService.addPostId(groupId, originalPost.id);
     return [];
   }
 

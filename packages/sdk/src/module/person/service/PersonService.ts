@@ -5,9 +5,15 @@
  */
 
 import { IPersonService } from './IPersonService';
-import { Person, PhoneNumberModel, SanitizedExtensionModel } from '../entity';
+import {
+  Person,
+  PhoneNumberModel,
+  SanitizedExtensionModel,
+  HeadShotModel,
+} from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, PersonDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw, SortableModel } from '../../../framework/model';
@@ -43,7 +49,7 @@ class PersonService extends EntityBaseService<Person>
     return this._personController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[]): Promise<void> {
+  handleIncomingData = async (persons: Raw<Person>[]): Promise<void> => {
     await this.getPersonController().handleIncomingData(persons);
   }
 
@@ -55,8 +61,18 @@ class PersonService extends EntityBaseService<Person>
     return await this.getPersonController().getAllCount();
   }
 
-  getHeadShot(uid: number, headShotVersion: string, size: number) {
-    return this.getPersonController().getHeadShot(uid, headShotVersion, size);
+  getHeadShotWithSize(
+    uid: number,
+    headshot_version: string,
+    headshot: HeadShotModel,
+    size: number,
+  ): string | null {
+    return this.getPersonController().getHeadShotWithSize(
+      uid,
+      headshot_version,
+      headshot,
+      size,
+    );
   }
 
   async buildPersonFeatureMap(

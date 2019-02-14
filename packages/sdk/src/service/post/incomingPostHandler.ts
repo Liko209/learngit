@@ -5,7 +5,7 @@
  */
 
 import { daoManager } from '../../dao';
-import PostDao, { PostViewDao } from '../../dao/post';
+import { PostDao } from '../../module/post/dao';
 import { Post } from '../../module/post/entity';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../notificationCenter';
@@ -56,19 +56,17 @@ class IncomingPostHandler {
     try {
       if (postsShouldBeRemovedGroupIds.length) {
         const postDao = daoManager.getDao(PostDao);
-        const postViewDao = daoManager.getDao(PostViewDao);
 
         let postsInDB: Post[] = [];
         await Promise.all(
           postsShouldBeRemovedGroupIds.map(async (id: number) => {
-            const posts = await postViewDao.queryPostsByGroupId(id);
+            const posts = await postDao.queryPostsByGroupId(id);
             postsInDB = postsInDB.concat(posts);
           }),
         );
         if (postsInDB.length) {
           const ids = postsInDB.map(item => item.id);
           postDao.bulkDelete(ids);
-          postViewDao.bulkDelete(ids);
           // should notifiy ???
           return transformedData.filter(item => ids.indexOf(item.id) === -1);
         }
@@ -101,7 +99,6 @@ class IncomingPostHandler {
     const groupIds = [];
     const postQueries = [];
     const postDao = daoManager.getDao(PostDao);
-    const postViewDao = daoManager.getDao(PostViewDao);
 
     for (let i = 0; i < keys.length; i += 1) {
       if (IncomingPostHandler.isGroupPostsDiscontinuous(groupPosts[keys[i]])) {
@@ -162,7 +159,6 @@ class IncomingPostHandler {
           ids.push(shouldBeMovedPosts[i].id);
         }
         await postDao.bulkDelete(ids);
-        await postViewDao.bulkDelete(ids);
         return ids;
       }
       return [];

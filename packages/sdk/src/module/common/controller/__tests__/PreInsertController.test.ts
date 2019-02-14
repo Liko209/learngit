@@ -3,67 +3,129 @@
  * @Date: 2019-01-16 13:25:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostDao } from '../../../../dao';
+import { ConfigDao, daoManager } from '../../../../dao';
+import { PostDao } from '../../../post/dao';
 import { PreInsertController } from '../impl/PreInsertController';
-import { ProgressService } from '../../../progress';
-import { DexieDB } from 'foundation';
+import { ProgressService, PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
+
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
+jest.mock('../../../../dao');
+jest.mock('../../../post/dao');
 
-const schema = {
-  name: 'Glip',
-  version: 1,
-  schema: {
-    1: {
-      post: {
-        unique: 'id',
-      },
-    },
-  },
-};
 describe('PreInsertController', () => {
   let preInsertController: PreInsertController;
   const progressService: ProgressService = new ProgressService();
+  const dao = new PostDao(null);
+  const configDao = new ConfigDao(null);
 
   beforeEach(() => {
-    const dao = new PostDao(new DexieDB(schema));
+    jest.spyOn(daoManager, 'getKVDao').mockReturnValueOnce(configDao);
     preInsertController = new PreInsertController(dao, progressService);
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+    jest
+      .spyOn(preInsertController, 'getEntityNotificationKey')
+      .mockReturnValue('ENTITY.POST');
   });
+
   afterEach(() => {
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
     jest.clearAllMocks();
   });
-  describe('preInsert', () => {
-    it('should call add progress and emit update', async () => {
-      await preInsertController.preInsert({ id: -2 });
+
+  describe('insert()', () => {
+    it('should call addProgress & notificationCenter.emitEntityUpdate', async () => {
+      await preInsertController.insert({ id: -2, version: -2 });
+      expect(preInsertController.isInPreInsert(-2)).toBe(true);
       expect(progressService.addProgress).toBeCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(1);
     });
   });
-  describe('incomesStatusChange', () => {
-    it('should call dao delete when success', async () => {
-      await preInsertController.incomesStatusChange(-1, true);
+
+  describe('delete()', () => {
+    it('should call add progress and emit update', async () => {
+      await preInsertController.insert({ id: -2, version: -2 });
+      expect(preInsertController.isInPreInsert(-2)).toBe(true);
+      await preInsertController.delete({ id: -2, version: -2 });
+      expect(preInsertController.isInPreInsert(-2)).toBe(false);
+    });
+  });
+
+  describe('bulkDelete()', () => {
+    beforeEach(async () => {
+      await preInsertController.insert({ id: -2, version: -2 });
+      await preInsertController.insert({ id: -3, version: -3 });
+      await preInsertController.insert({ id: -4, version: -4 });
+    });
+
+    it('should delete all insert versions', async () => {
+      expect(preInsertController.isInPreInsert(-2)).toBe(true);
+      expect(preInsertController.isInPreInsert(-3)).toBe(true);
+      expect(preInsertController.isInPreInsert(-4)).toBe(true);
+      await preInsertController.bulkDelete([
+        { id: -2, version: -2 },
+        { id: -3, version: -3 },
+        { id: -4, version: -4 },
+      ]);
+      expect(preInsertController.isInPreInsert(-2)).toBe(false);
+      expect(preInsertController.isInPreInsert(-3)).toBe(false);
+      expect(preInsertController.isInPreInsert(-4)).toBe(false);
+    });
+
+    it('should delete partial insert versions', async () => {
+      expect(preInsertController.isInPreInsert(-2)).toBe(true);
+      expect(preInsertController.isInPreInsert(-3)).toBe(true);
+      expect(preInsertController.isInPreInsert(-4)).toBe(true);
+      await preInsertController.bulkDelete([
+        { id: -2, version: -2 },
+        { id: -3, version: -3 },
+        { id: -5, version: -5 },
+      ]);
+      expect(preInsertController.isInPreInsert(-2)).toBe(false);
+      expect(preInsertController.isInPreInsert(-3)).toBe(false);
+      expect(preInsertController.isInPreInsert(-4)).toBe(true);
+    });
+  });
+
+  describe('isInPreInsert()', () => {
+    it('should return true for the insert version', async () => {
+      await preInsertController.insert({ id: -2, version: -2 });
+      expect(preInsertController.isInPreInsert(-2)).toBe(true);
+    });
+  });
+
+  describe('updateStatus()', () => {
+    it('should call progressService.addProgress when preinsert', async () => {
+      await preInsertController.updateStatus(
+        { id: -2, version: -2 },
+        PROGRESS_STATUS.INPROGRESS,
+      );
+      expect(progressService.addProgress).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call progressService.deleteProgress when success', async () => {
+      await preInsertController.updateStatus(
+        { id: -2, version: -2 },
+        PROGRESS_STATUS.SUCCESS,
+      );
       expect(progressService.deleteProgress).toHaveBeenCalledTimes(1);
     });
+
     it('should call updateProgress when failed', async () => {
-      await preInsertController.incomesStatusChange(-1, false);
+      await preInsertController.updateStatus(
+        { id: -2, version: -2 },
+        PROGRESS_STATUS.FAIL,
+      );
       expect(progressService.updateProgress).toHaveBeenCalledTimes(1);
     });
   });
-  describe('getEntityNotificationKey', () => {
+
+  describe('getEntityNotificationKey()', () => {
     it('should return entity name when has dao', () => {
       const result = preInsertController.getEntityNotificationKey();
       expect(result).toEqual('ENTITY.POST');
-    });
-    it('should throw error when has not dao instance', () => {
-      preInsertController = new PreInsertController(null);
-      try {
-        preInsertController.getEntityNotificationKey();
-        expect(true).toBe(false);
-      } catch (e) {
-        expect(true).toBeTruthy();
-      }
     });
   });
 });

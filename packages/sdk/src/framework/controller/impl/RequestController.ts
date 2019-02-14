@@ -15,7 +15,7 @@ class RequestController<T extends IdModel = IdModel>
   implements IRequestController<T> {
   constructor(
     public networkConfig: { basePath: string; networkClient: NetworkClient },
-  ) { }
+  ) {}
 
   async get(id: number): Promise<T | null> {
     if (id <= 0) {

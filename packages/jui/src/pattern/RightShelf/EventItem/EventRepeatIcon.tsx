@@ -3,11 +3,11 @@
  * @Date: 2019-01-18 10:52:00
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
-import { spacing } from '../../../foundation/utils';
+import { spacing, height } from '../../../foundation/utils';
 
 enum REPEAT_ICON_TYPE {
   repeat = 'repeat',
@@ -15,13 +15,15 @@ enum REPEAT_ICON_TYPE {
 
 const StyledRepeatIcon = styled(JuiIconography)`
   && {
+    display: inline-block;
+    line-height: ${height(4)};
     font-size: ${({ theme }) => theme.typography.caption1.fontSize};
     margin-right: ${spacing(2)};
   }
 `;
 
-const JuiEventRepeatIcon = () => {
+const JuiEventRepeatIcon = memo(() => {
   return <StyledRepeatIcon>{REPEAT_ICON_TYPE.repeat}</StyledRepeatIcon>;
-};
+});
 
 export { JuiEventRepeatIcon };

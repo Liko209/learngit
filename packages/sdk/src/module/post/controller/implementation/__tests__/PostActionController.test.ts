@@ -8,22 +8,41 @@ import { PostActionController } from '../PostActionController';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { Post } from '../../../entity';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../../../dao';
-import { ProgressService } from '../../../../progress';
+import { daoManager } from '../../../../../dao';
+import { PostDao } from '../../../dao';
+import { ProgressService, PROGRESS_STATUS } from '../../../../progress';
 import { GroupConfigService } from '../../../../../service';
 import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
 import _ from 'lodash';
+import { ExtendedBaseModel } from '../../../../models';
 
 jest.mock('../../../../../dao');
+jest.mock('../../../dao');
 jest.mock('../../../../progress');
 jest.mock('../../../../../service');
 jest.mock('../../../../item/service');
 
-class TestPreInsertController implements IPreInsertController<Post> {
-  async preInsert(entity: Post): Promise<void> {
+class TestPreInsertController<T extends ExtendedBaseModel>
+  implements IPreInsertController {
+  async insert(entity: T): Promise<void> {
     return;
   }
-  incomesStatusChange(id: number, shouldDelete: boolean): void {}
+
+  delete(entity: T): void {
+    return;
+  }
+
+  async bulkDelete(entities: T[]): Promise<void> {
+    return;
+  }
+
+  updateStatus(entity: T, status: PROGRESS_STATUS): void {
+    return;
+  }
+
+  isInPreInsert(version: number): boolean {
+    return false;
+  }
 }
 
 class TestPartialModifyController implements IPartialModifyController<Post> {
@@ -96,6 +115,7 @@ describe('PostController', () => {
       expect(groupConfigService.deletePostId).toBeCalledTimes(1);
       expect(result).toBeTruthy();
     });
+
     it('should call _deletePostFromRemote when id > 0', async () => {
       await postActionController.deletePost(1);
       expect(testPartialModifyController.updatePartially).toBeCalled();

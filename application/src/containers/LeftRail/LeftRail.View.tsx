@@ -76,6 +76,6 @@ class LeftRailViewComponent extends Component<
   }
 }
 
-const LeftRailView = translate('Conversations')(LeftRailViewComponent);
+const LeftRailView = translate('translations')(LeftRailViewComponent);
 
 export { LeftRailView };

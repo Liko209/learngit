@@ -6,27 +6,49 @@
 import * as React from 'react';
 import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
 import name2icon from './name2icon';
-import styled from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
+import { Omit } from '../utils/typeHelper';
+import { Palette } from '../theme/theme';
+import { palette } from '../../foundation/utils/styles';
 
-type JuiIconographyProps = MuiIconProps;
+type JuiIconographyProps = Omit<MuiIconProps, 'color'> & {
+  color?: [keyof Palette, string];
+};
 
-const JuiIcon = styled(MuiIcon)`
+const WrappedMuiIcon = ({ color, ...rest }: JuiIconographyProps) => (
+  <MuiIcon {...rest} />
+);
+
+const StyledIcon = styled<JuiIconographyProps>(WrappedMuiIcon)`
   display: block;
+  ${({ theme, color }) => {
+    if (!color) {
+      return;
+    }
+    const colorScope = color[0] || 'grey';
+    const colorName = color[1] || '500';
+    return css`
+      color: ${palette(colorScope, colorName)({ theme })}};
+    `;
+  }}
 `;
 
-const JuiIconography: React.SFC<JuiIconographyProps> & {
+const JuiIconographyComponent: React.SFC<JuiIconographyProps> & {
   dependencies?: any[];
 } = (props: JuiIconographyProps) => {
-  const iconName = props.children as string;
-  const className = `${props.className} ${name2icon[iconName]} icon`;
+  const { children, className, color } = props;
+  const iconName = children as string;
+  const _className = `${className} ${name2icon[iconName]} icon`;
+
   return (
-    <JuiIcon {...props} className={className}>
+    <StyledIcon {...props} className={_className} color={color}>
       {iconName}
-    </JuiIcon>
+    </StyledIcon>
   );
 };
 
-JuiIconography.displayName = 'JuiIconography';
-JuiIconography.dependencies = [MuiIcon];
+JuiIconographyComponent.displayName = 'JuiIconography';
+JuiIconographyComponent.dependencies = [MuiIcon];
 
+const JuiIconography = React.memo(JuiIconographyComponent);
 export { JuiIconographyProps, JuiIconography };

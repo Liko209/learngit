@@ -3,7 +3,7 @@
  * @Date: 2019-01-15 17:13:45
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { ellipsis } from '../../foundation/utils';
 
@@ -22,13 +22,13 @@ const WrappedListItemSecondarySpan = ({
 
 const StyledListItemSecondarySpan = styled(WrappedListItemSecondarySpan)`
   && {
-    display: flex;
-    align-items: center;
     ${({ isEllipsis }: { isEllipsis: boolean }) => isEllipsis && ellipsis()};
   }
 `;
 
-const JuiListItemSecondarySpan = (props: JuiListItemSecondarySpanProps) => {
+const JuiListItemSecondarySpanComponent = (
+  props: JuiListItemSecondarySpanProps,
+) => {
   const { text, children, isEllipsis } = props;
   return (
     <StyledListItemSecondarySpan isEllipsis={isEllipsis || false}>
@@ -38,6 +38,8 @@ const JuiListItemSecondarySpan = (props: JuiListItemSecondarySpanProps) => {
   );
 };
 
-JuiListItemSecondarySpan.displayName = 'JuiListItemSecondarySpan';
+JuiListItemSecondarySpanComponent.displayName = 'JuiListItemSecondarySpan';
+
+const JuiListItemSecondarySpan = memo(JuiListItemSecondarySpanComponent);
 
 export { JuiListItemSecondarySpan, JuiListItemSecondarySpanProps };

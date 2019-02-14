@@ -11,7 +11,28 @@ export type State = ExtendedBaseModel & {
   current_group_id: number;
   away_status_history?: string[];
   current_plugin: string;
-  __trigger_ids?: number[];
   last_group_id: number;
   at_mentioning_post_ids?: number[];
+};
+
+export type MyState = State;
+
+export type GroupState = {
+  id: number;
+  unread_count?: number;
+  unread_mentions_count?: number;
+  read_through?: number;
+  last_read_through?: number; // last post of the group
+  marked_as_unread?: boolean;
+  post_cursor?: number;
+  unread_deactivated_count?: number;
+  group_post_cursor?: number;
+  group_post_drp_cursor?: number;
+};
+
+export type TransformedState = {
+  groupStates: GroupState[];
+  myState?: State;
+  isSelf?: boolean;
+  isFromIndexData?: boolean;
 };

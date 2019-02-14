@@ -13,15 +13,19 @@ import {
   buildEntitySourceController,
   buildPartialModifyController,
 } from '../../../framework/controller';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
 import { ProgressService } from '../../progress';
+import { PostFetchController } from './PostFetchController';
+import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 
 class PostController {
   private _actionController: PostActionController;
   private _sendController: SendPostController;
-  private _preInsertController: PreInsertController;
+  private _preInsertController: IPreInsertController;
+  private _fetchController: PostFetchController;
 
   constructor() {}
 
@@ -52,6 +56,7 @@ class PostController {
     }
     return this._actionController;
   }
+
   getSendPostController(): SendPostController {
     if (!this._sendController) {
       this._sendController = new SendPostController(
@@ -60,6 +65,23 @@ class PostController {
       );
     }
     return this._sendController;
+  }
+
+  getPostFetchController() {
+    if (!this._fetchController) {
+      const persistentController = buildEntityPersistentController<Post>(
+        daoManager.getDao(PostDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
+      );
+
+      this._fetchController = new PostFetchController(
+        this._getPreInsertController(),
+        entitySourceController,
+      );
+    }
+    return this._fetchController;
   }
 
   private _getPreInsertController() {

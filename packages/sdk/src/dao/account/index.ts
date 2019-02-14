@@ -4,7 +4,7 @@
  */
 
 import { KVStorage } from 'foundation';
-import { BaseKVDao } from '../base';
+import { BaseKVDao } from '../../framework/dao';
 import { ACCOUNT_KEYS } from './constants';
 
 class AccountDao extends BaseKVDao {

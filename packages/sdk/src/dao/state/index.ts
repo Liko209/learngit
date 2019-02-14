@@ -2,7 +2,7 @@
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-03-06 13:22:43
  */
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { MyState } from '../../models';
 import { IDatabase } from 'foundation';
 

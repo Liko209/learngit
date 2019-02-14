@@ -5,17 +5,18 @@
  */
 
 import PreloadPostsForGroupHandler from '../preloadPostsForGroupHandler';
-import GroupService from '../../../service/group';
+import GroupService from '../../../module/group';
 
-jest.mock('../../../service/group');
+jest.mock('../../../module/group');
 
 describe('PreloadPostsForGroupHandler', () => {
   const groupService = new GroupService();
   GroupService.getInstance = jest.fn().mockReturnValue(groupService);
   it('PreloadPostsForGroupHandler', async () => {
     const handler = new PreloadPostsForGroupHandler();
-    groupService.getLeftRailGroups.mockResolvedValueOnce([]);
-    const result = await handler.preloadPosts();
-    expect(result).toBe(true);
+    groupService.getGroupsByType.mockResolvedValue([]);
+    jest.spyOn(handler, '_preloadPosts').mockResolvedValue(true);
+    await handler.preloadPosts();
+    expect(handler._preloadPosts).toHaveBeenCalledTimes(3);
   });
 });

@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 15:14:00
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { grey, typography } from '../../../foundation/utils/styles';
 
@@ -35,7 +35,7 @@ function highlight(value: string, terms: string[]) {
   };
 }
 
-const JuiSearchItemValue = (props: JuiSearchItemValueProps) => {
+const JuiSearchItemValue = memo((props: JuiSearchItemValueProps) => {
   const { value, terms, ...rest } = props;
   const highlightValue = highlight(value, terms);
   return (
@@ -44,6 +44,6 @@ const JuiSearchItemValue = (props: JuiSearchItemValueProps) => {
       dangerouslySetInnerHTML={highlightValue}
     />
   );
-};
+});
 
 export { JuiSearchItemValue, JuiSearchItemValueProps };

@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { FooterViewProps } from './types';
 import { JuiConversationCardFooter } from 'jui/pattern/ConversationCard';
+import { JuiCollapse } from 'jui/components/Collapse';
 import { Like } from '@/containers/ConversationCard/Actions/Like';
 
 type Props = FooterViewProps & WithNamespaces;
@@ -16,15 +17,18 @@ type Props = FooterViewProps & WithNamespaces;
 class FooterViewComponent extends Component<Props> {
   render() {
     const { id, likeCount } = this.props;
-
-    const props = {
-      likeCount,
-      Like: <Like id={id} />,
-    };
-    return <JuiConversationCardFooter {...props} />;
+    const hasLike = likeCount > 0;
+    return (
+      <JuiCollapse mountOnEnter={true} unmountOnExit={true} in={hasLike}>
+        <JuiConversationCardFooter
+          likeCount={likeCount}
+          Like={<Like id={id} />}
+        />
+      </JuiCollapse>
+    );
   }
 }
 
-const FooterView = translate('Conversations')(FooterViewComponent);
+const FooterView = translate('translations')(FooterViewComponent);
 
 export { FooterView };

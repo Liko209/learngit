@@ -8,7 +8,8 @@ import { Raw } from '../../../../framework/model';
 import _ from 'lodash';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { EditPostType } from '../../types';
 import { GroupConfigService } from '../../../../service';
 import { IPostActionController } from '../interface/IPostActionController';
@@ -92,7 +93,7 @@ class PostActionController implements IPostActionController {
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
 
-    this.preInsertController.incomesStatusChange(id, true);
+    this.preInsertController.delete(post);
 
     // 4
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();

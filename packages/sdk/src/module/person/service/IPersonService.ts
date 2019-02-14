@@ -12,6 +12,7 @@ import {
   PhoneNumberModel,
   SanitizedExtensionModel,
   PhoneNumberInfo,
+  HeadShotModel,
 } from '../entity';
 
 interface IPersonService {
@@ -21,7 +22,12 @@ interface IPersonService {
 
   getAllCount(): Promise<number>;
 
-  getHeadShot(uid: number, headShotVersion: string, size: number): string;
+  getHeadShotWithSize(
+    uid: number,
+    headshot_version: string,
+    headshot: HeadShotModel,
+    size: number,
+  ): string | null;
 
   buildPersonFeatureMap(
     personId: number,

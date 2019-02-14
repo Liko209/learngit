@@ -9,13 +9,7 @@ import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
 import { palette, height } from '../../foundation/utils';
-import {
-  LoadingWrapper,
-  Loading,
-  Progress,
-  Tip,
-  TipLink,
-} from '../ConversationLoading';
+import { LoadingWrapper, Loading, Progress } from '../ConversationLoading';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -82,21 +76,6 @@ const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => {
   );
 };
 
-const JuiRightRailContentLoadError = (
-  props: JuiRightRailContentLoadingProps,
-) => {
-  return (
-    <LoadingWrapper>
-      <Loading>
-        <Tip>
-          {props.tip}
-          <TipLink handleOnClick={props.onClick}>{props.linkText}</TipLink>
-        </Tip>
-      </Loading>
-    </LoadingWrapper>
-  );
-};
-
 const LoadingMoreWrapper = styled.div`
   display: flex;
   height: ${height(13)};
@@ -115,5 +94,4 @@ export {
   JuiRightRailItemLoading,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
-  JuiRightRailContentLoadError,
 };

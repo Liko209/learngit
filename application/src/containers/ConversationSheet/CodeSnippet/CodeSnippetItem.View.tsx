@@ -11,11 +11,13 @@ import { CodeSnippetViewProps } from './types';
 import { memoize } from 'lodash';
 import copy from 'copy-to-clipboard';
 import { translate, WithNamespaces } from 'react-i18next';
+import { observer } from 'mobx-react';
 
 const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
 const MAX_EDITOR_LINES = 200;
 
+@observer
 class CodeSnippet extends React.Component<
   WithNamespaces & CodeSnippetViewProps
 > {
@@ -34,7 +36,9 @@ class CodeSnippet extends React.Component<
     link.download = `${this.props.postItem.title}.txt`;
     const blob = new Blob([this.props.postItem.body], { type: 'text/plain' });
     link.href = window.URL.createObjectURL(blob);
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   }
 
   _getHeaderActions = memoize(() => {
@@ -105,7 +109,7 @@ class CodeSnippet extends React.Component<
   }
 
   render() {
-    const { title, body = '', mode: language, mimeType } = this.props.postItem;
+    const { title, mode: language, mimeType, body = '' } = this.props.postItem;
     const lineNumber = this.calcTotalLines(body);
     const showHoverAction = lineNumber > DEFAULT_LINE_LIMIT && this.state.hover;
     const showDownloadButton = lineNumber > MAX_EDITOR_LINES;

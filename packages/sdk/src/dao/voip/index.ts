@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { KVStorage } from 'foundation';
-import { BaseKVDao } from '../base';
+import { BaseKVDao } from '../../framework/dao';
 
 class VoIPDao extends BaseKVDao {
   static COLLECTION_NAME = 'voip';

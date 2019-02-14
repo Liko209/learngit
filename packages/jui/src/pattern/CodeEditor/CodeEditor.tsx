@@ -20,6 +20,10 @@ const StyledEditorWrapper = styled('div')<{ maxHeight: number }>`
   transition: max-height 0.75s ease-in-out;
 `;
 
+const StyledTextArea = styled('textarea')`
+  display: none;
+`;
+
 const OverrideDefaultStyle = createGlobalStyle<{}>`
 ${StyledEditorWrapper} {
   .CodeMirror {
@@ -132,22 +136,24 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     },
   };
 
-  textareaNode: React.RefObject<any> = React.createRef();
-  codeMirror: CodeMirror.EditorFromTextArea;
+  textareaNode = React.createRef<HTMLTextAreaElement | null>();
+  codeMirror?: CodeMirror.EditorFromTextArea;
 
   async componentDidMount() {
     const defaultOption = CodeEditor.codeMirrorOption[this.props.mode];
     const options = this.props.codeMirrorOption
       ? Object.assign(defaultOption, this.props.codeMirrorOption)
       : defaultOption;
+    const CodeMirror = await import('codemirror');
+    await import('./importModes');
 
-    // tslint:disable-next-line:space-in-parens
-    const CodeMirror = await import(/* webpackChunkName: "codemirror" */ 'codemirror');
-    this.codeMirror = CodeMirror.fromTextArea(
-      this.textareaNode.current,
-      options,
-    );
-    this.codeMirror.setValue(this.props.value || '');
+    if (this.textareaNode.current) {
+      this.codeMirror = CodeMirror.fromTextArea(
+        this.textareaNode.current,
+        options,
+      );
+      this.codeMirror.setValue(this.props.value || '');
+    }
   }
 
   shouldComponentUpdate(nextProps: CodeEditorProp) {
@@ -179,26 +185,6 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
           }
         }
       }
-
-      if (
-        nextProps.language &&
-        this.props.language !== nextProps.language &&
-        nextProps.language !== 'auto'
-      ) {
-        const modeName = nextProps.language;
-        if (!CodeEditor.loadedMode.has(modeName)) {
-          CodeEditor.loadedMode.add(modeName);
-          console.log('-------- [CodeEditor Log] --------');
-          console.log(modeName);
-          console.log('---------------- [Log End] ----------------');
-          require(`codemirror/mode/${modeName}/${modeName}`);
-          this.codeMirror.setOption('mode', this.props.codeMirrorOption.mode);
-          setTimeout(() => {
-            this.codeMirror.refresh();
-            this.codeMirror.setValue(this.props.value);
-          },         2000);
-        }
-      }
       return true;
     }
     return false;
@@ -211,6 +197,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
   }
 
   setOptionIfChanged(optionName: string, newValue: string) {
+    if (!this.codeMirror) return;
+
     const oldValue = this.codeMirror.getOption(optionName);
     if (!isEqual(oldValue, newValue)) {
       this.codeMirror.setOption(optionName, newValue);
@@ -254,8 +242,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
           maxHeight={height}
           data-test-automation-id="codeSnippetBody"
         >
-          <textarea
-            ref={this.textareaNode}
+          <StyledTextArea
+            ref={this.textareaNode as any}
             defaultValue={this.props.value}
             autoComplete="off"
           />

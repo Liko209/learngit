@@ -13,7 +13,7 @@ import {
 import { observer } from 'mobx-react';
 import { ToastViewProps } from './types';
 import Slide from '@material-ui/core/Slide';
-import { t } from 'i18next';
+import i18next from 'i18next';
 
 @observer
 class ToastView extends React.Component<ToastViewProps> {
@@ -54,7 +54,7 @@ class ToastView extends React.Component<ToastViewProps> {
     }
     let ms = message;
     if (typeof message === 'string') {
-      ms = t(message);
+      ms = i18next.t(message);
     }
     const config = { ...rest, action, message: ms };
     return (

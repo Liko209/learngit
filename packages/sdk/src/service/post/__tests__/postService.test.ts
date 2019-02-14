@@ -1,18 +1,14 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import _ from 'lodash';
-import {
-  daoManager,
-  PostDao,
-  ItemDao,
-  GroupConfigDao,
-  AccountDao,
-} from '../../../dao';
+import { daoManager, GroupConfigDao, AccountDao } from '../../../dao';
+import { PostDao } from '../../../module/post/dao/PostDao';
+import { ItemDao } from '../../../module/item/dao';
 import PostAPI from '../../../api/glip/post';
 import { baseHandleData } from '../handleData';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
-import GroupService from '../../group';
+import GroupService from '../../../module/group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { serviceErr, serviceOk } from '../../ServiceResult';
@@ -32,16 +28,19 @@ import { ItemService } from '../../../module/item';
 import { ProgressService, PROGRESS_STATUS } from '../../../module/progress';
 
 jest.mock('../../../dao');
+jest.mock('../../../module/post/dao/PostDao');
+jest.mock('../../../module/item/dao');
 jest.mock('../../../api/glip/post');
 jest.mock('../../serviceManager');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
-jest.mock('../../group');
+jest.mock('../../../module/group');
 jest.mock('../../notificationCenter');
 jest.mock('../../groupConfig');
 jest.mock('../../../module/progress');
 jest.mock('../../../module/item');
+jest.mock('sdk/api');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -247,242 +246,6 @@ describe('PostService', () => {
           limit: 1,
         }),
       ).rejects.toBeDefined();
-    });
-  });
-
-  describe('getPostsByGroupId()', () => {
-    beforeEach(() => {
-      clearMocks();
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-      jest.spyOn(postService, 'getPostsFromLocal');
-      jest.spyOn(postService, 'getPostsFromRemote');
-      jest.spyOn(postService, 'includeNewest').mockResolvedValue(true);
-      jest.spyOn(postService, 'isNewestSaved').mockResolvedValue(true);
-      jest.spyOn(postService, 'getById').mockResolvedValue({});
-      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
-      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
-    });
-
-    it('should save and not check newest if incoming includes newest', async () => {
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(baseHandleData.mock.calls[0][1]).toBe(true);
-      expect(postService.isNewestSaved).not.toHaveBeenCalled();
-    });
-
-    it('should save if newest is saved', async () => {
-      postService.includeNewest.mockResolvedValue(false);
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(baseHandleData.mock.calls[0][1]).toBe(true);
-      expect(postService.isNewestSaved).toHaveBeenCalled();
-    });
-
-    it('should not save if newest is not saved and incoming do not include newest', async () => {
-      postService.includeNewest.mockResolvedValue(false);
-      postService.isNewestSaved.mockResolvedValue(false);
-
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      expect(baseHandleData.mock.calls[0][1]).toBe(false);
-    });
-
-    it('should return local data', async (done: any) => {
-      /**
-       * We have 2 posts total at local, 0 at remote.
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [],
-        items: [],
-        hasMore: false,
-      });
-
-      const resultEmpty = await postService.getPostsByGroupId({
-        groupId: 1,
-      });
-
-      setTimeout(() => {
-        expect(postService.getPostsFromLocal).toHaveBeenCalledWith({
-          groupId: 1,
-          limit: 20,
-          direction: 'older',
-          postId: 0,
-        });
-        expect(resultEmpty).toEqual({
-          items: [],
-          posts: [{ id: 1 }, { id: 2 }],
-          hasMore: false,
-          limit: 20,
-        });
-        done();
-      });
-    });
-
-    it('should return remote data', async () => {
-      /**
-       * 2 posts total, 2 at remote, 0 at local.
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [],
-        items: [],
-        hasMore: true,
-      });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 1 }, { _id: 2 }],
-        items: [],
-        hasMore: false,
-      });
-
-      baseHandleData.mockResolvedValue([{ id: 1 }, { id: 2 }]);
-      itemService.handleIncomingData.mockResolvedValue([]);
-
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-      expect(result).toEqual({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: false,
-        limit: 20,
-      });
-    });
-
-    it('should return local+remote data when localData + remoteData < pageSize', async () => {
-      /**
-       * 4 posts total, 2 at local, 2 at remote.
-       * When pageSize is 20, it should return all 4 posts.
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 3 }, { _id: 4 }],
-        items: [],
-        hasMore: false,
-      });
-      baseHandleData.mockResolvedValue([{ id: 3 }, { id: 4 }]);
-      itemService.handleIncomingData.mockResolvedValue([]);
-      groupConfigDao.hasMoreRemotePost.mockResolvedValueOnce(true);
-      groupConfigDao.update = jest.fn();
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-
-      expect(result).toEqual({
-        posts: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
-        items: [],
-        hasMore: false,
-        limit: 20,
-      });
-    });
-
-    it('should return local+remote data when localData + remoteData > pageSize', async () => {
-      /**
-       * 4 posts total, 2 of them at local, 2 at remote.
-       * When pageSize is 3, it should return 3 posts (2 local + 1 remote).
-       */
-      postService.getPostsFromLocal.mockResolvedValueOnce({
-        posts: [{ id: 1 }, { id: 2 }],
-        items: [],
-        hasMore: true,
-      });
-      postService.getPostsFromRemote.mockResolvedValueOnce({
-        posts: [{ _id: 3 }],
-        items: [],
-        hasMore: false,
-      });
-      baseHandleData.mockResolvedValue([{ id: 3 }]);
-      itemService.handleIncomingData.mockResolvedValue([]);
-
-      const result = await postService.getPostsByGroupId({
-        groupId: 1,
-        limit: 3,
-      });
-      expect(result).toEqual({
-        posts: [{ id: 1 }, { id: 2 }, { id: 3 }],
-        items: [],
-        hasMore: false,
-        limit: 3,
-      });
-    });
-
-    it('should throw error when error occur', async () => {
-      jest.spyOn(postService, 'getPostsFromLocal').mockResolvedValueOnce({
-        posts: [],
-        items: [],
-        hasMore: true,
-        limit: 20,
-      });
-      const error = new JServerError(
-        ERROR_CODES_SERVER.NOT_AUTHORIZED,
-        'NOT_AUTHORIZED',
-      );
-      jest
-        .spyOn(postService, 'getPostsFromRemote')
-        .mockImplementationOnce(async () => {
-          throw error;
-        });
-
-      try {
-        await postService.getPostsByGroupId({
-          groupId: 1,
-          limit: 20,
-        });
-      } catch (e) {
-        expect(e).toEqual(error);
-      }
     });
   });
 

@@ -51,11 +51,11 @@ type GroupCommon = {
   permissions?: TeamPermission;
   post_cursor?: number;
   drp_post_cursor?: number;
-  __trigger_ids?: number[];
   deactivated_post_cursor?: number;
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
+  is_company_team: boolean;
   __send_failure_post_ids?: number[];
   __draft?: string;
   __last_accessed_at?: number;

@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
@@ -164,15 +164,12 @@ test(formalName(`The team information is updated when the member is left`, ['P1'
     await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
-
-  let members;
-  await h(t).withLog(`When I check the team member list from API`, async () => {
-    members = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data['members']);
-  });
-
-  await h(t).withLog(`Then the loginUser is not in the member list`, async () => {
+  await h(t).withLog(`Then the loginUser should not be in the member list (check via API)`, async () => {
     const personId = await h(t).glip(adminUser).toPersonId(loginUser.rcId);
-    assert.ok(!_.includes(members, personId), `Login User should no be in team members list`);
+    await H.retryUntilPass(async () => {
+      const members = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data['members']);
+      assert.ok(!_.includes(members, personId), `Login User should no be in team members list`);
+    });
   });
 
   await h(t).withLog(`When team member send a message on the team`, async () => {
@@ -239,5 +236,42 @@ test(formalName(`Only team members are allowed to leave team`, ['P2', 'JPT-932',
 
 });
 
+test(formalName(`User should not be allowed to leave the all hands team`, ['P1', 'JPT-1021', 'LeaveTeam', 'Chris.Zhan']), async t => {
+  const app = new AppRoot(t);
+  const memberUser = h(t).rcData.mainCompany.users[4];
+  const otherUser = h(t).rcData.mainCompany.users[5];
+  await h(t).platform(memberUser).init();
+  await h(t).platform(otherUser).init();
+  await h(t).glip(memberUser).init();
 
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const profileDialog = app.homePage.profileDialog;
+
+  let teamId;
+  await h(t).withLog(`Given I have one all hands team`, async () => {
+    const ids = await h(t).glip(memberUser).getCompanyTeamId();
+    teamId = ids[0];
+  });
+
+  await h(t).withLog(`And I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, memberUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When all hands team receive new message and appear on the left rail`, async () => {
+    await h(t).platform(otherUser).sendTextPost('test', teamId);
+  })
+
+  await h(t).withLog(`When team member open team setting dialog via team profile entry on conversation list`, async () => {
+    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.clickSetting();
+  });
+
+  const teamSettingDialog = app.homePage.teamSettingDialog;
+  await h(t).withLog(`Then team member can't see the 'Leave Team' option`, async () => {
+    await teamSettingDialog.shouldBePopup();
+    await t.expect(teamSettingDialog.leaveTeamButton.visible).notOk();
+  });
+});
 

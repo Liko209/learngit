@@ -32,7 +32,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @computed
   get allowMemberAddMember() {
-    const groupService = new GroupService();
+    const groupService: GroupService = GroupService.getInstance();
     const permissionFlags = groupService.getTeamUserPermissionFlags(
       this._group.permissions || {},
     );
@@ -68,8 +68,13 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     return this._group.isAdmin;
   }
 
+  @computed
+  get isCompanyTeam() {
+    return this._group.isCompanyTeam;
+  }
+
   leaveTeam = async () => {
-    const groupService = new GroupService();
+    const groupService: GroupService = GroupService.getInstance();
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     try {
@@ -109,7 +114,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   save = async (params: TeamSettingTypes) => {
     const name = params.name.trim();
     const description = params.description.trim();
-    const groupService = new GroupService();
+    const groupService: GroupService = GroupService.getInstance();
     this.setNameError('');
     try {
       await groupService.updateTeamSetting(this.id, {

@@ -15,7 +15,6 @@ type SelectedMember = {
 };
 
 class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
-  private _groupService: GroupService = new GroupService();
   @observable
   disabledOkBtn: boolean = true;
   @observable
@@ -36,7 +35,8 @@ class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
   @action
   addTeamMembers = async () => {
     const { group } = this.props;
-    await this._groupService.addTeamMembers(this.members, group.id);
+    const groupService: GroupService = GroupService.getInstance();
+    await groupService.addTeamMembers(this.members, group.id);
   }
 }
 

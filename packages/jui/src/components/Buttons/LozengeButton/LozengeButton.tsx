@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 10:36:55
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ButtonHTMLAttributes } from 'react';
+import React, { ButtonHTMLAttributes, memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import {
   height,
@@ -65,7 +65,7 @@ const StyledLozengeButton = styled.button`
   }
 `;
 
-const JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
+const _JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
   children,
   loading,
   arrowDirection,
@@ -92,9 +92,9 @@ const JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
   );
 };
 
-JuiLozengeButton.defaultProps = {
+_JuiLozengeButton.defaultProps = {
   loading: false,
 };
-JuiLozengeButton.displayName = 'JuiLozengeButton';
-
+_JuiLozengeButton.displayName = 'JuiLozengeButton';
+const JuiLozengeButton = memo(_JuiLozengeButton);
 export { JuiLozengeButton };

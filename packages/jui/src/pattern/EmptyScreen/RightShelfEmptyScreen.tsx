@@ -22,6 +22,8 @@ const Wrapper = styled(EmptyScreen.Wrapper)`
 `;
 
 const Pic = styled(EmptyScreen.Pic)`
+  min-width: ${width(47)};
+  min-height: ${height(37)};
   width: ${width(47)};
   height: ${height(37)};
   margin: ${spacing(0, 0, 8)};
@@ -39,9 +41,11 @@ const Content = styled(EmptyScreen.Content)`
 const JuiFlexWrapper = styled.div`
   display: flex;
   justify-content: center;
+  overflow-y: auto;
+  height: 100%;
 `;
 
-const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
+const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
   const { image, text, content, actions } = props;
 
   return (
@@ -60,6 +64,6 @@ const JuiRightShelfEmptyScreen = (props: JuiEmptyScreenProps) => {
       </EmptyScreen.Actions>
     </Wrapper>
   );
-};
+});
 
 export { JuiRightShelfEmptyScreen, JuiFlexWrapper };

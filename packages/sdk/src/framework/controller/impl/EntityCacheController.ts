@@ -82,7 +82,7 @@ class EntityCacheController<T extends IdModel = IdModel>
     return result ? result : null;
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
+  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     const entities: T[] = [];
     ids.forEach(async (id: number) => {
       const entity = await this.get(id);
@@ -91,6 +91,10 @@ class EntityCacheController<T extends IdModel = IdModel>
       }
     });
     return entities;
+  }
+
+  getEntityName(): string {
+    return '';
   }
 
   async getAll(): Promise<T[]> {
@@ -138,6 +142,9 @@ class EntityCacheController<T extends IdModel = IdModel>
         const oldEntity = this._entities[id];
         if (oldEntity) {
           this._updatePartial(oldEntity, partialModel);
+        } else {
+          const partialObject: {} = partialModel;
+          this._entities[id] = partialObject as T;
         }
       });
     } else {

@@ -28,6 +28,11 @@ class FileViewModel extends AbstractViewModel<FileProps>
   }
 
   @computed
+  get fileName() {
+    return this.file.name;
+  }
+
+  @computed
   get downloadUrl() {
     return this.file.downloadUrl;
   }

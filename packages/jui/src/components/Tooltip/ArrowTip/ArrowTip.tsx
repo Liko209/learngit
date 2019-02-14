@@ -85,7 +85,7 @@ const GlobalToolTipStyle = createGlobalStyle`
     ${bottom}
   }
 `;
-export class JuiArrowTip extends React.Component<JuiTooltipProps> {
+export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
   static dependencies = [MuiTooltip];
   arrowRef: React.RefObject<any>;
 

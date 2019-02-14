@@ -15,7 +15,7 @@ type JuiFileWithPreviewProps = {
   iconType?: string | null;
 };
 
-class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
+class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
   render() {
     const { size, fileName, url, Actions, iconType } = this.props;
 
@@ -28,7 +28,7 @@ class JuiFileWithPreview extends React.Component<JuiFileWithPreviewProps> {
           </Jui.CardFileName>
           <Jui.CardFileInfo component="div">
             <Jui.CardSize data-test-automation-id="file-size">
-              <Jui.FileIcon iconType={iconType} size="small" />
+              <Jui.FileIcon size="small">{iconType}</Jui.FileIcon>
               {size}
             </Jui.CardSize>
             <Jui.CardFileActions>{Actions}</Jui.CardFileActions>

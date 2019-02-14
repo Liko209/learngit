@@ -80,6 +80,7 @@ export default class MultiEntityMapStore<
     }
   }
 
+  @action
   set(data: T) {
     const model = this.createModel(data);
     const { id } = model;
@@ -95,6 +96,7 @@ export default class MultiEntityMapStore<
     });
   }
 
+  @action
   private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
     const model = this._data[id];
     if (model) {
@@ -105,6 +107,7 @@ export default class MultiEntityMapStore<
     }
   }
 
+  @action
   batchSet(entities: T[]) {
     entities.forEach((entity: T) => {
       const model = this._data[entity.id];
@@ -116,18 +119,21 @@ export default class MultiEntityMapStore<
     });
   }
 
+  @action
   batchReplace(entities: T[]) {
     entities.forEach((entity: T) => {
       this._replace(entity);
     });
   }
 
+  @action
   private _replace(entity: T) {
     if (entity && this._data[entity.id]) {
       this._partialUpdate(entity, entity.id);
     }
   }
 
+  @action
   remove(id: number) {
     setTimeout(() => {
       const model = this._data[id];

@@ -16,12 +16,12 @@ import {
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
+const groupService = new GroupService();
 
 describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
-    const groupService = new GroupService();
     beforeEach(() => {
-      (GroupService as any).mockImplementation(() => groupService);
+      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();

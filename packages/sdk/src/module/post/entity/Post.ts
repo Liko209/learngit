@@ -6,7 +6,9 @@
 
 import { ExtendedBaseModel } from '../../models';
 import { PostItemData } from './PostItemData';
-import { IdModel } from '../../../framework/model';
+import { IdModel, Raw } from '../../../framework/model';
+import { Item } from '../../item/entity';
+import { QUERY_DIRECTION } from '../../../dao/constants';
 
 export type Post = ExtendedBaseModel & {
   group_id: number;
@@ -32,4 +34,37 @@ export type Post = ExtendedBaseModel & {
 export type PostView = IdModel & {
   group_id: number;
   created_at: number;
+};
+
+export type IPostQuery = {
+  groupId: number;
+  limit?: number;
+  postId?: number;
+  direction?: QUERY_DIRECTION;
+};
+
+export type IPostResult = {
+  posts: Post[];
+  items: Item[];
+  hasMore: boolean;
+  limit?: number;
+};
+
+export type IPostsModel = {
+  posts: Raw<Post>[];
+  items: Raw<Item>[];
+};
+
+export type IRawPostResult = {
+  posts: Raw<Post>[];
+  items: Raw<Item>[];
+  hasMore: boolean;
+};
+
+export type IRequestRemotePostAndSave = {
+  direction: QUERY_DIRECTION;
+  groupId: number;
+  limit: number;
+  postId: number;
+  shouldSaveToDb: boolean;
 };

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 
@@ -25,7 +25,7 @@ const StyledAction = styled('span')`
   }
 `;
 
-const JuiProfileMiniCardFooterRight = ({ children }: Props) => {
+const JuiProfileMiniCardFooterRight = memo(({ children }: Props) => {
   return (
     <Wrapper>
       {React.Children.toArray(children).map((child, index) => {
@@ -33,6 +33,6 @@ const JuiProfileMiniCardFooterRight = ({ children }: Props) => {
       })}
     </Wrapper>
   );
-};
+});
 
 export { JuiProfileMiniCardFooterRight };

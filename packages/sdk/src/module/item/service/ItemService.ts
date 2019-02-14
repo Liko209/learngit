@@ -7,12 +7,16 @@
 import { Item, ItemFile } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ItemServiceController } from '../controller/ItemServiceController';
-import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+} from '../../../utils';
 import { Progress } from '../../progress';
 import { Post } from '../../post/entity';
-import ItemAPI, { IRightRailItemModel } from '../../../api/glip/item';
-import { ApiResult } from '../../../api/ApiResult';
-import { ItemDao, daoManager } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { ItemDao } from '../dao';
 import { SOCKET, ENTITY } from '../../../service/eventKey';
 import { FileItemService } from '../module/file';
 import { Api } from '../../../api';
@@ -21,6 +25,7 @@ import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
+import { mainLogger } from 'foundation';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';
@@ -80,7 +85,14 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getItems(options: ItemQueryOptions) {
-    return this.itemServiceController.getItems(options);
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
+      logId,
+    );
+    const result = await this.itemServiceController.getItems(options);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    return result;
   }
 
   async createItem(item: Item) {
@@ -190,6 +202,11 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getByPosts(posts: Post[]): Promise<Item[]> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      logId,
+    );
     let itemIds: number[] = [];
     posts.forEach((post: Post) => {
       if (post.item_ids && post.item_ids[0]) {
@@ -199,25 +216,22 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
         itemIds = itemIds.concat(post.at_mention_item_ids);
       }
     });
-    const itemDao = daoManager.getDao(ItemDao);
-    const items = await itemDao.getItemsByIds([
-      ...Array.from(new Set(itemIds)),
-    ]);
-    return items;
-  }
 
-  getRightRailItemsOfGroup(groupId: number, limit?: number): Promise<Item[]> {
-    ItemAPI.requestRightRailItems(groupId).then(
-      (result: ApiResult<IRightRailItemModel>) => {
-        if (result.isOk()) {
-          this.handleIncomingData(result.data.items);
-        }
-      },
+    let items: Item[] = [];
+    if (itemIds.length > 0) {
+      items = await this.getEntitySource().batchGet([
+        ...Array.from(new Set(itemIds)),
+      ]);
+    }
+
+    mainLogger.info(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      ': item count:',
+      String(itemIds.length),
     );
-    return (daoManager.getDao(ItemDao) as ItemDao).getItemsByGroupId(
-      groupId,
-      limit,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
+    return items;
   }
 
   async doNotRenderItem(id: number, type: string) {

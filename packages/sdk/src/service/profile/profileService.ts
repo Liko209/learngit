@@ -16,8 +16,9 @@ import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { transform } from '../utils';
 
 import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
-import handleData, { hiddenGroupsChange } from './handleData';
-import { daoManager, PersonDao } from '../../dao';
+import handleData from './handleData';
+import { daoManager } from '../../dao';
+import { PersonDao } from '../../module/person/dao';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -291,7 +292,6 @@ class ProfileService extends BaseService<Profile> {
           favorite_group_ids: favIds,
         };
       }
-      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
@@ -316,7 +316,6 @@ class ProfileService extends BaseService<Profile> {
         ...partialModel,
         [`hide_group_${groupId}`]: false,
       };
-      hiddenGroupsChange(originalModel, partialProfile as Profile);
       return partialProfile;
     };
 
@@ -369,6 +368,13 @@ class ProfileService extends BaseService<Profile> {
       return profile.max_leftrail_group_tabs2;
     }
     return DEFAULT_LEFTRAIL_GROUP;
+  }
+
+  async getFavoriteGroupIds(): Promise<number[]> {
+    const profile = await this.getProfile();
+    return profile && profile.favorite_group_ids
+      ? profile.favorite_group_ids
+      : [];
   }
 }
 

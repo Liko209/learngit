@@ -38,11 +38,6 @@ export class StreamController {
   }
 
   @computed
-  get postIds() {
-    return this._orderListHandler.sortableListStore.getIds();
-  }
-
-  @computed
   private get _groupState() {
     return getEntity<GroupState, GroupStateModel>(
       ENTITY_NAME.GROUP_STATE,
@@ -95,7 +90,18 @@ export class StreamController {
 
   @computed
   get items() {
-    return _(this._streamListHandler.sortableListStore.items)
+    const items = this._streamListHandler.sortableListStore.items;
+    let startIndex = 0;
+    const firstItem = _.first(items);
+    const isFirstItemPost =
+      firstItem &&
+      firstItem.data &&
+      firstItem.data.type === StreamItemType.POST;
+    if (!isFirstItemPost) {
+      startIndex = 1;
+    }
+    return _(items)
+      .slice(startIndex)
       .map('data')
       .compact()
       .value();
@@ -112,18 +118,18 @@ export class StreamController {
 
   @action
   handlePostsChanged = (delta: TDeltaWithData) => {
+    const items = _(this._streamListHandler.listStore.items)
+      .map('data')
+      .compact()
+      .value();
     const { streamItems } = this._assemblyLine.process(
       delta,
       this._orderListHandler.listStore.items,
       this.hasMoreUp,
-      this.items,
+      items,
       this._readThrough,
     );
     if (streamItems) {
-      const last = _.nth(streamItems, -1);
-      if (last && last.type !== StreamItemType.POST) {
-        streamItems.pop();
-      }
       this._streamListHandler.replaceAll(streamItems);
     }
   }

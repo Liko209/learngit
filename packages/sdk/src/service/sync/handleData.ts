@@ -13,22 +13,22 @@ import {
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
-import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
 import profileHandleData from '../profile/handleData';
-import stateHandleData from '../state/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
 import { Raw } from '../../framework/model';
 import { Profile } from '../../module/profile/entity';
 import { ItemService } from '../../module/item';
+import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
+import { GroupService } from '../../module/group';
 
-const dispatchIncomingData = (data: IndexDataModel) => {
+const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
     user_id: userId,
     company_id: companyId,
@@ -41,6 +41,7 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     groups = [],
     teams = [],
     posts = [],
+    public_teams = [],
     max_posts_exceeded: maxPostsExceeded = false,
     client_config: clientConfig = {},
   } = data;
@@ -48,13 +49,13 @@ const dispatchIncomingData = (data: IndexDataModel) => {
   const arrState: any[] = [];
   if (state && Object.keys(state).length > 0) {
     arrState.push(state);
+    arrState[0].__from_index = true;
   }
 
   let transProfile: Raw<Profile> | null = null;
   if (profile && Object.keys(profile).length > 0) {
     transProfile = profile;
   }
-
   return Promise.all([
     accountHandleData({
       userId,
@@ -65,15 +66,18 @@ const dispatchIncomingData = (data: IndexDataModel) => {
     companyHandleData(companies),
     (ItemService.getInstance() as ItemService).handleIncomingData(items),
     presenceHandleData(presences),
-    stateHandleData(arrState),
+    (StateService.getInstance() as StateService).handleState(arrState),
     // featureFlag.handleData(clientConfig),
   ])
     .then(() => profileHandleData(transProfile))
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
-    .then(() => groupHandleData(groups))
-    .then(() => groupHandleData(teams))
+    .then(() =>
+      GroupService.getInstance<GroupService>().handleData(public_teams),
+    )
+    .then(() => GroupService.getInstance<GroupService>().handleData(groups))
+    .then(() => GroupService.getInstance<GroupService>().handleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 

@@ -12,10 +12,12 @@ import { buildContainer } from '../buildContainer';
 type MyProps = {
   id: number;
 };
-type MyViewProps = {
+
+type MyViewProps = MyProps & {
   id: number;
   text: string;
 };
+
 const BadChild = () => <div />;
 const MyView = ({ id, text }: MyViewProps) => (
   <div>
@@ -23,31 +25,35 @@ const MyView = ({ id, text }: MyViewProps) => (
     <BadChild />
   </div>
 );
+
 const mockOnReceiveProps = jest.fn().mockName('onReceiveProps');
 const dispose = jest.fn().mockName('dispose');
-class MyViewModel extends StoreViewModel<MyProps> implements MyViewProps {
+class MyViewModel extends StoreViewModel<MyProps> {
   dispose = dispose;
 
-  @observable
-  id: number;
-  @observable
-  text: string;
+  @observable text: string;
 
   onReceiveProps(props: MyProps) {
     mockOnReceiveProps(props);
     if (isNaN(props.id)) throw new Error();
-    this.id = props.id;
     this.text = 'text';
   }
 }
 
-describe('buildContainer()', () => {
-  const MyContainer = buildContainer<MyProps>({
-    View: MyView,
-    ViewModel: MyViewModel,
-  });
+class ConflictViewModel extends StoreViewModel<MyProps> {
+  dispose = dispose;
 
+  @observable id: number;
+  @observable text: string;
+}
+
+describe('buildContainer()', () => {
   it('should build a container', () => {
+    const MyContainer = buildContainer<MyProps>({
+      View: MyView,
+      ViewModel: MyViewModel,
+    });
+
     const wrapper1 = mount(<MyContainer id={1} />);
     expect(wrapper1.text()).toBe('text 1');
 
@@ -56,6 +62,11 @@ describe('buildContainer()', () => {
   });
 
   it('should call onReceiveProps() of ViewModel when props change', () => {
+    const MyContainer = buildContainer<MyProps>({
+      View: MyView,
+      ViewModel: MyViewModel,
+    });
+
     const wrapper = mount(<MyContainer id={1} />);
     expect(mockOnReceiveProps).toHaveBeenCalledWith({ id: 1 });
 
@@ -64,10 +75,24 @@ describe('buildContainer()', () => {
   });
 
   it('should call dispose() of ViewModel when unmount', () => {
+    const MyContainer = buildContainer<MyProps>({
+      View: MyView,
+      ViewModel: MyViewModel,
+    });
+
     const wrapper = mount(<MyContainer id={1} />);
 
     wrapper.unmount();
 
     expect(dispose).toHaveBeenCalled();
+  });
+
+  it('should throw error when Container props conflict with ViewModel', () => {
+    const ConflictContainer = buildContainer<MyProps>({
+      View: MyView,
+      ViewModel: ConflictViewModel,
+    });
+
+    expect(() => mount(<ConflictContainer id={1} />)).toThrow();
   });
 });

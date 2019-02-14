@@ -3,14 +3,17 @@
  * @Date: 2018-11-15 11:09:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService, StateService } from 'sdk/service';
+
+/// <reference path="../../../../../__tests__/types.d.ts" />
+import { PostService, notificationCenter } from 'sdk/service';
+import { StateService } from 'sdk/module/state';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
 import { id } from 'inversify';
-import { errorHelper } from 'sdk/error';
+import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
 
@@ -20,20 +23,27 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
+import { NewPostService } from 'sdk/module/post';
+import { StreamProps, StreamItemType } from '../types';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/service/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
+const postService = {
+  getPostsByGroupId: jest.fn(),
+};
+
 function setup(obj?: any) {
+  jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
 }
 
 describe('StreamViewModel', () => {
-  let postService: PostService;
   let itemService: ItemService;
   const streamController = {
     dispose: jest.fn(),
@@ -43,9 +53,9 @@ describe('StreamViewModel', () => {
   };
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
     itemService = new ItemService();
-    postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
@@ -61,7 +71,7 @@ describe('StreamViewModel', () => {
       const vm = setup({
         props: { groupId: 1 },
       });
-      (postService.getPostsByGroupId as jest.Mock).mockResolvedValue({
+      postService.getPostsByGroupId.mockResolvedValue({
         posts: [
           { id: 1, item_ids: [], created_at: 10000 },
           { id: 2, item_ids: [], created_at: 10001 },
@@ -123,9 +133,9 @@ describe('StreamViewModel', () => {
 
   describe('dispose()', () => {
     it('should dispose streamController', () => {
-      const vm = setup({ streamController: { dispose: jest.fn() } });
+      const vm = setup({ _streamController: { dispose: jest.fn() } });
       vm.dispose();
-      expect(vm.streamController.dispose).toHaveBeenCalled();
+      expect(vm._streamController.dispose).toHaveBeenCalled();
     });
   });
 
@@ -133,12 +143,16 @@ describe('StreamViewModel', () => {
     function setup(props: { hasMoreUp: boolean; id?: number }) {
       const vm = new StreamViewModel({
         groupId: 1,
-      });
-      vm.streamController = {
-        hasMoreUp: props.hasMoreUp,
-        items: props.id ? [{ id: props.id, value: [props.id] }] : [],
-      };
+      } as StreamProps);
 
+      Object.assign(vm, {
+        _streamController: {
+          hasMoreUp: props.hasMoreUp,
+          items: props.id
+            ? [{ id: props.id, value: [props.id], type: StreamItemType.POST }]
+            : [],
+        },
+      });
       return vm;
     }
     it('should be true when user has loaded messages  [JPT-478]', () => {
@@ -170,34 +184,35 @@ describe('StreamViewModel', () => {
   describe('updateHistoryHandler()', () => {
     it('should update historyHandler with arguments', () => {
       const mockUpdate = jest.fn();
-      const groupState = Math.random();
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
         _historyHandler: { update: mockUpdate },
-        streamController: {},
+        _streamController: {
+          postIds,
+          items: postIds.map(i => ({
+            id: i,
+            value: i,
+            type: StreamItemType.POST,
+          })),
+        },
       });
 
-      vm.streamController.postIds = postIds;
-      Object.defineProperty(vm, '_groupState', {
-        value: groupState,
-      });
       vm.updateHistoryHandler();
-
       expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toBeCalledWith(groupState, postIds);
+      expect(mockUpdate).toBeCalledWith(vm._groupState, postIds);
     });
   });
 
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
       const stateService = new StateService();
-      const spy = jest.spyOn(stateService, 'markAsRead');
+      const spy = jest.spyOn(stateService, 'updateReadStatus');
       StateService.getInstance = jest.fn().mockReturnValue(stateService);
       const groupId = 123123;
       const vm = setup({ groupId });
       vm.markAsRead();
 
-      expect(spy).toBeCalledWith(groupId);
+      expect(spy).toBeCalledWith(groupId, false);
 
       spy.mockRestore();
     });
@@ -207,7 +222,7 @@ describe('StreamViewModel', () => {
     it('should enable newMessageSeparatorHandler', () => {
       const mockEnable = jest.fn();
       const vm = setup({
-        streamController: { enableNewMessageSep: mockEnable },
+        _streamController: { enableNewMessageSep: mockEnable },
       });
       vm.enableNewMessageSeparatorHandler();
 
@@ -219,7 +234,7 @@ describe('StreamViewModel', () => {
     it('should disable newMessageSeparatorHandler', () => {
       const mockDisable = jest.fn();
       const vm = setup({
-        streamController: { disableNewMessageSep: mockDisable },
+        _streamController: { disableNewMessageSep: mockDisable },
       });
 
       vm.disableNewMessageSeparatorHandler();
@@ -237,7 +252,7 @@ describe('StreamViewModel', () => {
         jumpToPostId: 121244,
         groupId: 123123123,
         _historyHandler: {},
-        streamController: { dispose },
+        _streamController: { dispose },
         _initialized: true,
       };
       const vm = setup({
@@ -263,6 +278,13 @@ describe('StreamViewModel', () => {
       expect(globalStore.get).toBeCalledWith(GLOBAL_KEYS.JUMP_TO_POST_ID);
       spy.mockRestore();
     });
+
+    // This should be removed in future since sync item mustn't be initiated in stream.
+    it('should sync group items when switch conversation', () => {
+      const { vm } = localSetup();
+      vm.initialize(12);
+      expect(itemService.requestSyncGroupItems).toBeCalled();
+    });
   });
 
   describe('loadPrevPosts()', () => {
@@ -270,7 +292,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -287,7 +309,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -297,6 +319,55 @@ describe('StreamViewModel', () => {
       expect(fetchData).toBeCalledWith(QUERY_DIRECTION.OLDER, undefined);
       expect(posts).toEqual(data);
     });
+
+    it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn(() => true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      Notification.flashToast = jest.fn();
+
+      await vm.loadPrevPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        dismissible: false,
+        fullWidth: false,
+        message: 'SorryWeWereNotAbleToLoadOlderMessages',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
+      });
+    });
+
+    it('should use generalErrorHandler if error is not from backend or network error', async () => {
+      const fetchData = jest.fn(() => Promise.reject(new Error()));
+      const hasMore = jest.fn(() => true);
+      jest.spyOn(errorUtil, 'generalErrorHandler');
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      await vm.loadPrevPosts();
+
+      expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
+    });
   });
 
   describe('loadNextPosts()', () => {
@@ -304,7 +375,7 @@ describe('StreamViewModel', () => {
       const hasMore = jest.fn(() => false);
       const fetchData = jest.fn(() => Promise.resolve([]));
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -322,7 +393,7 @@ describe('StreamViewModel', () => {
       const fetchData = jest.fn(() => Promise.resolve(data));
       const hasMore = jest.fn(() => true);
       const vm = setup({
-        streamController: {
+        _streamController: {
           hasMore,
           fetchData,
         },
@@ -331,6 +402,38 @@ describe('StreamViewModel', () => {
       const posts = await vm.loadNextPosts();
       expect(fetchData).toBeCalledWith(QUERY_DIRECTION.NEWER, undefined);
       expect(posts).toEqual(data);
+    });
+
+    it('should show error toast when server throw error while scroll down [JPT-695]', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn().mockReturnValue(true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      Notification.flashToast = jest.fn();
+
+      await vm.loadNextPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledWith({
+        dismissible: false,
+        fullWidth: false,
+        message: 'SorryWeWereNotAbleToLoadNewerMessages',
+        messageAlign: ToastMessageAlign.LEFT,
+        type: ToastType.ERROR,
+      });
     });
   });
 
@@ -371,7 +474,7 @@ describe('StreamViewModel', () => {
         dispose: jest.fn(),
       };
       const vm = setup({
-        streamController,
+        _streamController: streamController,
         _initialized: initialized,
         ...args,
       });
@@ -443,71 +546,6 @@ describe('StreamViewModel', () => {
         expect(streamController.enableNewMessageSep).toBeCalled();
       });
     });
-
     jest.restoreAllMocks();
-  });
-});
-
-describe('fetchData()', () => {
-  function setup() {
-    const vm = new StreamViewModel({ groupId: 1 });
-    return vm;
-  }
-  let vm;
-  let postService;
-  beforeEach(() => {
-    postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
-    vm = setup();
-  });
-  it('should show error toast when server throw error while scroll up [JPT-695]', async () => {
-    jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);
-    jest.spyOn(vm.streamController, 'fetchData');
-    postService.getPostsByGroupId = jest
-      .fn()
-      .mockRejectedValueOnce(new Error());
-    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
-    Notification.flashToast = jest.fn();
-    await vm.loadPrevPosts();
-    expect(vm.streamController.fetchData).toHaveBeenCalled();
-    expect(Notification.flashToast).toHaveBeenCalledWith({
-      dismissible: false,
-      fullWidth: false,
-      message: 'SorryWeWereNotAbleToLoadOlderMessages',
-      messageAlign: ToastMessageAlign.LEFT,
-      type: ToastType.ERROR,
-    });
-  });
-
-  it('should show error toast when server throw error while scroll down [JPT-695]', async () => {
-    jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);
-    jest.spyOn(vm.streamController, 'fetchData');
-    postService.getPostsByGroupId = jest
-      .fn()
-      .mockRejectedValueOnce(new Error());
-    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(true);
-    Notification.flashToast = jest.fn();
-    await vm.loadNextPosts();
-    expect(vm.streamController.fetchData).toHaveBeenCalled();
-    expect(Notification.flashToast).toHaveBeenCalledWith({
-      dismissible: false,
-      fullWidth: false,
-      message: 'SorryWeWereNotAbleToLoadNewerMessages',
-      messageAlign: ToastMessageAlign.LEFT,
-      type: ToastType.ERROR,
-    });
-  });
-
-  it('should use generalErrorHandler if error is not from backend', async () => {
-    jest.spyOn(vm.streamController, 'hasMore').mockReturnValueOnce(true);
-    jest.spyOn(vm.streamController, 'fetchData');
-    postService.getPostsByGroupId = jest
-      .fn()
-      .mockRejectedValueOnce(new Error());
-    jest.spyOn(errorHelper, 'isBackEndError').mockReturnValueOnce(false);
-    jest.spyOn(errorUtil, 'generalErrorHandler');
-    await vm.loadPrevPosts();
-    expect(vm.streamController.fetchData).toHaveBeenCalled();
-    expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,7 @@
  */
 import React, { ReactNode } from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { debounce } from 'lodash';
 import {
   JuiSearchBar,
@@ -108,13 +108,16 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
     const { value } = e.target;
-    const { setValue } = this.props;
+    const { setValue, updateFocus, focus } = this.props;
     setValue(value);
     if (!value.trim()) {
       this._resetData();
       return;
     }
     this._debounceSearch(value);
+    if (!focus) {
+      updateFocus(true);
+    }
   }
 
   onFocus = () => {
@@ -177,12 +180,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _Actions = (item: SortableModel<Group>) => {
     return (
       <JuiButton
-        onClick={this.handleJoinTeam(item)}
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
       >
-        {t('join')}
+        {i18next.t('join')}
       </JuiButton>
     );
   }
@@ -202,8 +204,9 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       <>
         {type.sortableModel.length > 0 && (
           <JuiSearchTitle
+            key={`showMore-${sectionIndex}`}
             isShowMore={type.hasMore}
-            showMore={t('showMore')}
+            showMore={i18next.t('showMore')}
             title={title}
             data-test-automation-id={`search-${title}`}
           />
@@ -319,6 +322,9 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       groups.sortableModel,
       teams.sortableModel,
     ];
+    if (section < 0 || cell < 0) {
+      return;
+    }
     const selectItem = searchItems[section][cell] as SortableModel<
       Person | Group
     >;
@@ -392,7 +398,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             onClear={this.onClear}
             value={searchValue}
             onChange={this.onChange}
-            placeholder={t('search')}
+            placeholder={i18next.t('search')}
             showCloseBtn={!!searchValue}
           />
           {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}

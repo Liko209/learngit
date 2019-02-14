@@ -3,7 +3,7 @@
  * @Date: 2018-09-17 16:07:00
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 import MuiTypography, { TypographyProps } from '@material-ui/core/Typography';
 import JuiLink, { JuiLinkProps } from '../Link';
@@ -28,7 +28,7 @@ type Props = {
   JuiLinkProps?: JuiLinkProps;
 };
 
-const JuiTextWithLink = (props: Props) => {
+const JuiTextWithLink = memo((props: Props) => {
   const { text, linkText, onClick, TypographyProps, JuiLinkProps } = props;
   let textProps;
   if (TypographyProps) {
@@ -44,6 +44,6 @@ const JuiTextWithLink = (props: Props) => {
       </JuiLink>
     </TipsText>
   );
-};
+});
 
 export { JuiTextWithLink };

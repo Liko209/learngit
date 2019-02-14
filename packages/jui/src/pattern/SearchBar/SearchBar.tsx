@@ -32,7 +32,7 @@ type Props = {
   tabIndex?: number;
 };
 
-class JuiSearchBar extends React.Component<Props, {}> {
+class JuiSearchBar extends React.PureComponent<Props, {}> {
   render() {
     const { children, focus, onClose, ...rest } = this.props;
     return (

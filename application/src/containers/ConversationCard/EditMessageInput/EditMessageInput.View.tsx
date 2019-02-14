@@ -61,7 +61,7 @@ class EditMessageInputViewComponent extends Component<
   }
 }
 
-const EditMessageInputView = translate('Conversations')(
+const EditMessageInputView = translate('translations')(
   EditMessageInputViewComponent,
 );
 

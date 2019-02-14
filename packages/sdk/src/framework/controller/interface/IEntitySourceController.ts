@@ -9,9 +9,11 @@ import { IEntityPersistentController } from './IEntityPersistentController';
 
 interface IEntitySourceController<T extends IdModel = IdModel>
   extends IEntityPersistentController<T> {
-  getEntityLocally(id: number): Promise<T>;
+  getEntityLocally(id: number): Promise<T | null>;
 
   getEntitiesLocally(ids: number[], includeDeactivated: boolean): Promise<T[]>;
+
+  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 }
 
 export { IEntitySourceController };

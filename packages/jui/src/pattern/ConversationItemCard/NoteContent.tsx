@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { typography, grey } from '../../foundation/utils/styles';
 
@@ -17,9 +17,9 @@ const StyledText = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiNoteContent = (props: Props) => (
+const JuiNoteContent = memo((props: Props) => (
   <StyledText>{props.children}</StyledText>
-);
+));
 
 JuiNoteContent.displayName = 'JuiNoteContent';
 

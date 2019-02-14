@@ -15,9 +15,12 @@ import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { LinkItemViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { SecondaryText } from '../common/SecondaryText.View';
+import { Palette } from 'jui/foundation/theme/theme';
 
 @observer
 class LinkItemView extends Component<LinkItemViewProps> {
+  private _color: [keyof Palette, string] = ['grey', '500'];
+
   private _openLink = () => {
     const { url } = this.props;
     window.open(url, '_blank');
@@ -36,7 +39,9 @@ class LinkItemView extends Component<LinkItemViewProps> {
           {faviconUrl ? (
             <JuiThumbnail url={faviconUrl} />
           ) : (
-            <JuiIconography fontSize="large">link</JuiIconography>
+            <JuiIconography fontSize="large" color={this._color}>
+              link
+            </JuiIconography>
           )}
         </JuiListItemIcon>
         <JuiListItemText

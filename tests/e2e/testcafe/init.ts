@@ -1,15 +1,37 @@
 import 'testcafe';
+import { RequestHook } from 'testcafe';
 import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
-import { ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS } from './config';
+import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';
 import { IConsoleLog } from './v2/models';
+import { MockClient, BrowserInitDto } from 'mock-client';
 
+import { getLogger } from 'log4js';
+const logger = getLogger(__filename);
+logger.level = 'info';
+
+// create electron configuration file
+const electronRunConfig = {
+  mainWindowUrl: process.env.MAIN_WINDOW_URL || SITE_URL,
+  electronPath: process.env.ELECTRON_PATH || '/Applications/Jupiter.app/Contents/MacOS/Jupiter'
+};
+const testcafeElectronRcFilename = '.testcafe-electron-rc';
+const testcafeElectronRcContent = JSON.stringify(electronRunConfig, null, 4);
+fs.writeFileSync(testcafeElectronRcFilename, testcafeElectronRcContent);
+logger.info(`create ${testcafeElectronRcFilename} with content ${testcafeElectronRcContent}`);
+
+
+// initialize mock client
+export const mockClient = ENABLE_MOCK_SERVER ? new MockClient(MOCK_SERVER_URL) : null;
+
+// initialize account pool client
 export const accountPoolClient = initAccountPoolManager(ENV_OPTS, DEBUG_MODE);
 
+// initialize beat dashboard
 const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHBOARD_URL, DASHBOARD_API_KEY) : null;
 
 // _runId is a share state
@@ -58,8 +80,10 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
   return _runId;
 }
 
+// inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
+
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
@@ -71,10 +95,28 @@ export function setupCase(accountType: string) {
       ENV_OPTS.RC_PLATFORM_BASE_URL,
       ENV_OPTS.GLIP_SERVER_BASE_URL,
     );
+
     await h(t).jupiterHelper.setup(
+      SITE_ENV,
       ENV_OPTS.AUTH_URL,
       ENV_OPTS.JUPITER_APP_KEY,
-    )
+    );
+
+    if (mockClient) {
+      h(t).mockClient = mockClient;
+      const mockEnvConfig = BrowserInitDto.of()
+        .env(SITE_ENV)
+        .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
+        .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
+      h(t).mockRequestId = await mockClient.registerBrowser(mockEnvConfig);
+      const hook = new MockClientHook();
+      hook.requestId = h(t).mockRequestId;
+      await t.addRequestHooks([hook]);
+      h(t).jupiterHelper.siteEnv = MOCK_ENV;
+      h(t).jupiterHelper.authUrl = MOCK_AUTH_URL;
+      h(t).jupiterHelper.mockRequestId = h(t).mockRequestId;
+    }
+
     await h(t).logHelper.setup();
     await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);
     await t.maximizeWindow();
@@ -83,6 +125,9 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    if (mockClient)
+      await mockClient.releaseBrowser(h(t).mockRequestId);
+
     // release account
     await h(t).dataHelper.teardown();
 
@@ -127,5 +172,17 @@ export function teardownCase() {
         await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
+  }
+}
+
+
+class MockClientHook extends RequestHook {
+  public requestId: string;
+
+  onRequest(event) {
+    event.requestOptions.headers['x-mock-request-id'] = this.requestId;
+  }
+
+  onResponse(event) {
   }
 }

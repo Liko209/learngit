@@ -12,9 +12,10 @@ import {
 } from 'jui/pattern/ConversationList';
 import { ConversationListItem } from '@/containers/ConversationList/ConversationListItem';
 import { toTitleCase } from '@/utils/string';
-import { SectionViewProps } from './types';
-import { Umi } from '../../Umi';
+import { SectionViewProps, SECTION_TYPE } from './types';
+import { Umi, UMI_SECTION_TYPE } from '../../Umi';
 import { JuiDivider } from 'jui/components/Divider';
+import { observer } from 'mobx-react';
 // TODO remove Stubs here
 
 const SortableList = SortableContainer(JuiConversationList);
@@ -22,6 +23,7 @@ const SortableItem = SortableElement(ConversationListItem);
 
 type Props = SectionViewProps & WithNamespaces;
 
+@observer
 class SectionViewComponent extends React.Component<Props> {
   renderList() {
     const { sortable, onSortEnd } = this.props;
@@ -54,14 +56,22 @@ class SectionViewComponent extends React.Component<Props> {
   render() {
     const {
       t,
+      type,
       title,
-      groupIds,
       iconName,
       expanded,
       isLast,
       handleCollapse,
       handleExpand,
     } = this.props;
+    let umiType: UMI_SECTION_TYPE;
+    if (type === SECTION_TYPE.FAVORITE) {
+      umiType = UMI_SECTION_TYPE.FAVORITE;
+    } else if (type === SECTION_TYPE.DIRECT_MESSAGE) {
+      umiType = UMI_SECTION_TYPE.DIRECT_MESSAGE;
+    } else {
+      umiType = UMI_SECTION_TYPE.TEAM;
+    }
     return (
       <div
         className="conversation-list-section"
@@ -70,7 +80,7 @@ class SectionViewComponent extends React.Component<Props> {
         <JuiConversationListSection
           title={toTitleCase(t(title))}
           icon={iconName}
-          umi={<Umi ids={groupIds} />}
+          umi={<Umi type={umiType} />}
           expanded={expanded}
           onCollapse={handleCollapse}
           onExpand={handleExpand}
@@ -83,7 +93,7 @@ class SectionViewComponent extends React.Component<Props> {
   }
 }
 
-const SectionView = translate('Conversations')(SectionViewComponent);
+const SectionView = translate('translations')(SectionViewComponent);
 
 export { SectionView };
 export default SectionView;

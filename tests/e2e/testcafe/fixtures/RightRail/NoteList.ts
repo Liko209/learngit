@@ -3,7 +3,6 @@
  * @Date: 2019-01-17 18:37:36
  * Copyright © RingCentral. All rights reserved.
  */
-import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
@@ -15,52 +14,63 @@ fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check the create note and display on the right rail', ['Isaac', 'P2','JPT-779']), async t => {
+
+test(formalName('Check the the sum of the shared notes displayed when add note', ['Isaac', 'P2', 'JPT-779']), async t => {
   const app = new AppRoot(t);
-  const homePage = app.homePage;
-  const rightRail = homePage.messageTab.rightRail;
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[0];
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
 
-  const noteItemAutomationID = 'rightRail-note-item';
-  const teamName = `Team ${uuid()}`;
   const noteTitle = uuid();
-  let groupId;
+  const secondNoteTitle = uuid();
 
-  // step 1 create team
-  await h(t).withLog('Then I login & create a team & enter the conversation', async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
+  const rightRail = app.homePage.messageTab.rightRail;
 
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-
-    groupId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: teamName,
+  let teamId;
+  await h(t).withLog('Given I have a team before login ', async () => {
+    teamId = await h(t).platform(loginUser).createAndGetGroupId({
+      name: uuid(),
       type: 'Team',
       members: [loginUser.rcId],
     });
+  });
 
-    await homePage.ensureLoaded();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(groupId).enter();
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter a conversation and I click Notes Tab', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+    await rightRail.openMore();
+    await rightRail.notesEntry.enter();
+  });
+
+  await h(t).withLog('Then Notes Tab should be opened', async () => {
+    await rightRail.notesEntry.shouldBeOpened();
   });
 
   // step 2 create a note
-  await h(t).withLog('Then User create a note', async () => {
-    await h(t).glip(loginUser).createSimpleNote(groupId, noteTitle, uuid());
-    await rightRail.openMore();
-    await rightRail.waitUntilVisible(rightRail.notesEntry);
-    await rightRail.notesEntry.enter();
-    await rightRail.waitUntilVisible(rightRail.nthListItem(noteItemAutomationID, 0));
-    await t.expect(rightRail.listSubTitle.textContent).contains('1');
-    await t.expect(rightRail.nthListItem(noteItemAutomationID, 0).find('span').withText(noteTitle).exists).ok();
+  await h(t).withLog('When User create a note', async () => {
+    await h(t).glip(loginUser).createSimpleNote(teamId, noteTitle, uuid());
   });
 
-  // create another note
-  await h(t).withLog('Then User can create another note', async () => {
-    const title2 = uuid();
-    await h(t).glip(loginUser).createSimpleNote(groupId, title2, uuid());
-    await rightRail.waitUntilVisible(rightRail.nthListItem(noteItemAutomationID, 1));
-    await t.expect(rightRail.listSubTitle.textContent).contains('2');
-    await t.expect(rightRail.nthListItem(noteItemAutomationID, 0).find('span').withText(title2).exists).ok();
+  await h(t).withLog('Then The notes Tab number should be 1', async () => {
+    await rightRail.notesTab.waitUntilItemsListExist();
+    await rightRail.notesTab.countInListShouldBe(1);
+    await rightRail.notesTab.countOnSubTitleShouldBe(1);
+    await rightRail.notesTab.nthItemTitleShouldBe(0, noteTitle);
+  });
+
+  // step 2 create a note
+  await h(t).withLog('When User create a new note', async () => {
+    await h(t).glip(loginUser).createSimpleNote(teamId, secondNoteTitle, uuid());
+  });
+
+  await h(t).withLog('Then The notes Tab number should be 2', async () => {
+    await rightRail.notesTab.countInListShouldBe(2);
+    await rightRail.notesTab.countOnSubTitleShouldBe(2);
+    await rightRail.notesTab.nthItemTitleShouldBe(0, secondNoteTitle);
   });
 });

@@ -5,7 +5,7 @@
  */
 import React, { MouseEvent, Fragment } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi } from '@/containers/Umi';
+import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { Indicator } from '@/containers/ConversationList/Indicator';
 import { Presence } from '@/containers/Presence';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -16,7 +16,7 @@ import { observable } from 'mobx';
 
 type Props = ConversationListItemViewProps;
 type State = {
-  currentGroupId: number;
+  isHover: boolean;
 };
 
 @observer
@@ -29,6 +29,10 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     CONVERSATION_TYPES.ME,
   ];
 
+  state = {
+    isHover: false,
+  };
+
   constructor(props: Props) {
     super(props);
     this._handleClick = this._handleClick.bind(this);
@@ -37,7 +41,11 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   }
 
   private get _umi() {
-    return this.props.umiHint ? <Umi ids={[this.props.groupId]} /> : undefined;
+    return this.props.umiHint ? (
+      <Umi type={UMI_SECTION_TYPE.SINGLE} id={this.props.groupId} />
+    ) : (
+      undefined
+    );
   }
 
   private get _presence() {
@@ -53,7 +61,24 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     return <Indicator id={this.props.groupId} />;
   }
 
+  private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    this.setState({
+      isHover: true,
+    });
+  }
+
+  private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    this.setState({
+      isHover: false,
+    });
+  }
+
   render() {
+    const { isHover } = this.state;
     return (
       <Fragment>
         <JuiConversationListItem
@@ -68,13 +93,18 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           title={this.props.displayName}
           selected={this.props.selected}
           hidden={this.props.hidden}
-        />
-        <Menu
-          personId={this.props.personId}
-          groupId={this.props.groupId}
-          anchorEl={this.menuAnchorEl}
-          onClose={this._closeMenu}
-        />
+          onMouseEnter={this._handleMouseEnter}
+          onMouseLeave={this._handleMouseLeave}
+        >
+          {isHover && (
+            <Menu
+              personId={this.props.personId}
+              groupId={this.props.groupId}
+              anchorEl={this.menuAnchorEl}
+              onClose={this._closeMenu}
+            />
+          )}
+        </JuiConversationListItem>
       </Fragment>
     );
   }
@@ -88,7 +118,8 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this.menuAnchorEl = event.currentTarget;
   }
 
-  private _closeMenu() {
+  private _closeMenu(event: MouseEvent<HTMLElement>) {
+    event.stopPropagation();
     this.menuAnchorEl = null;
   }
 }

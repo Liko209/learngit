@@ -21,7 +21,7 @@ type Props = {
   // Search: ComponentType,
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
-  BackNForward?: ComponentType<any>;
+  BackNForward: ComponentType<any>;
   SearchBar: ComponentType<any>;
 };
 
@@ -29,7 +29,7 @@ type States = {
   isShowSearchBar: boolean;
 };
 
-class JuiTopBar extends React.Component<Props, States> {
+class JuiTopBar extends React.PureComponent<Props, States> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -61,7 +61,7 @@ class JuiTopBar extends React.Component<Props, States> {
               <MainMenu />
               <Logo />
             </StyledMenuWithLogo>
-            {BackNForward ? <BackNForward /> : null}
+            <BackNForward />
             <SearchBar
               isShowSearchBar={isShowSearchBar}
               closeSearchBar={this.showSearchBar}
