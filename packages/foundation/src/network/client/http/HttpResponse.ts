@@ -5,12 +5,8 @@
  */
 import BaseResponse from '../../BaseResponse';
 import NetworkResponseBuilder from '../NetworkResponseBuilder';
-import HttpResponseBuilder from './HttpResponseBuilder';
 
 class HttpResponse extends BaseResponse {
-  static get builder() {
-    return new HttpResponseBuilder();
-  }
   constructor(builder: NetworkResponseBuilder) {
     super(
       builder.data,

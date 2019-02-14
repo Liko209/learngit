@@ -34,7 +34,7 @@ const knobs = {
     ),
 };
 
-class PopperMenu extends React.Component {
+class PopperMenu extends React.PureComponent {
   private _Anchor = () => {
     return <JuiButton>Open Popper</JuiButton>;
   }

@@ -85,13 +85,13 @@ const TitleAndStatusWrapper = styled('div')`
   overflow: hidden;
 `;
 
-type IJuiConversationPageHeader = React.Component<
+type IJuiConversationPageHeader = React.PureComponent<
   JuiConversationPageHeaderProps
 > &
   Dependencies;
 
 class JuiConversationPageHeader
-  extends React.Component<
+  extends React.PureComponent<
     JuiConversationPageHeaderProps,
     { showTooltip: boolean }
   >
@@ -108,10 +108,6 @@ class JuiConversationPageHeader
     };
     this.textRef = React.createRef();
     this._handleMouseEnter = this._handleMouseEnter.bind(this);
-  }
-
-  componentDidMount() {
-    this.checkShouldTooltipRender();
   }
 
   private _handleMouseEnter() {

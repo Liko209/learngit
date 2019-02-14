@@ -105,7 +105,7 @@ type Props = {
   id?: number;
 };
 
-class JuiMessageInput extends React.Component<Props> {
+class JuiMessageInput extends React.PureComponent<Props> {
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
 
   componentDidMount() {
