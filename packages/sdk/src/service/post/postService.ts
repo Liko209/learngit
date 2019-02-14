@@ -407,7 +407,7 @@ class PostService extends BaseService<Post> {
 
   async removeItemFromPost(postId: number, itemId: number) {
     const itemService: ItemService = ItemService.getInstance();
-    await itemService.deleteItemData(itemId);
+    await itemService.deleteItem(itemId);
 
     const post = await this.getByIdFromDao(postId);
     if (post) {
