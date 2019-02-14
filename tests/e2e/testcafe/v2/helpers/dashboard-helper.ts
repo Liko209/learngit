@@ -8,7 +8,7 @@ import { IStep, Status, IConsoleLog } from "../models";
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
-import { H } from '.';
+import { H, h } from '.';
 import { BeatsClient, Test, Step } from 'bendapi-ts';
 
 const logger = getLogger(__filename);
@@ -69,6 +69,7 @@ export class DashboardHelper {
       os: userAgent.getOS().name,
       osVer: userAgent.getOS().version,
       user_agent: testRun.browserConnection.browserInfo.userAgent,
+      mockRequestId: h(this.t).mockRequestId,
     }
     const res = await this.beatsClient.createTest(beatsTest);
 
