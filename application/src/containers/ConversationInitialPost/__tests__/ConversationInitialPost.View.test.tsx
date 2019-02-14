@@ -5,10 +5,14 @@
  */
 import React from 'react';
 import { ConversationInitialPostView } from '../ConversationInitialPost.View';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import { CONVERSATION_TYPES } from '@/constants';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import PersonModel from '@/store/models/Person';
+import { ThemeProvider } from 'styled-components';
+import { theme } from '../../../__tests__/utils';
+import 'mobx';
+jest.mock('mobx');
 
 describe('ConversationInitialPostView', () => {
   describe('render()', () => {
@@ -39,6 +43,54 @@ describe('ConversationInitialPostView', () => {
         <ConversationInitialPostView {...baseProps} notEmpty={notEmpty} />,
       );
       expect(wrapper.find(JuiConversationPageInit)).toHaveLength(1);
+    });
+  });
+
+  describe("Check the first post_Initial view of a new conversation after it's created [JPT-237]", () => {
+    const displayName = 'facebook';
+    const createTime = 'createTime';
+    const creator = { userDisplayName: 'Wayne zhou' };
+
+    const baseProps = {
+      creator,
+      displayName,
+      createTime,
+      id: 1,
+      groupType: CONVERSATION_TYPES.ME,
+      groupDescription: 'text',
+      userDisPlayName: 'a',
+      t: (p: any) => p,
+      tReady: {},
+      isTeam: true,
+      isCompanyTeam: true,
+    };
+
+    it('should show create info when it is not a company team [JPT-237]', () => {
+      const props = { ...baseProps, isCompanyTeam: false };
+      const wrapper = mount(
+        <ThemeProvider theme={theme}>
+          <ConversationInitialPostView {...props} />
+        </ThemeProvider>,
+      );
+
+      wrapper.mount();
+      expect(wrapper.html().includes(creator.userDisplayName)).toBeTruthy();
+      expect(wrapper.html().includes(displayName)).toBeTruthy();
+      expect(wrapper.html().includes(createTime)).toBeTruthy();
+    });
+
+    it('should not show create info when it is a company team [JPT-237]', () => {
+      const props = { ...baseProps, isCompanyTeam: true };
+      const wrapper = mount(
+        <ThemeProvider theme={theme}>
+          <ConversationInitialPostView {...props} />
+        </ThemeProvider>,
+      );
+
+      wrapper.mount();
+      expect(wrapper.html().includes(creator.userDisplayName)).toBeFalsy();
+      expect(wrapper.html().includes(displayName)).toBeFalsy();
+      expect(wrapper.html().includes(createTime)).toBeFalsy();
     });
   });
 });
