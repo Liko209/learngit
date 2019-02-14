@@ -3,7 +3,7 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 export class TelephonyPOC extends BaseWebComponent {
 
   get self() {
-    return this.getSelectorByAutomationId('leftPanel').nextSibling('div')
+    return this.getSelectorByAutomationId('leftPanel').nextSibling('div');
   }
 
   get inputs() {
@@ -21,14 +21,16 @@ export class TelephonyPOC extends BaseWebComponent {
     return this.button('Dial');
   }
 
+  get endButton() {
+    return this.button('End');
+  }
+
   async clickDial() {
-    console.log("click dial button");
-    await this.t.setNativeDialogHandler((type, text, url) => {
-      console.log(`type ${type}`);
-      console.log(text);
-      console.log(url);
-      return true;
-    }).click(this.dialButton);
+    await this.t.click(this.dialButton);
+  }
+
+  async clickEnd() {
+    await this.t.click(this.endButton);
   }
 
 }
