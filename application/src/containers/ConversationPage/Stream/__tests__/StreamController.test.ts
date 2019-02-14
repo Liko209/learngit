@@ -9,7 +9,7 @@ describe('StreamController', () => {
       { fetchData: async () => ({ data: [], hasMore: true }) },
       {
         isMatchFunc: () => true,
-        transformFunc: i => ({
+        transformFunc: (i) => ({
           id: i.id,
           sortValue: i.id,
           data: i,
@@ -27,7 +27,7 @@ describe('StreamController', () => {
       { id: 0, type: StreamItemType.DATE_SEPARATOR },
     ];
     controller._streamListHandler.replaceAll(items);
-    expect(controller.items.map(i => i.type)).toEqual(
+    expect(controller.items.map((i) => i.type)).toEqual(
       Array(2).fill(StreamItemType.POST),
     );
   });
@@ -39,8 +39,7 @@ describe('StreamController', () => {
       { id: 0, type: StreamItemType.POST },
     ];
     controller._streamListHandler.replaceAll(items);
-    console.log('andy hu', controller.items);
-    expect(controller.items.map(i => i.type)).toEqual(
+    expect(controller.items.map((i) => i.type)).toEqual(
       Array(3).fill(StreamItemType.POST),
     );
   });

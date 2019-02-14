@@ -10,7 +10,7 @@ import React, {
   createRef,
 } from 'react';
 import styled from '../../foundation/styled-components';
-
+import RO from 'resize-observer-polyfill';
 type JuiVirtualCellOnLoadFunc = () => void;
 
 type JuiVirtualCellProps = {
@@ -23,7 +23,7 @@ const JuiVirtualCellWrapper = styled.div``;
 
 class JuiObservedCellWrapper extends PureComponent<JuiVirtualCellProps> {
   private _ref: RefObject<HTMLDivElement> = createRef();
-  private _observer?: MutationObserver;
+  private _observer?: RO;
   private _handleResize = () => {
     const { onLoad } = this.props;
     onLoad && onLoad();
@@ -32,11 +32,8 @@ class JuiObservedCellWrapper extends PureComponent<JuiVirtualCellProps> {
   componentDidMount() {
     const { current } = this._ref;
     if (current) {
-      this._observer = new MutationObserver(this._handleResize);
-      this._observer.observe(current, {
-        subtree: true,
-        childList: true,
-      });
+      this._observer = new RO(this._handleResize);
+      this._observer.observe(current);
     }
   }
 
@@ -49,8 +46,8 @@ class JuiObservedCellWrapper extends PureComponent<JuiVirtualCellProps> {
   render() {
     const { children, style } = this.props;
     return (
-      <div ref={this._ref} style={style}>
-        {children}
+      <div style={style}>
+        <div ref={this._ref}> {children}</div>
       </div>
     );
   }

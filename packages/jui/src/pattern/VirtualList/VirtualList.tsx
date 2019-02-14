@@ -42,7 +42,7 @@ type JuiVirtualListProps = {
 };
 
 class JuiVirtualList extends Component<JuiVirtualListProps> {
-  static MIN_CELL_HEIGHT: number = 44;
+  static MIN_CELL_HEIGHT: number = 10;
   private _cache: CellMeasurerCache;
   private _listRef: List;
 
@@ -83,6 +83,10 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }: ListRowProps) => {
     const { dataSource } = this.props;
     const observeCell = dataSource.observeCell && dataSource.observeCell();
+    const cellCount = dataSource.countOfCell();
+    if (index >= cellCount) {
+      return;
+    }
     return (
       <CellMeasurer
         cache={this.cache}
@@ -95,7 +99,10 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
           const props: JuiVirtualCellProps = {
             index,
             style,
-            onLoad: measure,
+            onLoad: () => {
+              this._cache.clear(index, 0);
+              measure();
+            },
           };
           const cell = dataSource.cellAtIndex(props);
           return observeCell ? (
@@ -140,6 +147,10 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       this._listRef.scrollToRow(index);
       window.requestAnimationFrame(() => this._listRef.scrollToRow(index));
     }
+  }
+
+  scrollToPosition = (scrollTop: number) => {
+    this._listRef.scrollToPosition(scrollTop);
   }
 
   render() {
