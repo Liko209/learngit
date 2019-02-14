@@ -11,7 +11,7 @@ import { StateService } from 'sdk/module/state';
 import { ProfileService } from 'sdk/module/profile';
 
 jest.mock('sdk/api');
-jest.mock('sdk/service/profile');
+jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');
 jest.mock('sdk/service/group');
 jest.mock('../../utils/entities');
