@@ -27,6 +27,7 @@ import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
+import { GroupConfigService } from '../../../../../service/groupConfig';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -278,11 +279,25 @@ class FileUploadController {
     return this._uploadingFiles.get(groupId) || [];
   }
 
-  async setUploadItems(groupId: number, itemIds: number[]) {
-    if (itemIds.length === 0) {
-      return;
+  async initialUploadItemsFromDraft(groupId: number) {
+    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
+    const itemIds = await groupConfigService.getDraftAttachmentItemIds(groupId);
+    const fileIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+    console.log(
+      'TCL: FileUploadController -> initialUploadItemsFromDraft -> fileIds',
+      fileIds,
+    );
+    if (fileIds) {
+      await this._setUploadItems(groupId, fileIds);
+      return this.getUploadItems(groupId);
     }
 
+    return [];
+  }
+
+  private async _setUploadItems(groupId: number, itemIds: number[]) {
     const existFile = this.getUploadItems(groupId);
     let toFetchItemIds: number[] = [];
     if (existFile.length > 0) {

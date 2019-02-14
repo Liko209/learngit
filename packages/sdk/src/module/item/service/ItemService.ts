@@ -151,8 +151,8 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this.fileService.getUploadItems(groupId);
   }
 
-  async setUploadItems(groupId: number, itemIds: number[]) {
-    return await this.fileService.setUploadItems(groupId, itemIds);
+  async initialUploadItemsFromDraft(groupId: number) {
+    return await this.fileService.initialUploadItemsFromDraft(groupId);
   }
 
   async canResendFailedItems(itemIds: number[]) {
