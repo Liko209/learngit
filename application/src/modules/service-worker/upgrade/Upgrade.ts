@@ -40,11 +40,23 @@ class Upgrade {
 
   private _queryIfHasNewVersion() {
     if (this._swURL && navigator.serviceWorker) {
-      mainLogger.info(`${logTag}Checking new version`);
+      mainLogger.info(`${logTag}Will check new version`);
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
-          registration.update();
+          registration
+            .update()
+            .then((...args) => {
+              mainLogger.info(
+                `${logTag}Check new version done. ${JSON.stringify(args)}`,
+              );
+            })
+            .catch((...args) => {
+              mainLogger.warn(
+                `${logTag}Check new version failed. ${JSON.stringify(args)}`,
+              );
+            });
+          mainLogger.info(`${logTag}Checking new version`);
         });
     }
   }
