@@ -6,7 +6,7 @@
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
-import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
+// import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
@@ -22,8 +22,8 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
-  RTCInBoundRtp,
-  RTCOutBoundRtp,
+  // RTCInBoundRtp,
+  // RTCOutBoundRtp,
 } from './types';
 import { v4 as uuid } from 'uuid';
 
@@ -46,7 +46,7 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
-  private _rtcMediaStatsManager: RTCMediaStatsManager = null;
+  // private _rtcMediaStatsManager: RTCMediaStatsManager = null;
 
   constructor(
     isIncoming: boolean,
@@ -79,7 +79,7 @@ class RTCCall {
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
-    this._rtcMediaStatsManager = RTCMediaStatsManager.getInstance();
+    // this._rtcMediaStatsManager = RTCMediaStatsManager.getInstance();
     this._prepare();
   }
 
