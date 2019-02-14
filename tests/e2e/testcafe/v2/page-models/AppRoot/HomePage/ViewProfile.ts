@@ -262,11 +262,11 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
+    return this.getComponent(Member, this.memberList.find(`[data-id=${id}]`));
   }
 
   memberEntryByName(name: string) {
-    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent(0));
   }
 
   get addMembersIcon() {
@@ -322,6 +322,9 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getComponent(MoreMenu);
   }
 
+  get memberMoreMenu() {
+    return this.getComponent(MemberMoreMenu);
+  }
   get joinTeamButton() {
     return this.getSelectorByIcon('add_member');
   }
@@ -360,6 +363,14 @@ class Member extends BaseWebComponent {
     await this.t.expect(this.isAdmin).notOk();
   }
 
+  get moreButton() {
+    return this.getSelectorByAutomationId('', this.self);
+  }
+
+  async openMoreMenu() {
+    await this.t.hover(this.self).click(this.moreButton);
+  }
+
 }
 
 class MoreMenu extends BaseWebComponent {
@@ -382,6 +393,40 @@ class MoreMenu extends BaseWebComponent {
     await this.t.click(this.copyEmailMenuItem);
   }
 
+  async quit() {
+    await this.t.pressKey('ESC');
+  }
+}
+
+class MemberMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('div[role="document"]');
+  }
+
+  get removeFromTeamItem() {
+    return this.getSelectorByAutomationId('');
+  }
+
+  get makeTeamAdminItem() {
+    return this.getSelectorByAutomationId('');
+  }
+
+  get revokeTeamAdminItem() {
+    return this.getSelectorByAutomationId('');
+  }
+
+  async clickRemoveTeamMember() {
+    await this.t.click(this.removeFromTeamItem);
+  }
+
+  async clickMakeTeamAdmin() {
+    await this.t.click(this.makeTeamAdminItem);
+  }
+
+  async clickRevokeTeamAdmin() {
+    await this.t.click(this.revokeTeamAdminItem);
+  }
+  
   async quit() {
     await this.t.pressKey('ESC');
   }
