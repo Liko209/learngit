@@ -20,7 +20,7 @@ import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { UserConfig } from '../../../../../service/account/UserConfig';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
-import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
+
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { IItemService } from '../../../service/IItemService';
 import {
@@ -46,7 +46,6 @@ class FileUploadController {
     private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<Item>,
     private _fileRequestController: IRequestController<Item>,
-    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async sendItemFile(
@@ -293,10 +292,9 @@ class FileUploadController {
     }
 
     if (toFetchItemIds.length > 0) {
-      const toFetchItems = await this._entitySourceController.getEntitiesLocally(
-        toFetchItemIds,
-        false,
-      );
+      const toFetchItems = (await this._itemService
+        .getEntitySource()
+        .getEntitiesLocally(toFetchItemIds, false)) as Item[];
       this._uploadingFiles.set(groupId, existFile.concat(toFetchItems));
       this._saveToItemFileCache(toFetchItems);
     }

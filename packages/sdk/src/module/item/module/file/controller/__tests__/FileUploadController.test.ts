@@ -73,7 +73,7 @@ describe('fileUploadController', () => {
     itemService.createItem.mockImplementation(() => {});
     itemService.updateItem.mockImplementation(() => {});
     itemService.deleteItem.mockImplementation(() => {});
-
+    itemService.getEntitySource.mockReturnValue(entitySourceController);
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
@@ -82,7 +82,6 @@ describe('fileUploadController', () => {
       itemService,
       partialModifyController,
       fileRequestController,
-      entitySourceController,
     );
     partialModifyController.updatePartially = jest.fn();
   }
