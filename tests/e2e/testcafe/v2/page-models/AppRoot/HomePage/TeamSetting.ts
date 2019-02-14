@@ -177,7 +177,7 @@ export class TeamSettingDialog extends BaseWebComponent {
   }
 
   get allowPinPostText() {
-    return this.allowPostMessageToggle.parent('li').textContent;
+    return this.allowPinPostToggle.parent('li').textContent;
   }
 
   get allowPinPostCheckbox() {
