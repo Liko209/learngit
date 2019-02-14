@@ -1330,6 +1330,15 @@ describe('fileUploadController', () => {
     }
     const groupId = 10;
 
+    it('should just return when incoming ids is empty', async () => {
+      await fileUploadController.setUploadItems(groupId, []);
+      const curIds = fileUploadController
+        .getUploadItems(groupId)
+        .map(x => x.id);
+      expect(curIds).toEqual([]);
+      expect(entitySourceController.getEntitiesLocally).not.toBeCalled();
+    });
+
     it('should use incoming ids directly when has no upload files before', async () => {
       const itemFiles = [];
       setUpUploadingFiles(groupId, itemFiles);
