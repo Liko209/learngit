@@ -7,6 +7,7 @@ import { MiscUtils } from "../utils";
 import { ICredential } from "../models";
 
 const logger = getLogger(__filename);
+logger.level = 'info';
 
 export class RcPlatformSdk {
   private sdk: any;
@@ -23,6 +24,7 @@ export class RcPlatformSdk {
         await this.refresh();
         return true;
       }
+      logger.error('auth failed: ', err.response, err.response.data);
       return false;
     });
   }
@@ -36,7 +38,14 @@ export class RcPlatformSdk {
   }
 
   async init() {
-    await this.sdk.authorize(this.credential);
+    try {
+      console.log('start');
+      await this.sdk.authorize(this.credential);
+      console.log('done');
+    } catch (e) {
+      logger.error('auth failed: ', e.response, e.response.data);
+      throw e;
+    }
   }
 
   async refresh() {
