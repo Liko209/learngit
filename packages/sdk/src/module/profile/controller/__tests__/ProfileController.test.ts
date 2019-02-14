@@ -5,7 +5,6 @@
 import { ProfileController } from '../ProfileController';
 import Api from '../../../../api/api';
 import { MockEntitySourceController } from './MockEntitySourceController';
-// import { daoManager, ProfileDao } from '../../../../dao';
 import {
   buildEntitySourceController,
   buildPartialModifyController,
@@ -16,14 +15,13 @@ import { ProfileActionController } from '../ProfileActionController';
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api/api');
 jest.mock('../../../../dao');
+jest.mock('../../../progress');
 
 describe('ProfileController', () => {
   let profileController: ProfileController;
   let mockEntitySourceController: MockEntitySourceController;
-  // const profileDao: ProfileDao = new ProfileDao(null);
 
   beforeEach(() => {
-    // jest.spyOn(daoManager, 'getDao').mockReturnValue(profileDao);
 
     mockEntitySourceController = new MockEntitySourceController();
     profileController = new ProfileController(mockEntitySourceController);
@@ -38,7 +36,6 @@ describe('ProfileController', () => {
       Object.assign(Api, {
         glipNetworkClient: null,
       });
-
       buildPartialModifyController.mockImplementationOnce(() => {
         return undefined;
       });
@@ -46,11 +43,9 @@ describe('ProfileController', () => {
       buildRequestController.mockImplementationOnce(() => {
         return undefined;
       });
-
       buildEntitySourceController.mockImplementationOnce(() => {
         return undefined;
       });
-
       const result = profileController.getProfileActionController();
       expect(result instanceof ProfileActionController).toBe(true);
       expect(buildEntitySourceController).toBeCalledTimes(1);

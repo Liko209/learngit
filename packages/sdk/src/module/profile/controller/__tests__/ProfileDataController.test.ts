@@ -3,6 +3,7 @@
  * @Date: 2018-03-01 10:49:44
  */
 import { ProfileDataController } from '../ProfileDataController';
+import { Profile } from '../../entity';
 import { MockEntitySourceController } from './MockEntitySourceController'
 
 jest.mock('../../../../api/glip/profile');
@@ -82,6 +83,36 @@ describe('ProfileDataController', () => {
         });
       const result = await profileDataController.isConversationHidden(1);
       expect(result).toBe(5);
+    });
+  });
+
+  describe('profileHandleData()', () => {
+    it('should return null because of not profile', async () => {
+      const data = undefined;
+      jest.spyOn(profileDataController, '_handleProfile').mockImplementationOnce(profile => profile);
+
+      const result = await profileDataController.profileHandleData(data as Profile);
+      expect(result).toBeNull();
+    });
+
+    it('should return {id: 2} because of profile is not an array', async () => {
+      const data = {
+        id: 2,
+      };
+      jest.spyOn(profileDataController, '_handleProfile').mockImplementationOnce(profile => profile);
+
+      const result = await profileDataController.profileHandleData(data as Profile);
+      expect(result).toEqual({ id: 2 });
+    });
+
+    it('should return {id: 2} because of profile is an array', async () => {
+      const data = [{
+        id: 2,
+      }];
+      jest.spyOn(profileDataController, '_handleProfile').mockImplementationOnce(profile => profile);
+
+      const result = await profileDataController.profileHandleData(data[0] as Profile);
+      expect(result).toEqual({ id: 2 });
     });
   });
 });
