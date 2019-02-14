@@ -116,10 +116,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   reloadFiles = async () => {
     this.items.clear();
-    const draftItemIds = await this._groupConfigService.getDraftAttachmentItemIds(
-      this.id,
-    );
-    await this._itemService.setUploadItems(this.id, draftItemIds);
+    const draftItemIds = await this.getDraftItemIds();
+    if (draftItemIds.length > 0) {
+      await this._itemService.setUploadItems(this.id, draftItemIds);
+    }
 
     const uploadItems = this._itemService.getUploadItems(this.id);
     if (uploadItems && uploadItems.length > 0) {

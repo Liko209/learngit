@@ -280,6 +280,10 @@ class FileUploadController {
   }
 
   async setUploadItems(groupId: number, itemIds: number[]) {
+    if (itemIds.length === 0) {
+      return;
+    }
+
     const existFile = this.getUploadItems(groupId);
     let toFetchItemIds: number[] = [];
     if (existFile.length > 0) {
