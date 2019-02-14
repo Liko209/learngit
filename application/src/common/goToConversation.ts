@@ -26,11 +26,13 @@ const getConversationId = async (id: number | number[]) => {
     return id as number;
   }
   if (type === TypeDictionary.TYPE_ID_PERSON) {
-    const result = await groupService.getOrCreateGroupByMemberList(
-      Array.isArray(id) ? id : [id],
-    );
-    if (result.isOk()) {
-      return result.data.id;
+    try {
+      const result = await groupService.getOrCreateGroupByMemberList(
+        Array.isArray(id) ? id : [id],
+      );
+      return result.id;
+    } catch (error) {
+      return null;
     }
   }
   return null;

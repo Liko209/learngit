@@ -3,7 +3,6 @@ import { BaseResponse } from 'foundation';
 import _ from 'lodash';
 
 import { groupFactory } from '../../../../__tests__/factories';
-import { ApiResultErr, ApiResultOk } from '../../../../api/ApiResult';
 import GroupAPI from '../../../../api/glip/group';
 import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../../dao';
 import { ERROR_CODES_SERVER, JServerError } from '../../../../error';
@@ -125,12 +124,7 @@ describe('GroupFetchDataController', () => {
       jest.spyOn(groupActionController, 'handleRawGroup');
       groupActionController.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
-      GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultOk(group, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.createTeam.mockResolvedValue(group);
       await groupActionController.createTeam(1323, [], {
         name: 'some team',
         description: 'abc',
@@ -155,12 +149,7 @@ describe('GroupFetchDataController', () => {
 
     it('updateGroupPrivacy({id, privacy}) is update success', async () => {
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
-      GroupAPI.putTeamById.mockResolvedValue(
-        new ApiResultOk(group, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.putTeamById.mockResolvedValue(group);
       const result = groupActionController.updateGroupPrivacy({
         id: 1,
         privacy: 'privacy',
@@ -174,12 +163,7 @@ describe('GroupFetchDataController', () => {
       jest.spyOn(groupActionController, 'handleRawGroup');
       groupActionController.handleRawGroup.mockImplementationOnce(() => {});
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
-      GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultOk(group, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.createTeam.mockResolvedValue(group);
       await groupActionController.createTeam(1323, [], {
         name: 'some team',
         description: 'abc',
@@ -211,12 +195,7 @@ describe('GroupFetchDataController', () => {
       jest.spyOn(groupActionController, 'handleRawGroup');
       groupActionController.handleRawGroup.mockImplementationOnce(() => group);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
-      GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultOk(group, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.createTeam.mockResolvedValue(group);
 
       const result = await groupActionController.createTeam(1323, [], {
         name: 'some team',
@@ -241,14 +220,9 @@ describe('GroupFetchDataController', () => {
         ERROR_CODES_SERVER.ALREADY_TAKEN,
         'Already taken',
       );
-      GroupAPI.createTeam.mockResolvedValue(
-        new ApiResultErr(error, {
-          status: 403,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.createTeam.mockRejectedValue(error);
 
-      expect(
+      await expect(
         groupActionController.createTeam(1323, [], {
           name: 'some team',
           description: 'abc',

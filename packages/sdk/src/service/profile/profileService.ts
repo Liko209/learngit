@@ -347,19 +347,15 @@ class ProfileService extends BaseService<Profile> {
   ): Promise<Profile | JError> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
-
-    const apiResult = await ProfileAPI.putDataById<Profile>(
-      newProfile._id,
-      newProfile,
-    );
-
-    return apiResult.match({
-      Ok: async (rawProfile: Raw<Profile>) => {
-        const latestProfileModel: Profile = transform(rawProfile);
-        return latestProfileModel;
-      },
-      Err: (error: JError) => error,
-    });
+    try {
+      const result = await ProfileAPI.putDataById<Profile>(
+        newProfile._id,
+        newProfile,
+      );
+      return transform<Profile>(result);
+    } catch (error) {
+      return error;
+    }
   }
 
   async getMaxLeftRailGroup(): Promise<number> {

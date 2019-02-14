@@ -14,8 +14,7 @@ import {
 } from 'foundation';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
-import { ApiResult } from './ApiResult';
-import { apiErr, apiOk } from './utils';
+import { responseParser } from './parser';
 
 export interface IQuery {
   via?: NETWORK_VIA;
@@ -41,7 +40,7 @@ export interface INetworkRequests {
 }
 
 export interface IResultResolveFn<T = {}> {
-  (value: ApiResult<T> | PromiseLike<ApiResult<T>>): void;
+  (value: T | PromiseLike<T>): void;
 }
 
 export interface IResponseRejectFn {
@@ -99,10 +98,18 @@ export default class NetworkClient {
     this.apiMap.set(apiMapKey, promiseResolvers);
   }
 
-  request<T>(
+  async request<T>(query: IQuery, requestHolder?: RequestHolder): Promise<T> {
+    const response = await this.rawRequest(query, requestHolder);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    }
+    throw responseParser.parse(response);
+  }
+
+  rawRequest<T>(
     query: IQuery,
     requestHolder?: RequestHolder,
-  ): Promise<ApiResult<T>> {
+  ): Promise<BaseResponse> {
     return new Promise((resolve, reject) => {
       let isDuplicated = false;
       const { method } = query;
@@ -117,14 +124,16 @@ export default class NetworkClient {
             const promiseResolvers = this.apiMap.get(apiMapKey);
             if (promiseResolvers) {
               promiseResolvers.forEach(({ resolve }) => {
-                this._apiResolvedCallBack(resolve)(resp);
+                resolve(resp);
               });
               this.apiMap.delete(apiMapKey);
             }
           };
         }
       } else {
-        request.callback = this._apiResolvedCallBack(resolve);
+        request.callback = (resp: BaseResponse) => {
+          resolve(resp);
+        };
       }
 
       if (!isDuplicated) {
@@ -135,16 +144,6 @@ export default class NetworkClient {
         }
       }
     });
-  }
-
-  private _apiResolvedCallBack(resolve: IResultResolveFn<any>) {
-    return (resp: BaseResponse) => {
-      if (resp.status >= 200 && resp.status < 300) {
-        resolve(apiOk(resp));
-      } else {
-        resolve(apiErr(resp));
-      }
-    };
   }
 
   cancelRequest(request: IRequest) {

@@ -129,9 +129,7 @@ class PostFetchController {
     if (postId) {
       params.post_id = postId;
     }
-    const requestResult = await PostAPI.requestPosts(params);
-
-    const data = requestResult.expect('Get Remote post failed');
+    const data = await PostAPI.requestPosts(params);
 
     if (data) {
       result.posts = data.posts;

@@ -15,7 +15,6 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { SubscribeController } from '../../../base/controller/SubscribeController';
 import { Api } from '../../../../api';
 import ItemAPI from '../../../../api/glip/item';
-import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
 import { TypeDictionary } from '../../../../utils';
 import { ItemSyncController } from '../../controller/ItemSyncController';

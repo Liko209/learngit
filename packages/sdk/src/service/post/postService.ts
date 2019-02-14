@@ -114,13 +114,12 @@ class PostService extends BaseService<Post> {
     if (postId) {
       params.post_id = postId;
     }
-    const requestResult = await PostAPI.requestPosts(params);
+    const data = await PostAPI.requestPosts(params);
     const result: IRawPostResult = {
       posts: [],
       items: [],
       hasMore: false,
     };
-    const data = requestResult.expect('Get Remote post failed');
     if (data) {
       result.posts = data.posts;
       result.items = data.items;
@@ -142,8 +141,7 @@ class PostService extends BaseService<Post> {
     };
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
-      const remoteResult = await PostAPI.requestByIds(restIds);
-      const remoteData = remoteResult.expect('getPostsByIds failed');
+      const remoteData = await PostAPI.requestByIds(restIds);
       const posts: Post[] =
         (await baseHandleData(remoteData.posts, false)) || [];
       const itemService = ItemService.getInstance() as ItemService;
@@ -342,8 +340,7 @@ class PostService extends BaseService<Post> {
     delete buildPost.id;
 
     try {
-      const resp = await PostAPI.sendPost(buildPost);
-      const data = resp.expect('send post failed');
+      const data = await PostAPI.sendPost(buildPost);
       return this.handleSendPostSuccess(data, preInsertId);
     } catch (e) {
       this.handleSendPostFail(preInsertId, buildPost.group_id);
@@ -438,8 +435,7 @@ class PostService extends BaseService<Post> {
     try {
       const post = await PostServiceHandler.buildModifiedPostInfo(params);
       if (params.postId && post) {
-        const resp = await PostAPI.editPost(params.postId, post);
-        const data = resp.expect('modified post fail');
+        const data = await PostAPI.editPost(params.postId, post);
         const result = await baseHandleData(data);
         return result[0];
       }
@@ -482,8 +478,7 @@ class PostService extends BaseService<Post> {
       post._id = post.id;
       delete post.id;
       try {
-        const resp = await PostAPI.putDataById<Post>(id, post);
-        resp.expect('delete post failed');
+        await PostAPI.putDataById<Post>(id, post);
         return true;
       } catch (e) {
         throw ErrorParserHolder.getErrorParser().parse(e);
@@ -498,14 +493,16 @@ class PostService extends BaseService<Post> {
   ): Promise<Post | null> {
     newPost._id = newPost.id;
     delete newPost.id;
-    const result = await PostAPI.putDataById<Post>(newPost._id, newPost);
-    if (result.isOk()) {
+    let result;
+    try {
+      result = await PostAPI.putDataById<Post>(newPost._id, newPost);
       if (handleDataFunc) {
-        return await handleDataFunc(result.data);
+        return await handleDataFunc(result);
       }
-      return transform<Post>(result.data);
+      return transform<Post>(result);
+    } catch (error) {
+      return null;
     }
-    return null;
   }
 
   private async _doUpdateModel(updatedModel: Post) {
@@ -578,8 +575,7 @@ class PostService extends BaseService<Post> {
       group_id: groupId,
     };
     try {
-      const requestResult = await PostAPI.requestPosts(params);
-      const data = requestResult.expect('get newest post id of group failed');
+      const data = await PostAPI.requestPosts(params);
       const post = data.posts[0];
       if (post) {
         return post._id;
@@ -620,16 +616,19 @@ class PostService extends BaseService<Post> {
   async newMessageWithPeopleIds(
     ids: number[],
     message: string,
-  ): Promise<Result<Group>> {
+  ): Promise<Group | null> {
     const groupService: GroupService = GroupService.getInstance();
-    const result = await groupService.getOrCreateGroupByMemberList(ids);
-    if (result.isOk()) {
-      const id = result.data.id;
+    let result;
+    try {
+      result = await groupService.getOrCreateGroupByMemberList(ids);
+      const id = result.id;
       if (id && this._isValidTextMessage(message)) {
         setTimeout(() => {
           this.sendPost({ groupId: id, text: message });
         },         2000);
       }
+    } catch (error) {
+      result = null;
     }
     return result;
   }

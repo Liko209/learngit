@@ -78,8 +78,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
       const oldRcToken = authDao.get(AUTH_RC_TOKEN);
-      const refreshResult = await refreshToken(oldRcToken);
-      const newRcToken = refreshResult.expect('Failed to refresh rcToken');
+      const newRcToken = await refreshToken(oldRcToken);
       setRcToken(newRcToken);
       notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
       return newRcToken;

@@ -6,7 +6,6 @@
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import ProfileService from '../../../service/profile';
 import ProfileAPI from '../../../api/glip/profile';
-import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
 import { UserConfig } from '../../../service/account/UserConfig';
@@ -98,15 +97,10 @@ describe('ProfileService', () => {
         favorite_post_ids: [100, 101, 102],
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
-      ProfileAPI.putDataById.mockResolvedValue(
-        new ApiResultOk(
-          {
-            _id: 2,
-            favorite_post_ids: [100, 101, 102, 103],
-          },
-          { status: 200, headers: {} } as BaseResponse,
-        ),
-      );
+      ProfileAPI.putDataById.mockResolvedValue({
+        _id: 2,
+        favorite_post_ids: [100, 101, 102, 103],
+      });
       const returnValue = {
         id: 2,
         favorite_post_ids: [100, 101, 102, 103],
@@ -156,12 +150,7 @@ describe('ProfileService', () => {
         .mockImplementationOnce(() => {});
       jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(returnValue, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      ProfileAPI.putDataById.mockResolvedValueOnce(returnValue);
       handleData.mockResolvedValueOnce(returnValue);
     }
     beforeEach(() => {
@@ -218,12 +207,7 @@ describe('ProfileService', () => {
         .mockReturnValueOnce(profile.id);
       jest.spyOn(UserConfig, 'getCurrentUserId').mockReturnValueOnce(1);
       jest.spyOn(mockPersonService, 'getById').mockResolvedValueOnce(profile);
-      ProfileAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(returnValue, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      ProfileAPI.putDataById.mockResolvedValueOnce(returnValue);
       handleData.mockResolvedValueOnce(returnValue);
     }
     beforeEach(() => {
@@ -328,19 +312,9 @@ describe('ProfileService', () => {
         .mockImplementation(() => {});
 
       if (ok) {
-        ProfileAPI.putDataById.mockResolvedValueOnce(
-          new ApiResultOk(returnValue, {
-            status: 200,
-            headers: {},
-          } as BaseResponse),
-        );
+        ProfileAPI.putDataById.mockResolvedValueOnce(returnValue);
       } else {
-        ProfileAPI.putDataById.mockResolvedValueOnce(
-          new ApiResultErr(returnValue, {
-            status: 200,
-            headers: {},
-          } as BaseResponse),
-        );
+        ProfileAPI.putDataById.mockResolvedValueOnce(returnValue);
       }
 
       handleData.mockResolvedValueOnce(returnValue);
@@ -397,12 +371,7 @@ describe('ProfileService', () => {
       jest
         .spyOn<ProfileService, any>(profileService, '_doPartialSaveAndNotify')
         .mockImplementation(() => {});
-      ProfileAPI.putDataById.mockResolvedValueOnce(
-        new ApiResultOk(apiReturnProfile, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      ProfileAPI.putDataById.mockResolvedValueOnce(apiReturnProfile);
     }
     it('should remove group from hidden when group receive new post', async () => {
       expect.assertions(1);

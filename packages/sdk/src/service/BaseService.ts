@@ -14,7 +14,6 @@ import notificationCenter, {
 } from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
-import { ApiResult } from '../api/ApiResult';
 import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
 import EntityCacheManager from './entityCacheManager';
@@ -116,16 +115,19 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     if (id <= 0) {
       throwError(`invalid id(${id}), should not do network request`);
     }
-    const result: ApiResult<any> = await this.ApiClass.getDataById(id);
-    if (result.isOk()) {
-      const arr: SubModel[] = []
-        .concat(result.data)
-        .map((item: Raw<SubModel>) => transform(item)); // normal transform
-      const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
-      await this.handleData(arr, shouldSaveToDB);
-      return arr.length > 0 ? arr[0] : null;
+    let result;
+    try {
+      result = await this.ApiClass.getDataById(id);
+    } catch (error) {
+      result = null;
     }
-    return null;
+    const arr: SubModel[] = []
+      .concat(result)
+      .filter(item => !!item)
+      .map((item: Raw<SubModel>) => transform(item)); // normal transform
+    const shouldSaveToDB = await this.shouldSaveItemFetchedById(result);
+    await this.handleData(arr, shouldSaveToDB);
+    return arr.length > 0 ? arr[0] : null;
   }
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<

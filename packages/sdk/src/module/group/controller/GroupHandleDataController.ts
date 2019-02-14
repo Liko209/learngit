@@ -47,11 +47,14 @@ class GroupHandleDataController {
             }
           } else {
             // If not existed in DB, request from API and handle the response again
-            const result = await GroupAPI.requestGroupById(item._id);
-            result.match({
-              Ok: data => this.handleData([data]),
-              Err: err => mainLogger.error(`${JSON.stringify(err)}`),
-            });
+            let result;
+            try {
+              result = await GroupAPI.requestGroupById(item._id);
+              this.handleData([result]);
+              return result;
+            } catch (error) {
+              mainLogger.error(`${JSON.stringify(error)}`);
+            }
           }
         }
         return null;
@@ -117,10 +120,9 @@ class GroupHandleDataController {
           if (calculated) {
             return calculated;
           }
-          const result = await GroupAPI.requestGroupById(item._id);
-          if (result.isOk()) {
-            finalItem = result.data;
-          } else {
+          try {
+            finalItem = await GroupAPI.requestGroupById(item._id);
+          } catch (error) {
             return null;
           }
         }

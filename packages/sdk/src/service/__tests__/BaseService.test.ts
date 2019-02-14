@@ -10,7 +10,6 @@ import dataDispatcher from '../../component/DataDispatcher/index';
 import { SortableModel } from '../../models';
 import { IdModel, Raw } from '../../framework/model';
 import _ from 'lodash';
-import { ApiResultOk } from '../../api/ApiResult';
 import {
   BaseResponse,
   JNetworkError,
@@ -104,16 +103,11 @@ describe('BaseService', () => {
     it('should return data from API when Dao not return value', async () => {
       const service = new AService();
       jest.spyOn(service, 'getByIdFromDao').mockResolvedValue(null);
-      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue(
-        new ApiResultOk({ id: 2 }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue({ id: 2 });
 
       const result = await service.getById(2);
 
-      expect(result).toHaveProperty('data', { id: 2 });
+      expect(result).toEqual({ id: 2 });
     });
   });
 
@@ -162,12 +156,7 @@ describe('BaseService', () => {
   describe('getByIdFromAPI()', () => {
     it('should return data from API', async () => {
       const service = new AService();
-      fakeApi.getDataById.mockResolvedValue(
-        new ApiResultOk({ _id: 4 }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      fakeApi.getDataById.mockResolvedValue({ _id: 4 });
 
       const result = await service.getByIdFromAPI(4);
 
@@ -511,7 +500,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -545,7 +534,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -578,7 +567,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -612,7 +601,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -646,7 +635,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -681,7 +670,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -715,7 +704,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,

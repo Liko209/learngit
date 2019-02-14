@@ -8,9 +8,7 @@ import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 import { progressBar, IProgressEvent } from '../../utils/progress';
-import { ApiResult, ApiResultErr } from '../../api/ApiResult';
 import { IndexDataModel } from '../../api/glip/user';
-import { JError } from '../../error';
 
 interface IParams {
   newer_than?: string;
@@ -27,16 +25,13 @@ const withProgress = (
     params: object,
     requestConfig?: object,
     headers?: object,
-  ) => Promise<ApiResult<IndexDataModel, JError>>,
+  ) => Promise<IndexDataModel>,
 ) => async (params: object) => {
   progressBar.start();
-  let result: ApiResult<IndexDataModel, JError>;
+  let result: IndexDataModel;
   try {
     result = await getDataFunction(params, requestConfig);
   } catch (e) {
-    if (e instanceof ApiResultErr) {
-      result = e;
-    }
     throw e;
   } finally {
     progressBar.stop();

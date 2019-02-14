@@ -14,7 +14,6 @@ import { IPreInsertController } from '../../../common/controller/interface/IPreI
 import { PostFetchController } from '../PostFetchController';
 import { PROGRESS_STATUS } from '../../../progress';
 import PostAPI from '../../../../api/glip/post';
-import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { GroupService } from '../../../../module/group/service';
 import { GROUP_QUERY_TYPE } from '../../../../service';
@@ -360,10 +359,7 @@ describe('PostFetchController()', () => {
     };
 
     it('should return posts when postid is available', async () => {
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       const result = await postFetchController.fetchPaginationPosts({
         groupId: 1,
@@ -378,10 +374,7 @@ describe('PostFetchController()', () => {
     });
 
     it('should return post when no postid is specific', async () => {
-      const mockNotPostId = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNotPostId = data;
       PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
       const result = await postFetchController.fetchPaginationPosts({
         groupId: 1,
@@ -395,10 +388,7 @@ describe('PostFetchController()', () => {
     });
 
     it('should return [] when no matched', async () => {
-      const mockNoMatch = new ApiResultOk({ posts: [], items: [] }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNoMatch = { posts: [], items: [] };
       PostAPI.requestPosts.mockResolvedValue(mockNoMatch);
       const result = await postFetchController.fetchPaginationPosts({
         groupId: 1,
@@ -412,14 +402,8 @@ describe('PostFetchController()', () => {
     });
 
     it('should throw exception if failed to request', async () => {
-      PostAPI.requestPosts.mockResolvedValueOnce(
-        new ApiResultErr(
-          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
-            {
-              status: 403,
-              headers: {},
-            } as BaseResponse,
-        ),
+      PostAPI.requestPosts.mockRejectedValueOnce(
+        new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
       );
       expect.assertions(1);
       await expect(
@@ -448,14 +432,8 @@ describe('PostFetchController()', () => {
     }
 
     it('should throw exception when request server error', async () => {
-      PostAPI.requestPosts.mockResolvedValueOnce(
-        new ApiResultErr(
-          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
-            {
-              status: 403,
-              headers: {},
-            } as BaseResponse,
-        ),
+      PostAPI.requestPosts.mockRejectedValueOnce(
+        new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
       );
       await expect(
         postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
@@ -467,10 +445,7 @@ describe('PostFetchController()', () => {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       itemService.handleIncomingData = jest
         .fn()
@@ -490,10 +465,7 @@ describe('PostFetchController()', () => {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
 
       const result = await postFetchController.getRemotePostsByGroupIdAndSave(
