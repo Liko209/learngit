@@ -9,7 +9,9 @@ import SequenceProcessorHandler from '../SequenceProcessorHandler';
 
 class TestProcessor implements IProcessor {
   private _name: string;
-  constructor(name: string) { this._name = name; }
+  constructor(name: string) {
+    this._name = name;
+  }
   name(): string {
     return this._name;
   }
@@ -50,12 +52,11 @@ describe('SequenceProcessorHandler', () => {
   });
 
   it('process', async () => {
-    let result = await handler.process();
+    let result = await handler.execute();
     expect(result).toBe(true);
 
     handler.addProcessor(pro1);
-    result = await handler.process();
+    result = await handler.execute();
     expect(result).toBe(false);
   });
-
 });
