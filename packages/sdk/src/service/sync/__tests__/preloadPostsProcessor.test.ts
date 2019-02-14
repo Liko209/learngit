@@ -11,7 +11,6 @@ import { StateService } from '../../../module/state';
 import { NewGroupService } from '../../../module/group';
 
 jest.mock('../../../module/post/service/PostService');
-jest.mock('../../../service/profile');
 jest.mock('../../../module/state');
 jest.mock('../../../module/group');
 

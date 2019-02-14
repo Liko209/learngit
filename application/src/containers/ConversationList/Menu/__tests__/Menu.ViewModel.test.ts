@@ -5,9 +5,19 @@
  */
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
+import { service } from 'sdk';
+const { GroupService } = service;
+
+jest.mock('sdk/service');
+jest.mock('@/store/utils');
+
+const groupService = new GroupService();
+GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {
     it('should return falsy for shouldSkipCloseConfirmation as default', () => {
+      jest.spyOn(utils, 'getSingleEntity').mockImplementationOnce(() => false);
       const model = new MenuViewModel();
       expect(model.shouldSkipCloseConfirmation).toBeFalsy();
     });
