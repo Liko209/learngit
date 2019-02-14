@@ -365,7 +365,7 @@ describe('PostDataController', () => {
       expect(result).toEqual(posts.slice(9, 30).concat(posts.slice(39, 60)));
     });
 
-    it.only('should filter deactivated posts when [maxPostsExceed=true | has deactivated posts]', async () => {
+    it('should filter deactivated posts when [maxPostsExceed=true | has deactivated posts]', async () => {
       const posts = [];
       for (let i = 1; i <= 30; i += 1) {
         posts.push({
@@ -385,13 +385,51 @@ describe('PostDataController', () => {
     });
   });
 
-  describe('handleIndexPosts()', () => {
+  describe('handleSexioPosts()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
       jest
         .spyOn(mockEntitySourceController, 'bulkDelete')
         .mockResolvedValueOnce({});
+    });
+
+    it('should not save modified posts if not exist in local', async () => {
+      const posts = [];
+      for (let i = 1; i < 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      mockEntitySourceController.getEntityLocally.mockImplementation(arg => {
+        return arg % 2 === 0 ? posts[arg - 1] : null;
+      });
+      let result = await postDataController.handleSexioPosts(posts);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts.filter((post: Post) => post.id % 2 === 0));
+    });
+
+    it('should save modified posts if not exist in local', async () => {
+      const posts = [];
+      for (let i = 1; i < 30; i += 1) {
+        posts.push({
+          id: i,
+          group_id: 1,
+          created_at: i,
+          modified_at: i % 2 === 0 ? i : i + 1,
+        });
+      }
+      mockEntitySourceController.getEntityLocally.mockImplementation(arg => {
+        return posts[arg - 1];
+      });
+      let result = await postDataController.handleSexioPosts(posts);
+
+      result = _.orderBy(result, 'id', 'asc');
+      expect(result).toEqual(posts);
     });
   });
 

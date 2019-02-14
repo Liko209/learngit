@@ -52,7 +52,10 @@ function setup() {
 }
 
 describe('PostFetchController()', () => {
-  const postDataController = new PostDataController(null, null);
+  const postDataController = new PostDataController(
+    null,
+    entitySourceController,
+  );
   // const groupService = new GroupService();
   const postFetchController = new PostFetchController(
     postDataController,
@@ -443,7 +446,8 @@ describe('PostFetchController()', () => {
         postFetchController.getRemotePostsByGroupId(getParaMeters(true)),
       ).rejects.toBeInstanceOf(JNetworkError);
     });
-    it.skip('should not call updateHasMore when should not save', async () => {
+
+    it('should not call updateHasMore when should not save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
@@ -463,10 +467,13 @@ describe('PostFetchController()', () => {
       );
 
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(0);
-      expect(result.items).toEqual(data.items);
-      expect(result.posts).toEqual(data.posts);
+      expect(postDataController.handleFetchedPosts).toBeCalledWith(
+        { hasMore: false, posts: data.posts, items: data.items },
+        false,
+      );
     });
-    it.skip('should not call updateHasMore when should save', async () => {
+
+    it('should not call updateHasMore when should save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
