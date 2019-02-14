@@ -131,10 +131,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this._memoryDraftMap.set(this.id, draft);
   }
 
-  // set draftItemIds(draft: number[]) {
-  //   this._memoryDraftMap.set(this.id, draft);
-  // }
-
   reloadFiles = async () => {
     this.items.clear();
     const draftItemIds = await this.getDraftItemIds();
@@ -241,6 +237,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     if (record) {
       await this._itemService.cancelUpload(id);
       this.items.delete(id);
+      this.forceSaveDraftItems();
     }
   }
 
@@ -291,17 +288,15 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   forceSaveDraftItems = () => {
-    if (this.files && this.files.length > 0) {
-      const draftItemsIds: number[] = [];
-      this.files.forEach((file: ItemFile) => {
-        draftItemsIds.push(file.id);
-      });
-      this._memoryDraftMap.set(this.id, draftItemsIds);
-      this._groupConfigService.updateDraft({
-        attachment_item_ids: draftItemsIds,
-        id: this.id,
-      });
-    }
+    const draftItemsIds: number[] = [];
+    this.files.forEach((file: ItemFile) => {
+      draftItemsIds.push(file.id);
+    });
+    this._memoryDraftMap.set(this.id, draftItemsIds);
+    this._groupConfigService.updateDraft({
+      attachment_item_ids: draftItemsIds,
+      id: this.id,
+    });
   }
 
   dispose = () => {
