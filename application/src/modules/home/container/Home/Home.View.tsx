@@ -35,16 +35,16 @@ class HomeView extends Component<HomeViewProps> {
       mainLogger.info('Local storage is cleared by another document');
 
       window.location.reload();
-    } else if (event.key === dao.ACCOUNT_USER_ID_KEY) {
+    }
+
+    if (event.key === dao.ACCOUNT_USER_ID_KEY) {
       mainLogger.info(
         `${dao.ACCOUNT_USER_ID_KEY} is modified by another document ${
           event.oldValue
         } to ${event.newValue} `,
       );
 
-      if (event.oldValue) {
-        window.location.reload();
-      }
+      window.location.reload();
     }
   }
 
