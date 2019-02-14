@@ -24,7 +24,9 @@ export type PostItemsReadyCallbackType = {
     item_ids?: [];
   };
 };
-export type PostItemsReadyCallback = (data: PostItemsReadyCallbackType) => void;
+export type PostItemsReadyCallback = (
+  data: PostItemsReadyCallbackType,
+) => Promise<void>;
 export type SendPostItemsUpdateCallback = (
   data: Partial<Post>,
 ) => Promise<Post | null>;
