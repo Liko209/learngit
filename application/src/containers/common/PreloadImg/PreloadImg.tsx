@@ -15,36 +15,23 @@ type PreloadImgProps = {
 const cacheUrl = {};
 
 class PreloadImg extends Component<PreloadImgProps> {
-  state = { loaded: false, isError: false, flag: false };
+  state = { loaded: false, isError: false };
   img: any;
-  private _delayTimer: NodeJS.Timeout;
-  constructor(props: PreloadImgProps) {
-    super(props);
-    this._delayTimer = setTimeout(() => {
-      this.setState({ flag: true });
-    },                            500);
-  }
 
   handleLoad = () => {
     const { url } = this.props;
 
-    this.setState({ loaded: true, flag: true });
+    this.setState({ loaded: true });
     if (url) cacheUrl[url] = true;
-    if (this._delayTimer) {
-      clearTimeout(this._delayTimer);
-    }
   }
 
   handleError = () => {
-    this.setState({ isError: true, loaded: true, flag: true });
-    if (this._delayTimer) {
-      clearTimeout(this._delayTimer);
-    }
+    this.setState({ isError: true, loaded: true });
   }
 
   render() {
     const { children, placeholder, url } = this.props;
-    const { loaded, isError, flag } = this.state;
+    const { loaded, isError } = this.state;
 
     if (loaded && !isError) {
       return (
@@ -66,7 +53,7 @@ class PreloadImg extends Component<PreloadImgProps> {
           onError={this.handleError}
           style={{ display: 'none' }}
         />
-        {flag && placeholder}
+        {placeholder}
       </>
     );
   }
