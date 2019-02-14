@@ -5,7 +5,7 @@
  */
 
 import { AbstractProcessor } from './AbstractProcessor';
-import { IProcessor } from 'sdk/framework/processor/IProcessor';
+import { IProcessor } from './IProcessor';
 class SequenceProcessorHandler extends AbstractProcessor {
   private _isExecuting: boolean = false;
 
