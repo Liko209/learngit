@@ -116,7 +116,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   reloadFiles = async () => {
     this.items.clear();
-    const draftItemIds = await this.getDraftItemIds();
+    const draftItemIds = await this._groupConfigService.getDraftAttachmentItemIds(
+      this.id,
+    );
+
     if (draftItemIds.length > 0) {
       await this._itemService.setUploadItems(this.id, draftItemIds);
     }
@@ -277,7 +280,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this.files.forEach((file: ItemFile) => {
       draftItemsIds.push(file.id);
     });
-    this._memoryDraftMap.set(this.id, draftItemsIds);
     this._groupConfigService.updateDraft({
       attachment_item_ids: draftItemsIds,
       id: this.id,
