@@ -15,9 +15,9 @@ import { IPreInsertController } from '../../common/controller/interface/IPreInse
 import { ItemService } from '../../item';
 import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
+import { GroupService } from '../../group';
 
 const TAG = 'PostDataController';
-import { GroupService } from '../../group';
 
 class PostDataController {
   constructor(
@@ -255,7 +255,13 @@ class PostDataController {
     if (posts.length) {
       posts.forEach(async (post: Post) => {
         const groupService: GroupService = GroupService.getInstance();
-        await groupService.getById(post.group_id);
+        try {
+          await groupService.getById(post.group_id);
+        } catch (error) {
+          mainLogger
+            .tags('PostDataController')
+            .info(`get group ${post.group_id} fail`, error);
+        }
       });
     }
   }

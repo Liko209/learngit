@@ -73,7 +73,7 @@ class PostActionController implements IPostActionController {
     ): Partial<Raw<Post>> => {
       return {
         text: params.text,
-        at_mention_non_item_ids: params.mentionIds || [],
+        at_mention_non_item_ids: params.mentionNonItemIds || [],
         ...partialPost,
       };
     };

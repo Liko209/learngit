@@ -11,14 +11,19 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
+import { mainLogger } from 'sdk';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
     const _groupService: GroupService = GroupService.getInstance();
-    return _groupService.updateGroupLastAccessedTime({
-      id,
-      timestamp: accessTime,
-    });
+    _groupService
+      .updateGroupLastAccessedTime({
+        id,
+        timestamp: accessTime,
+      })
+      .catch((err: any) => {
+        mainLogger.tags('GroupHandler').info(`access Group ${id} fail:`, err);
+      });
   }
 
   static async isGroupHidden(id: number) {
