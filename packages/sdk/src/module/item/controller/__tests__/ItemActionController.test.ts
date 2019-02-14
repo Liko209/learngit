@@ -28,7 +28,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('', () => {
+describe('ItemActionController', () => {
   const itemService = {
     deleteLocalItem: jest.fn(),
   };
@@ -56,14 +56,33 @@ describe('', () => {
       requestController.put = jest.fn();
       progressService.deleteProgress = jest.fn();
       notificationCenter.emitEntityDelete = jest.fn();
+      partialUpdateController.updatePartially = jest.fn();
     });
 
-    it('should call ItemAPI when item id > 0', async () => {
+    it('should call partialUpdateController and send request to update item when item id > 0', async () => {
       const normalId = Math.abs(
         GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
       );
-
+      partialUpdateController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(
+              prehandleFunc(
+                { id: normalId, deactivated: true },
+                { id: normalId, deactivated: false, name: 'name' },
+              ),
+            ).toEqual({ id: normalId, deactivated: true });
+            doUpdateFunc({ id: normalId, deactivated: true });
+          },
+        );
       await itemActionController.deleteItem(normalId, itemService);
+      expect(partialUpdateController.updatePartially).toBeCalledWith(
+        normalId,
+        expect.anything(),
+        expect.anything(),
+      );
       expect(requestController.put).toBeCalledWith({
         id: normalId,
         deactivated: true,
