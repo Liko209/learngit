@@ -352,21 +352,17 @@ describe('FileItemService', () => {
     });
   });
 
-  describe('setUploadItems', () => {
+  describe('initialUploadItemsFromDraft', () => {
     beforeEach(() => {
       clearMocks();
       setup();
     });
 
     it('should call fileUploadController to get result', () => {
-      const itemIds = [1, 2, 3];
       const groupId = 10;
-      fileUploadController.setUploadItems = jest.fn();
-      expect(fileItemService.setUploadItems(groupId, itemIds)).toBeTruthy();
-      expect(fileUploadController.setUploadItems).toBeCalledWith(
-        groupId,
-        itemIds,
-      );
+      fileUploadController.initialUploadItemsFromDraft = jest.fn();
+      fileItemService.initialUploadItemsFromDraft(groupId);
+      expect(fileUploadController.initialUploadItemsFromDraft).toBeCalled();
     });
   });
 });

@@ -109,26 +109,15 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   reloadFiles = async () => {
-    this.items.clear();
-    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
-    const draftItemIds = await groupConfigService.getDraftAttachmentItemIds(
-      this.id,
-    );
+    this.cleanFiles();
     const itemService = ItemService.getInstance() as ItemService;
-
-    if (draftItemIds.length > 0) {
-      await itemService.setUploadItems(this.id, draftItemIds);
-    }
-
-    const uploadItems = itemService.getUploadItems(this.id);
+    const uploadItems = await itemService.initialUploadItemsFromDraft(this.id);
     if (uploadItems && uploadItems.length > 0) {
       uploadItems.forEach((element: ItemFile) => {
         this.items.set(element.id, {
           item: element,
         } as AttachmentItem);
       });
-    } else {
-      this.cleanFiles();
     }
   }
 
