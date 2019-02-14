@@ -58,7 +58,11 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private _Anchor = () => {
-    return <JuiIconography fontSize="small">more_horiz</JuiIconography>;
+    return (
+      <JuiIconography data-test-automation-id="moreIcon" fontSize="small">
+        more_horiz
+      </JuiIconography>
+    );
   }
 
   private _onClose = (event: React.MouseEvent<HTMLElement>) => {
