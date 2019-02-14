@@ -80,7 +80,7 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
             <ListItemSecondaryAction>
               <JuiToggleButton
                 checked={toggleItem.checked}
-                disabled={toggleItem.disabled || false}
+                disabled={!!toggleItem.disabled}
                 onChange={this.handleChange.bind(this, toggleItem)}
               />
             </ListItemSecondaryAction>
