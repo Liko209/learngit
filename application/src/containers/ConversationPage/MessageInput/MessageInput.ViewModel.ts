@@ -180,7 +180,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
-    this.forceSaveDraft();
+    this._groupConfigService.updateDraft({
+      draft: '',
+      id: this._oldId,
+      attachment_item_ids: [],
+    });
     const items = this.items;
     try {
       let realContent: string = content;
