@@ -46,8 +46,10 @@ class PostCacheController {
     FetchSortableDataListHandler<Post>
   > = new Map();
 
+  private _currentGroupId: number = 0;
+
   has(groupId: number): boolean {
-    return this._cacheMap.has(groupId);
+    return this._cacheMap[groupId] !== undefined;
   }
 
   get(
@@ -81,12 +83,29 @@ class PostCacheController {
     return listHandler;
   }
 
+  setCurrentConversation(groupId: number) {
+    this._currentGroupId = groupId;
+  }
+
+  releaseCurrentConversation(groupId: number) {
+    if (this._currentGroupId === groupId) {
+      this.get(groupId).dispose();
+      this._cacheMap.delete(groupId);
+      this._currentGroupId = 0;
+    }
+  }
+
   set(groupId: number, listHandler: FetchSortableDataListHandler<Post>) {
     this._cacheMap[groupId] = listHandler;
   }
 
   remove(groupId: number) {
-    this._cacheMap.delete(groupId);
+    if (this.has(groupId)) {
+      if (this._currentGroupId !== groupId) {
+        this.get(groupId).dispose();
+        this._cacheMap.delete(groupId);
+      }
+    }
   }
 }
 

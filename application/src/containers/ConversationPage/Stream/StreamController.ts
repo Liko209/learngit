@@ -72,6 +72,7 @@ export class StreamController {
       this._groupId,
       this._jumpToPostId,
     );
+    postCacheController.setCurrentConversation(this._groupId);
     this._orderListHandler = listHandler;
     this._orderListHandler.setDataChangeCallback(this.handlePostsChanged);
 
@@ -136,6 +137,8 @@ export class StreamController {
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
     }
+
+    postCacheController.releaseCurrentConversation(this._groupId);
   }
 
   @action
