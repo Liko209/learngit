@@ -108,8 +108,17 @@ export class FetchSortableDataListHandler<
   }
 
   refreshData() {
-    const sortableResult: ISortableModel<T>[] = this.listStore.items;
-    this.handlePageData(sortableResult);
+    let sortableResult: ISortableModel<T>[];
+    if (this.listStore.items.length > this._pageSize) {
+      sortableResult = this.listStore.items.slice(
+        this.listStore.items.length - this._pageSize,
+        this.listStore.items.length,
+      );
+      this.handleHasMore(true, QUERY_DIRECTION.OLDER);
+      this.sortableListStore.replaceAll(sortableResult);
+    } else {
+      sortableResult = this.listStore.items;
+    }
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         added: sortableResult,

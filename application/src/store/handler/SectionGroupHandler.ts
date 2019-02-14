@@ -324,16 +324,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
     if (updated.length) {
       updated.forEach((group: ISortableModel) => {
-        const processor = new PrefetchPostProcessor(group.id);
-        this._prefetchHandler.addProcessor(processor);
+        if (!postCacheController.has(group.id)) {
+          const processor = new PrefetchPostProcessor(group.id);
+          this._prefetchHandler.addProcessor(processor);
+        }
       });
     }
 
     if (added.length) {
       const truelyAdded = _.differenceBy(addedIds, deleted);
       truelyAdded.forEach((groupId: number) => {
-        const processor = new PrefetchPostProcessor(groupId);
-        this._prefetchHandler.addProcessor(processor);
+        if (!postCacheController.has(groupId)) {
+          const processor = new PrefetchPostProcessor(groupId);
+          this._prefetchHandler.addProcessor(processor);
+        }
       });
     }
   }
