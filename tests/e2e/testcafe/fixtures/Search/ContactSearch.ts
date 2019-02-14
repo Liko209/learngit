@@ -224,17 +224,13 @@ test(formalName('Search result should be updated in real time when team membersh
   // Thus here only 2 items in result list.
 
   // assertion
-  searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
+  searchResults = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
   }, true);
-
-  await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
-  });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
     await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
