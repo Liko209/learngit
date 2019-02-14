@@ -473,7 +473,7 @@ describe('PostFetchController()', () => {
       );
     });
 
-    it('should not call updateHasMore when should save', async () => {
+    it('should call updateHasMore when should save', async () => {
       const data = {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
@@ -483,13 +483,18 @@ describe('PostFetchController()', () => {
         headers: {},
       } as BaseResponse);
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
-
+      jest
+        .spyOn(postDataController, 'handleFetchedPosts')
+        .mockResolvedValueOnce({
+          posts: data.posts,
+          items: data.items,
+          hasMore: false,
+        });
       const result = await postFetchController.getRemotePostsByGroupId(
         getParaMeters(true),
       );
       groupService.updateHasMore.mockImplementationOnce(() => {});
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(1);
-      expect(result.success).toBeTruthy();
       expect(result.hasMore).toBeFalsy();
     });
   });
