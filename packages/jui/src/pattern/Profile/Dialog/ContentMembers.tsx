@@ -25,7 +25,7 @@ const JuiProfileDialogContentMembers = styled('div')`
 `;
 
 const JuiProfileDialogContentMemberHeader = styled('div')`
-  ${typography('subheading')};
+  ${typography('subheading1')};
   color: ${grey('900')};
   padding: ${spacing(4, 6, 3)};
   flex-basis: ${height(12.5)};

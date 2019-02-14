@@ -22,7 +22,7 @@ type ConversationCardFromProps = {
 };
 const StyledName = styled('div')`
   color: ${primary('700')};
-  ${typography('caption')};
+  ${typography('caption1')};
   ${ellipsis()};
   box-sizing: border-box;
   padding-left: ${spacing(2)};
