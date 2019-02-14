@@ -39,7 +39,7 @@ export class RcPlatformSdk {
     return await this.init();
   }
 
-  async createExtension(data: object, accountId: string = '~') {
+  async createExtension(data: any, accountId: string = '~') {
     const url = `restapi/v1.0/account/${accountId}/extension`;
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, data);
@@ -58,14 +58,72 @@ export class RcPlatformSdk {
     return await this.createPost(data, groupId);
   }
 
-  async createGroup(data: object) {
+  async createGroup(data: any) {
     const url = 'restapi/v1.0/glip/groups';
     return await this.retryRequestOnException(async () => {
       return await this.sdk.post(url, data);
     });
   }
 
-  async createAndGetGroupId(data: object) {
+  async createTeam(data: any) {
+    const url = 'restapi/v1.0/glip/teams';
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  async updateTeam(data: any, chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.patch(url, data);
+    });
+  }
+
+  async leaveTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/leave`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
+  async joinTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/join`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
+  async addTeamMember(data: any, chatId: string) {
+    return await this.editGroupMembers({
+      addedPersonIds: data.map(member => member.id),
+    }, chatId);
+    // fixme: using following code after glpa upgrade to latest
+    const url = `restapi/v1.0/glip/teams/${chatId}/add`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  async removeTeamMember(data: any, chatId: string) {
+    return await this.editGroupMembers({
+      removedPersonIds: data.map(member => member.id),
+    }, chatId);
+    // fixme: using following code after glpa upgrade to latest
+    const url = `restapi/v1.0/glip/teams/${chatId}/remove`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  async editGroupMembers(data: any, chatId: string) {
+    const url = `restapi/v1.0/glip/groups/${chatId}/bulk-assign`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  // deprecated
+  async createAndGetGroupId(data: any) {
     return await this.createGroup(data).then(res => res.data.id);
   }
 
