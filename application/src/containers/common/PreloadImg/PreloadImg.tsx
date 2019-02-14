@@ -19,7 +19,7 @@ type PreloadImgState = {
 };
 
 const cacheUrl = {};
-const DELAY_SHOW_PLACEHOLDER_TIME = 250;
+const DELAY_SHOW_PLACEHOLDER_TIME = 500;
 
 class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
   private _delayTimer: NodeJS.Timeout;
@@ -30,16 +30,18 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       isError: false,
       showPlaceholder: false,
     };
-    this._delayTimer = setTimeout(() => {
-      this.setState({ showPlaceholder: true });
-    },                            DELAY_SHOW_PLACEHOLDER_TIME);
   }
 
   clearDelayTimer = () => {
-    this.setState({ showPlaceholder: true });
     if (this._delayTimer) {
       clearTimeout(this._delayTimer);
     }
+  }
+
+  componentWillMount() {
+    this._delayTimer = setTimeout(() => {
+      this.setState({ showPlaceholder: true });
+    },                            DELAY_SHOW_PLACEHOLDER_TIME);
   }
 
   componentWillUnMount() {
@@ -48,15 +50,17 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
 
   handleLoad = () => {
     const { url } = this.props;
-
-    this.setState({ loaded: true });
+    this.setState({ loaded: true, showPlaceholder: true });
     if (url) cacheUrl[url] = true;
     this.clearDelayTimer();
   }
 
   handleError = () => {
-    this.setState({ isError: true, loaded: true });
-    this.clearDelayTimer();
+    const { url } = this.props;
+    if (url) {
+      this.setState({ isError: true, loaded: true, showPlaceholder: true });
+      this.clearDelayTimer();
+    }
   }
 
   render() {

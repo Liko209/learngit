@@ -34,6 +34,20 @@ function getFileType(item: FileItemModel): ExtendFileItem {
   return fileType;
 }
 
+function getThumbnailURL(item: FileItemModel) {
+  const { versions } = item;
+  if (versions.length > 0) {
+    const version = versions[0];
+    // hard code as dThor
+    const key = `${version.stored_file_id}size=1000x200`;
+    const { thumbs } = version;
+    if (thumbs) {
+      return thumbs[key];
+    }
+  }
+  return '';
+}
+
 function image(item: FileItemModel) {
   const { type, versionUrl, name } = item;
   const image = {
@@ -74,4 +88,4 @@ function documentType(item: FileItemModel) {
   return doc;
 }
 
-export { getFileType, image, documentType };
+export { getFileType, image, documentType, getThumbnailURL };
