@@ -8,8 +8,6 @@ import { computed, action } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { MenuViewModelProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import { Notification } from '@/containers/Notification';
-import { errorHelper } from 'sdk/error';
 
 class MenuViewModel extends StoreViewModel<MenuViewModelProps>
   implements MenuViewModelProps {
@@ -24,32 +22,9 @@ class MenuViewModel extends StoreViewModel<MenuViewModelProps>
     return this.props.groupId;
   }
 
-  private _renderFlashToast = (message: string) => {
-    Notification.flashToast({
-      message,
-      type: 'error',
-      messageAlign: 'left',
-      fullWidth: false,
-      dismissible: false,
-    });
-  }
-
   @action
   removeFromTeam = async () => {
-    try {
-      await this._GroupService.removeTeamMembers([this.personId], this.groupId);
-      return true;
-    } catch (error) {
-      if (errorHelper.isNetworkConnectionError(error)) {
-        this._renderFlashToast('removeMemberNetworkError');
-        return false;
-      }
-      if (errorHelper.isBackEndError(error)) {
-        this._renderFlashToast('removeMemberBackendError');
-        return false;
-      }
-      throw error;
-    }
+    await this._GroupService.removeTeamMembers([this.personId], this.groupId);
   }
 }
 export { MenuViewModel };

@@ -12,6 +12,8 @@ import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { MenuViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
+import { Notification } from '@/containers/Notification';
+import { errorHelper } from 'sdk/error';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -25,11 +27,34 @@ class MenuViewComponent extends Component<Props, State> {
   @observable
   menuAnchorEl: HTMLElement | null = null;
 
-  private _handleRemoveFromTeam = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
+  private _renderFlashToast = (message: string) => {
+    Notification.flashToast({
+      message,
+      type: 'error',
+      messageAlign: 'left',
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
+  private _handleRemoveFromTeam = async (event: MouseEvent<HTMLElement>) => {
+    event && event.stopPropagation();
     const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
-    removeFromTeam();
+    try {
+      await removeFromTeam();
+      return true;
+    } catch (error) {
+      if (errorHelper.isNetworkConnectionError(error)) {
+        this._renderFlashToast('removeMemberNetworkError');
+        return false;
+      }
+      if (errorHelper.isBackEndError(error)) {
+        this._renderFlashToast('removeMemberBackendError');
+        return false;
+      }
+      throw error;
+    }
   }
 
   private _Anchor = () => {
