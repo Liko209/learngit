@@ -19,6 +19,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellProps,
+  JuiVirtualListRowsRenderInfo,
 } from 'jui/pattern/VirtualList';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import { observer } from 'mobx-react';
@@ -39,6 +40,7 @@ class StreamViewComponent extends Component<Props>
   private _globalStore = storeManager.getGlobalStore();
   private _listRef = React.createRef<JuiVirtualList>();
   @observable private _isLoading = false;
+  private _isMostRecentPostVisibleBefore: boolean;
   state = { _jumpToPostId: 0 };
 
   @observable private _jumpToFirstUnreadLoading = false;
@@ -177,6 +179,53 @@ class StreamViewComponent extends Component<Props>
     ) : null;
   }
 
+  private _rowsRenderedHandler = (info: JuiVirtualListRowsRenderInfo) => {
+    const { startIndex, stopIndex } = info;
+    this._handleNewMessageRead(startIndex, stopIndex);
+    this._handleMostRecentPostIdRead(stopIndex);
+  }
+
+  @action
+  private _handleNewMessageRead(startIndex: number, stopIndex: number) {
+    if (this._firstHistoryUnreadPostViewed) {
+      return;
+    }
+    const firstUnreadMsgId = this.props.firstHistoryUnreadPostId;
+    if (!firstUnreadMsgId) {
+      return;
+    }
+    const newMsgTagIndex = this.props.items.findIndex(
+      (i: StreamItem) => !!(i.value && i.value.includes(firstUnreadMsgId)),
+    );
+
+    const isVisible =
+      startIndex <= newMsgTagIndex && newMsgTagIndex <= stopIndex;
+    if (isVisible) {
+      this.props.clearHistoryUnread();
+    }
+    this._firstHistoryUnreadPostViewed = isVisible;
+  }
+
+  private _handleMostRecentPostIdRead(stopIndex: number) {
+    if (this.props.hasMoreDown) {
+      return;
+    }
+    const MostRecentMsgTagIndex = this.countOfCell() - 1;
+    const isVisible = stopIndex >= MostRecentMsgTagIndex;
+    if (isVisible === this._isMostRecentPostVisibleBefore) {
+      return;
+    }
+    if (isVisible) {
+      if (document.hasFocus()) {
+        this.props.markAsRead();
+        this._setUmiDisplay(false);
+      }
+    } else {
+      this._setUmiDisplay(true);
+    }
+    this._isMostRecentPostVisibleBefore = isVisible;
+  }
+
   render() {
     const { loadInitialPostsError, t } = this.props;
 
@@ -198,6 +247,7 @@ class StreamViewComponent extends Component<Props>
               isLoading={this._isLoading}
               width={width}
               height={height}
+              onBeforeRowsRendered={this._rowsRenderedHandler}
             />
           )}
         </ReactResizeDetector>
@@ -259,7 +309,9 @@ class StreamViewComponent extends Component<Props>
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-    markAsRead();
+    if (this._isMostRecentPostVisibleBefore) {
+      markAsRead();
+    }
     this._setUmiDisplay(false);
   }
 
