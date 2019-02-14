@@ -503,7 +503,7 @@ describe('FetchSortableDataListHandler', () => {
           originalItems,
         });
         const dataChangeCallback = jest.fn();
-        fetchSortableDataHandler.setUpDataChangeCallback(dataChangeCallback);
+        fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
         fetchSortableDataHandler.onDataChanged(payload);
         if (callbackMuted) {
           return expect(dataChangeCallback).not.toHaveBeenCalled();

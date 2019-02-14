@@ -73,7 +73,7 @@ export class StreamController {
       this._jumpToPostId,
     );
     this._orderListHandler = listHandler;
-    this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
+    this._orderListHandler.setDataChangeCallback(this.handlePostsChanged);
 
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
@@ -131,7 +131,7 @@ export class StreamController {
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.setUpDataChangeCallback(undefined);
+      this._orderListHandler.setDataChangeCallback(undefined);
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();

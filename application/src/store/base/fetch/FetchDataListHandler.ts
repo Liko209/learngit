@@ -71,7 +71,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
       direction === QUERY_DIRECTION.OLDER,
     );
   }
-  setUpDataChangeCallback(cb: DeltaDataHandler | undefined) {
+  setDataChangeCallback(cb: DeltaDataHandler | undefined) {
     this._dataChangeCallBack = cb;
   }
 

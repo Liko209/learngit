@@ -19,7 +19,7 @@ import { GroupState } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { autorun, observable, computed } from 'mobx';
+import { autorun, observable, computed, action } from 'mobx';
 import { getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
@@ -31,6 +31,8 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
 import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from './PrefetchPostProcessor';
+import { TDelta } from '../base/fetch/types';
+import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
 
 const { GroupService, ProfileService } = service;
 
@@ -71,6 +73,10 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _stateService: StateService = StateService.getInstance();
+
+  private _prefetchHandler: SequenceProcessorHandler = new SequenceProcessorHandler(
+    'SequenceProcessorHandler',
+  );
 
   private _handlersMap: {} = {};
   private _oldFavGroupIds: number[] = [];
@@ -258,6 +264,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       this._removeByIds(SECTION_TYPE.TEAM, teamIdsShouldBeRemoved);
   }
 
+  @action
   private async _handleIncomesGroupState(
     payload: NotificationEntityPayload<GroupState>,
   ) {
@@ -304,6 +311,33 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     ]);
   }
 
+  private _handleGroupChanged = (delta: TDelta) => {
+    const { deleted, updated, added } = delta;
+    const addedIds = added.map(item => item.id);
+
+    if (deleted.length) {
+      const truelyDeleted = _.differenceBy(deleted, addedIds);
+      truelyDeleted.forEach((groupId: number) => {
+        postCacheController.remove(groupId);
+      });
+    }
+
+    if (updated.length) {
+      updated.forEach((group: ISortableModel) => {
+        const processor = new PrefetchPostProcessor(group.id);
+        this._prefetchHandler.addProcessor(processor);
+      });
+    }
+
+    if (added.length) {
+      const truelyAdded = _.differenceBy(addedIds, deleted);
+      truelyAdded.forEach((groupId: number) => {
+        const processor = new PrefetchPostProcessor(groupId);
+        this._prefetchHandler.addProcessor(processor);
+      });
+    }
+  }
+
   private async _addSection(
     sectionType: SECTION_TYPE,
     queryType: GROUP_QUERY_TYPE,
@@ -313,6 +347,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._handlersMap[sectionType] = new FetchSortableDataListHandler(
       dataProvider,
       config,
+    );
+    this._handlersMap[sectionType].setDataChangeCallback(
+      this._handleGroupChanged,
     );
     return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
   }
@@ -391,16 +428,29 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         logId,
       );
       const groups = await this._handlersMap[sectionType].fetchData(direction);
-      console.log(`===> ${sectionType}, count: ${groups.length}`);
       if (sectionType === SECTION_TYPE.FAVORITE) {
-        const handler = new SequenceProcessorHandler(
-          'prefetchSequenceProcessorHandler',
-        );
         groups.forEach((group: Group) => {
           const processor = new PrefetchPostProcessor(group.id);
-          handler.addProcessor(processor);
+          this._prefetchHandler.addProcessor(processor);
         });
-        handler.process();
+      } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
+        groups.forEach(async (group: Group) => {
+          const stateService: StateService = StateService.getInstance();
+          const state = await stateService.getById(group.id);
+          if (state && state.unread_count) {
+            const processor = new PrefetchPostProcessor(group.id);
+            this._prefetchHandler.addProcessor(processor);
+          }
+        });
+      } else {
+        groups.forEach(async (group: Group) => {
+          const stateService: StateService = StateService.getInstance();
+          const state = await stateService.getById(group.id);
+          if (state && state.unread_mentions_count) {
+            const processor = new PrefetchPostProcessor(group.id);
+            this._prefetchHandler.addProcessor(processor);
+          }
+        });
       }
       PerformanceTracerHolder.getPerformanceTracer().end(logId);
     }

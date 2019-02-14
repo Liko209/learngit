@@ -5,21 +5,38 @@
  */
 
 import { AbstractProcessor } from './AbstractProcessor';
+import { IProcessor } from 'sdk/framework/processor/IProcessor';
 class SequenceProcessorHandler extends AbstractProcessor {
+  private _isExecuting: boolean = false;
+
   constructor(name: string) {
     super(name);
   }
 
-  async process(): Promise<boolean> {
-    let totalSuccess = true;
-    for (let i = 0; i < this._processors.length; i += 1) {
-      const oneSuccess = await this._processors[i].process();
-      totalSuccess = totalSuccess && oneSuccess;
-      if (!this._processors[i].canContinue()) {
-        break;
-      }
+  addProcessor(processor: IProcessor): boolean {
+    const result = super.addProcessor(processor);
+    this.execute();
+    return result;
+  }
+
+  async execute(): Promise<boolean> {
+    const result = true;
+    if (this._isExecuting) {
+      return result;
     }
-    return totalSuccess;
+
+    const processor = this._processors.pop();
+    if (processor) {
+      this._isExecuting = true;
+      await processor.process().then(() => {
+        this._isExecuting = false;
+        this.execute();
+      });
+    } else {
+      console.log(`${this.name()}: is done`);
+    }
+
+    return result;
   }
 }
 

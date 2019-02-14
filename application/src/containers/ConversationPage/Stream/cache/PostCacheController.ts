@@ -46,6 +46,10 @@ class PostCacheController {
     FetchSortableDataListHandler<Post>
   > = new Map();
 
+  has(groupId: number): boolean {
+    return this._cacheMap.has(groupId);
+  }
+
   get(
     groupId: number,
     jump2PostId?: number,
@@ -80,9 +84,13 @@ class PostCacheController {
   set(groupId: number, listHandler: FetchSortableDataListHandler<Post>) {
     this._cacheMap[groupId] = listHandler;
   }
+
+  remove(groupId: number) {
+    this._cacheMap.delete(groupId);
+  }
 }
 
-const postController = new PostCacheController();
+const postCacheController = new PostCacheController();
 
 export { PostCacheController };
-export default postController;
+export default postCacheController;

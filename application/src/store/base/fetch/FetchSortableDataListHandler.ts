@@ -100,6 +100,7 @@ export class FetchSortableDataListHandler<
       this._dataChangeCallBack &&
         this._dataChangeCallBack({
           added: sortableResult,
+          updated: [],
           deleted: [],
         });
     });
@@ -112,6 +113,7 @@ export class FetchSortableDataListHandler<
     this._dataChangeCallBack &&
       this._dataChangeCallBack({
         added: sortableResult,
+        updated: [],
         deleted: [],
       });
   }
@@ -129,6 +131,7 @@ export class FetchSortableDataListHandler<
     if (this._dataChangeCallBack) {
       this._dataChangeCallBack({
         deleted: _.intersection(originalSortableIds, payload.body.ids),
+        updated: [],
         added: [],
       });
     }
@@ -142,6 +145,7 @@ export class FetchSortableDataListHandler<
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
+    let updatedSortableModels: ISortableModel[] = [];
 
     const entities = payload.body.entities;
     const keys = Array.from(payload.body.ids);
@@ -218,13 +222,24 @@ export class FetchSortableDataListHandler<
           originalSortableModels,
           item => item.id,
         );
+
+        updatedSortableModels = _.intersectionBy(
+          matchedSortableModels,
+          originalSortableModels,
+          item => item.id,
+        );
       }
     }
 
-    if (deletedSortableModelIds.length || addedSortableModels.length) {
+    if (
+      deletedSortableModelIds.length ||
+      addedSortableModels.length ||
+      updatedSortableModels.length
+    ) {
       this._dataChangeCallBack &&
         this._dataChangeCallBack({
           deleted: deletedSortableModelIds,
+          updated: updatedSortableModels,
           added: addedSortableModels,
         });
     }
