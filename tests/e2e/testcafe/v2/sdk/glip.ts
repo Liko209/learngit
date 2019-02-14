@@ -211,6 +211,28 @@ export class GlipSdk {
     });
   }
 
+  async removeTeamMembers(groupId: string | number, rcIds: string |string[]) {
+    const uri = `api/remove_team_members/${groupId}`;
+    const members = [].concat(await this.toPersonId(rcIds))
+    const data = {
+      members
+    };
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async addTeamMembers(groupId: string | number, rcIds: string |string[]) {
+    const uri = `api/add_team_members/${groupId}`;
+    const members = [].concat(await this.toPersonId(rcIds))
+    const data = {
+      members
+    };
+    return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
   getGroup(groupId: string | number) {
     const uri = `/api/group/${groupId}`;
     return this.axiosClient.get(uri, {

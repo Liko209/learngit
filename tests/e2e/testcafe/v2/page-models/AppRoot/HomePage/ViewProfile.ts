@@ -344,20 +344,33 @@ class Member extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName', this.self);
   }
 
-  get admin() {
+  get adminLabel() {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
   }
 
-  isAdmin(): Promise<boolean> {
-    return this.admin.exists
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
   }
 
-  async shouldBeAdmin() {
+  isAdmin(): Promise<boolean> {
+    return this.adminLabel.exists
+  }
+
+ isGuest(): Promise<boolean> {
+    return this.guestLabel.exists
+  }
+
+  async showAdminLabel() {
     await this.t.expect(this.isAdmin).ok();
   }
 
-  async shouldBeMemberOnly() {
+  async showGuestLabel() {
+    await this.t.expect(this.isGuest).ok();
+  }
+
+  async showMemberLabel() {
     await this.t.expect(this.isAdmin).notOk();
+    await this.t.expect(this.isGuest).notOk();
   }
 
 }
