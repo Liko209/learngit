@@ -5,26 +5,19 @@
  */
 import React, { Component } from 'react';
 import { JuiPinnedCell } from 'jui/pattern/RightShelf/PinnedItem';
-// import history from '@/history';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { PinnedItemViewProps } from './types';
 
-class PinnedItem extends Component<
-  PinnedItemViewProps & RouteComponentProps<{ subPath: string }>
-> {
+class PinnedItemView extends Component<PinnedItemViewProps> {
   componentDidUpdate() {
     this.props.didUpdate();
   }
   jumpToPost = () => {
     const { post } = this.props;
     const { id } = post;
-    // const groupId = Number(match.params.subPath);
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, id);
-    // history.replace(`/messages/${groupId}`);
-    console.log(this.props, id, '----nello');
   }
   render() {
     const { creatorName = '', createTime, textContent, items } = this.props;
@@ -39,7 +32,5 @@ class PinnedItem extends Component<
     );
   }
 }
-
-const PinnedItemView = withRouter(PinnedItem);
 
 export { PinnedItemView };

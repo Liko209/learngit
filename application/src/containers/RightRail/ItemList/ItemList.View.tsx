@@ -64,7 +64,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     );
   }
 
-  fixedCellHeight(index: number) {
+  fixedCellHeight() {
     return ITEM_HEIGHT;
   }
 
@@ -79,7 +79,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     return result;
   }
 
-  loadMore = async (startIndex: number, stopIndex: number) => {
+  loadMore = async () => {
     await this._loadData();
   }
 
