@@ -16,7 +16,7 @@ import ProfileService from '../../../service/profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service';
-import { IRequestRemotePostAndSave } from '../entity/Post';
+import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 
 class NewPostService extends EntityBaseService<Post> {
@@ -112,12 +112,12 @@ class NewPostService extends EntityBaseService<Post> {
       .groupHasPostInLocal(groupId);
   }
 
-  async getRemotePostsByGroupIdAndSave(
-    params: IRequestRemotePostAndSave,
-  ): Promise<IPostResult> {
+  async getRemotePostsByGroupId(
+    params: IRemotePostRequest,
+  ): Promise<IPostResult | null> {
     return this.getPostController()
       .getPostFetchController()
-      .getRemotePostsByGroupIdAndSave(params);
+      .getRemotePostsByGroupId(params);
   }
 
   async getPostCountByGroupId(groupId: number): Promise<number> {

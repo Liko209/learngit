@@ -72,9 +72,9 @@ describe('PreloadPostsProcessor', () => {
         shouldPreload: true,
         limit: ONE_PAGE,
       });
-      postService.getRemotePostsByGroupIdAndSave.mockResolvedValueOnce(null);
+      postService.getRemotePostsByGroupId.mockResolvedValueOnce(null);
       await processor.process();
-      expect(postService.getRemotePostsByGroupIdAndSave).toHaveBeenCalledTimes(
+      expect(postService.getRemotePostsByGroupId).toHaveBeenCalledTimes(
         1,
       );
     });
@@ -84,9 +84,9 @@ describe('PreloadPostsProcessor', () => {
         shouldPreload: false,
         limit: 0,
       });
-      postService.getRemotePostsByGroupIdAndSave.mockResolvedValueOnce(null);
+      postService.getRemotePostsByGroupId.mockResolvedValueOnce(null);
       await processor.process();
-      expect(postService.getRemotePostsByGroupIdAndSave).toHaveBeenCalledTimes(
+      expect(postService.getRemotePostsByGroupId).toHaveBeenCalledTimes(
         0,
       );
     });

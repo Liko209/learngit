@@ -16,7 +16,7 @@ import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
 import { GroupService } from '../../../module/group';
-import { IRequestRemotePostAndSave } from '../entity/Post';
+import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { Item } from '../../../module/item/entity';
 
@@ -81,15 +81,18 @@ class PostFetchController {
           direction,
           result.posts,
         );
-        const serverResult = await this.getRemotePostsByGroupIdAndSave({
+        const serverResult = await this.getRemotePostsByGroupId({
           direction,
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
         });
-        if (serverResult.success) {
-          result.posts.push(...serverResult.posts);
+        if (serverResult) {
+          result.posts = this._handleDuplicatePosts(
+            result.posts,
+            serverResult.posts,
+          );
           result.items.push(...serverResult.items);
           result.hasMore = serverResult.hasMore;
         }
@@ -124,7 +127,7 @@ class PostFetchController {
     }
     const requestResult = await PostAPI.requestPosts(params);
 
-    const data = requestResult.expect('Get Remote post failed');
+    const data = requestResult.expect('Get remote post failed');
 
     if (data) {
       result.posts = data.posts;
@@ -135,13 +138,13 @@ class PostFetchController {
     return result;
   }
 
-  async getRemotePostsByGroupIdAndSave({
+  async getRemotePostsByGroupId({
     direction,
     groupId,
     limit,
     postId,
     shouldSaveToDb,
-  }: IRequestRemotePostAndSave) {
+  }: IRemotePostRequest) {
     mainLogger.debug(
       TAG,
       'getPostsByGroupId() db is not exceed limit, request from server',
@@ -153,12 +156,6 @@ class PostFetchController {
       postId,
     });
 
-    const result = {
-      posts: [],
-      items: [],
-      hasMore: true,
-      success: false,
-    };
     if (serverResult) {
       const handledResult = await this.postDataController.handleFetchedPosts(
         serverResult,
@@ -168,15 +165,32 @@ class PostFetchController {
         const groupService: GroupService = GroupService.getInstance();
         groupService.updateHasMore(groupId, direction, handledResult.hasMore);
       }
-      Object.assign(result, handledResult);
-      result.success = true;
+      return handledResult;
     }
-    return result;
+    return serverResult;
   }
 
   private async _isPostInDb(postId: number): Promise<boolean> {
     const post = await this.entitySourceController.getEntityLocally(postId);
     return post ? true : false;
+  }
+
+  private _handleDuplicatePosts(localPosts: Post[], remotePosts: Post[]) {
+    if (localPosts && localPosts.length > 0) {
+      if (remotePosts && remotePosts.length > 0) {
+        remotePosts.forEach((remotePost: Post) => {
+          const index = localPosts.findIndex(
+            (localPost: Post) => localPost.version === remotePost.version,
+          );
+          if (index !== -1) {
+            localPosts.splice(index, 1);
+          }
+        });
+        return localPosts.concat(remotePosts);
+      }
+      return localPosts;
+    }
+    return remotePosts;
   }
 
   private async _getPostsFromDb({

@@ -95,17 +95,17 @@ describe('PostFetchController()', () => {
     });
 
     it('should return local + server result when shouldSaveToDb===true & local count < limit', async () => {
-      const mockPosts = [{ id: 1 }, { id: 2 }];
+      const mockPosts = [{ id: 1, version: 1 }, { id: 2, version: 2 }];
       const mockItems = [{ id: 11 }, { id: 22 }];
       const data = {
-        posts: [{ id: 3 }, { id: 4 }],
+        posts: [{ id: 3, version: 3 }, { id: 4, version: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
       groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
         .mockResolvedValueOnce({
           success: true,
           hasMore: false,
@@ -123,7 +123,12 @@ describe('PostFetchController()', () => {
       expect(result).toEqual({
         hasMore: false,
         items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
-        posts: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+        posts: [
+          { id: 1, version: 1 },
+          { id: 2, version: 2 },
+          { id: 3, version: 3 },
+          { id: 4, version: 4 },
+        ],
         limit: 20,
       });
     });
@@ -139,7 +144,7 @@ describe('PostFetchController()', () => {
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
         .mockResolvedValueOnce({
           success: true,
           hasMore: false,
@@ -160,14 +165,14 @@ describe('PostFetchController()', () => {
     });
 
     it('should return local result when shouldSaveToDb===true & local is not empty & remote is empty', async () => {
-      const mockPosts = [{ id: 1 }, { id: 2 }];
+      const mockPosts = [{ id: 1, version: 1 }, { id: 2, version: 2 }];
       const mockItems = [{ id: 11 }, { id: 22 }];
       const data = {
         posts: [],
         items: [],
       };
       jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
         .mockResolvedValueOnce({
           success: true,
           hasMore: false,
@@ -195,11 +200,11 @@ describe('PostFetchController()', () => {
       const mockPosts = [];
       const mockItems = [];
       const data = {
-        posts: [{ id: 3 }, { id: 4 }],
+        posts: [{ id: 3, version: 3 }, { id: 4, version: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
       jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
         .mockResolvedValueOnce({
           success: true,
           hasMore: false,
@@ -223,65 +228,13 @@ describe('PostFetchController()', () => {
       });
     });
 
-    it('should return empty result when shouldSaveToDb===true & local is empty & api request is failed', async () => {
-      const mockPosts = [{ id: 1 }, { id: 2 }];
-      const mockItems = [{ id: 11 }, { id: 22 }];
-      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
-      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
-      itemService.getByPosts.mockResolvedValue(mockItems);
-      jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
-        .mockResolvedValueOnce({
-          success: false,
-        });
-
-      const result = await postFetchController.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-
-      expect(result).toEqual({
-        hasMore: true,
-        items: mockItems,
-        posts: mockPosts,
-        limit: 20,
-      });
-    });
-
-    it('should return local results when shouldSaveToDb===true & local is not empty & api request is failed', async () => {
-      const mockPosts = [];
-      const mockItems = [];
-      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
-      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
-      itemService.getByPosts.mockResolvedValue(mockItems);
-      jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
-        .mockResolvedValueOnce({
-          success: false,
-        });
-
-      const result = await postFetchController.getPostsByGroupId({
-        groupId: 1,
-        limit: 20,
-      });
-
-      expect(result).toEqual({
-        hasMore: true,
-        items: [],
-        posts: [],
-        limit: 20,
-      });
-    });
-
     it('should return server results when shouldSaveToDb===false & api request is success', async () => {
       const data = {
-        posts: [{ id: 1 }, { id: 2 }],
+        posts: [{ id: 1, version: 1 }, { id: 2, version: 2 }],
         items: [{ id: 11 }, { id: 22 }],
       };
       jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
         .mockResolvedValueOnce({
           success: true,
           hasMore: false,
@@ -306,18 +259,23 @@ describe('PostFetchController()', () => {
       });
     });
 
-    it('should return empty when shouldSaveToDb===false & local is empty & api request is failed', async () => {
+    it('should return empty when shouldSaveToDb===false & local is empty & remote is empty', async () => {
       const mockPosts = [];
       const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
       groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
 
       jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupIdAndSave')
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
         .mockResolvedValueOnce({
-          success: false,
+          hasMore: false,
+          ...data,
         });
 
       const result = await postFetchController.getPostsByGroupId({
@@ -326,9 +284,47 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: true,
+        hasMore: false,
         items: [],
         posts: [],
+        limit: 20,
+      });
+    });
+
+    it('should remove pre-insert post when shouldSaveToDb===true & local count < limit', async () => {
+      const mockPosts = [{ id: -1, version: 100 }, { id: 2, version: 101 }];
+      const mockItems = [{ id: 11 }, { id: 22 }];
+      const data = {
+        posts: [{ id: 3, version: 100 }, { id: 4, version: 102 }],
+        items: [{ id: 12 }, { id: 23 }],
+      };
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          success: true,
+          hasMore: false,
+          ...data,
+        });
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(data.items);
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
+        posts: [
+          { id: 2, version: 101 },
+          { id: 3, version: 100 },
+          { id: 4, version: 102 },
+        ],
         limit: 20,
       });
     });
@@ -418,7 +414,7 @@ describe('PostFetchController()', () => {
     });
   });
 
-  describe('getRemotePostsByGroupIdAndSave()', () => {
+  describe('getRemotePostsByGroupId()', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -444,7 +440,7 @@ describe('PostFetchController()', () => {
         ),
       );
       await expect(
-        postFetchController.getRemotePostsByGroupIdAndSave(getParaMeters(true)),
+        postFetchController.getRemotePostsByGroupId(getParaMeters(true)),
       ).rejects.toBeInstanceOf(JNetworkError);
     });
     it.skip('should not call updateHasMore when should not save', async () => {
@@ -462,7 +458,7 @@ describe('PostFetchController()', () => {
         .mockResolvedValueOnce(data.items);
       groupService.updateHasMore.mockImplementationOnce(() => {});
 
-      const result = await postFetchController.getRemotePostsByGroupIdAndSave(
+      const result = await postFetchController.getRemotePostsByGroupId(
         getParaMeters(false),
       );
 
@@ -481,7 +477,7 @@ describe('PostFetchController()', () => {
       } as BaseResponse);
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
 
-      const result = await postFetchController.getRemotePostsByGroupIdAndSave(
+      const result = await postFetchController.getRemotePostsByGroupId(
         getParaMeters(true),
       );
       groupService.updateHasMore.mockImplementationOnce(() => {});

@@ -59,6 +59,7 @@ const baseHandleData = async ({ data, dao, eventKey, noSavingToDB }: any) => {
         await dao.bulkPut(normalData);
       }
     }
+    console.error('baseHandleData send update');
     notificationCenter.emitEntityUpdate(eventKey, data);
     return normalData;
   } catch (e) {

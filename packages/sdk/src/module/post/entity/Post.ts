@@ -61,7 +61,7 @@ export type IRawPostResult = {
   hasMore: boolean;
 };
 
-export type IRequestRemotePostAndSave = {
+export type IRemotePostRequest = {
   direction: QUERY_DIRECTION;
   groupId: number;
   limit: number;

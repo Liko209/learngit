@@ -150,7 +150,7 @@ class PostDataController {
     );
   }
 
-  async filterAndSavePosts(posts: Post[], save?: boolean): Promise<Post[]> {
+  async filterAndSavePosts(posts: Post[], save: boolean): Promise<Post[]> {
     if (!posts || !posts.length) {
       return posts;
     }

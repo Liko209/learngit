@@ -10,7 +10,7 @@ import { mainLogger } from 'foundation';
 import { StateService } from '../../module/state';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { GroupService } from '../../module/group';
-import { IRequestRemotePostAndSave } from '../../module/post/entity/Post';
+import { IRemotePostRequest } from '../../module/post/entity/Post';
 
 const DEFAULT_DIRECTION: QUERY_DIRECTION = QUERY_DIRECTION.OLDER;
 const ONE_PAGE: number = 20;
@@ -34,7 +34,7 @@ class PreloadPostsProcessor implements IProcessor {
       } count:${result.limit}`,
     );
     if (result.shouldPreload) {
-      const params: IRequestRemotePostAndSave = {
+      const params: IRemotePostRequest = {
         limit: result.limit,
         direction: DEFAULT_DIRECTION,
         groupId: this._group.id,
@@ -42,7 +42,7 @@ class PreloadPostsProcessor implements IProcessor {
         shouldSaveToDb: true,
       };
       const postService: NewPostService = NewPostService.getInstance();
-      await postService.getRemotePostsByGroupIdAndSave(params);
+      await postService.getRemotePostsByGroupId(params);
     }
     return true;
   }
