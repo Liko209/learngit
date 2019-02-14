@@ -36,8 +36,9 @@ class IndicatorViewModel extends AbstractViewModel
   get hasDraft() {
     const { draft } = this.groupConfig;
     const draftItemIds = this.groupConfig.attachmentItemIds;
-    return (
-      (draftItemIds && draftItemIds.length > 0) || (draft && draft.length > 0)
+    return !!(
+      (draftItemIds && draftItemIds.length > 0) ||
+      (draft && draft.length > 0)
     );
   }
 
