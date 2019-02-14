@@ -35,13 +35,19 @@ describe('RTC call', () => {
       return this.isReadyReturnValue;
     }
   }
+  class MediaStreams {
+    getMediaStats = jest.fn();
+    stopMediaStats = jest.fn();
+  }
   class MockSession extends EventEmitter2 {
+    mediaStreams: MediaStreams;
     constructor() {
       super();
       this.remoteIdentity = {
         displayName: 'test',
         uri: { aor: 'test@ringcentral.com' },
       };
+      this.mediaStreams = new MediaStreams();
     }
 
     flip = jest.fn();
