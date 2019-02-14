@@ -298,7 +298,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
 
 });
 
-test.only(formalName('Check \"Allow members to add other members\" can be turn on/off on the create new team dialog', ['P1', 'JPT-1078', 'Wayne.zhou', 'CreateTeam']), async t => {
+test(formalName('Check \"Allow members to add other members\" can be turn on/off on the create new team dialog', ['P1', 'JPT-1078', 'Wayne.zhou', 'CreateTeam']), async t => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const adminUser = users[4];
