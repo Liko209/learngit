@@ -118,7 +118,8 @@ class PostActionController implements IPostActionController {
 
   async removeItemFromPost(postId: number, itemId: number) {
     const itemService: ItemService = ItemService.getInstance();
-    await itemService.deleteItemData(itemId);
+    await itemService.deleteItem(itemId);
+
     const post = await this.entitySourceController.getEntityLocally(postId);
     if (post) {
       const itemIds = post.item_ids.filter((value: number) => {

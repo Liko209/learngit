@@ -72,6 +72,7 @@ class PostDataController {
       await this.preInsertController.bulkDelete(posts);
       return await this.filterAndSavePosts(posts, true);
     }
+    return data;
   }
 
   /**
