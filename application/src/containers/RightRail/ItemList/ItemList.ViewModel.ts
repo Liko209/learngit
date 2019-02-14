@@ -266,6 +266,16 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   get ids() {
     return this._sortableDataHandler.sortableListStore.getIds;
   }
+
+  @computed
+  get width() {
+    return this.props.width;
+  }
+
+  @computed
+  get height() {
+    return this.props.height;
+  }
 }
 
 export { ItemListViewModel };

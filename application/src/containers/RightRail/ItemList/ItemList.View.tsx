@@ -22,8 +22,7 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { debounce } from 'lodash';
-const LOAD_DELAY = 300;
-import ReactResizeDetector from 'react-resize-detector';
+const LOAD_DELAY = 100;
 
 const HEADER_HEIGHT = 36;
 @observer
@@ -92,7 +91,14 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   render() {
-    const { totalCount, ids, loadStatus, tabConfig } = this.props;
+    const {
+      totalCount,
+      ids,
+      loadStatus,
+      tabConfig,
+      width,
+      height,
+    } = this.props;
     const { loading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
     return (
@@ -103,17 +109,13 @@ class ItemListView extends React.Component<ViewProps & Props>
           </JuiListSubheader>
         )}
         {firstLoaded && (
-          <ReactResizeDetector handleWidth={true} handleHeight={true}>
-            {(width: number = 0, height: number = HEADER_HEIGHT) => (
-              <JuiVirtualList
-                dataSource={this}
-                threshold={1}
-                isLoading={loading}
-                width={width}
-                height={height - HEADER_HEIGHT}
-              />
-            )}
-          </ReactResizeDetector>
+          <JuiVirtualList
+            dataSource={this}
+            threshold={1}
+            isLoading={loading}
+            width={width}
+            height={height - HEADER_HEIGHT}
+          />
         )}
         {loading && !firstLoaded && this.firstLoader()}
       </JuiRightShelfContent>

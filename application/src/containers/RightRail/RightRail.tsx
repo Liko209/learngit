@@ -28,6 +28,9 @@ type TriggerButtonProps = {
   onClick: () => {};
 } & WithNamespaces;
 
+// height of conversation header & tabs
+const HEIGHT_FIX = 48 + 33;
+
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
@@ -77,8 +80,8 @@ class RightRailComponent extends React.Component<Props> {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true}>
-        {(width: number) => (
+      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+        {(width: number, height: number) => (
           <JuiTabs
             defaultActiveIndex={0}
             tag="right-shelf"
@@ -105,6 +108,8 @@ class RightRailComponent extends React.Component<Props> {
                   <ItemList
                     type={type}
                     groupId={id}
+                    width={width}
+                    height={height - HEIGHT_FIX}
                     active={tabIndex === index}
                   />
                 </JuiTab>
