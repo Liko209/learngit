@@ -8,7 +8,7 @@ import {
   ERROR_CODES_NETWORK,
 } from 'foundation';
 import { PersonService } from '../../../module/person';
-import ProfileService from '../../profile';
+import { ProfileService } from '../../../module/profile';
 import { UserConfig } from '../../account/UserConfig';
 import GroupAPI from '../../../api/glip/group';
 import { GROUP_QUERY_TYPE, PERMISSION_ENUM } from '../../constants';
@@ -48,7 +48,7 @@ jest.mock('../../../dao');
 jest.mock('../handleData');
 jest.mock('../../../module/person');
 jest.mock('../../../module/group/dao');
-jest.mock('../../../service/profile');
+jest.mock('../../../module/profile');
 jest.mock('../../account/UserConfig');
 jest.mock('../../notificationCenter');
 jest.mock('../../../service/company');

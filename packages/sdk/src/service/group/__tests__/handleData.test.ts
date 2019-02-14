@@ -4,7 +4,7 @@ import { daoManager } from '../../../dao';
 import { GroupDao } from '../../../module/group/dao';
 import GroupAPI from '../../../api/glip/group';
 import { PersonService } from '../../../module/person';
-import ProfileService from '../../../service/profile';
+import { ProfileService } from '../../../module/profile';
 import { UserConfig } from '../../../service/account';
 import { Group } from '../../../module/group/entity';
 import { Post } from '../../../module/post/entity';
@@ -29,7 +29,7 @@ import handleData, {
 jest.mock('../../../api');
 jest.mock('../../../framework/controller');
 
-jest.mock('../../../service/profile');
+jest.mock('../../../module/profile');
 jest.mock('../../../service/account');
 jest.mock('../../notificationCenter');
 jest.mock('../../../module/state');

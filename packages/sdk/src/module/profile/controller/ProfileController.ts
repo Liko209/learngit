@@ -5,13 +5,14 @@
  */
 import { ProfileDataController } from './ProfileDataController';
 import { ProfileActionController } from './ProfileActionController';
-import { ProfileDao, daoManager } from '../../../dao';
+import { daoManager } from '../../../dao';
 import {
   buildRequestController,
   buildEntityPersistentController,
   buildEntitySourceController,
   buildPartialModifyController,
 } from '../../../framework/controller';
+import { ProfileDao } from '../dao';
 import Api from '../../../api/api';
 import { Profile } from '../entity';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';

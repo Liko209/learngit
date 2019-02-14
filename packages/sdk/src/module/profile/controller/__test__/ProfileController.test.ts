@@ -3,7 +3,7 @@
  * @Date: 2018-03-01 10:49:44
  */
 import { ProfileController } from '../ProfileController';
-import { Api } from '../../../../api';
+import Api from '../../../../api/api';
 import { MockEntitySourceController } from './MockEntitySourceController';
 // import { daoManager, ProfileDao } from '../../../../dao';
 import {
@@ -11,9 +11,10 @@ import {
   buildPartialModifyController,
   buildRequestController,
 } from '../../../../framework/controller';
+import { ProfileActionController } from '../ProfileActionController';
 
 jest.mock('../../../../framework/controller');
-jest.mock('../../../../api');
+jest.mock('../../../../api/api');
 jest.mock('../../../../dao');
 
 describe('ProfileController', () => {
@@ -26,7 +27,6 @@ describe('ProfileController', () => {
 
     mockEntitySourceController = new MockEntitySourceController();
     profileController = new ProfileController(mockEntitySourceController);
-
   });
 
   afterEach(() => {
@@ -52,7 +52,7 @@ describe('ProfileController', () => {
       });
 
       const result = profileController.getProfileActionController();
-      expect(result instanceof ProfileController).toBe(true);
+      expect(result instanceof ProfileActionController).toBe(true);
       expect(buildEntitySourceController).toBeCalledTimes(1);
       expect(buildPartialModifyController).toBeCalledTimes(1);
       expect(buildRequestController).toBeCalledTimes(1);

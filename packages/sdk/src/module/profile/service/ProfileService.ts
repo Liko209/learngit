@@ -7,7 +7,8 @@
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { IProfileService } from './IProfileService';
 import { Profile } from '../entity/Profile';
-import { daoManager, ProfileDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET, SERVICE } from '../../../service';
