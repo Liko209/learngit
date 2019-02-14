@@ -28,6 +28,7 @@ class ContactSearch extends React.Component<Props> {
       searchMembers,
       suggestions,
       errorEmail,
+      messageRef,
     } = this.props;
 
     return (
@@ -43,6 +44,7 @@ class ContactSearch extends React.Component<Props> {
         errorEmail={errorEmail}
         helperText={helperText}
         automationId="contactSearchSuggestionsList"
+        messageRef={messageRef}
       />
     );
   }

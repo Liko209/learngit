@@ -11,7 +11,7 @@ import PostAPI from '../../api/glip/post';
 import BaseService from '../../service/BaseService';
 import PostServiceHandler from '../../service/post/postServiceHandler';
 import ProfileService from '../../service/profile';
-import GroupService from '../../service/group';
+import GroupService from '../../module/group';
 import notificationCenter from '../notificationCenter';
 import { baseHandleData, handleDataFromSexio } from './handleData';
 import { Post } from '../../module/post/entity';
@@ -643,7 +643,7 @@ class PostService extends BaseService<Post> {
     const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
     const postsMap = await Promise.all(promises);
     const posts = _.union(...postsMap);
-    const ids = posts.map(post => post.id);
+    const ids = posts.filter(post => !!post).map(post => post.id);
     await dao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);

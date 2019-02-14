@@ -11,10 +11,14 @@ export default class ItemModel extends Base<Item> {
   @observable
   typeId: number;
 
+  @observable
+  atMentionPostIds?: number[];
+
   constructor(data: Item) {
     super(data);
     const { type_id } = data;
     this.typeId = type_id;
+    this.atMentionPostIds = data.at_mentioning_post_ids;
   }
 
   static fromJS(data: Item) {

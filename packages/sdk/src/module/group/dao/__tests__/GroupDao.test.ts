@@ -112,13 +112,5 @@ describe('GroupDao', () => {
       ).resolves.toMatchObject(groups[3]);
     });
 
-    it('get latest group', async () => {
-      await expect(groupDao.getLatestGroup()).resolves.toMatchObject(groups[4]);
-    });
-
-    it('get last n group', async () => {
-      const result = await groupDao.getLastNGroups(3);
-      expect(result.map((t: Group) => t.id)).toEqual([5, 4, 3]);
-    });
   });
 });

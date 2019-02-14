@@ -1,25 +1,40 @@
 /*
  * @Author: Paynter Chen
- * @Date: 2019-01-02 09:30:31
+ * @Date: 2019-02-02 16:16:43
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
+
 import { Api } from '../../../api';
-import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
-import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { Group } from '../entity';
-import { TeamSetting, PermissionFlags } from '../types';
-import { TeamPermissionController } from './TeamPermissionController';
+import GroupAPI from '../../../api/glip/group';
+import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
+import { ErrorParserHolder } from '../../../error';
 import { buildRequestController } from '../../../framework/controller';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
+import { Raw } from '../../../framework/model';
+import { GroupApiType } from '../../../models';
+import { UserConfig } from '../../../service/account/UserConfig';
+import { ENTITY } from '../../../service/eventKey';
+import notificationCenter from '../../../service/notificationCenter';
+import PostService from '../../../service/post';
+import ProfileService from '../../../service/profile';
+import { transform } from '../../../service/utils';
+import { GroupDao } from '../dao';
+import { Group } from '../entity';
+import { IGroupService } from '../service/IGroupService';
+import { PermissionFlags, TeamSetting } from '../types';
+import { TeamPermissionController } from './TeamPermissionController';
 
-class TeamActionController {
+export class GroupActionController {
   teamRequestController: IRequestController<Group>;
-
+  groupRequestController: IRequestController<Group>;
   constructor(
-    public partialModifyController: IPartialModifyController<Group>,
+    public groupService: IGroupService,
     public entitySourceController: IEntitySourceController<Group>,
+    public partialModifyController: IPartialModifyController<Group>,
     public teamPermissionController: TeamPermissionController,
   ) {}
 
@@ -198,6 +213,204 @@ class TeamActionController {
     );
   }
 
+  async pinPost(postId: number, groupId: number, toPin: boolean) {
+    await this.partialModifyController.updatePartially(
+      groupId,
+      (partialEntity, originalEntity) => {
+        const { pinned_post_ids = [] } = originalEntity;
+        if (toPin) {
+          return {
+            ...partialEntity,
+            pinned_post_ids: _.union(pinned_post_ids, [postId]),
+          };
+        }
+        return {
+          ...partialEntity,
+          pinned_post_ids: _.difference(pinned_post_ids, [postId]),
+        };
+      },
+      async (updateEntity: Group) => {
+        if (updateEntity.is_team) {
+          return await this._getTeamRequestController().put(updateEntity);
+        }
+        return await this._getGroupRequestController().put(updateEntity);
+      },
+    );
+  }
+
+  async createTeam(
+    creator: number,
+    memberIds: (number | string)[],
+    options: TeamSetting = {},
+  ): Promise<Group> {
+    const teamSetting = this.teamPermissionController.processLinkTeamSetting(
+      options,
+    );
+    const {
+      isPublic = false,
+      name,
+      description,
+      permissionFlags = {},
+    } = teamSetting;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
+      permissionFlags,
+      0,
+    );
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      set_abbreviation: name,
+      members: memberIds.concat(creator),
+      permissions: {
+        admin: {
+          uids: [creator],
+        },
+        user: {
+          uids: [],
+          level: permissionLevel,
+        },
+      },
+    };
+    const apiResult = await GroupAPI.createTeam(team);
+    return await this.handleRawGroup(apiResult.expect('create team fail'));
+  }
+
+  async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
+    const group = transform<Group>(rawGroup);
+    return group;
+  }
+
+  // update partial group data
+  async updateGroupPartialData(params: Partial<Group>): Promise<boolean> {
+    try {
+      await this.partialModifyController.updatePartially(
+        params.id || 0,
+        (partialEntity, originEntity) => {
+          return {
+            ...partialEntity,
+            ...params,
+          };
+        },
+        async (updatedModel: Group) => {
+          return updatedModel;
+        },
+      );
+      return true;
+    } catch (error) {
+      throw ErrorParserHolder.getErrorParser().parse(error);
+    }
+  }
+
+  async updateGroupPrivacy(params: {
+    id: number;
+    privacy: string;
+  }): Promise<void> {
+    await this.partialModifyController.updatePartially(
+      params.id,
+      (partialEntity: Partial<Group>, originEntity: Group) => {
+        return { ...partialEntity, privacy: params.privacy };
+      },
+      async (updateEntity: Group) =>
+        await this._getGroupRequestController().put(updateEntity),
+    );
+  }
+
+  // update partial group data, for last accessed time
+  async updateGroupLastAccessedTime(params: {
+    id: number;
+    timestamp: number;
+  }): Promise<boolean> {
+    const { id, timestamp } = params;
+    const result = await this.updateGroupPartialData({
+      id,
+      __last_accessed_at: timestamp,
+    });
+    return result;
+  }
+
+  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
+    if (_.isEmpty(ids)) {
+      return;
+    }
+    const dao = daoManager.getDao(GroupDao);
+    await dao.bulkDelete(ids);
+    if (shouldNotify) {
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
+    }
+  }
+
+  async deleteAllTeamInformation(ids: number[]) {
+    const postService: PostService = PostService.getInstance();
+    await postService.deletePostsByGroupIds(ids, true);
+    await this.groupService.deleteGroupsConfig(ids);
+    const groups = await this.entitySourceController.getEntitiesLocally(
+      ids,
+      false,
+    );
+    const privateGroupIds = groups
+      .filter((group: Group) => {
+        return group.privacy === 'private';
+      })
+      .map((group: Group) => group.id);
+    await this.removeTeamsByIds(privateGroupIds, true);
+  }
+
+  async setAsTrue4HasMoreConfigByDirection(
+    ids: number[],
+    direction: QUERY_DIRECTION,
+  ): Promise<void> {
+    if (!ids.length) {
+      return;
+    }
+    const data: any = [];
+    ids.forEach((id: number) => {
+      const config = {
+        id,
+      };
+      if (direction === QUERY_DIRECTION.OLDER) {
+        config['has_more_older'] = true;
+      } else {
+        config['has_more_newer'] = true;
+      }
+      data.push(config);
+    });
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    groupConfigDao.bulkUpdate(data);
+  }
+
+  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+    const profileService: ProfileService = ProfileService.getInstance();
+    const isHidden = await profileService.isConversationHidden(groupId);
+    let isIncludeSelf = false;
+    let isValid = false;
+    let group;
+    try {
+      group = await this.entitySourceController.get(groupId);
+    } catch (err) {
+      group = null;
+      mainLogger
+        .tags('GroupActionController')
+        .info(`get group ${groupId} fail`, err);
+    }
+    if (group) {
+      isValid = this.groupService.isValid(group);
+      const currentUserId = UserConfig.getCurrentUserId();
+      isIncludeSelf = group.members.includes(currentUserId);
+    }
+    return !isHidden && isValid && isIncludeSelf;
+  }
+
+  private _getGroupRequestController() {
+    if (!this.groupRequestController) {
+      this.groupRequestController = buildRequestController<Group>({
+        basePath: '/group',
+        networkClient: Api.glipNetworkClient,
+      });
+    }
+    return this.groupRequestController;
+  }
+
   private _getTeamRequestController() {
     if (!this.teamRequestController) {
       this.teamRequestController = buildRequestController<Group>({
@@ -261,5 +474,3 @@ class TeamActionController {
     return partialEntity;
   }
 }
-
-export { TeamActionController };

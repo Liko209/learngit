@@ -106,7 +106,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         text: content,
         groupId: this.gid,
         postId: this.id,
-        mentionIds: ids,
+        mentionNonItemIds: ids,
       });
       this._exitEditMode();
     } catch (e) {

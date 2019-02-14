@@ -5,7 +5,7 @@
  */
 import React, { MouseEvent, Fragment } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi } from '@/containers/Umi';
+import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { Indicator } from '@/containers/ConversationList/Indicator';
 import { Presence } from '@/containers/Presence';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -41,7 +41,11 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   }
 
   private get _umi() {
-    return this.props.umiHint ? <Umi ids={[this.props.groupId]} /> : undefined;
+    return this.props.umiHint ? (
+      <Umi type={UMI_SECTION_TYPE.SINGLE} id={this.props.groupId} />
+    ) : (
+      undefined
+    );
   }
 
   private get _presence() {
