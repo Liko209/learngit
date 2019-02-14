@@ -395,7 +395,4 @@ describe('i18next-en', () => {
   ).toEqual(
     'This is the beginning of your direct message history with Dan Abramov',
   );
-  expect(i18next.t('allHandsTeamDescription')).toEqual(
-    'Welcome to your company team. All of your co-workers will automatically be added here when they join RingCentral.',
-  );
 });

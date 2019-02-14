@@ -83,15 +83,10 @@ class ConversationInitialPost extends React.Component<
   }
 
   private _teamDescription() {
-    const { isTeam, groupDescription, t, isCompanyTeam } = this.props;
+    const { isTeam, groupDescription } = this.props;
     if (!isTeam) return null;
     if (groupDescription) {
       return <StyledDescription>{groupDescription}</StyledDescription>;
-    }
-    if (isCompanyTeam) {
-      return (
-        <StyledDescription>{t('allHandsTeamDescription')}</StyledDescription>
-      );
     }
     return null;
   }
