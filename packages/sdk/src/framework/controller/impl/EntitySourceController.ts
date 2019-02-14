@@ -50,7 +50,7 @@ class EntitySourceController<T extends IdModel = IdModel>
   async get(key: number): Promise<T | null> {
     const result = await this.getEntityLocally(key);
     if (!result && this.requestController) {
-      return this.requestController.get(key);
+      return await this.requestController.get(key);
     }
     return result;
   }
@@ -69,6 +69,10 @@ class EntitySourceController<T extends IdModel = IdModel>
 
   async getTotalCount(): Promise<number> {
     return await this.entityPersistentController.getTotalCount();
+  }
+
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    return await this.entityPersistentController.getEntities(filterFunc);
   }
 
   getEntityNotificationKey(): string {

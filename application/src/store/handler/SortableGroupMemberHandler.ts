@@ -173,7 +173,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _replaceData() {
     const personService = PersonService.getInstance<PersonService>();
     const groupService = GroupService.getInstance<GroupService>();
-    const group = await groupService.getById(this._group.id);
+    let group;
+    try {
+      group = await groupService.getById(this._group.id);
+    } catch (error) {
+      group = null;
+    }
     const result = await personService.getPersonsByIds(
       group && group.members ? group.members : [],
     );

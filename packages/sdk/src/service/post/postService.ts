@@ -643,7 +643,7 @@ class PostService extends BaseService<Post> {
     const promises = groupIds.map(id => dao.queryPostsByGroupId(id));
     const postsMap = await Promise.all(promises);
     const posts = _.union(...postsMap);
-    const ids = posts.map(post => post.id);
+    const ids = posts.filter(post => !!post).map(post => post.id);
     await dao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);
