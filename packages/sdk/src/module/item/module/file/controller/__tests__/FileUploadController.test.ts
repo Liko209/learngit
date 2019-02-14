@@ -19,6 +19,7 @@ import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
 import { UserConfig } from '../../../../../../service/account/UserConfig';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
+import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
 import {
   FileUploadController,
@@ -36,6 +37,7 @@ jest.mock('../../../../service/ItemService');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
 );
+jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../service/account/clientConfig');
 jest.mock('../../../../../../service/account/UserConfig');
@@ -55,9 +57,10 @@ function clearMocks() {
 describe('fileUploadController', () => {
   const itemService = new ItemService();
   const itemDao = new ItemDao(null);
+  let fileUploadController: FileUploadController;
   const partialModifyController = new PartialModifyController(null);
   const fileRequestController = new RequestController(null);
-  let fileUploadController: FileUploadController;
+  const entitySourceController = new EntitySourceController(null, null, null);
 
   function setup() {
     const userId = 2;
@@ -79,6 +82,7 @@ describe('fileUploadController', () => {
       itemService,
       partialModifyController,
       fileRequestController,
+      entitySourceController,
     );
     partialModifyController.updatePartially = jest.fn();
   }
@@ -1303,6 +1307,70 @@ describe('fileUploadController', () => {
       });
 
       expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
+    });
+  });
+
+  describe('setUploadItems', () => {
+    let uploadingFiles = undefined;
+    const progressCaches = new Map();
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      uploadingFiles = new Map();
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+    });
+
+    function setUpUploadingFiles(groupId: number, itemFiles: any[]) {
+      uploadingFiles.set(groupId, itemFiles);
+      Object.assign(fileUploadController, {
+        _uploadingFiles: uploadingFiles,
+      });
+    }
+    const groupId = 10;
+
+    it('should use incoming ids directly when has no upload files before', async () => {
+      const itemFiles = [];
+      setUpUploadingFiles(groupId, itemFiles);
+
+      const incomingIds = [-1, -4];
+      entitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          { id: -1, name: 'name', is_new: true } as ItemFile,
+          { id: -4, name: 'name', is_new: false } as ItemFile,
+        ]);
+      await fileUploadController.setUploadItems(groupId, incomingIds);
+      const curIds = fileUploadController
+        .getUploadItems(groupId)
+        .map(x => x.id);
+      expect(curIds).toEqual([-1, -4]);
+      expect(progressCaches.has(-4)).not.toBeUndefined();
+      expect(progressCaches.has(-1)).not.toBeUndefined();
+    });
+
+    it('should compare and insert incoming itemIds to uploadFiles when has uploadFiles before', async () => {
+      const itemFiles = [
+        { id: -1, name: 'name', is_new: true } as ItemFile,
+        { id: -2, name: 'name', is_new: false } as ItemFile,
+      ];
+
+      setUpUploadingFiles(groupId, itemFiles);
+      const previousItems = fileUploadController
+        .getUploadItems(groupId)
+        .map(x => x.id);
+      const incomingIds = [-1, -4];
+      entitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([{ id: -4, name: 'name', is_new: false } as ItemFile]);
+      await fileUploadController.setUploadItems(groupId, incomingIds);
+      const curIds = fileUploadController
+        .getUploadItems(groupId)
+        .map(x => x.id);
+      expect(previousItems).toEqual([-1, -2]);
+      expect(curIds).toEqual([-1, -2, -4]);
+      expect(progressCaches.has(-4)).not.toBeUndefined();
     });
   });
 });

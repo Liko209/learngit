@@ -280,11 +280,40 @@ class FileUploadController {
   }
 
   async setUploadItems(groupId: number, itemIds: number[]) {
-    const items = await this._entitySourceController.getEntitiesLocally(
-      itemIds,
-      false,
-    );
-    this._uploadingFiles.set(groupId, items);
+    const existFile = this.getUploadItems(groupId);
+    let toFetchItemIds: number[] = [];
+    if (existFile.length > 0) {
+      toFetchItemIds = _.difference(itemIds, existFile.map(x => x.id));
+    } else {
+      toFetchItemIds = itemIds;
+    }
+
+    if (toFetchItemIds.length > 0) {
+      const toFetchItems = await this._entitySourceController.getEntitiesLocally(
+        toFetchItemIds,
+        false,
+      );
+      this._uploadingFiles.set(groupId, existFile.concat(toFetchItems));
+      this._saveToItemFileCache(toFetchItems);
+    }
+  }
+
+  private _saveToItemFileCache(items: Item[]) {
+    items.forEach((item: Item) => {
+      if (!this._progressCaches.has(item.id)) {
+        this._progressCaches.set(item.id, {
+          progress: {
+            id: item.id,
+            rate: {
+              loaded: 0,
+              total: 1,
+            },
+            status: PROGRESS_STATUS.INPROGRESS,
+          },
+          itemFile: item,
+        });
+      }
+    });
   }
 
   getUploadProgress(itemId: number): Progress | undefined {
