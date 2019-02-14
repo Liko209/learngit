@@ -17,6 +17,10 @@ enum WEBPHONE_SESSION_STATE {
   PROGRESS = 'progress',
 }
 
+enum RC_SIP_HEADER_NAME {
+  RC_API_IDS = 'P-Rc-Api-Ids',
+}
+
 type ProvisionDataOptions = {
   appKey?: string;
   appName?: string;
@@ -27,4 +31,9 @@ type ProvisionDataOptions = {
   onSession?: string;
 };
 
-export { UA_EVENT, WEBPHONE_SESSION_STATE, ProvisionDataOptions };
+export {
+  UA_EVENT,
+  WEBPHONE_SESSION_STATE,
+  RC_SIP_HEADER_NAME,
+  ProvisionDataOptions,
+};

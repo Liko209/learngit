@@ -35,6 +35,29 @@ describe('RTC call', () => {
       return this.isReadyReturnValue;
     }
   }
+
+  class MockRequest {
+    public headers: any = {
+      'P-Rc-Api-Ids': [
+        {
+          raw:
+            'party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+        },
+      ],
+    };
+  }
+  
+  class MockResponse {
+    public headers: any = {
+      'P-Rc-Api-Ids': [
+        {
+          raw:
+            'party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+        },
+      ],
+    };
+  }
+
   class MockSession extends EventEmitter2 {
     constructor() {
       super();
@@ -44,6 +67,7 @@ describe('RTC call', () => {
       };
     }
 
+    request: MockRequest = new MockRequest();
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();

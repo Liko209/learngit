@@ -12,6 +12,8 @@ import { WEBPHONE_SESSION_STATE } from '../signaling/types';
 
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
+  private _inviteResponse: any = null;
+
   constructor() {
     super();
   }
@@ -27,7 +29,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
-    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, (inviteRes: any) => {
+      this._inviteResponse = inviteRes;
       this._onSessionConfirmed();
     });
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
@@ -55,6 +58,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   private _onSessionProgress(response: any) {
     this.emit(CALL_SESSION_STATE.PROGRESS, response);
+  }
+
+  getInviteResponse() {
+    return this._inviteResponse;
   }
 
   hangup() {
