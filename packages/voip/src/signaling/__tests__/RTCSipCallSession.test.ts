@@ -128,7 +128,7 @@ describe('sip call session', () => {
   }
 
   describe('hold()', () => {
-    it('should emit hold succeed action when hold success', done => {
+    it('should notify reinviteAccepted when receive reinviteAccepted event after call "hold" API [JPT-1136]', done => {
       initSession();
       vsession.hold.mockResolvedValue(null);
       sipcallsession.hold();
@@ -155,7 +155,7 @@ describe('sip call session', () => {
       });
     });
 
-    it('should emit hold failed action when hold failed by server', done => {
+    it('should notify reinviteFailed when receive reinviteFailed event after call "hold" API [JPT-1135]', done => {
       initSession();
       vsession.hold.mockResolvedValue(null);
       sipcallsession.hold();
@@ -171,7 +171,7 @@ describe('sip call session', () => {
   });
 
   describe('unhold()', () => {
-    it('should emit unhold succeed action when unhold success', done => {
+    it('should notify reinviteAccepted when receive reinviteAccepted event after call "unhold" API [1138]', done => {
       initSession();
       vsession.sessionDescriptionHandler.setDirectionFlag(false);
       vsession.unhold.mockResolvedValue(null);
@@ -200,7 +200,7 @@ describe('sip call session', () => {
       });
     });
 
-    it('should emit unhold failed action when unhold failed by server', done => {
+    it('should notify reinviteFailed when receive reinviteFailed event after call "unhold" API [1137]', done => {
       initSession();
       vsession.sessionDescriptionHandler.setDirectionFlag(false);
       vsession.unhold.mockResolvedValue(null);
