@@ -5,7 +5,6 @@
  */
 import { ShallowRendererProps } from 'enzyme';
 import React from 'react';
-import { mount } from 'enzyme';
 
 function unwrapMemo(
   node: React.ReactElement<any>,
