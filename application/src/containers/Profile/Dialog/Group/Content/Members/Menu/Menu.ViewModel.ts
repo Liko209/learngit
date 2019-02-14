@@ -6,12 +6,12 @@
 
 import { computed, action } from 'mobx';
 import { GroupService } from 'sdk/module/group';
-import { MenuViewModelProps } from './types';
+import { MenuViewModelProps, MenuProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
 
-class MenuViewModel extends StoreViewModel<MenuViewModelProps>
+class MenuViewModel extends StoreViewModel<MenuProps>
   implements MenuViewModelProps {
   private _GroupService: GroupService = GroupService.getInstance();
   @computed
@@ -34,10 +34,52 @@ class MenuViewModel extends StoreViewModel<MenuViewModelProps>
     });
   }
 
+  containErrorHander = (serviceFunction: Function) => async ([
+    NetworkError,
+    BackendError,
+  ]: string[]) => {
+    try {
+      await serviceFunction();
+      return true;
+    } catch (error) {
+      if (errorHelper.isNetworkConnectionError(error)) {
+        this._renderFlashToast(NetworkError);
+        return false;
+      }
+      if (errorHelper.isBackEndError(error)) {
+        this._renderFlashToast(BackendError);
+        return false;
+      }
+      throw error;
+    }
+  }
+
   @action
   removeFromTeam = async () => {
     try {
       await this._GroupService.removeTeamMembers([this.personId], this.groupId);
+      return true;
+    } catch (error) {
+      if (errorHelper.isNetworkConnectionError(error)) {
+        this._renderFlashToast('removeMemberNetworkError');
+        return false;
+      }
+      if (errorHelper.isBackEndError(error)) {
+        this._renderFlashToast('removeMemberBackendError');
+        return false;
+      }
+      throw error;
+    }
+  }
+  @action
+  toggleTeamAdmin = async () => {
+    const { isThePersonAdmin } = this.props;
+    try {
+      if (isThePersonAdmin) {
+        await this._GroupService.makeAdmin(this.groupId, this.personId);
+      } else {
+        await this._GroupService.revokeAdmin(this.groupId, this.personId);
+      }
       return true;
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {

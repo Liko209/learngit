@@ -32,6 +32,13 @@ class MenuViewComponent extends Component<Props, State> {
     removeFromTeam();
   }
 
+  private _toggleTeamAdmin = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    const { onMenuClose, toggleTeamAdmin } = this.props;
+    onMenuClose();
+    toggleTeamAdmin();
+  }
+
   private _Anchor = () => {
     return <JuiIconography fontSize="small">more_horiz</JuiIconography>;
   }
@@ -41,7 +48,15 @@ class MenuViewComponent extends Component<Props, State> {
     this.props.onMenuClose();
   }
   render() {
-    const { isCurrentUserSelf, t } = this.props;
+    const {
+      isCurrentUserSelf,
+      t,
+      isThePersonAdmin,
+      isThePersonGuest,
+    } = this.props;
+    const teamAdminToggleButton = isThePersonAdmin
+      ? 'revokeTeamAdmin'
+      : 'makeTeamAdmin';
     return (
       <JuiPopoverMenu
         Anchor={this._Anchor}
@@ -62,6 +77,14 @@ class MenuViewComponent extends Component<Props, State> {
               onClick={this._handleRemoveFromTeam}
             >
               {t('removeFromTeam')}
+            </JuiMenuItem>
+          )}
+          {!isThePersonGuest && (
+            <JuiMenuItem
+              data-test-automation-id={teamAdminToggleButton}
+              onClick={this._toggleTeamAdmin}
+            >
+              {t(teamAdminToggleButton)}
             </JuiMenuItem>
           )}
         </JuiMenuList>

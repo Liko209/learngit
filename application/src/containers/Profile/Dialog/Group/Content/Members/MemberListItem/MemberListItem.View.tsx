@@ -94,6 +94,8 @@ class MemberListItem extends React.Component<
               groupId={cid}
               onMenuClose={this._onMenuClose}
               isCurrentUserSelf={isCurrentUserSelf}
+              isThePersonAdmin={isThePersonAdmin}
+              isThePersonGuest={isThePersonGuest}
             />
           </ListRightWrapper>
         )}
