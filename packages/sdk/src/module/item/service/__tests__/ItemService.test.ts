@@ -262,15 +262,15 @@ describe('ItemService', () => {
     });
   });
 
-  describe('createItem()', () => {
+  describe('createLocalItem()', () => {
     it('should controller with correct parameter', async () => {
       Object.assign(itemService, {
         _itemServiceController: itemServiceController,
       });
 
-      itemServiceController.createItem = jest.fn();
+      itemServiceController.createLocalItem = jest.fn();
 
-      await itemService.createItem({
+      await itemService.createLocalItem({
         id: -1,
         created_at: 1234,
         modified_at: 1234,
@@ -287,7 +287,7 @@ describe('ItemService', () => {
         versions: [],
       });
 
-      expect(itemServiceController.createItem).toBeCalledWith({
+      expect(itemServiceController.createLocalItem).toBeCalledWith({
         id: -1,
         created_at: 1234,
         modified_at: 1234,
@@ -306,15 +306,15 @@ describe('ItemService', () => {
     });
   });
 
-  describe('updateItem()', () => {
+  describe('updateLocalItem()', () => {
     it('should controller with correct parameter', async () => {
       Object.assign(itemService, {
         _itemServiceController: itemServiceController,
       });
 
-      itemServiceController.updateItem = jest.fn();
+      itemServiceController.updateLocalItem = jest.fn();
 
-      await itemService.updateItem({
+      await itemService.updateLocalItem({
         id: 1,
         created_at: 1234,
         modified_at: 1234,
@@ -330,7 +330,7 @@ describe('ItemService', () => {
         type: 'jpg',
         versions: [],
       });
-      expect(itemServiceController.updateItem).toBeCalledWith({
+      expect(itemServiceController.updateLocalItem).toBeCalledWith({
         id: 1,
         created_at: 1234,
         modified_at: 1234,
@@ -349,17 +349,17 @@ describe('ItemService', () => {
     });
   });
 
-  describe('deleteItem()', () => {
+  describe('deleteLocalItem()', () => {
     it('should controller with correct parameter', async () => {
       Object.assign(itemService, {
         _itemServiceController: itemServiceController,
       });
 
-      itemServiceController.deleteItem = jest.fn();
+      itemServiceController.deleteLocalItem = jest.fn();
 
-      itemService.deleteItem(1);
+      itemService.deleteLocalItem(1);
 
-      expect(itemServiceController.deleteItem).toBeCalledWith(1);
+      expect(itemServiceController.deleteLocalItem).toBeCalledWith(1);
     });
   });
 

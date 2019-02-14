@@ -42,6 +42,7 @@
   "Sunday": "Sunday",
   "PublicTeam": "Public Team (visible to any co-worker)",
   "MembersMayPostMessages": "Allow members to post messages",
+  "MembersMayAddOtherMembers": "Allow members to add other members",
   "addedToTeam": "{{inviter}} added {{newUser}} to the team",
   "Add": "Add",
   "AddTeamMembers": "Add team members",
@@ -347,5 +348,7 @@
   "havingTroubleCloseConversation": "We are having trouble closing the conversation. Please try again later.",
   "remove_from_favorites": "Remove from Favorites",
   "signInFailedTitle": "Sign In Failed",
-  "signInFailedContent": "We are having trouble signing you in. Please try again later."
+  "signInFailedContent": "We are having trouble signing you in. Please try again later.",
+  "postMessages": "Post messages",
+  "pinPosts": "Pin posts"
 }
