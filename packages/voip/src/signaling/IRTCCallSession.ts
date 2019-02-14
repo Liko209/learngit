@@ -24,6 +24,8 @@ interface IRTCCallSession extends EventEmitter2 {
   unhold(): void;
   dtmf(digits: string): void;
   getPeerConnection(): any;
+  getMediaStats(onMediaStat: any, interval: number): void;
+  stopMediaStats(): void;
 }
 
 export { IRTCCallSession };

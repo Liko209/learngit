@@ -8,10 +8,18 @@ import { mainLogger } from 'foundation/src';
 import { RTCInBoundRtp, RTCOutBoundRtp } from '../api/types';
 
 class RTCMediaStatsManager {
+  private static instance: RTCMediaStatsManager;
   private _rtcOutBoundRtp: RTCOutBoundRtp;
   private _rtcInBoundRtp: RTCInBoundRtp;
 
   constructor() {}
+
+  public static getInstance() {
+    if (!RTCMediaStatsManager.instance) {
+      RTCMediaStatsManager.instance = new RTCMediaStatsManager();
+    }
+    return RTCMediaStatsManager.instance;
+  }
 
   setInBoundRtp(rtcInBoundRtp: RTCInBoundRtp): void {
     mainLogger.info('get rtcInBoundRtp statistic Success');

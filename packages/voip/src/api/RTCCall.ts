@@ -46,7 +46,6 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
-  private _getStatsTimer: NodeJS.Timeout | null = null;
   private _rtcMediaStatsManager: RTCMediaStatsManager = null;
 
   constructor(
@@ -80,6 +79,7 @@ class RTCCall {
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
+    this._rtcMediaStatsManager = RTCMediaStatsManager.getInstance();
     this._prepare();
   }
 
@@ -91,12 +91,6 @@ class RTCCall {
     this._hangupInvalidCallTimer = setTimeout(() => {
       this.hangup();
     },                                        kRTCHangupInvalidCallInterval * 1000);
-  }
-
-  private _addGetStatsTimer(): void {
-    this._getStatsTimer = setInterval(() => {
-      this._getStats();
-    },                                kRTCGetStatsInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -198,38 +192,6 @@ class RTCCall {
     this._callSession.setSession(session);
   }
 
-  private async _getStats() {
-    const pc = this._callSession.getPeerConnection();
-    let outBoundRtp: RTCOutBoundRtp;
-    let inBoundRtp: RTCInBoundRtp;
-    if (pc) {
-      const report = await pc.getStats();
-      report.forEach((item: any) => {
-        if ('outbound-rtp' === item.type) {
-          outBoundRtp = item;
-          const outTransport: any = report.get(outBoundRtp.transportId);
-          const outCandidatePair: any = report.get(
-            outTransport.selectedCandidatePairId,
-          );
-          outBoundRtp.currentRoundTripTime =
-            outCandidatePair.currentRoundTripTime;
-
-          this._rtcMediaStatsManager.setOutBoundRtp(outBoundRtp);
-        }
-        if ('inbound-rtp' === item.type) {
-          inBoundRtp = item;
-          const inTransport: any = report.get(inBoundRtp.transportId);
-          const inCandidatePair: any = report.get(
-            inTransport.selectedCandidatePairId,
-          );
-          inBoundRtp.currentRoundTripTime =
-            inCandidatePair.currentRoundTripTime;
-          this._rtcMediaStatsManager.setInBoundRtp(inBoundRtp);
-        }
-      });
-    }
-  }
-
   private _startOutCallFSM(): void {
     if (this._account.isReady()) {
       this._fsm.accountReady();
@@ -282,7 +244,11 @@ class RTCCall {
         clearTimeout(this._hangupInvalidCallTimer);
         this._hangupInvalidCallTimer = null;
       }
-      this._addGetStatsTimer();
+      // 开始获取stats
+      this._callSession.getMediaStats((report: any, session: any) => {
+        console.log('getStats', report);
+        console.log('getStats', session);
+      },                              kRTCGetStatsInterval * 1000);
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -292,10 +258,8 @@ class RTCCall {
       this._destroy();
     });
     this._fsm.on(CALL_FSM_NOTIFY.LEAVE_CONNECTED, () => {
-      if (this._getStatsTimer) {
-        clearInterval(this._getStatsTimer);
-        this._getStatsTimer = null;
-      }
+      // 结束获取stats
+      this._callSession.stopMediaStats();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();

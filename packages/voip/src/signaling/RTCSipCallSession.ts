@@ -221,6 +221,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   getSession() {
     return this._session;
   }
+
+  getMediaStats(onMediaStat: any, interval: number) {
+    this._session.mediaStreams.getMediaStats(onMediaStat, interval);
+  }
+
+  stopMediaStats() {
+    this._session.mediaStreams.stopMediaStats();
+  }
 }
 
 export { RTCSipCallSession };
