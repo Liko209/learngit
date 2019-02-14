@@ -69,7 +69,6 @@ class FileItemController {
         this._itemService,
         partialModifyController,
         itemRequestController,
-        entitySourceController,
       );
     }
 
