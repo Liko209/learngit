@@ -73,25 +73,25 @@ class RTCAccount implements IRTCAccount {
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ): RTCCall | null {
+  ) {
     if (toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return null;
+      return;
     }
-    if (!this._callManager.allowCall()) {
-      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return null;
+    let callOption: RTCCallOptions;
+    if (options) {
+      callOption = options;
+    } else {
+      callOption = {};
     }
-    const call = new RTCCall(false, toNumber, null, this, delegate, options);
-    this._callManager.addCall(call);
-    return call;
+    this._regManager.makeCall(toNumber, delegate, callOption);
   }
 
   public makeAnonymousCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ): RTCCall | null {
+  ) {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
       optionsWithAnonymous = options;
@@ -100,11 +100,15 @@ class RTCAccount implements IRTCAccount {
       optionsWithAnonymous = { fromNumber: kRTCAnonymous };
     }
     rtcLogger.error(LOG_TAG, 'make anonymous call');
-    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
+    this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
     return this._state === RTC_ACCOUNT_STATE.REGISTERED;
+  }
+
+  state(): RTC_ACCOUNT_STATE {
+    return this._state;
   }
 
   callList(): RTCCall[] {
@@ -129,7 +133,17 @@ class RTCAccount implements IRTCAccount {
 
   private _initListener() {
     this._regManager.on(
-      REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION,
+      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
+      (
+        toNumber: string,
+        delegate: IRTCCallDelegate,
+        options: RTCCallOptions,
+      ) => {
+        this._onMakeOutgoingCall(toNumber, delegate, options);
+      },
+    );
+    this._regManager.on(
+      REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE,
       (session: any) => {
         this._onReceiveInvite(session);
       },
@@ -160,6 +174,22 @@ class RTCAccount implements IRTCAccount {
     }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
+    }
+  }
+
+  private _onMakeOutgoingCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+    options: RTCCallOptions,
+  ) {
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
+      return;
+    }
+    const call = new RTCCall(false, toNumber, null, this, delegate, options);
+    this._callManager.addCall(call);
+    if (this._delegate) {
+      this._delegate.onMadeOutgoingCall(call);
     }
   }
 

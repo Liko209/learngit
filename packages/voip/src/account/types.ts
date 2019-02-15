@@ -3,8 +3,6 @@
  * @Date: 2018-12-27 17:42:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { ProvisionDataOptions } from '../signaling/types';
-
 type RTCSipProvisionInfo = {
   device: object;
   sipInfo: {
@@ -20,8 +18,7 @@ type RTCSipProvisionInfo = {
 
 type RTCRegisterAsyncTask = {
   name: string;
-  provData?: any;
-  provOptions?: ProvisionDataOptions;
+  data?: any;
 };
 
 enum RTC_PROV_EVENT {
@@ -36,12 +33,15 @@ enum REGISTRATION_EVENT {
   PROVISION_READY = 'provisionReady',
   RE_REGISTER = 'reRegister',
   ACCOUNT_STATE_CHANGED = 'accountStateChanged',
-  RECEIVER_INCOMING_SESSION = 'receiveIncomingSession',
+  MAKE_OUTGOING_CALL_TASK = 'makeOutgoingCallTask',
+  RECEIVE_INCOMING_INVITE_TASK = 'receiveIncomingInviteTask',
   UA_REGISTER_SUCCESS = 'uaRegisterSuccess',
   UA_REGISTER_FAILED = 'uaRegisterFailed',
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
+  MAKE_OUTGOING_CALL = 'makeOutgoingCall',
+  RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
 }
 
 enum REGISTRATION_FSM_STATE {
