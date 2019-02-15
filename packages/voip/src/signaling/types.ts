@@ -19,6 +19,11 @@ enum WEBPHONE_SESSION_STATE {
   REINVITE_FAILED = 'reinviteFailed',
 }
 
+enum WEBPHONE_SESSION_EVENT {
+  SDH_CREATED = 'SessionDescriptionHandler-created',
+  ADD_TRACK = 'addTrack',
+}
+
 type ProvisionDataOptions = {
   appKey?: string;
   appName?: string;
@@ -29,4 +34,9 @@ type ProvisionDataOptions = {
   onSession?: string;
 };
 
-export { UA_EVENT, WEBPHONE_SESSION_STATE, ProvisionDataOptions };
+export {
+  UA_EVENT,
+  WEBPHONE_SESSION_STATE,
+  WEBPHONE_SESSION_EVENT,
+  ProvisionDataOptions,
+};

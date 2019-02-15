@@ -29,9 +29,9 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from './CreateTeam.ViewModel';
 
-interface IState {
+type State = {
   items: JuiListToggleItemProps[];
-}
+};
 
 const StyledSnackbarsContent = styled(JuiSnackbarContent)`
   && {
@@ -40,7 +40,7 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 `;
 
 @observer
-class CreateTeam extends React.Component<ViewProps, IState> {
+class CreateTeam extends React.Component<ViewProps, State> {
   teamNameRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
@@ -57,6 +57,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         type: 'isPublic',
         text: i18next.t('PublicTeam'),
         checked: false,
+        automationId: 'CreateTeamIsPublic',
       },
       {
         type: 'canAddMember',
@@ -66,13 +67,14 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       {
         type: 'canPost',
         text: i18next.t('MembersMayPostMessages'),
-
         checked: true,
+        automationId: 'CreateTeamCanPost',
       },
       {
         type: 'canPin',
         text: i18next.t('MembersMayPinPosts'),
         checked: true,
+        automationId: 'CreateTeamCanAddMember',
       },
     ];
   }

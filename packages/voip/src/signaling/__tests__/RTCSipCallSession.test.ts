@@ -6,13 +6,19 @@
 
 import { RTCSipCallSession } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
-import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import {
+  WEBPHONE_SESSION_STATE,
+  WEBPHONE_SESSION_EVENT,
+} from '../../signaling/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_ACTION } from '../../api/types';
 
 describe('sip call session', () => {
-  class SessionDescriptionHandler {
+  class SessionDescriptionHandler extends EventEmitter2 {
     private _directionFlag: boolean = true;
+    constructor() {
+      super();
+    }
 
     setDirectionFlag(flag: boolean) {
       this._directionFlag = flag;
@@ -31,17 +37,24 @@ describe('sip call session', () => {
       super();
       this.sessionDescriptionHandler = new SessionDescriptionHandler();
     }
-
     emitSessionConfirmed() {
       this.emit(WEBPHONE_SESSION_STATE.ACCEPTED);
     }
-
     emitSessionDisconnected() {
       this.emit(WEBPHONE_SESSION_STATE.BYE);
     }
-
     emitSessionError() {
       this.emit(WEBPHONE_SESSION_STATE.FAILED);
+    }
+
+    emitSdhCreated() {
+      this.emit(WEBPHONE_SESSION_EVENT.SDH_CREATED);
+    }
+    emitTrackAdded() {
+      this.sessionDescriptionHandler.emit(
+        WEBPHONE_SESSION_EVENT.ADD_TRACK,
+        null,
+      );
     }
 
     emitSessionReinviteAccepted() {
@@ -306,6 +319,16 @@ describe('sip call session', () => {
       jest.spyOn(sipcallsession, '_onSessionError');
       vsession.emitSessionError();
       expect(sipcallsession._onSessionError).toHaveBeenCalled();
+    });
+
+    it('should _onSessionTrackAdded be called when webphone session emet trackAdded', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      jest.spyOn(sipcallsession, '_onSessionTrackAdded');
+      vsession.emitSdhCreated();
+      vsession.emitTrackAdded();
+      expect(sipcallsession._onSessionTrackAdded).toHaveBeenCalled();
     });
   });
 });

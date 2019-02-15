@@ -52,6 +52,10 @@ export abstract class BaseWebComponent {
     return this.self.getAttribute(attributeName);
   }
 
+  get findSelector() {
+    return this.self.find;
+  }
+
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
     const component = new ctor(this.t);
     if (root) {

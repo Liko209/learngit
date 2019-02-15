@@ -277,6 +277,15 @@ export class ConversationPage extends BaseConversationPage {
   async removeFileOnMessageArea(n = 0) {
     await this.t.click(this.removeFileButtons.nth(n));
   }
+
+  get readOnlyDiv() {
+    return this.getSelectorByAutomationId("disabled-message-input", this.self);
+  }
+
+  async shouldBeReadOnly() {
+    await this.t.expect(this.messageInputArea.exists).notOk();
+    await this.t.expect(this.readOnlyDiv.exists).ok();
+  }
 }
 
 

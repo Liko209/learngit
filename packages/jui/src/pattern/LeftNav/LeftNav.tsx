@@ -12,7 +12,13 @@ import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
-import { height, grey, palette, spacing } from '../../foundation/utils/styles';
+import {
+  height,
+  grey,
+  palette,
+  spacing,
+  typography,
+} from '../../foundation/utils/styles';
 
 const MaxWidth = 200;
 const MinWidth = 72;
@@ -102,7 +108,7 @@ const StyledListItemText = styled(MuiListItemText)`
     padding: 0;
     span {
       color: ${palette('accent', 'ash')}; // Aah
-      font-size: ${({ theme }) => `${theme.typography.fontSize}px`};
+      ${typography('body1')};
     }
   }
 `;

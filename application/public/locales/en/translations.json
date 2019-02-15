@@ -288,6 +288,9 @@
   "leaveTeamConfirmTitle": "Leave team",
   "leaveTeamConfirmContent": "Once you leave {{teamName}}, you will no longer have access to the content.",
   "leaveTeamConfirmOk": "leave",
+  "removeFromTeam": "Remove from team",
+  "removeMemberNetworkError": "Sorry, we weren't able to remove this team member.",
+  "removeMemberBackendError": "Sorry, we weren't able to remove this team member. Try again.",
   "addToFavorites": "add to favorites",
   "removeFromFavorites": "remove from favorites",
   "thisIsAPrivateTeam": "This is a private team",
@@ -349,5 +352,7 @@
   "havingTroubleCloseConversation": "We are having trouble closing the conversation. Please try again later.",
   "remove_from_favorites": "Remove from Favorites",
   "signInFailedTitle": "Sign In Failed",
-  "signInFailedContent": "We are having trouble signing you in. Please try again later."
+  "signInFailedContent": "We are having trouble signing you in. Please try again later.",
+  "postMessages": "Post messages",
+  "pinPosts": "Pin posts"
 }
