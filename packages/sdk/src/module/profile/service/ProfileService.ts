@@ -54,19 +54,19 @@ class ProfileService extends EntityBaseService<Profile>
   }
 
   async getProfile(): Promise<Profile> {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileDataController()
       .getProfile();
   }
 
   async getMaxLeftRailGroup(): Promise<number> {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileDataController()
       .getMaxLeftRailGroup();
   }
 
   async isConversationHidden(groupId: number) {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileDataController()
       .isConversationHidden(groupId);
   }
@@ -75,31 +75,31 @@ class ProfileService extends EntityBaseService<Profile>
     oldIndex: number,
     newIndex: number,
   ): Promise<Profile | null> {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileActionController()
       .reorderFavoriteGroups(oldIndex, newIndex);
   }
 
   async markGroupAsFavorite(groupId: number, markAsFavorite: boolean) {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileActionController()
       .markGroupAsFavorite(groupId, markAsFavorite);
   }
 
   async markMeConversationAsFav() {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileActionController()
       .markMeConversationAsFav();
   }
 
   async putFavoritePost(postId: number, toBook: boolean) {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileActionController()
       .putFavoritePost(postId, toBook);
   }
 
   async reopenConversation(groupId: number) {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileActionController()
       .reopenConversation(groupId);
   }
@@ -109,9 +109,15 @@ class ProfileService extends EntityBaseService<Profile>
     hidden: boolean,
     shouldUpdateSkipConfirmation: boolean,
   ) {
-    return this.getProfileController()
+    return await this.getProfileController()
       .getProfileActionController()
       .hideConversation(groupId, hidden, shouldUpdateSkipConfirmation);
+  }
+
+  async getFavoriteGroupIds() {
+    return await this.getProfileController()
+      .getProfileDataController()
+      .getFavoriteGroupIds();
   }
 }
 

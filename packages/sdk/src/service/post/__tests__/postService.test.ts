@@ -13,8 +13,7 @@ import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { serviceErr, serviceOk } from '../../ServiceResult';
 import notificationCenter from '../../notificationCenter';
-import { SERVICE, ENTITY } from '../../eventKey';
-import { Listener } from 'eventemitter2';
+import { ENTITY } from '../../eventKey';
 import {
   err,
   ok,

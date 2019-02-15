@@ -73,6 +73,11 @@ class ProfileDataController {
     return false;
   }
 
+  async getFavoriteGroupIds() {
+    const profile = await this.getProfile();
+    return profile.favorite_group_ids || [];
+  }
+
   private async _handleProfile(profile: Raw<Profile>): Promise<Profile | null> {
     try {
       if (profile) {

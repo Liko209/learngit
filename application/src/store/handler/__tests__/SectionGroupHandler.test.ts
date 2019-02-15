@@ -9,7 +9,7 @@ import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import { GroupService } from 'sdk/module/group';
-
+import { notificationCenter, ENTITY } from 'sdk/service';
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');

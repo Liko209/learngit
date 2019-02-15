@@ -15,7 +15,7 @@ import { Profile } from '../../../../profile/entity';
 import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../../constants';
 import { GroupState } from '../../../entity';
 import { GroupService } from '../../../../group';
-import { ProfileService } from '../../../../../service/profile';
+import { ProfileService } from '../../../../profile';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { DeactivatedDao } from '../../../../../dao';
 import { NotificationEntityPayload } from '../../../../../service/notificationCenter';

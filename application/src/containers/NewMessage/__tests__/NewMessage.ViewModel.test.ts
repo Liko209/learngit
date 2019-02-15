@@ -5,25 +5,23 @@
  */
 
 import * as goToConversation from '@/common/goToConversation';
-import { service } from 'sdk';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
+import { NewPostService } from 'sdk/module/post';
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 jest.mock('@/common/goToConversation');
-
-const { PostService } = service;
 
 const postService = {
   sendPost() {},
 };
 
 const newMessageVM = new NewMessageViewModel();
+NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
 describe('NewMessageVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
-    jest.spyOn(PostService, 'getInstance').mockReturnValue(postService);
     const gs = {
       get: jest.fn(),
       set: jest.fn(),

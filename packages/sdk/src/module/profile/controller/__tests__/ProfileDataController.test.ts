@@ -1,10 +1,11 @@
 /*
- * @Author: Lip Wang (lip.wangn@ringcentral.com)
- * @Date: 2018-03-01 10:49:44
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2019-02-15 09:26:00
+ * Copyright © RingCentral. All rights reserved.
  */
 import { ProfileDataController } from '../ProfileDataController';
 import { Profile } from '../../entity';
-import { MockEntitySourceController } from './MockEntitySourceController'
+import { MockEntitySourceController } from './MockEntitySourceController';
 
 jest.mock('../../../../api/glip/profile');
 jest.mock('../../../../framework/controller/interface/IEntitySourceController');
@@ -28,8 +29,12 @@ describe('ProfileDataController', () => {
 
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
-      jest.spyOn(profileDataController, 'getCurrentProfileId').mockReturnValue(2);
-      jest.spyOn(mockEntitySourceController, 'get').mockImplementationOnce(id => id);
+      jest
+        .spyOn(profileDataController, 'getCurrentProfileId')
+        .mockReturnValue(2);
+      jest
+        .spyOn(mockEntitySourceController, 'get')
+        .mockImplementationOnce(id => id);
 
       const result = await profileDataController.getProfile();
       expect(result).toEqual(2);
@@ -46,7 +51,7 @@ describe('ProfileDataController', () => {
     it('should return default value 20 because of key max_leftrail_group_tabs2 in profile', async () => {
       profileDataController.getProfile = jest
         .fn()
-        .mockImplementationOnce(() => { });
+        .mockImplementationOnce(() => {});
       const result = await profileDataController.getMaxLeftRailGroup();
       expect(result).toBe(20);
     });
@@ -89,9 +94,13 @@ describe('ProfileDataController', () => {
   describe('profileHandleData()', () => {
     it('should return null because of not profile', async () => {
       const data = undefined;
-      jest.spyOn(profileDataController, '_handleProfile').mockImplementationOnce(profile => profile);
+      jest
+        .spyOn(profileDataController, '_handleProfile')
+        .mockImplementationOnce(profile => profile);
 
-      const result = await profileDataController.profileHandleData(data as Profile);
+      const result = await profileDataController.profileHandleData(
+        data as Profile,
+      );
       expect(result).toBeNull();
     });
 
@@ -99,19 +108,29 @@ describe('ProfileDataController', () => {
       const data = {
         id: 2,
       };
-      jest.spyOn(profileDataController, '_handleProfile').mockImplementationOnce(profile => profile);
+      jest
+        .spyOn(profileDataController, '_handleProfile')
+        .mockImplementationOnce(profile => profile);
 
-      const result = await profileDataController.profileHandleData(data as Profile);
+      const result = await profileDataController.profileHandleData(
+        data as Profile,
+      );
       expect(result).toEqual({ id: 2 });
     });
 
     it('should return {id: 2} because of profile is an array', async () => {
-      const data = [{
-        id: 2,
-      }];
-      jest.spyOn(profileDataController, '_handleProfile').mockImplementationOnce(profile => profile);
+      const data = [
+        {
+          id: 2,
+        },
+      ];
+      jest
+        .spyOn(profileDataController, '_handleProfile')
+        .mockImplementationOnce(profile => profile);
 
-      const result = await profileDataController.profileHandleData(data[0] as Profile);
+      const result = await profileDataController.profileHandleData(
+        data as Profile,
+      );
       expect(result).toEqual({ id: 2 });
     });
   });

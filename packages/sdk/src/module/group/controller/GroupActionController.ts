@@ -20,7 +20,7 @@ import { UserConfig } from '../../../service/account/UserConfig';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import PostService from '../../../service/post';
-import ProfileService from '../../../service/profile';
+import { ProfileService } from '../../profile';
 import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
 import { Group } from '../entity';

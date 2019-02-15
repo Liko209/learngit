@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable, action } from 'mobx';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
