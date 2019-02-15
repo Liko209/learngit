@@ -93,7 +93,7 @@ class ItemListView extends React.Component<ViewProps & Props>
 
   render() {
     const { totalCount, ids, loadStatus, tabConfig } = this.props;
-    const { loading, firstLoaded } = loadStatus;
+    const { showLoading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
     return (
       <JuiRightShelfContent>
@@ -108,14 +108,14 @@ class ItemListView extends React.Component<ViewProps & Props>
               <JuiVirtualList
                 dataSource={this}
                 threshold={1}
-                isLoading={loading}
+                isLoading={showLoading}
                 width={width}
                 height={height - HEADER_HEIGHT}
               />
             )}
           </ReactResizeDetector>
         )}
-        {loading && !firstLoaded && this.firstLoader()}
+        {showLoading && !firstLoaded && this.firstLoader()}
       </JuiRightShelfContent>
     );
   }
