@@ -125,7 +125,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       padding: ${({ theme }) => spacing(0, 4)({ theme })};
       background-color: ${palette('common', 'white')};
       color:${primary('700')};
-      ${typography('caption')};
+      ${typography('caption1')};
       min-height:unset;
       width:inherit;
       &:hover {
