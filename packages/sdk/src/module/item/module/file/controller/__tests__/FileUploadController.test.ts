@@ -72,12 +72,14 @@ describe('fileUploadController', () => {
 
     UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
     UserConfig.getCurrentUserId.mockReturnValue(userId);
+    GroupConfigService.getInstance = jest
+      .fn()
+      .mockReturnValue(groupConfigService);
     itemService.getEntitySource.mockReturnValue(entitySourceController);
     itemService.createLocalItem.mockImplementation(() => {});
     itemService.updateLocalItem.mockImplementation(() => {});
     itemService.deleteLocalItem.mockImplementation(() => {});
 
-    notificationCenter.emitEntityReplace.mockImplementation(() => {});
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
 

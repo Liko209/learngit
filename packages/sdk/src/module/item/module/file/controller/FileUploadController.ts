@@ -285,10 +285,7 @@ class FileUploadController {
     const fileIds = itemIds.filter(
       id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
     );
-    console.log(
-      'TCL: FileUploadController -> initialUploadItemsFromDraft -> fileIds',
-      fileIds,
-    );
+
     if (fileIds) {
       await this._setUploadItems(groupId, fileIds);
       return this.getUploadItems(groupId);
