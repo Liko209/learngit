@@ -3,7 +3,7 @@
  * @Date: 2018-12-07 14:48:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupService } from 'sdk/service/group';
+import { GroupService } from 'sdk/module/group';
 import { ProfileService } from 'sdk/service/profile';
 import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
@@ -11,23 +11,19 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
+import { mainLogger } from 'sdk';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
     const _groupService: GroupService = GroupService.getInstance();
-    return _groupService.updateGroupLastAccessedTime({
-      id,
-      timestamp: accessTime,
-    });
-  }
-
-  static async groupIdValidator(id: number) {
-    const _groupService: GroupService = GroupService.getInstance();
-    const group = await _groupService.getById(id);
-    if (!group) {
-      return;
-    }
-    return _groupService.isValid(group);
+    _groupService
+      .updateGroupLastAccessedTime({
+        id,
+        timestamp: accessTime,
+      })
+      .catch((err: any) => {
+        mainLogger.tags('GroupHandler').info(`access Group ${id} fail:`, err);
+      });
   }
 
   static async isGroupHidden(id: number) {
@@ -83,11 +79,9 @@ export class MessageRouterChangeHelper {
   }
 
   static async verifyGroup(id: number) {
-    const [isHidden, isValidate] = await Promise.all([
-      await GroupHandler.isGroupHidden(id),
-      await GroupHandler.groupIdValidator(id),
-    ]);
-    return !isHidden && isValidate ? String(id) : '';
+    const groupService: GroupService = GroupService.getInstance();
+    const isGroupCanBeShown = await groupService.isGroupCanBeShown(id);
+    return isGroupCanBeShown ? String(id) : '';
   }
 
   static isConversation(id: string) {
@@ -106,9 +100,9 @@ export class MessageRouterChangeHelper {
 
   static handleSourceOfRouter(id: number) {
     const handler = SectionGroupHandler.getInstance();
-    handler.onReady((conversationList: Set<number>) => {
+    handler.onReady((conversationList: number[]) => {
       GroupHandler.ensureGroupOpened(id);
-      if (conversationList.has(id)) {
+      if (conversationList.includes(id)) {
         return;
       }
       GroupHandler.accessGroup(id);

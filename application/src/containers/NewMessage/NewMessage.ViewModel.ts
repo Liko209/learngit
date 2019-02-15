@@ -27,7 +27,7 @@ class NewMessageViewModel extends StoreViewModel {
 
   @computed
   get disabledOkBtn() {
-    return this.isOffline || this.members.length === 0;
+    return this.members.length === 0;
   }
 
   @computed

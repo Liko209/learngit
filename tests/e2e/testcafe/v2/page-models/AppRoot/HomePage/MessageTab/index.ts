@@ -5,11 +5,12 @@ import { h, H } from '../../../../helpers';
 import { ClientFunction } from 'testcafe';
 import { MentionPage, BookmarkPage, ConversationPage, DuplicatePromptPage } from "./ConversationPage";
 import { RightRail } from './RightRail';
-import { LeftRail} from './LeftRail';
+import { LeftRail } from './LeftRail';
 
 class Entry extends BaseWebComponent {
   async enter() {
     await this.t.click(this.self);
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -83,6 +84,10 @@ class MoreMenu extends Entry {
 
   get close() {
     return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
+  }
+
+  async openProfile() {
+    return await this.t.click(this.profile.self);
   }
 }
 
@@ -175,6 +180,8 @@ class ConversationEntry extends BaseWebComponent {
 
   async enter() {
     await this.t.hover(this.self).click(this.self);
+    // whenever we enter
+    await this.waitForAllSpinnersToDisappear();
   }
 }
 
@@ -286,8 +293,6 @@ class CloseConversationModal extends BaseWebComponent {
   }
 }
 
-
-
 export class MessageTab extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
@@ -388,7 +393,7 @@ class Umi extends BaseWebComponent {
     return await this.getNumber(this.self);
   }
 
-  async shouldBeNumber(n: number, maxRetry = 5, interval = 1e3) {
+  async shouldBeNumber(n: number, maxRetry = 5, interval = 3e3) {
     await H.retryUntilPass(async () => {
       const umi = await this.count();
       assert.strictEqual(n, umi, `UMI Number error: expect ${n}, but actual ${umi}`);

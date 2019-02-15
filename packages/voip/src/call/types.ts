@@ -8,6 +8,8 @@ enum CALL_SESSION_STATE {
   DISCONNECTED = 'callSessionDisconnected',
   ERROR = 'callSessionError',
   PROGRESS = 'callSessionProgress',
+  REINVITE_ACCEPTED = 'callSessionReinviteAccepted',
+  REINVITE_FAILED = 'callSessionReinviteFailed',
 }
 
 enum CALL_FSM_NOTIFY {

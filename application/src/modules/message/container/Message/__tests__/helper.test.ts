@@ -5,12 +5,12 @@
  */
 jest.mock('sdk/module/state');
 jest.mock('sdk/service/profile');
-jest.mock('sdk/service/group');
+jest.mock('sdk/module/group');
 jest.mock('@/history');
 jest.mock('@/store');
 jest.mock('@/store/handler/SectionGroupHandler');
 
-import { GroupService } from 'sdk/service/group';
+import { GroupService } from 'sdk/module/group';
 import { ProfileService } from 'sdk/service/profile';
 import { StateService } from 'sdk/module/state';
 import history from '@/history';
@@ -40,19 +40,19 @@ function resetMockedServices() {
   mockedGroupService = {
     valid: true,
     group: {},
-    async isValid() {
-      return this.valid;
-    },
     async getById() {
       return {};
     },
-    updateGroupLastAccessedTime: jest.fn(),
+    updateGroupLastAccessedTime: jest.fn().mockResolvedValue(''),
+    async isGroupCanBeShown(id: number) {
+      return this.valid && !(await mockedProfileService.isConversationHidden());
+    },
   };
   mockedGlobalStore = {
     set: jest.fn(),
   };
   mockedSectionHandler = {
-    list: new Set([110]),
+    list: [110],
     onReady: (callback: Function) => callback(mockedSectionHandler.list),
   };
 }

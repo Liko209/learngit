@@ -9,10 +9,15 @@ import { IItemService } from '../../service/IItemService';
 import { Item } from '../../entity';
 import { ISubItemService } from '../../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../../config';
-import { daoManager, ItemDao } from '../../../../dao';
+import { ItemDao } from '../../dao';
+import { daoManager } from '../../../../dao';
 import { ItemUtils } from '../../utils';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
+import { EntityPersistentController } from '../../../../framework/controller/impl/EntityPersistentController';
+import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
+import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 
-jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../config');
 jest.mock('../../module/base/service/ISubItemService');
 jest.mock('../../../../framework/controller');
@@ -30,7 +35,9 @@ describe('ItemServiceController', () => {
 
   const itemService = {} as IItemService;
 
-  const itemServiceController = new ItemServiceController(itemService, null);
+  let entitySourceController: IEntitySourceController<Item>;
+
+  let itemServiceController: ItemServiceController;
   const subServices: Map<number, ISubItemService> = new Map();
 
   function setUp() {
@@ -38,12 +45,21 @@ describe('ItemServiceController', () => {
     itemDao.put = jest.fn();
 
     subItemService = {
-      updateItem: jest.fn(),
-      deleteItem: jest.fn(),
-      createItem: jest.fn(),
+      updateLocalItem: jest.fn(),
+      deleteLocalItem: jest.fn(),
+      createLocalItem: jest.fn(),
       getSubItemsCount: jest.fn(),
       getSortedIds: jest.fn(),
     };
+
+    entitySourceController = new EntitySourceController(
+      new EntityPersistentController<Item>(itemDao),
+      itemDao,
+    );
+    itemServiceController = new ItemServiceController(
+      itemService,
+      entitySourceController,
+    );
 
     subServices.set(fileTypeId, subItemService);
 
@@ -102,9 +118,9 @@ describe('ItemServiceController', () => {
       clearMocks();
       setUp();
       subItemService.getSortedIds = jest.fn().mockResolvedValue([1, 3, 2]);
-      itemDao.getItemsByIds = jest
+      entitySourceController.batchGet = jest
         .fn()
-        .mockResolvedValue([item1, item2, item3]);
+        .mockResolvedValue([item1, item3, item2]);
     });
 
     it('should return sorted items', async () => {
@@ -118,7 +134,7 @@ describe('ItemServiceController', () => {
     });
   });
 
-  describe('createItem', () => {
+  describe('createLocalItem', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -126,20 +142,20 @@ describe('ItemServiceController', () => {
 
     it('should create item and its sanitized item when item is valid', async () => {
       expect.assertions(2);
-      await itemServiceController.createItem(validItem);
+      await itemServiceController.createLocalItem(validItem);
       expect(itemDao.put).toBeCalledWith(validItem);
-      expect(subItemService.createItem).toBeCalledWith(validItem);
+      expect(subItemService.createLocalItem).toBeCalledWith(validItem);
     });
 
     it('should create item and but dont create its sanitized item when item is invalid', async () => {
       expect.assertions(2);
-      await itemServiceController.createItem(invalidItem);
+      await itemServiceController.createLocalItem(invalidItem);
       expect(itemDao.put).toBeCalledWith(invalidItem);
-      expect(subItemService.createItem).not.toHaveBeenCalled();
+      expect(subItemService.createLocalItem).not.toHaveBeenCalled();
     });
   });
 
-  describe('updateItem', () => {
+  describe('updateLocalItem', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -147,20 +163,20 @@ describe('ItemServiceController', () => {
 
     it('should update item and its sanitized item when item is valid', async () => {
       expect.assertions(2);
-      await itemServiceController.updateItem(validItem);
+      await itemServiceController.updateLocalItem(validItem);
       expect(itemDao.update).toBeCalledWith(validItem);
-      expect(subItemService.updateItem).toBeCalledWith(validItem);
+      expect(subItemService.updateLocalItem).toBeCalledWith(validItem);
     });
 
     it('should update item and but dont update its sanitized item when item is invalid', async () => {
       expect.assertions(2);
-      await itemServiceController.updateItem(invalidItem);
+      await itemServiceController.updateLocalItem(invalidItem);
       expect(itemDao.update).toBeCalledWith(invalidItem);
-      expect(subItemService.updateItem).not.toHaveBeenCalled();
+      expect(subItemService.updateLocalItem).not.toHaveBeenCalled();
     });
   });
 
-  describe('deleteItem', () => {
+  describe('deleteLocalItem', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -168,16 +184,16 @@ describe('ItemServiceController', () => {
 
     it('should delete item and its sanitized item when item is valid', async () => {
       expect.assertions(2);
-      await itemServiceController.deleteItem(validItem.id);
+      await itemServiceController.deleteLocalItem(validItem.id);
       expect(itemDao.delete).toBeCalledWith(validItem.id);
-      expect(subItemService.deleteItem).toBeCalledWith(validItem.id);
+      expect(subItemService.deleteLocalItem).toBeCalledWith(validItem.id);
     });
 
     it('should update item and but dont update its sanitized item when item is invalid', async () => {
       expect.assertions(2);
-      await itemServiceController.deleteItem(invalidItem.id);
+      await itemServiceController.deleteLocalItem(invalidItem.id);
       expect(itemDao.delete).toBeCalledWith(invalidItem.id);
-      expect(subItemService.deleteItem).not.toBeCalledWith(invalidItem.id);
+      expect(subItemService.deleteLocalItem).not.toBeCalledWith(invalidItem.id);
     });
   });
 });

@@ -15,6 +15,8 @@ enum WEBPHONE_SESSION_STATE {
   BYE = 'bye',
   FAILED = 'failed',
   PROGRESS = 'progress',
+  REINVITE_ACCEPTED = 'reinviteAccepted',
+  REINVITE_FAILED = 'reinviteFailed',
 }
 
 enum WEBPHONE_SESSION_EVENT {

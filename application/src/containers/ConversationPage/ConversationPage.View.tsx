@@ -141,7 +141,10 @@ class ConversationPageViewComponent extends Component<
             />
           </JuiDropZone>
         ) : (
-          <JuiDisabledInput text={t('disabledText')} />
+          <JuiDisabledInput
+            data-test-automation-id="disabled-message-input"
+            text={t('disabledText')}
+          />
         )}
         <AttachmentManager id={groupId} viewRef={this._attachmentManagerRef} />
       </JuiConversationPage>
@@ -150,7 +153,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  translate('Conversations')(ConversationPageViewComponent),
+  translate('translations')(ConversationPageViewComponent),
 );
 
 export { ConversationPageView };

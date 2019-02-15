@@ -17,34 +17,27 @@ import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
 import { TASK_DATA_TYPE } from '../../constants';
-import {
-  stateHandleTask,
-  groupHandleTask,
-  dataHandleTask,
-  dataHandleTaskArray,
-} from '../../types';
+import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateFetchDataController } from './StateFetchDataController';
+import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 
+type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
+
 class StateDataHandleController {
-  private _taskArray: dataHandleTaskArray;
+  private _taskArray: DataHandleTask[];
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
     private _stateFetchDataController: StateFetchDataController,
+    private _totalUnreadController: TotalUnreadController,
   ) {
     this._taskArray = [];
   }
 
-  async handleState(states: Partial<State>[]): Promise<void> {
-    if (states.length === 0) {
-      mainLogger.info(
-        '[StateDataHandleController] Invalid state change trigger',
-      );
-      return;
-    }
-    const stateTask: stateHandleTask = {
+  handleState(states: Partial<State>[]): void {
+    const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
@@ -54,15 +47,9 @@ class StateDataHandleController {
     }
   }
 
-  async handlePartialGroup(groups: Partial<Group>[]): Promise<void> {
-    if (groups.length === 0) {
-      mainLogger.info(
-        '[StateDataHandleController] Invalid partial group change trigger',
-      );
-      return;
-    }
-    const groupTask: groupHandleTask = {
-      type: TASK_DATA_TYPE.GROUP,
+  handleGroupCursor(groups: Partial<Group>[]): void {
+    const groupTask: DataHandleTask = {
+      type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
     this._taskArray.push(groupTask);
@@ -71,24 +58,7 @@ class StateDataHandleController {
     }
   }
 
-  async handleGroupChanges(groups?: Group[]): Promise<void> {
-    if (!groups || !groups.length) {
-      mainLogger.info(
-        '[StateDataHandleController] Invalid group change trigger',
-      );
-      return;
-    }
-    const groupTask: groupHandleTask = {
-      type: TASK_DATA_TYPE.GROUP,
-      data: groups,
-    };
-    this._taskArray.push(groupTask);
-    if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
-    }
-  }
-
-  private async _startDataHandleTask(task: dataHandleTask): Promise<void> {
+  private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     let transformedState: TransformedState;
     if (task.type === TASK_DATA_TYPE.STATE) {
       transformedState = this._transformStateData(task.data);
@@ -97,6 +67,10 @@ class StateDataHandleController {
     }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
+    await this._totalUnreadController.handleGroupState(
+      updatedState.groupStates,
+    );
+
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
       this._startDataHandleTask(this._taskArray[0]);
@@ -106,7 +80,6 @@ class StateDataHandleController {
   private _transformGroupData(groups: Partial<Group>[]): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
-      isSelf: false,
     };
     transformedState.groupStates = _.compact(
       groups.map((group: Partial<State>) => {
@@ -150,7 +123,6 @@ class StateDataHandleController {
   private _transformStateData(states: Partial<State>[]): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
-      isSelf: false,
     };
     const myState: Partial<State> = {};
     const groupStates = {};
@@ -162,6 +134,10 @@ class StateDataHandleController {
         }
         if (key === '_id') {
           myState.id = state[key];
+          return;
+        }
+        if (key === '__from_index') {
+          transformedState.isFromIndexData = true;
           return;
         }
         const keys = [
@@ -209,7 +185,6 @@ class StateDataHandleController {
     const updatedState: TransformedState = {
       groupStates: [],
       myState: transformedState.myState,
-      isSelf: transformedState.isSelf,
     };
     if (transformedState.groupStates.length > 0) {
       const groupStates = transformedState.groupStates;
@@ -286,7 +261,10 @@ class StateDataHandleController {
               } else if (
                 groupState.post_cursor < (localGroupState.post_cursor || 0)
               ) {
-                if (!groupState.marked_as_unread) {
+                if (
+                  !groupState.marked_as_unread &&
+                  !transformedState.isFromIndexData
+                ) {
                   mainLogger.info(
                     `[StateDataHandleController]: invalid state_post_cursor change: ${groupState}`,
                   );
@@ -315,33 +293,34 @@ class StateDataHandleController {
             ) {
               stateChanged = true;
             }
-            if (!stateChanged) {
-              return;
-            }
           }
           const resultGroupState = _.merge({}, localGroupState, groupState);
 
           // calculate umi
+          let unreadCount: number = 0;
           if (transformedState.isSelf) {
-            resultGroupState.unread_count = 0;
+            unreadCount = 0;
+          } else {
+            const group_cursor =
+              (resultGroupState.group_post_cursor || 0) +
+              (resultGroupState.group_post_drp_cursor || 0);
+            const state_cursor =
+              (resultGroupState.post_cursor || 0) +
+              (resultGroupState.unread_deactivated_count || 0);
+            unreadCount = Math.max(group_cursor - state_cursor, 0);
           }
-          const group_cursor =
-            (resultGroupState.group_post_cursor || 0) +
-            (resultGroupState.group_post_drp_cursor || 0);
-          const state_cursor =
-            (resultGroupState.post_cursor || 0) +
-            (resultGroupState.unread_deactivated_count || 0);
-          resultGroupState.unread_count = Math.max(
-            group_cursor - state_cursor,
-            0,
-          );
+
+          if (unreadCount !== resultGroupState.unread_count) {
+            resultGroupState.unread_count = unreadCount;
+            stateChanged = true;
+          }
 
           if (resultGroupState.unread_count > 0) {
             resultGroupState.marked_as_unread = true;
           } else {
             resultGroupState.marked_as_unread = false;
           }
-          return resultGroupState;
+          return stateChanged ? resultGroupState : undefined;
         }),
       );
     }

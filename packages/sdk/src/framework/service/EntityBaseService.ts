@@ -9,7 +9,7 @@ import { IdModel } from '../model';
 import { container } from '../../container';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
-import { BaseDao } from '../../dao';
+import { BaseDao } from '../../framework/dao';
 import NetworkClient from '../../api/NetworkClient';
 import {
   buildRequestController,
@@ -59,9 +59,9 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     }
   }
 
-  getById(id: number): Promise<T | null> {
+  async getById(id: number): Promise<T | null> {
     if (this._entitySourceController) {
-      return Promise.resolve(this._entitySourceController.get(id));
+      return await this._entitySourceController.get(id);
     }
     throw new Error('entitySourceController is null');
   }

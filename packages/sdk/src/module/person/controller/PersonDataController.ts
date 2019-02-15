@@ -5,7 +5,8 @@
  */
 
 import { Person } from '../entity';
-import { daoManager, PersonDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../dao';
 import { Raw } from '../../../framework/model';
 import { UserConfig } from '../../../service/account/UserConfig';
 import { transform, baseHandleData } from '../../../service/utils';
@@ -30,7 +31,7 @@ class PersonDataController {
         return false;
       });
       ids.length &&
-        notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FORM, ids);
+        notificationCenter.emit(SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM, ids);
     }
   }
 

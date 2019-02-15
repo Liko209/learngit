@@ -24,7 +24,7 @@ const styleHiddenWhenNoCount = css`
 `;
 
 const styleCount = css`
-  ${typography('caption')};
+  ${typography('caption1')};
   text-align: center;
   ${styleHiddenWhenNoCount};
 `;

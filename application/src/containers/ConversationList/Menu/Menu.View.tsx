@@ -17,7 +17,6 @@ import {
   ProfileDialogGroup,
   ProfileDialogPerson,
 } from '@/containers/Profile/Dialog';
-import { TranslationFunction } from 'i18next';
 import {
   ToastType,
   ToastMessageAlign,
@@ -40,19 +39,21 @@ class MenuViewComponent extends Component<Props, State> {
     this._checkboxChange = this._checkboxChange.bind(this);
   }
 
-  renderCloseMenuItem(t: TranslationFunction, closable: boolean) {
+  renderCloseMenuItem() {
+    const { t, closable } = this.props;
     return (
       <JuiMenuItem
         data-test-automation-id="closeConversation"
         onClick={this._handleCloseConversation}
         disabled={!closable}
       >
-        {t('conversationMenuItem:close')}
+        {t('close')}
       </JuiMenuItem>
     );
   }
 
   private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+    event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
     const result = await this.props.toggleFavorite();
@@ -79,6 +80,7 @@ class MenuViewComponent extends Component<Props, State> {
 
   private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
     const { t } = this.props;
+    event.stopPropagation();
     this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();
@@ -87,20 +89,18 @@ class MenuViewComponent extends Component<Props, State> {
         checked: false,
       });
       Dialog.alert({
-        title: t('conversationMenuItem:closeConfirmDialogHeader'),
+        title: t('closeConfirmDialogHeader'),
         content: (
           <>
-            <JuiTypography>
-              {t('conversationMenuItem:closeConfirmDialogContent')}
-            </JuiTypography>
+            <JuiTypography>{t('closeConfirmDialogContent')}</JuiTypography>
             <JuiCheckboxLabel
-              label={t('conversationMenuItem:closeConfirmDialogDontAskMeAgain')}
+              label={t('closeConfirmDialogDontAskMeAgain')}
               checked={false}
               handleChange={this._checkboxChange}
             />
           </>
         ),
-        okText: t('conversationMenuItem:Close Conversation'),
+        okText: t('Close Conversation'),
         okVariant: 'text',
         onOK: () => {
           this._closeConversationWithConfirm();
@@ -156,7 +156,7 @@ class MenuViewComponent extends Component<Props, State> {
     });
   }
   render() {
-    const { anchorEl, onClose, favoriteText, t, closable } = this.props;
+    const { anchorEl, onClose, favoriteText, t } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -168,22 +168,20 @@ class MenuViewComponent extends Component<Props, State> {
           data-test-automation-id="favToggler"
           onClick={this._handleToggleFavorite}
         >
-          {t(`conversationMenuItem:${favoriteText}`)}
+          {t(`${favoriteText}`)}
         </JuiMenuItem>
         <JuiMenuItem
           data-test-automation-id="profileEntry"
           onClick={this._handleProfileDialog}
         >
-          {t('viewProfile')}
+          {t('Profile')}
         </JuiMenuItem>
-        {this.renderCloseMenuItem(t, closable)}
+        {this.renderCloseMenuItem()}
       </JuiMenu>
     );
   }
 }
 
-const MenuView = withRouter(
-  translate('conversationMenuItem')(MenuViewComponent),
-);
+const MenuView = withRouter(translate('translations')(MenuViewComponent));
 
 export { MenuView, MenuViewComponent };

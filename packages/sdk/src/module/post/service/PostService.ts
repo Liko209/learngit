@@ -7,10 +7,12 @@
 import { PostController } from '../controller/PostController';
 import { Post, IPostQuery, IPostResult } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { PostDao } from '../../../module/post/dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
+import { IRequestRemotePostAndSave } from '../entity/Post';
 
 class NewPostService extends EntityBaseService<Post> {
   static serviceName = 'NewPostService';
@@ -72,6 +74,24 @@ class NewPostService extends EntityBaseService<Post> {
     return this.getPostController()
       .getPostFetchController()
       .getPostsByGroupId({ groupId, postId, limit, direction });
+  }
+
+  async getRemotePostsByGroupIdAndSave(
+    params: IRequestRemotePostAndSave,
+  ): Promise<IPostResult> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getRemotePostsByGroupIdAndSave(params);
+  }
+
+  async getPostCountByGroupId(groupId: number): Promise<number> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getPostCountByGroupId(groupId);
+  }
+
+  async getPostFromLocal(postId: number): Promise<Post | null> {
+    return this.getEntitySource().getEntityLocally(postId);
   }
 }
 

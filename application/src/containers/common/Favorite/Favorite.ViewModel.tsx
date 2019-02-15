@@ -5,52 +5,51 @@
  */
 
 import { computed, observable } from 'mobx';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
+import { ProfileService } from 'sdk/service/profile';
 import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { IconButtonSize } from 'jui/components/Buttons';
 
-import { AbstractViewModel } from '@/base';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
+import { StoreViewModel } from '@/store/ViewModel';
+import { GLOBAL_KEYS } from '@/store/constants';
 
-import { FavoriteProps, FavoriteViewProps } from './types';
+import { FavoriteProps } from './types';
 
-const { GroupService } = service;
+class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
+  private _groupService: GroupService = GroupService.getInstance();
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  @observable
+  conversationId: number;
 
-class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
-  implements FavoriteViewProps {
-  private _groupService: service.GroupService = GroupService.getInstance();
   constructor(props: FavoriteProps) {
     super(props);
     this.autorun(this.getConversationId);
   }
 
-  @observable
-  conversationId: number;
-
   @computed
-  get id() {
-    return this.props.id; // personId || conversationId
+  private get _id() {
+    return this.props.id;
   }
 
   @computed
-  get size(): IconButtonSize {
-    return this.props.size || 'small';
+  private get _type() {
+    return GlipTypeUtil.extractTypeId(this._id);
   }
 
   getConversationId = async () => {
-    const type = GlipTypeUtil.extractTypeId(this.id);
     if (
-      type === TypeDictionary.TYPE_ID_GROUP ||
-      type === TypeDictionary.TYPE_ID_TEAM
+      this._type === TypeDictionary.TYPE_ID_GROUP ||
+      this._type === TypeDictionary.TYPE_ID_TEAM
     ) {
-      this.conversationId = this.id;
+      this.conversationId = this._id;
       return;
     }
-    if (type === TypeDictionary.TYPE_ID_PERSON) {
-      const group = await this._groupService.getLocalGroup([this.id]);
+
+    if (this._type === TypeDictionary.TYPE_ID_PERSON) {
+      const group = await this._groupService.getLocalGroup([this._id]);
       if (group) {
         this.conversationId = group.id;
       } else {
@@ -71,6 +70,16 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   }
 
   @computed
+  get isMember() {
+    if (this._group) {
+      return (
+        this._group.members && this._group.members.includes(this._currentUserId)
+      );
+    }
+    return false;
+  }
+
+  @computed
   get isFavorite() {
     if (this._group) {
       return this._group.isFavorite;
@@ -79,7 +88,7 @@ class FavoriteViewModel extends AbstractViewModel<FavoriteProps>
   }
 
   handlerFavorite = () => {
-    return this._groupService.markGroupAsFavorite(
+    return (ProfileService.getInstance() as ProfileService).markGroupAsFavorite(
       this.conversationId,
       !this.isFavorite,
     );

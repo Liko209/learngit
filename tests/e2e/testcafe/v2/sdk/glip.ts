@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import * as querystring from 'querystring';
-
-import _ = require('lodash');
+import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
 
 import { RcPlatformSdk } from './platform';
@@ -667,7 +666,7 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string,  options?: object) {
+  async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       title: title || 'untitled',

@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import {
-  AutoSizer,
+  // AutoSizer,
   InfiniteLoader,
   List,
   Index,
@@ -18,6 +18,8 @@ import { IVirtualListDataSource } from './VirtualListDataSource';
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
   isLoading: boolean;
+  width: number;
+  height: number;
   threshold?: number;
 };
 
@@ -59,35 +61,35 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   render() {
-    const { isLoading, dataSource } = this.props;
+    const { isLoading, dataSource, width, height } = this.props;
     const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
-
+    const { renderEmptyContent, onScroll = undefined } = dataSource;
     return (
       <JuiVirtualListWrapper>
-        <InfiniteLoader
-          rowCount={rowCount}
-          isRowLoaded={this.isRowLoaded}
-          loadMoreRows={this.loadMore}
-        >
-          {({ onRowsRendered, registerChild }) => (
-            <AutoSizer>
-              {({ width, height }) => (
-                <List
-                  overscanRowCount={20}
-                  rowCount={rowCount}
-                  width={width}
-                  height={height}
-                  rowHeight={this._rowHeight}
-                  noRowsRenderer={dataSource.renderEmptyContent}
-                  ref={registerChild}
-                  onRowsRendered={onRowsRendered}
-                  rowRenderer={this.rowRenderer}
-                />
-              )}
-            </AutoSizer>
-          )}
-        </InfiniteLoader>
+        {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
+        {rowCount !== 0 && (
+          <InfiniteLoader
+            rowCount={rowCount}
+            isRowLoaded={this.isRowLoaded}
+            loadMoreRows={this.loadMore}
+          >
+            {({ onRowsRendered, registerChild }) => (
+              <List
+                overscanRowCount={20}
+                rowCount={rowCount}
+                width={width}
+                height={height}
+                rowHeight={this._rowHeight}
+                ref={registerChild}
+                onScroll={onScroll}
+                noRowsRenderer={dataSource.renderEmptyContent}
+                onRowsRendered={onRowsRendered}
+                rowRenderer={this.rowRenderer}
+              />
+            )}
+          </InfiniteLoader>
+        )}
       </JuiVirtualListWrapper>
     );
   }

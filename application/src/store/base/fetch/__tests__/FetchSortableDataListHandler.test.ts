@@ -25,6 +25,7 @@ import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { SortableListStore } from '../SortableListStore';
+jest.mock('sdk/api');
 
 type SimpleItem = BaseModel & {
   value: number;
@@ -51,6 +52,11 @@ const sortFunc: ISortFunc<any> = (
   first: ISortableModel,
   second: ISortableModel,
 ) => first.sortValue - second.sortValue;
+
+const sortByDescFunc: ISortFunc<any> = (
+  first: ISortableModel,
+  second: ISortableModel,
+) => second.sortValue - first.sortValue;
 
 function buildReplacePayload(
   originalIds: number[],
@@ -136,17 +142,25 @@ function buildPayload(
   return payload;
 }
 
-function setup({ originalItems }: { originalItems: SimpleItem[] }) {
+function setup(
+  { originalItems }: { originalItems: SimpleItem[] },
+  customSortFunc?: ISortFunc<any>,
+) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
-  const listStore = new SortableListStore<SimpleItem>(sortFunc);
-  listStore.append(
+  const listStore = new SortableListStore<SimpleItem>(customSortFunc);
+  listStore.upsert(
     originalItems.map((item: SimpleItem) => {
       return { id: item.id, sortValue: item.value, data: item };
     }),
   );
   const fetchSortableDataHandler = new FetchSortableDataListHandler(
     dataProvider,
-    { transformFunc, sortFunc, isMatchFunc: matchInRange, pageSize: 2 },
+    {
+      transformFunc,
+      sortFunc: customSortFunc,
+      isMatchFunc: matchInRange,
+      pageSize: 2,
+    },
     listStore,
   );
 
@@ -357,6 +371,15 @@ describe('FetchSortableDataListHandler', () => {
         },
       },
     ],
+    [
+      'when update item without update sort value',
+      {
+        originalItems: [buildItem(1), buildItem(2)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
+        expectedOrder: [1, 2],
+        callbackMuted: true,
+      },
+    ],
     /**
      * REPLACE
      */
@@ -459,6 +482,21 @@ describe('FetchSortableDataListHandler', () => {
         expect(
           fetchSortableDataHandler2.listStore.items.map(item => item.id),
         ).toEqual(expectedOrder);
+      });
+
+      it(`should have correct order which is ordered by custom sort func,  ${when}`, () => {
+        const { fetchSortableDataHandler: fetchSortableDataHandler2 } = setup(
+          {
+            originalItems,
+          },
+          sortByDescFunc,
+        );
+
+        fetchSortableDataHandler2.onDataChanged(payload);
+
+        expect(
+          fetchSortableDataHandler2.listStore.items.map(item => item.id),
+        ).toEqual(_.reverse(expectedOrder));
       });
 
       it(`should notify callback ${when}`, () => {
@@ -576,14 +614,14 @@ describe('FetchSortableDataListHandler', () => {
       };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
 
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);
 
       newGroup = { ...group, id: 789, most_recent_post_created_at: 1002 };
       notificationCenter.emitEntityUpdate(ENTITY.GROUP, [newGroup]);
-      expect(fetchSortableDataHandler.sortableListStore.getIds()).toEqual([
+      expect(fetchSortableDataHandler.sortableListStore.getIds).toEqual([
         456,
         123,
       ]);

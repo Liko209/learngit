@@ -9,7 +9,8 @@ import { SubItemServiceRegister } from '../config';
 import { ItemActionController } from './ItemActionController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
-import { daoManager, ItemDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { ItemDao } from '../dao';
 import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
@@ -74,40 +75,35 @@ class ItemServiceController {
     if (subItemService) {
       ids = await subItemService.getSortedIds(options);
     }
-    const itemDao = daoManager.getDao(ItemDao);
-    const items = await itemDao.getItemsByIds(ids);
 
-    const itemMap: Map<number, Item> = new Map();
-    items.forEach((item: Item) => {
-      itemMap.set(item.id, item);
-    });
+    if (ids.length === 0) {
+      return [];
+    }
 
-    return ids.map((id: number) => {
-      return itemMap.get(id) as Item;
-    });
+    return await this._entitySourceController.batchGet(ids, true);
   }
 
-  async createItem(item: Item) {
+  async createLocalItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
 
     this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).createItem(item));
+      (await this._getSubItemServiceByITemId(item.id).createLocalItem(item));
   }
 
-  async updateItem(item: Item) {
+  async updateLocalItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
 
     this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).updateItem(item));
+      (await this._getSubItemServiceByITemId(item.id).updateLocalItem(item));
   }
 
-  async deleteItem(itemId: number) {
+  async deleteLocalItem(itemId: number) {
     await daoManager.getDao(ItemDao).delete(itemId);
 
     itemId > 0 &&
-      (await this._getSubItemServiceByITemId(itemId).deleteItem(itemId));
+      (await this._getSubItemServiceByITemId(itemId).deleteLocalItem(itemId));
   }
 
   private _getSubItemServiceByITemId(itemId: number) {
@@ -149,12 +145,12 @@ class ItemServiceController {
     }
     const deactivatedItems = items.filter(item => item.deactivated);
     deactivatedItems.forEach((item: Item) => {
-      subItemService.deleteItem(item.id);
+      subItemService.deleteLocalItem(item.id);
     });
 
     const normalData = items.filter(item => !item.deactivated);
     normalData.forEach((item: Item) => {
-      subItemService.createItem(item);
+      subItemService.createLocalItem(item);
     });
   }
 

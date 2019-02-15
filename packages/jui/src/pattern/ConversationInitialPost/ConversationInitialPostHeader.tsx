@@ -3,7 +3,7 @@
  * @Date: 2018-10-26 10:21:00
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiDivider } from '../../components/Divider';
 import { spacing, typography, grey, width } from '../../foundation/utils';
@@ -28,6 +28,7 @@ const StyledSpan = styled.span`
   display: inline-block;
   ${typography('body1')};
   color: ${grey('700')};
+  word-break: break-all;
 `;
 const StyledTeamName = styled.span`
   ${typography('body2')};
@@ -43,19 +44,19 @@ const StyledDescription = styled.div`
   word-break: break-word;
 `;
 
-const JuiConversationInitialPostHeader = (
-  props: JuiConversationInitialPostHeaderProps,
-) => {
-  const { children } = props;
-  return (
-    <React.Fragment>
-      <StyledConversationInitialPostHeader>
-        {children}
-      </StyledConversationInitialPostHeader>
-      <JuiDivider />
-    </React.Fragment>
-  );
-};
+const JuiConversationInitialPostHeader = React.memo(
+  (props: JuiConversationInitialPostHeaderProps) => {
+    const { children } = props;
+    return (
+      <React.Fragment>
+        <StyledConversationInitialPostHeader>
+          {children}
+        </StyledConversationInitialPostHeader>
+        <JuiDivider />
+      </React.Fragment>
+    );
+  },
+);
 
 export {
   JuiConversationInitialPostHeader,

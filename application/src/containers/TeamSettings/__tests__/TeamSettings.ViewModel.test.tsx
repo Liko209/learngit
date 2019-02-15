@@ -16,12 +16,12 @@ import {
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
+const groupService = new GroupService();
 
 describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
-    const groupService = new GroupService();
     beforeEach(() => {
-      (GroupService as any).mockImplementation(() => groupService);
+      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();
@@ -34,13 +34,13 @@ describe('TeamSettingsViewModel', () => {
         name: 'hello  ',
         description: '  Dolor nostrud laboris veniam et duis. ',
         allowMemberAddMember: true,
+        allowMemberPost: true,
+        allowMemberPin: true,
       });
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
-        permissionFlags: {
-          TEAM_ADD_MEMBER: true,
-        },
+        permissionFlags: expect.anything(),
       });
       expect(result).toBe(true);
     });
@@ -59,13 +59,13 @@ describe('TeamSettingsViewModel', () => {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis. ',
         allowMemberAddMember: true,
+        allowMemberPost: true,
+        allowMemberPin: true,
       });
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
-        permissionFlags: {
-          TEAM_ADD_MEMBER: true,
-        },
+        permissionFlags: expect.anything(),
       });
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
@@ -89,13 +89,13 @@ describe('TeamSettingsViewModel', () => {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis. ',
         allowMemberAddMember: true,
+        allowMemberPost: true,
+        allowMemberPin: true,
       });
       expect(groupService.updateTeamSetting).toHaveBeenCalledWith(123, {
         name: 'hello',
         description: 'Dolor nostrud laboris veniam et duis.',
-        permissionFlags: {
-          TEAM_ADD_MEMBER: true,
-        },
+        permissionFlags: expect.anything(),
       });
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,

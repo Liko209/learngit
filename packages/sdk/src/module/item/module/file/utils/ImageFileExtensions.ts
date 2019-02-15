@@ -4,26 +4,49 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const GifFileExtensions = new Set(['gif', 'giphy']);
+const GifFileExtensions = new Set(['gif']);
 
 const SupportPreviewImageExtensions = new Set([
   'jpg',
   'png',
   'jpeg',
   'bmp',
+  'gif',
   'tif',
   'tiff',
-  'heic',
-  'giphy',
-  'gif',
+  // 'giphy', // todo: Unrealized support preivew giphy
+  // 'tif', // use thumbs url
+  // Unable to parse the following suffix file.
+  // https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+  // 'tiff', // Only Safari support, Chrome and Firefox not support.
+  // 'ps', // Only Safari support, Chrome and Firefox not support.
+  // 'psd', // Only Safari support, Chrome and Firefox not support.
+  // 'ai', // Chrome and Firefox and Safari not support.
+  // 'heic', // Chrome and Firefox and Safari not support. Apple macOS Mojave dynamic wallpaper.
 ]);
 
-const ResizableExtensions = new Set(['bmp', 'jpg', 'jpeg', 'png']);
+const ResizableExtensions = new Set([
+  'bmp',
+  'jpg',
+  'jpeg',
+  'png',
+  'tif',
+  'tiff',
+]);
 
 const ImageFileExtensions = new Set([
+  'jpg',
+  'png',
+  'jpeg',
+  'bmp',
+  'gif',
+  'tif',
+  'tiff',
+  'ai',
+  'psd',
+  'heic',
   'ase',
   'art',
-  'bmp',
   'blp',
   'cd5',
   'cit',
@@ -41,8 +64,6 @@ const ImageFileExtensions = new Set([
   'ico',
   'iff',
   'jng',
-  'jpeg',
-  'jpg',
   'jfif',
   'jp2',
   'jps',
@@ -61,16 +82,15 @@ const ImageFileExtensions = new Set([
   'pcx',
   'pdn',
   'pgm',
-  'PI1',
-  'PI2',
-  'PI3',
+  'pi1',
+  'pi2',
+  'pi3',
   'pict',
   'pct',
   'pnm',
   'pns',
   'ppm',
   'psb',
-  'psd',
   'pdd',
   'psp',
   'px',
@@ -85,15 +105,12 @@ const ImageFileExtensions = new Set([
   'int',
   'bw',
   'tga',
-  'tiff',
-  'tif',
   'vtf',
   'xbm',
   'xcf',
   'xpm',
   '3dv',
   'amf',
-  'ai',
   'awg',
   'cgm',
   'cdr',
@@ -116,7 +133,6 @@ const ImageFileExtensions = new Set([
   'emf',
   'art',
   'xar',
-  'png',
   'webp',
   'jxr',
   'hdp',
@@ -131,7 +147,6 @@ const ImageFileExtensions = new Set([
   'pcx',
   'pgf',
   'sgi',
-  'rgb',
   'rgba',
   'bw',
   'int',
@@ -141,7 +156,6 @@ const ImageFileExtensions = new Set([
   'sun',
   'tga',
   'ps',
-  'etc',
 ]);
 
 export {

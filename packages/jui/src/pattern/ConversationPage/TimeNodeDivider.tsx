@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { grey, height, spacing } from '../../foundation/utils/styles';
 import { JuiDivider } from '../../components/Divider';
@@ -37,13 +37,15 @@ type Props = {
   text: string;
 };
 
-const JuiTimeNodeDivider = ({ text }: Props) => {
+const JuiTimeNodeDivider = memo(({ text }: Props) => {
   return (
     <StyledBox>
       <StyledDivider />
-      <StyledText><span>{text}</span></StyledText>
+      <StyledText>
+        <span>{text}</span>
+      </StyledText>
     </StyledBox>
   );
-};
+});
 
 export { JuiTimeNodeDivider };

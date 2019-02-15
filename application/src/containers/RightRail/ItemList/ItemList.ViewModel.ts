@@ -8,13 +8,6 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { getGlobalValue } from '@/store/utils';
-import { t } from 'i18next';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
 import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { SortUtils } from 'sdk/framework/utils';
@@ -25,7 +18,7 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY } from 'sdk/service';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
+import { ENTITY_NAME } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
 import { TAB_CONFIG } from './config';
 
@@ -79,9 +72,13 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return TAB_CONFIG.find(looper => looper.type === this.type)!;
   }
 
-  @computed
   private get _typeId() {
     return RightRailItemTypeIdMap[this.type];
+  }
+
+  @computed
+  get _active() {
+    return this.props.active;
   }
 
   private _getFilterFunc() {
@@ -115,7 +112,6 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     this.reaction(
       () => this._groupId,
       () => {
-        this._loadStatus.firstLoaded = false;
         const {
           sortKey = ITEM_SORT_KEYS.CREATE_TIME,
           desc = false,
@@ -133,6 +129,22 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       { fireImmediately: true },
     );
     this.reaction(() => this.ids, () => this.loadTotalCount());
+    this.reaction(
+      () => this._active,
+      (active: boolean) => {
+        if (active && !this._loadStatus.firstLoaded) {
+          this.forceReload();
+        }
+      },
+    );
+    this.reaction(
+      () => this._loadStatus.firstLoaded,
+      (firstLoaded: boolean) => {
+        if (firstLoaded) {
+          this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
+        }
+      },
+    );
   }
 
   async loadTotalCount() {
@@ -182,14 +194,19 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       this._getFilterFunc(),
     );
 
+    if (this._sortableDataHandler) {
+      this._sortableDataHandler.dispose();
+    }
+
     this._sortableDataHandler = new FetchSortableDataListHandler(dataProvider, {
       isMatchFunc,
       transformFunc,
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
+      hasMoreDown: true,
+      hasMoreUp: true,
     });
-    this.fetchNextPageItems();
   }
 
   private _isExpectedItemOfThisGroup(item: Item) {
@@ -214,34 +231,25 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   forceReload = async () => {
     this._loadStatus.firstLoaded = false;
+    this._loadStatus.loading = false;
     await this.fetchNextPageItems();
   }
 
   @action
   fetchNextPageItems = async () => {
-    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
-    if (status === 'offline') {
-      const { offlinePrompt } = this.tabConfig;
-      Notification.flashToast({
-        message: t(offlinePrompt),
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-      Object.assign(this._loadStatus, { loadError: true, loading: false });
+    const { active } = this.props;
+    const { loading, firstLoaded } = this._loadStatus;
+    const noMore = firstLoaded && this.totalCount === this.ids.length;
+    if (!active || loading || noMore) {
       return;
     }
 
     try {
       this._loadStatus.loading = true;
-      const result = await this._sortableDataHandler.fetchData(
-        QUERY_DIRECTION.NEWER,
-      );
+      await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
       Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
-      return result;
     } catch (e) {
-      Object.assign(this._loadStatus, { loadError: true, loading: false });
+      Object.assign(this._loadStatus, { loading: false });
     }
   }
 
@@ -256,7 +264,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get ids() {
-    return this._sortableDataHandler.sortableListStore.getIds();
+    return this._sortableDataHandler.sortableListStore.getIds;
   }
 }
 

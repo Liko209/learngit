@@ -5,17 +5,24 @@
  */
 
 import React, { Component } from 'react';
-import { t } from 'i18next';
+import { translate, WithNamespaces } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
-import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
+import {
+  AttachmentList,
+  ItemInfo,
+} from 'jui/pattern/MessageInput/AttachmentList';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
+import { getFileIcon } from '@/common/getFileIcon';
 
 @observer
-class AttachmentsView extends Component<AttachmentsViewProps> {
+class AttachmentsViewComponent extends Component<
+  AttachmentsViewProps & WithNamespaces
+> {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
+      const { t } = this.props;
       return (
         <JuiDuplicateAlert
           title={t('updateFiles')}
@@ -44,11 +51,14 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
     this.props.autoUploadFiles(files);
   }
 
+  private _resolveIcon = (item: ItemInfo) => getFileIcon(item.name);
+
   render() {
     const { files, cancelUploadFile } = this.props;
     return (
       <>
         <AttachmentList
+          iconResolver={this._resolveIcon}
           files={files}
           removeAttachment={cancelUploadFile}
           data-test-automation-id="message-attachment-node"
@@ -58,5 +68,7 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
     );
   }
 }
+
+const AttachmentsView = translate('translations')(AttachmentsViewComponent);
 
 export { AttachmentsView };

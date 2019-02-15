@@ -13,7 +13,7 @@ describe('MemberHeaderView', () => {
     it('should display [AddTeamMembers] button when user has permission to add team. [JPT-911]', () => {
       const props: any = {
         group: {},
-        isCurrentUserHasPermissionAddTeam: true,
+        isCurrentUserHasPermissionAddMember: true,
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
       expect(Wrapper.find(ButtonInRight).exists()).toEqual(true);
@@ -21,7 +21,7 @@ describe('MemberHeaderView', () => {
     it('should display none [AddTeamMembers] button when user has not permission to add team. [JPT-911]', () => {
       const props: any = {
         group: {},
-        isCurrentUserHasPermissionAddTeam: false,
+        isCurrentUserHasPermissionAddMember: false,
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
       expect(Wrapper.find(ButtonInRight).exists()).toEqual(false);

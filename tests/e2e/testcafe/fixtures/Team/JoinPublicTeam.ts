@@ -69,30 +69,30 @@ test.skip(formalName(`Display Join button for public team which login user doesn
   const search = app.homePage.header.search;
 
   await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    // https://jira.ringcentral.com/browse/FIJI-2500
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
     await h(t).reload();
     await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
+    await t.hover(search.getSearchItemByCid(publicTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
+    await search.getSearchItemByCid(publicTeamId).shouldHaveJoinButton();
   })
 
   await h(t).withLog(`When I search and hover the joined team B ${joinedTeamName}`, async () => {
-    await search.typeText(joinedTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(joinedTeamId).self);
+    await search.typeSearchKeyword(joinedTeamName, { replace: true, paste: true });
+    await t.hover(search.getSearchItemByCid(joinedTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.itemEntryByCid(joinedTeamId).shouldNotHasJoinButton();
+    await search.getSearchItemByCid(joinedTeamId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
   await h(t).withLog(`When I search the people ${otherUserName}`, async () => {
-    await search.typeText(otherUserName, { replace: true, paste: true });
+    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
 
   });
   await h(t).withLog(`Then at least one people and one group should be showed`, async () => {
@@ -109,7 +109,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
   for (let i of _.range(groupCount)) {
@@ -119,7 +119,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
 });
@@ -155,22 +155,22 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   const search = app.homePage.header.search;
 
   await h(t).withLog(`When I search the public team A ${publicTeamName}`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
     await t.wait(3e3);
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
     await h(t).reload();
     await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
     await t.wait(3e3); // wait search result show;
   });
   await h(t).withLog(`And I click join button of the public team A`, async () => {
-    await t.hover(search.itemEntryByCid(publicTeamId).self)
+    await t.hover(search.getSearchItemByCid(publicTeamId).self)
 
-    await search.itemEntryByCid(publicTeamId).join();
+    await search.getSearchItemByCid(publicTeamId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(search.itemEntryByCid(publicTeamId).exists).notOk();
+    await t.expect(search.getSearchItemByCid(publicTeamId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
@@ -230,13 +230,13 @@ test.skip(formalName(`Joined team successful after clicking join button in confi
 
   const search = app.homePage.header.search;
   await h(t).withLog(`When I search the public team A ${publicTeamName}, and click Join button of team A`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
     await h(t).reload();
     await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
     await t.wait(3e3); // wait search result show;
-    await search.itemEntryByCid(publicTeamId).join();
+    await search.getSearchItemByCid(publicTeamId).join();
   });
 
 
@@ -311,7 +311,6 @@ test(formalName(`The user should see go to conversation icon instead of the join
   const post = conversationPage.postItemById(teamMentionPostId);
   await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
     await t.click(post.mentions);
   });
 
@@ -388,7 +387,6 @@ test(formalName(`Will show confirmation dialog when joining the public team from
   const post = conversationPage.postItemById(teamMentionPostId);
   await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
-    await conversationPage.waitUntilPostsBeLoaded();
     await t.click(post.mentions);
   });
 

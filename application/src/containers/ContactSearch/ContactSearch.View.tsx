@@ -20,7 +20,7 @@ class ContactSearch extends React.Component<Props> {
   }
   render() {
     const {
-      onSelectChange,
+      onContactSelectChange,
       label,
       placeholder,
       error,
@@ -28,13 +28,14 @@ class ContactSearch extends React.Component<Props> {
       searchMembers,
       suggestions,
       errorEmail,
+      messageRef,
     } = this.props;
 
     return (
       <JuiContactSearch
         inputChange={searchMembers}
         suggestions={suggestions}
-        onSelectChange={onSelectChange}
+        onSelectChange={onContactSelectChange}
         label={label}
         placeholder={placeholder}
         Chip={Chip}
@@ -43,6 +44,7 @@ class ContactSearch extends React.Component<Props> {
         errorEmail={errorEmail}
         helperText={helperText}
         automationId="contactSearchSuggestionsList"
+        messageRef={messageRef}
       />
     );
   }

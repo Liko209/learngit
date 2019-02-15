@@ -84,7 +84,7 @@ const GlobalStyle = createGlobalStyle<{}>`
 
 const StyledError = styled.div`
   && {
-    ${typography('caption')};
+    ${typography('caption1')};
     color: ${palette('semantic', 'negative')};
     margin-top: ${spacing(2)};
   }
@@ -105,7 +105,7 @@ type Props = {
   id?: number;
 };
 
-class JuiMessageInput extends React.Component<Props> {
+class JuiMessageInput extends React.PureComponent<Props> {
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
 
   componentDidMount() {

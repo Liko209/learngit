@@ -8,7 +8,8 @@ import { Raw } from '../../../../framework/model';
 import _ from 'lodash';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { EditPostType } from '../../types';
 import { GroupConfigService } from '../../../../service';
 import { IPostActionController } from '../interface/IPostActionController';
@@ -64,7 +65,7 @@ class PostActionController implements IPostActionController {
     ): Partial<Raw<Post>> => {
       return {
         text: params.text,
-        at_mention_non_item_ids: params.mentionIds || [],
+        at_mention_non_item_ids: params.mentionNonItemIds || [],
         ...partialPost,
       };
     };

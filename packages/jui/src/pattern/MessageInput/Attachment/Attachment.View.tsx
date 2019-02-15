@@ -5,10 +5,9 @@
  */
 
 import React, {
-  Component,
   MouseEvent,
   Fragment,
-  PureComponent,
+  Component,
   RefObject,
   createRef,
 } from 'react';
@@ -41,7 +40,7 @@ const MenuList = styled(JuiMenuList)`
 type Props = AttachmentViewProps;
 
 @withUploadFile
-class UploadArea extends PureComponent<any> {
+class UploadArea extends Component<any> {
   render() {
     return <div />;
   }
@@ -66,10 +65,13 @@ class AttachmentView extends Component<Props> {
 
   private _hideMenuAndShowDialog = () => {
     this._hideMenu();
-    const ref = this._uploadRef.current;
-    if (ref) {
-      ref.showFileDialog();
-    }
+    // fix for Edge bug: FIJI-2818
+    setTimeout(() => {
+      const ref = this._uploadRef.current;
+      if (ref) {
+        ref.showFileDialog();
+      }
+    },         0);
   }
 
   render() {

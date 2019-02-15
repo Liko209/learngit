@@ -9,7 +9,7 @@ import { IPreInsertController } from '../interface/IPreInsertController';
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { IProgressService } from '../../../progress/service/IProgressService';
 import notificationCenter from '../../../../service/notificationCenter';
-import { BaseDao } from '../../../../dao';
+import { IDao } from '../../../../framework/dao';
 import { ControllerUtils } from '../../../../framework/controller/ControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import PreInsertIdController from './PreInsertIdController';
@@ -18,11 +18,10 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
   implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
 
-  constructor(
-    public dao: BaseDao<T>,
-    public progressService: IProgressService,
-  ) {
-    this._preInsertIdController = new PreInsertIdController(dao.modelName);
+  constructor(public dao: IDao<T>, public progressService: IProgressService) {
+    this._preInsertIdController = new PreInsertIdController(
+      dao.getEntityName(),
+    );
   }
 
   async insert(entity: T): Promise<void> {

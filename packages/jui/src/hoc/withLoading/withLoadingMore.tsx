@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 10:11:06
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType, Fragment, RefObject } from 'react';
+import React, { ComponentType, RefObject } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
 import { JuiCircularProgress } from '../../components/Progress';
@@ -40,7 +40,7 @@ const withLoadingMore = (
     ? withDelay(CustomizedLoading)
     : null;
 
-  return class LoadingMoreComponent extends React.Component<
+  return class LoadingMoreComponent extends React.PureComponent<
     WithLoadingMoreProps
   > {
     render() {
@@ -48,11 +48,11 @@ const withLoadingMore = (
       const LoadingMoreWithDelay =
         CustomizedLoadingWithDelay || DefaultLoadingMoreWithDelay;
       return (
-        <Fragment>
+        <>
           {loadingTop ? <LoadingMoreWithDelay /> : null}
           <Component {...rest} />
           {loadingBottom ? <LoadingMoreWithDelay /> : null}
-        </Fragment>
+        </>
       );
     }
   };

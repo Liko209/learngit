@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
-import { t } from 'i18next';
+import React, { createRef } from 'react';
+import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { withRouter } from 'react-router-dom';
@@ -13,7 +13,6 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-// import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Banners';
 import { Notification } from '@/containers/Notification';
 import {
@@ -41,6 +40,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 
 @observer
 class CreateTeam extends React.Component<ViewProps, IState> {
+  teamNameRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
@@ -52,12 +54,18 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return [
       {
         type: 'isPublic',
-        text: t('PublicTeam'),
+        text: i18next.t('PublicTeam'),
         checked: false,
       },
       {
         type: 'canPost',
-        text: t('MembersMayPostMessages'),
+        text: i18next.t('MembersMayPostMessages'),
+
+        checked: true,
+      },
+      {
+        type: 'canAddMember',
+        text: i18next.t('MembersMayAddOtherMembers'),
         checked: true,
       },
     ];
@@ -73,6 +81,20 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return {
       items,
     };
+  }
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.teamNameRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
   }
 
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
@@ -94,15 +116,30 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { items } = this.state;
     const { teamName, description, members } = this.props;
     const { history, create } = this.props;
-    const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
-    const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const result = await create(teamName, members, description, {
-      isPublic,
-      canPost,
-    });
-    if (result.isOk()) {
+
+    const uiSetting = items.reduce((options, option) => {
+      options[option.type] = option.checked;
+      return options;
+    },                             {}) as {
+      isPublic: boolean;
+      canAddMember: boolean;
+      canPost: boolean;
+    };
+
+    const teamSetting = {
+      description,
+      name: teamName,
+      isPublic: uiSetting.isPublic,
+      permissionFlags: {
+        TEAM_ADD_MEMBER: uiSetting.canAddMember,
+        TEAM_POST: uiSetting.canPost,
+      },
+    };
+
+    const newTeam = await create(members, teamSetting);
+    if (newTeam) {
       this.onClose();
-      history.push(`/messages/${result.data.id}`);
+      history.push(`/messages/${newTeam.id}`);
     }
   }
 
@@ -130,7 +167,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       handleNameChange,
       handleDescChange,
       handleSearchContactChange,
-      isOffline,
       serverError,
       errorEmail,
       serverUnknownError,
@@ -143,44 +179,45 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         open={true}
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        okBtnProps={{ disabled: isOffline || disabledOkBtn }}
-        title={t('CreateTeam')}
+        okBtnProps={{ disabled: disabledOkBtn }}
+        title={i18next.t('CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
-        okText={t('Create')}
+        okText={i18next.t('Create')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('Create Team Error')}
+              {i18next.t('Create Team Error')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={t('Cancel')}
+        cancelText={i18next.t('Cancel')}
       >
         <JuiTextField
-          id={t('teamName')}
-          label={t('teamName')}
+          id={i18next.t('teamName')}
+          label={i18next.t('teamName')}
           fullWidth={true}
           error={nameError}
           inputProps={{
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
-          helperText={nameError && t(errorMsg)}
+          inputRef={this.teamNameRef}
+          helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
-          placeholder={t('Search Contact Placeholder')}
+          label={i18next.t('Members')}
+          placeholder={i18next.t('Search Contact Placeholder')}
           error={emailError}
-          helperText={emailError && t(emailErrorMsg)}
+          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea
-          id={t('teamDescription')}
-          label={t('teamDescription')}
+          id={i18next.t('teamDescription')}
+          label={i18next.t('teamDescription')}
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
             maxLength: 1000,

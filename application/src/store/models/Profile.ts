@@ -1,12 +1,21 @@
 import _ from 'lodash';
-import { computed } from 'mobx';
+import { observable } from 'mobx';
 import { Profile } from 'sdk/module/profile/entity';
 import Base from './Base';
 
 export default class ProfileModel extends Base<Profile> {
+  @observable
   favoritePostIds: number[];
+
+  @observable
   favoriteGroupIds: number[];
+
+  @observable
+  hiddenGroupIds: number[] = [];
+
+  @observable
   skipCloseConversationConfirmation: boolean;
+
   constructor(data: Profile) {
     super(data);
     const {
@@ -19,26 +28,15 @@ export default class ProfileModel extends Base<Profile> {
     this.favoriteGroupIds = favoriteGroupIds;
     this.skipCloseConversationConfirmation = skipCloseConversationConfirmation;
 
+    const hiddenGroupIds: number[] = [];
     Object.keys(data).forEach((key: string) => {
       const m = key.match(new RegExp(`(${'hide_group'})_(\\d+)`));
-      if (m) {
-        this[_.camelCase(key)] = data[key];
+      if (m && data[key] === true) {
+        hiddenGroupIds.push(Number(m[2]));
       }
     });
-  }
 
-  @computed
-  get hiddenGroupIds() {
-    const hiddenGroupIds: number[] = [];
-    Object.keys(this).forEach((key: string) => {
-      if (this[key] === true) {
-        const m = key.match(new RegExp(`(${'hideGroup'})(\\d+)`));
-        if (m) {
-          hiddenGroupIds.push(Number(m[2]));
-        }
-      }
-    });
-    return hiddenGroupIds;
+    this.hiddenGroupIds = hiddenGroupIds;
   }
 
   static fromJS(data: Profile) {

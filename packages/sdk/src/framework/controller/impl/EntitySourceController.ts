@@ -5,7 +5,7 @@
  */
 
 import { IdModel } from '../../model';
-import { DeactivatedDao } from '../../../dao';
+import { IDao } from '../../../framework/dao';
 import _ from 'lodash';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
@@ -15,7 +15,7 @@ class EntitySourceController<T extends IdModel = IdModel>
   implements IEntitySourceController<T> {
   constructor(
     public entityPersistentController: IEntityPersistentController<T>,
-    public deactivatedDao: DeactivatedDao,
+    public deactivatedDao: IDao<T>,
     public requestController?: IRequestController<T>,
   ) {}
 
@@ -50,13 +50,17 @@ class EntitySourceController<T extends IdModel = IdModel>
   async get(key: number): Promise<T | null> {
     const result = await this.getEntityLocally(key);
     if (!result && this.requestController) {
-      return this.requestController.get(key);
+      return await this.requestController.get(key);
     }
     return result;
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
-    return await this.entityPersistentController.batchGet(ids);
+  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+    return await this.entityPersistentController.batchGet(ids, order);
+  }
+
+  getEntityName(): string {
+    return this.entityPersistentController.getEntityName();
   }
 
   async getAll(): Promise<T[]> {
@@ -67,11 +71,15 @@ class EntitySourceController<T extends IdModel = IdModel>
     return await this.entityPersistentController.getTotalCount();
   }
 
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    return await this.entityPersistentController.getEntities(filterFunc);
+  }
+
   getEntityNotificationKey(): string {
     return this.entityPersistentController.getEntityNotificationKey();
   }
 
-  async getEntityLocally(id: number): Promise<T> {
+  async getEntityLocally(id: number): Promise<T | null> {
     const result = await this.entityPersistentController.get(id);
     return result || (await this.deactivatedDao.get(id));
   }

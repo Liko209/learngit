@@ -3,7 +3,7 @@
  * @Date: 2018-08-22 15:22:51
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { RefObject } from 'react';
+import React, { RefObject, memo } from 'react';
 import MuiIconButton, {
   IconButtonProps as MuiIconButtonProps,
 } from '@material-ui/core/IconButton';
@@ -212,5 +212,5 @@ JuiIconButtonComponent.defaultProps = {
   tooltipTitle: '',
 };
 
-const JuiIconButton = styled(JuiIconButtonComponent)``;
+const JuiIconButton = styled(memo(JuiIconButtonComponent))``;
 export { JuiIconButton, JuiIconButtonProps, IconButtonVariant, IconButtonSize };

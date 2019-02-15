@@ -5,7 +5,9 @@
  */
 
 import { ItemService } from '../../../item';
-import { PostDao, ItemDao, daoManager } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
+import { ItemDao } from '../../../item/dao';
 import { ExtendedBaseModel } from '../../../models';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { PROGRESS_STATUS } from '../../../progress';
@@ -15,6 +17,7 @@ import { Post } from '../../entity';
 
 jest.mock('../../../item');
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
@@ -67,21 +70,6 @@ describe('PostDataController', () => {
       clearMocks();
       setup();
     });
-
-    it('should do nothing if data is null', async () => {
-      const result = await postDataController.handleFetchedPosts(
-        null,
-        false,
-        (posts: Post[], items: Item[]) => {},
-      );
-      const filterAndSavePosts = jest.spyOn(
-        postDataController,
-        'filterAndSavePosts',
-      );
-      expect(filterAndSavePosts).not.toBeCalled();
-      expect(itemService.handleIncomingData).not.toBeCalled();
-    });
-
     it('should go through data handle process if data is not null', async () => {
       const data = {
         posts: [{ id: 3, group_id: 1 }, { id: 4, group_id: 2 }],

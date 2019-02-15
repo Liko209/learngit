@@ -195,8 +195,10 @@ class PersonController {
     terms: string[];
     sortableModels: SortableModel<Person>[];
   } | null> {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.SEARCH_PERSON,
+      logId,
     );
     let currentUserId: number | null = null;
     if (excludeSelf) {
@@ -204,7 +206,7 @@ class PersonController {
     }
 
     const result = await this._cacheSearchController.searchEntities(
-      (person: Person, terms: string[]) => {
+      async (person: Person, terms: string[]) => {
         do {
           if (
             !this._isValid(person) ||
@@ -284,9 +286,7 @@ class PersonController {
         return 0;
       },
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 

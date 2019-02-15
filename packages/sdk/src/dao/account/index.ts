@@ -4,11 +4,11 @@
  */
 
 import { KVStorage } from 'foundation';
-import { BaseKVDao } from '../base';
-import { ACCOUNT_KEYS } from './constants';
+import { BaseKVDao } from '../../framework/dao';
+import { ACCOUNT_COLLECTION_NAME, ACCOUNT_KEYS } from './constants';
 
 class AccountDao extends BaseKVDao {
-  static COLLECTION_NAME: string = 'account';
+  static COLLECTION_NAME: string = ACCOUNT_COLLECTION_NAME;
   constructor(kvStorage: KVStorage) {
     super(AccountDao.COLLECTION_NAME, kvStorage, ACCOUNT_KEYS);
   }

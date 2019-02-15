@@ -6,6 +6,7 @@
 import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
+import { getFileIcon } from '@/common/getFileIcon';
 
 enum FileType {
   image = 0,
@@ -100,6 +101,11 @@ export default class FileItemModel extends ItemModel {
   get origWidth() {
     if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_width');
+  }
+
+  @computed
+  get iconType() {
+    return getFileIcon(this.type);
   }
 
   static fromJS(data: Item) {

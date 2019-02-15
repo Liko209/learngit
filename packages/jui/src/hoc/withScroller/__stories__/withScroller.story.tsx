@@ -5,7 +5,7 @@
  */
 /// <reference path="../../../../.storybook/storybook.d.ts" />
 import _ from 'lodash';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -40,7 +40,7 @@ storiesOf('HoC/withScroller', module)
     );
   })
   .add('stick to bottom', () => {
-    class DemoContent extends Component<any, any> {
+    class DemoContent extends PureComponent<any, any> {
       render() {
         const { children } = this.props;
         return <ul>{children}</ul>;
@@ -49,7 +49,7 @@ storiesOf('HoC/withScroller', module)
 
     const DemoContentWithScroller = withScroller(DemoContent);
 
-    class Demo extends Component<any, any> {
+    class Demo extends PureComponent<any, any> {
       constructor(props: any) {
         super(props);
         this.state = { items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] };

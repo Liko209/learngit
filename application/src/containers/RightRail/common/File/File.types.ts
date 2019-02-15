@@ -12,6 +12,7 @@ type FileProps = {
 
 type FileViewProps = {
   file: FileItemModel;
+  fileName: string;
   personName: string;
   createdTime: string;
   downloadUrl: string;

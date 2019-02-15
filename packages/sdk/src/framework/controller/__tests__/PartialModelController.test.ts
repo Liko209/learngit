@@ -8,7 +8,8 @@ import { PartialModifyController } from '../impl/PartialModifyController';
 import { EntitySourceController } from '../impl/EntitySourceController';
 import { Raw } from '../../../framework/model';
 import { TestEntity, TestDatabase } from './TestTypes';
-import { BaseDao, DeactivatedDao } from '../../../dao';
+import { BaseDao } from '../../../framework/dao';
+import { DeactivatedDao } from '../../../dao';
 import notificationCenter from '../../../service/notificationCenter';
 import { EntityPersistentController } from '../impl/EntityPersistentController';
 

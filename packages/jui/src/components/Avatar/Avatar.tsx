@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:25:50
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import MuiAvatar, {
   AvatarProps as MuiAvatarProps,
@@ -68,22 +68,22 @@ const StyledPresenceWrapper = styled.div`
   right: 0;
 `;
 
-const JuiAvatar = (props: JuiAvatarProps) => {
-  const { presence, size } = props;
+const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
+  const { presence, style, size } = props;
 
   return presence ? (
-    <StyledWrapper size={size}>
+    <StyledWrapper size={size} style={style}>
       <StyledAvatar {...props} />
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
     </StyledWrapper>
   ) : (
     <StyledAvatar {...props} />
   );
-};
+});
 
 JuiAvatar.defaultProps = {
   size: 'medium',
 };
 JuiAvatar.displayName = 'JuiAvatar';
-JuiAvatar.dependencies = [MuiAvatar];
+
 export { JuiAvatarProps, JuiAvatar };

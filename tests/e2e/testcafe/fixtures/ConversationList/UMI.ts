@@ -9,8 +9,6 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ClientFunction } from 'testcafe';
-import * as assert from 'assert';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -109,15 +107,9 @@ test(formalName('UMI should be added received messages count in conversations', 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
     await teamConversation.umi.shouldBeNumber(2);
   });
-},
-);
+});
 
 test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'ConversationList']), async (t: TestController) => {
-  if (await H.isEdge()) {
-    await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-    return;
-  }
-
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -174,7 +166,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 
   await h(t).withLog('Then I click the team to open the team conversation', async () => {
     await teamsSection.conversationEntryById(teamId).enter();
-    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
@@ -186,11 +177,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
 });
 
 test(formalName('Current opened conversation should not display UMI', ['JPT-105', 'P1', 'ConversationList']), async (t: TestController) => {
-  if (await H.isEdge()) {
-    await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-    return;
-  }
-
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -528,16 +514,10 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   await h(t).withLog('Should have 1 umi in header of team sections', async () => {
     await teamsSection.headerUmi.shouldBeNumber(1);
   });
-},
-);
+});
 
 test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
-    if (await H.isEdge()) {
-      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-      return;
-    }
-
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -573,7 +553,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
-      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.scrollToMiddle();
       await h(t).platform(otherUser).sendTextPost('test again', pvtChatId);
     });
@@ -595,11 +574,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
 
 test(formalName('Should not show UMI and scroll up automatically when receive post', ['JPT-191', 'P2', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
-    if (await H.isEdge()) {
-      await h(t).log('Skip: This case is not working on Edge due to a Testcafe bug (FIJI-1758)');
-      return;
-    }
-
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -729,9 +703,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-// bug https://jira.ringcentral.com/browse/FIJI-2766 so skip the checkpoint
-// skip due to https://jira.ringcentral.com/browse/FIJI-3130
-test.skip(formalName('JPT- 743 Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
+test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;

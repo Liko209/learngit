@@ -20,9 +20,9 @@ type Props = FavoriteViewProps & WithNamespaces;
 
 @observer
 class FavoriteViewComponent extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
+  static defaultProps: Partial<Props> = {
+    size: 'small',
+  };
 
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;
@@ -44,8 +44,10 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { conversationId, isFavorite, size, t } = this.props;
-    if (!conversationId) {
+    const { conversationId, isMember, isFavorite, size, t } = this.props;
+    if (!conversationId || !isMember) {
+      // 1. not create a conversation
+      // 2. not a member
       return null;
     }
     const tooltipKey = isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';

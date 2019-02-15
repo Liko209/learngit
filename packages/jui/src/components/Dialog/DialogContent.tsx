@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import MuiDialogContent, {
   DialogContentProps as MuiDialogContentProps,
 } from '@material-ui/core/DialogContent';
@@ -23,18 +23,18 @@ const fullWidthStyle = (theme: Theme, fullWidth?: boolean) => {
 `;
 };
 
-const JuiDialogContent = styled(
+const JuiDialogContent = memo(styled(
   ({ fullWidth, fill, ...props }: JuiDialogContentProps) => {
     return <MuiDialogContent {...props} classes={{ root: 'root' }} />;
   },
 )`
   &.root {
     overflow-y: visible;
-    padding: ${({ fill }) => (fill ? spacing(0, 0, 6) : spacing(0, 6, 6))};
+    padding: ${({ fill }) => (fill ? spacing(0, 0, 3) : spacing(0, 6, 3))};
   }
   & .root {
     ${({ theme, fullWidth }) => fullWidthStyle(theme, fullWidth)};
   }
-`;
+`);
 
 export { JuiDialogContent };

@@ -8,7 +8,8 @@ import { PostActionController } from '../PostActionController';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { Post } from '../../../entity';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
-import { daoManager, PostDao } from '../../../../../dao';
+import { daoManager } from '../../../../../dao';
+import { PostDao } from '../../../dao';
 import { ProgressService, PROGRESS_STATUS } from '../../../../progress';
 import { GroupConfigService } from '../../../../../service';
 import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
@@ -16,6 +17,7 @@ import _ from 'lodash';
 import { ExtendedBaseModel } from '../../../../models';
 
 jest.mock('../../../../../dao');
+jest.mock('../../../dao');
 jest.mock('../../../../progress');
 jest.mock('../../../../../service');
 jest.mock('../../../../item/service');

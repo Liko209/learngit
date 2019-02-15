@@ -3,17 +3,21 @@
  * @Date: 2018-02-28 00:26:24
  */
 /// <reference path="../../__tests__/types.d.ts" />
-import { KVStorage, DBManager, KVStorageManager, DexieDB, IDatabase } from 'foundation';
+import {
+  KVStorage,
+  DBManager,
+  KVStorageManager,
+  DexieDB,
+  IDatabase,
+} from 'foundation';
 import DaoManager from '../DaoManager';
-import BaseKVDao from '../base/BaseKVDao'; // eslint-disable-line
-import { BaseDao } from '../base';
-import { Person } from '../../models';
+import { BaseDao, BaseKVDao } from '../../framework/dao';
 import Dexie from 'dexie';
+import { IdModel } from '../../framework/model';
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-jest.mock('../base/BaseDao');
-jest.mock('../base/BaseKVDao');
+jest.mock('../../framework/dao');
 jest.mock('../schema', () => ({
   name: 'DB',
   version: 1,
@@ -22,8 +26,14 @@ jest.mock('../schema', () => ({
       mock: {
         unique: 'id',
         indices: [
-          'index', 'name', 'pet', '[index+name]',
-          '[name+index]', '[id+index]', '[index+id]', '*teams',
+          'index',
+          'name',
+          'pet',
+          '[index+name]',
+          '[name+index]',
+          '[id+index]',
+          '[index+id]',
+          '*teams',
         ],
       },
     },
@@ -38,7 +48,7 @@ class TestKVDao extends BaseKVDao {
   }
 }
 
-class TestDao extends BaseDao<Person> {
+class TestDao extends BaseDao<IdModel> {
   static COLLECTION_NAME = 'TestDao';
 
   constructor(db: IDatabase) {
@@ -72,7 +82,9 @@ describe('DaoManager', () => {
 
       it('should not delete old db if version is same', async () => {
         await daoManager.initDatabase();
-        expect(DBManager.mock.instances[0].deleteDatabase).not.toHaveBeenCalled();
+        expect(
+          DBManager.mock.instances[0].deleteDatabase,
+        ).not.toHaveBeenCalled();
         expect(mockConfigDao.remove).not.toHaveBeenCalled();
       });
 
@@ -139,7 +151,9 @@ describe('DaoManager', () => {
 
   describe('getDao()', () => {
     it('should return the same dao instance for a dao class', () => {
-      expect(daoManager.getKVDao(TestKVDao)).toBe(daoManager.getKVDao(TestKVDao));
+      expect(daoManager.getKVDao(TestKVDao)).toBe(
+        daoManager.getKVDao(TestKVDao),
+      );
       expect(daoManager.getDao(TestDao)).toBe(daoManager.getDao(TestDao));
     });
   });

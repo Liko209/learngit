@@ -6,7 +6,7 @@
 
 import { IdModel } from '../../model';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
-import { BaseDao } from '../../../dao';
+import { IDao } from '../../../framework/dao';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../service/notificationCenter';
@@ -15,7 +15,7 @@ import { IEntityCacheController } from '../interface/IEntityCacheController';
 class EntityPersistentController<T extends IdModel = IdModel>
   implements IEntityPersistentController<T> {
   constructor(
-    public dao?: BaseDao<T>,
+    public dao?: IDao<T>,
     public entityCacheController?: IEntityCacheController<T>,
   ) {
     this._subscribeEntityChange();
@@ -97,17 +97,42 @@ class EntityPersistentController<T extends IdModel = IdModel>
     return item;
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
+  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     let items: T[] = [];
     if (this.entityCacheController) {
-      items = await this.entityCacheController.batchGet(ids);
+      items = await this.entityCacheController.batchGet(ids, order);
     }
 
     if (items.length !== ids.length && this.dao) {
-      items = await this.dao.batchGet(ids);
+      items = await this.dao.batchGet(ids, order);
     }
 
     return items;
+  }
+
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    let items: T[] = [];
+    if (this.entityCacheController) {
+      items = await this.entityCacheController.getEntities(filterFunc);
+    }
+
+    if (items.length === 0 && this.dao) {
+      items = await this.dao.getAll();
+    }
+
+    return items;
+  }
+
+  getEntityName(): string {
+    if (this.dao) {
+      return this.dao.getEntityName();
+    }
+
+    if (this.entityCacheController) {
+      return this.entityCacheController.getEntityName();
+    }
+
+    return 'unknown';
   }
 
   async getAll(): Promise<T[]> {
@@ -130,23 +155,14 @@ class EntityPersistentController<T extends IdModel = IdModel>
     }
 
     if (totalCount === 0 && this.dao) {
-      totalCount = await this.dao.getAllCount();
+      totalCount = await this.dao.getTotalCount();
     }
     return totalCount;
   }
 
   getEntityNotificationKey() {
-    if (this.dao) {
-      const modelName = this.dao.modelName.toUpperCase();
-      const eventKey: string = `ENTITY.${modelName}`;
-      return eventKey;
-    }
-
-    if (this.entityCacheController) {
-      return this.entityCacheController.getEntityNotificationKey();
-    }
-
-    return 'unknown';
+    const modelName = this.getEntityName().toUpperCase();
+    return `ENTITY.${modelName}`;
   }
 
   private _subscribeEntityChange() {
