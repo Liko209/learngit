@@ -67,6 +67,9 @@ describe('i18next-en', () => {
     expect(i18next.t('MembersMayPostMessages')).toEqual(
       'Allow members to post messages',
     );
+    expect(i18next.t('MembersMayAddOtherMembers')).toEqual(
+      'Allow members to add other members',
+    );
     expect(
       i18next.t('addedToTeam', { inviter: 'Lip', newUser: 'Valor' }),
     ).toEqual('Lip added Valor to the team');
@@ -390,4 +393,7 @@ describe('i18next-en', () => {
   expect(
     i18next.t('DownloadToSeeTheRestLine', { restLines: restLines + 1 }),
   ).toEqual(`Download to see the rest ${restLines + 1} lines`);
+  expect(i18next.t('postMessages')).toEqual('Post messages');
+  expect(i18next.t('pinPosts')).toEqual('Pin posts');
+  expect(i18next.t('allowTeamMembersTo')).toEqual('Allow team members to');
 });

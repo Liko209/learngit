@@ -36,8 +36,11 @@ describe('RTC call', () => {
     }
   }
 
-  class SessionDescriptionHandler {
+  class SessionDescriptionHandler extends EventEmitter2 {
     private _directionFlag: boolean = true;
+    constructor() {
+      super();
+    }
 
     setDirectionFlag(flag: boolean) {
       this._directionFlag = flag;
