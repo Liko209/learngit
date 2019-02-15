@@ -23,7 +23,7 @@ const StyledLeftSection = styled('div')`
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
-  ${typography('caption')} overflow: hidden;
+  ${typography('caption1')} overflow: hidden;
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
