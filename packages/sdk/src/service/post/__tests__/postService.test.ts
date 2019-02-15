@@ -10,10 +10,9 @@ import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
 import GroupService from '../../../module/group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
-import { serviceErr, serviceOk } from '../../ServiceResult';
 import notificationCenter from '../../notificationCenter';
 import { ENTITY } from '../../eventKey';
-import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { JNetworkError, ERROR_CODES_NETWORK, JError } from 'foundation';
 import { JServerError, ERROR_CODES_SERVER } from '../../../error';
 import GroupConfigService from '../../groupConfig';
 import { ItemService } from '../../../module/item';
@@ -410,14 +409,16 @@ describe('PostService', () => {
 
     it('should return null when post id is negative', async () => {
       postService.getById.mockResolvedValueOnce(null);
-      const result = await postService.likePost(-1, 101, true);
-      expect(result.isErr()).toBe(true);
+      await expect(postService.likePost(-1, 101, true)).rejects.toBeInstanceOf(
+        JError,
+      );
     });
 
     it('should return null when post is not exist', async () => {
       postService.getById.mockResolvedValueOnce(null);
-      const result = await postService.likePost(100, 101, true);
-      expect(result.isErr()).toBe(true);
+      await expect(postService.likePost(100, 101, true)).rejects.toBeInstanceOf(
+        JError,
+      );
     });
 
     it('should return old post if person id is in post likes when to like', async () => {
@@ -428,8 +429,7 @@ describe('PostService', () => {
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [101] }]);
       const result = await postService.likePost(100, 101, true);
-      expect(result.isOk()).toBe(true);
-      expect(result.isOk() && result.data.likes).toEqual([101]);
+      expect(result.likes).toEqual([101]);
       // expect(post.likes).toEqual([101]);
     });
 
@@ -437,7 +437,7 @@ describe('PostService', () => {
       const post = { id: 100, likes: [] };
       postService.getById.mockResolvedValue(post);
       const result = await postService.likePost(100, 102, false);
-      expect(result.isOk() && result.data.likes).toEqual([]);
+      expect(result.likes).toEqual([]);
     });
     it('should return new post if person id is in post likes when to like', async () => {
       const post = { id: 100, likes: [] };
@@ -445,7 +445,7 @@ describe('PostService', () => {
       const data = { _id: 100, likes: [101] };
       PostAPI.putDataById.mockResolvedValueOnce(data);
       const result = await postService.likePost(100, 101, true);
-      expect(result.isOk() && result.data.likes).toEqual([101]);
+      expect(result.likes).toEqual([101]);
     });
 
     it('should return new post if person id is in post likes when to unlike', async () => {
@@ -456,16 +456,16 @@ describe('PostService', () => {
 
       baseHandleData.mockResolvedValueOnce([{ id: 100, likes: [102] }]);
       const result = await postService.likePost(100, 101, false);
-      expect(result.isOk() && result.data.likes).toEqual([102]);
+      expect(result.likes).toEqual([102]);
     });
 
     it('should return error when server error', async () => {
-      postService.getById.mockResolvedValueOnce({ id: 100, likes: [101, 102] });
-      PostAPI.putDataById.mockResolvedValueOnce({
-        error: { _id: 100, likes: [102] },
-      });
-      const result = await postService.likePost(100, 101, false);
-      expect(result.isErr()).toBe(true);
+      const error = new JError('test', 'test', 'test error');
+      postService.getById.mockResolvedValue({ id: 100, likes: [101, 102] });
+      PostAPI.putDataById.mockRejectedValue(error);
+      await expect(postService.likePost(100, 101, false)).rejects.toEqual(
+        error,
+      );
     });
   });
 
@@ -519,7 +519,10 @@ describe('PostService', () => {
     });
 
     it('should return post null when post server error', async () => {
-      const error = new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '');
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        '',
+      );
       daoManager.getDao.mockReturnValueOnce(postDao);
       postDao.get.mockResolvedValueOnce({
         id: 100,
@@ -532,16 +535,17 @@ describe('PostService', () => {
 
   describe('bookMark Post', () => {
     it('book post should return serviceErr', async () => {
-      profileService.putFavoritePost.mockResolvedValueOnce(
-        serviceErr(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '500'),
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        '500',
       );
-      const result = await postService.bookmarkPost(1, true);
-      expect(result.isErr()).toBe(true);
+      profileService.putFavoritePost.mockRejectedValueOnce(error);
+      await expect(postService.bookmarkPost(1, true)).rejects.toEqual(error);
     });
     it('book post should return serviceOk', async () => {
-      profileService.putFavoritePost.mockResolvedValueOnce(serviceOk({}));
+      profileService.putFavoritePost.mockResolvedValueOnce({});
       const result = await postService.bookmarkPost(1, true);
-      expect(result.isOk()).toBe(true);
+      expect(result).toEqual({});
     });
   });
 

@@ -90,7 +90,11 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
 
   async onBoardingPreparation() {
     const profileService: ProfileService = ProfileService.getInstance();
-    await profileService.markMeConversationAsFav();
+    await profileService.markMeConversationAsFav().catch((error: Error) => {
+      mainLogger
+        .tags('AccountService')
+        .info('markMeConversationAsFav fail:', error);
+    });
   }
 
   getUnreadToggleSetting() {

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, JError } from 'foundation';
+import { mainLogger } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { daoManager, DeactivatedDao } from '../dao';
 import { IdModel, Raw, SortableModel } from '../framework/model';
@@ -14,7 +14,6 @@ import notificationCenter, {
 } from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
-import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
@@ -370,37 +369,36 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | JError>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
-  ): Promise<ServiceResult<SubModel>> {
+  ): Promise<SubModel> {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
       ? partialModel._id
       : 0;
-    let result: ServiceResult<SubModel>;
+    let result: SubModel;
 
     do {
       const originalModel = await this.getById(id);
 
       if (!originalModel) {
         mainLogger.warn('handlePartialUpdate: OriginalModel not found');
-        result = serviceErr(
+        throw new JSdkError(
           ERROR_CODES_SDK.GENERAL,
           `OriginalModel not found: modelId: ${id}`,
         );
-        break;
       }
 
       if (!doUpdateModel) {
         mainLogger.warn(
           'handlePartialUpdate: doUpdateModel is nil, no updates',
         );
-        result = serviceOk(originalModel);
+        result = originalModel;
         break;
       }
 
@@ -489,14 +487,14 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | JError>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
-  ): Promise<ServiceResult<SubModel>> {
-    let result: ServiceResult<SubModel>;
+  ): Promise<SubModel> {
+    let result: SubModel;
     do {
       partialModel.id = originalModel.id;
       if (partialModel._id) {
@@ -510,7 +508,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
         mainLogger.warn('handlePartialUpdate: no changes, no need update');
-        result = serviceOk(originalModel);
+        result = originalModel;
         break;
       }
 
@@ -526,10 +524,10 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
 
-      const updateResult = await doUpdateModel(mergedModel);
-
-      if (updateResult instanceof JError) {
-        const error = updateResult;
+      let updateResult;
+      try {
+        updateResult = await doUpdateModel(mergedModel);
+      } catch (error) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
           rollbackPartialModel,
@@ -541,13 +539,10 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ERROR_CODES_SDK.GENERAL, 'doUpdateModel failed', {
-          apiError: error,
-        });
-        break;
+        throw error;
       }
 
-      result = serviceOk(updateResult);
+      result = updateResult;
     } while (false);
 
     return result;

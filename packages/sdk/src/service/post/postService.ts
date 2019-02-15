@@ -21,7 +21,7 @@ import { Group } from '../../module/group/entity';
 import { ENTITY, SOCKET, SERVICE } from '../eventKey';
 import { transform } from '../utils';
 import { RawPostInfo } from './types';
-import { mainLogger, err, Result } from 'foundation';
+import { mainLogger } from 'foundation';
 import { QUERY_DIRECTION } from '../../dao/constants';
 import { uniqueArray } from '../../utils';
 import GroupConfigService from '../groupConfig';
@@ -493,27 +493,18 @@ class PostService extends BaseService<Post> {
   ): Promise<Post | null> {
     newPost._id = newPost.id;
     delete newPost.id;
-    let result;
-    try {
-      result = await PostAPI.putDataById<Post>(newPost._id, newPost);
-      if (handleDataFunc) {
-        return await handleDataFunc(result);
-      }
-      return transform<Post>(result);
-    } catch (error) {
-      return null;
+    const result = await PostAPI.putDataById<Post>(newPost._id, newPost);
+    if (handleDataFunc) {
+      return await handleDataFunc(result);
     }
-  }
-
-  private async _doUpdateModel(updatedModel: Post) {
-    return this._requestUpdatePost(updatedModel);
+    return transform<Post>(result);
   }
 
   async likePost(
     postId: number,
     personId: number,
     toLike: boolean,
-  ): Promise<Result<Post>> {
+  ): Promise<Post> {
     const post = await this.getById(postId);
     if (post) {
       const likes = post.likes ? [...post.likes] : [];
@@ -536,14 +527,12 @@ class PostService extends BaseService<Post> {
       return this.handlePartialUpdate(
         partialModel,
         undefined,
-        this._doUpdateModel.bind(this),
+        this._requestUpdatePost.bind(this),
       );
     }
-    return err(
-      new JSdkError(
-        ERROR_CODES_SDK.GENERAL,
-        `Post can not find with id ${postId}`,
-      ),
+    throw new JSdkError(
+      ERROR_CODES_SDK.GENERAL,
+      `Post can not find with id ${postId}`,
     );
   }
 

@@ -164,7 +164,7 @@ describe('ensureGroupOpened', () => {
       .mockResolvedValueOnce(true);
     mockedProfileService.reopenConversation = jest
       .fn()
-      .mockResolvedValueOnce({ isErr: () => true });
+      .mockRejectedValueOnce(new Error('test'));
     MessageRouterChangeHelper.handleSourceOfRouter(110);
     setTimeout(() => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();

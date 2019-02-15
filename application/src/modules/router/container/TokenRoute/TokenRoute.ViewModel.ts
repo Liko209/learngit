@@ -8,7 +8,7 @@ import { AuthService } from 'sdk/service';
 import { computed, observable, action } from 'mobx';
 import * as H from 'history';
 import { parse } from 'qs';
-import { service } from 'sdk';
+import { service, mainLogger } from 'sdk';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -43,7 +43,11 @@ class TokenRouteViewModel extends StoreViewModel {
     const profileService: service.ProfileService = ProfileService.getInstance();
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
-    await profileService.markMeConversationAsFav();
+    await profileService.markMeConversationAsFav().catch((error: Error) => {
+      mainLogger
+        .tags('TokenRoute.ViewModel')
+        .info('markMeConversationAsFav fail:', error);
+    });
     this._redirect(state);
   }
 

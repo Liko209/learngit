@@ -12,10 +12,9 @@ import { UserConfig } from '../account/UserConfig';
 import { Profile } from '../../module/profile/entity';
 import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
-import { ServiceResult, serviceErr, serviceOk } from '../ServiceResult';
 import { transform } from '../utils';
 
-import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
+import { JSdkError, ERROR_CODES_SDK } from '../../error';
 import handleData from './handleData';
 import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
@@ -77,7 +76,7 @@ class ProfileService extends BaseService<Profile> {
   async reorderFavoriteGroups(
     oldIndex: number,
     newIndex: number,
-  ): Promise<ServiceResult<Profile>> {
+  ): Promise<Profile> {
     const profileId = this.getCurrentProfileId();
 
     const partialProfile: any = {
@@ -145,12 +144,12 @@ class ProfileService extends BaseService<Profile> {
     return await this._requestUpdateProfile(updatedModel);
   }
 
-  async markMeConversationAsFav(): Promise<ServiceResult<Profile>> {
+  async markMeConversationAsFav(): Promise<Profile> {
     const profile = await this.getProfile();
 
     if (profile.me_tab) {
       // Me conversation already be marked as favorite.
-      return serviceOk(profile);
+      return profile;
     }
 
     const currentId = UserConfig.getCurrentUserId();
@@ -183,16 +182,13 @@ class ProfileService extends BaseService<Profile> {
       );
     }
 
-    return serviceErr(
+    throw new JSdkError(
       ERROR_CODES_SDK.GENERAL,
       `personService.getById(${currentId}) failed`,
     );
   }
 
-  async putFavoritePost(
-    postId: number,
-    toBook: boolean,
-  ): Promise<ServiceResult<Profile>> {
+  async putFavoritePost(postId: number, toBook: boolean): Promise<Profile> {
     const profile = await this.getProfile();
     if (profile) {
       let oldFavPostIds = _.cloneDeep(profile.favorite_post_ids) || [];
@@ -200,7 +196,7 @@ class ProfileService extends BaseService<Profile> {
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);
       if (shouldDoNothing) {
-        return serviceOk(profile);
+        return profile;
       }
       const partialProfile: any = {
         id: profile.id,
@@ -225,7 +221,7 @@ class ProfileService extends BaseService<Profile> {
         this._doUpdateModel.bind(this),
       );
     }
-    return serviceErr(
+    throw new JSdkError(
       ERROR_CODES_SDK.GENERAL,
       `profileService.putFavoritePost(${postId}) failed`,
     );
@@ -264,7 +260,7 @@ class ProfileService extends BaseService<Profile> {
     groupId: number,
     hidden: boolean,
     shouldUpdateSkipConfirmation: boolean,
-  ): Promise<ServiceResult<Profile>> {
+  ): Promise<Profile> {
     const preHandlePartialModel = (
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
@@ -327,7 +323,7 @@ class ProfileService extends BaseService<Profile> {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ) => Partial<Raw<Profile>>,
-  ): Promise<ServiceResult<Profile>> {
+  ): Promise<Profile> {
     const profileId = this.getCurrentProfileId();
 
     const partialProfile: any = {
@@ -342,20 +338,14 @@ class ProfileService extends BaseService<Profile> {
     );
   }
 
-  private async _requestUpdateProfile(
-    newProfile: Profile,
-  ): Promise<Profile | JError> {
+  private async _requestUpdateProfile(newProfile: Profile): Promise<Profile> {
     newProfile._id = newProfile.id;
     delete newProfile.id;
-    try {
-      const result = await ProfileAPI.putDataById<Profile>(
-        newProfile._id,
-        newProfile,
-      );
-      return transform<Profile>(result);
-    } catch (error) {
-      return error;
-    }
+    const result = await ProfileAPI.putDataById<Profile>(
+      newProfile._id,
+      newProfile,
+    );
+    return transform<Profile>(result);
   }
 
   async getMaxLeftRailGroup(): Promise<number> {

@@ -6,7 +6,6 @@
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import ProfileService from '../../../service/profile';
 import ProfileAPI from '../../../api/glip/profile';
-import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
 import { UserConfig } from '../../../service/account/UserConfig';
 import { daoManager } from '../../../dao';
@@ -61,8 +60,7 @@ describe('ProfileService', () => {
   describe('favoritePost()', () => {
     it('profile not exist in local should return null', async () => {
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(null);
-      const result = await profileService.putFavoritePost(100, true);
-      expect(result.isErr()).toBeTruthy();
+      expect(profileService.putFavoritePost(100, true)).rejects.not.toBeNull();
     });
     it('favorite post ids in local to like, ', async () => {
       const profile = {
@@ -71,11 +69,7 @@ describe('ProfileService', () => {
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       const result = await profileService.putFavoritePost(100, true);
-      if (result.isOk()) {
-        expect(result.data.favorite_post_ids).toEqual([100, 101, 102]);
-      } else {
-        expect(true).toBe(false);
-      }
+      expect(result.favorite_post_ids).toEqual([100, 101, 102]);
     });
     it('should do nothing because post id is not in favorite post ids', async () => {
       const profile = {
@@ -84,11 +78,7 @@ describe('ProfileService', () => {
       };
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       const result = await profileService.putFavoritePost(103, false);
-      if (result.isOk()) {
-        expect(result.data.favorite_post_ids).toEqual([100, 101, 102]);
-      } else {
-        expect(true).toBe(false);
-      }
+      expect(result.favorite_post_ids).toEqual([100, 101, 102]);
     });
 
     it('favorite post ids not in local to like', async () => {
@@ -107,14 +97,10 @@ describe('ProfileService', () => {
       };
       jest
         .spyOn(profileService, 'handlePartialUpdate')
-        .mockResolvedValueOnce(new ServiceResultOk(returnValue));
+        .mockResolvedValueOnce(returnValue);
 
       const result = await profileService.putFavoritePost(103, true);
-      if (result.isOk()) {
-        expect(result.data.favorite_post_ids).toEqual([100, 101, 102, 103]);
-      } else {
-        expect(true).toBe(false);
-      }
+      expect(result.favorite_post_ids).toEqual([100, 101, 102, 103]);
     });
 
     it('favorite post ids not in local to unlike', async () => {
@@ -129,13 +115,9 @@ describe('ProfileService', () => {
       };
       jest
         .spyOn(profileService, 'handlePartialUpdate')
-        .mockResolvedValueOnce(new ServiceResultOk(returnValue));
+        .mockResolvedValueOnce(returnValue);
       const result = await profileService.putFavoritePost(102, false);
-      if (result.isOk()) {
-        expect(result.data.favorite_post_ids).toEqual([100, 101]);
-      } else {
-        expect(true).toBe(false);
-      }
+      expect(result.favorite_post_ids).toEqual([100, 101]);
     });
   });
 
@@ -170,9 +152,7 @@ describe('ProfileService', () => {
       setupMock(profile, returnValue);
       const result = await profileService.reorderFavoriteGroups(1, 0);
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('favorite_group_ids', [2, 1, 3]);
-      }
+      expect(result).toHaveProperty('favorite_group_ids', [2, 1, 3]);
     });
 
     it('should reorder forward to back', async () => {
@@ -188,16 +168,14 @@ describe('ProfileService', () => {
 
       const result = await profileService.reorderFavoriteGroups(0, 2);
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('favorite_group_ids', [3, 2, 1]);
-      }
+      expect(result).toHaveProperty('favorite_group_ids', [3, 2, 1]);
     });
   });
   describe('markMeGroupAsFavorite()', () => {
     function setupMock(profile: any, returnValue: any = {}) {
       jest
         .spyOn(profileService, 'handlePartialUpdate')
-        .mockResolvedValueOnce(new ServiceResultOk(returnValue));
+        .mockResolvedValueOnce(returnValue);
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
         .spyOn(profileService, 'updatePartialModel2Db')
@@ -226,10 +204,7 @@ describe('ProfileService', () => {
       setupMock(profile);
 
       const result = await profileService.markMeConversationAsFav();
-
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('favorite_group_ids', []);
-      }
+      expect(result).toHaveProperty('favorite_group_ids', []);
     });
 
     it('should not remove self from favorite when me_tab=true', async () => {
@@ -244,9 +219,7 @@ describe('ProfileService', () => {
 
       const result = await profileService.markMeConversationAsFav();
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('favorite_group_ids', [2]);
-      }
+      expect(result).toHaveProperty('favorite_group_ids', [2]);
     });
 
     it('should add self to favorite when me_tab=false', async () => {
@@ -269,9 +242,7 @@ describe('ProfileService', () => {
 
       const result = await profileService.markMeConversationAsFav();
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('favorite_group_ids', [2]);
-      }
+      expect(result).toHaveProperty('favorite_group_ids', [2]);
     });
 
     it('should remove self from favorite when me_tab=false', async () => {
@@ -296,9 +267,7 @@ describe('ProfileService', () => {
 
       const result = await profileService.markMeConversationAsFav();
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('favorite_group_ids', []);
-      }
+      expect(result).toHaveProperty('favorite_group_ids', []);
     });
   });
 
@@ -314,7 +283,7 @@ describe('ProfileService', () => {
       if (ok) {
         ProfileAPI.putDataById.mockResolvedValueOnce(returnValue);
       } else {
-        ProfileAPI.putDataById.mockResolvedValueOnce(returnValue);
+        ProfileAPI.putDataById.mockRejectedValueOnce(returnValue);
       }
 
       handleData.mockResolvedValueOnce(returnValue);
@@ -339,15 +308,12 @@ describe('ProfileService', () => {
       setupMock(profile, apiReturnedValue, true);
       const result = await profileService.reopenConversation(222233333);
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('hide_group_222233333', false);
-      }
+      expect(result).toHaveProperty('hide_group_222233333', false);
     });
 
     it('should return error result when profile not found', async () => {
       jest.spyOn(profileService, 'getById').mockImplementation(id => null);
-      const result = await profileService.reopenConversation(1);
-      expect(result.isErr()).toBeTruthy();
+      await expect(profileService.reopenConversation(1)).rejects.not.toBeNull();
     });
 
     it('should return error result when api error occurred', async () => {
@@ -358,9 +324,9 @@ describe('ProfileService', () => {
 
       setupMock(profile, apiError, false);
 
-      const result = await profileService.reopenConversation(98);
-
-      expect(result.isErr()).toBeTruthy();
+      await expect(profileService.reopenConversation(98)).rejects.toEqual(
+        apiError,
+      );
     });
   });
 
@@ -390,9 +356,7 @@ describe('ProfileService', () => {
         222233333,
       ]);
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('hide_group_222233333', false);
-      }
+      expect(result).toHaveProperty('hide_group_222233333', false);
     });
 
     it('should do nothing when visible group receive new post', async () => {
@@ -410,9 +374,7 @@ describe('ProfileService', () => {
         222233333,
       ]);
 
-      if (result.isOk()) {
-        expect(result.data).toHaveProperty('hide_group_222233333', false);
-      }
+      expect(result).toHaveProperty('hide_group_222233333', false);
     });
   });
 

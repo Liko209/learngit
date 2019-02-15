@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ServiceResult } from 'sdk/service/ServiceResult';
 import { Profile } from 'sdk/module/profile/entity';
 import { MouseEvent } from 'react';
 
@@ -24,10 +23,8 @@ type MenuViewProps = {
   shouldSkipCloseConfirmation: boolean;
   closable: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
-  toggleFavorite: () => Promise<ServiceResult<Profile>>;
-  closeConversation: (
-    shouldSkipNextTime: boolean,
-  ) => Promise<ServiceResult<Profile>>;
+  toggleFavorite: () => Promise<Profile>;
+  closeConversation: (shouldSkipNextTime: boolean) => Promise<Profile>;
 };
 
 export { MenuProps, MenuViewProps };

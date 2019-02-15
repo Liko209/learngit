@@ -14,10 +14,8 @@ jest.mock('@/containers/Notification');
 describe('LikeView', () => {
   describe('render()', () => {
     function setUpMock(isLike: boolean, isFailed: boolean) {
-      const likeFun = async (
-        toLike: boolean,
-      ): Promise<{ isFailed: boolean }> => {
-        return { isFailed };
+      const likeFun = async (toLike: boolean): Promise<void> => {
+        throw new Error('test');
       };
       const props: any = {
         isLike,

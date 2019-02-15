@@ -20,8 +20,9 @@ type Props = LikeViewProps & WithNamespaces;
 class LikeViewComponent extends Component<Props> {
   private _handleLikeButton = async () => {
     const { isLike, like } = this.props;
-    const result = await like(!isLike);
-    if (result.isFailed) {
+    try {
+      await like(!isLike);
+    } catch (error) {
       const message = !isLike
         ? 'SorryWeWereNotAbleToLikeTheMessage'
         : 'SorryWeWereNotAbleToUnlikeTheMessage';

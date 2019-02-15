@@ -294,8 +294,7 @@ describe('BaseService', () => {
         service.doPartialNotify,
       );
 
-      expect(result.isOk()).toBeTruthy();
-      expect(result).toHaveProperty('data', updateModel);
+      expect(result).toEqual(updateModel);
       expect(service.doPartialNotify).toBeCalledTimes(1);
     });
   });
@@ -311,7 +310,7 @@ describe('BaseService', () => {
 
       jest
         .spyOn(service, 'doUpdateModel')
-        .mockResolvedValue(
+        .mockRejectedValue(
           new JNetworkError(
             ERROR_CODES_NETWORK.NOT_NETWORK,
             'fake network error',
@@ -324,14 +323,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const result = await service.handlePartialUpdate(
-        partialModel,
-        service.preHandlePartialModel,
-        service.doUpdateModel,
-        service.doPartialNotify,
-      );
-
-      expect(result.isErr()).toBeTruthy();
+      await expect(
+        service.handlePartialUpdate(
+          partialModel,
+          service.preHandlePartialModel,
+          service.doUpdateModel,
+          service.doPartialNotify,
+        ),
+      ).rejects.toBeInstanceOf(JNetworkError);
 
       expect(service.doPartialNotify).toBeCalledTimes(2);
     });
@@ -350,14 +349,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const result = await service.handlePartialUpdate(
-        partialModel,
-        service.preHandlePartialModel,
-        service.doUpdateModel,
-        service.doPartialNotify,
-      );
-
-      expect(result.isErr()).toBeTruthy();
+      await expect(
+        service.handlePartialUpdate(
+          partialModel,
+          service.preHandlePartialModel,
+          service.doUpdateModel,
+          service.doPartialNotify,
+        ),
+      ).rejects.not.toBeNull();
 
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
@@ -384,8 +383,7 @@ describe('BaseService', () => {
         service.doUpdateModel,
         service.doPartialNotify,
       );
-      expect(result.isOk()).toBeTruthy();
-      expect(result).toHaveProperty('data', originalModel);
+      expect(result).toEqual(originalModel);
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
   });

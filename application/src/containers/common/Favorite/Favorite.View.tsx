@@ -6,8 +6,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/module/profile/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
@@ -26,13 +24,12 @@ class FavoriteViewComponent extends Component<Props> {
 
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;
-    const result: ServiceResult<Profile> = await handlerFavorite();
-
-    if (result.isErr()) {
+    try {
+      await handlerFavorite();
+    } catch (error) {
       const message = isFavorite
         ? 'markUnFavoriteServerErrorContent'
         : 'markFavoriteServerErrorContent';
-
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
