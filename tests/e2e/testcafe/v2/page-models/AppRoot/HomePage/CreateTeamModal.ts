@@ -129,19 +129,19 @@ export class CreateTeamModal extends BaseWebComponent {
   }
 
   get isPublicDiv() {
-    return this.getSelectorByAutomationId('CreateTeamIsPublic');
+    return this.getSelectorByAutomationId('CreateTeamIsPublic').parent('li');
   }
 
   get mayAddMemberDiv() {
-    return this.getSelectorByAutomationId('CreateTeamCanAddMember')
+    return this.getSelectorByAutomationId('CreateTeamCanAddMember').parent('li');
   }
 
-  get mayPostDiv() {
-    return this.getSelectorByAutomationId('CreateTeamCanPost')
+  get mayPostMessageDiv() {
+    return this.getSelectorByAutomationId('CreateTeamCanPost').parent('li');
   }
 
   get mayPinPostDiv() {
-    return this.getSelectorByAutomationId('CreateTeamCanPinPost')
+    return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
   }
 
   get isPublicToggle() {
@@ -152,8 +152,8 @@ export class CreateTeamModal extends BaseWebComponent {
     return this.checkboxOf(this.mayAddMemberDiv);
   }
 
-  get mayPostToggle() {
-    return this.checkboxOf(this.mayPostDiv);
+  get mayPostMessageToggle() {
+    return this.checkboxOf(this.mayPostMessageDiv);
   }
 
   get mayPinPostToggle() {
@@ -183,12 +183,12 @@ export class CreateTeamModal extends BaseWebComponent {
     await this.toggle(this.mayAddMemberToggle, false);
   }
 
-  async turnOnMayPost() {
-    await this.toggle(this.mayPostToggle, true);
+  async turnOnMayPostMessage() {
+    await this.toggle(this.mayPostMessageToggle, true);
   }
 
-  async turnOffMayPost() {
-    await this.toggle(this.mayPostToggle, false);
+  async turnOffMayPostMessage() {
+    await this.toggle(this.mayPostMessageToggle, false);
   }
 
   async turnOnMayPinPost() {
