@@ -42,7 +42,7 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onReRegisterAction(): void {
-    if (this._userAgent && 'reRegister' in this._userAgent) {
+    if (this._userAgent) {
       this._userAgent.reRegister();
     }
   }
