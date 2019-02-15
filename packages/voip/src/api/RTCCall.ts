@@ -214,7 +214,6 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
       // Update party id and session id in invite response sip message
       const inviteRes = this._callSession.getInviteResponse();
-      rtcLogger.warn(LOG_TAG, `invite res=${inviteRes}`);
       if (inviteRes) {
         this._parseRcApiIds(inviteRes.headers);
       } else {
