@@ -49,7 +49,7 @@ class PostCacheController {
   private _currentGroupId: number = 0;
 
   has(groupId: number): boolean {
-    return this._cacheMap[groupId] !== undefined;
+    return this._cacheMap.has(groupId);
   }
 
   get(
@@ -96,7 +96,7 @@ class PostCacheController {
   }
 
   set(groupId: number, listHandler: FetchSortableDataListHandler<Post>) {
-    this._cacheMap[groupId] = listHandler;
+    this._cacheMap.set(groupId, listHandler);
   }
 
   remove(groupId: number) {
