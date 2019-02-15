@@ -12,7 +12,8 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getFileType, getThumbnailURL } from '@/common/getFileType';
+import { getFileType } from '@/common/getFileType';
+import { getThumbnailURL } from '@/common/getThumbnailURL';
 import { Props, ViewProps } from './types';
 
 type Size = {

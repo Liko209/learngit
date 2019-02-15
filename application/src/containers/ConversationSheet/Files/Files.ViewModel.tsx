@@ -24,13 +24,17 @@ import {
 import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
-import { getFileType, getThumbnailURL } from '@/common/getFileType';
+import { getFileType } from '@/common/getFileType';
+import { getThumbnailURL } from '@/common/getThumbnailURL';
 import PostModel from '@/store/models/Post';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { getThumbnail, RULE } from '@/common/getThumbnail';
+import {
+  generateModifiedImageURL,
+  RULE,
+} from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
@@ -84,7 +88,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       origHeight > 0 &&
       FileItemUtils.isSupportPreview({ type })
     ) {
-      const thumbnail = await getThumbnail({
+      const thumbnail = await generateModifiedImageURL({
         id,
         origWidth,
         origHeight,
