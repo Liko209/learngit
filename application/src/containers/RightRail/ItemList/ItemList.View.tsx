@@ -22,7 +22,8 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { debounce } from 'lodash';
-const LOAD_DELAY = 100;
+// according to most debounce config
+const LOAD_DEBOUNCE = 300;
 
 const HEADER_HEIGHT = 36;
 @observer
@@ -38,7 +39,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         return;
       }
       await this.props.fetchNextPageItems();
-    },                        LOAD_DELAY);
+    },                        LOAD_DEBOUNCE);
   }
 
   countOfCell() {

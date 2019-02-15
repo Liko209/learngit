@@ -28,8 +28,11 @@ type TriggerButtonProps = {
   onClick: () => {};
 } & WithNamespaces;
 
-// height of conversation header & tabs
-const HEIGHT_FIX = 48 + 33;
+// height of conversation header & tabs, pass these constant height to list;
+// since resize observer in resize observer will cause UI performance issue.
+const HEIGHT_CONVERSATION_HEADER = 48;
+const HEIGHT_TABS = 33;
+const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
 
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
