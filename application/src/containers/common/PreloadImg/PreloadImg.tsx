@@ -76,7 +76,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
     }
 
     return (
-      <div>
+      <>
         <img
           src={url}
           onLoad={this.handleLoad}
@@ -84,7 +84,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
           style={{ display: 'none' }}
         />
         {showPlaceholder && placeholder}
-      </div>
+      </>
     );
   }
 }
