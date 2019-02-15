@@ -25,7 +25,7 @@ class SequenceProcessorHandler extends AbstractProcessor {
       return result;
     }
 
-    const processor = this._processors.pop();
+    const processor = this._processors.shift();
     if (processor) {
       this._isExecuting = true;
       await processor.process().then(() => {
