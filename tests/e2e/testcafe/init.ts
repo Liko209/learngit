@@ -109,6 +109,7 @@ export function setupCase(accountType: string) {
         .appKey(ENV_OPTS.RC_PLATFORM_APP_KEY)
         .appSecret(ENV_OPTS.RC_PLATFORM_APP_SECRET);
       h(t).mockRequestId = await mockClient.registerBrowser(mockEnvConfig);
+      logger.info(`mock request id is: ${h(t).mockRequestId}`);
       const hook = new MockClientHook();
       hook.requestId = h(t).mockRequestId;
       await t.addRequestHooks([hook]);

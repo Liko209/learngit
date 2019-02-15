@@ -4,11 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { GroupService } from 'sdk/module/group';
-import { JServerError, ERROR_CODES_SERVER } from 'sdk/error';
-import { Notification } from '@/containers/Notification';
-import { getGlobalValue } from '../../../../../../store/utils';
-import { SearchBarViewModel } from '../SearchBar.ViewModel';
 import { PersonService } from 'sdk/module/person';
+import { SearchBarViewModel } from '../SearchBar.ViewModel';
 jest.mock('../../../../../../store/utils');
 jest.mock('@/containers/Notification');
 
@@ -79,42 +76,63 @@ describe('SearchBarViewModel', () => {
     });
   });
   describe('getSection()', () => {
-    it('Should return section', () => {
+    it('If search result > 9 only show 9 items', () => {
       const section = searchBarViewModel.getSection(
         {
-          sortableModels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+          sortableModels: [
+            { id: 1 },
+            { id: 2 },
+            { id: 3 },
+            { id: 4 },
+            { id: 5 },
+            { id: 6 },
+            { id: 7 },
+            { id: 8 },
+            { id: 9 },
+            { id: 10 },
+          ],
         } as any,
         1,
       );
       expect(section).toEqual({
-        sortableModel: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        ids: [1, 2, 3, 4, 5, 6, 7, 8, 9],
         hasMore: true,
       });
+    });
+    it('If search result section item > 3 should be has more', () => {
       const section1 = searchBarViewModel.getSection(
         {
-          sortableModels: [1, 2, 3, 4, 5],
+          sortableModels: [
+            { id: 1 },
+            { id: 2 },
+            { id: 3 },
+            { id: 4 },
+            { id: 5 },
+          ],
         } as any,
         2,
       );
       expect(section1).toEqual({
-        sortableModel: [1, 2, 3],
+        ids: [1, 2, 3],
         hasMore: true,
       });
+    });
+    it('If search result section item < 3 not has more', () => {
       const section2 = searchBarViewModel.getSection(
         {
-          sortableModels: [1, 2],
+          sortableModels: [{ id: 1 }, { id: 2 }],
         } as any,
         2,
       );
       expect(section2).toEqual({
-        sortableModel: [1, 2],
+        ids: [1, 2],
         hasMore: false,
       });
     });
-    it('Should be empty array', () => {
+    it('If search result is empty ids should be empty array', () => {
       const section = searchBarViewModel.getSection(null, 0);
       expect(section).toEqual({
-        sortableModel: [],
+        ids: [],
         hasMore: false,
       });
     });

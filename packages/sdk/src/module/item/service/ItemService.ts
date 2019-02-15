@@ -95,19 +95,19 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return result;
   }
 
-  async createItem(item: Item) {
-    return await this.itemServiceController.createItem(item);
+  async createLocalItem(item: Item) {
+    return await this.itemServiceController.createLocalItem(item);
   }
 
-  async updateItem(item: Item) {
-    return await this.itemServiceController.updateItem(item);
+  async updateLocalItem(item: Item) {
+    return await this.itemServiceController.updateLocalItem(item);
+  }
+
+  async deleteLocalItem(itemId: number) {
+    return await this.itemServiceController.deleteLocalItem(itemId);
   }
 
   async deleteItem(itemId: number) {
-    return await this.itemServiceController.deleteItem(itemId);
-  }
-
-  async deleteItemData(itemId: number) {
     return await this.itemServiceController.itemActionController.deleteItem(
       itemId,
       this,
