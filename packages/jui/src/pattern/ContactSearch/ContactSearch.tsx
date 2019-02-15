@@ -38,6 +38,7 @@ export type Props = {
   helperText?: string;
   automationId?: string;
   errorEmail?: string;
+  messageRef?: React.RefObject<HTMLInputElement>;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -217,6 +218,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       helperText,
       automationId,
       errorEmail,
+      messageRef,
     } = this.props;
     const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
 
@@ -254,6 +256,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   error,
                   helperText,
                   fullWidth: true,
+                  ref: messageRef,
                   InputProps: getInputProps({
                     startAdornment: selectedItem.map(
                       (item: Suggestion, index: number) => {

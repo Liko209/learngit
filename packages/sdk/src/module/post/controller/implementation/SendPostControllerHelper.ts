@@ -76,11 +76,23 @@ class SendPostControllerHelper {
       item_id: params.itemId,
       item_ids: params.itemIds || [],
       post_ids: [],
-      at_mention_item_ids: [],
-      at_mention_non_item_ids: params.mentionIds || [],
+      at_mention_item_ids: params.mentionItemIds || [],
+      at_mention_non_item_ids: params.mentionNonItemIds || [],
       company_id: params.companyId,
       deactivated: false,
+      parent_id: params.parentId,
     };
+
+    if (params.annotation) {
+      buildPost.annotation = {
+        x_percent: params.annotation.xPercent,
+        y_percent: params.annotation.yPercent,
+        stored_file_version: params.annotation.storedFileVersion,
+        page: params.annotation.page,
+        anno_id: params.annotation.annoId,
+      };
+    }
+
     return buildPost;
   }
 

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import BaseClient from './client/BaseClient';
-import { HttpResponse } from './client/http';
+import { HttpResponseBuilder } from './client/http';
 import doLog from './log';
 
 import {
@@ -41,7 +41,7 @@ export class NetworkRequestExecutor
   constructor(
     request: IRequest,
     client: BaseClient,
-    decoration: IRequestDecoration,
+    decoration?: IRequestDecoration,
   ) {
     this.request = request;
     this.via = request.via;
@@ -139,20 +139,20 @@ export class NetworkRequestExecutor
     switch (response.status) {
       case HTTP_STATUS_CODE.UNAUTHORIZED:
         this._handle401XApiCompletionCallback(response);
-        break;
+        return;
       case HTTP_STATUS_CODE.BAD_GATEWAY:
         this._handle502XApiCompletionCallback(response);
         break;
       case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
         break;
-      default:
-        this._callXApiCompletionCallback(response);
     }
+
+    this._callXApiCompletionCallback(response);
   }
 
   private _callXApiResponse(status: HTTP_STATUS_CODE, statusText: string) {
-    const response = HttpResponse.builder
+    const response = HttpResponseBuilder.builder
       .setStatus(status)
       .setStatusText(statusText)
       .setRequest(this.request)

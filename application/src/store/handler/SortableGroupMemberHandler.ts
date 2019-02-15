@@ -11,7 +11,7 @@ import {
 } from '@/store/base/fetch';
 
 import { PersonService } from 'sdk/module/person';
-import GroupService from 'sdk/service/group';
+import GroupService from 'sdk/module/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
@@ -173,7 +173,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _replaceData() {
     const personService = PersonService.getInstance<PersonService>();
     const groupService = GroupService.getInstance<GroupService>();
-    const group = await groupService.getById(this._group.id);
+    let group;
+    try {
+      group = await groupService.getById(this._group.id);
+    } catch (error) {
+      group = null;
+    }
     const result = await personService.getPersonsByIds(
       group && group.members ? group.members : [],
     );

@@ -90,6 +90,7 @@ describe('TeamSettingsView', () => {
         },
         id: 123,
         isAdmin: false,
+        isCompanyTeam: false,
         save: () => {},
         leaveTeam: () => {},
         groupName: 'my team',

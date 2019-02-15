@@ -1,13 +1,13 @@
-import { service } from 'sdk';
+import { service, mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item';
 import { StateService } from 'sdk/module/state';
 import { ProgressService } from 'sdk/module/progress';
+import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 import { PersonService } from 'sdk/module/person';
 import { PermissionService } from 'sdk/module/permission';
 const {
   CompanyService,
-  GroupService,
   GroupConfigService,
   PostService,
   PresenceService,
@@ -23,7 +23,18 @@ const ENTITY_SETTING = {
       ENTITY.PEOPLE_GROUPS,
       ENTITY.GROUP,
     ],
-    service: () => GroupService.getInstance(),
+    service: () => {
+      return {
+        getById: async (id: number) => {
+          try {
+            return await GroupService.getInstance().getById(id);
+          } catch (err) {
+            mainLogger.tags('Entity Config').log(`get group ${id} fail:`, err);
+            return null;
+          }
+        },
+      };
+    },
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },
@@ -113,7 +124,7 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PROGRESS]: {
     event: [ENTITY.PROGRESS],
-    service: (id: number) => {
+    service: () => {
       return {
         getById: (id: number) =>
           (<ProgressService>ProgressService.getInstance()).getByIdSync(id),
@@ -163,6 +174,10 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.CURRENT_POST_LIST_TYPE]: '',
   [GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW]: false,
   [GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS]: [] as number[],
+  [GLOBAL_KEYS.TOTAL_UNREAD]: {},
+  [GLOBAL_KEYS.FAVORITE_UNREAD]: {},
+  [GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD]: {},
+  [GLOBAL_KEYS.TEAM_UNREAD]: {},
 };
 
 export { ENTITY_SETTING, GLOBAL_VALUES };

@@ -78,7 +78,6 @@
     "rollup-plugin-uglify-es": "0.0.1",
     "shelljs": "0.8.2",
     "string-length": "2.0.0",
-    "terser": "3.14.1",
     "ts-jest": "23.1.4",
     "ts-node": "7.0.1",
     "tslint": "5.11.0",
@@ -91,5 +90,9 @@
       "pre-push": "npm run tsc && npm run lint-all && npm run webpack && node ./scripts/check-coverage &&  npm run test:cover",
       "commit-msg": "node scripts/validate-commit-msg.js"
     }
+  },
+  "resolutions": {
+    "terser": "3.14.1",
+    "@types/react-transition-group": "2.0.15"
   }
 }

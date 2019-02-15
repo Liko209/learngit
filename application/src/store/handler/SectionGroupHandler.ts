@@ -13,6 +13,7 @@ import {
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
+import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { GroupState } from 'sdk/models';
@@ -30,7 +31,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
 
-const { GroupService, ProfileService } = service;
+const { ProfileService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
@@ -61,7 +62,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
-    const groupService = GroupService.getInstance<service.GroupService>();
+    const groupService = GroupService.getInstance<GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
     return { data: result, hasMore: false };
   }
@@ -107,7 +108,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ENTITY_NAME.PROFILE,
       'hiddenGroupIds',
     );
-    const newIds = (hiddenGroupIds && hiddenGroupIds.get()) || [];
+    const newIds = hiddenGroupIds || [];
     this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
     this._hiddenGroupIds = newIds;
     this._removeGroupsIfExistedInHiddenGroups();
@@ -146,7 +147,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
     }
     if (shouldAdd) {
-      const groupService = GroupService.getInstance<service.GroupService>();
+      const groupService = GroupService.getInstance<GroupService>();
       const groups = await groupService.getGroupsByIds(ids);
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(groups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(groups);
@@ -174,7 +175,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
       this._oldFavGroupIds = newFavIds;
       // handle favorite section change
-      const groupService = GroupService.getInstance<service.GroupService>();
+      const groupService = GroupService.getInstance<GroupService>();
       const groups = await groupService.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
       );

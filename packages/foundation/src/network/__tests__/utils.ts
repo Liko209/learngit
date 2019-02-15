@@ -8,7 +8,7 @@ import {
 import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
 import RequestTask from '../RequestTask';
 import BaseClient from '../client/BaseClient';
-import { HttpResponse } from '../client/http';
+import { HttpResponseBuilder } from '../client/http';
 import NetworkRequestConsumer from '../NetworkRequestConsumer';
 import NetworkRequestSurvivalMode from '../NetworkRequestSurvivalMode';
 import AbstractHandleType from '../AbstractHandleType';
@@ -27,7 +27,7 @@ const getFakeRequest = () => {
 };
 
 const getFakeResponse = () => {
-  const response = HttpResponse.builder.build();
+  const response = HttpResponseBuilder.builder.build();
   return response;
 };
 

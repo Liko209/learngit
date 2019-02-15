@@ -8,7 +8,7 @@ import { baseHandleData } from '../handleData';
 import PostService from '../index';
 import PostServiceHandler from '../postServiceHandler';
 import ProfileService from '../../profile';
-import GroupService from '../../group';
+import GroupService from '../../../module/group';
 import { postFactory, itemFactory } from '../../../__tests__/factories';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { serviceErr, serviceOk } from '../../ServiceResult';
@@ -35,11 +35,12 @@ jest.mock('../../serviceManager');
 jest.mock('../postServiceHandler');
 jest.mock('../handleData');
 jest.mock('../../profile');
-jest.mock('../../group');
+jest.mock('../../../module/group');
 jest.mock('../../notificationCenter');
 jest.mock('../../groupConfig');
 jest.mock('../../../module/progress');
 jest.mock('../../../module/item');
+jest.mock('sdk/api');
 
 PostAPI.putDataById = jest.fn();
 PostAPI.requestByIds = jest.fn();
@@ -789,7 +790,7 @@ describe('PostService', () => {
       clearMocks();
       setup();
       daoManager.getDao.mockReturnValue(postDao);
-      itemService.deleteItemData = jest.fn();
+      itemService.deleteItem = jest.fn();
     });
 
     it('should delete post when post is invalid  after remvoe item id ', async () => {
@@ -798,7 +799,7 @@ describe('PostService', () => {
       postDao.get = jest.fn().mockResolvedValue(post1);
       await postService.removeItemFromPost(post1.id, post1.item_ids[0]);
       expect(spyDelete).toBeCalledWith(post1.id);
-      expect(itemService.deleteItemData).toBeCalled();
+      expect(itemService.deleteItem).toBeCalled();
     });
 
     it('should update post when post is valid after remvoe item id', async () => {
@@ -809,7 +810,7 @@ describe('PostService', () => {
       spyDelete.mockImplementation(() => {});
       postDao.get = jest.fn().mockResolvedValue(post2);
       await postService.removeItemFromPost(post2.id, post2.item_ids[0]);
-      expect(itemService.deleteItemData).toBeCalled();
+      expect(itemService.deleteItem).toBeCalled();
       expect(spyDelete).not.toBeCalled();
       expect(postService.handlePartialUpdate).toBeCalledTimes(1);
     });
