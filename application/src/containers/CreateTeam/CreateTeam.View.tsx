@@ -75,7 +75,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
         type: 'canPin',
         text: i18next.t('MembersMayPinPosts'),
         checked: true,
-        automationId: 'CreateTeamCanAddMember',
+        automationId: 'CreateTeamCanPinPost',
       },
     ];
   }
