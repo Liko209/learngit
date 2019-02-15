@@ -14,6 +14,10 @@ import { MenuViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -30,42 +34,59 @@ class MenuViewComponent extends Component<Props, State> {
   private _renderFlashToast = (message: string) => {
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
   }
 
-  private _handleRemoveFromTeam = async (event: MouseEvent<HTMLElement>) => {
-    event && event.stopPropagation();
-    const { onMenuClose, removeFromTeam } = this.props;
-    onMenuClose();
+  private _containErrorHander = async (
+    serviceFunction: Function,
+    [networkError, backendError]: string[],
+  ) => {
     try {
-      await removeFromTeam();
+      await serviceFunction();
       return true;
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {
-        this._renderFlashToast('removeMemberNetworkError');
+        this._renderFlashToast(networkError);
         return false;
       }
       if (errorHelper.isBackEndError(error)) {
-        this._renderFlashToast('removeMemberBackendError');
+        this._renderFlashToast(backendError);
         return false;
       }
       throw error;
     }
   }
 
-  private _toggleTeamAdmin = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    const { onMenuClose, toggleTeamAdmin } = this.props;
+  private _handleRemoveFromTeam = async (event: MouseEvent<HTMLElement>) => {
+    event && event.stopPropagation();
+    const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
-    toggleTeamAdmin();
+    this._containErrorHander(removeFromTeam, [
+      'removeMemberNetworkError',
+      'removeMemberBackendError',
+    ]);
+  }
+
+  private _toggleTeamAdmin = (event: MouseEvent<HTMLElement>) => {
+    event && event.stopPropagation();
+    const { onMenuClose, toggleTeamAdmin, isThePersonAdmin } = this.props;
+    onMenuClose();
+    const errorList = isThePersonAdmin
+      ? ['revokeTeamAdminNetworkError', 'revokeTeamAdminBackendError']
+      : ['makeTeamAdminNetworkError', 'makeTeamAdminBackendError'];
+    this._containErrorHander(toggleTeamAdmin, errorList);
   }
 
   private _Anchor = () => {
-    return <JuiIconography fontSize="small">more_horiz</JuiIconography>;
+    return (
+      <JuiIconography data-test-automation-id="moreIcon" fontSize="small">
+        more_horiz
+      </JuiIconography>
+    );
   }
 
   private _onClose = (event: React.MouseEvent<HTMLElement>) => {

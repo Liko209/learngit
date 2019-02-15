@@ -30,9 +30,9 @@ class MenuViewModel extends StoreViewModel<MenuProps>
   toggleTeamAdmin = async () => {
     const { isThePersonAdmin } = this.props;
     if (isThePersonAdmin) {
-      await this._GroupService.makeAdmin(this.groupId, this.personId);
-    } else {
       await this._GroupService.revokeAdmin(this.groupId, this.personId);
+    } else {
+      await this._GroupService.makeAdmin(this.groupId, this.personId);
     }
   }
 }
