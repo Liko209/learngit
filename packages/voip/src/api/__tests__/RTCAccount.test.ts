@@ -6,7 +6,7 @@
 import { RTCAccount } from '../RTCAccount';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCAccountDelegate } from '../IRTCAccountDelegate';
-import { UA_EVENT } from '../../signaling/types';
+import { WEBPHONE_SESSION_STATE, UA_EVENT } from '../../signaling/types';
 import {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
@@ -44,6 +44,29 @@ class MockUserAgent extends EventEmitter2 {
   }
   reRegister = jest.fn();
 }
+
+class MockRequest {
+  public headers: any = {
+    'P-Rc-Api-Ids': [
+      {
+        raw:
+          'party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+      },
+    ],
+  };
+}
+
+class MockResponse {
+  public headers: any = {
+    'P-Rc-Api-Ids': [
+      {
+        raw:
+          'party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+      },
+    ],
+  };
+}
+
 class MockSession extends EventEmitter2 {
   constructor() {
     super();
@@ -52,7 +75,17 @@ class MockSession extends EventEmitter2 {
       uri: { aor: 'test@ringcentral.com' },
     };
   }
+
+  public request: MockRequest = new MockRequest();
+
   public remoteIdentity: any;
+
+  mockSignal(signal: string, response?: any): void {
+    this.emit(signal, response);
+  }
+  mute = jest.fn();
+  unmute = jest.fn();
+  terminate = jest.fn();
 }
 
 describe('networkChangeToOnline()', () => {
@@ -191,6 +224,22 @@ describe('RTCAccount', async () => {
     });
   });
 
+  it('Should parse multi-party conference headers for incoming call. [JPT-1050]', done => {
+    setupAccount();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account.callList()[0].getCallInfo().partyId).toBe(
+        'cs172622609264474468-2',
+      );
+      expect(account.callList()[0].getCallInfo().sessionId).toBe(
+        'Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+      );
+      done();
+    });
+  });
+
   it('Should call count set to 0 when active call hangup. [JPT-807]', done => {
     setupAccount();
     const listener = new MockCallListener();
@@ -215,6 +264,30 @@ describe('RTCAccount', async () => {
     setImmediate(() => {
       expect(account.callCount()).toBe(0);
       done();
+    });
+  });
+
+  it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
+    setupAccount();
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    const session = new MockSession();
+    const res = new MockResponse();
+    setImmediate(() => {
+      expect(mockListener.onMadeOutgoingCall).toBeCalled();
+      expect(account.callList().length).toBe(1);
+      const call = account.callList()[0];
+      call.onAccountReady();
+      call.setCallSession(session);
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED, res);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        expect(call.getCallInfo().partyId).toBe('cs172622609264474468-2');
+        expect(call.getCallInfo().sessionId).toBe(
+          'Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+        );
+        done();
+      });
     });
   });
 

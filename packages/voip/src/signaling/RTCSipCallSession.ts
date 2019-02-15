@@ -19,8 +19,10 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
+  private _inviteResponse: any = null;
   private _uuid: string = '';
   private _mediaElement: RTCMediaElement | null;
+
   constructor(uuid: string) {
     super();
     this._uuid = uuid;
@@ -48,7 +50,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
-    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, (inviteRes: any) => {
+      this._inviteResponse = inviteRes;
       this._onSessionConfirmed();
     });
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
@@ -93,6 +96,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   private _onSessionProgress(response: any) {
     this.emit(CALL_SESSION_STATE.PROGRESS, response);
+  }
+
+  getInviteResponse() {
+    return this._inviteResponse;
   }
 
   private _onSessionTrackAdded(e: RTCTrackEvent) {

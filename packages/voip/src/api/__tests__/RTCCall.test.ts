@@ -36,6 +36,28 @@ describe('RTC call', () => {
     }
   }
 
+  class MockRequest {
+    public headers: any = {
+      'P-Rc-Api-Ids': [
+        {
+          raw:
+            'party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+        },
+      ],
+    };
+  }
+  
+  class MockResponse {
+    public headers: any = {
+      'P-Rc-Api-Ids': [
+        {
+          raw:
+            'party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw',
+        },
+      ],
+    };
+  }
+
   class SessionDescriptionHandler extends EventEmitter2 {
     private _directionFlag: boolean = true;
     constructor() {
@@ -53,6 +75,7 @@ describe('RTC call', () => {
       return 'sendrecv';
     }
   }
+
   class MockSession extends EventEmitter2 {
     public sessionDescriptionHandler: SessionDescriptionHandler;
     constructor() {
@@ -72,6 +95,7 @@ describe('RTC call', () => {
       this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
     }
 
+    request: MockRequest = new MockRequest();
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();
