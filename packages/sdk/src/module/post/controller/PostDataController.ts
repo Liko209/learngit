@@ -14,6 +14,7 @@ import { ItemService } from '../../item';
 import { ENTITY } from '../../../service';
 import { GroupService } from '../../group';
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 class PostDataController {
   constructor(
@@ -66,7 +67,13 @@ class PostDataController {
     if (posts.length) {
       posts.forEach(async (post: Post) => {
         const groupService: GroupService = GroupService.getInstance();
-        await groupService.getById(post.group_id);
+        try {
+          await groupService.getById(post.group_id);
+        } catch (error) {
+          mainLogger
+            .tags('PostDataController')
+            .info(`get group ${post.group_id} fail`, error);
+        }
       });
     }
   }

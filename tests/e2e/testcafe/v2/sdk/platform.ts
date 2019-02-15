@@ -1,13 +1,16 @@
 import { AxiosError } from 'axios';
 import * as _ from 'lodash';
 import { getLogger } from 'log4js';
+import Ringcentral from 'ringcentral-js-concise';
 
 import { MiscUtils } from "../utils";
 import { ICredential } from "../models";
 
 const logger = getLogger(__filename);
+logger.level = 'info';
 
 export class RcPlatformSdk {
+  private sdk: any;
 
   async retryRequestOnException(cb: () => Promise<any>) {
     return await MiscUtils.retryAsync(cb, async (err: AxiosError) => {
@@ -21,18 +24,28 @@ export class RcPlatformSdk {
         await this.refresh();
         return true;
       }
+      logger.error('auth failed: ', err.response, err.response.data);
       return false;
     });
   }
 
-  constructor(private sdk: any, private credential: ICredential) { }
+  constructor(key, secret, url, private credential: ICredential) {
+    this.sdk = new Ringcentral(key, secret, url);
+  }
 
   get token() {
     return this.sdk._token;
   }
 
   async init() {
-    await this.sdk.authorize(this.credential);
+    try {
+      console.log('start');
+      await this.sdk.authorize(this.credential);
+      console.log('done');
+    } catch (e) {
+      logger.error('auth failed: ', e.response, e.response.data);
+      throw e;
+    }
   }
 
   async refresh() {

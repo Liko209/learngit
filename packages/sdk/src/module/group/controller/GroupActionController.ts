@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
@@ -240,11 +241,8 @@ export class GroupActionController {
   async createTeam(
     creator: number,
     memberIds: (number | string)[],
-    options: TeamSetting = {},
+    teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const teamSetting = this.teamPermissionController.processLinkTeamSetting(
-      options,
-    );
     const {
       isPublic = false,
       name,
@@ -343,7 +341,10 @@ export class GroupActionController {
     const postService: PostService = PostService.getInstance();
     await postService.deletePostsByGroupIds(ids, true);
     await this.groupService.deleteGroupsConfig(ids);
-    const groups = await this.groupService.getGroupsByIds(ids);
+    const groups = await this.entitySourceController.getEntitiesLocally(
+      ids,
+      false,
+    );
     const privateGroupIds = groups
       .filter((group: Group) => {
         return group.privacy === 'private';
@@ -380,7 +381,15 @@ export class GroupActionController {
     const isHidden = await profileService.isConversationHidden(groupId);
     let isIncludeSelf = false;
     let isValid = false;
-    const group = await this.entitySourceController.get(groupId);
+    let group;
+    try {
+      group = await this.entitySourceController.get(groupId);
+    } catch (err) {
+      group = null;
+      mainLogger
+        .tags('GroupActionController')
+        .info(`get group ${groupId} fail`, err);
+    }
     if (group) {
       isValid = this.groupService.isValid(group);
       const currentUserId = UserConfig.getCurrentUserId();

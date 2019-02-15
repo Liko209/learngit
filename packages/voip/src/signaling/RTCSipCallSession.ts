@@ -42,6 +42,15 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
     });
+    this._session.on(
+      WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED,
+      (session: any) => {
+        this._onSessionReinviteAccepted(session);
+      },
+    );
+    this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
+      this._onSessionReinviteFailed(session);
+    });
   }
 
   private _onSessionConfirmed() {
@@ -62,6 +71,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   getInviteResponse() {
     return this._inviteResponse;
+  }
+
+  private _onSessionReinviteAccepted(session: any) {
+    this.emit(CALL_SESSION_STATE.REINVITE_ACCEPTED, session);
+  }
+
+  private _onSessionReinviteFailed(session: any) {
+    this.emit(CALL_SESSION_STATE.REINVITE_FAILED, session);
   }
 
   hangup() {
@@ -179,30 +196,17 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hold() {
     if (this._session) {
-      this._session.hold().then(
-        () => {
-          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS, RTC_CALL_ACTION.HOLD);
-        },
-        () => {
-          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
-        },
-      );
+      this._session.hold().catch(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.HOLD);
+      });
     }
   }
 
   unhold() {
     if (this._session) {
-      this._session.unhold().then(
-        () => {
-          this.emit(
-            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-            RTC_CALL_ACTION.UNHOLD,
-          );
-        },
-        () => {
-          this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
-        },
-      );
+      this._session.unhold().catch(() => {
+        this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.UNHOLD);
+      });
     }
   }
 
