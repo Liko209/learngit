@@ -21,80 +21,126 @@ const revokeTeamAdminText = 'Revoke team admin';
 
 test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-1092', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
-  const u1 = users[3];
-  const u2 = users[4];
-  const u3 = users[5];
-  await h(t).platform(u1).init();
+  const u1 = users[4];
+  const u2 = users[5];
   await h(t).glip(u1).init();
+  await h(t).glip(u2).init();
   const app = new AppRoot(t);
+  const profileDialog = app.homePage.profileDialog;
+  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
+  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
 
   let teamId;
-  await h(t).withLog('Given I have one team and I am admin', async () => {
+  await h(t).withLog('Given I have one team with admin and member', async () => {
     teamId = await h(t).platform(u1).createAndGetGroupId({
       isPublic: true,
       name: uuid(),
       type: 'Team',
-      members: [u1.rcId, u2.rcId,u3.rcId],
+      members: [u1.rcId, u2.rcId],
     });
   });
 
-  await h(t).withLog(`And I login Jupiter with ${u1.company.number}#${u1.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with admin u1 ${u1.company.number}#${u1.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, u1);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
+  await h(t).withLog(`When admin u1 open team profile via team "More Menu"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
   // Case1: member 'u2' changed to admin
-  await h(t).withLog(`And hover on the member 'u2' row -> "More" menu options `, async () => {
-    // todo 
+  await h(t).withLog(`And hover on the member 'u2' row `, async () => {
+    await t.hover(profileDialog.memberEntryByName(u2Name).self);
+  });
+
+  await h(t).withLog('Then show "more" button', async () => {
+    await t.expect(profileDialog.memberEntryByName(u2Name).moreButton.exists).ok();
+  }, true);
+
+  await h(t).withLog('When click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(u2Name).moreButton);
   });
 
   await h(t).withLog(`Then show "${makeTeamAdminText}" button`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberMoreMenu.makeTeamAdminItem.withExactText(makeTeamAdminText).exists).ok();
   });
 
-  await h(t).withLog(`When hover on the 'u2' row again -> "More" menu options  `, async () => {
-    // todo 
+  await h(t).withLog(`When click the "${makeTeamAdminText}" button`, async () => {
+    await profileDialog.memberMoreMenu.clickMakeTeamAdmin();
   });
 
+  await h(t).withLog(`Then will show 'Admin' label in u2 row`, async() => {
+    await app.homePage.profileDialog.memberEntryByName(u2Name).showAdminLabel();
+  });
+
+  await h(t).withLog(`When hover on the 'u2' row again`, async () => {
+    await t.hover(profileDialog.memberEntryByName(u2Name).self);
+  });
+  
+  await h(t).withLog('Then Show "more" button', async () => {
+    await t.expect(profileDialog.memberEntryByName(u2Name).moreButton.exists).ok();
+  }, true);
+
+  await h(t).withLog('When click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(u2Name).moreButton);
+  });
   await h(t).withLog(`Then show "${revokeTeamAdminText}" button`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberMoreMenu.revokeTeamAdminItem.withExactText(revokeTeamAdminText).exists).ok();
   });
 
   // Case2: admin 'u1' changed to member
-  await h(t).withLog(`And hover on the admin 'u1' row -> "More" menu options `, async () => {
-    // todo 
+  await h(t).withLog(`When hover on the admin 'u1' row`, async () => {
+    await profileDialog.memberMoreMenu.quit();
+    await t.hover(profileDialog.memberEntryByName(u1Name).self);
   });
 
-  await h(t).withLog(`Then show "${makeTeamAdminText}" button`, async () => {
-    // todo 
-  });
+  await h(t).withLog('Then show "more" button', async () => {
+    await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).ok();
+  }, true);
 
-  await h(t).withLog(`When hover on the 'u1' row again -> "More" menu options  `, async () => {
-    // todo 
+  await h(t).withLog('When click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(u1Name).moreButton);
   });
 
   await h(t).withLog(`Then show "${revokeTeamAdminText}" button`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberMoreMenu.revokeTeamAdminItem.withExactText(revokeTeamAdminText).exists).ok();
   });
+
+  await h(t).withLog(`When click the "${revokeTeamAdminText}" button`, async () => {
+    await profileDialog.memberMoreMenu.clickRevokeTeamAdmin();
+  });
+
+  await h(t).withLog(`Then won't show label in member u1 row`, async() => {
+    await app.homePage.profileDialog.memberEntryByName(u1Name).showMemberLabel();
+  });
+
+  await h(t).withLog(`When hover on the 'u1' row again`, async () => {
+    await t.hover(profileDialog.memberEntryByName(u1Name).self);
+  });
+
+  await h(t).withLog(`Then won't "more" button`, async () => {
+    await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).notOk();
+  }, true);
 
 });
 
 test(formalName('The admin/non-admin roles should sync dynamically when the role changed', ['P1', 'JPT-1104', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
-  const u1 = users[3];
-  const u2 = users[4];
-  await h(t).platform(u1).init();
+  const u1 = users[4];
+  const u2 = users[5];
   await h(t).glip(u1).init();
+  await h(t).glip(u2).init();
   const app = new AppRoot(t);
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
+  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
+  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
+  const u1PersonId = await h(t).glip(u1).toPersonId(u1.rcId);
+  const u2PersonId = await h(t).glip(u2).toPersonId(u2.rcId);
 
-  let teamId;
+  let teamId,adminIds;
   await h(t).withLog('Given I have one team', async () => {
     teamId = await h(t).platform(u1).createAndGetGroupId({
       isPublic: true,
@@ -104,9 +150,12 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
     });
   });
 
+  const roleUser1 = await h(t).userRole(u1);
+  const roleUser2 = await h(t).userRole(u2);
+
   //check the settings when admin changed to member
   await h(t).withLog(`And I login Jupiter with ${u2.company.number}#${u2.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, u2);
+    await t.useRole(roleUser2);
     await app.homePage.ensureLoaded();
   });
 
@@ -115,13 +164,17 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
-  //todo use api to change role
+  adminIds = [u1PersonId,u2PersonId];
   await h(t).withLog(`And make member 'u2' to admin`, async() => {
-
+    await h(t).glip(u1).updateGroup(teamId, {
+      permissions: {
+        admin: { uids: adminIds}
+      }
+    })
   });
 
   await h(t).withLog(`Then will show 'Admin' label in u2 row`, async() => {
-    await app.homePage.profileDialog.memberEntryById(u2.rcId).showAdminLabel();
+    await app.homePage.profileDialog.memberEntryByName(u2Name).showAdminLabel();
   });
 
   await h(t).withLog(`When I open the team setting dialog`, async () => {
@@ -135,7 +188,7 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
 
 //check the settings when admin changed to member
 await h(t).withLog(`And I login Jupiter with ${u1.company.number}#${u1.extension}`, async () => {
-  await h(t).directLoginWithUser(SITE_URL, u1);
+  await t.useRole(roleUser1);
   await app.homePage.ensureLoaded();
 });
 
@@ -148,34 +201,43 @@ await h(t).withLog(`When I open the team setting dialog`, async () => {
   await profileDialog.clickSetting();
 });
 
-  //todo use api to change role
-  await h(t).withLog(`And make admin 'u1' to member`, async() => {
-
+  adminIds = [u2PersonId];
+  await h(t).withLog(`And make login user admin 'u1' to member`, async() => {
+    await h(t).glip(u1).updateGroup(teamId, {
+        permissions: {
+          admin: { uids: adminIds}
+        }    
+    })
   });
-
-  await h(t).withLog(`Then show admin settings`, async () => {
-    await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.teamNameInputArea.exists).ok();
+  await h(t).withLog(`Then the admin settings dialog will change to non-admin settings dialog`, async () => {
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).ok();
  });
 
- await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
+ await h(t).withLog(`When click cancel button in the settings profile`, async () => {
+    await teamSettingDialog.cancel();
+});
+
+ await h(t).withLog(`And admin open team profile via team "More Menu"`, async () => {
   await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
   await app.homePage.messageTab.moreMenu.profile.enter();
 });
 
  await h(t).withLog(`Then won't show label in member u1 row`, async() => {
-  await app.homePage.profileDialog.memberEntryById(u2.rcId).showMemberLabel();
+  await app.homePage.profileDialog.memberEntryByName(u1Name).showMemberLabel();
 });
 
 });  
 
 test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1', 'JPT-1101', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
-  const u1 = users[3];
-  const u2 = users[4];
-  await h(t).platform(u1).init();
+  const u1 = users[4];
+  const u2 = users[5];
   await h(t).glip(u1).init();
+  await h(t).glip(u2).init();
   const app = new AppRoot(t);
+  const profileDialog = app.homePage.profileDialog;
+  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
+  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -187,33 +249,42 @@ test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1',
     });
   });
 
-  await h(t).withLog(`And I login Jupiter with ${u1.company.number}#${u1.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, u1);
+  await h(t).withLog(`And I login Jupiter with non-admin ${u2.company.number}#${u2.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, u2);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
+  await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
   await h(t).withLog(`And hover on the admin himself/herself row`, async () => {
-    // todo 
+    await t.hover(profileDialog.memberEntryByName(u1Name).self);
   });
 
   await h(t).withLog(`Then the whole "More" menu will be hidden`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).notOk();
+  });
+
+  await h(t).withLog(`And hover on the member himself/herself row`, async () => {
+    await t.hover(profileDialog.memberEntryByName(u2Name).self);
+  });
+
+  await h(t).withLog(`Then the whole "More" menu will be hidden`, async () => {
+    await t.expect(profileDialog.memberEntryByName(u2Name).moreButton.exists).notOk();
   });
 
 });  
 
 test(formalName(`Can't revoke himself/herself when login user is the only admin in one team`, ['P2', 'JPT-1099', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
-  const u1 = users[3];
-  const u2 = users[4];
-  await h(t).platform(u1).init();
+  const u1 = users[4];
+  const u2 = users[5];
   await h(t).glip(u1).init();
   const app = new AppRoot(t);
+  const profileDialog = app.homePage.profileDialog;
+  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -236,21 +307,23 @@ test(formalName(`Can't revoke himself/herself when login user is the only admin 
   });
 
   await h(t).withLog(`And hover on the admin himself/herself row`, async () => {
-    // todo 
+    await t.hover(profileDialog.memberEntryByName(u1Name).self);
   });
 
   await h(t).withLog(`Then the whole "More" menu will be hidden`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).notOk();
   });
 
 });  
 
 test(formalName(`The whole "More" menu will be hidden when this admin is the only one member in the team`, ['P2', 'JPT-1096', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
-  const u1 = users[3];
+  const u1 = users[4];
   await h(t).platform(u1).init();
   await h(t).glip(u1).init();
   const app = new AppRoot(t);
+  const profileDialog = app.homePage.profileDialog;
+  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -273,16 +346,17 @@ test(formalName(`The whole "More" menu will be hidden when this admin is the onl
   });
 
   await h(t).withLog(`And hover on the admin himself/herself row`, async () => {
-    // todo 
+    await t.hover(profileDialog.memberEntryByName(u1Name).self);
   });
 
   await h(t).withLog(`Then the whole "More" menu will be hidden`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberEntryByName(u1Name).moreButton.exists).notOk();
   });
 
 });  
 
-test(formalName(`Make all team members as admin of this team when no admin in the team`, ['P2', 'JPT-1103', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
+//TODO
+test.only(formalName(`Make all team members as admin of this team when no admin in the team`, ['P2', 'JPT-1103', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const u1 = users[3];
   const u2 = users[4];
@@ -290,6 +364,8 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   await h(t).platform(u1).init();
   await h(t).glip(u1).init();
   const app = new AppRoot(t);
+  const profileDialog = app.homePage.profileDialog;
+  const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -305,22 +381,33 @@ await h(t).withLog(`And remove the admin from the team`, async() => {
   await h(t).glip(u1).removeTeamMembers(teamId,[u2.rcId,u3.rcId]);
 });
 
-  await h(t).withLog(`And I login Jupiter with ${u2.company.number}#${u2.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with a member u2 ${u2.company.number}#${u2.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, u2);
     await app.homePage.ensureLoaded();
   });
 
+  await t.debug();
   await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
-  await h(t).withLog(`And hover on the member 'u2' row -> "More" menu options `, async () => {
-    // todo 
+  await h(t).withLog(`And hover on the member 'u2' row`, async () => {
+    await t.hover(profileDialog.memberEntryByName(u2Name).self);
+  });
+
+  await h(t).withLog('Then show "more" button', async () => {
+    await t.expect(profileDialog.memberEntryByName(u2Name).moreButton.exists).ok();
+  }, true);
+
+  await h(t).withLog('When click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(u2Name).moreButton);
   });
 
   await h(t).withLog(`Then show "${makeTeamAdminText}" button`, async () => {
-    // todo 
+    await t.expect(profileDialog.memberMoreMenu.makeTeamAdminItem.withExactText(makeTeamAdminText).exists).ok();
   });
+
+  
 
 });  
