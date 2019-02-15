@@ -22,6 +22,8 @@ import { ENTITY_NAME } from '@/store/constants';
 import { GlipTypeUtil } from 'sdk/utils';
 import { TAB_CONFIG } from './config';
 
+const LOADING_DELAY = 500;
+
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
     private _groupId: number,
@@ -246,8 +248,17 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
 
     try {
       this._loadStatus.loading = true;
+      this._loadStatus.timer = setTimeout(
+        () => (this._loadStatus.showLoading = true),
+        LOADING_DELAY,
+      );
       await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-      Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
+      clearTimeout(this._loadStatus.timer);
+      Object.assign(this._loadStatus, {
+        firstLoaded: true,
+        loading: false,
+        showLoading: false,
+      });
     } catch (e) {
       Object.assign(this._loadStatus, { loading: false });
     }

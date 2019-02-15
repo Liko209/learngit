@@ -9,11 +9,14 @@ import { TabConfig } from './config';
 type LoadStatus = {
   firstLoaded: boolean;
   loading: boolean;
+  timer?: NodeJS.Timeout;
+  showLoading: boolean;
 };
 
 const InitLoadStatus: LoadStatus = {
   firstLoaded: false,
   loading: false,
+  showLoading: false,
 };
 
 type Props = {

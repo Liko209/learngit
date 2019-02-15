@@ -919,6 +919,24 @@ describe('GroupService', () => {
         most_recent_content_modified_at: 1,
       };
 
+      const team5: Group = {
+        id: 5,
+        created_at: 1,
+        modified_at: 1,
+        creator_id: 1,
+        is_team: true,
+        is_new: false,
+        is_archived: false,
+        privacy: 'protected',
+        deactivated: false,
+        version: 1,
+        members: [1, 2],
+        company_id: 1,
+        set_abbreviation: 'Belmont office to access Jupiter Test Env',
+        email_friendly_abbreviation: '',
+        most_recent_content_modified_at: 1,
+      };
+
       function prepareGroupsForSearch() {
         UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
         groupService.enableCache();
@@ -927,6 +945,7 @@ describe('GroupService', () => {
         groupService.getCacheManager().set(team2);
         groupService.getCacheManager().set(team3);
         groupService.getCacheManager().set(team4);
+        groupService.getCacheManager().set(team5);
       }
 
       beforeEach(() => {
@@ -934,12 +953,19 @@ describe('GroupService', () => {
       });
 
       it('should show correct', async () => {
-        const result = await groupService.doFuzzySearchTeams('Jupiter, E');
-        expect(result.sortableModels.length).toBe(4);
+        let result = await groupService.doFuzzySearchTeams('Jupiter, E');
+        expect(result.sortableModels.length).toBe(5);
         expect(result.sortableModels[0].entity).toEqual(team3);
-        expect(result.sortableModels[1].entity).toEqual(team4);
-        expect(result.sortableModels[2].entity).toEqual(team1);
-        expect(result.sortableModels[3].entity).toEqual(team2);
+        expect(result.sortableModels[1].entity).toEqual(team5);
+        expect(result.sortableModels[2].entity).toEqual(team4);
+        expect(result.sortableModels[3].entity).toEqual(team1);
+        expect(result.sortableModels[4].entity).toEqual(team2);
+
+        result = await groupService.doFuzzySearchTeams('Jupiter, access');
+        expect(result.sortableModels.length).toBe(3);
+        expect(result.sortableModels[0].entity).toEqual(team1);
+        expect(result.sortableModels[1].entity).toEqual(team2);
+        expect(result.sortableModels[2].entity).toEqual(team5);
       });
     });
   });
