@@ -196,6 +196,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     const { data } = this.state;
     const currentSection = section < 0 ? 0 : section;
     const searchItem: SearchItems = data[currentSection];
+
+    if (!searchItem) {
+      return;
+    }
     const currentSectionLength = searchItem.ids.length;
     if (cell < currentSectionLength - 1) {
       this._setSelectIndex(currentSection, cell + 1);
