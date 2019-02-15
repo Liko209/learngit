@@ -65,9 +65,17 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get attachments() {
-    return this.attachmentIds.map((attachment: number) => {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, attachment);
+    const items: FileItemModel[] = [];
+    this.attachmentIds.forEach((attachment: number) => {
+      const item = getEntity<Item, FileItemModel>(
+        ENTITY_NAME.FILE_ITEM,
+        attachment,
+      );
+      if (!item.isMocked && !item.deactivated) {
+        items.push(item);
+      }
     });
+    return items;
   }
 }
 
