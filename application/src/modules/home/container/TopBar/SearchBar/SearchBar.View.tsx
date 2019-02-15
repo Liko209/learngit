@@ -23,7 +23,7 @@ import { ViewProps, SectionTypeMap } from './types';
 
 import { SearchSectionsConfig } from './config';
 
-const SEARCH_DELAY = 100;
+const SEARCH_DELAY = 50;
 
 type SearchItems = {
   ids: number[];
@@ -312,7 +312,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           <JuiSearchInput
             ref={this.textInput}
             focus={focus}
-            onFocus={this.onFocus}
+            onClick={this.onFocus}
             onClear={this.onClear}
             value={searchValue}
             onChange={this.onChange}
