@@ -44,8 +44,10 @@ function dialog(config: BaseType) {
     isAlert,
     open: true,
     async onOK() {
-      onOK && (await onOK());
-      dismiss();
+      const result = onOK && (await onOK());
+      if (result !== false) {
+        dismiss();
+      }
     },
     onCancel() {
       onCancel && onCancel();

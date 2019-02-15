@@ -37,7 +37,7 @@ type JuiModalProps = {
   cancelVariant?: JuiButtonProps['variant'];
   cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
-  onOK?(event?: React.MouseEvent): void;
+  onOK?(event?: React.MouseEvent): void | Promise<boolean> | Promise<void>;
   onCancel?(event?: React.MouseEvent): void;
   content?: string | JSX.Element;
   fillContent?: boolean;
@@ -50,11 +50,27 @@ type JuiDialogFuncProps = { componentProps?: any } & Omit<
 >;
 
 class JuiModal extends PureComponent<JuiModalProps, {}> {
+  handleCancel = () => {
+    const { loading, onCancel } = this.props;
+    if (loading || !onCancel) {
+      return;
+    }
+
+    onCancel();
+  }
+
+  handleOK = () => {
+    const { loading, onOK } = this.props;
+    if (loading || !onOK) {
+      return;
+    }
+
+    onOK();
+  }
+
   defaultFooter() {
     const {
-      onCancel,
       cancelText,
-      onOK,
       okText,
       okVariant = 'contained',
       okType = 'primary',
@@ -67,7 +83,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       <>
         {cancelText ? (
           <JuiButton
-            onClick={onCancel}
+            onClick={this.handleCancel}
             color="primary"
             variant={cancelVariant}
             autoFocus={true}
@@ -77,7 +93,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           </JuiButton>
         ) : null}
         <JuiButton
-          onClick={onOK}
+          onClick={this.handleOK}
           color={okType}
           variant={okVariant}
           autoFocus={true}

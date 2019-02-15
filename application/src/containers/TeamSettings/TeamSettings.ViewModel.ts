@@ -118,11 +118,13 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     try {
       await groupService.deleteTeam(this.id);
       this._onDeleteTeamSuccess();
+      return true;
     } catch (e) {
       this._onActionError(e, {
         backendErrorMessage: 'deleteTeamServerErrorContent',
         networkErrorMessage: 'deleteTeamNetworkErrorContent',
       });
+      return false;
     }
   }
 

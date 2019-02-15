@@ -156,10 +156,14 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       cancelText: toTitleCase(t('cancel')),
       onOK: async () => {
         dialog.startLoading();
-        await deleteTeam();
+        const result = await deleteTeam();
         dialog.stopLoading();
+        if (!result) {
+          return false;
+        }
         dialog.dismiss();
         portalManager.dismiss();
+        return true;
       },
     });
   }
