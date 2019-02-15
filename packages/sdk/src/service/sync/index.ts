@@ -29,6 +29,7 @@ import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 import { ItemDao } from '../../module/item/dao';
 import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+import { progressBar } from '../../utils/progress';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
@@ -44,15 +45,23 @@ export default class SyncService extends BaseService {
   private _syncListener: SyncListener;
 
   constructor() {
-    const subscriptions = {
+    super(null, null, null, {
       [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
         if (state === 'connected' || state === 'refresh') {
           this.syncData();
+        } else if (state === 'connecting') {
+          progressBar.start();
+        } else if (state === 'disconnected') {
+          progressBar.stop();
         }
       },
-    };
-    super(null, null, null, subscriptions);
+    });
     this.isLoading = false;
+  }
+
+  getIndexTimestamp() {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    return configDao.get(LAST_INDEX_TIMESTAMP);
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -60,9 +69,10 @@ export default class SyncService extends BaseService {
     if (this.isLoading) {
       return;
     }
+
+    progressBar.start();
     this.isLoading = true;
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
+    const lastIndexTimestamp = this.getIndexTimestamp();
     if (lastIndexTimestamp) {
       await this._syncIndexData(lastIndexTimestamp);
     } else {
@@ -70,6 +80,7 @@ export default class SyncService extends BaseService {
     }
     this.isLoading = false;
     this._preloadPosts();
+    progressBar.stop();
   }
 
   private async _preloadPosts() {
