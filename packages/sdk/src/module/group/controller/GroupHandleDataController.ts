@@ -126,6 +126,20 @@ class GroupHandleDataController {
         }
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
+
+        if (
+          !transformed.is_team &&
+          transformed.members.length === 2 &&
+          transformed.removed_guest_user_ids &&
+          transformed.removed_guest_user_ids.length === 1
+        ) {
+          transformed.deactivated = true;
+        }
+
+        if (transformed.privacy) {
+          transformed.is_public = transformed.privacy === 'protected';
+        }
+
         return transformed;
       }),
     );

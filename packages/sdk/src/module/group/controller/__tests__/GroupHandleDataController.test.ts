@@ -156,8 +156,8 @@ describe('GroupHandleDataController', () => {
         },
         { _id: 2, members: [1, 2], deactivated: false },
         { _id: 3, members: [2], deactivated: false },
-        { _id: 4, deactivated: false },
-        { _id: 5, is_archived: true },
+        { _id: 4, members: [], deactivated: false },
+        { _id: 5, members: [], is_archived: true },
       ]);
       await groupHandleDataController.handleData(groups);
       // expect getTransformData function
@@ -172,8 +172,8 @@ describe('GroupHandleDataController', () => {
       expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
         { id: 2, members: [1, 2], deactivated: false },
         { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
-        { id: 4, deactivated: false },
-        { id: 5, is_archived: true },
+        { id: 4, members: [], deactivated: false },
+        { id: 5, members: [], is_archived: true },
       ]);
     });
   });
