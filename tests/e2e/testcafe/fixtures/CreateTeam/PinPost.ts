@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-02-15 16:37:06 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-15 18:26:16
+ * @Last Modified time: 2019-02-15 18:35:05
  */
 
 
@@ -70,10 +70,6 @@ test(formalName(`Restrict non admin team members from pinning posts in Create te
       assert.ok(!(1 << 3 & Number(userPermissionsValue)), `permission value Error: ${userPermissionsValue}`);
     });
   });
-
-
-
-
 
   await h(t).withLog('When I open Create Team in AddActionMenu', async () => {
     await app.homePage.openAddActionMenu();
