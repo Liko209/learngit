@@ -71,12 +71,12 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       );
     }
 
-    if (url && cacheUrl[url]) {
+    if ((url && cacheUrl[url]) || !showPlaceholder) {
       return children;
     }
 
     return (
-      <>
+      <div>
         <img
           src={url}
           onLoad={this.handleLoad}
@@ -84,7 +84,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
           style={{ display: 'none' }}
         />
         {showPlaceholder && placeholder}
-      </>
+      </div>
     );
   }
 }
