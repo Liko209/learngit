@@ -20,6 +20,7 @@ type ViewProps = {
   save: (params: TeamSettingTypes) => boolean;
   nameErrorMsg?: string;
   leaveTeam: () => void;
+  deleteTeam: () => void;
   saving: boolean;
 };
 

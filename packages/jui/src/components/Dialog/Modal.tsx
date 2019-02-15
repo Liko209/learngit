@@ -41,6 +41,7 @@ type JuiModalProps = {
   onCancel?(event?: React.MouseEvent): void;
   content?: string | JSX.Element;
   fillContent?: boolean;
+  loading?: boolean;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -60,6 +61,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
       cancelVariant = 'text',
       okBtnProps,
       cancelBtnProps,
+      loading,
     } = this.props;
     return (
       <>
@@ -80,6 +82,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           variant={okVariant}
           autoFocus={true}
           {...okBtnProps}
+          loading={loading}
         >
           {okText}
         </JuiButton>
