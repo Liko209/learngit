@@ -255,7 +255,7 @@ describe('RTCAccount', async () => {
     });
   });
 
-  it('should clear provisioning info when account enter unreg state. [JPT-1010]', done => {
+  it('should clear provisioning info when account enter unreg state. [JPT-1011]', done => {
     setupAccount();
     localStorage.put(kProvisioningInfoKey, '1234');
     expect(localStorage.get(kProvisioningInfoKey)).not.toBe(null);
