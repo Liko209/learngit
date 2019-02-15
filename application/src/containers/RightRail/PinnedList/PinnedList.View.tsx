@@ -68,7 +68,7 @@ class PinnedListView
     return result;
   }
 
-  loadMore = async (startIndex: number, stopIndex: number) => {};
+  loadMore = async () => {};
 
   firstLoader = () => {
     return <JuiRightRailContentLoading />;
