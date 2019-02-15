@@ -56,7 +56,7 @@ class PostCacheController {
     groupId: number,
     jump2PostId?: number,
   ): FetchSortableDataListHandler<Post> {
-    let listHandler = !!jump2PostId ? undefined : this._cacheMap[groupId];
+    let listHandler = !!jump2PostId ? undefined : this._cacheMap.get(groupId);
     if (!listHandler) {
       const options = {
         transformFunc: (dataModel: Post) => ({

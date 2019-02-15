@@ -1,7 +1,7 @@
-import { IProcessor } from 'sdk/framework/processor/IProcessor';
 import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
+import { IProcessor } from 'sdk/src/framework/processor/IProcessor';
 
 export default class PrefetchPostProcessor implements IProcessor {
   constructor(private _groupId: number) {}

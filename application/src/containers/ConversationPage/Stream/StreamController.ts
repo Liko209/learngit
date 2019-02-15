@@ -4,21 +4,17 @@ import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItem
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
 import { StreamItemAssemblyLine } from './StreamItemAssemblyLine/StreamItemAssemblyLine';
 import { StreamItem, TDeltaWithData, StreamItemType } from './types';
-import {
-  FetchSortableDataListHandler,
-  IFetchSortableDataProvider,
-} from '@/store/base/fetch';
+import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { NewMessageSeparatorHandler } from './StreamItemAssemblyLine/Assembler/NewMessageSeparator';
 import { Post } from 'sdk/module/post/entity';
 import _ from 'lodash';
 import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
-import { ENTITY_NAME, storeManager } from '@/store';
+import { ENTITY_NAME } from '@/store';
 
 import { GroupState } from 'sdk/models';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
-import { NewPostService } from 'sdk/module/post';
 import postCacheController from './cache/PostCacheController';
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
@@ -28,8 +24,6 @@ const transformFunc = <T extends { id: number }>(dataModel: T) => ({
 });
 
 export class StreamController {
-  private _postService: NewPostService = NewPostService.getInstance();
-
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<StreamItem>;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
@@ -93,24 +87,6 @@ export class StreamController {
     ]);
   }
 
-  postDataProvider: IFetchSortableDataProvider<Post> = {
-    fetchData: async (direction, pageSize, anchor) => {
-      const {
-        posts,
-        hasMore,
-        items,
-      } = await this._postService.getPostsByGroupId({
-        direction,
-        groupId: this._groupId,
-        postId: anchor && anchor.id,
-        limit: pageSize,
-      });
-      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
-      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
-      return { hasMore, data: posts };
-    },
-  };
-
   @computed
   get items() {
     const items = this._streamListHandler.sortableListStore.items;
@@ -132,7 +108,7 @@ export class StreamController {
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.setDataChangeCallback(undefined);
+      this._orderListHandler.setDataChangeCallback();
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
