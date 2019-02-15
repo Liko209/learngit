@@ -22,4 +22,9 @@ enum RTC_REST_API {
   API_SIP_PROVISION = '/v1.0/client-info/sip-provision',
 }
 
-export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE, RTC_REST_API };
+type RTCMediaElement = {
+  local: any;
+  remote: any;
+};
+
+export { RTC_NETWORK_EVENT, RTC_NETWORK_STATE, RTC_REST_API, RTCMediaElement };

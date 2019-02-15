@@ -43,108 +43,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     super();
     this._callFsmTable = new RTCCallFsmTable(this);
     this._eventQueue = async.queue((task: any, callback: any) => {
-      switch (task.name) {
-        case CallFsmEvent.HANGUP: {
-          this._onHangup();
-          break;
-        }
-        case CallFsmEvent.FLIP: {
-          this._onFlip(task.params);
-          break;
-        }
-        case CallFsmEvent.START_RECORD: {
-          this._onStartRecord();
-          break;
-        }
-        case CallFsmEvent.STOP_RECORD: {
-          this._onStopRecord();
-          break;
-        }
-        case CallFsmEvent.MUTE: {
-          this._onMute();
-          break;
-        }
-        case CallFsmEvent.UNMUTE: {
-          this._onUnmute();
-          break;
-        }
-        case CallFsmEvent.TRANSFER: {
-          this._onTransfer(task.params);
-          break;
-        }
-        case CallFsmEvent.PARK: {
-          this._onPark();
-          break;
-        }
-        case CallFsmEvent.ANSWER: {
-          this._onAnswer();
-          break;
-        }
-        case CallFsmEvent.REJECT: {
-          this._onReject();
-          break;
-        }
-        case CallFsmEvent.SEND_TO_VOICEMAIL: {
-          this._onSendToVoicemail();
-          break;
-        }
-        case CallFsmEvent.HOLD: {
-          this._onHold();
-          break;
-        }
-        case CallFsmEvent.UNHOLD: {
-          this._onUnhold();
-          break;
-        }
-        case CallFsmEvent.DTMF: {
-          this._onDtmf(task.params);
-          break;
-        }
-        case CallFsmEvent.ACCOUNT_READY: {
-          this._onAccountReady();
-          break;
-        }
-        case CallFsmEvent.ACCOUNT_NOT_READY: {
-          this._onAccountNotReady();
-          break;
-        }
-        case CallFsmEvent.SESSION_ACCEPTED: {
-          this._onSessionAccepted();
-          break;
-        }
-        case CallFsmEvent.SESSION_CONFIRMED: {
-          this._onSessionConfirmed();
-          break;
-        }
-        case CallFsmEvent.SESSION_DISCONNECTED: {
-          this._onSessionDisconnected();
-          break;
-        }
-        case CallFsmEvent.SESSION_ERROR: {
-          this._onSessionError();
-          break;
-        }
-        case CallFsmEvent.HOLD_SUCCESS: {
-          this._onHoldSuccess();
-          break;
-        }
-        case CallFsmEvent.HOLD_FAILED: {
-          this._onHoldFailed();
-          break;
-        }
-        case CallFsmEvent.UNHOLD_SUCCESS: {
-          this._onUnholdSuccess();
-          break;
-        }
-        case CallFsmEvent.UNHOLD_FAILED: {
-          this._onUnholdFailed();
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      callback();
+      callback(task.params);
     });
     // Observer FSM State
     // enter pending state will also report connecting for now
@@ -170,111 +69,156 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   }
 
   public answer() {
-    this._eventQueue.push({ name: CallFsmEvent.ANSWER }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.ANSWER }, () => {
+      this._onAnswer();
+    });
   }
 
   public reject() {
-    this._eventQueue.push({ name: CallFsmEvent.REJECT }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.REJECT }, () => {
+      this._onReject();
+    });
   }
 
   public sendToVoicemail() {
-    this._eventQueue.push({ name: CallFsmEvent.SEND_TO_VOICEMAIL }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.SEND_TO_VOICEMAIL }, () => {
+      this._onSendToVoicemail();
+    });
   }
 
   public hangup() {
-    this._eventQueue.push({ name: CallFsmEvent.HANGUP }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.HANGUP }, () => {
+      this._onHangup();
+    });
   }
 
   flip(target: number) {
     this._eventQueue.push(
       { name: CallFsmEvent.FLIP, params: target },
-      () => {},
+      (params: any) => {
+        this._onFlip(params);
+      },
     );
   }
 
   startRecord(): void {
-    this._eventQueue.push({ name: CallFsmEvent.START_RECORD }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.START_RECORD }, () => {
+      this._onStartRecord();
+    });
   }
 
   stopRecord(): void {
-    this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.STOP_RECORD }, () => {
+      this._onStopRecord();
+    });
   }
 
   mute(): void {
-    this._eventQueue.push({ name: CallFsmEvent.MUTE }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.MUTE }, () => {
+      this._onMute();
+    });
   }
 
   unmute(): void {
-    this._eventQueue.push({ name: CallFsmEvent.UNMUTE }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.UNMUTE }, () => {
+      this._onUnmute();
+    });
   }
 
   park() {
-    this._eventQueue.push({ name: CallFsmEvent.PARK }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.PARK }, () => {
+      this._onPark();
+    });
   }
 
   transfer(target: string): void {
     this._eventQueue.push(
       { name: CallFsmEvent.TRANSFER, params: target },
-      () => {},
+      (params: any) => {
+        this._onTransfer(params);
+      },
     );
   }
 
   hold(): void {
-    this._eventQueue.push({ name: CallFsmEvent.HOLD }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.HOLD }, () => {
+      this._onHold();
+    });
   }
 
   unhold(): void {
-    this._eventQueue.push({ name: CallFsmEvent.UNHOLD }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.UNHOLD }, () => {
+      this._onUnhold();
+    });
   }
 
   dtmf(digits: string): void {
     this._eventQueue.push(
       { name: CallFsmEvent.DTMF, params: digits },
-      () => {},
+      (params: any) => {
+        this._onDtmf(params);
+      },
     );
   }
 
   public accountReady() {
-    this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {
+      this._onAccountReady();
+    });
   }
 
   public accountNotReady() {
-    this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_NOT_READY }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_NOT_READY }, () => {
+      this._onAccountNotReady();
+    });
   }
 
   public sessionAccepted() {
-    this._eventQueue.push({ name: CallFsmEvent.SESSION_ACCEPTED }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_ACCEPTED }, () => {
+      this._onSessionAccepted();
+    });
   }
 
   public sessionConfirmed() {
-    this._eventQueue.push({ name: CallFsmEvent.SESSION_CONFIRMED }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_CONFIRMED }, () => {
+      this._onSessionConfirmed();
+    });
   }
 
   public sessionDisconnected() {
-    this._eventQueue.push(
-      { name: CallFsmEvent.SESSION_DISCONNECTED },
-      () => {},
-    );
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_DISCONNECTED }, () => {
+      this._onSessionDisconnected();
+    });
   }
 
   public holdSuccess() {
-    this._eventQueue.push({ name: CallFsmEvent.HOLD_SUCCESS }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.HOLD_SUCCESS }, () => {
+      this._onHoldSuccess();
+    });
   }
 
   public holdFailed() {
-    this._eventQueue.push({ name: CallFsmEvent.HOLD_FAILED }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.HOLD_FAILED }, () => {
+      this._onHoldFailed();
+    });
   }
 
   public unholdSuccess() {
-    this._eventQueue.push({ name: CallFsmEvent.UNHOLD_SUCCESS }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.UNHOLD_SUCCESS }, () => {
+      this._onUnholdSuccess();
+    });
   }
 
   public unholdFailed() {
-    this._eventQueue.push({ name: CallFsmEvent.UNHOLD_FAILED }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.UNHOLD_FAILED }, () => {
+      this._onUnholdFailed();
+    });
   }
 
   public sessionError() {
-    this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {});
+    this._eventQueue.push({ name: CallFsmEvent.SESSION_ERROR }, () => {
+      this._onSessionError();
+    });
   }
 
   onAnswerAction() {

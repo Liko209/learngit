@@ -63,17 +63,21 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
         : ITEM_HEIGHT * memberIdsLength;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(width: number = 0, height: number = 0) => (
-          <JuiProfileDialogContentMemberList>
-            <JuiVirtualList
-              dataSource={this}
-              isLoading={false}
-              width={width}
-              height={height || dialogHeight}
-              data-test-automation-id="profileDialogMemberList"
-            />
-          </JuiProfileDialogContentMemberList>
-        )}
+        {(width: number = 0, height: number = dialogHeight) => {
+          const virtualListHeight =
+            memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
+          return (
+            <JuiProfileDialogContentMemberList>
+              <JuiVirtualList
+                dataSource={this}
+                isLoading={false}
+                width={width}
+                height={virtualListHeight}
+                data-test-automation-id="profileDialogMemberList"
+              />
+            </JuiProfileDialogContentMemberList>
+          );
+        }}
       </ReactResizeDetector>
     );
   }

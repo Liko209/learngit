@@ -6,14 +6,37 @@
 
 import { RTCSipCallSession } from '../RTCSipCallSession';
 import { EventEmitter2 } from 'eventemitter2';
-import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
+import {
+  WEBPHONE_SESSION_STATE,
+  WEBPHONE_SESSION_EVENT,
+} from '../../signaling/types';
+import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
+import { RTC_CALL_ACTION } from '../../api/types';
 
 describe('sip call session', () => {
-  class VirtualSession extends EventEmitter2 {
+  class SessionDescriptionHandler extends EventEmitter2 {
+    private _directionFlag: boolean = true;
     constructor() {
       super();
     }
 
+    setDirectionFlag(flag: boolean) {
+      this._directionFlag = flag;
+    }
+
+    getDirection(): string {
+      if (this._directionFlag) {
+        return 'sendonly';
+      }
+      return 'sendrecv';
+    }
+  }
+  class VirtualSession extends EventEmitter2 {
+    public sessionDescriptionHandler: SessionDescriptionHandler;
+    constructor() {
+      super();
+      this.sessionDescriptionHandler = new SessionDescriptionHandler();
+    }
     emitSessionConfirmed() {
       this.emit(WEBPHONE_SESSION_STATE.CONFIRMED);
     }
@@ -21,18 +44,37 @@ describe('sip call session', () => {
     emitSessionAccepted() {
       this.emit(WEBPHONE_SESSION_STATE.ACCEPTED);
     }
-
     emitSessionDisconnected() {
       this.emit(WEBPHONE_SESSION_STATE.BYE);
     }
-
     emitSessionError() {
       this.emit(WEBPHONE_SESSION_STATE.FAILED);
     }
+
+    emitSdhCreated() {
+      this.emit(WEBPHONE_SESSION_EVENT.SDH_CREATED);
+    }
+    emitTrackAdded() {
+      this.sessionDescriptionHandler.emit(
+        WEBPHONE_SESSION_EVENT.ADD_TRACK,
+        null,
+      );
+    }
+
+    emitSessionReinviteAccepted() {
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED, this);
+    }
+
+    emitSessionReinviteFailed() {
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
+    }
+
     terminate() {}
     flip = jest.fn();
     startRecord = jest.fn();
     stopRecord = jest.fn();
+    hold = jest.fn();
+    unhold = jest.fn();
     accept() {}
     reject() {}
     toVoicemail() {}
@@ -90,6 +132,104 @@ describe('sip call session', () => {
       vsession.startRecord.mockResolvedValue(null);
       sipcallsession.startRecord();
       expect(vsession.startRecord).toHaveBeenCalled();
+    });
+  });
+
+  let sipcallsession = null;
+  let vsession = null;
+  function initSession() {
+    sipcallsession = new RTCSipCallSession();
+    vsession = new VirtualSession();
+    sipcallsession.setSession(vsession);
+    jest.spyOn(sipcallsession, 'emit');
+  }
+
+  describe('hold()', () => {
+    it('should notify reinviteAccepted when receive reinviteAccepted event after call "hold" API [JPT-1136]', done => {
+      initSession();
+      vsession.hold.mockResolvedValue(null);
+      sipcallsession.hold();
+      vsession.emitSessionReinviteAccepted();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_SESSION_STATE.REINVITE_ACCEPTED,
+          vsession,
+        );
+        done();
+      });
+    });
+
+    it('should emit hold failed action when hold failed by return promise reject', done => {
+      initSession();
+      vsession.hold.mockRejectedValue(null);
+      sipcallsession.hold();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.HOLD,
+        );
+        done();
+      });
+    });
+
+    it('should notify reinviteFailed when receive reinviteFailed event after call "hold" API [JPT-1135]', done => {
+      initSession();
+      vsession.hold.mockResolvedValue(null);
+      sipcallsession.hold();
+      vsession.emitSessionReinviteFailed();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_SESSION_STATE.REINVITE_FAILED,
+          vsession,
+        );
+        done();
+      });
+    });
+  });
+
+  describe('unhold()', () => {
+    it('should notify reinviteAccepted when receive reinviteAccepted event after call "unhold" API [1138]', done => {
+      initSession();
+      vsession.sessionDescriptionHandler.setDirectionFlag(false);
+      vsession.unhold.mockResolvedValue(null);
+      sipcallsession.unhold();
+      vsession.emitSessionReinviteAccepted();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_SESSION_STATE.REINVITE_ACCEPTED,
+          vsession,
+        );
+        done();
+      });
+    });
+
+    it('should emit unhold failed action when unhold failed by return promise reject', done => {
+      initSession();
+      vsession.sessionDescriptionHandler.setDirectionFlag(false);
+      vsession.unhold.mockRejectedValue(null);
+      sipcallsession.unhold();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.UNHOLD,
+        );
+        done();
+      });
+    });
+
+    it('should notify reinviteFailed when receive reinviteFailed event after call "unhold" API [1137]', done => {
+      initSession();
+      vsession.sessionDescriptionHandler.setDirectionFlag(false);
+      vsession.unhold.mockResolvedValue(null);
+      sipcallsession.unhold();
+      vsession.emitSessionReinviteFailed();
+      setImmediate(() => {
+        expect(sipcallsession.emit).toHaveBeenCalledWith(
+          CALL_SESSION_STATE.REINVITE_FAILED,
+          vsession,
+        );
+        done();
+      });
     });
   });
 
@@ -192,6 +332,16 @@ describe('sip call session', () => {
       jest.spyOn(sipcallsession, '_onSessionError');
       vsession.emitSessionError();
       expect(sipcallsession._onSessionError).toHaveBeenCalled();
+    });
+
+    it('should _onSessionTrackAdded be called when webphone session emet trackAdded', () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      jest.spyOn(sipcallsession, '_onSessionTrackAdded');
+      vsession.emitSdhCreated();
+      vsession.emitTrackAdded();
+      expect(sipcallsession._onSessionTrackAdded).toHaveBeenCalled();
     });
   });
 });
