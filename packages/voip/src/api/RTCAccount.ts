@@ -16,7 +16,6 @@ import {
   RTCSipProvisionInfo,
   RTC_PROV_EVENT,
 } from '../account/types';
-import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
 import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
@@ -195,10 +194,6 @@ class RTCAccount implements IRTCAccount {
       endPointId: uuid(),
       audioHelper: options.audioHelper,
       logLevel: options.logLevel,
-      media: {
-        remote: rtcMediaManager.getRemoteAudio(),
-        local: rtcMediaManager.getLocalAudio(),
-      },
     };
     this._regManager.provisionReady(sipProv, info);
   }
