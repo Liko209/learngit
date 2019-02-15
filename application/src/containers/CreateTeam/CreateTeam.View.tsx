@@ -63,6 +63,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
         type: 'canAddMember',
         text: i18next.t('MembersMayAddOtherMembers'),
         checked: true,
+        automationId: 'CreateTeamCanAddMember',
       },
       {
         type: 'canPost',
