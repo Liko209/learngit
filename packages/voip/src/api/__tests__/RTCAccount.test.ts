@@ -270,13 +270,15 @@ describe('RTCAccount', async () => {
   it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    const call = account.makeCall('123', listener);
+    account.makeCall('123', listener);
     const session = new MockSession();
-    call.onAccountReady();
-    call.setCallSession(session);
     const res = new MockResponse();
-
     setImmediate(() => {
+      expect(mockListener.onMadeOutgoingCall).toBeCalled();
+      expect(account.callList().length).toBe(1);
+      const call = account.callList()[0];
+      call.onAccountReady();
+      call.setCallSession(session);
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED, res);
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
