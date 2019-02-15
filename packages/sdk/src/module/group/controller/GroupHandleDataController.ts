@@ -127,12 +127,13 @@ class GroupHandleDataController {
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
 
-        if (
+        const beRemovedAsGuest =
           !transformed.is_team &&
           transformed.members.length === 2 &&
           transformed.removed_guest_user_ids &&
-          transformed.removed_guest_user_ids.length === 1
-        ) {
+          transformed.removed_guest_user_ids.length === 1;
+
+        if (beRemovedAsGuest) {
           transformed.deactivated = true;
         }
 
