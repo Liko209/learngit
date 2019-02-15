@@ -20,7 +20,7 @@ import { GroupState } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { autorun, observable, computed } from 'mobx';
+import { autorun, observable, computed, reaction } from 'mobx';
 import { getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
@@ -87,7 +87,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     this._subscribeNotification();
     autorun(() => this._profileUpdateGroupSections());
-    autorun(() => this._updateHiddenGroupIds());
+    reaction(
+      () => {
+        const hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
+          ENTITY_NAME.PROFILE,
+          'hiddenGroupIds',
+        );
+        return hiddenGroupIds || [];
+      },
+      (newIds: number[]) => this._updateHiddenGroupIds(newIds),
+    );
     autorun(() => this.removeOverLimitGroupByChangingIds());
     autorun(() => this.removeOverLimitGroupByChangingCurrentGroupId());
   }
@@ -103,12 +112,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._dataLoader = this._dataLoader.then(() => handler(this.groupIds));
   }
 
-  private _updateHiddenGroupIds() {
-    const hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
-      ENTITY_NAME.PROFILE,
-      'hiddenGroupIds',
-    );
-    const newIds = hiddenGroupIds || [];
+  private _updateHiddenGroupIds(newIds: number[]) {
     this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
     this._hiddenGroupIds = newIds;
     this._removeGroupsIfExistedInHiddenGroups();
