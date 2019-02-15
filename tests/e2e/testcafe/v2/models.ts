@@ -28,8 +28,12 @@ export interface IUser {
 export interface IGroup {
   name?: string;
   glipId?: string;
+  owner?: IUser;
   members: IUser[];
   type: string;
+  privacy?: string;
+  isPublic?: boolean;
+  description?: string;
 }
 
 export interface ICredential {

@@ -128,7 +128,9 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           {this.renderContent()}
         </JuiDialogContent>
         {contentAfter}
-        <StyledActions>{footer ? footer : this.defaultFooter()}</StyledActions>
+        <StyledActions className="modal-actions">
+          {footer ? footer : this.defaultFooter()}
+        </StyledActions>
       </JuiDialog>
     );
   }

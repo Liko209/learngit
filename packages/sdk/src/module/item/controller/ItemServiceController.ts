@@ -83,27 +83,27 @@ class ItemServiceController {
     return await this._entitySourceController.batchGet(ids, true);
   }
 
-  async createItem(item: Item) {
+  async createLocalItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.put(item);
 
     this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).createItem(item));
+      (await this._getSubItemServiceByITemId(item.id).createLocalItem(item));
   }
 
-  async updateItem(item: Item) {
+  async updateLocalItem(item: Item) {
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.update(item);
 
     this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).updateItem(item));
+      (await this._getSubItemServiceByITemId(item.id).updateLocalItem(item));
   }
 
-  async deleteItem(itemId: number) {
+  async deleteLocalItem(itemId: number) {
     await daoManager.getDao(ItemDao).delete(itemId);
 
     itemId > 0 &&
-      (await this._getSubItemServiceByITemId(itemId).deleteItem(itemId));
+      (await this._getSubItemServiceByITemId(itemId).deleteLocalItem(itemId));
   }
 
   private _getSubItemServiceByITemId(itemId: number) {
@@ -145,12 +145,12 @@ class ItemServiceController {
     }
     const deactivatedItems = items.filter(item => item.deactivated);
     deactivatedItems.forEach((item: Item) => {
-      subItemService.deleteItem(item.id);
+      subItemService.deleteLocalItem(item.id);
     });
 
     const normalData = items.filter(item => !item.deactivated);
     normalData.forEach((item: Item) => {
-      subItemService.createItem(item);
+      subItemService.createLocalItem(item);
     });
   }
 

@@ -67,6 +67,9 @@ describe('i18next-en', () => {
     expect(i18next.t('MembersMayPostMessages')).toEqual(
       'Allow members to post messages',
     );
+    expect(i18next.t('MembersMayAddOtherMembers')).toEqual(
+      'Allow members to add other members',
+    );
     expect(
       i18next.t('addedToTeam', { inviter: 'Lip', newUser: 'Valor' }),
     ).toEqual('Lip added Valor to the team');

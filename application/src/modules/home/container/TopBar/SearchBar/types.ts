@@ -7,16 +7,27 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 
+enum SectionTypeMap {
+  PEOPLE,
+  GROUPS,
+  TEAMS,
+}
+
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
   hasMore: boolean;
 };
 
+type SearchSections = {
+  ids: number[];
+  hasMore: boolean;
+};
+
 type SearchResult = {
   terms: string[];
-  persons: SearchSection<Person>;
-  groups: SearchSection<Group>;
-  teams: SearchSection<Group>;
+  people: SearchSections;
+  groups: SearchSections;
+  teams: SearchSections;
 };
 
 type Props = {};
@@ -24,7 +35,7 @@ type Props = {};
 type ViewProps = {
   focus: boolean;
   updateFocus: (focus: boolean) => void;
-  search: (key: string) => Promise<SearchResult>;
+  search: (key: string) => Promise<SearchResult | undefined>;
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
@@ -45,4 +56,5 @@ export {
   SortableModel,
   Person,
   Group,
+  SectionTypeMap,
 };
