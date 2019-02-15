@@ -46,13 +46,9 @@ class RTCCallManager {
   }
 
   connectedCallList(): RTCCall[] {
-    const connectedCalls: RTCCall[] = [];
-    this._calls.forEach((item: RTCCall) => {
-      if (item.getCallState() === RTC_CALL_STATE.CONNECTED) {
-        connectedCalls.push(item);
-      }
-    });
-    return connectedCalls;
+    return this._calls.filter(
+      (item: RTCCall) => item.getCallState() === RTC_CALL_STATE.CONNECTED,
+    );
   }
 
   connectedCallCount(): number {
