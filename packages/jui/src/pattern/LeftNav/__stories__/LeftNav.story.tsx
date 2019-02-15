@@ -9,21 +9,20 @@ import { boolean } from '@storybook/addon-knobs';
 import { BrowserRouter } from 'react-router-dom';
 import { JuiLeftNav } from '../index';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-const UMI_COUNT = [[0, 999, 30, 2], [2, 10, 88, 0, 0, 1]];
 const icons = [
   [
-    { icon: 'dashboard', title: 'Dashboard', url: '' },
-    { icon: 'message', title: 'Messages', url: '' },
-    { icon: 'phone', title: 'Phone', url: '' },
-    { icon: 'videocam', title: 'Meetings', url: '' },
+    { icon: 'dashboard', title: 'Dashboard', url: 'path/1' },
+    { icon: 'messages', title: 'Messages', url: 'path/1' },
+    { icon: 'phone', title: 'Phone', url: 'path/1' },
+    { icon: 'meetings', title: 'Meetings', url: 'path/1' },
   ],
   [
-    { icon: 'contacts', title: 'Contacts', url: '' },
-    { icon: 'date_range', title: 'Calendar', url: '' },
-    { icon: 'assignment_turned_in', title: 'Tasks', url: '' },
-    { icon: 'library_books', title: 'Notes', url: '' },
-    { icon: 'files', title: 'Files', url: '' },
-    { icon: 'settings', title: 'Settings', url: '' },
+    { icon: 'contacts', title: 'Contacts', url: 'path/1' },
+    { icon: 'calendar', title: 'Calendar', url: 'path/1' },
+    { icon: 'tasks', title: 'Tasks', url: 'path/1' },
+    { icon: 'notes', title: 'Notes', url: 'path/1' },
+    { icon: 'copy', title: 'Files', url: 'path/1' },
+    { icon: 'settings', title: 'Settings', url: 'path/1' },
   ],
 ];
 storiesOf('Pattern', module)
@@ -32,7 +31,12 @@ storiesOf('Pattern', module)
     const isExpand = boolean('expand', false);
     return (
       <BrowserRouter>
-        <JuiLeftNav icons={icons} expand={isExpand} onRouteChange={() => {}} />
+        <JuiLeftNav
+          selectedPath={'a'}
+          icons={icons}
+          expand={isExpand}
+          onRouteChange={() => {}}
+        />
       </BrowserRouter>
     );
   });

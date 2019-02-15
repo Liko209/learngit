@@ -3,7 +3,6 @@
  * @Date: 2018-09-18 10:10:39
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../.storybook/storybook.d.ts" />
 import _ from 'lodash';
 import React, { PureComponent } from 'react';
 import { storiesOf } from '@storybook/react';
@@ -61,7 +60,7 @@ storiesOf('HoC/withScroller', module)
         return (
           <DemoWrapper>
             <DemoContentWithScroller initialScrollTop={99999} stickTo="bottom">
-              {items.map(n => (
+              {items.map((n: any) => (
                 <li key={n}>{n}</li>
               ))}
             </DemoContentWithScroller>

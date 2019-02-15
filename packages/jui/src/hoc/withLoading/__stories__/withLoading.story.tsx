@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 10:10:56
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent, ReactNode } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
@@ -48,7 +48,7 @@ type Item = {
 };
 
 type ListProps = {
-  children: JSX.Element;
+  children?: ReactNode;
 };
 
 storiesOf('HoC/withLoading', module).add('demo', () => {
@@ -120,7 +120,11 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
           </DemoWrapper>
           loading more:
           <DemoWrapper>
-            <ListWithLoadingMore loadingTop={_loading} loadingBottom={false}>
+            <ListWithLoadingMore
+              viewRef={{} as any}
+              loadingTop={_loading}
+              loadingBottom={false}
+            >
               {loadingMoreChildren}
             </ListWithLoadingMore>
           </DemoWrapper>
