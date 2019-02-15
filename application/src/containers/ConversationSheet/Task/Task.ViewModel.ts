@@ -71,7 +71,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
         ENTITY_NAME.FILE_ITEM,
         attachment,
       );
-      if (!item.isMocked && !item.deactivated) {
+      if (item && !item.isMocked && !item.deactivated) {
         items.push(item);
       }
     });

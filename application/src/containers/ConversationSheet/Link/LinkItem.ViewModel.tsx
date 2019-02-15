@@ -23,7 +23,7 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
     const items: LinkItemModel[] = [];
     this._ids.forEach((id: number) => {
       const item = getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, id);
-      if (!item.isMocked && !item.deactivated) {
+      if (item && !item.isMocked && !item.deactivated) {
         items.push(item);
       }
     });

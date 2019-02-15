@@ -25,7 +25,7 @@ class NoteViewModel extends AbstractViewModel<NoteProps>
     const items: NoteItemModel[] = [];
     this._ids.map((id: number) => {
       const item = getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, id);
-      if (!item.isMocked && !item.deactivated) {
+      if (item && !item.isMocked && !item.deactivated) {
         items.push(item);
       }
     });
