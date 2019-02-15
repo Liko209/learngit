@@ -23,7 +23,12 @@ class StateActionController {
 
   async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
     const groupService: GroupService = GroupService.getInstance();
-    const group = await groupService.getById(groupId);
+    let group;
+    try {
+      group = await groupService.getById(groupId);
+    } catch (error) {
+      group = null;
+    }
     if (!group) {
       return;
     }

@@ -20,8 +20,7 @@ export class CreateTeamModal extends BaseWebComponent {
   }
 
   get createButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').nth(1);
+    return this.self.find('.modal-actions button').nth(1);
   }
 
   get toggleList() {
@@ -30,6 +29,10 @@ export class CreateTeamModal extends BaseWebComponent {
 
   get teamNameInput() {
     return this.getSelectorByAutomationId("CreateTeamName");
+  }
+
+  get mayAddOtherMemberButton() {
+    return this.getToggleButton(2);
   }
 
   get teamDescriptionInput() {
@@ -46,6 +49,10 @@ export class CreateTeamModal extends BaseWebComponent {
 
   async clickMayPostButton() {
     await this.t.click(this.getToggleButton(1));
+  }
+
+  async clickMayAddOtherMemberButton() {
+    await this.t.click(this.getToggleButton(2));
   }
 
   async typeTeamName(teamName) {
@@ -78,6 +85,12 @@ export class CreateTeamModal extends BaseWebComponent {
 
   async typeMember(text: string, options?) {
     await this.clickAndTypeText(this.membersInput, text, options);
+  }
+
+  async addMember(name: string) {
+    await this.typeMember(name,{paste: true});
+    await this.t.wait(3e3);
+    await this.selectMemberByNth(0);
   }
 
   get selectedMembers() {
