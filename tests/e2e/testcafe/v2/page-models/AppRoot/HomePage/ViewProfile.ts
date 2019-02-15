@@ -250,15 +250,19 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   async countOnMemberListShouldBe(n: number) {
-    await this.t.expect(this.memberList.find("li").count).eql(n);
+    await this.t.expect(this.memberNames.count).eql(n);
   }
 
   get memberList() {
-    return this.getSelectorByAutomationId('profileDialogMemberList');
+    return this.self.find('*[role="rowgroup"]');
   }
 
   get memberNames() {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName');
+  }
+
+  nthMemberEntry(n: number) {
+    return this.getComponent(Member, this.memberList.find('*').withAttribute('data-id').nth(n));
   }
 
   memberEntryById(id: string) {
@@ -364,7 +368,7 @@ class Member extends BaseWebComponent {
   }
 
   get moreButton() {
-    return this.getSelectorByAutomationId('', this.self);
+    return this.getSelectorByAutomationId('moreIcon', this.self);
   }
 
   async openMoreMenu() {
@@ -404,15 +408,15 @@ class MemberMoreMenu extends BaseWebComponent {
   }
 
   get removeFromTeamItem() {
-    return this.getSelectorByAutomationId('');
+    return this.getSelectorByAutomationId('removeFromTeam');
   }
 
   get makeTeamAdminItem() {
-    return this.getSelectorByAutomationId('');
+    return this.getSelectorByAutomationId('makeTeamAdmin');
   }
 
   get revokeTeamAdminItem() {
-    return this.getSelectorByAutomationId('');
+    return this.getSelectorByAutomationId('revokeTeamAdmin');
   }
 
   async clickRemoveTeamMember() {
