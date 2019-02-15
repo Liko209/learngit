@@ -253,9 +253,7 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
         LOADING_DELAY,
       );
       await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-      if (this._loadStatus.timer) {
-        clearTimeout(this._loadStatus.timer);
-      }
+      clearTimeout(this._loadStatus.timer);
       Object.assign(this._loadStatus, {
         firstLoaded: true,
         loading: false,
