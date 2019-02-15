@@ -131,21 +131,14 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it('Should schedule nex retry interval as max(60, current_interval * 2). [JPT-813]', () => {
+    it('Should schedule nex retry interval as max(3600, current_interval * 2). [JPT-813]', () => {
       setup();
-      expect(regManager._retryInterval).toBe(2);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(4);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(8);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(16);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(32);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(60);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(60);
+      let expected = 2;
+      for (let i = 0; i < 20; i++) {
+        expect(regManager._retryInterval).toBe(expected);
+        regManager._calculateNextRetryInterval();
+        expected = expected * 2 > 3600 ? 3600 : expected * 2;
+      }
     });
   });
 

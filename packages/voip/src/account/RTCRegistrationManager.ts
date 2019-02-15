@@ -11,6 +11,7 @@ import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
 import { RTC_ACCOUNT_STATE, RTCCallOptions } from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
+import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import {
   REGISTRATION_ERROR_CODE,
   REGISTRATION_EVENT,
@@ -41,7 +42,9 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onReRegisterAction(): void {
-    this._userAgent.reRegister();
+    if (this._userAgent) {
+      this._userAgent.reRegister();
+    }
   }
 
   public onProvisionReadyAction(
@@ -52,44 +55,29 @@ class RTCRegistrationManager extends EventEmitter2
     this._initUserAgentListener();
   }
 
+  public onMakeOutgoingCallAction(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+    options: RTCCallOptions,
+  ) {
+    this.emit(
+      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
+      toNumber,
+      delegate,
+      options,
+    );
+  }
+
+  public onReceiveIncomingInviteAction(callSession: any) {
+    this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
+  }
+
   constructor() {
     super();
     this._fsm = new RTCRegistrationFSM(this);
     this._eventQueue = async.queue(
       (task: RTCRegisterAsyncTask, callback: any) => {
-        switch (task.name) {
-          case REGISTRATION_EVENT.PROVISION_READY: {
-            this._fsm.provisionReady(task.provData, task.provOptions);
-            break;
-          }
-          case REGISTRATION_EVENT.RE_REGISTER: {
-            this._fsm.reRegister();
-            break;
-          }
-          case REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE: {
-            this._fsm.networkChangeToOnline();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_REGISTER_SUCCESS: {
-            this._fsm.regSuccess();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_REGISTER_FAILED: {
-            this._fsm.regFailed();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_REGISTER_TIMEOUT: {
-            this._fsm.regTimeout();
-            break;
-          }
-          case REGISTRATION_EVENT.UA_UNREGISTERED: {
-            this._fsm.unregister();
-            break;
-          }
-          default:
-            break;
-        }
-        callback();
+        callback(task.data);
       },
     );
     this._initFsmObserve();
@@ -159,21 +147,53 @@ class RTCRegistrationManager extends EventEmitter2
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.PROVISION_READY,
-        provData: provisionData,
-        provOptions: provisionOptions,
+        data: {
+          provData: provisionData,
+          provOptions: provisionOptions,
+        },
       },
-      () => {},
+      (data?: any) => {
+        this._fsm.provisionReady(data.provData, data.provOptions);
+      },
     );
   }
 
   public reRegister() {
-    this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {});
+    this._eventQueue.push({ name: REGISTRATION_EVENT.RE_REGISTER }, () => {
+      this._fsm.reRegister();
+    });
+  }
+
+  public makeCall(
+    to: string,
+    delegate: IRTCCallDelegate,
+    options: RTCCallOptions,
+  ) {
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.MAKE_OUTGOING_CALL_TASK,
+        data: {
+          toNumber: to,
+          callDelegate: delegate,
+          callOptions: options,
+        },
+      },
+      (data?: any) => {
+        this._fsm.makeOutgoingCall(
+          data.toNumber,
+          data.callDelegate,
+          data.callOptions,
+        );
+      },
+    );
   }
 
   networkChangeToOnline() {
     this._eventQueue.push(
       { name: REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE },
-      () => {},
+      () => {
+        this._fsm.networkChangeToOnline();
+      },
     );
   }
 
@@ -187,33 +207,46 @@ class RTCRegistrationManager extends EventEmitter2
   private _onUARegSuccess() {
     this._eventQueue.push(
       { name: REGISTRATION_EVENT.UA_REGISTER_SUCCESS },
-      () => {},
+      () => {
+        this._fsm.regSuccess();
+      },
     );
   }
 
   private _onUADeRegister() {
-    this._eventQueue.push(
-      { name: REGISTRATION_EVENT.UA_UNREGISTERED },
-      () => {},
-    );
+    this._eventQueue.push({ name: REGISTRATION_EVENT.UA_UNREGISTERED }, () => {
+      this._fsm.unregister();
+    });
   }
 
   private _onUARegFailed(response: any, cause: any) {
     if (REGISTRATION_ERROR_CODE.TIME_OUT === cause) {
       this._eventQueue.push(
         { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
-        () => {},
+        () => {
+          this._fsm.regTimeout();
+        },
       );
     } else {
       this._eventQueue.push(
         { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
-        () => {},
+        () => {
+          this._fsm.regFailed();
+        },
       );
     }
   }
 
   private _onUAReceiveInvite(session: any) {
-    this.emit(REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION, session);
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE_TASK,
+        data: { callSession: session },
+      },
+      (data?: any) => {
+        this._fsm.receiveIncomingInvite(data.callSession);
+      },
+    );
   }
 
   private _scheduleRegisterRetryTimer() {

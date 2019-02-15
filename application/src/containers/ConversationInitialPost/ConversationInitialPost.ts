@@ -1,7 +1,7 @@
 /*
  * @Author: Shining Miao (shining.miao@ringcentral.com)
  * @Date: 2018-10-29 10:00:10
- * Copyright © RingCentral. All rights reserved2.
+ * Copyright © RingCentral. All rights reserved.
  */
 import { buildContainer } from '@/base';
 import { ConversationInitialPostView } from './ConversationInitialPost.View';
