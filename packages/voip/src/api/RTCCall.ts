@@ -198,8 +198,8 @@ class RTCCall {
     if (
       this._isIncomingCall &&
       session &&
-      'request' in session &&
-      'headers' in session.request
+      session.request &&
+      session.request.headers
     ) {
       // Update party id and session id in incoming call sip message
       this._parseRcApiIds(session.request.headers);
@@ -219,7 +219,7 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
       // Update party id and session id in invite response sip message
       const inviteRes = this._callSession.getInviteResponse();
-      if (inviteRes) {
+      if (inviteRes && inviteRes.headers) {
         this._parseRcApiIds(inviteRes.headers);
       } else {
         rtcLogger.warn(
@@ -525,11 +525,11 @@ class RTCCall {
   // Header name: P-Rc-Api-Ids
   // Example: party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw"
   private _parseRcApiIds(headers: any) {
-    if (headers == null) {
+    if (!headers) {
       return;
     }
     const apiIds = headers[RC_SIP_HEADER_NAME.RC_API_IDS];
-    if (null == apiIds) {
+    if (!apiIds) {
       rtcLogger.warn(
         LOG_TAG,
         `Sip headers have no ${RC_SIP_HEADER_NAME.RC_API_IDS}`,
