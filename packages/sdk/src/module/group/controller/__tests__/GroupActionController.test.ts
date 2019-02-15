@@ -145,7 +145,7 @@ describe('GroupFetchDataController', () => {
             },
             user: {
               uids: [],
-              level: 2,
+              level: 0,
             },
           },
         }),

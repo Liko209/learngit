@@ -67,7 +67,10 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 
   @action
-  create = async (memberIds: (number | string)[], options: TeamSetting): Promise<Group | null> => {
+  create = async (
+    memberIds: (number | string)[],
+    options: TeamSetting,
+  ): Promise<Group | null> => {
     const groupService: GroupService = GroupService.getInstance();
     const creatorId = Number(UserConfig.getCurrentUserId());
     try {

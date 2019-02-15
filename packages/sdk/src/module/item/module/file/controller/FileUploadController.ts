@@ -269,7 +269,7 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    this._itemService.deleteItem(itemId);
+    this._itemService.deleteLocalItem(itemId);
     notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
   }
 
@@ -529,7 +529,7 @@ class FileUploadController {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    this._itemService.updateItem(preInsertItem);
+    this._itemService.updateLocalItem(preInsertItem);
     const itemId = preInsertItem.id;
 
     const preHandlePartial = (
@@ -580,8 +580,8 @@ class FileUploadController {
     itemFile: ItemFile,
   ) {
     const preInsertId = preInsertItem.id;
-    await this._itemService.deleteItem(preInsertId);
-    await this._itemService.updateItem(itemFile);
+    await this._itemService.deleteLocalItem(preInsertId);
+    await this._itemService.updateLocalItem(itemFile);
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
@@ -665,7 +665,7 @@ class FileUploadController {
   private async _preSaveItemFile(newItemFile: ItemFile, file: File) {
     this._saveItemFileToUploadingFiles(newItemFile);
     this._saveItemFileToProgressCache(newItemFile, file);
-    await this._itemService.createItem(newItemFile);
+    await this._itemService.createLocalItem(newItemFile);
   }
 
   private _toItemFile(
