@@ -6,13 +6,10 @@
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
 import { service } from 'sdk';
-const { GroupService } = service;
 
 jest.mock('sdk/service');
 jest.mock('@/store/utils');
-
-const groupService = new GroupService();
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+jest.mock('sdk/api');
 
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {

@@ -6,14 +6,14 @@
 import { getGlobalValue } from '../../utils/entities';
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
-import { notificationCenter, ENTITY, GroupService } from 'sdk/service';
-import { StateService } from 'sdk/module/state';
 import { ProfileService } from 'sdk/module/profile';
+import { StateService } from 'sdk/module/state';
+import { GroupService } from 'sdk/module/group';
 
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');
-jest.mock('sdk/service/group');
+jest.mock('sdk/module/group');
 jest.mock('../../utils/entities');
 
 const profileService = new ProfileService();

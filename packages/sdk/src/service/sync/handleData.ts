@@ -13,7 +13,6 @@ import {
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
-import groupHandleData from '../group/handleData';
 import notificationCenter from '../notificationCenter';
 import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
@@ -27,6 +26,7 @@ import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
 import { ProfileService } from '../../module/profile';
+import { GroupService } from '../../module/group';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -49,6 +49,7 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
   const arrState: any[] = [];
   if (state && Object.keys(state).length > 0) {
     arrState.push(state);
+    arrState[0].__from_index = true;
   }
 
   let transProfile: Raw<Profile> | null = null;
@@ -76,9 +77,11 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     .then(() =>
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
-    .then(() => groupHandleData(public_teams))
-    .then(() => groupHandleData(groups))
-    .then(() => groupHandleData(teams))
+    .then(() =>
+      GroupService.getInstance<GroupService>().handleData(public_teams),
+    )
+    .then(() => GroupService.getInstance<GroupService>().handleData(groups))
+    .then(() => GroupService.getInstance<GroupService>().handleData(teams))
     .then(() => postHandleData(posts, maxPostsExceeded));
 };
 

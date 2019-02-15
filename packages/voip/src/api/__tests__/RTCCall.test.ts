@@ -35,13 +35,38 @@ describe('RTC call', () => {
       return this.isReadyReturnValue;
     }
   }
+
+  class SessionDescriptionHandler {
+    private _directionFlag: boolean = true;
+
+    setDirectionFlag(flag: boolean) {
+      this._directionFlag = flag;
+    }
+
+    getDirection(): string {
+      if (this._directionFlag) {
+        return 'sendonly';
+      }
+      return 'sendrecv';
+    }
+  }
   class MockSession extends EventEmitter2 {
+    public sessionDescriptionHandler: SessionDescriptionHandler;
     constructor() {
       super();
       this.remoteIdentity = {
         displayName: 'test',
         uri: { aor: 'test@ringcentral.com' },
       };
+      this.sessionDescriptionHandler = new SessionDescriptionHandler();
+    }
+
+    emitSessionReinviteAccepted() {
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED, this);
+    }
+
+    emitSessionReinviteFailed() {
+      this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
     }
 
     flip = jest.fn();
@@ -1189,10 +1214,7 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.mute();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('holded');
@@ -1222,10 +1244,7 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       call.mute();
       setImmediate(() => {
@@ -1386,10 +1405,7 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.mute();
       call.unmute();
       setImmediate(() => {
@@ -1421,10 +1437,8 @@ describe('RTC call', () => {
       call.answer();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
+
       call.unhold();
       call.mute();
       call.unmute();
@@ -1467,10 +1481,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('holded');
         done();
@@ -1483,10 +1494,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteFailed();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
         done();
@@ -1500,10 +1508,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('unholding');
@@ -1518,10 +1523,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       call._callSession.emit(
         CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
@@ -1540,15 +1542,10 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.UNHOLD,
-      );
+      session.sessionDescriptionHandler.setDirectionFlag(false);
+      session.emitSessionReinviteAccepted();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
         done();
@@ -1600,10 +1597,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.hangup();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
@@ -1617,10 +1611,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
@@ -1634,10 +1625,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
@@ -1652,10 +1640,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       call.hangup();
       setImmediate(() => {
@@ -1671,10 +1656,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       session.mockSignal(WEBPHONE_SESSION_STATE.FAILED);
       setImmediate(() => {
@@ -1690,10 +1672,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       session.mockSignal(WEBPHONE_SESSION_STATE.BYE);
       setImmediate(() => {
@@ -1870,10 +1849,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.dtmf('1');
       setImmediate(() => {
         expect(call._fsm.state()).toBe('holded');
@@ -1887,10 +1863,7 @@ describe('RTC call', () => {
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       call.hold();
-      call._callSession.emit(
-        CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-        RTC_CALL_ACTION.HOLD,
-      );
+      session.emitSessionReinviteAccepted();
       call.unhold();
       call.dtmf('1');
       setImmediate(() => {

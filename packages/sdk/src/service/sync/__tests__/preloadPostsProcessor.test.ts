@@ -8,7 +8,7 @@ import { Group } from '../../../module/group/entity/Group';
 import { NewPostService } from '../../../module/post/service/PostService';
 import PreloadPostsProcessor from '../preloadPostsProcessor';
 import { StateService } from '../../../module/state';
-import { NewGroupService } from '../../../module/group';
+import { GroupService } from '../../../module/group';
 
 jest.mock('../../../module/post/service/PostService');
 jest.mock('../../../module/state');
@@ -16,11 +16,11 @@ jest.mock('../../../module/group');
 
 const postService: NewPostService = new NewPostService();
 const stateService: StateService = new StateService();
-const groupService: NewGroupService = new NewGroupService();
+const groupService: GroupService = new GroupService();
 beforeEach(() => {
   NewPostService.getInstance = jest.fn().mockReturnValue(postService);
   StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 });
 
 const ONE_PAGE = 20;

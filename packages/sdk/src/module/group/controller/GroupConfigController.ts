@@ -3,7 +3,8 @@
  * @Date: 2019-01-28 13:34:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { daoManager, QUERY_DIRECTION, GroupConfigDao } from '../../../dao';
+import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
+
 class GroupConfigController {
   constructor() {}
 
@@ -24,6 +25,11 @@ class GroupConfigController {
       id: groupId,
       [`has_more_${direction}`]: hasMore,
     });
+  }
+
+  async deleteGroupsConfig(ids: number[]) {
+    const groupConfigDao = daoManager.getDao(GroupConfigDao);
+    await groupConfigDao.bulkDelete(ids);
   }
 }
 

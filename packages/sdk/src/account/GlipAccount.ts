@@ -5,7 +5,7 @@
  */
 import { AbstractAccount } from '../framework';
 import PostService from '../service/post';
-import GroupService from '../service/group';
+import GroupService from '../module/group';
 import CompanyService from '../service/company';
 import { PersonService } from '../module/person';
 import PresenceService from '../service/presence';
