@@ -48,8 +48,8 @@ describe('ConversationInitialPostView', () => {
 
   describe("Check the first post_Initial view of a new conversation after it's created [JPT-237]", () => {
     const displayName = 'facebook';
-    const createTime = 'createTime';
-    const creator = { userDisplayName: 'Wayne zhou' };
+    const createTime = 1531726169129;
+    const creator = { userDisplayName: 'Wayne zhou' } as PersonModel;
 
     const baseProps = {
       creator,
@@ -63,6 +63,7 @@ describe('ConversationInitialPostView', () => {
       tReady: {},
       isTeam: true,
       isCompanyTeam: true,
+      notEmpty: true,
     };
 
     it('should show create info when it is not a company team [JPT-237]', () => {
@@ -76,7 +77,7 @@ describe('ConversationInitialPostView', () => {
       wrapper.mount();
       expect(wrapper.html().includes(creator.userDisplayName)).toBeTruthy();
       expect(wrapper.html().includes(displayName)).toBeTruthy();
-      expect(wrapper.html().includes(createTime)).toBeTruthy();
+      expect(wrapper.html().includes(createTime.toString())).toBeTruthy();
     });
 
     it('should not show create info when it is a company team [JPT-237]', () => {
@@ -90,7 +91,7 @@ describe('ConversationInitialPostView', () => {
       wrapper.mount();
       expect(wrapper.html().includes(creator.userDisplayName)).toBeFalsy();
       expect(wrapper.html().includes(displayName)).toBeFalsy();
-      expect(wrapper.html().includes(createTime)).toBeFalsy();
+      expect(wrapper.html().includes(createTime.toString())).toBeFalsy();
     });
   });
 });
