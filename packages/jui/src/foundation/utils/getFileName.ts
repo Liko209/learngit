@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const getFileName = (filename: string) => {
+const getFileName = (filename: string, truncation: number = -8) => {
   if (!filename) return '';
 
   const name = filename;
-  const right = name.substr(-7);
+  const right = name.substr(truncation);
   const left = name.replace(right, '');
   return [left, right];
 };

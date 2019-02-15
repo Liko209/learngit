@@ -6,6 +6,7 @@
 import { ThemeProps as StyledThemeProps } from 'styled-components';
 import { Theme as MuiTheme } from '@material-ui/core/styles/createMuiTheme';
 import { Palette as MuiPalette } from '@material-ui/core/styles/createPalette';
+import { Omit } from '../../foundation/utils/typeHelper';
 
 type Palette = {
   primary: {
@@ -106,7 +107,31 @@ type Theme = {
     height: number;
   };
   typography: {
-    title1: {
+    display4: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    display3: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    display2: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    display1: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    headline: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -118,7 +143,7 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    subheading1: {
+    title1: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -130,7 +155,19 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    caption1: {
+    subheading1: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    body2: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    body1: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -142,7 +179,13 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    h6: {
+    caption1: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    button: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -157,7 +200,7 @@ type Theme = {
   maxHeight: {
     dialog: string;
   };
-} & MuiTheme;
+} & Omit<MuiTheme, 'typography'>;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
 export { Palette, Theme, ThemeProps };

@@ -23,6 +23,11 @@ import {
 } from './types';
 import { v4 as uuid } from 'uuid';
 
+enum SDH_DIRECTION {
+  SEND_ONLY = 'sendonly',
+  SEND_RECV = 'sendrecv',
+}
+
 class RTCCall {
   private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
   private _callInfo: RTCCallInfo = {
@@ -64,7 +69,7 @@ class RTCCall {
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
     this._fsm = new RTCCallFsm();
-    this._callSession = new RTCSipCallSession();
+    this._callSession = new RTCSipCallSession(this._callInfo.uuid);
     if (this._isIncomingCall) {
       this._callInfo.fromName = session.remoteIdentity.displayName;
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
@@ -207,6 +212,15 @@ class RTCCall {
     });
     this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
+    });
+    this._callSession.on(
+      CALL_SESSION_STATE.REINVITE_ACCEPTED,
+      (session: any) => {
+        this._onSessionReinviteAccepted(session);
+      },
+    );
+    this._callSession.on(CALL_SESSION_STATE.REINVITE_FAILED, (session: any) => {
+      this._onSessionReinviteFailed(session);
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -379,6 +393,25 @@ class RTCCall {
       this._hangupInvalidCallTimer = null;
     }
   }
+
+  private _getSessionReinviteAction(session: any): RTC_CALL_ACTION {
+    if (
+      SDH_DIRECTION.SEND_ONLY ===
+      session.sessionDescriptionHandler.getDirection()
+    ) {
+      return RTC_CALL_ACTION.HOLD;
+    }
+    return RTC_CALL_ACTION.UNHOLD;
+  }
+
+  private _onSessionReinviteAccepted(session: any) {
+    this._onCallActionSuccess(this._getSessionReinviteAction(session));
+  }
+
+  private _onSessionReinviteFailed(session: any) {
+    this._onCallActionFailed(this._getSessionReinviteAction(session));
+  }
+
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();

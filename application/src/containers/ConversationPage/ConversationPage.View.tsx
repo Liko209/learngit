@@ -154,7 +154,10 @@ class ConversationPageViewComponent extends Component<
             />
           </JuiDropZone>
         ) : (
-          <JuiDisabledInput text={t('disabledText')} />
+          <JuiDisabledInput
+            data-test-automation-id="disabled-message-input"
+            text={t('disabledText')}
+          />
         )}
         <AttachmentManager id={groupId} viewRef={this._attachmentManagerRef} />
       </JuiConversationPage>

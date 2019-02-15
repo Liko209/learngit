@@ -85,6 +85,10 @@ class MoreMenu extends Entry {
   get close() {
     return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
   }
+
+  async openProfile() {
+    return await this.t.click(this.profile.self);
+  }
 }
 
 class MenuItem extends Entry {
