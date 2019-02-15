@@ -1,6 +1,6 @@
 import { service, mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { ProgressService } from 'sdk/module/progress';
 import { GroupService } from 'sdk/module/group';
@@ -106,7 +106,7 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
-    service: () => NewPostService.getInstance(),
+    service: () => PostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: 1000,
   },

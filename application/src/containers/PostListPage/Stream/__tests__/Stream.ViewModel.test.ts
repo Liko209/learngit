@@ -10,7 +10,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store';
 import * as _ from 'lodash';
 import * as utils from '@/store/utils';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('@/store');
 jest.mock('@/store/utils');
@@ -25,7 +25,7 @@ function setup(obj: any) {
   return vm;
 }
 
-const postService = new NewPostService();
+const postService = new PostService();
 
 describe('StreamViewModel', () => {
   let mockedSortableListHandler: any;
@@ -33,7 +33,7 @@ describe('StreamViewModel', () => {
   let vm: any;
   let newProps: any;
   beforeEach(() => {
-    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
     mockedSortableListHandler = {
       sortableListStore: {
         getIds: jest.fn().mockReturnValue([1, 2, 3]),

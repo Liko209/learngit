@@ -8,13 +8,13 @@ import { getSingleEntity } from '../../../../../store/utils';
 import { BookmarkViewModel } from '../Bookmark.ViewModel';
 import { serviceOk } from 'sdk/service/ServiceResult';
 
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
 jest.mock('../../../../../store/utils');
 
-const postService = new NewPostService();
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let bookmarkViewModel: BookmarkViewModel;
 

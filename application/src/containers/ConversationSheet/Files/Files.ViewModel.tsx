@@ -17,7 +17,7 @@ import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
@@ -31,7 +31,7 @@ import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
-  private _postService: NewPostService;
+  private _postService: PostService;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
   @observable
@@ -40,7 +40,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   constructor(props: FilesViewProps) {
     super(props);
     this._itemService = ItemService.getInstance();
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);

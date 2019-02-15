@@ -22,7 +22,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 
 jest.mock('sdk/module/item');
@@ -30,7 +30,7 @@ jest.mock('sdk/module/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
-const postService = new NewPostService();
+const postService = new PostService();
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
@@ -52,7 +52,7 @@ describe('StreamViewModel', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
-    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });

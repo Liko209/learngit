@@ -19,7 +19,7 @@ import { GroupApiType } from '../../../models';
 import { UserConfig } from '../../../service/account/UserConfig';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { NewPostService } from '../../post';
+import { PostService } from '../../post';
 import ProfileService from '../../../service/profile';
 import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
@@ -338,7 +338,7 @@ export class GroupActionController {
   }
 
   deleteAllTeamInformation = async (ids: number[]) => {
-    const postService: NewPostService = NewPostService.getInstance();
+    const postService: PostService = PostService.getInstance();
     await postService.deletePostsByGroupIds(ids, true);
     await this.groupService.deleteGroupsConfig(ids);
     const groups = await this.entitySourceController.getEntitiesLocally(

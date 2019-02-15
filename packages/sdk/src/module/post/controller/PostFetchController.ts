@@ -244,33 +244,6 @@ class PostFetchController {
     return result;
   }
 
-  async getLastPostOfGroup(groupId: number): Promise<Post | null> {
-    const postDao = daoManager.getDao(PostDao);
-    return postDao.queryLastPostByGroupId(groupId);
-  }
-
-  async groupHasPostInLocal(groupId: number) {
-    const postDao: PostDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryPostsByGroupId(
-      groupId,
-      0,
-      undefined,
-      1,
-    );
-    return posts.length !== 0;
-  }
-
-  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
-    const result = await this.fetchPaginationPosts({
-      groupId,
-      limit: 1,
-    });
-    if (result && result.posts && result.posts.length) {
-      return result.posts[0]._id;
-    }
-    return null;
-  }
-
   private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {
     if (posts && posts.length) {
       const validAnchorPost =

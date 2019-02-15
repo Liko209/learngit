@@ -532,56 +532,6 @@ describe('PostFetchController()', () => {
       expect(result.posts).toEqual([{ id: 1 }, { id: 2 }]);
     });
   });
-  describe('getLastPostOfGroup', async () => {
-    it('should return latest post when local group has posts', async () => {
-      const mockData = {
-        id: 1,
-        group_id: 2,
-      };
-      postDao.queryLastPostByGroupId.mockResolvedValueOnce(mockData);
-      const result = await postFetchController.getLastPostOfGroup(2);
-      expect(result).toEqual(mockData);
-    });
-    it('should return null when local group has not post', async () => {
-      postDao.queryLastPostByGroupId.mockResolvedValueOnce(null);
-      const result = await postFetchController.getLastPostOfGroup(2);
-      expect(result).toEqual(null);
-    });
-  });
-  describe('groupHasPostInLocal', () => {
-    it('should return true when local has post', async () => {
-      postDao.queryPostsByGroupId.mockResolvedValueOnce([
-        { id: 1, group_id: 2 },
-      ]);
-      const result = await postFetchController.groupHasPostInLocal(2);
-      expect(result).toBeTruthy();
-    });
-    it('should return true when local has not post', async () => {
-      postDao.queryPostsByGroupId.mockResolvedValueOnce([]);
-      const result = await postFetchController.groupHasPostInLocal(2);
-      expect(result).toBeFalsy();
-    });
-  });
-
-  describe('getNewestPostIdOfGroup', () => {
-    it('should return post id when has post', async () => {
-      const data = { posts: [{ _id: 1, group_id: 2 }], items: [] };
-      jest
-        .spyOn(postFetchController, 'fetchPaginationPosts')
-        .mockReturnValueOnce(data);
-
-      const result = await postFetchController.getNewestPostIdOfGroup(2);
-      expect(result).toEqual(1);
-    });
-    it('should return null when has not post', async () => {
-      const data = { posts: [], items: [] };
-      jest
-        .spyOn(postFetchController, 'fetchPaginationPosts')
-        .mockReturnValueOnce(data);
-      const result = await postFetchController.getNewestPostIdOfGroup(2);
-      expect(result).toEqual(null);
-    });
-  });
 
   describe('getPostCountByGroupId', () => {
     it('should return correct post count by group id', async () => {

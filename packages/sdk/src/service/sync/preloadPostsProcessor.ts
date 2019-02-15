@@ -5,7 +5,7 @@
  */
 import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
-import { NewPostService } from '../../module/post';
+import { PostService } from '../../module/post';
 import { mainLogger } from 'foundation';
 import { StateService } from '../../module/state';
 import { QUERY_DIRECTION } from '../../dao/constants';
@@ -41,7 +41,7 @@ class PreloadPostsProcessor implements IProcessor {
         postId: 0,
         shouldSaveToDb: true,
       };
-      const postService: NewPostService = NewPostService.getInstance();
+      const postService: PostService = PostService.getInstance();
       await postService.getRemotePostsByGroupId(params);
     }
     return true;
@@ -65,7 +65,7 @@ class PreloadPostsProcessor implements IProcessor {
     const stateService: StateService = StateService.getInstance();
     const state = await stateService.getById(this._group.id);
 
-    const postService: NewPostService = NewPostService.getInstance();
+    const postService: PostService = PostService.getInstance();
     const groupService: GroupService = GroupService.getInstance();
     if (this._isFavorite || !this._group.is_team) {
       // if unread count < one page, load one page

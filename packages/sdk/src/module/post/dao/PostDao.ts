@@ -85,15 +85,6 @@ class PostDao extends BaseDao<Post> {
     );
   }
 
-  queryLastPostByGroupId(groupId: number): Promise<Post | null> {
-    const query = this.createQuery();
-    return query
-      .orderBy('created_at', true)
-      .equal('group_id', groupId)
-      .filter((item: Post) => !item.deactivated)
-      .first();
-  }
-
   queryOldestPostByGroupId(groupId: number): Promise<Post | null> {
     const query = this.createQuery();
     return query

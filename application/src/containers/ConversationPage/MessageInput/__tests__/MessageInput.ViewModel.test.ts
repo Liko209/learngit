@@ -15,14 +15,14 @@ import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { GroupConfigService } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/service/groupConfig');
 jest.mock('sdk/api');
 
-const postService = new NewPostService();
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const groupConfigService = {
   updateDraft: jest.fn(),

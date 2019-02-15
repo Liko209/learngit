@@ -7,7 +7,7 @@
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { BookmarkProps, BookmarkViewProps } from './types';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { Profile } from 'sdk/module/profile/entity';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -35,7 +35,7 @@ class BookmarkViewModel extends StoreViewModel<BookmarkProps>
 
   @action
   bookmark = async (toBookmark: boolean): Promise<{ isFailed: boolean }> => {
-    const postService: NewPostService = NewPostService.getInstance();
+    const postService: PostService = PostService.getInstance();
     const result = await postService.bookmarkPost(this._id, toBookmark);
     return {
       isFailed: result.isErr(),

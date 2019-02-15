@@ -12,12 +12,12 @@ import ProfileService from '../service/profile';
 import { TelephonyService } from '../module/telephony';
 import { ItemService } from '../module/item';
 import { StateService } from '../module/state';
-import { NewPostService } from '../module/post';
+import { PostService } from '../module/post';
 
 class GlipAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
     this.setSupportedServices([
-      NewPostService.name,
+      PostService.name,
       GroupService.name,
       CompanyService.name,
       ItemService.name,

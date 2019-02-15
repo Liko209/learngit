@@ -29,7 +29,7 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { UserConfig } from '../../../../service/account/UserConfig';
 import CompanyService from '../../../../service/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
-import { NewPostService } from '../../../post';
+import { PostService } from '../../../post';
 import ProfileService from '../../../../service/profile';
 import { TypeDictionary } from '../../../../utils';
 import { PersonService } from '../../../person';
@@ -80,7 +80,7 @@ describe('GroupFetchDataController', () => {
   const groupDao = new GroupDao(null);
   const configDao = new ConfigDao(null);
   const groupConfigDao = new GroupConfigDao(null);
-  const postService = new NewPostService();
+  const postService = new PostService();
   const mockUserId = 1;
 
   beforeEach(() => {
@@ -89,7 +89,7 @@ describe('GroupFetchDataController', () => {
     UserConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
-    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
 
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,

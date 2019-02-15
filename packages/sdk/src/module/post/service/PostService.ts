@@ -19,8 +19,8 @@ import { SOCKET } from '../../../service';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 
-class NewPostService extends EntityBaseService<Post> {
-  static serviceName = 'NewPostService';
+class PostService extends EntityBaseService<Post> {
+  static serviceName = 'PostService';
   postController: PostController;
   constructor() {
     super(false, daoManager.getDao(PostDao), {
@@ -100,18 +100,6 @@ class NewPostService extends EntityBaseService<Post> {
     return await profileService.putFavoritePost(postId, toBook);
   }
 
-  async getLastPostOfGroup(groupId: number): Promise<Post | null> {
-    return this.getPostController()
-      .getPostFetchController()
-      .getLastPostOfGroup(groupId);
-  }
-
-  async groupHasPostInLocal(groupId: number) {
-    return this.getPostController()
-      .getPostFetchController()
-      .groupHasPostInLocal(groupId);
-  }
-
   async getRemotePostsByGroupId(
     params: IRemotePostRequest,
   ): Promise<IPostResult | null> {
@@ -128,12 +116,6 @@ class NewPostService extends EntityBaseService<Post> {
 
   async getPostFromLocal(postId: number): Promise<Post | null> {
     return this.getEntitySource().getEntityLocally(postId);
-  }
-
-  async getNewestPostIdOfGroup(groupId: number): Promise<number | null> {
-    return this.getPostController()
-      .getPostFetchController()
-      .getNewestPostIdOfGroup(groupId);
   }
 
   async removeItemFromPost(postId: number, itemId: number) {
@@ -161,4 +143,4 @@ class NewPostService extends EntityBaseService<Post> {
   }
 }
 
-export { NewPostService };
+export { PostService };

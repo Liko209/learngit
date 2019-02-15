@@ -14,7 +14,7 @@ import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { transform2Map, getEntity } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store/base/StoreManager';
@@ -57,7 +57,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService: NewPostService = NewPostService.getInstance();
+    const postService: PostService = PostService.getInstance();
     let ids;
     let hasMore;
     if (anchor) {
@@ -122,7 +122,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const deleted = _(this._postIds)
         .difference(postIds)
         .value();
-      const postService: NewPostService = NewPostService.getInstance();
+      const postService: PostService = PostService.getInstance();
       this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);

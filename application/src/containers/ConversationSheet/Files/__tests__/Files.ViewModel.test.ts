@@ -11,7 +11,7 @@ import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
 jest.mock('../../../../store/utils');
@@ -22,8 +22,8 @@ const itemService = {
 };
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-const postService = new NewPostService();
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 ItemService.getInstance = jest.fn().mockReturnValue({});
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});

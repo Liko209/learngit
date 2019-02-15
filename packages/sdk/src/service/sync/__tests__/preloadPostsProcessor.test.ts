@@ -5,7 +5,7 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import { Group } from '../../../module/group/entity/Group';
-import { NewPostService } from '../../../module/post/service/PostService';
+import { PostService } from '../../../module/post/service/PostService';
 import PreloadPostsProcessor from '../preloadPostsProcessor';
 import { StateService } from '../../../module/state';
 import { GroupService } from '../../../module/group';
@@ -15,11 +15,11 @@ jest.mock('../../../service/profile');
 jest.mock('../../../module/state');
 jest.mock('../../../module/group');
 
-const postService: NewPostService = new NewPostService();
+const postService: PostService = new PostService();
 const stateService: StateService = new StateService();
 const groupService: GroupService = new GroupService();
 beforeEach(() => {
-  NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+  PostService.getInstance = jest.fn().mockReturnValue(postService);
   StateService.getInstance = jest.fn().mockReturnValue(stateService);
   GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 });

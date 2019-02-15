@@ -30,7 +30,7 @@ import { StateService } from './module/state';
 import SyncService from './service/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
-import { NewPostService } from './module/post';
+import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 
@@ -60,7 +60,7 @@ const registerConfigs = {
     { name: ProfileService.name, value: ProfileService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
-    { name: NewPostService.name, value: NewPostService },
+    { name: PostService.name, value: PostService },
     { name: PermissionService.name, value: PermissionService },
     { name: GroupService.name, value: GroupService },
     {
