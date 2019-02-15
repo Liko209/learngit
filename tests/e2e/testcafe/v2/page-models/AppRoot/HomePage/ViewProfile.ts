@@ -250,7 +250,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   async countOnMemberListShouldBe(n: number) {
-    await this.t.expect(this.memberList.find("li").count).eql(n);
+    await this.t.expect(this.memberNames.count).eql(n);
   }
 
   get memberList() {
@@ -266,7 +266,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryByName(name: string) {
-    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent(0))
   }
 
   get addMembersIcon() {
