@@ -19,6 +19,7 @@ type SelectFile = {
 type AttachmentsProps = {
   id: number;
   viewRef?: React.RefObject<any>;
+  forceSaveDraft: boolean;
 };
 
 type DidUploadFileCallback = () => Promise<void>;

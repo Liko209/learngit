@@ -194,7 +194,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         } else {
           this.items.set(item.id, info);
         }
-        this.forceSaveDraftItems();
+        if (this.props.forceSaveDraft) {
+          this.forceSaveDraftItems();
+        }
       }
       return item;
     } catch (e) {
