@@ -96,6 +96,11 @@ class RTCCall {
     this._delegate = delegate;
   }
 
+  // This api is only for UT
+  setCallState(newstate: RTC_CALL_STATE) {
+    this._callState = newstate;
+  }
+
   getCallState(): RTC_CALL_STATE {
     return this._callState;
   }
