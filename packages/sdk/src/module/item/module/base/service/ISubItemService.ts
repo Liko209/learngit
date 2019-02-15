@@ -10,11 +10,11 @@ import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 interface ISubItemService {
   getSortedIds(options: ItemQueryOptions): Promise<number[]>;
 
-  updateItem(item: Item): void;
+  updateLocalItem(item: Item): void;
 
-  deleteItem(itemId: number): void;
+  deleteLocalItem(itemId: number): void;
 
-  createItem(item: Item): void;
+  createLocalItem(item: Item): void;
 
   getSubItemsCount(
     groupId: number,

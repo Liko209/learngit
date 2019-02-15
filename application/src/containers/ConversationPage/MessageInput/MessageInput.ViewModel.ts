@@ -192,7 +192,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         text: realContent,
         groupId: this.id,
         itemIds: items.map(item => item.id),
-        mentionIds: ids,
+        mentionNonItemIds: ids,
       });
       // clear context (attachments) after post
       //

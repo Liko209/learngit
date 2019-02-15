@@ -16,11 +16,11 @@ class CodeItemService extends EntityBaseService<CodeItem>
     super(false);
   }
 
-  async updateItem(file: CodeItem) {}
+  async updateLocalItem(file: CodeItem) {}
 
-  async deleteItem(itemId: number) {}
+  async deleteLocalItem(itemId: number) {}
 
-  async createItem(file: CodeItem) {}
+  async createLocalItem(file: CodeItem) {}
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return [];

@@ -13,7 +13,6 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-// import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Banners';
 import { Notification } from '@/containers/Notification';
 import {
@@ -61,6 +60,12 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       {
         type: 'canPost',
         text: i18next.t('MembersMayPostMessages'),
+
+        checked: true,
+      },
+      {
+        type: 'canAddMember',
+        text: i18next.t('MembersMayAddOtherMembers'),
         checked: true,
       },
     ];
@@ -77,7 +82,6 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       items,
     };
   }
-
   componentDidMount() {
     // because of modal is dynamic append body
     // so must be delay focus
@@ -112,15 +116,30 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { items } = this.state;
     const { teamName, description, members } = this.props;
     const { history, create } = this.props;
-    const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
-    const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const result = await create(teamName, members, description, {
-      isPublic,
-      canPost,
-    });
-    if (result.isOk()) {
+
+    const uiSetting = items.reduce((options, option) => {
+      options[option.type] = option.checked;
+      return options;
+    },                             {}) as {
+      isPublic: boolean;
+      canAddMember: boolean;
+      canPost: boolean;
+    };
+
+    const teamSetting = {
+      description,
+      name: teamName,
+      isPublic: uiSetting.isPublic,
+      permissionFlags: {
+        TEAM_ADD_MEMBER: uiSetting.canAddMember,
+        TEAM_POST: uiSetting.canPost,
+      },
+    };
+
+    const newTeam = await create(members, teamSetting);
+    if (newTeam) {
       this.onClose();
-      history.push(`/messages/${result.data.id}`);
+      history.push(`/messages/${newTeam.id}`);
     }
   }
 

@@ -15,11 +15,11 @@ interface IItemService {
 
   handleSanitizedItems(items: Item[]): void;
 
-  createItem(item: Item): Promise<void>;
+  createLocalItem(item: Item): Promise<void>;
 
-  updateItem(item: Item): Promise<void>;
+  updateLocalItem(item: Item): Promise<void>;
 
-  deleteItem(itemId: number): Promise<void>;
+  deleteLocalItem(itemId: number): Promise<void>;
 
   sendItemFile(
     groupId: number,

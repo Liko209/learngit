@@ -5,16 +5,17 @@
  */
 import history from '@/history';
 import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { ok, err } from 'foundation';
 jest.mock('@/history');
-jest.mock('sdk/service/group');
+jest.mock('sdk/module/group');
 jest.mock('sdk/utils');
 jest.mock('@/containers/Notification');
 
-const { GroupService, PostService } = service;
+const { PostService } = service;
 
 const groupService = new GroupService();
 const postService = new PostService();

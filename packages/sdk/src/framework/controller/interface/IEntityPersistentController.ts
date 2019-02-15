@@ -10,6 +10,8 @@ import { IDao } from '../../dao';
 interface IEntityPersistentController<T extends IdModel = IdModel>
   extends IDao<T> {
   getEntityNotificationKey(): string;
+
+  getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 }
 
 export { IEntityPersistentController };

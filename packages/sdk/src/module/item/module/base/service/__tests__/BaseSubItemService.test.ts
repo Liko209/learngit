@@ -42,7 +42,7 @@ describe('BaseSubItemService', () => {
     return { item };
   }
 
-  describe('createItem', () => {
+  describe('createLocalItem', () => {
     beforeEach(() => {
       clearMocks();
     });
@@ -50,7 +50,7 @@ describe('BaseSubItemService', () => {
     it('should sanitize item and create it', async () => {
       const { item } = setUpData();
       subItemDao.put = jest.fn();
-      await baseSubItemService.createItem(item);
+      await baseSubItemService.createLocalItem(item);
       expect(subItemDao.put).toBeCalledWith({
         id: item.id,
         group_ids: item.group_ids,
@@ -67,7 +67,7 @@ describe('BaseSubItemService', () => {
     it('should sanitize item and update it', async () => {
       const { item } = setUpData();
       subItemDao.update = jest.fn();
-      await baseSubItemService.updateItem(item);
+      await baseSubItemService.updateLocalItem(item);
       expect(subItemDao.update).toBeCalledWith({
         id: item.id,
         group_ids: item.group_ids,
@@ -84,7 +84,7 @@ describe('BaseSubItemService', () => {
     it('should  delete it', async () => {
       const { item } = setUpData();
       subItemDao.delete = jest.fn();
-      await baseSubItemService.deleteItem(item.id);
+      await baseSubItemService.deleteLocalItem(item.id);
       expect(subItemDao.delete).toBeCalledWith(item.id);
     });
   });

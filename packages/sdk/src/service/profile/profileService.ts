@@ -369,6 +369,13 @@ class ProfileService extends BaseService<Profile> {
     }
     return DEFAULT_LEFTRAIL_GROUP;
   }
+
+  async getFavoriteGroupIds(): Promise<number[]> {
+    const profile = await this.getProfile();
+    return profile && profile.favorite_group_ids
+      ? profile.favorite_group_ids
+      : [];
+  }
 }
 
 export { ProfileService };
