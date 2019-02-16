@@ -299,15 +299,10 @@ describe('FetchSortableDataListHandler', () => {
         originalItems: [buildItem(3), buildItem(5)],
         payload: buildPayload(EVENT_TYPES.UPDATE, [{ id: 5, value: 2 }]),
         expectedOrder: [5, 3],
-        callbackMuted: true,
         expectedCallbackResponse: {
-          updated: [
-            {
-              index: 0,
-              oldValue: buildSortableModel(5),
-              value: { data: { id: 5, value: 2 }, id: 5, sortValue: 2 },
-            },
-          ],
+          added: [],
+          deleted: [],
+          updated: [{ data: { id: 5, value: 2 }, id: 5, sortValue: 2 }],
         },
       },
     ],
@@ -503,7 +498,7 @@ describe('FetchSortableDataListHandler', () => {
           originalItems,
         });
         const dataChangeCallback = jest.fn();
-        fetchSortableDataHandler.setUpDataChangeCallback(dataChangeCallback);
+        fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
         fetchSortableDataHandler.onDataChanged(payload);
         if (callbackMuted) {
           return expect(dataChangeCallback).not.toHaveBeenCalled();

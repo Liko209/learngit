@@ -131,7 +131,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
     SubModel[]
-    > {
+  > {
     this._checkDaoClass();
     const dao = daoManager.getDao(this.DaoClass);
 
@@ -257,10 +257,10 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
     return srcText.length > 0
       ? terms.reduce(
-        (prev: boolean, key: string) =>
-          prev && new RegExp(`${key}`, 'i').test(srcText),
-        true,
-      )
+          (prev: boolean, key: string) =>
+            prev && new RegExp(`${key}`, 'i').test(srcText),
+          true,
+        )
       : false;
   }
 
@@ -374,8 +374,8 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
-        ? partialModel._id
-        : 0;
+      ? partialModel._id
+      : 0;
     let result: ServiceResult<SubModel>;
 
     do {
@@ -503,7 +503,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       );
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
-        mainLogger.warn('handlePartialUpdate: no changes, no need update');
+        mainLogger.info('handlePartialUpdate: no changes, no need update');
         result = serviceOk(originalModel);
         break;
       }
