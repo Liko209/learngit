@@ -61,10 +61,6 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       return children;
     }
 
-    if (!showPlaceholder && !loaded) {
-      return <div style={{ opacity: 0 }}>{children}</div>; // for showing a blank image placeholder before delay show placeholder.
-    }
-
     return (
       <>
         {url && (
@@ -75,9 +71,13 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
             style={{ display: 'none' }}
           />
         )}
-        <DelayWrapper delay={DELAY_SHOW_PLACEHOLDER_TIME}>
+        <DelayWrapper
+          delay={DELAY_SHOW_PLACEHOLDER_TIME}
+          placeholder={<div style={{ opacity: 0 }}>{children}</div>}
+        >
           {placeholder}
         </DelayWrapper>
+        <div style={{ opacity: 0 }}>{children}</div>
       </>
     );
   }
