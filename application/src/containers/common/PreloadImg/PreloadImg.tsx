@@ -61,6 +61,10 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       return children;
     }
 
+    if (!showPlaceholder && !loaded) {
+      return <div style={{ opacity: 0 }}>{children}</div>; // for showing a blank image placeholder before delay show placeholder.
+    }
+
     return (
       <>
         {url && (
