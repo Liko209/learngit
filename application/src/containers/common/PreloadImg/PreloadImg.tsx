@@ -77,7 +77,6 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
         >
           {placeholder}
         </DelayWrapper>
-        <div style={{ opacity: 0 }}>{children}</div>
       </>
     );
   }
