@@ -14,13 +14,31 @@ import { NewPostService } from 'sdk/module/post';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service';
+import { Item } from 'sdk/module/item/entity';
+import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
+import { TypeDictionary } from 'sdk/utils';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 class PostDataProvider implements IFetchSortableDataProvider<Post> {
   private _postService: NewPostService = NewPostService.getInstance();
+  private _itemStoreMap = new Map<number, ENTITY_NAME>();
 
-  constructor(private _groupId: number) {}
+  constructor(private _groupId: number) {
+    this._itemStoreMap.set(TypeDictionary.TYPE_ID_FILE, ENTITY_NAME.FILE_ITEM);
+    this._itemStoreMap.set(TypeDictionary.TYPE_ID_TASK, ENTITY_NAME.TASK_ITEM);
+    this._itemStoreMap.set(TypeDictionary.TYPE_ID_LINK, ENTITY_NAME.LINK_ITEM);
+    this._itemStoreMap.set(TypeDictionary.TYPE_ID_PAGE, ENTITY_NAME.NOTE_ITEM);
+    this._itemStoreMap.set(TypeDictionary.TYPE_ID_CODE, ENTITY_NAME.CODE_ITEM);
+    this._itemStoreMap.set(
+      TypeDictionary.TYPE_ID_EVENT,
+      ENTITY_NAME.EVENT_ITEM,
+    );
+    this._itemStoreMap.set(
+      TypeDictionary.TYPE_ID_CONFERENCE,
+      ENTITY_NAME.CONFERENCE_ITEM,
+    );
+  }
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
@@ -35,7 +53,15 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
       },
     );
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
-    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
+    items.forEach((item: Item) => {
+      const type = GlipTypeUtil.extractTypeId(item.id);
+      const entityName = this._itemStoreMap.get(type);
+      if (entityName) {
+        storeManager.dispatchUpdatedDataModels(entityName, [item]);
+      } else {
+        storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, [item]);
+      }
+    });
     return { hasMore, data: posts };
   }
 }
