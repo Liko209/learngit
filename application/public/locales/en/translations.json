@@ -130,6 +130,41 @@
     "message": "Message"
   },
   "item": {
+    "activity": {
+      "items": "items",
+      "task": "task",
+      "event": "event",
+      "note": "note",
+      "file": "file",
+      "file_plural": "files",
+      "link": "link",
+      "link_plural": "links",
+      "video chat": "video chat",
+      "audio conference": "audio conference",
+      "snippet": "snippet",
+
+      "replied": "replied",
+      "shared": "shared",
+      "started": "started",
+      "updated": "updated",
+      "created": "created",
+      "via": "via",
+      "marked": "marked",
+      "completed": "completed",
+      "reassigned": "reassigned",
+      "assigned": "assigned",
+      "incomplete": "incomplete",
+
+      "verb-noun-adjectives": "$t({{verb}}) $t({{noun}}) $t({{adjectives}})",
+      "verb-noun-adjectives-user": "$t({{verb}}) $t({{noun}}) $t({{adjectives}}) for {{user}}",
+      "verb-noun-numerals": "$t({{verb}}) $t({{noun}}) {{count}}",
+      "verb-noun": "$t({{verb}}) $t({{noun}})",
+      "verb-noun-user": "$t({{verb}}) $t({{noun}}) for {{user}}",
+      "verb-article-noun": "$t({{verb}}) {{noun, en-handle-an}} $t({{noun}})",
+      "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
+      "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
+    },
+
     "avatarNamesWithOthers": " and other {{count}} people",
     "attachments": "Attachments",
     "assignee": "Assignee",
@@ -335,35 +370,5 @@
   "setting": {
     "Settings": "Settings",
     "teamSettings": "Settings"
-  },
-
-  "task": "task",
-  "video chat": "video chat",
-  "audio conference": "audio conference",
-  "note": "note",
-  "file": "file",
-  "file_plural": "files",
-  "snippet": "snippet",
-  "link": "link",
-  "link_plural": "links",
-  "event": "event",
-  "replied": "replied",
-  "shared": "shared",
-  "started": "started",
-  "updated": "updated",
-  "created": "created",
-  "via": "via",
-  "marked": "marked",
-  "completed": "completed",
-  "reassigned": "reassigned",
-  "assigned": "assigned",
-  "incomplete": "incomplete",
-  "verb-noun-adjectives": "$t({{verb}}) $t({{noun}}) $t({{adjectives}})",
-  "verb-noun-adjectives-user": "$t({{verb}}) $t({{noun}}) $t({{adjectives}}) for {{user}}",
-  "verb-noun-numerals": "$t({{verb}}) $t({{noun}}) {{count}}",
-  "verb-noun": "$t({{verb}}) $t({{noun}})",
-  "verb-noun-user": "$t({{verb}}) $t({{noun}}) for {{user}}",
-  "verb-article-noun": "$t({{verb}}) {{noun, en-handle-an}} $t({{noun}})",
-  "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
-  "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
+  }
 }
