@@ -80,7 +80,10 @@ class CodeSnippet extends React.Component<
 
     if (!collapsed && showDownload) {
       actions.push({
-        text: t('item.downloadToSeeTheRestLine', { restLines }),
+        text: t('item.downloadToSeeTheRestLine', {
+          restLines,
+          count: restLines,
+        }),
         handler: this.handleDownload,
       });
     }
