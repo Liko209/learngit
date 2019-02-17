@@ -68,7 +68,7 @@ class CodeSnippet extends React.Component<
 
     if (collapsed) {
       actions.push({
-        text: t('item.expandLine', { lineNumber }),
+        text: t('item.expandLines', { lineNumber }),
         handler: this.handleExpand,
       });
     } else {

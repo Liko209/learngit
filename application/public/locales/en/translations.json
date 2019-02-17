@@ -203,8 +203,9 @@
     "hostCode": "Host Access",
     "participantCode": "Participant Access",
 
-    "downloadToSeeTheRestLine": "Download to see the rest {{restLines}} $t(line, {'count':{{restLines}} })",
-    "expandLine": "Expand ({{lineNumber}} lines)",
+    "downloadToSeeTheRestLine": "Download to see the rest {{restLines}} line",
+    "downloadToSeeTheRestLine_plural": "Download to see the rest {{restLines}} lines",
+    "expandLines": "Expand ({{lineNumber}} lines)",
 
     "pinned": "Pinned",
     "files": "Files",
