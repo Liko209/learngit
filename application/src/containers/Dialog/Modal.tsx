@@ -18,8 +18,8 @@ function modal(config: BaseType) {
   const BaseModal = (props: BaseType) => {
     const { isAlert, ...newConfig } = props;
     const defaultBtnText = {
-      okText: i18next.t('OK'),
-      cancelText: i18next.t('Cancel'),
+      okText: i18next.t('common.dialog.OK'),
+      cancelText: i18next.t('common.dialog.cancel'),
     };
 
     if (isAlert) {

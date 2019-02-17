@@ -326,9 +326,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
     if (this._canHandleError(err)) {
       Notification.flashToast({
-        message: `SorryWeWereNotAbleToLoad${
-          direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
-        }Messages`,
+        message:
+          direction === QUERY_DIRECTION.OLDER
+            ? 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages'
+            : 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,

@@ -47,10 +47,10 @@ class TokenRoute extends Component<TokenRouteProps> {
     const { t } = this.props;
     let content = '';
     if (isError) {
-      content = t('signInFailedContent');
+      content = t('auth.signInFailedContent');
     }
     if (isOffline) {
-      content = t('Network Error');
+      content = t('common.prompt.Network Error');
     }
     if (content) {
       if (this._alert) {
@@ -58,7 +58,7 @@ class TokenRoute extends Component<TokenRouteProps> {
       }
       this._alert = Dialog.alert({
         content,
-        title: t('signInFailedTitle'),
+        title: t('auth.signInFailedTitle'),
         onOK: () => {
           this.onClose();
         },

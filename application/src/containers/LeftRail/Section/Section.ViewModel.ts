@@ -20,16 +20,16 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
-    title: 'favorite_plural',
+    title: 'message.favoriteGroups',
     iconName: 'star_border',
     sortable: true,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
-    title: 'directMessage_plural',
+    title: 'message.directGroups',
     iconName: 'direct_message',
   },
   [SECTION_TYPE.TEAM]: {
-    title: 'team_plural',
+    title: 'message.teamGroups',
     iconName: 'team',
   },
 };

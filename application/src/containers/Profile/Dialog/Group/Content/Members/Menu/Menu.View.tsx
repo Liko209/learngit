@@ -46,11 +46,11 @@ class MenuViewComponent extends Component<Props, State> {
       return true;
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {
-        this._renderFlashToast('removeMemberNetworkError');
+        this._renderFlashToast('people.prompt.removeMemberNetworkError');
         return false;
       }
       if (errorHelper.isBackEndError(error)) {
-        this._renderFlashToast('removeMemberBackendError');
+        this._renderFlashToast('people.prompt.removeMemberBackendError');
         return false;
       }
       throw error;
@@ -90,7 +90,7 @@ class MenuViewComponent extends Component<Props, State> {
               data-test-automation-id="removeFromTeam"
               onClick={this._handleRemoveFromTeam}
             >
-              {t('removeFromTeam')}
+              {t('people.team.removeFromTeam')}
             </JuiMenuItem>
           )}
         </JuiMenuList>

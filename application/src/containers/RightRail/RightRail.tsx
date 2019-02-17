@@ -31,7 +31,9 @@ type TriggerButtonProps = {
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
-    return isOpen ? 'conversationDetailsHide' : 'conversationDetailsShow';
+    return isOpen
+      ? 'message.conversationDetailsHide'
+      : 'message.conversationDetailsShow';
   }
 
   private _getIconKey = () => {
@@ -63,7 +65,7 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <JuiRightShelfHeader>
         <JuiRightShelfHeaderText>
-          {t('conversationDetails')}
+          {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>
       </JuiRightShelfHeader>
     );
@@ -84,7 +86,7 @@ class RightRailComponent extends React.Component<Props> {
             tag="right-shelf"
             width={width}
             onChangeTab={this._handleTabChanged}
-            moreText={t('more')}
+            moreText={t('common.more')}
           >
             {TAB_CONFIG.map(
               (

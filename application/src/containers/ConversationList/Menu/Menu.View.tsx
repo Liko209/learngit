@@ -47,7 +47,7 @@ class MenuViewComponent extends Component<Props, State> {
         onClick={this._handleCloseConversation}
         disabled={!closable}
       >
-        {t('close')}
+        {t('people.team.close')}
       </JuiMenuItem>
     );
   }
@@ -59,8 +59,8 @@ class MenuViewComponent extends Component<Props, State> {
     const result = await this.props.toggleFavorite();
     if (result.isErr()) {
       const message = isFavorite
-        ? 'markUnFavoriteServerErrorContent'
-        : 'markFavoriteServerErrorContent';
+        ? 'people.prompt.markUnFavoriteServerErrorContent'
+        : 'people.prompt.markFavoriteServerErrorContent';
 
       Notification.flashToast({
         message,
@@ -89,18 +89,20 @@ class MenuViewComponent extends Component<Props, State> {
         checked: false,
       });
       Dialog.alert({
-        title: t('closeConfirmDialogHeader'),
+        title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
           <>
-            <JuiTypography>{t('closeConfirmDialogContent')}</JuiTypography>
+            <JuiTypography>
+              {t('people.prompt.closeConfirmDialogContent')}
+            </JuiTypography>
             <JuiCheckboxLabel
-              label={t('closeConfirmDialogDontAskMeAgain')}
+              label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
               checked={false}
               handleChange={this._checkboxChange}
             />
           </>
         ),
-        okText: t('Close Conversation'),
+        okText: t('people.prompt.closeConversation'),
         okVariant: 'text',
         onOK: () => {
           this._closeConversationWithConfirm();
@@ -133,7 +135,7 @@ class MenuViewComponent extends Component<Props, State> {
       },
       Err: () => {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToCloseTheConversation',
+          message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -174,7 +176,7 @@ class MenuViewComponent extends Component<Props, State> {
           data-test-automation-id="profileEntry"
           onClick={this._handleProfileDialog}
         >
-          {t('Profile')}
+          {t('people.team.profile')}
         </JuiMenuItem>
         {this.renderCloseMenuItem()}
       </JuiMenu>

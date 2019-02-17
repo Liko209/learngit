@@ -40,7 +40,7 @@ describe('AddMembersView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'AddTeamMembersBackendError',
+            message: 'people.prompt.AddTeamMembersBackendError',
           }),
         );
         done();
@@ -61,7 +61,7 @@ describe('AddMembersView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'AddTeamMembersNetworkError',
+            message: 'people.prompt.AddTeamMembersNetworkError',
           }),
         );
         done();

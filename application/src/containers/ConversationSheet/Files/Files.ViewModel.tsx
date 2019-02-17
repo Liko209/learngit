@@ -189,7 +189,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
-        message: i18next.t('notAbleToCancelUpload'),
+        message: i18next.t('item.prompt.notAbleToCancelUpload'),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -206,7 +206,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         }
       } catch (e) {
         Notification.flashToast({
-          message: i18next.t('notAbleToCancelUploadTryAgain'),
+          message: i18next.t('item.prompt.notAbleToCancelUploadTryAgain'),
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

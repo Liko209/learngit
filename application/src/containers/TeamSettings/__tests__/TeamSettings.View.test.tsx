@@ -15,7 +15,7 @@ describe('TeamSettingsView', () => {
   describe('render()', () => {
     it('should pass correct max length attributes to the input fields [JPT-927]', () => {
       const props: any = {
-        t: (s: string) => s,
+        t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
         initialData: {
           name: '',
           description: '',
@@ -45,7 +45,7 @@ describe('TeamSettingsView', () => {
 
     it('should display original name and description of team when first open setting [JPT-892]', () => {
       const props: any = {
-        t: (s: string) => s,
+        t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
         initialData: {
           name: 'INITIAL NAME',
           description: 'SOME INITIAL DESC....',
@@ -78,11 +78,13 @@ describe('TeamSettingsView', () => {
     it('The Leave Team dialog display correctly after clicking leave team button [JPT-934]', (done: jest.DoneCallback) => {
       jest.spyOn(Dialog, 'confirm');
       const props: any = {
-        t: (s: string, options: object) => {
+        t: (text: string, options: object) => {
           if (!options) {
-            return s;
+            return text.substring(text.lastIndexOf('.') + 1);
           }
-          return `${s} ${JSON.stringify(options)}`;
+          return `${text.substring(text.lastIndexOf('.') + 1)} ${JSON.stringify(
+            options,
+          )}`;
         },
         initialData: {
           name: '',

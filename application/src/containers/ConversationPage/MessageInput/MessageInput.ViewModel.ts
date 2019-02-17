@@ -26,8 +26,8 @@ import { NewPostService } from 'sdk/module/post';
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>

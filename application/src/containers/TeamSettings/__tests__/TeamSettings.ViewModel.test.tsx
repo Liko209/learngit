@@ -70,7 +70,7 @@ describe('TeamSettingsViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToSaveTheUpdate',
+        message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -100,7 +100,7 @@ describe('TeamSettingsViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+        message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -145,7 +145,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.leaveTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('leaveTeamServerErrorContent'),
+        toastParamsBuilder('people.prompt.leaveTeamServerErrorContent'),
       );
     });
     it('should show leaveTeamNetworkErrorContent when network error occurs [JPT-930]', async () => {
@@ -157,7 +157,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.leaveTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('leaveTeamNetworkErrorContent'),
+        toastParamsBuilder('people.prompt.leaveTeamNetworkErrorContent'),
       );
     });
     it('should call generalErrorHandler when server error occurs', async () => {

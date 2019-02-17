@@ -77,16 +77,16 @@ class ProfileDialogGroupContentViewComponent extends Component<
               {showMessage &&
                 renderButton(
                   'chat_bubble',
-                  'message',
-                  ['ariaGoToTeam', 'ariaGoToGroup'],
+                  'message.message',
+                  ['people.team.ariaGoToTeam', 'people.team.ariaGoToGroup'],
                   this.props,
                   this.messageAfterClick,
                 )}
               {showJoinTeam &&
                 renderButton(
                   'add_member',
-                  'joinTeam',
-                  ['ariaJoinTeam', 'ariaJoinTeam'],
+                  'people.team.joinTeam',
+                  ['people.team.ariaJoinTeam', 'people.team.ariaJoinTeam'],
                   this.props,
                   this.joinTeamAfterClick,
                 )}

@@ -29,7 +29,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle={i18next.t('download')}
+    tooltipTitle={i18next.t('common.download')}
   >
     download
   </JuiIconButton>

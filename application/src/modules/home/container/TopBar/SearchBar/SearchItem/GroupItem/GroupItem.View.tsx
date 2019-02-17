@@ -86,7 +86,7 @@ class GroupItemComponent extends React.Component<
                 variant="round"
                 size="small"
               >
-                {t('join')}
+                {t('people.team.joinButtonTitle')}
               </JuiButton>
             )
           }

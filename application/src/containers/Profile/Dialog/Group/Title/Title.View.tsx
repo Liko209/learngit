@@ -30,7 +30,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
     return (
       <>
         <JuiDialogTitleWithActionLeft>
-          {t('Profile')}
+          {t('people.team.profile')}
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
           <Privacy id={id} size="medium" />
@@ -41,8 +41,8 @@ class ProfileDialogGroupTitleViewComponent extends Component<
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton
             onClick={this.dismiss}
-            tooltipTitle={t('close')}
-            ariaLabel={t('close')}
+            tooltipTitle={t('common.dialog.close')}
+            ariaLabel={t('common.dialog.close')}
           >
             close
           </JuiIconButton>

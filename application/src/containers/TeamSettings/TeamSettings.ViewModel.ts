@@ -109,10 +109,10 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     const isNetworkError = errorHelper.isNetworkConnectionError(e);
     let message = '';
     if (isBackEndError) {
-      message = 'leaveTeamServerErrorContent';
+      message = 'people.prompt.leaveTeamServerErrorContent';
     }
     if (isNetworkError) {
-      message = 'leaveTeamNetworkErrorContent';
+      message = 'people.prompt.leaveTeamNetworkErrorContent';
     }
     if (message) {
       return Notification.flashToast({
@@ -161,12 +161,12 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
             codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
           })
       ) {
-        this.setNameError('alreadyTaken');
+        this.setNameError('people.prompt.alreadyTaken');
         return false;
       }
       if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdate',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -176,7 +176,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

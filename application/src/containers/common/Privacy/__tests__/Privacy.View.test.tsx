@@ -41,7 +41,7 @@ describe('PrivacyView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markPrivateServerErrorForTeam',
+            message: 'people.prompt.markPrivateServerErrorForTeam',
           }),
         );
         done();
@@ -62,7 +62,7 @@ describe('PrivacyView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markPrivateServerErrorForTeam',
+            message: 'people.prompt.markPrivateServerErrorForTeam',
           }),
         );
         done();
@@ -82,7 +82,7 @@ describe('PrivacyView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'teamNetError',
+            message: 'people.prompt.teamNetError',
           }),
         );
         done();
@@ -103,7 +103,7 @@ describe('PrivacyView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'teamNetError',
+            message: 'people.prompt.teamNetError',
           }),
         );
         done();
