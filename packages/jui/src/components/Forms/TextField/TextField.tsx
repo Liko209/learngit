@@ -5,7 +5,10 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
+import MuiTextField, {
+  TextFieldProps,
+  OutlinedTextFieldProps,
+} from '@material-ui/core/TextField';
 import { spacing, palette } from '../../../foundation/utils/styles';
 
 const TextField = styled(MuiTextField)`
@@ -23,15 +26,17 @@ const TextField = styled(MuiTextField)`
       border-bottom-color: ${palette('primary', 'main')};
     }
   }
-`;
+` as typeof MuiTextField;
+
+function isOutlinedTextFieldProps(
+  textFieldProps: TextFieldProps,
+): textFieldProps is OutlinedTextFieldProps {
+  return textFieldProps.variant === 'outlined';
+}
 
 type Props = TextFieldProps;
 
-class JuiTextField extends React.PureComponent<Props, {}> {
-  constructor(props: Props) {
-    super(props);
-  }
-
+class JuiTextField extends React.PureComponent<Props> {
   onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { onKeyDown } = this.props;
     if (e.key === 'ArrowUp') {
@@ -70,10 +75,12 @@ class JuiTextField extends React.PureComponent<Props, {}> {
           ...inputLabelRest,
         }}
         InputProps={{
-          classes: {
-            underline: 'underline',
-            ...inputPropsClasses,
-          },
+          classes: isOutlinedTextFieldProps(this.props)
+            ? inputPropsClasses
+            : {
+              underline: 'underline',
+              ...inputPropsClasses,
+            },
           ...inputPropsRest,
         }}
       />

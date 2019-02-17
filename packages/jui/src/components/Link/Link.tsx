@@ -40,8 +40,9 @@ const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
 type ILink = React.ComponentType<JuiLinkProps>;
 const JuiLink: ILink = React.memo(
   ({ Component, handleOnClick, ...rest }: JuiLinkProps) => {
+    const { size, ...componentRest } = rest;
     return Component ? (
-      <Component {...rest}>
+      <Component {...componentRest}>
         <StyledComponent onClick={handleOnClick} {...rest} />
       </Component>
     ) : null;
