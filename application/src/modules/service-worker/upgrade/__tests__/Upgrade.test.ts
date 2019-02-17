@@ -19,7 +19,7 @@ describe('Upgrade', async () => {
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
     upgradeHandler.onNewContentAvailable();
-    upgradeHandler.upgradeIfAvailable();
+    upgradeHandler.upgradeIfAvailable('Test');
     expect(mockFn).toBeCalled();
   });
 });

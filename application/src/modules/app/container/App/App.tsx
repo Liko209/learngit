@@ -41,7 +41,7 @@ class App extends React.Component {
   componentDidMount() {
     this._unListenHistory = history.listen((location: any, action: string) => {
       if (action === 'PUSH') {
-        this._upgradeHandler.upgradeIfAvailable();
+        this._upgradeHandler.upgradeIfAvailable('History push');
       }
     });
 
@@ -78,7 +78,7 @@ class App extends React.Component {
   }
 
   private _focusHandler = () => {
-    this._upgradeHandler.upgradeIfAvailable();
+    this._upgradeHandler.upgradeIfAvailable('Get focused');
   }
 }
 const HotApp = hot(App);
