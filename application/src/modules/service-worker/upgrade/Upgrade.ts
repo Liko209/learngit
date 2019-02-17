@@ -26,6 +26,10 @@ class Upgrade {
   public onNewContentAvailable() {
     mainLogger.info(`${logTag}New content available`);
     this._hasNewVersion = true;
+
+    if (this._appIsInBackground()) {
+      this.upgradeIfAvailable();
+    }
   }
 
   public upgradeIfAvailable() {
@@ -64,6 +68,10 @@ class Upgrade {
   private _canDoReload() {
     // TO-DO in future, disallow reload when there is any call or meeting.
     return true;
+  }
+
+  private _appIsInBackground() {
+    return false;
   }
 
   private _reloadApp() {
