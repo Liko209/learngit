@@ -151,7 +151,7 @@ enum NETWORK_VIA {
 
 enum CONSUMER_MAX_QUEUE_COUNT {
   HTTP = 5,
-  SOCKET = 5,
+  SOCKET = 10,
 }
 
 enum REQUEST_WEIGHT {
