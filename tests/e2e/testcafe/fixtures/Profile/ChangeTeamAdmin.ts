@@ -78,7 +78,7 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
   await h(t).withLog(`When hover on the 'u2' row again`, async () => {
     await t.hover(profileDialog.memberEntryByName(u2Name).self);
   });
-  
+
   await h(t).withLog('Then Show "more" button', async () => {
     await t.expect(profileDialog.memberEntryByName(u2Name).moreButton.exists).ok();
   }, true);
@@ -86,6 +86,7 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
   await h(t).withLog('When click the more button', async () => {
     await t.click(profileDialog.memberEntryByName(u2Name).moreButton);
   });
+
   await h(t).withLog(`Then show "${revokeTeamAdminText}" button`, async () => {
     await t.expect(profileDialog.memberMoreMenu.revokeTeamAdminItem.withExactText(revokeTeamAdminText).exists).ok();
   });
@@ -362,9 +363,11 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   const u3 = users[5];
   await h(t).glip(u1).init();
   await h(t).glip(u2).init();
+  await h(t).glip(u3).init();
   const app = new AppRoot(t);
   const profileDialog = app.homePage.profileDialog;
   const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
+  const u3Name = await h(t).glip(u3).getPersonPartialData('display_name', u3.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -406,5 +409,21 @@ await h(t).withLog(`And remove the admin from the team`, async() => {
   await h(t).withLog(`Then show "${makeTeamAdminText}" button`, async () => {
     await t.expect(profileDialog.memberMoreMenu.makeTeamAdminItem.withExactText(makeTeamAdminText).exists).ok();
   });
+
+  await h(t).withLog(`When click the "${makeTeamAdminText}" button`, async () => {
+    await profileDialog.memberMoreMenu.clickMakeTeamAdmin();
+  });
+
+  await h(t).withLog(`Then will show 'Admin' label in u2 row`, async() => {
+    await app.homePage.profileDialog.memberEntryByName(u2Name).showAdminLabel();
+  });
+
+  await h(t).withLog(`And hover on the member 'u3' row`, async () => {
+    await t.hover(profileDialog.memberEntryByName(u3Name).self);
+  });
+
+  await h(t).withLog(`Then won't show "more" button`, async () => {
+    await t.expect(profileDialog.memberEntryByName(u3Name).moreButton.exists).notOk();
+  }, true);
 
 });  
