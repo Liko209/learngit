@@ -16,7 +16,6 @@ export default class ProgressBar {
 
   start() {
     if (!this._start) {
-      console.log('progressBar start');
       this._start = true;
       NProgress.configure({ showSpinner: false });
       NProgress.start();
@@ -32,7 +31,6 @@ export default class ProgressBar {
 
   stop() {
     if (this._start) {
-      console.log('progressBar stop');
       this._start = false;
       NProgress.done();
     }
