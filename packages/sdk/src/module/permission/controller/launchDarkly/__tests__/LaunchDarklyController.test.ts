@@ -35,6 +35,14 @@ describe('LaunchDarklyController', () => {
         UserPermissionType.JUPITER_SEND_NEW_MESSAGE,
       );
       expect(permission).toBeTruthy();
+      permission = controller.hasPermission(
+        UserPermissionType.JUPITER_CAN_SAVE_LOG,
+      );
+      expect(permission).toBeFalsy();
+      permission = controller.hasPermission(
+        UserPermissionType.JUPITER_CAN_UPLOAD_LOG,
+      );
+      expect(permission).toBeFalsy();
     });
     it('should return launchDarkly value when LaunchDarkly is  ready', () => {
       const controller = new LaunchDarklyController(() => {});

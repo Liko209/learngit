@@ -29,7 +29,7 @@ class PermissionController {
     const sp = await this.splitIOController.hasPermission(type);
     const ld = this.launchDarklyController.hasPermission(type);
     mainLogger.log(`hasPermission of ${type} splitIO:${sp} launchDarkly:${ld}`);
-    return sp && ld;
+    return sp || ld;
   }
 
   async getById(id: number): Promise<UserPermission> {
