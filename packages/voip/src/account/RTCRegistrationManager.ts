@@ -55,6 +55,13 @@ class RTCRegistrationManager extends EventEmitter2
     this._initUserAgentListener();
   }
 
+  public onUnregisterAction() {
+    if (this._userAgent) {
+      this._userAgent.unregister();
+    }
+    this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
+  }
+
   public onMakeOutgoingCallAction(
     toNumber: string,
     delegate: IRTCCallDelegate,
@@ -202,6 +209,17 @@ class RTCRegistrationManager extends EventEmitter2
     options: RTCCallOptions,
   ): any {
     return this._userAgent.makeCall(phoneNumber, options);
+  }
+
+  public logout() {
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.LOGOUT,
+      },
+      () => {
+        this._fsm.unregister();
+      },
+    );
   }
 
   private _onUARegSuccess() {

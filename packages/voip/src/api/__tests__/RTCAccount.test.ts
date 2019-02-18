@@ -15,9 +15,15 @@ import {
 } from '../types';
 
 import { kRTCAnonymous } from '../../account/constants';
-import { REGISTRATION_FSM_STATE } from '../../account/types';
+import {
+  REGISTRATION_FSM_STATE,
+  RTCSipProvisionInfo,
+} from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
+import { kProvisioningInfoKey } from '../../utils/constants';
+import { ITelephonyDaoDelegate } from 'foundation/src';
+import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { RTCCall } from '../RTCCall';
 
 class MockAccountListener implements IRTCAccountDelegate {
@@ -42,6 +48,7 @@ class MockUserAgent extends EventEmitter2 {
   makeCall(phoneNumber: string, options: RTCCallOptions): any {
     return new MockSession();
   }
+  unregister = jest.fn();
   reRegister = jest.fn();
 }
 
@@ -88,6 +95,20 @@ class MockSession extends EventEmitter2 {
   terminate = jest.fn();
 }
 
+class MockLocalStorage implements ITelephonyDaoDelegate {
+  public prov: RTCSipProvisionInfo | null = null;
+
+  put(key: string, value: any): void {
+    this.prov = value;
+  }
+  get(key: string) {
+    return this.prov;
+  }
+  remove(key: string): void {
+    this.prov = null;
+  }
+}
+
 describe('networkChangeToOnline()', () => {
   it('should _onNetworkChangeToOnline() is called when rtcNetworkNotificationCenter call _onOnline()', () => {
     const mockListener = new MockAccountListener();
@@ -103,6 +124,7 @@ describe('networkChangeToOnline()', () => {
 
 describe('RTCAccount', async () => {
   let mockListener: MockAccountListener;
+  let localStorage: MockLocalStorage;
   let account: RTCAccount = null;
   let ua: MockUserAgent;
   function setupAccount() {
@@ -111,6 +133,8 @@ describe('RTCAccount', async () => {
       account = null;
     }
     mockListener = new MockAccountListener();
+    localStorage = new MockLocalStorage();
+    RTCDaoManager.instance().setDaoDelegate(localStorage);
     account = new RTCAccount(mockListener);
     ua = new MockUserAgent();
     jest
@@ -166,7 +190,7 @@ describe('RTCAccount', async () => {
   it('Should  Report unregistered state to upper layer when account state transient to unregistered [JPT-562]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
-    ua.mockSignal(UA_EVENT.REG_UNREGISTER);
+    account.logout();
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
@@ -267,6 +291,65 @@ describe('RTCAccount', async () => {
     });
   });
 
+  it('should call hangupAllCalls when account enter unReg state. [JPT-1010]', done => {
+    setupAccount();
+    jest.spyOn(account._callManager, 'endAllCalls');
+    account.logout();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.UNREGISTERED,
+      );
+      expect(account._callManager.endAllCalls).toBeCalled();
+      done();
+    });
+  });
+
+  it('should clear provisioning info when account enter unreg state. [JPT-1011]', done => {
+    setupAccount();
+    localStorage.put(kProvisioningInfoKey, '1234');
+    expect(localStorage.get(kProvisioningInfoKey)).not.toBe(null);
+    jest.spyOn(account._provManager, 'clearProvInfo');
+    account.logout();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.UNREGISTERED,
+      );
+      expect(account._provManager.clearProvInfo).toBeCalled();
+      expect(account._provManager._sipProvisionInfo).toBe(null);
+      expect(localStorage.get(kProvisioningInfoKey)).toBe(null);
+      done();
+    });
+  });
+
+  it('should call unreg API in webphone when account enter unreg state. [JPT-1012]', done => {
+    setupAccount();
+    account.logout();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.UNREGISTERED,
+      );
+      expect(ua.unregister).toBeCalled();
+      done();
+    });
+  });
+
+  it('should enter unreg state when call logout in failed state. [JPT-1013]', done => {
+    setupAccount();
+    ua.mockSignal(UA_EVENT.REG_FAILED);
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.FAILURE,
+      );
+      account.logout();
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.UNREGISTERED,
+        );
+        done();
+      });
+    });
+  });
+
   it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
     setupAccount();
     const listener = new MockCallListener();
@@ -303,6 +386,57 @@ describe('RTCAccount', async () => {
         expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
         done();
       });
+    });
+  });
+
+  it('should enter unreg state when call logout in ready state. [JPT-1014]', done => {
+    setupAccount();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      account.logout();
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.UNREGISTERED,
+        );
+        done();
+      });
+    });
+  });
+
+  it('should enter unreg state when call logout in inprogress state. [JPT-1015]', done => {
+    setupAccount();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.IN_PROGRESS,
+      );
+      account.logout();
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.UNREGISTERED,
+        );
+        done();
+      });
+    });
+  });
+
+  it('should enter unreg state when call logout in idle state.', done => {
+    if (account) {
+      account.destroy();
+      account = null;
+    }
+    mockListener = new MockAccountListener();
+    account = new RTCAccount(mockListener);
+    ua = new MockUserAgent();
+    account._regManager._userAgent = ua;
+    account._regManager._initUserAgentListener();
+    expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.IDLE);
+    account.logout();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.UNREGISTERED,
+      );
+      done();
     });
   });
 
