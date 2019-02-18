@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, select, text, number } from '@storybook/addon-knobs';
+import { boolean, select, number } from '@storybook/addon-knobs';
 import {
   withInfoDecorator,
   alignCenterDecorator,

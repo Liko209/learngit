@@ -42,6 +42,7 @@ export type GroupConfig = {
   has_more_newer?: boolean;
   is_newest_saved?: boolean;
   draft?: string;
+  attachment_item_ids?: number[];
   send_failure_post_ids?: number[];
   last_index_of_files?: number;
   last_index_of_tasks?: number;

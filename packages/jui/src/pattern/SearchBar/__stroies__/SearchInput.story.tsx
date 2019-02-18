@@ -12,7 +12,7 @@ import React, { ChangeEvent } from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiSearchInput } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { text, boolean } from '@storybook/addon-knobs';
+import { boolean } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/SearchBar', module)
   .addDecorator(withInfoDecorator(JuiSearchInput, { inline: true }))
