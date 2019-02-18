@@ -3,6 +3,7 @@
   "exclude": [
     "node_modules",
     "src/**/__tests__/*",
-    "src/**/*(.spec|.test).ts(x)?"
+    "src/**/*(.spec|.test).ts(x)?",
+    "**/VirtualList.story.tsx"
   ]
 }
