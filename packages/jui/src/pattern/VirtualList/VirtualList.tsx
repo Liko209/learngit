@@ -3,7 +3,7 @@
  * @Date: 2019-01-19 21:41:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import {
   InfiniteLoader,
   List,
@@ -14,6 +14,8 @@ import {
   CellMeasurerCache,
   ListProps,
 } from 'react-virtualized';
+// TODO This component should be moved to application
+import { observer } from 'mobx-react';
 import { noop } from '../../foundation/utils';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { IVirtualListDataSource } from './VirtualListDataSource';
@@ -54,18 +56,19 @@ type State = {
   atBottom: boolean;
 };
 
-class JuiVirtualList<K, V> extends PureComponent<
-  JuiVirtualListProps<K, V>,
-  State
-> {
-  static MIN_CELL_HEIGHT: number = 10;
+const MIN_CELL_HEIGHT = 10;
+
+@observer
+class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
+  static MIN_CELL_HEIGHT: number = MIN_CELL_HEIGHT;
   private _cache: CellMeasurerCache;
   private _listRef: List;
   private _skipStickTo: boolean = false;
   private _forceScrollToIndex: number = 0;
+  private _unmounted = false;
 
   static defaultProps = {
-    minCellHeight: JuiVirtualList.MIN_CELL_HEIGHT,
+    minCellHeight: MIN_CELL_HEIGHT,
     threshold: 15,
     overscan: 10,
     minimumBatchSize: 10,
@@ -84,6 +87,10 @@ class JuiVirtualList<K, V> extends PureComponent<
 
   componentDidMount() {
     this.loadInitialData();
+  }
+
+  componentWillUnmount() {
+    this._unmounted = true;
   }
 
   private _registerList = (callback: (ref: List) => void) => (ref: List) => {
@@ -112,10 +119,6 @@ class JuiVirtualList<K, V> extends PureComponent<
   }: ListRowProps) => {
     const { observeCell, rowRenderer } = this.props;
 
-    if (this._isSpinnerRow(rowIndex)) {
-      return this._renderMoreSpinner(rowIndex, style);
-    }
-
     return (
       <CellMeasurer
         cache={this.cache}
@@ -125,16 +128,17 @@ class JuiVirtualList<K, V> extends PureComponent<
         parent={parent}
       >
         {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
+          if (this._isSpinnerRow(rowIndex)) {
+            return this._renderMoreSpinner(rowIndex, style);
+          }
+
           const dataIndex = this._toDataIndex(rowIndex);
 
           const props: JuiVirtualCellProps<V> = {
             style,
             index: dataIndex,
             item: this._getItem(dataIndex)!,
-            onLoad: () => {
-              this._cache.clear(dataIndex, 0);
-              measure();
-            },
+            onLoad: measure,
           };
 
           const cell = rowRenderer(props);
@@ -167,36 +171,48 @@ class JuiVirtualList<K, V> extends PureComponent<
   loadInitialData = async () => {
     const { dataSource, stickToBottom } = this.props;
 
-    if (dataSource.loadInitialData) {
-      await dataSource.loadInitialData();
+    if (!dataSource.loadInitialData) return;
 
-      if (this.props.initialScrollToIndex) {
-        this._forceScrollToIndex = this.props.initialScrollToIndex;
-        if (this._isLoadingMore('up')) {
-          this._forceScrollToIndex++;
-        }
-      } else if (stickToBottom) {
-        this._forceScrollToIndex = dataSource.size() - 1;
+    await dataSource.loadInitialData();
+
+    if (this.props.initialScrollToIndex) {
+      this._forceScrollToIndex = this.props.initialScrollToIndex;
+      if (this._isLoadingMore('up')) {
+        this._forceScrollToIndex++;
       }
-
-      this.forceUpdate(() => {
-        this._forceScrollToIndex = 0;
-      });
+    } else if (stickToBottom) {
+      this._forceScrollToIndex = dataSource.size() - 1;
     }
+
+    if (this._unmounted) return;
+
+    this.forceUpdate(() => {
+      this._forceScrollToIndex = 0;
+    });
+  }
+
+  hasMoreDown = () => {
+    const { dataSource } = this.props;
+    return dataSource.hasMore && dataSource.hasMore('down');
+  }
+
+  hasMoreUp = () => {
+    const { dataSource } = this.props;
+    return dataSource.hasMore && dataSource.hasMore('up');
   }
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
     const { dataSource } = this.props;
-    const hasMore = dataSource.hasMore && dataSource.hasMore();
+    const hasMoreDown = this.hasMoreDown();
     const isLoading = dataSource.isLoading && dataSource.isLoading();
 
-    if (!isLoading && hasMore) {
+    console.log('loadMore', startIndex, stopIndex);
+
+    if (!isLoading && hasMoreDown) {
       const oldSize = dataSource.size();
-      if (dataSource.infiniteLoadMore) {
-        await dataSource.infiniteLoadMore(startIndex, stopIndex);
-        this._skipStickTo = true;
-      } else if (dataSource.loadMore) {
-        await dataSource.loadMore(startIndex, stopIndex);
+
+      if (dataSource.loadMore) {
+        await dataSource.loadMore(startIndex, stopIndex, 'down');
         this._skipStickTo = true;
       } else {
         return;
@@ -210,7 +226,14 @@ class JuiVirtualList<K, V> extends PureComponent<
   }
 
   isRowLoaded = ({ index }: Index) => {
-    return !!this.props.dataSource.get(index as any);
+    let rowRendered = false;
+    if (index <= 0 && this.hasMoreUp()) {
+      rowRendered = false;
+    } else {
+      rowRendered = !!this.props.dataSource.get(index as any);
+    }
+    console.log('isRowLoaded index: ', index, rowRendered);
+    return rowRendered;
   }
 
   private _toDataIndex(rowIndex: number) {
@@ -326,7 +349,7 @@ class JuiVirtualList<K, V> extends PureComponent<
     if (dataSource.total) {
       total = dataSource.total();
     } else if (dataSource.hasMore) {
-      total = dataSource.hasMore() ? Infinity : rowCount;
+      total = dataSource.hasMore('down') ? Infinity : rowCount;
     } else {
       total = dataSource.size();
     }
@@ -348,6 +371,7 @@ class JuiVirtualList<K, V> extends PureComponent<
               <List
                 ref={this._registerList(registerChild)}
                 onRowsRendered={(info: JuiVirtualListRowsRenderInfo) => {
+                  console.log('info: ', info);
                   onBeforeRowsRendered(info);
                   onRowsRendered(info);
                 }}

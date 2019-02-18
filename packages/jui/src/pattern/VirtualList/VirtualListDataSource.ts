@@ -4,10 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 interface IVirtualListDataSource<K, V> {
-  loadMore?: (startIndex: number, endIndex: number) => Promise<any>;
+  loadMore?: (
+    startIndex: number,
+    endIndex: number,
+    direction: 'up' | 'down',
+  ) => Promise<any>;
   infiniteLoadMore?: (startIndex: number, endIndex: number) => Promise<any>;
   loadInitialData?: () => Promise<any>;
-  hasMore?: () => boolean;
+  hasMore?: (direction: 'up' | 'down') => boolean;
   isLoading?: () => boolean;
   isLoadingContent?: () => boolean;
   isLoadingMore?: (direction: 'up' | 'down') => boolean;

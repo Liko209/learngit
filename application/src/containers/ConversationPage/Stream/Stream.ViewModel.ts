@@ -192,9 +192,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  async loadPrevPosts() {
+  async loadPrevPosts(limit: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, limit);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
@@ -202,9 +202,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  async loadNextPosts() {
+  async loadNextPosts(limit: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, limit);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);

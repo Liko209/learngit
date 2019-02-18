@@ -76,6 +76,7 @@ class RightRailComponent extends React.Component<Props> {
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
+    return null;
     return (
       <ReactResizeDetector handleWidth={true}>
         {(width: number) => (

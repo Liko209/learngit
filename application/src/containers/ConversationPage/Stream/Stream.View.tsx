@@ -35,11 +35,13 @@ type StreamItemPost = StreamItem & { value: number[] };
 
 @observer
 class StreamViewComponent extends Component<Props>
-  implements IVirtualListDataSource {
+  implements IVirtualListDataSource<number, StreamItem> {
   private _timeout: NodeJS.Timeout | null;
   private _globalStore = storeManager.getGlobalStore();
-  private _listRef = React.createRef<JuiVirtualList>();
-  @observable private _isLoading = false;
+  private _listRef = React.createRef<JuiVirtualList<number, StreamItem>>();
+  @observable private _loadingContent = false;
+  @observable private _loadingMoreUp = false;
+  @observable private _loadingMoreDown = false;
   private _isMostRecentPostVisibleBefore: boolean;
   state = { _jumpToPostId: 0 };
 
@@ -53,42 +55,71 @@ class StreamViewComponent extends Component<Props>
     return null;
   }
 
-  /**
-  data source methods
-   */
-  countOfCell() {
+  get(index: number) {
+    const { hasMoreUp } = this.props;
+    if (hasMoreUp) {
+      return this.props.items[index];
+    }
+    return this.props.items[index - 1];
+  }
+
+  size() {
     const { hasMoreUp } = this.props;
     return this.props.items.length + (hasMoreUp ? 0 : 1);
   }
 
-  cellAtIndex(params: JuiVirtualCellProps) {
-    const { hasMoreUp } = this.props;
-    const { index } = params;
-    if (hasMoreUp) {
-      const streamItem = this.props.items[index];
-      return this._renderStreamItem(streamItem);
+  hasMore(direction: 'up' | 'down') {
+    let hasMore = false;
+    if ('down' === direction) {
+      hasMore = this.props.hasMoreDown;
     }
-    if (index === 0) {
+    if ('up' === direction) {
+      hasMore = this.props.hasMoreUp;
+    }
+    return hasMore;
+  }
+
+  rowRenderer = (params: JuiVirtualCellProps<StreamItem>) => {
+    const { hasMoreUp } = this.props;
+    const { index, item: streamItem } = params;
+    if (!hasMoreUp && index === 0) {
       return this._renderInitialPost();
     }
-    const streamItem = this.props.items[index - 1];
     return this._renderStreamItem(streamItem);
   }
 
-  observeCell() {
-    return true;
+  async loadMore(
+    startIndex: number,
+    stopIndex: number,
+    direction: 'up' | 'down',
+  ) {
+    if ('up' === direction) {
+      this._loadingMoreUp = true;
+      await this.props.loadPrevPosts(20);
+      this._loadingMoreUp = false;
+    }
+
+    if ('down' === direction) {
+      this._loadingMoreUp = true;
+      await this.props.loadNextPosts(stopIndex - startIndex + 1);
+      this._loadingMoreUp = false;
+    }
+    return;
   }
 
-  async loadMore() {
-    this._isLoading = true;
-    // await this.props.loadPrevPosts();
-    this._isLoading = false;
+  isLoadingContent() {
+    return this._loadingContent;
+  }
+
+  isLoadingMore(direction: 'up' | 'down') {
+    if ('up' === direction) return this._loadingMoreUp;
+    if ('down' === direction) return this._loadingMoreDown;
+    return false;
   }
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
-    await this._loadInitialPosts();
   }
 
   componentWillUnmount() {
@@ -210,7 +241,7 @@ class StreamViewComponent extends Component<Props>
     if (this.props.hasMoreDown) {
       return;
     }
-    const MostRecentMsgTagIndex = this.countOfCell() - 1;
+    const MostRecentMsgTagIndex = this.size() - 1;
     const isVisible = stopIndex >= MostRecentMsgTagIndex;
     if (isVisible === this._isMostRecentPostVisibleBefore) {
       return;
@@ -234,7 +265,6 @@ class StreamViewComponent extends Component<Props>
         showTip={!!loadInitialPostsError}
         tip={t('translations:messageLoadingErrorTip')}
         linkText={t('translations:tryAgain')}
-        onClick={this._loadInitialPosts}
       />
     ) : (
       <JuiStream>
@@ -242,11 +272,14 @@ class StreamViewComponent extends Component<Props>
         <ReactResizeDetector handleWidth={true} handleHeight={true}>
           {(width: number = 0, height: number) => (
             <JuiVirtualList
-              dataSource={this}
               ref={this._listRef}
-              isLoading={this._isLoading}
+              dataSource={this}
+              rowRenderer={this.rowRenderer}
+              observeCell={true}
+              stickToBottom={true}
               width={width}
               height={height}
+              threshold={40}
               onBeforeRowsRendered={this._rowsRenderedHandler}
             />
           )}
@@ -256,11 +289,14 @@ class StreamViewComponent extends Component<Props>
   }
 
   @action.bound
-  private _loadInitialPosts = async () => {
+  loadInitialData = async () => {
     const { loadInitialPosts, updateHistoryHandler, markAsRead } = this.props;
+    this._loadingContent = true;
     await loadInitialPosts();
+    this._loadingContent = false;
     updateHistoryHandler();
     markAsRead();
+
     this.jumpToInitialPosition();
   }
 
@@ -269,7 +305,7 @@ class StreamViewComponent extends Component<Props>
       const list = this._listRef.current;
       const { _jumpToPostId } = this.state;
       if (!_jumpToPostId) {
-        // return list.scrollToPosition(99999);
+        return;
       }
       const targetItemFilter = (item: StreamItem, id: number) => {
         return !!(item.value && item.value.includes(id));
@@ -304,6 +340,23 @@ class StreamViewComponent extends Component<Props>
         `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${scrollToPostId}`,
       );
       return;
+    }
+
+    this._scrollToPost(scrollToPostId);
+  }
+
+  private _scrollToPost(postId: number) {
+    const { items } = this.props;
+    const postIndex = items.findIndex(
+      (item: StreamItem) =>
+        !!(
+          StreamItemType.POST === item.type &&
+          item.value &&
+          item.value.includes(postId)
+        ),
+    );
+    if (this._listRef.current && postIndex > -1) {
+      this._listRef.current.scrollToCell(postIndex);
     }
   }
 
