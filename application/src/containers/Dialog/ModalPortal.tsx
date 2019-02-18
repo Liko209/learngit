@@ -14,7 +14,7 @@ type State = {
 // type ProviderProps = { value: () => void };
 // const Xxx = React.createContext<ProviderProps>({ value: () => {} });
 
-class DialogPortal extends React.Component<Props, State> {
+class ModalPortal extends React.Component<Props, State> {
   state: State = {
     portals: new Map(),
   };
@@ -43,4 +43,4 @@ class DialogPortal extends React.Component<Props, State> {
   }
 }
 
-export { DialogPortal };
+export { ModalPortal };

@@ -101,6 +101,8 @@
   "markPrivateServerErrorContent": "We weren't able to private this conversation. Try again.",
   "leaveTeamServerErrorContent": "Sorry, we weren't able to let you leave the team. Try again.",
   "leaveTeamNetworkErrorContent": "Sorry, we weren't able to let you leave the team.",
+  "deleteTeamServerErrorContent": "Sorry, we weren't able to delete this team. Try again.",
+  "deleteTeamNetworkErrorContent": "Sorry, we weren't able to delete this team.",
   "suggested people": "suggested people",
   "team members": "team members",
   "search": "Search",
@@ -287,6 +289,10 @@
   "leaveTeamConfirmTitle": "Leave team",
   "leaveTeamConfirmContent": "Once you leave {{teamName}}, you will no longer have access to the content.",
   "leaveTeamConfirmOk": "leave",
+  "deleteTeamConfirmTitle": "Delete Team?",
+  "deleteTeamConfirmContent": "Are you sure you want to permanently delete {{teamName}}?",
+  "deleteTeamConfirmOk": "delete",
+  "deleteTeamSuccessMsg": "Team deleted successfully.",
   "removeFromTeam": "Remove from team",
   "removeMemberNetworkError": "Sorry, we weren't able to remove this team member.",
   "removeMemberBackendError": "Sorry, we weren't able to remove this team member. Try again.",
@@ -353,5 +359,7 @@
   "signInFailedTitle": "Sign In Failed",
   "signInFailedContent": "We are having trouble signing you in. Please try again later.",
   "postMessages": "Post messages",
-  "pinPosts": "Pin posts"
+  "pinPosts": "Pin posts",
+  "deleteTeam": "Delete team",
+  "deleteTeamToolTip": "Delete a team permanently."
 }

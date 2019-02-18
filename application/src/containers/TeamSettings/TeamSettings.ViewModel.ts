@@ -26,6 +26,10 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 
+type ActionErrorOptions = {
+  backendErrorMessage: string;
+  networkErrorMessage: string;
+};
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
   nameErrorMsg?: string = '';
@@ -100,19 +104,49 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     try {
       await groupService.leaveTeam(userId, this.id);
     } catch (e) {
-      this.onLeaveTeamError(e);
+      this._onActionError(e, {
+        backendErrorMessage: 'leaveTeamServerErrorContent',
+        networkErrorMessage: 'leaveTeamNetworkErrorContent',
+      });
     }
   }
 
-  onLeaveTeamError = (e: Error) => {
+  @action
+  deleteTeam = async () => {
+    const groupService: GroupService = GroupService.getInstance();
+
+    try {
+      await groupService.deleteTeam(this.id);
+      this._onDeleteTeamSuccess();
+      return true;
+    } catch (e) {
+      this._onActionError(e, {
+        backendErrorMessage: 'deleteTeamServerErrorContent',
+        networkErrorMessage: 'deleteTeamNetworkErrorContent',
+      });
+      return false;
+    }
+  }
+
+  private _onDeleteTeamSuccess = () => {
+    Notification.flashToast({
+      message: 'deleteTeamSuccessMsg',
+      type: ToastType.SUCCESS,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
+  private _onActionError = (e: Error, options: ActionErrorOptions) => {
     const isBackEndError = errorHelper.isBackEndError(e);
     const isNetworkError = errorHelper.isNetworkConnectionError(e);
     let message = '';
     if (isBackEndError) {
-      message = 'leaveTeamServerErrorContent';
+      message = options.backendErrorMessage;
     }
     if (isNetworkError) {
-      message = 'leaveTeamNetworkErrorContent';
+      message = options.networkErrorMessage;
     }
     if (message) {
       return Notification.flashToast({
