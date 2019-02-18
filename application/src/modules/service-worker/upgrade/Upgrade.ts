@@ -75,7 +75,7 @@ class Upgrade {
     }
 
     if (this._editorIsOnFocusAndNotEmpty()) {
-      mainLogger.info(`${logTag}Forbidden to reload editor is focused`);
+      mainLogger.info(`${logTag}Forbidden to reload due to editor is focused`);
       return false;
     }
 
@@ -99,7 +99,7 @@ class Upgrade {
     return allInputElements.some((el: Element) => {
       if (el === document.activeElement) {
         const classList = [].slice.call(el.classList);
-        // Has no ql-editor
+        // Have both ql-blank and ql-editor if it is empty
         return classList.length === 1;
       }
       return false;
