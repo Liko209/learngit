@@ -91,7 +91,11 @@ class Jupiter {
   }
 }
 
-const container = new Container({ defaultScope: 'Singleton' });
+const container = new Container({
+  defaultScope: 'Singleton',
+  skipBaseClassChecks: true,
+});
+
 container.bind<Jupiter>(Jupiter).to(Jupiter);
 const {
   lazyInject,

@@ -151,6 +151,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this.fileService.getUploadItems(groupId);
   }
 
+  async initialUploadItemsFromDraft(groupId: number) {
+    return await this.fileService.initialUploadItemsFromDraft(groupId);
+  }
+
   async canResendFailedItems(itemIds: number[]) {
     const fileItemsIds = itemIds.filter(
       id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
@@ -253,6 +257,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
     return this.fileService.getThumbsUrlWithSize(itemId, width, height);
+  }
+
+  hasUploadingFiles() {
+    return this.fileService.hasUploadingFiles();
   }
 }
 
