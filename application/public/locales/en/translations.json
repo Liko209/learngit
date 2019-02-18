@@ -148,6 +148,8 @@
       "started": "started",
       "updated": "updated",
       "created": "created",
+      "uploaded": "uploaded",
+      "version": "version",
       "via": "via",
       "marked": "marked",
       "completed": "completed",
