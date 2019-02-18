@@ -42,7 +42,9 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onReRegisterAction(): void {
-    this._userAgent.reRegister();
+    if (this._userAgent) {
+      this._userAgent.reRegister();
+    }
   }
 
   public onProvisionReadyAction(
@@ -51,6 +53,13 @@ class RTCRegistrationManager extends EventEmitter2
   ): void {
     this._userAgent = new RTCSipUserAgent(provisionData, options);
     this._initUserAgentListener();
+  }
+
+  public onUnregisterAction() {
+    if (this._userAgent) {
+      this._userAgent.unregister();
+    }
+    this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
   }
 
   public onMakeOutgoingCallAction(
@@ -200,6 +209,17 @@ class RTCRegistrationManager extends EventEmitter2
     options: RTCCallOptions,
   ): any {
     return this._userAgent.makeCall(phoneNumber, options);
+  }
+
+  public logout() {
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.LOGOUT,
+      },
+      () => {
+        this._fsm.unregister();
+      },
+    );
   }
 
   private _onUARegSuccess() {

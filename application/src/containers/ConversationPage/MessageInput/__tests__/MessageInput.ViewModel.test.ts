@@ -15,20 +15,20 @@ import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { GroupConfigService } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
-import { daoManager } from 'sdk/src/dao';
+import { PostService } from 'sdk/module/post';
+
+jest.mock('sdk/module/post');
+jest.mock('sdk/service/groupConfig');
+jest.mock('sdk/api');
+
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const groupConfigService = {
   updateDraft: jest.fn(),
   getDraft: jest.fn(),
 };
-
 GroupConfigService.getInstance = () => groupConfigService;
-jest.mock('sdk/service/groupConfig');
-jest.mock('sdk/api');
-
-const postService = {
-  sendPost: jest.fn().mockResolvedValue(null),
-};
 
 const itemService = {
   getUploadItems: jest.fn(),
@@ -38,15 +38,12 @@ const mockGroupEntityData = {
   draft: 'draft',
 };
 
-const { PostService } = service;
-
 let messageInputViewModel;
 describe('MessageInputViewModel', () => {
   beforeEach(() => {
     jest
       .spyOn(GroupConfigService, 'getInstance')
       .mockReturnValue(groupConfigService);
-    jest.spyOn(PostService, 'getInstance').mockReturnValue(postService);
     jest.spyOn(ItemService, 'getInstance').mockReturnValue(itemService);
     jest.mock('@/store/utils', () => ({
       getEntity: jest.fn(() => mockGroupEntityData),
@@ -68,7 +65,6 @@ describe('MessageInputViewModel', () => {
     describe('_sendPost()', () => {
       let mockThis;
       let enterHandler;
-      let markdownFromDelta;
       function markdownFromDeltaGen(text) {
         const markdownFromDeltaRes = {
           content: text,

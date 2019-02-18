@@ -29,7 +29,7 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { UserConfig } from '../../../../service/account/UserConfig';
 import CompanyService from '../../../../service/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
-import PostService from '../../../../service/post';
+import { PostService } from '../../../post';
 import ProfileService from '../../../../service/profile';
 import { TypeDictionary } from '../../../../utils';
 import { PersonService } from '../../../person';
@@ -48,7 +48,7 @@ jest.mock('../../../../service/profile');
 jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../service/company');
-jest.mock('../../../../service/post');
+jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 
