@@ -27,15 +27,11 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
   const initialScrollToIndex = number('initial scroll to index', 300);
   const observeCell = boolean('observe cell', false);
   const stickToBottom = boolean('stick to bottom', false);
+
   function generateURL() {
     const size = Math.round(10 + Math.random() * 10) * 10;
     const url = `https://via.placeholder.com/${size}`;
     return url;
-  }
-  const initCount = 40;
-  const data: string[] = [];
-  for (let i = 0; i < initCount; ++i) {
-    data.push(generateURL());
   }
 
   type CellProps = {
@@ -76,67 +72,58 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
   }
 
-  let dataSourceLoading = false;
-
-  class DataSource implements IVirtualListDataSource {
-    private _list: string[];
-    constructor(data: string[]) {
-      this._list = data;
-    }
+  class DataSource implements IVirtualListDataSource<number, string> {
+    private _loading: boolean = false;
+    private _items: string[] = [];
 
     addRandomCell = (n: number = 1) => {
       for (let i = 0; i < n; ++i) {
-        this._list.push(generateURL());
+        this._items.push(generateURL());
       }
     }
 
-    countOfCell() {
-      return this._list.length;
+    get(i: number) {
+      return this._items[i];
     }
 
-    observeCell() {
-      return observeCell;
+    hasMore() {
+      return count > this.size();
     }
 
-    stickToBottom() {
-      return stickToBottom;
+    size() {
+      return this._items.length;
     }
 
-    loadMore = async () => {
-      if (this._list.length >= count) {
-        return;
-      }
-      dataSourceLoading = true;
-      return new Promise((resolve: any) => {
+    isLoading() {
+      return this._loading;
+    }
+
+    loadInitialData = () => {
+      return new Promise((resolve: Function) => {
+        this._loading = true;
         setTimeout(() => {
           this.addRandomCell(20);
-          dataSourceLoading = false;
+          this._loading = false;
+          resolve();
+        },         100);
+      });
+    }
+
+    loadMore = () => {
+      console.log('loadMore: ');
+      return new Promise((resolve: Function) => {
+        if (this._items.length >= count) {
+          resolve();
+        }
+        this._loading = true;
+        setTimeout(() => {
+          this.addRandomCell(20);
+          this._loading = false;
           resolve();
         },         1000);
       });
     }
-
-    moreLoader = () => <div>Loading ...</div>;
-
-    cellAtIndex({ index, style, onLoad }: JuiVirtualCellProps) {
-      const text = `${index}`;
-      const s = {
-        ...style,
-        borderBottom: '1px dashed',
-      };
-      return (
-        <DynamicCell
-          title={text}
-          style={s}
-          url={this._list[index]}
-          onLoad={onLoad}
-          key={index}
-        />
-      );
-    }
   }
-
-  const dataSource = new DataSource(data);
 
   const style: CSSProperties = {
     width: 400,
@@ -145,9 +132,16 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     display: 'flex',
     flexDirection: 'column',
   };
+
+  const dataSource = new DataSource();
+
   class Content extends PureComponent {
-    private _listRef: RefObject<JuiVirtualList> = createRef();
-    state = { cellIndex: initialScrollToIndex, loading: false };
+    private _listRef: RefObject<JuiVirtualList<number, string>> = createRef();
+    state = {
+      dataSource,
+      cellIndex: initialScrollToIndex,
+      loading: false,
+    };
 
     private _handleCellIndexChange = (event: ChangeEvent<HTMLInputElement>) => {
       const cellIndex = parseInt(event.currentTarget.value, 10);
@@ -159,20 +153,34 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
 
     private _handleAddCell = () => {
-      dataSource.addRandomCell(1);
-      window.requestAnimationFrame(() => this._listRef.current.reload());
+      this.state.dataSource.addRandomCell(1);
+      this._listRef.current.forceUpdate();
     }
 
-    private _simulateLoadData = () => {
-      this.setState({ loading: true });
-      setTimeout(() => {
-        dataSource.addRandomCell(20);
-        this.setState({ loading: false });
-      },         500);
+    private _rowRenderer = ({
+      index,
+      item,
+      style,
+      onLoad,
+    }: JuiVirtualCellProps<string>) => {
+      const text = `${index}`;
+      const s = {
+        ...style,
+        borderBottom: '1px dashed',
+      };
+      return (
+        <DynamicCell
+          title={text}
+          style={s}
+          url={item}
+          onLoad={onLoad}
+          key={index}
+        />
+      );
     }
 
     render() {
-      const { cellIndex, loading } = this.state;
+      const { cellIndex } = this.state;
       return (
         <div style={style}>
           <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
@@ -185,14 +193,15 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
           </div>
           <JuiVirtualList
             ref={this._listRef}
-            dataSource={dataSource}
+            stickToBottom={stickToBottom}
+            dataSource={this.state.dataSource}
+            rowRenderer={this._rowRenderer}
             width={400}
             height={500}
-            isLoading={loading || dataSourceLoading}
+            observeCell={observeCell}
           />
           <div>
             <button onClick={this._handleAddCell}>Add cell</button>
-            <button onClick={this._simulateLoadData}>Load more data</button>
           </div>
         </div>
       );

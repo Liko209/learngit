@@ -11,52 +11,34 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { ITEM_HEIGHT } from './config';
 import {
   JuiVirtualList,
-  IVirtualListDataSource,
   JuiVirtualCellWrapper,
   JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
-
 import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-import { debounce } from 'lodash';
-const LOAD_DELAY = 300;
 import ReactResizeDetector from 'react-resize-detector';
 
 const HEADER_HEIGHT = 36;
+
 @observer
-class ItemListView extends React.Component<ViewProps & Props>
-  implements IVirtualListDataSource {
-  private _loadData: Function;
-  constructor(props: ViewProps & Props) {
-    super(props);
-    this._loadData = debounce(async () => {
-      const { loadStatus, ids, totalCount } = this.props;
-      const { firstLoaded, loading } = loadStatus;
-      if ((firstLoaded && ids.length === totalCount) || loading) {
-        return;
-      }
-      await this.props.fetchNextPageItems();
-    },                        LOAD_DELAY);
-  }
-
-  countOfCell() {
-    const { ids, loadStatus } = this.props;
-    const { loading } = loadStatus;
-    return loading ? ids.length + 1 : ids.length;
-  }
-
-  cellAtIndex = ({ index, style }: JuiVirtualCellProps) => {
-    const { ids, tabConfig } = this.props;
+class ItemListView extends React.Component<ViewProps & Props> {
+  rowRenderer = ({
+    index,
+    item: itemId,
+    style,
+  }: JuiVirtualCellProps<number>) => {
+    const { tabConfig, active } = this.props;
     const Component: any = tabConfig.item;
-    const id = ids[index];
     let content;
-    if (id) {
-      content = <Component id={id} />;
+    if (itemId) {
+      content = <Component id={itemId} />;
     }
+
+    if (!active) return null;
 
     return (
       <JuiVirtualCellWrapper key={index} style={style}>
@@ -65,23 +47,9 @@ class ItemListView extends React.Component<ViewProps & Props>
     );
   }
 
-  fixedCellHeight() {
-    return ITEM_HEIGHT;
-  }
-
-  renderEmptyContent = () => {
+  noContentRenderer = () => {
     const { type } = this.props;
     return emptyView(type);
-  }
-
-  isRowLoaded = (index: number) => {
-    const { ids } = this.props;
-    const result = typeof ids[index] !== 'undefined';
-    return result;
-  }
-
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this._loadData();
   }
 
   firstLoader = () => {
@@ -93,30 +61,43 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   render() {
-    const { totalCount, ids, loadStatus, tabConfig } = this.props;
-    const { loading, firstLoaded } = loadStatus;
+    const { dataSource, groupId, tabConfig } = this.props;
     const { subheader } = tabConfig;
+    const totalCount = dataSource.total();
+
     return (
       <JuiRightShelfContent>
-        {firstLoaded && totalCount > 0 && ids.length > 0 && (
-          <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t(subheader)} ({totalCount})
-          </JuiListSubheader>
-        )}
-        {firstLoaded && (
-          <ReactResizeDetector handleWidth={true} handleHeight={true}>
-            {(width: number = 0, height: number = HEADER_HEIGHT) => (
-              <JuiVirtualList
-                dataSource={this}
-                threshold={1}
-                isLoading={loading}
-                width={width}
-                height={height - HEADER_HEIGHT}
-              />
-            )}
+        {dataSource.isLoadingContent() && this.firstLoader()}
+        {!dataSource.isLoadingContent() &&
+          totalCount > 0 &&
+          dataSource.size() > 0 && (
+            <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
+              {i18next.t(subheader)} ({totalCount})
+            </JuiListSubheader>
+          )}
+        {
+          <ReactResizeDetector
+            key={groupId}
+            handleWidth={true}
+            handleHeight={true}
+          >
+            {(width: number = 0, height: number = HEADER_HEIGHT) => {
+              return (
+                <JuiVirtualList
+                  overscan={1}
+                  threshold={10}
+                  dataSource={dataSource}
+                  rowRenderer={this.rowRenderer}
+                  noContentRenderer={this.noContentRenderer}
+                  moreLoader={this.moreLoader}
+                  fixedCellHeight={ITEM_HEIGHT}
+                  width={width}
+                  height={height - HEADER_HEIGHT}
+                />
+              );
+            }}
           </ReactResizeDetector>
-        )}
-        {loading && !firstLoaded && this.firstLoader()}
+        }
       </JuiRightShelfContent>
     );
   }

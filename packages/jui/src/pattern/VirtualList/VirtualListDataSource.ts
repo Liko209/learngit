@@ -3,30 +3,17 @@
  * @Date: 2019-01-02 15:02:50
  * Copyright © RingCentral. All rights reserved.
  */
-import { JuiVirtualCellProps } from './VirtualCell';
-
-interface IVirtualListDataSource {
-  minCellHeight?: () => number;
-
-  countOfCell(): number;
-
-  cellAtIndex(params: JuiVirtualCellProps): JSX.Element;
-
-  observeCell?: () => boolean;
-
-  fixedCellHeight?: (index: number) => number;
-
-  // for loading data
+interface IVirtualListDataSource<K, V> {
   loadMore?: (startIndex: number, endIndex: number) => Promise<any>;
-
-  stickToBottom?: () => boolean;
-
-  // empty content
-  renderEmptyContent?: () => JSX.Element;
-
-  onScroll?: (event: any) => void;
-
-  moreLoader?: () => JSX.Element;
+  infiniteLoadMore?: (startIndex: number, endIndex: number) => Promise<any>;
+  loadInitialData?: () => Promise<any>;
+  hasMore?: () => boolean;
+  isLoading?: () => boolean;
+  isLoadingContent?: () => boolean;
+  isLoadingMore?: (direction: 'up' | 'down') => boolean;
+  get: (index: K) => V | undefined;
+  size: () => number;
+  total?: () => number;
 }
 
 export { IVirtualListDataSource };
