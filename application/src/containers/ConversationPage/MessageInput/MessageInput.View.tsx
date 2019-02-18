@@ -96,7 +96,9 @@ class MessageInputViewComponent extends Component<
         />
       </MessageActionBar>
     );
-    const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
+    const attachmentsNode = (
+      <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
+    );
     return (
       <JuiMessageInput
         value={draft}
