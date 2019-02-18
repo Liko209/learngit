@@ -21,7 +21,6 @@ import CompanyService from './service/company';
 import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
-import PostService from './service/post';
 import PresenceService from './service/presence';
 import { ProfileService } from './module/profile';
 import GroupConfigService from './service/groupConfig';
@@ -31,7 +30,7 @@ import { StateService } from './module/state';
 import SyncService from './service/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
-import { NewPostService } from './module/post';
+import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 
@@ -53,7 +52,7 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: PostService.name, value: PostService },
+    { name: GroupService.name, value: GroupService },
     { name: CompanyService.name, value: CompanyService },
     { name: ItemService.name, value: ItemService },
     { name: PersonService.name, value: PersonService },
@@ -61,7 +60,7 @@ const registerConfigs = {
     { name: ProfileService.name, value: ProfileService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
-    { name: NewPostService.name, value: NewPostService },
+    { name: PostService.name, value: PostService },
     { name: PermissionService.name, value: PermissionService },
     { name: GroupService.name, value: GroupService },
     {

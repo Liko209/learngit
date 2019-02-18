@@ -30,10 +30,16 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   }
 
   public register(options?: ProvisionDataOptions): void {
+    if (!this._webphone) {
+      return;
+    }
     this._webphone.userAgent.register(options);
   }
 
   public makeCall(phoneNumber: string, options: RTCCallOptions): any {
+    if (!this._webphone) {
+      return null;
+    }
     if (!options.homeCountryId) {
       options.homeCountryId = '1';
     }
@@ -41,12 +47,24 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   }
 
   public reRegister() {
+    if (!this._webphone) {
+      return;
+    }
     this._webphone.userAgent.transport.stopSendingKeepAlives();
     this._webphone.userAgent.transport.connectionTimeout = null;
     this._webphone.userAgent.transport.connectionPromise = null;
     this._webphone.userAgent.transport.connectDeferredResolve = null;
     this._webphone.userAgent.transport.status = 3;
     this._webphone.userAgent.transport.reconnect();
+  }
+
+  public unregister() {
+    if (!this._webphone) {
+      return;
+    }
+    this._webphone.userAgent.unregister();
+    this._webphone.userAgent.removeAllListeners();
+    this._webphone = null;
   }
 
   private _initListener(): void {

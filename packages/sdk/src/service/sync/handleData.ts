@@ -14,7 +14,6 @@ import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
-import postHandleData from '../post/handleData';
 import { presenceHandleData } from '../presence/handleData';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
@@ -26,6 +25,7 @@ import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
 import { ProfileService } from '../../module/profile';
+import { PostService } from '../../module/post';
 import { GroupService } from '../../module/group';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
@@ -82,7 +82,12 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     )
     .then(() => GroupService.getInstance<GroupService>().handleData(groups))
     .then(() => GroupService.getInstance<GroupService>().handleData(teams))
-    .then(() => postHandleData(posts, maxPostsExceeded));
+    .then(() =>
+      PostService.getInstance<PostService>().handleIndexData(
+        posts,
+        maxPostsExceeded,
+      ),
+    );
 };
 
 const handleData = async (

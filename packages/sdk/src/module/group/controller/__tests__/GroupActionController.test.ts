@@ -17,8 +17,8 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { Raw } from '../../../../framework/model';
 import { UserConfig } from '../../../../service/account/UserConfig';
 import notificationCenter from '../../../../service/notificationCenter';
-import PostService from '../../../../service/post';
 import { ProfileService } from '../../../profile';
+import { PostService } from '../../../post';
 import { PersonService } from '../../../person';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
@@ -36,7 +36,7 @@ jest.mock('../../../profile');
 jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../service/company');
-jest.mock('../../../../service/post');
+jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 

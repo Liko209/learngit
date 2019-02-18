@@ -7,7 +7,7 @@
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { BookmarkProps, BookmarkViewProps } from './types';
-import { PostService } from 'sdk/service';
+import { PostService } from 'sdk/module/post';
 import { Profile } from 'sdk/module/profile/entity';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';

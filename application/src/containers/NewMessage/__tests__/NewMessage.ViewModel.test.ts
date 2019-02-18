@@ -6,18 +6,18 @@
 
 import * as goToConversation from '@/common/goToConversation';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
+
+jest.mock('sdk/module/post');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 jest.mock('@/common/goToConversation');
 
-const postService = {
-  sendPost() {},
-};
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const newMessageVM = new NewMessageViewModel();
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
 
 describe('NewMessageVM', () => {
   beforeAll(() => {
