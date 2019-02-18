@@ -32,6 +32,12 @@ enum SDH_DIRECTION {
   SEND_RECV = 'sendrecv',
 }
 
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  RECORD_IN_PROGRESS = 'recordInProgress',
+}
+
 class RTCCall {
   private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
   private _callInfo: RTCCallInfo = {
@@ -48,7 +54,7 @@ class RTCCall {
   private _account: IRTCAccount;
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
-  private _isRecording: boolean = false;
+  private _recordState: RECORD_STATE = RECORD_STATE.IDLE;
   private _isMute: boolean = false;
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
@@ -117,6 +123,10 @@ class RTCCall {
 
   getCallInfo(): RTCCallInfo {
     return this._callInfo;
+  }
+
+  getRecordState(): RECORD_STATE {
+    return this._recordState;
   }
 
   isMuted(): boolean {
@@ -357,11 +367,11 @@ class RTCCall {
   ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
-        this._isRecording = true;
+        this._recordState = RECORD_STATE.RECORDING;
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._isRecording = false;
+        this._recordState = RECORD_STATE.IDLE;
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
@@ -384,11 +394,11 @@ class RTCCall {
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
-        this._isRecording = false;
+        this._recordState = RECORD_STATE.IDLE;
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._isRecording = true;
+        this._recordState = RECORD_STATE.RECORDING;
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
@@ -486,19 +496,19 @@ class RTCCall {
   }
 
   private _onStartRecordAction() {
-    if (this._isRecording) {
+    if (RECORD_STATE.RECORDING === this._recordState) {
       this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
-    } else {
-      this._isRecording = true;
+    } else if (RECORD_STATE.IDLE === this._recordState) {
+      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
       this._callSession.startRecord();
     }
   }
 
   private _onStopRecordAction() {
-    if (this._isRecording) {
-      this._isRecording = false;
+    if (RECORD_STATE.RECORDING === this._recordState) {
+      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
       this._callSession.stopRecord();
-    } else {
+    } else if (RECORD_STATE.IDLE === this._recordState) {
       this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
     }
   }
