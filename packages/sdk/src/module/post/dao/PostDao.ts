@@ -63,6 +63,10 @@ class PostDao extends BaseDao<Post> {
     });
   }
 
+  async queryPostIdsByGroupId(groupId: number) {
+    return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
+  }
+
   async queryPostsByGroupId(
     groupId: number,
     anchorPostId?: number,
@@ -79,15 +83,6 @@ class PostDao extends BaseDao<Post> {
       direction,
       limit,
     );
-  }
-
-  queryLastPostByGroupId(groupId: number): Promise<Post | null> {
-    const query = this.createQuery();
-    return query
-      .orderBy('created_at', true)
-      .equal('group_id', groupId)
-      .filter((item: Post) => !item.deactivated)
-      .first();
   }
 
   queryOldestPostByGroupId(groupId: number): Promise<Post | null> {

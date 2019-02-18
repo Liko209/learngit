@@ -8,16 +8,13 @@ import { getSingleEntity } from '../../../../../store/utils';
 import { BookmarkViewModel } from '../Bookmark.ViewModel';
 import { serviceOk } from 'sdk/service/ServiceResult';
 
-const mockPostService = {
-  bookmarkPost: jest.fn(),
-};
-jest.mock('sdk/service/post', () => ({
-  default: {
-    getInstance: () => mockPostService,
-  },
-}));
+import { PostService } from 'sdk/module/post';
 
+jest.mock('sdk/module/post');
 jest.mock('../../../../../store/utils');
+
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let bookmarkViewModel: BookmarkViewModel;
 
@@ -45,10 +42,10 @@ describe('ActionsViewModel', () => {
   });
 
   it('bookmark()', async () => {
-    mockPostService.bookmarkPost.mockResolvedValue(serviceOk({}));
+    postService.bookmarkPost.mockResolvedValue(serviceOk({}));
     await bookmarkViewModel.bookmark(true);
-    expect(mockPostService.bookmarkPost).toBeCalledWith(1, true);
+    expect(postService.bookmarkPost).toBeCalledWith(1, true);
     await bookmarkViewModel.bookmark(false);
-    expect(mockPostService.bookmarkPost).toBeCalledWith(1, false);
+    expect(postService.bookmarkPost).toBeCalledWith(1, false);
   });
 });
