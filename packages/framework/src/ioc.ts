@@ -12,18 +12,6 @@ import {
   buildProviderModule,
   autoProvide,
 } from 'inversify-binding-decorators';
-import getDecorators from 'inversify-inject-decorators';
-import { Jupiter } from './Jupiter';
-
-const container = new Container({ defaultScope: 'Singleton' });
-container.bind<Jupiter>(Jupiter).to(Jupiter);
-
-const {
-  lazyInject,
-  lazyInjectNamed,
-  lazyInjectTagged,
-  lazyMultiInject,
-} = getDecorators(container, false);
 
 const provideSingleton = (identifier: interfaces.ServiceIdentifier<any>) => {
   return fluentProvide(identifier)
@@ -35,7 +23,6 @@ export {
   interfaces,
   Container,
   ContainerModule,
-  container,
   injectable,
   decorate,
   provide,
@@ -43,8 +30,4 @@ export {
   buildProviderModule,
   autoProvide,
   inject,
-  lazyInject,
-  lazyInjectNamed,
-  lazyInjectTagged,
-  lazyMultiInject,
 };
