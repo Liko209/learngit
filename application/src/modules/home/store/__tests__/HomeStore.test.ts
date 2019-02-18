@@ -23,6 +23,11 @@ describe('Home Store', () => {
         path: '/phone',
       },
     },
+    {
+      route: {
+        path: '/meeting',
+      },
+    },
   ];
   let homeStore: HomeStore;
 
@@ -36,13 +41,18 @@ describe('Home Store', () => {
 
   describe('defaultRouterPath', () => {
     it('should get empty path when paths not in sub', () => {
-      homeStore.setDefaultRouterPaths(['/nothing']);
+      homeStore.setDefaultRouterPaths(['/settings']);
       expect(homeStore.defaultRouterPath).toEqual('');
     });
 
     it('should get first matched path when there is path which is not registered', () => {
-      homeStore.setDefaultRouterPaths(['/nothing', '/messages', '/dashboard']);
+      homeStore.setDefaultRouterPaths(['/settings', '/messages', '/dashboard']);
       expect(homeStore.defaultRouterPath).toEqual('/messages');
+    });
+
+    it('should get first matched path when there is path which is not registered', () => {
+      homeStore.setDefaultRouterPaths(['/settings', '/dashboard', '/messages']);
+      expect(homeStore.defaultRouterPath).toEqual('/dashboard');
     });
   });
 });
