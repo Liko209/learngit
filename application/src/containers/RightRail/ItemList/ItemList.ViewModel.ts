@@ -6,14 +6,12 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed } from 'mobx';
 
-import { TAB_CONFIG } from './config';
 import { ItemListDataSource } from './ItemList.DataSource';
 import { Props, ViewProps } from './types';
 
 class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
-  @computed
-  get tabConfig() {
-    return TAB_CONFIG.find(looper => looper.type === this.props.type)!;
+  constructor(props: Props) {
+    super(props);
   }
 
   @computed

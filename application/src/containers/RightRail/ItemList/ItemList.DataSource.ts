@@ -1,3 +1,4 @@
+import { observable, action, reaction, IReactionDisposer } from 'mobx';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -13,7 +14,6 @@ import { ENTITY } from 'sdk/service';
 import { GlipTypeUtil } from 'sdk/utils';
 
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
-import { observable, action } from 'mobx';
 import { TAB_CONFIG } from './config';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
@@ -57,28 +57,36 @@ class ItemListDataSource implements IVirtualListDataSource<any, number> {
   @observable private _total: number = Infinity;
   @observable private _loadingContent = false;
   @observable private _loadingMoreDown = false;
+  private _disposer: IReactionDisposer;
 
   constructor(props: ItemListDataSourceProps) {
     const { groupId, type } = props;
     this.groupId = groupId;
     this.setType(type);
+
+    this._disposer = reaction(
+      () => this.getIds().length,
+      () => this._loadTotalCount(),
+      {
+        fireImmediately: true,
+      },
+    );
   }
 
   @action
   setType(type: RIGHT_RAIL_ITEM_TYPE) {
     this.type = type;
-    const { sortKey, desc } = this._getSort(type);
+    const { sortKey, desc } = this.getSort();
     this._buildSortableMemberListHandler(this.groupId, type, sortKey, desc);
-    this._loadTotalCount(this.groupId, type);
   }
 
   @action
-  private async _loadTotalCount(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
+  private async _loadTotalCount() {
     const itemService: ItemService = ItemService.getInstance();
     this._total = await itemService.getGroupItemsCount(
-      groupId,
-      this._getTypeId(type),
-      this._getFilterFunc(groupId, type),
+      this.groupId,
+      this._getTypeId(this.type),
+      this._getFilterFunc(this.groupId, this.type),
     );
   }
 
@@ -86,11 +94,11 @@ class ItemListDataSource implements IVirtualListDataSource<any, number> {
     return TAB_CONFIG.find(looper => looper.type === type)!;
   }
 
-  private _getSort(type: RIGHT_RAIL_ITEM_TYPE) {
+  getSort() {
     return {
       sortKey: ITEM_SORT_KEYS.CREATE_TIME,
       desc: false,
-      ...this._getTabConfig(type).sort,
+      ...this._getTabConfig(this.type).sort,
     };
   }
 
@@ -148,7 +156,7 @@ class ItemListDataSource implements IVirtualListDataSource<any, number> {
       entityName: ENTITY_NAME.ITEM,
       eventName: ENTITY.ITEM,
       hasMoreDown: true,
-      hasMoreUp: true,
+      hasMoreUp: false,
     });
   }
 
@@ -253,6 +261,7 @@ class ItemListDataSource implements IVirtualListDataSource<any, number> {
   }
 
   dispose() {
+    this._disposer();
     return this._sortableDataHandler.dispose();
   }
 }

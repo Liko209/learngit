@@ -3,28 +3,29 @@
  * @Date: 2019-01-19 21:41:19
  * Copyright © RingCentral. All rights reserved.
  */
+import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import {
-  InfiniteLoader,
-  List,
-  Index,
-  ListRowProps,
-  IndexRange,
   CellMeasurer,
   CellMeasurerCache,
+  Index,
+  IndexRange,
+  InfiniteLoader,
+  List,
   ListProps,
+  ListRowProps,
 } from 'react-virtualized';
-// TODO This component should be moved to application
-import { observer } from 'mobx-react';
+
 import { noop } from '../../foundation/utils';
-import { JuiVirtualListWrapper } from './VirtualListWrapper';
-import { IVirtualListDataSource } from './VirtualListDataSource';
 import {
-  JuiVirtualCellOnLoadFunc,
   JuiObservedCellWrapper,
+  JuiVirtualCellOnLoadFunc,
   JuiVirtualCellProps,
 } from './VirtualCell';
+import { IVirtualListDataSource } from './VirtualListDataSource';
+import { JuiVirtualListWrapper } from './VirtualListWrapper';
 
+// TODO This component should be moved to application
 type JuiVirtualListRowsRenderInfo = {
   overscanStartIndex: number;
   overscanStopIndex: number;
@@ -118,6 +119,9 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
     style,
   }: ListRowProps) => {
     const { observeCell, rowRenderer } = this.props;
+    if (this._isSpinnerRow(rowIndex)) {
+      return this._renderMoreSpinner(rowIndex, style);
+    }
 
     return (
       <CellMeasurer
@@ -128,10 +132,6 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
         parent={parent}
       >
         {({ measure }: { measure: JuiVirtualCellOnLoadFunc }) => {
-          if (this._isSpinnerRow(rowIndex)) {
-            return this._renderMoreSpinner(rowIndex, style);
-          }
-
           const dataIndex = this._toDataIndex(rowIndex);
 
           const props: JuiVirtualCellProps<V> = {
@@ -206,8 +206,6 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
     const hasMoreDown = this.hasMoreDown();
     const isLoading = dataSource.isLoading && dataSource.isLoading();
 
-    console.log('loadMore', startIndex, stopIndex);
-
     if (!isLoading && hasMoreDown) {
       const oldSize = dataSource.size();
 
@@ -226,14 +224,7 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
   }
 
   isRowLoaded = ({ index }: Index) => {
-    let rowRendered = false;
-    if (index <= 0 && this.hasMoreUp()) {
-      rowRendered = false;
-    } else {
-      rowRendered = !!this.props.dataSource.get(index as any);
-    }
-    console.log('isRowLoaded index: ', index, rowRendered);
-    return rowRendered;
+    return !!this.props.dataSource.get(index as any);
   }
 
   private _toDataIndex(rowIndex: number) {
@@ -353,6 +344,7 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
     } else {
       total = dataSource.size();
     }
+    total = total + spinnerCount;
 
     const isEmpty = total === 0;
 
@@ -371,7 +363,6 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
               <List
                 ref={this._registerList(registerChild)}
                 onRowsRendered={(info: JuiVirtualListRowsRenderInfo) => {
-                  console.log('info: ', info);
                   onBeforeRowsRendered(info);
                   onRowsRendered(info);
                 }}

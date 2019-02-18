@@ -21,6 +21,7 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import ReactResizeDetector from 'react-resize-detector';
+import { getTabConfig } from './utils';
 
 const HEADER_HEIGHT = 36;
 
@@ -31,7 +32,8 @@ class ItemListView extends React.Component<ViewProps & Props> {
     item: itemId,
     style,
   }: JuiVirtualCellProps<number>) => {
-    const { tabConfig, active } = this.props;
+    const { type, active } = this.props;
+    const tabConfig = getTabConfig(type);
     const Component: any = tabConfig.item;
     let content;
     if (itemId) {
@@ -61,8 +63,8 @@ class ItemListView extends React.Component<ViewProps & Props> {
   }
 
   render() {
-    const { dataSource, groupId, tabConfig } = this.props;
-    const { subheader } = tabConfig;
+    const { dataSource, groupId, type } = this.props;
+    const { subheader } = getTabConfig(type);
     const totalCount = dataSource.total();
 
     return (

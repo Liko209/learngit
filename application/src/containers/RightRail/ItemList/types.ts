@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { TabConfig } from './config';
 import { ItemListDataSource } from './ItemList.DataSource';
 
 type LoadStatus = {
@@ -25,7 +24,6 @@ type Props = {
 
 type ViewProps = {
   dataSource: ItemListDataSource;
-  tabConfig: TabConfig;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };
