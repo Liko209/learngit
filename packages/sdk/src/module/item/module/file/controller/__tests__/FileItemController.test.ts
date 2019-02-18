@@ -43,7 +43,7 @@ describe('FileItemController', () => {
   const itemDao = new ItemDao(null);
   const itemService = {} as IItemService;
   function setup() {
-    fileItemController = new FileItemController(itemService);
+    fileItemController = new FileItemController();
 
     Object.defineProperty(Api, 'glipNetworkClient', {
       get: jest.fn(() => {

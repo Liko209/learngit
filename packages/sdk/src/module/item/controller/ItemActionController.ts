@@ -18,6 +18,8 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ProgressService } from '../../progress';
 import { ENTITY } from '../../../service/eventKey';
 import { IItemService } from '../service/IItemService';
+import { daoManager } from '../../../dao';
+import { ItemDao } from '../dao';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -87,7 +89,9 @@ class ItemActionController {
         doUpdateModel,
       );
     } else {
-      await itemService.deleteLocalItem(itemId);
+      const itemDao = daoManager.getDao(ItemDao);
+      itemDao.delete(itemId);
+      // await itemService.deleteLocalItem(itemId);
       notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);

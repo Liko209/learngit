@@ -36,9 +36,9 @@ describe('FileItemService', () => {
     fileItemDao = new FileItemDao(null);
     daoManager.getDao = jest.fn().mockReturnValue(fileItemDao);
     fileActionController = new FileActionController(null);
-    fileUploadController = new FileUploadController(null, null, null);
-    fileItemController = new FileItemController(null);
-    fileItemService = new FileItemService(itemService as IItemService);
+    fileUploadController = new FileUploadController(null, null);
+    fileItemController = new FileItemController();
+    fileItemService = new FileItemService();
     Object.defineProperties(fileItemService, {
       fileUploadController: {
         get: jest.fn(() => fileUploadController),
@@ -323,19 +323,6 @@ describe('FileItemService', () => {
       const res = await fileItemService.getThumbsUrlWithSize(1, 2, 3);
       expect(res).toBe('a');
       expect(fileActionController.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
-    });
-  });
-
-  describe('toSanitizedItem', () => {
-    const { fileItem } = setUpData();
-    it('should return sanitized item', () => {
-      expect(fileItemService.toSanitizedItem(fileItem)).toEqual({
-        id: fileItem.id,
-        group_ids: fileItem.group_ids,
-        created_at: fileItem.created_at,
-        name: fileItem.name,
-        type: fileItem.type,
-      });
     });
   });
 

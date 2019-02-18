@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
 import { BaseDao } from '../../../../../framework/dao';
-import { SanitizedItem } from '../entity';
+import { SanitizedItem, Item } from '../entity';
 import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { isIEOrEdge } from 'foundation/src/db/adapter/dexie/utils';
 
@@ -70,6 +70,54 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return isIEOrEdge
       ? query.filter(item => item.group_ids.includes(groupId))
       : query.contain('group_ids', groupId);
+  }
+
+  toSanitizedItem(item: Item) {
+    return {
+      id: item.id,
+      group_ids: item.group_ids,
+      created_at: item.created_at,
+    };
+  }
+
+  toPartialSanitizedItem(partialItem: Partial<Item>) {
+    return { ..._.pick(partialItem, ['id', 'created_at', 'group_ids']) };
+  }
+
+  shouldSaveSubItem<K extends { id: number; post_ids?: number[] }>(item: K) {
+    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
+  }
+
+  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+    if (Array.isArray(item)) {
+      const array = item;
+      await this.bulkUpdate(array);
+    } else {
+      if (item.id) {
+        const saved = await this.get(item.id);
+        // If item not exists, no need to save
+        if (saved) {
+          await super.update(item);
+        }
+      }
+    }
+  }
+
+  async bulkUpdate(partialItems: Partial<T>[]): Promise<void> {
+    const itemIds: number[] = [];
+    partialItems.forEach((value: Partial<T>) => {
+      if (value.id) {
+        itemIds.push(value.id);
+      }
+    });
+    const exists = new Set(await this.primaryKeys(itemIds));
+    const updates: Partial<T>[] = [];
+    partialItems.forEach((item: Partial<T>) => {
+      if (item.id && exists.has(item.id)) {
+        updates.push(item);
+      }
+    });
+    await super.bulkUpdate(updates);
   }
 }
 

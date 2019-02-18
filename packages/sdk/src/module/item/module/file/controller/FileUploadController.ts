@@ -20,9 +20,9 @@ import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { UserConfig } from '../../../../../service/account/UserConfig';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
-import { IItemService } from '../../../service/IItemService';
 import {
   isInBeta,
   EBETA_FLAG,
@@ -44,9 +44,9 @@ class FileUploadController {
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
   private _canceledUploadFileIds: Set<number> = new Set();
   constructor(
-    private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<Item>,
     private _fileRequestController: IRequestController<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async sendItemFile(
@@ -271,7 +271,8 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    this._itemService.deleteLocalItem(itemId);
+    const itemDao = daoManager.getDao(ItemDao);
+    itemDao.delete(itemId);
     notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
   }
 
@@ -283,7 +284,8 @@ class FileUploadController {
     const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
     const itemIds = await groupConfigService.getDraftAttachmentItemIds(groupId);
     const fileIds = itemIds.filter(
-      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+      (id: number) =>
+        GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
     );
 
     if (fileIds) {
@@ -304,9 +306,10 @@ class FileUploadController {
     }
 
     if (toFetchItemIds.length > 0) {
-      const toFetchItems = (await this._itemService
-        .getEntitySource()
-        .getEntitiesLocally(toFetchItemIds, false)) as Item[];
+      const toFetchItems = (await this._entitySourceController.getEntitiesLocally(
+        toFetchItemIds,
+        false,
+      )) as Item[];
       this._uploadingFiles.set(groupId, existFile.concat(toFetchItems));
       this._saveToItemFileCache(toFetchItems);
     }
@@ -582,7 +585,9 @@ class FileUploadController {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    this._itemService.updateLocalItem(preInsertItem);
+    const itemDao = daoManager.getDao(ItemDao);
+    itemDao.update(preInsertItem);
+
     const itemId = preInsertItem.id;
 
     const preHandlePartial = (
@@ -633,8 +638,9 @@ class FileUploadController {
     itemFile: ItemFile,
   ) {
     const preInsertId = preInsertItem.id;
-    await this._itemService.deleteLocalItem(preInsertId);
-    await this._itemService.updateLocalItem(itemFile);
+    const itemDao = daoManager.getDao(ItemDao);
+    itemDao.delete(preInsertId);
+    itemDao.update(itemFile);
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
@@ -718,7 +724,8 @@ class FileUploadController {
   private async _preSaveItemFile(newItemFile: ItemFile, file: File) {
     this._saveItemFileToUploadingFiles(newItemFile);
     this._saveItemFileToProgressCache(newItemFile, file);
-    await this._itemService.createLocalItem(newItemFile);
+    const itemDao = daoManager.getDao(ItemDao);
+    itemDao.put(newItemFile);
   }
 
   private _toItemFile(

@@ -9,6 +9,7 @@ import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager } from '../../../../../../dao';
 import { ItemDao } from '../../../../dao';
+import { Item } from '../../../../entity';
 
 import ItemAPI from '../../../../../../api/glip/item';
 import { ApiResultOk, ApiResultErr } from '../../../../../../api/ApiResult';
@@ -25,13 +26,13 @@ import {
   FileUploadController,
   ItemFileUploadStatus,
 } from '../FileUploadController';
-import { ItemService } from '../../../../service/ItemService';
 import {
   JServerError,
   ERROR_CODES_SERVER,
   JSdkError,
   ERROR_CODES_SDK,
 } from '../../../../../../error';
+import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
 import { GroupConfigService } from '../../../../../../service/groupConfig';
 
 jest.mock('../../../../../../service/groupConfig');
@@ -57,36 +58,43 @@ function clearMocks() {
 }
 
 describe('fileUploadController', () => {
-  const groupConfigService = new GroupConfigService();
-  const itemService = new ItemService();
   const itemDao = new ItemDao(null);
+  const partialModifyController = new PartialModifyController(
+    null,
+  ) as IPartialModifyController<Item>;
+  const fileRequestController = new RequestController(
+    null,
+  ) as RequestController<Item>;
   let fileUploadController: FileUploadController;
-  const partialModifyController = new PartialModifyController(null);
-  const fileRequestController = new RequestController(null);
+
+  const groupConfigService = new GroupConfigService();
+
   const entitySourceController = new EntitySourceController(null, null, null);
 
   function setup() {
     const userId = 2;
     const companyId = 3;
-    daoManager.getDao.mockReturnValue(itemDao);
+
+    itemDao.put = jest.fn();
+    itemDao.update = jest.fn();
+    itemDao.delete = jest.fn();
+    daoManager.getDao = jest.fn().mockReturnValue(itemDao);
 
     UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
     UserConfig.getCurrentUserId.mockReturnValue(userId);
+
+    notificationCenter.emitEntityReplace.mockImplementation(() => {});
     GroupConfigService.getInstance = jest
       .fn()
       .mockReturnValue(groupConfigService);
-    itemService.getEntitySource.mockReturnValue(entitySourceController);
-    itemService.createLocalItem.mockImplementation(() => {});
-    itemService.updateLocalItem.mockImplementation(() => {});
-    itemService.deleteLocalItem.mockImplementation(() => {});
 
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
 
     fileUploadController = new FileUploadController(
-      itemService,
       partialModifyController,
       fileRequestController,
+      entitySourceController,
     );
     partialModifyController.updatePartially = jest.fn();
   }
@@ -122,8 +130,6 @@ describe('fileUploadController', () => {
     const groupId = 1;
     const userId = 2;
     const companyId = 3;
-
-    const itemDao = new ItemDao(null);
 
     beforeEach(() => {
       clearMocks();
@@ -188,6 +194,7 @@ describe('fileUploadController', () => {
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
       itemDao.get.mockResolvedValue(itemFile);
+      itemDao.put = jest.fn();
       ItemAPI.uploadFileItem.mockImplementation(
         (files: FormData, callback: ProgressCallback) => {
           callback({ lengthComputable: false, loaded: 0, total: 100 });
@@ -214,7 +221,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
-        expect(itemService.createLocalItem).toBeCalledTimes(1);
+        expect(itemDao.put).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
           [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
@@ -243,8 +250,6 @@ describe('fileUploadController', () => {
 
       itemDao.get.mockResolvedValue(itemFile);
       ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
-
-      // fileService.handlePartialUpdate = jest.fn();
 
       const file = new FormData();
       file.append('file', { name: '1.ts', type: 'ts' } as File);
@@ -806,7 +811,6 @@ describe('fileUploadController', () => {
     let progressCaches: Map<number, ItemFileUploadStatus> = undefined;
     let uploadingFiles = undefined;
 
-    const itemDao = new ItemDao(null);
     beforeEach(() => {
       clearMocks();
       setup();
@@ -816,7 +820,7 @@ describe('fileUploadController', () => {
       progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
-      const f = new FormData();
+      const f = { name: 'file' };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -839,7 +843,7 @@ describe('fileUploadController', () => {
       });
     });
 
-    it('should not call cancel api and update when item id is not in progress', async () => {
+    it('should not call cancel api and update when item id is not in progress', async (done: any) => {
       const itemId = 10;
       await fileUploadController.cancelUpload(itemId);
       expect(ItemAPI.cancelUploadRequest).not.toBeCalled();
@@ -847,17 +851,21 @@ describe('fileUploadController', () => {
         ENTITY.ITEM,
         expect.anything(),
       );
-      expect(itemService.deleteLocalItem).toBeCalledTimes(1);
-      expect(uploadingFiles.get(1)).toHaveLength(1);
-      expect(uploadingFiles.get(2)).toHaveLength(3);
-      expect(progressCaches.get(-3)).not.toBeUndefined();
-      expect(progressCaches.get(-4)).not.toBeUndefined();
+
+      setTimeout(() => {
+        expect(itemDao.delete).toBeCalledWith(itemId);
+        expect(uploadingFiles.get(1)).toHaveLength(1);
+        expect(uploadingFiles.get(2)).toHaveLength(3);
+        expect(progressCaches.get(-3)).not.toBeUndefined();
+        expect(progressCaches.get(-4)).not.toBeUndefined();
+        done();
+      });
     });
 
     it('should delete item and send notification', async () => {
       const itemId = -3;
       await fileUploadController.cancelUpload(itemId);
-      expect(itemService.deleteLocalItem).toBeCalledTimes(1);
+      expect(itemDao.delete).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
       expect(progressCaches.get(itemId)).toBeUndefined();
       expect(progressCaches.get(-4)).not.toBeUndefined();
@@ -924,8 +932,8 @@ describe('fileUploadController', () => {
           itemWithVersion.name,
           true,
         );
-        expect(itemService.deleteLocalItem).toBeCalledWith(itemWithVersion.id);
-        expect(itemService.updateLocalItem).toBeCalledWith(serverItemFile);
+        expect(itemDao.delete).toBeCalledWith(itemWithVersion.id);
+        expect(itemDao.update).toBeCalledWith(serverItemFile);
         expect(fileRequestController.put).toBeCalledTimes(1);
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
@@ -945,7 +953,7 @@ describe('fileUploadController', () => {
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
-      const f = new FormData();
+      const f = { name: 'name' };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -1055,7 +1063,7 @@ describe('fileUploadController', () => {
 
       progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: 1, total: 3, loaded: 5, groupId: 1 };
+      const p: Progress = { id: 1, rate: { total: 3, loaded: 5 } };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -1177,7 +1185,7 @@ describe('fileUploadController', () => {
 
       progressCaches.set(-1, {
         itemFile: { group_ids: [1], versions: [{ size: 1 }] },
-        progress: { loaded: 10 },
+        progress: { rate: { loaded: 10, total: 100 } },
         file: { size: 1, name: 'name' } as File,
       } as ItemFileUploadStatus);
 
@@ -1204,7 +1212,7 @@ describe('fileUploadController', () => {
 
       progressCaches.set(-1, {
         itemFile: { group_ids: [1], versions: [{ size: 1 }] },
-        progress: { loaded: 10 },
+        progress: { rate: { loaded: 10, total: 100 } },
         file: { size: 0, name: 'name' } as File,
       } as ItemFileUploadStatus);
 
