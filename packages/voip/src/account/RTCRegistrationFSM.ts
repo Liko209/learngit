@@ -7,6 +7,8 @@
 import StateMachine from 'ts-javascript-state-machine';
 import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { REGISTRATION_FSM_STATE } from './types';
+import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
+import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 enum REGISTRATION_FSM_EVENT {
@@ -17,6 +19,8 @@ enum REGISTRATION_FSM_EVENT {
   UNREGISTER = 'unregister',
   RE_REGISTER = 'reRegister',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
+  MAKE_OUTGOING_CALL = 'makeOutgoingCall',
+  RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
 }
 
 class RTCRegistrationFSM extends StateMachine {
@@ -56,6 +60,47 @@ class RTCRegistrationFSM extends StateMachine {
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },
         },
+        {
+          name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+          ],
+          to: (
+            toNumber: string,
+            delegate: IRTCCallDelegate,
+            options: RTCCallOptions,
+            s: any,
+          ) => {
+            dependency.onMakeOutgoingCallAction(toNumber, delegate, options);
+            return s;
+          },
+        },
+        {
+          name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
+          from: REGISTRATION_FSM_STATE.FAILURE,
+          to: (
+            toNumber: string,
+            delegate: IRTCCallDelegate,
+            options: RTCCallOptions,
+          ) => {
+            dependency.onMakeOutgoingCallAction(toNumber, delegate, options);
+            dependency.onReRegisterAction();
+            return REGISTRATION_FSM_STATE.IN_PROGRESS;
+          },
+        },
+        {
+          name: REGISTRATION_FSM_EVENT.RECEIVE_INCOMING_INVITE,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.FAILURE,
+            REGISTRATION_FSM_STATE.READY,
+          ],
+          to: (callSession: any, s: any) => {
+            dependency.onReceiveIncomingInviteAction(callSession);
+            return s;
+          },
+        },
         // registration in progress
         {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,
@@ -81,8 +126,16 @@ class RTCRegistrationFSM extends StateMachine {
         // ready
         {
           name: REGISTRATION_FSM_EVENT.UNREGISTER,
-          from: REGISTRATION_FSM_STATE.READY,
-          to: REGISTRATION_FSM_STATE.UNREGISTERED,
+          from: [
+            REGISTRATION_FSM_STATE.READY,
+            REGISTRATION_FSM_STATE.FAILURE,
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.IDLE,
+          ],
+          to: () => {
+            dependency.onUnregisterAction();
+            return REGISTRATION_FSM_STATE.UNREGISTERED;
+          },
         },
         {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,

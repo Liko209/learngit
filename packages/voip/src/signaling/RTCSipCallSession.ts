@@ -8,18 +8,41 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from '../api/types';
-import { WEBPHONE_SESSION_STATE } from '../signaling/types';
+import {
+  WEBPHONE_SESSION_STATE,
+  WEBPHONE_SESSION_EVENT,
+} from '../signaling/types';
+import { rtcMediaManager } from '../utils/RTCMediaManager';
+import { RTCMediaElement } from '../utils/types';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 
+const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _session: any = null;
-  constructor() {
+  private _inviteResponse: any = null;
+  private _uuid: string = '';
+  private _mediaElement: RTCMediaElement | null;
+
+  constructor(uuid: string) {
     super();
+    this._uuid = uuid;
+    this._mediaElement = rtcMediaManager.createMediaElement(this._uuid);
   }
   destroy() {
     if (!this._session) {
       return;
     }
     this._session.removeAllListeners();
+    if (this._session.sessionDescriptionHandler) {
+      this._session.sessionDescriptionHandler.removeAllListeners();
+    }
+
+    const sdh = this._session.sessionDescriptionHandler;
+    const pc = sdh && sdh.peerConnection;
+    if (pc) {
+      sdh.close();
+    }
+    rtcMediaManager.removeMediaElement(this._uuid);
     this._session = null;
   }
 
@@ -27,7 +50,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
-    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, () => {
+    this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, (inviteRes: any) => {
+      this._inviteResponse = inviteRes;
       this._onSessionConfirmed();
     });
     this._session.on(WEBPHONE_SESSION_STATE.BYE, () => {
@@ -38,6 +62,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     });
     this._session.on(WEBPHONE_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
+    });
+    this._session.on(WEBPHONE_SESSION_EVENT.SDH_CREATED, () => {
+      this._session.sessionDescriptionHandler.on(
+        WEBPHONE_SESSION_EVENT.ADD_TRACK,
+        (e: RTCTrackEvent) => {
+          this._onSessionTrackAdded(e);
+        },
+      );
     });
     this._session.on(
       WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED,
@@ -64,6 +96,70 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   private _onSessionProgress(response: any) {
     this.emit(CALL_SESSION_STATE.PROGRESS, response);
+  }
+
+  getInviteResponse() {
+    return this._inviteResponse;
+  }
+
+  private _onSessionTrackAdded(e: RTCTrackEvent) {
+    if (!this._mediaElement) {
+      return;
+    }
+    if (
+      !this._session ||
+      !this._session.sessionDescriptionHandler ||
+      !this._session.sessionDescriptionHandler.peerConnection
+    ) {
+      return;
+    }
+    const pc = this._session.sessionDescriptionHandler.peerConnection;
+    let remote_stream: MediaStream;
+    const receivers = pc.getReceivers && pc.getReceivers();
+    if (receivers) {
+      remote_stream = new MediaStream();
+      if (e.type === 'track' && e.track) {
+        rtcLogger.debug(LOG_TAG, 'Receiver track from RTCTrackEvent added');
+        remote_stream.addTrack(e.track);
+      } else {
+        receivers.forEach((receiver: any) => {
+          const rtrack = receiver.track;
+          if (rtrack) {
+            rtcLogger.debug(LOG_TAG, 'Receiver track from Receivers added');
+            remote_stream.addTrack(rtrack);
+          }
+        });
+      }
+    } else {
+      remote_stream = pc.getRemoteStreams() && pc.getRemoteStreams()[0];
+    }
+    if (remote_stream) {
+      this._mediaElement.remote.srcObject = remote_stream;
+      this._mediaElement.remote.play().catch(() => {
+        rtcLogger.error(LOG_TAG, 'Failed to play remote media element');
+      });
+    }
+
+    let local_stream: MediaStream;
+    const senders = pc.getSenders && pc.getSenders();
+    if (senders) {
+      local_stream = new MediaStream();
+      senders.forEach((sender: any) => {
+        const strack = sender.track;
+        if (strack && strack.kind === 'audio') {
+          rtcLogger.debug(LOG_TAG, 'Sender track added');
+          local_stream.addTrack(strack);
+        }
+      });
+    } else {
+      local_stream = pc.getLocalStreams() && pc.getLocalStreams()[0];
+    }
+    if (local_stream) {
+      this._mediaElement.local.srcObject = local_stream;
+      this._mediaElement.local.play().catch(() => {
+        rtcLogger.error(LOG_TAG, 'Failed to play local media element');
+      });
+    }
   }
 
   private _onSessionReinviteAccepted(session: any) {
