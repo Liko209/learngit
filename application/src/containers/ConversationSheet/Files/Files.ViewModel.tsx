@@ -135,7 +135,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!item) {
         return;
       }
-      if (item.deactivated) {
+      if (item.deactivated || item.isMocked) {
         return;
       }
       const file = getFileType(item);

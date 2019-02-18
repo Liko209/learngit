@@ -52,7 +52,6 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
         limit: pageSize,
       },
     );
-    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
     items.forEach((item: Item) => {
       const type = GlipTypeUtil.extractTypeId(item.id);
       const entityName = this._itemStoreMap.get(type);
