@@ -39,9 +39,7 @@ export class RcPlatformSdk {
 
   async init() {
     try {
-      console.log('start');
       await this.sdk.authorize(this.credential);
-      console.log('done');
     } catch (e) {
       logger.error('auth failed: ', e.response, e.response.data);
       throw e;

@@ -393,6 +393,11 @@ describe('i18next-en', () => {
   expect(
     i18next.t('DownloadToSeeTheRestLine', { restLines: restLines + 1 }),
   ).toEqual(`Download to see the rest ${restLines + 1} lines`);
+  expect(
+    i18next.t('directMessageDescription', { displayName: 'Dan Abramov' }),
+  ).toEqual(
+    'This is the beginning of your direct message history with Dan Abramov',
+  );
   expect(i18next.t('postMessages')).toEqual('Post messages');
   expect(i18next.t('pinPosts')).toEqual('Pin posts');
   expect(i18next.t('allowTeamMembersTo')).toEqual('Allow team members to');

@@ -20,7 +20,7 @@ import {
 } from 'sdk/service';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
@@ -252,7 +252,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   sendFilesOnlyPost = async () => {
-    const postService = NewPostService.getInstance() as NewPostService;
+    const postService = PostService.getInstance() as PostService;
     try {
       const ids: number[] = [];
       this.items.forEach((value: AttachmentItem) => {

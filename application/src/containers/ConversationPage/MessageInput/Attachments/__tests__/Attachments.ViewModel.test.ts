@@ -14,7 +14,7 @@ import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
@@ -101,7 +101,7 @@ const itemService = {
   canUploadFiles: jest.fn().mockImplementation(() => true),
 };
 
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 GroupConfigService.getInstance = jest.fn().mockReturnValue(groupConfigService);
