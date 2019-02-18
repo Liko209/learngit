@@ -26,7 +26,7 @@ import { IEntityCacheController } from '../../../../framework/controller/interfa
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 
-jest.mock('../../../../service/group');
+jest.mock('../../../../module/group');
 jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');

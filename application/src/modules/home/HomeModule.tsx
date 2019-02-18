@@ -11,7 +11,7 @@ class HomeModule extends AbstractModule {
   @inject(HomeService) private _homeService: HomeService;
 
   async bootstrap() {
-    this._homeService.setDefaultRouterPath(config.defaultRouterPath);
+    this._homeService.setDefaultRouterPaths(config.defaultRouterPaths);
   }
 }
 

@@ -3,7 +3,8 @@
  * @Date: 2018-11-13 18:05:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { TDelta, ISortableModel } from '../../../store/base/fetch/types';
+import { ISortableModel, TDelta } from '../../../store/base/fetch/types';
+
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -39,7 +40,7 @@ type StreamItem = {
   type: StreamItemType;
   timeStart: number;
   timeEnd?: number;
-  value?: number | number[];
+  value?: number[];
   meta?: any;
 };
 
@@ -61,8 +62,6 @@ type StreamViewProps = {
   setRowVisible: (n: number) => void;
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
-  atBottom: () => boolean;
-  atTop: () => boolean;
   enableNewMessageSeparatorHandler: () => void;
   loadPostUntilFirstUnread: () => Promise<number | undefined>;
   updateHistoryHandler: () => void;
@@ -73,11 +72,7 @@ type StreamViewProps = {
   firstHistoryUnreadPostId?: number;
   loadInitialPostsError?: Error;
   loading?: boolean;
-};
-
-type StreamSnapshot = {
-  atBottom: boolean;
-  atTop: boolean;
+  loadPrevPosts: () => Promise<any>;
 };
 
 type TDeltaWithData = TDelta & {
@@ -86,7 +81,6 @@ type TDeltaWithData = TDelta & {
 type ISortableModelWithData = ISortableModel & { data: any };
 
 export {
-  StreamSnapshot,
   StreamProps,
   StreamViewProps,
   StreamItemType,

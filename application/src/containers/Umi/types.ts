@@ -4,8 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { UMI_SECTION_TYPE } from 'sdk/module/state';
+
 type UmiProps = {
-  ids: number[];
+  type: UMI_SECTION_TYPE;
+  id?: number;
   global?: string;
 };
 
@@ -14,4 +17,4 @@ type UmiViewProps = {
   important?: boolean;
 };
 
-export { UmiProps, UmiViewProps };
+export { UmiProps, UmiViewProps, UMI_SECTION_TYPE };

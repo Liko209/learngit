@@ -56,7 +56,8 @@ class ConversationPageViewComponent extends Component<
     if (stream.props.hasMoreDown) {
       return this.remountStream();
     }
-    return stream.scrollToBottom();
+    return;
+    // return stream.scrollToBottom();
   }
 
   @action.bound
@@ -141,7 +142,10 @@ class ConversationPageViewComponent extends Component<
             />
           </JuiDropZone>
         ) : (
-          <JuiDisabledInput text={t('disabledText')} />
+          <JuiDisabledInput
+            data-test-automation-id="disabled-message-input"
+            text={t('disabledText')}
+          />
         )}
         <AttachmentManager id={groupId} viewRef={this._attachmentManagerRef} />
       </JuiConversationPage>

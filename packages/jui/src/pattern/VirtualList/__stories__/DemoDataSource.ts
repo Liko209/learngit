@@ -13,7 +13,7 @@ abstract class AbstractDemoInfiniteDataSource<K, V>
   implements IVirtualListDataSource<K, V> {
   private _map: Map<K, V> = new Map();
   private _loading: boolean = false;
-  private _loadingMore: boolean = false;
+  private _loadingMoreDown: boolean = false;
 
   abstract loadMore(startIndex: number, endIndex: number): Promise<any>;
   abstract hasMore(): boolean;
@@ -23,9 +23,9 @@ abstract class AbstractDemoInfiniteDataSource<K, V>
     this.loadMore = async (startIndex: number, endIndex: number) => {
       if (this.isLoading()) return;
 
-      this._loadingMore = true;
+      this._loadingMoreDown = true;
       await originLoadMore.apply(this, [startIndex, endIndex]);
-      this._loadingMore = false;
+      this._loadingMoreDown = false;
     };
   }
 
@@ -43,7 +43,7 @@ abstract class AbstractDemoInfiniteDataSource<K, V>
 
   isLoadingMore(direction: 'up' | 'down') {
     if ('down' === direction) {
-      return this._loadingMore;
+      return this._loadingMoreDown;
     }
     return false;
   }
@@ -53,7 +53,7 @@ abstract class AbstractDemoInfiniteDataSource<K, V>
   }
 
   isLoading() {
-    return this.isLoadingContent() || this.isLoadingMore();
+    return this.isLoadingContent() || this.isLoadingMore('down');
   }
 }
 

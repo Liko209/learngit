@@ -64,7 +64,7 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
           <img src={url} onLoad={onLoad} />
           <div>
             <button onClick={this._toggle}>Toggle</button>
-            {flag && <div>This is some content...</div>}
+            <div>{flag && <span>This is some content...</span>}</div>
           </div>
         </div>
       );

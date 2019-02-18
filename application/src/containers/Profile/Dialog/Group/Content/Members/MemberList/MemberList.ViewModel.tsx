@@ -9,9 +9,8 @@ import { MemberListProps } from './types';
 import storeManager from '@/store';
 const globalStore = storeManager.getGlobalStore();
 import { GLOBAL_KEYS } from '@/store/constants';
-import { onScroll, onScrollToBottom } from '@/plugins/InfiniteListPlugin';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
-
+import { compact } from 'lodash';
 class MemberListViewModel extends StoreViewModel<MemberListProps> {
   @observable
   private _pagination: number = 1;
@@ -23,7 +22,7 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
 
   constructor(props: MemberListProps) {
     super(props);
-    this.toBottom = this.toBottom.bind(this);
+    this.loadMore = this.loadMore.bind(this);
   }
 
   @computed
@@ -51,19 +50,20 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
 
   @computed
   get memberIds() {
-    return this.allMemberIds.slice(0, this._pagination * this._PAGE_COUNT);
+    return compact(
+      this.allMemberIds.slice(0, this._pagination * this._PAGE_COUNT),
+    );
   }
 
   @action
-  @onScrollToBottom
-  toBottom() {
+  loadMore() {
     if (this.allMemberIds.length === this.memberIds.length) return;
     this._pagination++;
   }
 
-  @onScroll
-  onScrollEvent(event: { target: HTMLElement }) {
-    const scrollTop = event.target.scrollTop;
+  @action
+  onScrollEvent = (event: { scrollTop: number }) => {
+    const scrollTop = event.scrollTop;
     if (scrollTop > 20) {
       globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, true);
     } else {

@@ -58,7 +58,7 @@ class JuiVirtualList<K, V> extends PureComponent<
   JuiVirtualListProps<K, V>,
   State
 > {
-  static MIN_CELL_HEIGHT: number = 44;
+  static MIN_CELL_HEIGHT: number = 10;
   private _cache: CellMeasurerCache;
   private _listRef: List;
   private _skipStickTo: boolean = false;
@@ -131,7 +131,10 @@ class JuiVirtualList<K, V> extends PureComponent<
             style,
             index: dataIndex,
             item: this._getItem(dataIndex)!,
-            onLoad: measure,
+            onLoad: () => {
+              this._cache.clear(dataIndex, 0);
+              measure();
+            },
           };
 
           const cell = rowRenderer(props);
@@ -266,6 +269,10 @@ class JuiVirtualList<K, V> extends PureComponent<
         {moreLoader && moreLoader()}
       </div>
     );
+  }
+
+  scrollToPosition = (scrollTop: number) => {
+    this._listRef.scrollToPosition(scrollTop);
   }
 
   render() {

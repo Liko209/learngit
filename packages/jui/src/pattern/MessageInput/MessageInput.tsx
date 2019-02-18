@@ -32,9 +32,12 @@ const Wrapper = styled.div<{
 
 const GlobalStyle = createGlobalStyle<{}>`
   [data-name=conversation-card] {
+      &&&& .ql-container {
+        max-height: ${height(64)};
+      }
       &&&& .ql-editor {
-      max-height: ${height(64)};
-    }
+        max-height: ${height(64)};
+      }
   }
   .quill {
     width: 100%;
@@ -84,7 +87,7 @@ const GlobalStyle = createGlobalStyle<{}>`
 
 const StyledError = styled.div`
   && {
-    ${typography('caption')};
+    ${typography('caption1')};
     color: ${palette('semantic', 'negative')};
     margin-top: ${spacing(2)};
   }
