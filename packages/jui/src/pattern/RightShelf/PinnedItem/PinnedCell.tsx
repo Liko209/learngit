@@ -39,7 +39,6 @@ const IconWrapper = styled.div`
     width: ${width(4)};
     height: ${height(4)};
     margin: ${spacing(0, 1, 0, 1)};
-    overflow: hidden;
     font-size: ${({ theme }) => theme.typography.subheading1.fontSize};
   }
 `;
@@ -82,6 +81,7 @@ const MAX_ITEM_LENGTH = 3;
 class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
   private _renderItems = () => {
     const { items = [] } = this.props;
+    console.log(items, ' ---------nello items');
     let array = items;
     let restCount = 0;
     if (items.length > MAX_ITEM_LENGTH) {

@@ -22,6 +22,7 @@ import TaskItemModel from '@/store/models/TaskItem';
 import NoteItemModel from '@/store/models/NoteItem';
 import EventItemModel from '@/store/models/EventItem';
 import LinkItemModel from '@/store/models/LinkItem';
+import { getFileIcon } from '@/common/getFileIcon';
 
 const ITEM_ICON_MAP = {
   [TypeDictionary.TYPE_ID_FILE]: (id: number) => {
@@ -29,7 +30,8 @@ const ITEM_ICON_MAP = {
     if (file && file.type && FileItemUtils.isImageItem(file)) {
       return 'image_preview';
     }
-    return 'default_file';
+
+    return getFileIcon(file.type);
   },
   [TypeDictionary.TYPE_ID_TASK]: 'tasks',
   [TypeDictionary.TYPE_ID_PAGE]: 'notes',
@@ -112,6 +114,7 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
     const textMapper = ITEM_TEXT_MAP[type];
     result.push({
       icon,
+      isFile: type === TypeDictionary.TYPE_ID_FILE,
       text: textMapper ? textMapper(id) : '',
     });
   }

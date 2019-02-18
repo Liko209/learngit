@@ -7,15 +7,17 @@ import React, { Component, ReactElement } from 'react';
 import { JuiListItemText } from '../../../components/Lists';
 import { Wrapper, IconWrapper } from './styles';
 import { JuiIconography } from '../../../foundation/Iconography';
+import { FileName } from '../../ConversationCard/Files/FileName';
 
 type JuiPinnedItemProps = {
   icon: string | ReactElement<any>;
+  isFile: boolean;
   text: string;
 };
 
 class JuiPinnedItem extends Component<JuiPinnedItemProps> {
   render() {
-    const { icon, text } = this.props;
+    const { icon, text, isFile } = this.props;
     let iconElement = icon;
     if (typeof icon === 'string') {
       iconElement = <JuiIconography fontSize="inherit">{icon}</JuiIconography>;
@@ -23,7 +25,11 @@ class JuiPinnedItem extends Component<JuiPinnedItemProps> {
     return (
       <Wrapper>
         <IconWrapper>{iconElement}</IconWrapper>
-        <JuiListItemText primary={text} />
+        {isFile ? (
+          <FileName filename={text} />
+        ) : (
+          <JuiListItemText primary={text} />
+        )}
       </Wrapper>
     );
   }
