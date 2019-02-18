@@ -32,6 +32,7 @@ const StyledListItem = styled(MuiListItem)`
     padding: ${spacing(0)};
     height: ${height(12)};
     line-height: ${height(12)};
+    transform: translateZ(0);
   }
 `;
 
