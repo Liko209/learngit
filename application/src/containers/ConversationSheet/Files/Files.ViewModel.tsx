@@ -25,7 +25,6 @@ import { ItemService } from 'sdk/module/item';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
-import { getThumbnailURL } from '@/common/getThumbnailURL';
 import PostModel from '@/store/models/Post';
 import {
   ToastType,
@@ -79,9 +78,8 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     // 3. git use original url.
     if (FileItemUtils.isGifItem({ type }) && versionUrl) {
       url = versionUrl;
-    } else {
-      url = getThumbnailURL(item);
     }
+
     if (
       !url &&
       origWidth > 0 &&
