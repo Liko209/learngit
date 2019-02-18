@@ -388,7 +388,6 @@ await h(t).withLog(`And remove the admin from the team`, async() => {
     await app.homePage.ensureLoaded();
   });
 
-  await t.debug();
   await h(t).withLog(`When I open team profile via team "More Menu"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
