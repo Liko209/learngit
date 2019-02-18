@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He
- * @Date: 2019-02-14 16:15:37
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-02-18 10:39:14
+ * @Author: Potar.He 
+ * @Date: 2019-02-18 16:59:52 
+ * @Last Modified by:   Potar.He 
+ * @Last Modified time: 2019-02-18 16:59:52 
  */
 import * as assert from 'assert';
 import * as _ from 'lodash';
@@ -65,11 +65,20 @@ test.skip(formalName('Only admin has the ability to remove members from the team
     await t.hover(profileDialog.memberEntryByName(adminName1).self);
   });
 
-  await h(t).withLog('Then No "More" menu options', async () => {
-    await t.expect(profileDialog.memberEntryByName(adminName1).moreButton.exists).notOk();
+  await h(t).withLog('Then Show "more" button', async () => {
+    await t.expect(profileDialog.memberEntryByName(adminName1).moreButton.exists).ok();
+  }, true);
+  
+  await h(t).withLog('When I click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(adminName1).moreButton);
+  });
+
+  await h(t).withLog(`And no ${removeFromTeamText} button`, async () => {
+    await t.expect(profileDialog.memberMoreMenu.removeFromTeamItem.withExactText(removeFromTeamText).exists).notOk();
   }, true);
 
   await h(t).withLog('When admin1 hover admin2 row in members list', async () => {
+    await profileDialog.memberMoreMenu.quit();
     await t.hover(profileDialog.memberEntryByName(adminName2).self);
   });
 
@@ -195,7 +204,7 @@ test.skip(formalName('The remove team member permission should sync dynamically'
       await t.hover(profileDialog.nthMemberEntry(i).self);
     });
 
-    await h(t).withLog('Then No "More" menu options', async () => {
+    await h(t).withLog('Then no "more" button', async () => {
       await t.expect(profileDialog.nthMemberEntry(i).moreButton.exists).notOk();
     }, true);
   }
