@@ -216,7 +216,7 @@ class RTCCall {
 
   private _prepare(): void {
     // listen session
-    this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
+    this._callSession.on(CALL_SESSION_STATE.ACCEPTED, () => {
       // Update party id and session id in invite response sip message
       const inviteRes = this._callSession.getInviteResponse();
       if (inviteRes && inviteRes.headers) {
@@ -227,6 +227,9 @@ class RTCCall {
           "Can't get invite response for parsing partyid and sessionid",
         );
       }
+      this._onSessionAccepted();
+    });
+    this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
       this._onSessionConfirmed();
     });
     this._callSession.on(CALL_SESSION_STATE.DISCONNECTED, () => {
@@ -400,6 +403,9 @@ class RTCCall {
   }
 
   // session listener
+  private _onSessionAccepted() {
+    this._fsm.sessionAccepted();
+  }
   private _onSessionConfirmed() {
     this._fsm.sessionConfirmed();
   }
