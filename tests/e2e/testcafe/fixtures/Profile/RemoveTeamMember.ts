@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-02-14 16:15:37 
  * @Last Modified by: 
- * @Last Modified time: 2019-02-18 12:51:11
+ * @Last Modified time: 2019-02-18 12:53:41
  */
 import * as assert from 'assert';
 import * as _ from 'lodash';
@@ -140,7 +140,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
 
 });
 
-test.only(formalName('The remove team member permission should sync dynamically', ['JPT-1086', 'P1', 'RemoveTeamMember', 'Potar.he']), async (t) => {
+test(formalName('The remove team member permission should sync dynamically', ['JPT-1086', 'P1', 'RemoveTeamMember', 'Potar.he']), async (t) => {
   const app = new AppRoot(t);
 
   const users = h(t).rcData.mainCompany.users
