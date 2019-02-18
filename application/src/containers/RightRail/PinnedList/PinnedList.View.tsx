@@ -52,7 +52,7 @@ class PinnedListView
     }
 
     return (
-      <JuiVirtualCellWrapper key={index} style={style}>
+      <JuiVirtualCellWrapper key={id} style={style}>
         {content}
       </JuiVirtualCellWrapper>
     );

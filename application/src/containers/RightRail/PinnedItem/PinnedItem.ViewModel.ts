@@ -113,6 +113,7 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
     }
     const textMapper = ITEM_TEXT_MAP[type];
     result.push({
+      id,
       icon,
       isFile: type === TypeDictionary.TYPE_ID_FILE,
       text: textMapper ? textMapper(id) : '',

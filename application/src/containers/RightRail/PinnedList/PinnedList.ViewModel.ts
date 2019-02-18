@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, action } from 'mobx';
+import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PinnedListProps, PinnedListViewProps } from './types';
 import { Group } from 'sdk/module/group/entity';
@@ -14,16 +14,6 @@ import { ENTITY_NAME } from '@/store/constants';
 
 class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   implements PinnedListViewProps {
-  constructor(props: PinnedListProps) {
-    super(props);
-    this.reaction(
-      () => this._groupId,
-      () => {
-        this.forceReload();
-      },
-      { fireImmediately: true },
-    );
-  }
   @computed
   private get _groupId() {
     return this.props.groupId;
@@ -44,14 +34,6 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
     const { pinnedPostIds } = this.group;
     return pinnedPostIds || [];
   }
-
-  @action
-  forceReload = async () => {
-    await this.fetchNextPageItems();
-  }
-
-  @action
-  fetchNextPageItems = async () => {}
 }
 
 export { PinnedListViewModel };

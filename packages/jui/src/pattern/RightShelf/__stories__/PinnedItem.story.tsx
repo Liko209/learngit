@@ -20,16 +20,19 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
   };
   const itemData1: JuiPinnedItemProps[] = [
     {
+      id: 123,
       icon: 'events',
       text: 'This is an event',
     },
   ];
   const itemData2: JuiPinnedItemProps[] = [
     {
+      id: 1234,
       icon: 'image_preview',
       text: 'This is an event',
     },
     {
+      id: 1235,
       icon: 'tasks',
       text: 'This is an task',
     },
@@ -37,26 +40,32 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
   const itemData3: JuiPinnedItemProps[] = [];
   const itemData4: JuiPinnedItemProps[] = [
     {
+      id: 126,
       icon: 'image_preview',
       text: 'This is an event',
     },
     {
+      id: 127,
       icon: 'tasks',
       text: 'This is an task',
     },
     {
+      id: 128,
       icon: 'tasks',
       text: 'This is an task',
     },
     {
+      id: 129,
       icon: 'tasks',
       text: 'This is an task',
     },
     {
+      id: 1210,
       icon: 'tasks',
       text: 'This is an task',
     },
     {
+      id: 1211,
       icon: 'tasks',
       text: 'This is an task',
     },

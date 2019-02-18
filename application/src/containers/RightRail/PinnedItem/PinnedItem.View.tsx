@@ -8,7 +8,9 @@ import { JuiPinnedCell } from 'jui/pattern/RightShelf/PinnedItem';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { PinnedItemViewProps } from './types';
+import { observer } from 'mobx-react';
 
+@observer
 class PinnedItemView extends Component<PinnedItemViewProps> {
   componentDidUpdate() {
     this.props.didUpdate();

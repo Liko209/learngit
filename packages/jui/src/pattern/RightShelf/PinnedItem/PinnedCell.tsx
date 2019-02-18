@@ -91,7 +91,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
     return (
       <>
         {array.map((props: JuiPinnedItemProps, index: number) => (
-          <JuiPinnedItem key={index} {...props} />
+          <JuiPinnedItem key={props.id} {...props} />
         ))}
         {restCount > 0 && <MoreWrapper>and {restCount} more</MoreWrapper>}
       </>
@@ -100,6 +100,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
   render() {
     const { creator, createTime, items = [], onClick, content } = this.props;
     const lineCount = items.length > 0 ? 1 : 2;
+    console.log(createTime, '------create time nello');
     return (
       <CellWrapper onClick={onClick}>
         <HeadWrapper>

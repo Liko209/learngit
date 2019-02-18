@@ -13,6 +13,7 @@ type JuiPinnedItemProps = {
   icon: string | ReactElement<any>;
   isFile: boolean;
   text: string;
+  id: number;
 };
 
 class JuiPinnedItem extends Component<JuiPinnedItemProps> {
