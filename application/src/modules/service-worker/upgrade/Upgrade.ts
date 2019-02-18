@@ -92,15 +92,30 @@ class Upgrade {
       return false;
     }
 
-    const allInputElements = [].slice.call(
-      document.querySelectorAll('.ql-editor'),
-    );
-
-    return allInputElements.some((el: Element) => {
-      if (el === document.activeElement) {
+    return (
+      this._hasElementOnFocusAndNotEmpty(
+        'input[type="text"]',
+        (el: Element) => {
+          return !!(el as HTMLInputElement).value;
+        },
+      ) ||
+      this._hasElementOnFocusAndNotEmpty('.ql-editor', (el: Element) => {
         const classList = [].slice.call(el.classList);
         // Have both ql-blank and ql-editor if it is empty
         return classList.length === 1;
+      })
+    );
+  }
+
+  private _hasElementOnFocusAndNotEmpty(
+    type: string,
+    isNotEmptyCallBack: (el: Element) => boolean,
+  ) {
+    const allInput = [].slice.call(document.querySelectorAll(type));
+
+    return allInput.some((el: Element) => {
+      if (el === document.activeElement) {
+        return isNotEmptyCallBack(el);
       }
       return false;
     });
