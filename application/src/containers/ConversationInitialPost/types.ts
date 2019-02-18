@@ -13,14 +13,13 @@ type ConversationInitialPostProps = {
 };
 
 type ConversationInitialPostViewProps = WithNamespaces & {
-  id: number; // group id
   displayName: string;
   groupType: CONVERSATION_TYPES;
   groupDescription: string;
   creator: PersonModel;
   isTeam: boolean;
-  notEmpty: boolean;
   createTime: number;
-};
+  isCompanyTeam: boolean;
+} & ConversationInitialPostProps;
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };

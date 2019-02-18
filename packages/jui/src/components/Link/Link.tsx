@@ -49,7 +49,7 @@ const JuiLink: ILink = React.memo(
 );
 
 const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
-  small: 'caption',
+  small: 'caption1',
   medium: 'body2',
   large: 'headline',
 };

@@ -11,8 +11,9 @@ import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
 
-jest.mock('sdk/service/post');
+jest.mock('sdk/module/post');
 jest.mock('../../../../store/utils');
 jest.mock('@/containers/Notification');
 
@@ -21,10 +22,7 @@ const itemService = {
 };
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-const { PostService } = service;
-const postService = {
-  removeItemFromPost: jest.fn(),
-};
+const postService = new PostService();
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 ItemService.getInstance = jest.fn().mockReturnValue({});

@@ -31,7 +31,7 @@ import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { JuiDivider } from '../../../components/Divider/Divider';
 
-storiesOf('Pattern/SettingDialogs', module)
+storiesOf('Pattern/TeamSetting', module)
   .add('Admin', () => {
     const nameTakenError = boolean('name taken error', false);
     const forbidSave = boolean('forbid saving', false);
@@ -89,6 +89,14 @@ storiesOf('Pattern/SettingDialogs', module)
           <JuiTeamSettingSubSectionList>
             <JuiTeamSettingSubSectionListItem label="Add team members">
               <JuiToggleButton onChange={action('on allowMemberAdd change')} />
+            </JuiTeamSettingSubSectionListItem>
+            <JuiDivider />
+            <JuiTeamSettingSubSectionListItem label="Post messages">
+              <JuiToggleButton onChange={action('on allowMemberPost change')} />
+            </JuiTeamSettingSubSectionListItem>
+            <JuiDivider />
+            <JuiTeamSettingSubSectionListItem label="Pin posts">
+              <JuiToggleButton onChange={action('on allowMemberPin change')} />
             </JuiTeamSettingSubSectionListItem>
           </JuiTeamSettingSubSectionList>
         </JuiTeamSettingSubSection>

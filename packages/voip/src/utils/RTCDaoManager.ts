@@ -50,6 +50,17 @@ class RTCDaoManager {
     }
     return this._delegate.get(kProvisioningInfoKey);
   }
+
+  public removeProvisioning() {
+    if (!this._delegate) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'Failed to remove provisioning info. DAO delegate is null',
+      );
+      return;
+    }
+    this._delegate.remove(kProvisioningInfoKey);
+  }
 }
 
 export { RTCDaoManager };
