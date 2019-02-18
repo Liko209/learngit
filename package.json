@@ -94,5 +94,8 @@
   "resolutions": {
     "terser": "3.14.1",
     "@types/react-transition-group": "2.0.15"
+  },
+  "dependencies": {
+    "ldclient-js": "2.9.3"
   }
 }
