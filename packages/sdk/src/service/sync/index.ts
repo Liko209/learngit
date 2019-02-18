@@ -70,7 +70,6 @@ export default class SyncService extends BaseService {
       return;
     }
 
-    progressBar.start();
     this.isLoading = true;
     const lastIndexTimestamp = this.getIndexTimestamp();
     if (lastIndexTimestamp) {
@@ -80,7 +79,6 @@ export default class SyncService extends BaseService {
     }
     this.isLoading = false;
     this._preloadPosts();
-    progressBar.stop();
   }
 
   private async _preloadPosts() {
@@ -98,12 +96,16 @@ export default class SyncService extends BaseService {
 
     try {
       const currentTime = Date.now();
+
+      progressBar.start();
       const initialResult = await fetchInitialData(currentTime);
 
       if (initialResult.isOk()) {
         onInitialLoaded && (await onInitialLoaded(initialResult.data));
         await handleData(initialResult.data);
         onInitialHandled && (await onInitialHandled());
+
+        progressBar.stop();
 
         const remainingResult = await fetchRemainingData(currentTime);
 
@@ -114,6 +116,8 @@ export default class SyncService extends BaseService {
           mainLogger.info('fetch initial data or remaining data success');
           return;
         }
+      } else {
+        progressBar.stop();
       }
 
       mainLogger.error('fetch initial data or remaining data error');
@@ -125,6 +129,7 @@ export default class SyncService extends BaseService {
   }
 
   private async _syncIndexData(timeStamp: number) {
+    progressBar.start();
     const { onIndexLoaded, onIndexHandled } = this._syncListener;
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
@@ -135,6 +140,7 @@ export default class SyncService extends BaseService {
     } else {
       this._handleSyncIndexError(result.error);
     }
+    progressBar.stop();
   }
 
   private async _handleSyncIndexError(result: any) {
