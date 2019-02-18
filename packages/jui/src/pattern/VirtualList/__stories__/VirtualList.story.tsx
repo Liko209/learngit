@@ -143,7 +143,6 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
 
   type States = {
     dataSource: IVirtualListDataSource<any, any>;
-    isLoading: boolean;
     visibleRange: IndexRange;
     renderedRange: IndexRange;
     loadedRange: IndexRange;
@@ -154,7 +153,6 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
   class Content extends PureComponent<{}, States> {
     state: States = {
       dataSource,
-      isLoading: false,
       visibleRange: { startIndex: 0, stopIndex: -1 },
       renderedRange: { startIndex: 0, stopIndex: -1 },
       loadedRange: { startIndex: 0, stopIndex: -1 },
@@ -189,7 +187,6 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
             overscan={overscan}
             stickToBottom={stickToBottom}
             moreLoader={this._moreLoader}
-            isLoading={this.state.isLoading}
             onBeforeRowsRendered={this._handleBeforeRowsRendered}
             width={400}
             height={400}

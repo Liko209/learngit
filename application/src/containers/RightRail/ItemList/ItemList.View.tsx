@@ -84,8 +84,8 @@ class ItemListView extends React.Component<ViewProps & Props> {
             {(width: number = 0, height: number = HEADER_HEIGHT) => {
               return (
                 <JuiVirtualList
-                  overscan={1}
-                  threshold={10}
+                  overscan={5}
+                  threshold={40}
                   dataSource={dataSource}
                   rowRenderer={this.rowRenderer}
                   noContentRenderer={this.noContentRenderer}
