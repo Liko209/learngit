@@ -81,7 +81,7 @@ const MAX_ITEM_LENGTH = 3;
 class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
   private _renderItems = () => {
     const { items = [] } = this.props;
-    console.log(items, ' ---------nello items');
+
     let array = items;
     let restCount = 0;
     if (items.length > MAX_ITEM_LENGTH) {
@@ -100,21 +100,32 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
   render() {
     const { creator, createTime, items = [], onClick, content } = this.props;
     const lineCount = items.length > 0 ? 1 : 2;
-    console.log(createTime, '------create time nello');
+
     return (
-      <CellWrapper onClick={onClick}>
+      <CellWrapper data-test-automation-id="pinned-section" onClick={onClick}>
         <HeadWrapper>
           <IconWrapper>
             <JuiIconography fontSize="inherit" color={['grey', '500']}>
               pin
             </JuiIconography>
           </IconWrapper>
-          <JuiListItemText primary={creator} primaryColor={['grey', '900']} />
-          <TimeWrapper>{createTime}</TimeWrapper>
+          <JuiListItemText
+            data-test-automation-id="pinned-creator"
+            primary={creator}
+            primaryColor={['grey', '900']}
+          />
+          <TimeWrapper data-test-automation-id="pinned-createTime">
+            {createTime}
+          </TimeWrapper>
         </HeadWrapper>
         <ContentWrapper>
           {content && (
-            <TextWrapper lineCount={lineCount}>{content}</TextWrapper>
+            <TextWrapper
+              data-test-automation-id="pinned-text"
+              lineCount={lineCount}
+            >
+              {content}
+            </TextWrapper>
           )}
           {this._renderItems()}
         </ContentWrapper>

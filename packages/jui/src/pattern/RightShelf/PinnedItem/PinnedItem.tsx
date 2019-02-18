@@ -25,11 +25,16 @@ class JuiPinnedItem extends Component<JuiPinnedItemProps> {
     }
     return (
       <Wrapper>
-        <IconWrapper>{iconElement}</IconWrapper>
+        <IconWrapper data-test-automation-id="pinned-item-icon">
+          {iconElement}
+        </IconWrapper>
         {isFile ? (
           <FileName filename={text} />
         ) : (
-          <JuiListItemText primary={text} />
+          <JuiListItemText
+            data-test-automation-id="pinned-item-text"
+            primary={text}
+          />
         )}
       </Wrapper>
     );

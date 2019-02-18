@@ -5,7 +5,7 @@ import styled from '../../../foundation/styled-components';
 import { JuiPinnedCell, JuiPinnedItemProps } from '../PinnedItem';
 
 storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
-  const t = text('text', 'No files shared yet');
+  // const t = text('text', 'No files shared yet');
   const content = text(
     'content',
     'Files that get shared in your conversation automatically show up here.',
@@ -14,14 +14,15 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
     width: 268px;
     background: white;
   `;
-  type ItemConfig = {
-    icon: string;
-    text: string;
-  };
+  // type ItemConfig = {
+  //   icon: string;
+  //   text: string;
+  // };
   const itemData1: JuiPinnedItemProps[] = [
     {
       id: 123,
       icon: 'events',
+      isFile: false,
       text: 'This is an event',
     },
   ];
@@ -29,11 +30,13 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
     {
       id: 1234,
       icon: 'image_preview',
+      isFile: true,
       text: 'This is an event',
     },
     {
       id: 1235,
       icon: 'tasks',
+      isFile: false,
       text: 'This is an task',
     },
   ];
@@ -42,31 +45,37 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
     {
       id: 126,
       icon: 'image_preview',
+      isFile: true,
       text: 'This is an event',
     },
     {
       id: 127,
       icon: 'tasks',
+      isFile: false,
       text: 'This is an task',
     },
     {
       id: 128,
+      isFile: false,
       icon: 'tasks',
       text: 'This is an task',
     },
     {
       id: 129,
       icon: 'tasks',
+      isFile: false,
       text: 'This is an task',
     },
     {
       id: 1210,
       icon: 'tasks',
+      isFile: false,
       text: 'This is an task',
     },
     {
       id: 1211,
       icon: 'tasks',
+      isFile: false,
       text: 'This is an task',
     },
   ];
