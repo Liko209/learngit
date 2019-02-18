@@ -32,13 +32,13 @@ import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;

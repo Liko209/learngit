@@ -164,14 +164,14 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       minimumBatchSize,
       onBeforeRowsRendered,
     } = this.props;
-    const { renderEmptyContent, fixedCellHeight } = dataSource;
+    const { renderEmptyContent, fixedCellHeight, onScroll } = dataSource;
     const cellCount = dataSource.countOfCell();
     const rowCount = isLoading ? cellCount + 1 : cellCount;
-
     const props: ListProps = {
       rowCount,
       width,
       height,
+      onScroll,
     } as ListProps;
 
     if (overscan) {

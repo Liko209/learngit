@@ -4,16 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-// import React from 'react';
+import React from 'react';
 import styled from '../../../foundation/styled-components';
 import {
   spacing,
   grey,
   typography,
   height,
+  width,
   palette,
   ellipsis,
-} from '../../../foundation/utils/styles';
+} from '../../../foundation/utils/styles'; // use external instead of injected due to incompatible with SortableElement
+import { JuiListItem, JuiListItemProps } from '../../../components/Lists';
 
 const JuiProfileDialogContentMembers = styled('div')`
   padding: 0;
@@ -24,7 +26,7 @@ const JuiProfileDialogContentMembers = styled('div')`
 `;
 
 const JuiProfileDialogContentMemberHeader = styled('div')`
-  ${typography('subheading')};
+  ${typography('subheading1')};
   color: ${grey('900')};
   padding: ${spacing(4, 6, 3)};
   flex-basis: ${height(12.5)};
@@ -45,18 +47,43 @@ const JuiProfileDialogContentMemberList = styled('ul')`
   flex: 1;
 `;
 
-const JuiProfileDialogContentMemberListItem = styled('li')`
-  display: flex;
-  height: ${height(12)};
-  background-color: ${palette('common', 'white')};
-  align-items: center;
-  padding: ${spacing(0, 4, 0, 8)};
-  &:hover {
-    background-color: ${grey('100')};
+const JuiProfileDialogContentMemberListItemRightWrapper = styled('div')`
+  > div {
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    display: flex;
   }
-  /* &:nth-last-child(1) {
-    margin-bottom: ${spacing(10)};
-  } */
+  width: ${width(5)};
+  height: ${height(5)};
+  margin-right: ${spacing(4)};
+  display: flex;
+  flex: 1;
+  z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
+  color: ${palette('grey', '400')};
+  font-size: ${spacing(5)};
+  display: inline-block;
+`;
+type MemberListItemProps = {
+  isHover: boolean;
+} & JuiListItemProps;
+const MemberListItem = ({ isHover, ...rest }: MemberListItemProps) => {
+  return <JuiListItem {...rest} />;
+};
+
+const JuiProfileDialogContentMemberListItem = styled(MemberListItem)`
+  && {
+    display: flex;
+    height: ${height(12)};
+    align-items: center;
+    padding: ${spacing(0, 4, 0, 8)};
+    cursor: pointer;
+    background-color: ${({ isHover }) =>
+      isHover ? grey('100') : palette('common', 'white')};
+    /* &:nth-last-child(1) {
+      margin-bottom: ${spacing(10)};
+    } */
+  }
 `;
 
 const JuiProfileDialogContentMemberListItemName = styled('p')`
@@ -100,4 +127,5 @@ export {
   JuiProfileDialogContentMemberListItemAdmin,
   JuiProfileDialogContentMemberListItemGuest,
   JuiProfileDialogContentMemberShadow,
+  JuiProfileDialogContentMemberListItemRightWrapper,
 };

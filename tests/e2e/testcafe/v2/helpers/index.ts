@@ -11,6 +11,7 @@ import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 import { DashboardHelper } from './dashboard-helper';
 import { AllureHelper } from './allure-helper';
+import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
@@ -66,6 +67,10 @@ class Helper {
 
   get allureHelper() {
     return new AllureHelper(this.t);
+  }
+
+  get scenarioHelper() {
+    return new ScenarioHelper(this.t, this.sdkHelper);
   }
 
   /* delegate following method */

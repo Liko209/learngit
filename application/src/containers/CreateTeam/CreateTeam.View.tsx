@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -13,7 +13,6 @@ import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-// import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Banners';
 import { Notification } from '@/containers/Notification';
 import {
@@ -29,9 +28,9 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-interface IState {
+type State = {
   items: JuiListToggleItemProps[];
-}
+};
 
 const StyledSnackbarsContent = styled(JuiSnackbarContent)`
   && {
@@ -40,7 +39,10 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 `;
 
 @observer
-class CreateTeam extends React.Component<ViewProps, IState> {
+class CreateTeam extends React.Component<ViewProps, State> {
+  teamNameRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
@@ -54,11 +56,19 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         type: 'isPublic',
         text: i18next.t('PublicTeam'),
         checked: false,
+        automationId: 'create-team-isPublic',
       },
       {
         type: 'canPost',
         text: i18next.t('MembersMayPostMessages'),
         checked: true,
+        automationId: 'create-team-canPost',
+      },
+      {
+        type: 'canAddMember',
+        text: i18next.t('MembersMayAddOtherMembers'),
+        checked: true,
+        automationId: 'create-team-canAddMember',
       },
     ];
   }
@@ -73,6 +83,20 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return {
       items,
     };
+  }
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.teamNameRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
   }
 
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
@@ -94,15 +118,30 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     const { items } = this.state;
     const { teamName, description, members } = this.props;
     const { history, create } = this.props;
-    const isPublic = items.filter(item => item.type === 'isPublic')[0].checked;
-    const canPost = items.filter(item => item.type === 'canPost')[0].checked;
-    const result = await create(teamName, members, description, {
-      isPublic,
-      canPost,
-    });
-    if (result.isOk()) {
+
+    const uiSetting = items.reduce((options, option) => {
+      options[option.type] = option.checked;
+      return options;
+    },                             {}) as {
+      isPublic: boolean;
+      canAddMember: boolean;
+      canPost: boolean;
+    };
+
+    const teamSetting = {
+      description,
+      name: teamName,
+      isPublic: uiSetting.isPublic,
+      permissionFlags: {
+        TEAM_ADD_MEMBER: uiSetting.canAddMember,
+        TEAM_POST: uiSetting.canPost,
+      },
+    };
+
+    const newTeam = await create(members, teamSetting);
+    if (newTeam) {
       this.onClose();
-      history.push(`/messages/${result.data.id}`);
+      history.push(`/messages/${newTeam.id}`);
     }
   }
 
@@ -165,6 +204,7 @@ class CreateTeam extends React.Component<ViewProps, IState> {
             maxLength: 200,
             'data-test-automation-id': 'CreateTeamName',
           }}
+          inputRef={this.teamNameRef}
           helperText={nameError && i18next.t(errorMsg)}
           onChange={handleNameChange}
         />

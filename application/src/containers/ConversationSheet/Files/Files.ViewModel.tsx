@@ -15,13 +15,9 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import {
-  PostService,
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';

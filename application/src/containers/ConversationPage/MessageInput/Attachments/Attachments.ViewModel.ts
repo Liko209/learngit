@@ -16,7 +16,7 @@ import {
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
@@ -31,7 +31,7 @@ const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
   private _itemService: ItemService;
-  private _postService: NewPostService;
+  private _postService: PostService;
   private _didUploadFileCallback?: DidUploadFileCallback;
   @observable
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
@@ -41,7 +41,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this._itemService = ItemService.getInstance();
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
     this.reaction(
       () => this.id,
       () => {

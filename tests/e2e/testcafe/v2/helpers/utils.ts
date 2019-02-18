@@ -1,6 +1,8 @@
 import 'testcafe';
 import * as fs from 'fs';
 import * as assert from 'assert';
+import * as shortid from 'shortid';
+
 import { ClientFunction } from 'testcafe';
 
 export class H {
@@ -29,6 +31,10 @@ export class H {
     return new Promise<void>((res, rej) => {
       setTimeout(res, time);
     });
+  }
+
+  static uuid() {
+    return shortid.generate();
   }
 
   static escapePostText(origin: string) {

@@ -87,7 +87,7 @@ const GlobalStyle = createGlobalStyle<{}>`
 
 const StyledError = styled.div`
   && {
-    ${typography('caption')};
+    ${typography('caption1')};
     color: ${palette('semantic', 'negative')};
     margin-top: ${spacing(2)};
   }

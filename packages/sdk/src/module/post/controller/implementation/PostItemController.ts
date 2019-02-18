@@ -42,7 +42,7 @@ class PostItemController implements IPostItemController {
       }
       if (!this.hasItemInTargetStatus(post, PROGRESS_STATUS.INPROGRESS)) {
         // return ;
-        itemReadyCallback({
+        await itemReadyCallback({
           success: false,
           obj: {},
         });
@@ -50,7 +50,7 @@ class PostItemController implements IPostItemController {
         await this.waiting4Items(post, itemReadyCallback, postUpdateCallback);
       }
     } else {
-      itemReadyCallback({
+      await itemReadyCallback({
         success: true,
         obj: {},
       });
@@ -121,13 +121,13 @@ class PostItemController implements IPostItemController {
         if (!isPostSent && this.getPseudoItemIds(clonePost).length === 0) {
           isPostSent = true;
           // callback
-          itemReadyCallback({
+          await itemReadyCallback({
             success: true,
             obj: { item_ids: clonePost.item_ids },
           });
         }
       } else {
-        itemReadyCallback({
+        await itemReadyCallback({
           success: false,
           obj: { item_ids: clonePost.item_ids },
         });
@@ -138,7 +138,7 @@ class PostItemController implements IPostItemController {
         // has failed
         if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
           // callback
-          itemReadyCallback({
+          await itemReadyCallback({
             success: false,
             obj: { item_ids: clonePost.item_ids },
           });
