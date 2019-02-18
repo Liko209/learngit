@@ -29,7 +29,7 @@ storiesOf('Pattern', module)
     const groupName = text('Group name', 'Team AAA');
     const activity = text('activity', 'shared 22 files');
     const status = text('status', '🏃 in the meeting');
-    const mode = boolean('navigation', false) ? 'navigation' : null;
+    const mode = boolean('navigation', false) ? 'navigation' : undefined;
     const from = mode && (
       <JuiConversationCardFrom
         name={groupName}

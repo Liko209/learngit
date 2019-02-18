@@ -9,6 +9,7 @@ import { ProvisionDataOptions } from './types';
 interface IRTCUserAgent extends EventEmitter2 {
   reRegister(): void;
   register(options?: ProvisionDataOptions): void;
+  unregister(): void;
   makeCall(phoneNumber: string, options: RTCCallOptions): any;
 }
 

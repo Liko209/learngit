@@ -32,7 +32,7 @@ enum ERROR_TYPE {
 }
 
 class RTCProvManager extends EventEmitter2 {
-  private _sipProvisionInfo: RTCSipProvisionInfo;
+  private _sipProvisionInfo: RTCSipProvisionInfo | null = null;
   private _requestErrorRetryInterval: number = kRTCProvRequestErrorRertyTimerMin; // seconds
   private _reFreshInterval: number = kRTCProvFreshTimer; // seconds
   private _reFreshTimerId: NodeJS.Timeout | null = null;
@@ -54,6 +54,12 @@ class RTCProvManager extends EventEmitter2 {
       return;
     }
     await this._sendSipProvRequest();
+  }
+
+  clearProvInfo() {
+    this._clearFreshTimer();
+    this._sipProvisionInfo = null;
+    RTCDaoManager.instance().removeProvisioning();
   }
 
   private async _sendSipProvRequest() {
@@ -103,7 +109,10 @@ class RTCProvManager extends EventEmitter2 {
     this._resetFreshTimer();
     this._requestErrorRetryInterval = kRTCProvRequestErrorRertyTimerMin;
 
-    if (!_.isEqual(responseData, this._sipProvisionInfo)) {
+    if (
+      !this._sipProvisionInfo ||
+      !_.isEqual(responseData, this._sipProvisionInfo)
+    ) {
       rtcLogger.info('RTCProvManager', 'emit new prov');
       this._sipProvisionInfo = responseData;
       RTCDaoManager.instance().saveProvisionInfo(this._sipProvisionInfo);

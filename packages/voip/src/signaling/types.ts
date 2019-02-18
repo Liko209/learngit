@@ -12,6 +12,7 @@ enum UA_EVENT {
 
 enum WEBPHONE_SESSION_STATE {
   ACCEPTED = 'accepted',
+  CONFIRMED = 'confirmed',
   BYE = 'bye',
   FAILED = 'failed',
   PROGRESS = 'progress',
