@@ -22,8 +22,8 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { debounce } from 'lodash';
-const LOAD_DELAY = 300;
-import ReactResizeDetector from 'react-resize-detector';
+// according to most debounce config
+const LOAD_DEBOUNCE = 300;
 
 const HEADER_HEIGHT = 36;
 @observer
@@ -39,7 +39,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         return;
       }
       await this.props.fetchNextPageItems();
-    },                        LOAD_DELAY);
+    },                        LOAD_DEBOUNCE);
   }
 
   countOfCell() {
@@ -84,7 +84,7 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   firstLoader = () => {
-    return <JuiRightRailContentLoading />;
+    return <JuiRightRailContentLoading delay={500} />;
   }
 
   moreLoader = () => {
@@ -92,8 +92,15 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   render() {
-    const { totalCount, ids, loadStatus, tabConfig } = this.props;
-    const { showLoading, firstLoaded } = loadStatus;
+    const {
+      totalCount,
+      ids,
+      loadStatus,
+      tabConfig,
+      width,
+      height,
+    } = this.props;
+    const { loading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
     return (
       <JuiRightShelfContent>
@@ -103,19 +110,15 @@ class ItemListView extends React.Component<ViewProps & Props>
           </JuiListSubheader>
         )}
         {firstLoaded && (
-          <ReactResizeDetector handleWidth={true} handleHeight={true}>
-            {(width: number = 0, height: number = HEADER_HEIGHT) => (
-              <JuiVirtualList
-                dataSource={this}
-                threshold={1}
-                isLoading={showLoading}
-                width={width}
-                height={height - HEADER_HEIGHT}
-              />
-            )}
-          </ReactResizeDetector>
+          <JuiVirtualList
+            dataSource={this}
+            threshold={1}
+            isLoading={loading}
+            width={width}
+            height={height - HEADER_HEIGHT}
+          />
         )}
-        {showLoading && !firstLoaded && this.firstLoader()}
+        {loading && !firstLoaded && this.firstLoader()}
       </JuiRightShelfContent>
     );
   }

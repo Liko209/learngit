@@ -9,20 +9,19 @@ import { TabConfig } from './config';
 type LoadStatus = {
   firstLoaded: boolean;
   loading: boolean;
-  timer?: NodeJS.Timeout;
-  showLoading: boolean;
 };
 
 const InitLoadStatus: LoadStatus = {
   firstLoaded: false,
   loading: false,
-  showLoading: false,
 };
 
 type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
   active: boolean;
+  width: number;
+  height: number;
 };
 
 type ViewProps = {
@@ -32,6 +31,8 @@ type ViewProps = {
   tabConfig: TabConfig;
   forceReload: () => void;
   fetchNextPageItems: () => Promise<any>;
+  width: number;
+  height: number;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };

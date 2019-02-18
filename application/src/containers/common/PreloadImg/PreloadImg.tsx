@@ -3,8 +3,9 @@
  * @Date: 2019-01-24 13:35:29
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { JuiFade } from 'jui/foundation/Transitions';
+import { withDelay } from 'jui/hoc/withDelay';
 
 type PreloadImgProps = {
   url?: string;
@@ -15,57 +16,42 @@ type PreloadImgProps = {
 type PreloadImgState = {
   loaded: boolean;
   isError: boolean;
-  showPlaceholder: boolean;
 };
 
 const cacheUrl = {};
-const DELAY_SHOW_PLACEHOLDER_TIME = 250;
+const DELAY_SHOW_PLACEHOLDER_TIME = 500;
+
+const DelayWrapper = withDelay(Fragment);
 
 class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
-  private _delayTimer: NodeJS.Timeout;
   constructor(props: PreloadImgProps) {
     super(props);
     this.state = {
       loaded: false,
       isError: false,
-      showPlaceholder: false,
     };
-    this._delayTimer = setTimeout(() => {
-      this.setState({ showPlaceholder: true });
-    },                            DELAY_SHOW_PLACEHOLDER_TIME);
-  }
-
-  clearDelayTimer = () => {
-    this.setState({ showPlaceholder: true });
-    if (this._delayTimer) {
-      clearTimeout(this._delayTimer);
-    }
-  }
-
-  componentWillUnMount() {
-    this.clearDelayTimer();
   }
 
   handleLoad = () => {
     const { url } = this.props;
-
-    this.setState({ loaded: true });
     if (url) cacheUrl[url] = true;
-    this.clearDelayTimer();
+    this.setState({ loaded: true });
   }
 
   handleError = () => {
-    this.setState({ isError: true, loaded: true });
-    this.clearDelayTimer();
+    const { url } = this.props;
+    if (url) {
+      this.setState({ isError: true, loaded: true });
+    }
   }
 
   render() {
     const { children, placeholder, url } = this.props;
-    const { loaded, isError, showPlaceholder } = this.state;
+    const { loaded, isError } = this.state;
 
     if (loaded && !isError) {
       return (
-        <JuiFade in={true} timeout={1500}>
+        <JuiFade in={true} timeout={700}>
           {children}
         </JuiFade>
       );
@@ -75,19 +61,22 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       return children;
     }
 
-    if (!showPlaceholder && !loaded) {
-      return <div style={{ opacity: 0 }}>{children}</div>; // for showing a blank image placeholder before delay show placeholder.
-    }
-
     return (
       <>
-        <img
-          src={url}
-          onLoad={this.handleLoad}
-          onError={this.handleError}
-          style={{ display: 'none' }}
-        />
-        {showPlaceholder && placeholder}
+        {url && (
+          <img
+            src={url}
+            onLoad={this.handleLoad}
+            onError={this.handleError}
+            style={{ display: 'none' }}
+          />
+        )}
+        <DelayWrapper
+          delay={DELAY_SHOW_PLACEHOLDER_TIME}
+          placeholder={<div style={{ opacity: 0 }}>{children}</div>}
+        >
+          {placeholder}
+        </DelayWrapper>
       </>
     );
   }

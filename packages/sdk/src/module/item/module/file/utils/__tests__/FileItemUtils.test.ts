@@ -12,6 +12,17 @@ import {
 } from '../ImageFileExtensions';
 
 describe('FileItemUtils', () => {
+  describe('filterType', () => {
+    it('should get type', () => {
+      const type = 'a';
+      expect(FileItemUtils.filterType({ type })).toEqual(type);
+    });
+
+    it('should filter image type', () => {
+      const type = 'image/jpeg';
+      expect(FileItemUtils.filterType({ type })).toEqual('jpeg');
+    });
+  });
   describe('isSupportPreview', () => {
     it('should return true when is support preview ', () => {
       SupportPreviewImageExtensions.forEach((element: string) => {
