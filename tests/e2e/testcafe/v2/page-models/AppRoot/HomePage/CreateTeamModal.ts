@@ -33,22 +33,6 @@ export class CreateTeamModal extends BaseWebComponent {
     return this.getSelectorByAutomationId("CreateTeamDescription");
   }
 
-  private getToggleButton(index) {
-    return this.toggleList.find('input').nth(index);
-  }
-
-  async clickPublicTeamButton() {
-    await this.t.click(this.getToggleButton(0));
-  }
-
-  async clickMayPostButton() {
-    await this.t.click(this.getToggleButton(1));
-  }
-
-  async clickMayAddOtherMemberButton() {
-    await this.t.click(this.getToggleButton(2));
-  }
-
   async typeTeamName(teamName) {
     await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
   }
