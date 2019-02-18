@@ -5,10 +5,8 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import MuiTextField, {
-  TextFieldProps,
-  OutlinedTextFieldProps,
-} from '@material-ui/core/TextField';
+import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
+import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
 
 import {
   typography,
@@ -50,12 +48,6 @@ const Textarea = styled<JuiTextFieldProps>(MuiTextField)`
     }
   }
 ` as typeof MuiTextField;
-
-function isOutlinedTextFieldProps(
-  textFieldProps: TextFieldProps,
-): textFieldProps is OutlinedTextFieldProps {
-  return textFieldProps.variant === 'outlined';
-}
 
 class JuiTextarea extends React.PureComponent<TextFieldProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

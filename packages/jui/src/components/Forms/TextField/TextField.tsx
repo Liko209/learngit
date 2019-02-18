@@ -5,11 +5,9 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import MuiTextField, {
-  TextFieldProps,
-  OutlinedTextFieldProps,
-} from '@material-ui/core/TextField';
+import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { spacing, palette } from '../../../foundation/utils/styles';
+import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
 
 const TextField = styled(MuiTextField)`
   && {
@@ -27,12 +25,6 @@ const TextField = styled(MuiTextField)`
     }
   }
 ` as typeof MuiTextField;
-
-function isOutlinedTextFieldProps(
-  textFieldProps: TextFieldProps,
-): textFieldProps is OutlinedTextFieldProps {
-  return textFieldProps.variant === 'outlined';
-}
 
 type Props = TextFieldProps;
 
