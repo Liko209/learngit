@@ -250,23 +250,27 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   async countOnMemberListShouldBe(n: number) {
-    await this.t.expect(this.memberList.find("li").count).eql(n);
+    await this.t.expect(this.memberNames.count).eql(n);
   }
 
   get memberList() {
-    return this.getSelectorByAutomationId('profileDialogMemberList');
+    return this.self.find('*[role="rowgroup"]');
   }
 
   get memberNames() {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName');
   }
 
+  nthMemberEntry(n: number) {
+    return this.getComponent(Member, this.memberList.find('*').withAttribute('data-id').nth(n));
+  }
+
   memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`li[data-id=${id}]`));
+    return this.getComponent(Member, this.memberList.find(`[data-id=${id}]`));
   }
 
   memberEntryByName(name: string) {
-    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent(0));
   }
 
   get addMembersIcon() {
@@ -322,6 +326,10 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getComponent(MoreMenu);
   }
 
+  get memberMoreMenu() {
+    return this.getComponent(MemberMoreMenu);
+  }
+
   get joinTeamButton() {
     return this.getSelectorByIcon('add_member');
   }
@@ -352,25 +360,25 @@ class Member extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
   }
 
-  isAdmin(): Promise<boolean> {
-    return this.adminLabel.exists
-  }
-
- isGuest(): Promise<boolean> {
-    return this.guestLabel.exists
-  }
-
   async showAdminLabel() {
-    await this.t.expect(this.isAdmin).ok();
+    await this.t.expect(this.adminLabel.exists).ok();
   }
 
   async showGuestLabel() {
-    await this.t.expect(this.isGuest).ok();
+    await this.t.expect(this.guestLabel.exists).ok();
   }
 
   async showMemberLabel() {
-    await this.t.expect(this.isAdmin).notOk();
-    await this.t.expect(this.isGuest).notOk();
+    await this.t.expect(this.adminLabel.exists).notOk();
+    await this.t.expect(this.guestLabel.exists).notOk();
+  }
+
+  get moreButton() {
+    return this.getSelectorByAutomationId('moreIcon', this.self);
+  }
+
+  async openMoreMenu() {
+    await this.t.hover(this.self).click(this.moreButton);
   }
 
 }
@@ -395,6 +403,40 @@ class MoreMenu extends BaseWebComponent {
     await this.t.click(this.copyEmailMenuItem);
   }
 
+  async quit() {
+    await this.t.pressKey('ESC');
+  }
+}
+
+class MemberMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('div[role="document"]');
+  }
+
+  get removeFromTeamItem() {
+    return this.getSelectorByAutomationId('removeFromTeam');
+  }
+
+  get makeTeamAdminItem() {
+    return this.getSelectorByAutomationId('makeTeamAdmin');
+  }
+
+  get revokeTeamAdminItem() {
+    return this.getSelectorByAutomationId('revokeTeamAdmin');
+  }
+
+  async clickRemoveTeamMember() {
+    await this.t.click(this.removeFromTeamItem);
+  }
+
+  async clickMakeTeamAdmin() {
+    await this.t.click(this.makeTeamAdminItem);
+  }
+
+  async clickRevokeTeamAdmin() {
+    await this.t.click(this.revokeTeamAdminItem);
+  }
+  
   async quit() {
     await this.t.pressKey('ESC');
   }

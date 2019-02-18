@@ -217,7 +217,7 @@ export class GlipSdk {
     const data = {
       members
     };
-    return this.axiosClient.post(uri, data, {
+    return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
   }
@@ -228,7 +228,7 @@ export class GlipSdk {
     const data = {
       members
     };
-    return this.axiosClient.post(uri, data, {
+    return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
   }
