@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import JuiToastWrapper from '../ToastWrapper';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { number, array, text, select } from '@storybook/addon-knobs';
+import { number, text, select } from '@storybook/addon-knobs';
 import Slide from '@material-ui/core/Slide';
 import {
   JuiSnackbar,

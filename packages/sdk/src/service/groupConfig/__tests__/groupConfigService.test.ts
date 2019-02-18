@@ -39,20 +39,43 @@ describe('GroupConfigService', () => {
     });
   });
   describe('getDraft', () => {
-    it('should return empty string when there is groupConfig in DB', async () => {
+    it('should return empty string when there is no groupConfig in DB', async () => {
       groupConfigDao.get.mockResolvedValueOnce(null);
       const result = await groupConfigService.getDraft(1);
-      expect(result).toEqual('');
+      expect(result).toBe('');
     });
-    it('should return empty string when there is draft in groupConfig', async () => {
+    it('should return empty string when there is no draft in groupConfig', async () => {
       groupConfigDao.get.mockResolvedValueOnce({ id: 1 });
       const result = await groupConfigService.getDraft(1);
-      expect(result).toEqual('');
+      expect(result).toBe('');
     });
     it('should return draft', async () => {
       groupConfigDao.get.mockResolvedValueOnce({ id: 1, draft: '123' });
       const result = await groupConfigService.getDraft(1);
       expect(result).toEqual('123');
+    });
+  });
+
+  describe('getDraftAttachmentItemIds', () => {
+    it('should return empty array when there is no groupConfig in DB', async () => {
+      groupConfigDao.get.mockResolvedValueOnce(null);
+      const result = await groupConfigService.getDraftAttachmentItemIds(1);
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when there is no draft attachment_item_ids in groupConfig', async () => {
+      groupConfigDao.get.mockResolvedValueOnce({ id: 1 });
+      const result = await groupConfigService.getDraftAttachmentItemIds(1);
+      expect(result).toEqual([]);
+    });
+
+    it('should return draft attachment_item_ids', async () => {
+      groupConfigDao.get.mockResolvedValueOnce({
+        id: 1,
+        attachment_item_ids: [123],
+      });
+      const result = await groupConfigService.getDraftAttachmentItemIds(1);
+      expect(result).toEqual([123]);
     });
   });
 

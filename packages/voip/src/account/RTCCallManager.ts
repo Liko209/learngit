@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { RTC_CALL_STATE } from '../api/types';
 import { RTCCall } from '../api/RTCCall';
 import { kRTCMaxCallCount } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -42,6 +43,16 @@ class RTCCallManager {
 
   callCount(): number {
     return this._calls.length;
+  }
+
+  connectedCallList(): RTCCall[] {
+    return this._calls.filter(
+      (item: RTCCall) => item.getCallState() === RTC_CALL_STATE.CONNECTED,
+    );
+  }
+
+  connectedCallCount(): number {
+    return this.connectedCallList().length;
   }
 
   getCallByUuid(callUuid: string): RTCCall | null {

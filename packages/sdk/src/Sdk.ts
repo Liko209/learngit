@@ -46,7 +46,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) { }
+  ) {}
 
   async init(config: ISdkConfig) {
     // Use default config value
@@ -101,6 +101,10 @@ class Sdk {
 
   async onLogin() {
     this.updateNetworkToken();
+
+    if (this.syncService.getIndexTimestamp()) {
+      return;
+    }
 
     await this.syncService.syncData({
       /**
