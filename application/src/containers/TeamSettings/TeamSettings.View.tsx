@@ -168,6 +168,34 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
+  handleArchiveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const { t, groupName, archiveTeam } = this.props;
+    const dialog = Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'archiveTeamConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'archiveTeamOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'archiveTeamCancelButton' },
+      size: 'small',
+      okType: 'negative',
+      title: t('archiveTeamConfirmTitle'),
+      content: t('archiveTeamConfirmContent', {
+        teamName: groupName,
+      }),
+      okText: toTitleCase(t('archiveTeamConfirmOk')),
+      cancelText: toTitleCase(t('cancel')),
+      onOK: async () => {
+        dialog.startLoading();
+        const result = await archiveTeam();
+        dialog.stopLoading();
+        if (!result) {
+          return false;
+        }
+        dialog.dismiss();
+        portalManager.dismiss();
+        return true;
+      },
+    });
+  }
+
   leaveTeamOKButtonHandler = async () => {
     portalManager.dismiss();
     this.props.leaveTeam();
@@ -273,6 +301,20 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           </ButtonListItemText>
         </ButtonListItem>
         {isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        <ButtonListItem
+          data-test-automation-id="archiveTeamButton"
+          color="semantic.negative"
+          onClick={this.handleArchiveTeamClick}
+          hide={!isAdmin || isCompanyTeam}
+        >
+          <ButtonListItemText color="semantic.negative">
+            {t('archiveTeam')}
+          </ButtonListItemText>
+          <JuiIconButton variant="plain" tooltipTitle={t('archiveTeamToolTip')}>
+            info
+          </JuiIconButton>
+        </ButtonListItem>
+        {!isAdmin || isCompanyTeam ? null : <JuiDivider />}
         <ButtonListItem
           data-test-automation-id="deleteTeamButton"
           color="semantic.negative"
