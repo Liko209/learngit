@@ -52,7 +52,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this.reaction(
       () => this.files,
       () => {
-        const quill = (document.querySelector(QUILL_QUERY) as any).__quill;
+        const getQuill = document.querySelector(QUILL_QUERY) as any;
+        const quill = getQuill && getQuill.__quill;
         requestAnimationFrame(() => {
           quill.focus();
         });

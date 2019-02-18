@@ -118,7 +118,7 @@ describe('AttachmentsViewModel', () => {
   let vm: AttachmentsViewModel;
 
   beforeEach(() => {
-    vm = new AttachmentsViewModel({ id: 456 });
+    vm = new AttachmentsViewModel({ id: 456, forceSaveDraft: true });
     _uploadedItems = [];
     _uploadingItems = [];
   });
