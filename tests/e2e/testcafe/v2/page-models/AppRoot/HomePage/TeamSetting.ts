@@ -192,4 +192,11 @@ export class TeamSettingDialog extends BaseWebComponent {
     await this.toggle(this.allowPinPostCheckbox, false);
   }
   
+  get deleteTeamButton() {
+    return this.getSelectorByAutomationId("deleteTeamButton");
+  }
+
+  async clickDeleteTeamButton() {
+    await this.t.click(this.deleteTeamButton);
+  }
 }

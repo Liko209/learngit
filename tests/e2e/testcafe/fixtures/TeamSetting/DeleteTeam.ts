@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h, H } from '../../v2/helpers';
+import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
@@ -26,28 +26,35 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
-  const memberUserName = await h(t).glip(adminUser).getPersonPartialData('display_name', memberUser.rcId);
+  const alertText = "Team deleted successfully.";
+  const unopenedTeamName = uuid();
+
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;
 
-  const roleAdmin = await h(t).userRole(adminUser);
-
-  let teamId;
+  let unopenedTeamId, openedTeamId;
   await h(t).withLog(`Given I have one new team`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
+    unopenedTeamId = await h(t).platform(adminUser).createAndGetGroupId({
+      name: unopenedTeamName,
+      type: 'Team',
+      members: [adminUser.rcId, memberUser.rcId],
+    });
+
+    openedTeamId = await h(t).platform(adminUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
       members: [adminUser.rcId, memberUser.rcId],
     });
   });
 
-  await h(t).withLog(`And I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, memberUser);
+  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, adminUser);
     await app.homePage.ensureLoaded();
+    await teamSection.conversationEntryById(openedTeamId).enter();
   });
 
-  await h(t).withLog(`When I open team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  await h(t).withLog(`When I open unopened Team setting dialog via team profile entry on conversation list`, async () => {
+    await teamSection.conversationEntryById(unopenedTeamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
     await profileDialog.clickSetting();
   });
@@ -55,70 +62,95 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   const teamSettingDialog = app.homePage.teamSettingDialog;
   await h(t).withLog(`Then "Delete team" button should be showed`, async () => {
     await teamSettingDialog.shouldBePopup();
-    await t.expect(teamSettingDialog.leaveTeamButton.visible).ok();
+    await t.expect(teamSettingDialog.deleteTeamButton.visible).ok();
   });
 
   await h(t).withLog(`When I click "Delete team" button`, async () => {
-    await teamSettingDialog.clickLeaveTeamButton();
+    await teamSettingDialog.clickDeleteTeamButton();
   });
 
-  await h(t).withLog(`Then the Setting dialog is closed `, async () => {
-    await t.expect(teamSettingDialog.exists).notOk();
-  });
-
-  const leaveTeamDialog = app.homePage.leaveTeamDialog
+  const deleteTeamDialog = app.homePage.deleteTeamDialog;
   await h(t).withLog(`And the Delete team confirmation is displayed`, async () => {
-    await leaveTeamDialog.shouldBePopup();
+    await deleteTeamDialog.shouldBePopup();
+    await deleteTeamDialog.teamNameInConfirmationShouldBe(unopenedTeamName);
   });
 
   await h(t).withLog(`When I click "Cancel" button`, async () => {
-    await leaveTeamDialog.cancel();
+    await deleteTeamDialog.clickCancel();
   });
 
   await h(t).withLog(`Then the confirmation dismiss`, async () => {
-    await t.expect(leaveTeamDialog.exists).notOk();
+    await t.expect(deleteTeamDialog.exists).notOk();
   });
 
-  await h(t).withLog(`And the team member still in the team`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-    await t.expect(profileDialog.memberNames.withText(memberUserName).exists).ok();
+  await h(t).withLog(`Then the Settings dialog should remain on the screen`, async () => {
+    await t.expect(teamSettingDialog.exists).ok();
+  });
+
+  await h(t).withLog(`And the team still in the team list`, async () => {
+    await t.expect(teamSection.conversationEntryById(unopenedTeamId).exists).ok();
   });
 
   await h(t).withLog(`When I open Delete team confirmation again`, async () => {
-    await profileDialog.clickSetting();
-    await teamSettingDialog.clickLeaveTeamButton();
-  })
-
-  await h(t).withLog(`Then the confirmation is displayed and teamSettingDialog is closed`, async () => {
-    await t.expect(teamSettingDialog.exists).notOk();
-    await leaveTeamDialog.shouldBePopup();
+    await teamSettingDialog.clickDeleteTeamButton();
   });
 
-  await h(t).withLog(`When I click "Leave" button`, async () => {
-    await leaveTeamDialog.leave();
+  await h(t).withLog(`Then the confirmation is displayed`, async () => {
+    await deleteTeamDialog.shouldBePopup();
+  });
+
+  await h(t).withLog(`When I click "Delete Team" button`, async () => {
+    await deleteTeamDialog.clickDeleteButton();
   });
 
   await h(t).withLog(`Then the confirmation dismiss`, async () => {
-    await t.expect(leaveTeamDialog.exists).notOk();
+    await t.expect(deleteTeamDialog.exists).notOk();
+  });
+
+  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
+    await app.homePage.alertDialog.shouldBeShowMessage(alertText);
+    await app.homePage.messageTab.conversationPage.groupIdShouldBe(openedTeamId);
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamSection.conversationEntryById(unopenedTeamId).exists).notOk();
   });
 
-  await h(t).withLog(`When I login Jupiter with team admin: ${adminUser.company.number}#${adminUser.extension}`, async () => {
-    await t.useRole(roleAdmin);
-  });
-
-  await h(t).withLog(`And I open profile dialog of the team`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+  await h(t).withLog(`When I delete opened Team`, async () => {
+    await teamSection.conversationEntryById(openedTeamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.clickSetting();
+    await teamSettingDialog.clickDeleteTeamButton();
+    await deleteTeamDialog.clickDeleteButton();
   });
 
-  await h(t).withLog(`Then the team member ${memberUserName} leave the team`, async () => {
-    await t.expect(profileDialog.memberNames.withText(memberUserName).exists).notOk();
+  await h(t).withLog(`Then the detele Team confirmation dismiss`, async () => {
+    await t.expect(deleteTeamDialog.exists).notOk();
   });
+
+  await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
+    await app.homePage.alertDialog.shouldBeShowMessage(alertText);
+  });
+
+  await h(t).withLog(`And send to the empty conversation screen`, async () => {
+    await t.expect(h(t).href).match(/messages$/);
+  });
+
+  await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
+    await t.expect(teamSection.conversationEntryById(openedTeamId).exists).notOk();
+  });
+
+
+  // await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
+  //   await app.homePage.openSettingMenu();
+  //   await app.homePage.settingMenu.clickLogout();
+  //   await h(t).directLoginWithUser(SITE_URL, memberUser);
+  //   await app.homePage.ensureLoaded();
+  // });
+
+  // await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
+  //   await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+  // });
 
 });
 

@@ -1,9 +1,9 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
 
-export class LeaveTeamDialog extends BaseWebComponent {
+export class DeleteTeamDialog extends BaseWebComponent {
 
   get self() {
-    return this.getSelector('*[role="dialog"]');
+    return this.getSelectorByAutomationId('deleteTeamConfirmDialog');
   }
 
   get title() {
@@ -28,7 +28,7 @@ export class LeaveTeamDialog extends BaseWebComponent {
   }
 
   get cancelButton() {
-    return this.button('Cancel');
+    return this.getSelectorByAutomationId('deleteTeamCancelButton');
   }
 
   async clickCancel() {
@@ -36,7 +36,7 @@ export class LeaveTeamDialog extends BaseWebComponent {
   }
 
   get DeleteButton() {
-    return this.button('Delete');
+    return this.getSelectorByAutomationId('deleteTeamOkButton');
   }
 
   async clickDeleteButton() {
