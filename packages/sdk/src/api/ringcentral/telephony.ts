@@ -162,6 +162,8 @@ export {
   ISpecialServiceRequest,
   getSpecialNumbers,
   getPhoneParserData,
+  IDialingPlanRequest,
   getAccountDialingPlan,
+  IPhoneNumberRequest,
   getExtensionPhoneNumberList,
 };
