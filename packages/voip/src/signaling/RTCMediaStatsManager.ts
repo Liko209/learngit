@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation/src';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCInBoundRtp, RTCOutBoundRtp } from '../api/types';
 
+const loggerTag = 'RTCMediaStatsManager';
 class RTCMediaStatsManager {
   private static instance: RTCMediaStatsManager;
   private _rtcOutBoundRtp: RTCOutBoundRtp;
@@ -22,15 +23,15 @@ class RTCMediaStatsManager {
   }
 
   setInBoundRtp(rtcInBoundRtp: RTCInBoundRtp): void {
-    mainLogger.info('get rtcInBoundRtp statistic Success');
+    rtcLogger.info(loggerTag, 'get rtcInBoundRtp statistic Success');
     this._rtcInBoundRtp = rtcInBoundRtp;
-    mainLogger.info(this._rtcInBoundRtp);
+    console.info(this._rtcInBoundRtp);
   }
 
   setOutBoundRtp(rtcOutBoundRtp: RTCOutBoundRtp): void {
-    mainLogger.info('get rtcOutBoundRtp statistic Success');
+    rtcLogger.info(loggerTag, 'get rtcOutBoundRtp statistic Success');
     this._rtcOutBoundRtp = rtcOutBoundRtp;
-    mainLogger.info(this._rtcOutBoundRtp);
+    console.info(loggerTag, this._rtcOutBoundRtp);
   }
 }
 

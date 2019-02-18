@@ -6,7 +6,7 @@
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
-// import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
+import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
@@ -46,7 +46,7 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
-  // private _rtcMediaStatsManager: RTCMediaStatsManager = null;
+  private _rtcMediaStatsManager: RTCMediaStatsManager;
 
   constructor(
     isIncoming: boolean,
@@ -79,7 +79,7 @@ class RTCCall {
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
-    // this._rtcMediaStatsManager = RTCMediaStatsManager.getInstance();
+    this._rtcMediaStatsManager = RTCMediaStatsManager.getInstance();
     this._prepare();
   }
 
@@ -245,6 +245,7 @@ class RTCCall {
         this._hangupInvalidCallTimer = null;
       }
       this._callSession.getMediaStats((report: any, session: any) => {
+        // this._rtcMediaStatsManager.setInBoundRtp(report);
         console.log('getStats', report);
         console.log('getStats', session);
       },                              kRTCGetStatsInterval * 1000);
@@ -257,7 +258,6 @@ class RTCCall {
       this._destroy();
     });
     this._fsm.on(CALL_FSM_NOTIFY.LEAVE_CONNECTED, () => {
-      // 结束获取stats
       this._callSession.stopMediaStats();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
