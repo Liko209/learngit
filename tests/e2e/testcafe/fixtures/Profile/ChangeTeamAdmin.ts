@@ -383,8 +383,8 @@ await h(t).withLog(`And remove the admin from the team`, async() => {
   await h(t).glip(u1).removeTeamMembers(teamId,[u1.rcId]);
 });
 
-  await h(t).withLog(`And I login Jupiter with a member u2 ${u2.company.number}#${u2.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, u2);
+  await h(t).withLog(`And I login Jupiter with a member u3 ${u3.company.number}#${u3.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, u3);
     await app.homePage.ensureLoaded();
   });
 
@@ -393,7 +393,24 @@ await h(t).withLog(`And remove the admin from the team`, async() => {
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
+  await h(t).withLog(`And hover on the member 'u3' row`, async () => {
+    await t.hover(profileDialog.memberEntryByName(u3Name).self);
+  });
+
+  await h(t).withLog(`Then show "more" button`, async () => {
+    await t.expect(profileDialog.memberEntryByName(u3Name).moreButton.exists).ok();
+  }, true);
+
+  await h(t).withLog('When click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(u3Name).moreButton);
+  });
+
+  await h(t).withLog(`Then show "${makeTeamAdminText}" button`, async () => {
+    await t.expect(profileDialog.memberMoreMenu.makeTeamAdminItem.withExactText(makeTeamAdminText).exists).ok();
+  });
+
   await h(t).withLog(`And hover on the member 'u2' row`, async () => {
+    await profileDialog.memberMoreMenu.quit();
     await t.hover(profileDialog.memberEntryByName(u2Name).self);
   });
 
@@ -421,7 +438,7 @@ await h(t).withLog(`And remove the admin from the team`, async() => {
     await t.hover(profileDialog.memberEntryByName(u3Name).self);
   });
 
-  await h(t).withLog(`Then won't show "more" button`, async () => {
+  await h(t).withLog(`Then no "more" button`, async () => {
     await t.expect(profileDialog.memberEntryByName(u3Name).moreButton.exists).notOk();
   }, true);
 
