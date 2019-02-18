@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { RTC_CALL_STATE } from '../api/types';
 import { RTCCall } from '../api/RTCCall';
 import { kRTCMaxCallCount } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -44,18 +45,34 @@ class RTCCallManager {
     return this._calls.length;
   }
 
+  connectedCallList(): RTCCall[] {
+    return this._calls.filter(
+      (item: RTCCall) => item.getCallState() === RTC_CALL_STATE.CONNECTED,
+    );
+  }
+
+  connectedCallCount(): number {
+    return this.connectedCallList().length;
+  }
+
   getCallByUuid(callUuid: string): RTCCall | null {
-    this._calls.forEach((item: any) => {
-      if (item.getCallInfo().uuid === callUuid) {
-        return item;
+    this._calls.forEach((call: any) => {
+      if (call.getCallInfo().uuid === callUuid) {
+        return call;
       }
     });
     return null;
   }
 
   notifyAccountReady() {
-    this._calls.forEach((item: RTCCall) => {
-      item.onAccountReady();
+    this._calls.forEach((call: RTCCall) => {
+      call.onAccountReady();
+    });
+  }
+
+  endAllCalls() {
+    this._calls.forEach((call: RTCCall) => {
+      call.hangup();
     });
   }
 }

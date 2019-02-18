@@ -3,5 +3,5 @@
   "compilerOptions": {
     "target": "es5"
   },
-  "exclude": ["src/**/__tests__/**/*.ts", "src/**/*(.spec|.test).ts"]
+  "exclude": ["src/**/__tests__/*", "src/**/*(.spec|.test).ts(x)?"]
 }

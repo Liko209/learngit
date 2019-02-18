@@ -7,13 +7,14 @@
 import { Notification } from '@/containers/Notification';
 import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
+import { GroupConfigService } from 'sdk/service';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
@@ -30,6 +31,9 @@ const postService = {
 };
 const groupService = {
   updateGroupDraft: jest.fn(),
+};
+const groupConfigService = {
+  updateDraft: jest.fn(),
 };
 
 let fileIDs: number = -1001;
@@ -97,9 +101,10 @@ const itemService = {
   canUploadFiles: jest.fn().mockImplementation(() => true),
 };
 
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+GroupConfigService.getInstance = jest.fn().mockReturnValue(groupConfigService);
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -113,7 +118,7 @@ describe('AttachmentsViewModel', () => {
   let vm: AttachmentsViewModel;
 
   beforeEach(() => {
-    vm = new AttachmentsViewModel({ id: 456 });
+    vm = new AttachmentsViewModel({ id: 456, forceSaveDraft: true });
     _uploadedItems = [];
     _uploadingItems = [];
   });
@@ -288,6 +293,25 @@ describe('AttachmentsViewModel', () => {
       const vm2 = new AttachmentsViewModel({ id: 789 });
       await vm2.autoUploadFiles([file]);
       expect(vm.showDuplicateFiles).toBe(false);
+    });
+  });
+
+  describe('forceSaveDraftItems()', () => {
+    it('should call forceSaveDraftItems after uploading a file', async () => {
+      const info: SelectFile = { data: file, duplicate: false };
+      jest.spyOn(vm, 'forceSaveDraftItems');
+      await vm.uploadFile(info, false);
+      expect(vm.forceSaveDraftItems).toHaveBeenCalled();
+    });
+
+    it('should call updateDraft with forceSaveDraftItems', async () => {
+      const info: SelectFile = { data: file, duplicate: false };
+      jest.spyOn(vm, 'forceSaveDraftItems');
+      await vm.uploadFile(info, false);
+      expect(groupConfigService.updateDraft).toHaveBeenCalledWith({
+        attachment_item_ids: [-1022],
+        id: 456,
+      });
     });
   });
 });

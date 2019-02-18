@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, number, select, text } from '@storybook/addon-knobs';
+import { number, text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
@@ -20,12 +20,9 @@ storiesOf('Pattern/MessageInput', module)
   .add('MessageInput', () => {
     const onChange = () => {};
     return (
-      <JuiMessageInput
-        value="test"
-        onChange={onChange}
-        keyboardEventHandler={{}}
-        error=""
-      />
+      <JuiMessageInput value="test" onChange={onChange} error="" modules={{}}>
+        <div />
+      </JuiMessageInput>
     );
   });
 
@@ -104,7 +101,6 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
-  const removeAttachment = () => {};
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =

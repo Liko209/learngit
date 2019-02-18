@@ -36,6 +36,7 @@ const CallFsmEvent = {
   UNHOLD: 'unhold',
   PARK: 'park',
   DTMF: 'dtmf',
+  SESSION_ACCEPTED: 'sessionAccepted',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
   SESSION_ERROR: 'sessionError',
@@ -316,8 +317,13 @@ class RTCCallFsmTable extends StateMachine {
           },
         },
         {
+          name: CallFsmEvent.SESSION_ACCEPTED,
+          from: CallFsmState.CONNECTING,
+          to: CallFsmState.CONNECTED,
+        },
+        {
           name: CallFsmEvent.SESSION_CONFIRMED,
-          from: [CallFsmState.ANSWERING, CallFsmState.CONNECTING],
+          from: CallFsmState.ANSWERING,
           to: CallFsmState.CONNECTED,
         },
         {

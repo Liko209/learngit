@@ -61,10 +61,14 @@ export class MessageRouterChangeHelper {
 
   static async goToLastOpenedGroup() {
     const lastGroupId = await this.getLastGroupId();
-    this.goToConversation(lastGroupId, 'REPLACE');
+    this._goToConversation(lastGroupId, 'REPLACE');
+  }
+  static async goToConversation(id: string, action?: Action) {
+    const validId = await this.verifyGroup(Number(id));
+    return this._goToConversation(validId, action);
   }
 
-  static async goToConversation(id: string, action?: Action) {
+  private static async _goToConversation(id: string, action?: Action) {
     switch (action) {
       case 'REPLACE':
         history.replace(`/messages/${id}`);
