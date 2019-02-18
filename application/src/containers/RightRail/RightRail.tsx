@@ -15,8 +15,8 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
-import { TAB_CONFIG } from './ItemList/config';
+import { ItemList } from './ItemList';
+import { TAB_CONFIG, TabConfig } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 
 type Props = {
@@ -89,20 +89,11 @@ class RightRailComponent extends React.Component<Props> {
             moreText={t('common.more')}
           >
             {TAB_CONFIG.map(
-              (
-                {
-                  title,
-                  type,
-                }: {
-                  title: string;
-                  type: RIGHT_RAIL_ITEM_TYPE;
-                },
-                index: number,
-              ) => (
+              ({ title, type, automationID }: TabConfig, index: number) => (
                 <JuiTab
                   key={index}
                   title={t(title)}
-                  automationId={`right-shelf-${title}`}
+                  automationId={`right-shelf-${automationID}`}
                 >
                   <ItemList
                     type={type}

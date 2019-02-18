@@ -41,6 +41,7 @@ type TabConfig = {
     sortKey?: ITEM_SORT_KEYS;
     desc?: boolean;
   };
+  automationID: string;
   offlinePrompt: string;
 };
 
@@ -55,6 +56,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'item.noPinSubText',
       image: PinnedEmptyImage,
     },
+    automationID: 'pinned',
     offlinePrompt: 'item.networkErrorPinnedPrompt',
   },
   {
@@ -70,6 +72,7 @@ const TAB_CONFIG: TabConfig[] = [
     sort: {
       desc: true,
     },
+    automationID: 'files',
     offlinePrompt: 'item.networkErrorFilesPrompt',
   },
   {
@@ -85,6 +88,7 @@ const TAB_CONFIG: TabConfig[] = [
     sort: {
       desc: true,
     },
+    automationID: 'images',
     offlinePrompt: 'item.networkErrorImagesPrompt',
   },
   {
@@ -97,6 +101,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'item.noTaskSubText',
       image: TasksEmptyImage,
     },
+    automationID: 'tasks',
     offlinePrompt: 'item.networkErrorTasksPrompt',
   },
   {
@@ -112,6 +117,7 @@ const TAB_CONFIG: TabConfig[] = [
     sort: {
       desc: true,
     },
+    automationID: 'links',
     offlinePrompt: 'item.networkErrorLinksPrompt',
   },
   {
@@ -127,6 +133,7 @@ const TAB_CONFIG: TabConfig[] = [
     sort: {
       desc: true,
     },
+    automationID: 'notes',
     offlinePrompt: 'item.networkErrorNotesPrompt',
   },
   {
@@ -142,6 +149,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'item.noEventSubText',
       image: EventsEmptyImage,
     },
+    automationID: 'events',
     offlinePrompt: 'item.networkErrorEventsPrompt',
   },
   {
@@ -154,6 +162,7 @@ const TAB_CONFIG: TabConfig[] = [
       content: 'item.noIntegrationSubText',
       image: IntegrationsEmptyImage,
     },
+    automationID: 'integrations',
     offlinePrompt: 'item.networkErrorIntegrationsPrompt',
   },
 ];
