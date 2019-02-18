@@ -33,7 +33,7 @@ function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
 
     render() {
       const { delay, ...rest } = this.props;
-      return this.state.visible ? <Component {...rest} /> : null;
+      return this.state.visible ? <Component {...rest as T} /> : null;
     }
 
     private _show = () => {
