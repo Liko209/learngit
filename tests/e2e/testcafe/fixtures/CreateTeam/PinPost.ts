@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-02-15 16:37:06 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-15 18:37:49
+ * @Last Modified time: 2019-02-18 17:15:17
  */
 
 
@@ -28,6 +28,7 @@ test(formalName(`Restrict non admin team members from pinning posts in Create te
 
   const teamName1 = uuid();
   const teamName2 = uuid();
+  const teamName3 = uuid();
 
   await h(t).withLog(`Given I login Jupiter with ${adminUser.company.number}#${adminUser.extension} `, async () => {
     await h(t).directLoginWithUser(SITE_URL, adminUser);
@@ -124,14 +125,14 @@ test(formalName(`Restrict non admin team members from pinning posts in Create te
   });
 
   await h(t).withLog(`When admin turn on the pinging toggle and create team`, async () => {
-    await createTeamModal.typeTeamName(teamName2);
+    await createTeamModal.typeTeamName(teamName3);
     await createTeamModal.turnOnMayPinPost();
     await createTeamModal.clickCreateButton();
   });
 
   await h(t).withLog(`Then The sending post and pinning post status should on (via API).`, async () => {
     await H.retryUntilPass(async () => {
-      const teamId = await teamSection.conversationEntryByName(teamName2).groupId;
+      const teamId = await teamSection.conversationEntryByName(teamName3).groupId;
       const userPermissionsValue = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data.permissions.user.level);
       assert.ok(1 << 0 & Number(userPermissionsValue), `permission value Error: ${userPermissionsValue}`);
       assert.ok(1 << 3 & Number(userPermissionsValue), `permission value Error: ${userPermissionsValue}`);
