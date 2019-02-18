@@ -247,6 +247,7 @@ class StreamViewComponent extends Component<Props>
               isLoading={this._isLoading}
               width={width}
               height={height}
+              overscan={4}
               onBeforeRowsRendered={this._rowsRenderedHandler}
             />
           )}
