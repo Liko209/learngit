@@ -270,7 +270,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryByName(name: string) {
-    return this.getComponent(Member, this.memberNames.withExactText(name).parent(0));
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
   }
 
   get addMembersIcon() {
@@ -385,7 +385,7 @@ class Member extends BaseWebComponent {
 
 class MoreMenu extends BaseWebComponent {
   get self() {
-    return this.getSelector('div[role="document"]');
+    return this.getSelector('ul[role="menu"]');
   }
 
   get copyUrlMenuItem() {
@@ -410,7 +410,7 @@ class MoreMenu extends BaseWebComponent {
 
 class MemberMoreMenu extends BaseWebComponent {
   get self() {
-    return this.getSelector('div[role="document"]');
+    return this.getSelector('ul[role="menu"]');
   }
 
   get removeFromTeamItem() {
@@ -426,15 +426,15 @@ class MemberMoreMenu extends BaseWebComponent {
   }
 
   async clickRemoveTeamMember() {
-    await this.t.click(this.removeFromTeamItem);
+    await this.t.click(this.removeFromTeamItem).expect(this.exists).notOk();
   }
 
   async clickMakeTeamAdmin() {
-    await this.t.click(this.makeTeamAdminItem);
+    await this.t.click(this.makeTeamAdminItem).expect(this.makeTeamAdminItem.exists).notOk();
   }
 
   async clickRevokeTeamAdmin() {
-    await this.t.click(this.revokeTeamAdminItem);
+    await this.t.click(this.revokeTeamAdminItem).expect(this.exists).notOk();
   }
   
   async quit() {
