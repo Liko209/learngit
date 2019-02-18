@@ -111,6 +111,17 @@ describe('ItemService', () => {
         });
     });
 
+    describe('initialUploadItemsFromDraft', () => {
+      it('should call file item service with correct parameter', async () => {
+        expect.assertions(1);
+        fileItemService.initialUploadItemsFromDraft = jest.fn();
+        await itemService.initialUploadItemsFromDraft(groupId);
+        expect(fileItemService.initialUploadItemsFromDraft).toBeCalledWith(
+          groupId,
+        );
+      });
+    });
+
     describe('getThumbsUrlWithSize', () => {
       it('should call file item service with correct parameter', async () => {
         expect.assertions(2);
@@ -234,6 +245,14 @@ describe('ItemService', () => {
         expect(fileItemService.cleanUploadingFiles).toBeCalledWith(groupId, [
           itemFile.id,
         ]);
+      });
+    });
+
+    describe('hasUploadingFiles', () => {
+      it('should call file item service', () => {
+        fileItemService.hasUploadingFiles = jest.fn().mockReturnValue(true);
+        expect(itemService.hasUploadingFiles()).toBeTruthy();
+        expect(fileItemService.hasUploadingFiles).toBeCalled();
       });
     });
   });

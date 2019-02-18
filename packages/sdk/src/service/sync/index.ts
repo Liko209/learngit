@@ -29,6 +29,7 @@ import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 import { ItemDao } from '../../module/item/dao';
 import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+import { progressBar } from '../../utils/progress';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
@@ -44,15 +45,23 @@ export default class SyncService extends BaseService {
   private _syncListener: SyncListener;
 
   constructor() {
-    const subscriptions = {
+    super(null, null, null, {
       [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
         if (state === 'connected' || state === 'refresh') {
           this.syncData();
+        } else if (state === 'connecting') {
+          progressBar.start();
+        } else if (state === 'disconnected') {
+          progressBar.stop();
         }
       },
-    };
-    super(null, null, null, subscriptions);
+    });
     this.isLoading = false;
+  }
+
+  getIndexTimestamp() {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    return configDao.get(LAST_INDEX_TIMESTAMP);
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -60,9 +69,9 @@ export default class SyncService extends BaseService {
     if (this.isLoading) {
       return;
     }
+
     this.isLoading = true;
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
+    const lastIndexTimestamp = this.getIndexTimestamp();
     if (lastIndexTimestamp) {
       await this._syncIndexData(lastIndexTimestamp);
     } else {
@@ -85,6 +94,7 @@ export default class SyncService extends BaseService {
       onRemainingHandled,
     } = this._syncListener;
 
+    progressBar.start();
     try {
       const currentTime = Date.now();
       const initialResult = await fetchInitialData(currentTime);
@@ -102,9 +112,11 @@ export default class SyncService extends BaseService {
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
+    progressBar.stop();
   }
 
   private async _syncIndexData(timeStamp: number) {
+    progressBar.start();
     const { onIndexLoaded, onIndexHandled } = this._syncListener;
     // 5 minutes ago to ensure data is correct
     let result;
@@ -116,6 +128,7 @@ export default class SyncService extends BaseService {
     } catch (error) {
       this._handleSyncIndexError(error);
     }
+    progressBar.stop();
   }
 
   private async _handleSyncIndexError(result: any) {

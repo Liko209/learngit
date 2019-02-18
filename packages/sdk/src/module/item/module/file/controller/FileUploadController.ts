@@ -20,12 +20,14 @@ import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { UserConfig } from '../../../../../service/account/UserConfig';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { IItemService } from '../../../service/IItemService';
 import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
+import { GroupConfigService } from '../../../../../service/groupConfig';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -275,6 +277,57 @@ class FileUploadController {
 
   getUploadItems(groupId: number): ItemFile[] {
     return this._uploadingFiles.get(groupId) || [];
+  }
+
+  async initialUploadItemsFromDraft(groupId: number) {
+    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
+    const itemIds = await groupConfigService.getDraftAttachmentItemIds(groupId);
+    const fileIds = itemIds.filter(
+      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+    );
+
+    if (fileIds) {
+      await this._setUploadItems(groupId, fileIds);
+      return this.getUploadItems(groupId);
+    }
+
+    return [];
+  }
+
+  private async _setUploadItems(groupId: number, itemIds: number[]) {
+    const existFile = this.getUploadItems(groupId);
+    let toFetchItemIds: number[] = [];
+    if (existFile.length > 0) {
+      toFetchItemIds = _.difference(itemIds, existFile.map(x => x.id));
+    } else {
+      toFetchItemIds = itemIds;
+    }
+
+    if (toFetchItemIds.length > 0) {
+      const toFetchItems = (await this._itemService
+        .getEntitySource()
+        .getEntitiesLocally(toFetchItemIds, false)) as Item[];
+      this._uploadingFiles.set(groupId, existFile.concat(toFetchItems));
+      this._saveToItemFileCache(toFetchItems);
+    }
+  }
+
+  private _saveToItemFileCache(items: Item[]) {
+    items.forEach((item: Item) => {
+      if (!this._progressCaches.has(item.id)) {
+        this._progressCaches.set(item.id, {
+          progress: {
+            id: item.id,
+            rate: {
+              loaded: 0,
+              total: 1,
+            },
+            status: PROGRESS_STATUS.INPROGRESS,
+          },
+          itemFile: item,
+        });
+      }
+    });
   }
 
   getUploadProgress(itemId: number): Progress | undefined {
@@ -775,6 +828,25 @@ class FileUploadController {
       }
     }
     return type;
+  }
+
+  hasUploadingFiles() {
+    let hasUploading = false;
+    const uploadingFiles = Array.from(this._progressCaches.values());
+    for (let i = 0; i < uploadingFiles.length; i++) {
+      const fileStatus = uploadingFiles[i];
+      if (fileStatus.itemFile && !this._isFileUploaded(fileStatus.itemFile)) {
+        hasUploading = true;
+        break;
+      }
+    }
+    return hasUploading;
+  }
+
+  private _isFileUploaded(itemFile: ItemFile) {
+    return (
+      itemFile.versions.length > 0 && itemFile.versions[0].stored_file_id > 0
+    );
   }
 }
 

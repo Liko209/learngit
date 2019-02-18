@@ -40,6 +40,8 @@ enum REGISTRATION_EVENT {
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
+  LOGOUT = 'logout',
+  LOGOUT_ACTION = 'logoutAction',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
   RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
 }

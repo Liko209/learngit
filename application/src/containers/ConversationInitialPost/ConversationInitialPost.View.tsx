@@ -14,7 +14,6 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-// import { Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
@@ -49,29 +48,47 @@ class ConversationInitialPost extends React.Component<
   }
 
   private get _conversationInitialPostHeader() {
-    const { isTeam, displayName, groupDescription, t, createTime } = this.props;
-
     return (
       <JuiConversationInitialPostHeader>
-        {isTeam ? (
-          <StyledTitle>
-            {this._name}
-            <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
-            <StyledTeamName>{displayName}</StyledTeamName>
-            <StyledSpan>
-              &nbsp;{t('on')} {createTime}
-            </StyledSpan>
-          </StyledTitle>
-        ) : (
-          <StyledSpan>
-            {t('directMessageDescription', { displayName })}
-          </StyledSpan>
-        )}
-        {isTeam && groupDescription ? (
-          <StyledDescription>{groupDescription}</StyledDescription>
-        ) : null}
+        {this._groupCreateInfo()}
+        {this._teamDescription()}
       </JuiConversationInitialPostHeader>
     );
+  }
+
+  private _groupCreateInfo() {
+    const { isTeam, displayName, t, createTime, isCompanyTeam } = this.props;
+    if (!isTeam) {
+      return (
+        <StyledSpan>
+          {t('directMessageDescription', { displayName })}
+        </StyledSpan>
+      );
+    }
+
+    if (!isCompanyTeam) {
+      return (
+        <StyledTitle>
+          {this._name}
+          <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
+          <StyledTeamName>{displayName}</StyledTeamName>
+          <StyledSpan>
+            &nbsp;{t('on')} {createTime}
+          </StyledSpan>
+        </StyledTitle>
+      );
+    }
+
+    return null;
+  }
+
+  private _teamDescription() {
+    const { isTeam, groupDescription } = this.props;
+    if (!isTeam) return null;
+    if (groupDescription) {
+      return <StyledDescription>{groupDescription}</StyledDescription>;
+    }
+    return null;
   }
 
   private get _handleShareFile() {

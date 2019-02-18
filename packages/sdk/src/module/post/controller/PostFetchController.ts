@@ -5,7 +5,6 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
 import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
@@ -17,23 +16,17 @@ import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
 import { GroupService } from '../../../module/group';
-import { IRequestRemotePostAndSave } from '../entity/Post';
+import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { Item } from '../../../module/item/entity';
 
 const TAG = 'PostFetchController';
 
 class PostFetchController {
-  private _postDataController: PostDataController;
-
   constructor(
-    public preInsertController: IPreInsertController,
+    public postDataController: PostDataController,
     public entitySourceController: IEntitySourceController<Post>,
-  ) {
-    this._postDataController = new PostDataController(
-      preInsertController,
-      entitySourceController,
-    );
-  }
+  ) {}
 
   /** 1, Check does postId is 0 or post id is in db
    *  1) PostId is 0, means open conversation from group | contact | profile,
@@ -88,15 +81,18 @@ class PostFetchController {
           direction,
           result.posts,
         );
-        const serverResult = await this.getRemotePostsByGroupIdAndSave({
+        const serverResult = await this.getRemotePostsByGroupId({
           direction,
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
         });
-        if (serverResult.success) {
-          result.posts.push(...serverResult.posts);
+        if (serverResult) {
+          result.posts = this._handleDuplicatePosts(
+            result.posts,
+            serverResult.posts,
+          );
           result.items.push(...serverResult.items);
           result.hasMore = serverResult.hasMore;
         }
@@ -140,13 +136,13 @@ class PostFetchController {
     return result;
   }
 
-  async getRemotePostsByGroupIdAndSave({
+  async getRemotePostsByGroupId({
     direction,
     groupId,
     limit,
     postId,
     shouldSaveToDb,
-  }: IRequestRemotePostAndSave) {
+  }: IRemotePostRequest) {
     mainLogger.debug(
       TAG,
       'getPostsByGroupId() db is not exceed limit, request from server',
@@ -158,14 +154,8 @@ class PostFetchController {
       postId,
     });
 
-    const result = {
-      posts: [],
-      items: [],
-      hasMore: true,
-      success: false,
-    };
     if (serverResult) {
-      const handledResult = await this._postDataController.handleFetchedPosts(
+      const handledResult = await this.postDataController.handleFetchedPosts(
         serverResult,
         shouldSaveToDb,
       );
@@ -173,15 +163,32 @@ class PostFetchController {
         const groupService: GroupService = GroupService.getInstance();
         groupService.updateHasMore(groupId, direction, handledResult.hasMore);
       }
-      Object.assign(result, handledResult);
-      result.success = true;
+      return handledResult;
     }
-    return result;
+    return serverResult;
   }
 
   private async _isPostInDb(postId: number): Promise<boolean> {
     const post = await this.entitySourceController.getEntityLocally(postId);
     return post ? true : false;
+  }
+
+  private _handleDuplicatePosts(localPosts: Post[], remotePosts: Post[]) {
+    if (localPosts && localPosts.length > 0) {
+      if (remotePosts && remotePosts.length > 0) {
+        remotePosts.forEach((remotePost: Post) => {
+          const index = localPosts.findIndex(
+            (localPost: Post) => localPost.version === remotePost.version,
+          );
+          if (index !== -1) {
+            localPosts.splice(index, 1);
+          }
+        });
+        return localPosts.concat(remotePosts);
+      }
+      return localPosts;
+    }
+    return remotePosts;
   }
 
   private async _getPostsFromDb({
@@ -205,6 +212,32 @@ class PostFetchController {
       hasMore: true,
       items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
     };
+    return result;
+  }
+
+  async getPostsByIds(
+    ids: number[],
+  ): Promise<{ posts: Post[]; items: Item[] }> {
+    const itemService: ItemService = ItemService.getInstance();
+    const localPosts = await this.entitySourceController.batchGet(ids);
+    const result = {
+      posts: localPosts,
+      items: await itemService.getByPosts(localPosts),
+    };
+    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+    if (restIds.length) {
+      const remoteData = await PostAPI.requestByIds(restIds);
+      const posts: Post[] =
+        (await this.postDataController.filterAndSavePosts(
+          this.postDataController.transformData(remoteData.posts),
+          false,
+        )) || [];
+      const itemService = ItemService.getInstance() as ItemService;
+      const items =
+        (await itemService.handleIncomingData(remoteData.items)) || [];
+      result.posts.push(...posts);
+      result.items.push(...items);
+    }
     return result;
   }
 
