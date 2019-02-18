@@ -73,11 +73,11 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     maxLength: DESC_MAX_LENGTH,
   };
 
-  handleClose = () => portalManager.dismiss();
+  handleClose = () => portalManager.dismissLast();
   handleOk = async () => {
     const shouldClose = await this.props.save(this.state);
     if (shouldClose) {
-      portalManager.dismiss();
+      this.handleClose();
     }
   }
 
@@ -123,7 +123,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
     const { t, groupName } = this.props;
-    portalManager.dismiss();
+    portalManager.dismissLast();
     Dialog.confirm({
       modalProps: { 'data-test-automation-id': 'leaveTeamConfirmDialog' },
       okBtnProps: { 'data-test-automation-id': 'leaveTeamOkButton' },
@@ -141,7 +141,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 
   leaveTeamOKButtonHandler = async () => {
-    portalManager.dismiss();
+    portalManager.dismissLast();
     this.props.leaveTeam();
   }
 

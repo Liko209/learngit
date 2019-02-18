@@ -3,75 +3,78 @@
  * @Date: 2018-12-26 14:22:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { ComponentClass, ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EventEmitter2 } from 'eventemitter2';
 
-type ComponentTypes = ComponentClass | ComponentType<any>;
-type PortalsMapValue = {
-  node: HTMLElement;
+type Portal = {
+  component: ComponentType<any>;
   dismiss: () => void;
   props?: any;
 };
 
-type PortalsMapProps = Map<ComponentTypes, PortalsMapValue>;
+type Portals = Portal[];
 
 const EventKey = 'portalsChange';
 
 class PortalManager extends EventEmitter2 {
-  portals: PortalsMapProps;
-  constructor() {
-    super();
-    this.portals = new Map();
+  portals: Portals = [];
+
+  register({ component, dismiss, props }: Portal) {
+    const length = this.portals.push({ component, dismiss, props });
+    this.emit(EventKey, this.portals);
+    return length - 1;
   }
 
-  register(
-    component: ComponentTypes,
-    { node, dismiss, props }: PortalsMapValue,
-  ) {
-    this.portals.set(component, { node, dismiss, props });
+  unRegister(index: number) {
+    this.portals.splice(index, 1);
     this.emit(EventKey, this.portals);
   }
 
-  unRegister(component: ComponentTypes) {
-    const value = this.portals.get(component);
-    if (value) {
-      const node = value.node;
-      node.parentNode && node.parentNode.removeChild(node);
-      this.portals.delete(component);
-      this.emit(EventKey, this.portals);
-    }
-  }
-
-  dismiss(afterDismiss?: () => void) {
-    const portals = this.portals;
-    const last = portals.size - 1;
-    this.unRegister(Array.from(portals.keys())[last]);
+  dismissAll(afterDismiss?: () => void) {
+    this.portals.length = 0;
+    this.emit(EventKey, this.portals);
     typeof afterDismiss === 'function' && afterDismiss();
   }
 
-  wrapper(component: ComponentTypes) {
+  dismissLast(afterDismiss?: () => void) {
+    if (this.portals.length) {
+      this.portals.pop();
+      this.emit(EventKey, this.portals);
+    }
+    typeof afterDismiss === 'function' && afterDismiss();
+  }
+
+  wrapper(component: ComponentType<any>, container?: Element) {
+    let hasShow = false;
     const wrapperComponent = {
+      index: -1,
       dismiss: (afterDismiss?: () => void) => {
-        this.unRegister(component);
+        hasShow = false;
+        this.unRegister(wrapperComponent.index);
         typeof afterDismiss === 'function' && afterDismiss();
       },
-      show: (appendNode?: HTMLElement, props?: any) => {
+      show: (props?: any) => {
         const dismiss = wrapperComponent.dismiss;
 
-        if (this.portals.get(component)) {
+        if (hasShow) {
           return {
             dismiss,
           };
         }
 
-        const renderNode = document.createElement('div');
+        hasShow = true;
 
-        this.register(component, {
+        const newProps = { ...props };
+
+        if (!newProps.key) {
+          newProps.key = `${Date.now()}`;
+        }
+
+        wrapperComponent.index = this.register({
+          component,
           dismiss,
-          props,
-          node: renderNode,
+          props: newProps,
         });
-        (appendNode || document.body).appendChild(renderNode);
 
         return {
           dismiss,
@@ -86,11 +89,11 @@ class PortalManager extends EventEmitter2 {
   }
 
   onChange(fn: Function) {
-    this.on(EventKey, (portals: PortalsMapProps) => {
+    this.on(EventKey, (portals: Portals) => {
       fn(portals);
     });
   }
 }
 
-export { PortalsMapProps, PortalManager, EventKey };
+export { Portals, PortalManager, EventKey };
 export default new PortalManager();

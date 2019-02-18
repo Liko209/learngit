@@ -4,24 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { createPortal } from 'react-dom';
-import portalManager, { PortalsMapProps } from '@/common/PortalManager';
+import portalManager, { Portals } from '@/common/PortalManager';
+import DialogContext from './DialogContext';
 
 type Props = {};
 type State = {
-  portals: PortalsMapProps;
+  portals: Portals;
 };
-// type ProviderProps = { value: () => void };
-// const Xxx = React.createContext<ProviderProps>({ value: () => {} });
 
 class DialogPortal extends React.Component<Props, State> {
   state: State = {
-    portals: new Map(),
+    portals: [],
   };
 
   constructor(props: Props) {
     super(props);
-    portalManager.onChange((portals: PortalsMapProps) => {
+    portalManager.onChange((portals: Portals) => {
       this.setState({
         portals,
       });
@@ -30,16 +28,16 @@ class DialogPortal extends React.Component<Props, State> {
 
   render() {
     const { portals } = this.state;
-    const components = [];
-    for (const [Element, value] of portals.entries()) {
-      const { node, props } = value;
-      if (Element instanceof Function) {
-        components.push(createPortal(<Element {...props} />, node));
-      } else {
-        components.push(createPortal(Element, node));
+    return portals.map(({ component: Component, props, dismiss }) => {
+      if (Component instanceof Function) {
+        return (
+          <DialogContext.Provider value={dismiss} key={props.key}>
+            <Component {...props} />
+          </DialogContext.Provider>
+        );
       }
-    }
-    return components;
+      return Element;
+    });
   }
 }
 

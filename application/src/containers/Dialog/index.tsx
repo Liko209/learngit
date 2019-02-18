@@ -7,6 +7,7 @@ import { JuiModalProps, JuiDialogFuncProps } from 'jui/components/Dialog';
 import { modal } from './Modal';
 import { dialog } from './Dialog';
 import { DialogPortal } from './DialogPortal';
+export { default as DialogContext } from './DialogContext';
 
 type ReturnFunc = {
   dismiss: () => void;

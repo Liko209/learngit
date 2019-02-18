@@ -3,55 +3,46 @@
  * @Date: 2018-12-29 09:44:52
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import portalManager, { EventKey } from '../PortalManager';
 
 describe('portalManager', () => {
   beforeEach(() => {
-    portalManager.portals = new Map();
+    portalManager.portals = [];
     jest.restoreAllMocks();
   });
 
   it('portalManager register()', async () => {
     jest.spyOn(portalManager, 'emit');
-    const comp: any = 1;
-    portalManager.register(comp, {
-      node: document.createElement('div'),
-      dismiss: 2,
-      props: {},
-    } as any);
+    const comp = () => <span />;
+    const wrapper = portalManager.wrapper(comp);
+
+    wrapper.show();
 
     expect(portalManager.emit).toHaveBeenCalledWith(
       'portalsChange',
       portalManager.portals,
     );
-
-    portalManager.unRegister(comp);
-    expect(portalManager.portals.size).toBe(0);
-    expect(portalManager.emit).toHaveBeenCalledWith(
-      EventKey,
-      portalManager.portals,
-    );
+    expect(portalManager.portals.length).toBe(1);
   });
   it('portalManager unRegister()', async () => {
     jest.spyOn(portalManager, 'emit');
-    const comp: any = 1;
-    portalManager.unRegister(comp);
-    expect(portalManager.emit).toHaveBeenCalledTimes(0);
+    const comp = () => <span />;
+    const wrapper = portalManager.wrapper(comp);
+    wrapper.show();
+    wrapper.dismiss();
+    expect(portalManager.portals.length).toBe(0);
+    expect(portalManager.emit).toHaveBeenCalledTimes(2);
   });
-  it('portalManager dismiss()', async () => {
+  it('portalManager dismissLast()', async () => {
     const cb = jest.fn();
     jest.spyOn(portalManager, 'emit');
     jest.spyOn(portalManager, 'unRegister');
 
-    const comp: any = 1;
-    portalManager.register(comp, {
-      node: document.createElement('div'),
-      dismiss: 2,
-      props: {},
-    } as any);
-
-    portalManager.dismiss(cb);
-    expect(portalManager.unRegister).toHaveBeenCalledWith(1);
+    const comp = () => <span />;
+    const wrapper = portalManager.wrapper(comp);
+    wrapper.show();
+    portalManager.dismissLast(cb);
     expect(cb).toHaveBeenCalledTimes(1);
   });
 
@@ -65,7 +56,7 @@ describe('portalManager', () => {
 });
 describe('portalManager wrapper()', async () => {
   beforeEach(() => {
-    portalManager.portals = new Map();
+    portalManager.portals = [];
     jest.restoreAllMocks();
   });
 
