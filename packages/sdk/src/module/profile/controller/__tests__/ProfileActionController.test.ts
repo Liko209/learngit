@@ -181,9 +181,12 @@ describe('ProfileActionController', () => {
       });
       testPartialModifyController.partialEntity = { _id: 2 };
       const controller = getActionController();
-      const result = await controller.putFavoritePost(222, true);
-      const data = result.expect('');
-      expect(data).toEqual({ _id: 2, favorite_post_ids: [111, 222] });
+      try {
+        const result = await controller.putFavoritePost(222, true);
+        expect(result).toEqual({ _id: 2, favorite_post_ids: [111, 222] });
+      } catch (e) {
+        expect(true).toBeFalsy();
+      }
     });
     it('should mark post as unfavorite', async () => {
       profileDataController.getProfile.mockResolvedValueOnce({
@@ -192,9 +195,12 @@ describe('ProfileActionController', () => {
       });
       testPartialModifyController.partialEntity = { _id: 2 };
       const controller = getActionController();
-      const result = await controller.putFavoritePost(111, false);
-      const data = result.expect('');
-      expect(data).toEqual({ _id: 2, favorite_post_ids: [] });
+      try {
+        const result = await controller.putFavoritePost(111, false);
+        expect(result).toEqual({ _id: 2, favorite_post_ids: [] });
+      } catch (e) {
+        expect(true).toBeFalsy();
+      }
     });
 
     it('should do nothing when post is unfavorite and mark it as unfavorite', async () => {
@@ -203,9 +209,12 @@ describe('ProfileActionController', () => {
         favorite_post_ids: [111],
       });
       const controller = getActionController();
-      const result = await controller.putFavoritePost(222, false);
-      const data = result.expect('');
-      expect(data).toEqual({ id: 2, favorite_post_ids: [111] });
+      try {
+        const result = await controller.putFavoritePost(222, false);
+        expect(result).toEqual({ id: 2, favorite_post_ids: [111] });
+      } catch (e) {
+        expect(true).toBeFalsy();
+      }
     });
 
     it('should do nothing when post is favorite and mark it as favorite', async () => {
@@ -214,9 +223,13 @@ describe('ProfileActionController', () => {
         favorite_post_ids: [111],
       });
       const controller = getActionController();
-      const result = await controller.putFavoritePost(111, true);
-      const data = result.expect('');
-      expect(data).toEqual({ id: 2, favorite_post_ids: [111] });
+
+      try {
+        const result = await controller.putFavoritePost(111, true);
+        expect(result).toEqual({ id: 2, favorite_post_ids: [111] });
+      } catch (e) {
+        expect(true).toBeFalsy();
+      }
     });
   });
   describe('reopenConversation', () => {

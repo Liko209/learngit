@@ -12,12 +12,6 @@ import { ProfileDataController } from './ProfileDataController';
 import { UserConfig } from '../../../service/account/UserConfig';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
-import {
-  ServiceResult,
-  serviceOk,
-  serviceErr,
-} from '../../../service/ServiceResult';
-import { ERROR_CODES_SDK } from '../../../error/sdk/types';
 
 class ProfileActionController {
   constructor(
@@ -129,7 +123,7 @@ class ProfileActionController {
   async putFavoritePost(
     postId: number,
     toBook: boolean,
-  ): Promise<ServiceResult<Profile>> {
+  ): Promise<Profile | null> {
     const profile = await this.profileDataController.getProfile();
     if (profile) {
       let oldFavPostIds = _.cloneDeep(profile.favorite_post_ids) || [];
@@ -137,7 +131,7 @@ class ProfileActionController {
         (toBook && oldFavPostIds.indexOf(postId) !== -1) ||
         (!toBook && oldFavPostIds.indexOf(postId) === -1);
       if (shouldDoNothing) {
-        return serviceOk(profile);
+        return profile;
       }
 
       const preHandlePartial = (
@@ -153,21 +147,15 @@ class ProfileActionController {
         return partialModel;
       };
 
-      const result = await this.partialModifyController.updatePartially(
+      return await this.partialModifyController.updatePartially(
         this.profileDataController.getCurrentProfileId(),
         preHandlePartial,
         async (newProfile: Profile) => {
           return this.requestController.put(newProfile);
         },
       );
-      if (result) {
-        return serviceOk(result);
-      }
     }
-    return serviceErr(
-      ERROR_CODES_SDK.GENERAL,
-      `profileService.putFavoritePost(${postId}) failed`,
-    );
+    return null;
   }
 
   async reopenConversation(groupId: number) {
