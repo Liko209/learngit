@@ -18,4 +18,13 @@ const RINGCENTRAL_API = {
   API_EXTENSION_PHONE_NUMBER: `/${API_VERSION}/account/~/extension/~/phone-number`,
 };
 
-export { RINGCENTRAL_API };
+const HTTP_HEADER_KEY = {
+  ACCEPT: 'Accept',
+  IF_NONE_MATCH: 'If-None-Match',
+};
+
+const CONTENT_TYPE = {
+  XML: 'application/xml',
+};
+
+export { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE };

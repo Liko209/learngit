@@ -3,21 +3,21 @@
  * @Date: 2019-02-14 11:03:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { RINGCENTRAL_API } from './constants';
+import { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE } from './constants';
 import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 import Api from '../api';
 
-interface ISpecialServiceReason {
+type ISpecialServiceReason = {
   id: string;
   message: string;
-}
+};
 
-interface ISpecialServiceFeature {
+type ISpecialServiceFeature = {
   enabled: boolean;
   reason: ISpecialServiceReason;
-}
+};
 
-interface ISpecialServiceRecord {
+type ISpecialServiceRecord = {
   phoneNumber: string;
   description: string;
   features: {
@@ -26,38 +26,38 @@ interface ISpecialServiceRecord {
     sms: ISpecialServiceFeature;
     faxOut: ISpecialServiceFeature;
   };
-}
+};
 
-interface IUriInfo {
+type IUriInfo = {
   uri: string;
-}
+};
 
-interface IPagingInfo {
+type IPagingInfo = {
   page: number;
   totalPages: number;
   perPage: number;
   totalElements: number;
   pageStart: number;
   pageEnd: number;
-}
+};
 
-interface INavigationInfo {
+type INavigationInfo = {
   firstPage: IUriInfo;
   lastPage: IUriInfo;
-}
+};
 
-interface ISpecialServiceNumberResponse {
+type ISpecialServiceNumberResponse = {
   uri: string;
   records: ISpecialServiceRecord[];
   paging: IPagingInfo;
   navigation: INavigationInfo;
-}
+};
 
-interface ISpecialServiceRequest {
+type ISpecialServiceRequest = {
   page: number;
   perPage: number;
   countryId: number;
-}
+};
 
 function getSpecialNumbers(request?: ISpecialServiceRequest) {
   const query = {
@@ -71,40 +71,39 @@ function getSpecialNumbers(request?: ISpecialServiceRequest) {
 }
 
 function getPhoneParserData(localDataVersion: string) {
-  const ContentTypeXML = 'application/xml';
+  const extraHeaders = {};
   const localDataVersionWithQuote = `\"${localDataVersion}\"`;
+  extraHeaders[HTTP_HEADER_KEY.ACCEPT] = CONTENT_TYPE.XML;
+  extraHeaders[HTTP_HEADER_KEY.IF_NONE_MATCH] = localDataVersionWithQuote;
   const query = {
     path: RINGCENTRAL_API.API_PHONE_PARSER_DATA,
     method: NETWORK_METHOD.GET,
     authFree: false,
     via: NETWORK_VIA.HTTP,
-    headers: {
-      Accept: ContentTypeXML,
-      'If-None-Match': localDataVersionWithQuote,
-    },
+    headers: extraHeaders,
   };
   return Api.rcNetworkClient.http(query);
 }
 
-interface IDialingPlanRequest {
+type IDialingPlanRequest = {
   page: number;
   perPage: number;
-}
+};
 
-interface IDialingPlanRecord {
+type IDialingPlanRecord = {
   uri: string;
   id: string;
   name: string;
   isoCode: string;
   callingCode: string;
-}
+};
 
-interface IDialingPlanResponse {
+type IDialingPlanResponse = {
   uri: string;
   records: IDialingPlanRecord[];
   paging: IPagingInfo;
   navigation: INavigationInfo;
-}
+};
 
 function getAccountDialingPlan(request?: IDialingPlanRequest) {
   const query = {
@@ -117,19 +116,19 @@ function getAccountDialingPlan(request?: IDialingPlanRequest) {
   return Api.rcNetworkClient.http<IDialingPlanResponse>(query);
 }
 
-interface IPhoneNumberRequest {
+type IPhoneNumberRequest = {
   usageType: string;
   page: number;
   perPage: number;
-}
+};
 
-interface ICountryInfo {
+type ICountryInfo = {
   uri: string;
   id: string;
   name: string;
-}
+};
 
-interface IPhoneNumberRecord {
+type IPhoneNumberRecord = {
   id: number;
   phoneNumber: string;
   paymentType: string;
@@ -138,14 +137,14 @@ interface IPhoneNumberRecord {
   status: string;
   country: ICountryInfo;
   features: string[];
-}
+};
 
-interface IPhoneNumberResponse {
+type IPhoneNumberResponse = {
   uri: string;
   records: IPhoneNumberRecord[];
   paging: IPagingInfo;
   navigation: INavigationInfo;
-}
+};
 
 function getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {
   const query = {
