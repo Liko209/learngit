@@ -426,15 +426,15 @@ class MemberMoreMenu extends BaseWebComponent {
   }
 
   async clickRemoveTeamMember() {
-    await this.t.click(this.removeFromTeamItem).expect(this.exists).notOk();
+    await this.t.click(this.removeFromTeamItem);
   }
 
   async clickMakeTeamAdmin() {
-    await this.t.click(this.makeTeamAdminItem).expect(this.makeTeamAdminItem.exists).notOk();
+    await this.t.click(this.makeTeamAdminItem);
   }
 
   async clickRevokeTeamAdmin() {
-    await this.t.click(this.revokeTeamAdminItem).expect(this.exists).notOk();
+    await this.t.click(this.revokeTeamAdminItem);
   }
   
   async quit() {
