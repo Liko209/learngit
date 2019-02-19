@@ -8,7 +8,7 @@
  * @Date: 2018-11-22 09:53:22
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiRightRailLoading } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';

@@ -1,2 +1,2 @@
-import { NewPostService } from './service/PostService';
-export { NewPostService };
+import { PostService } from './service/PostService';
+export { PostService };

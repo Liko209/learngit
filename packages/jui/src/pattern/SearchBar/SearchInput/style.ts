@@ -3,6 +3,7 @@
  * @Date: 2018-11-22 13:56:11
  * Copyright © RingCentral. All rights reserved.
  */
+import MuiTextField from '@material-ui/core/TextField';
 import { JuiIconButton } from '../../../components/Buttons/IconButton';
 import styled, { css } from '../../../foundation/styled-components';
 import {
@@ -84,6 +85,6 @@ const SearchInput = styled(JuiTextField)`
       }
     }
   }
-`;
+` as typeof MuiTextField;
 
 export { SearchWrapper, CloseBtn, SearchInput, SearchIcon };

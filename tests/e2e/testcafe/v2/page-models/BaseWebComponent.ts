@@ -108,6 +108,10 @@ export abstract class BaseWebComponent {
     return this.self.find('button').withText(name);
   }
 
+  checkboxOf(sel: Selector) {
+    return sel.find('input[type="checkbox"]');
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;

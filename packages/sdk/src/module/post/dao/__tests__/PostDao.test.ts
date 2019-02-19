@@ -97,12 +97,6 @@ describe('Post Dao', () => {
       expect(_.last(result).created_at).toBe(2);
     });
 
-    it('Query last post by group ID', async () => {
-      const result = await postDao.queryLastPostByGroupId(9163628546);
-      expect(result.group_id).toBe(9163628546);
-      expect(result.created_at).toBe(4);
-    });
-
     it('Query Oldest Post By Group Id', async () => {
       let result = await postDao.queryOldestPostByGroupId(123);
       expect(result).toBeFalsy();

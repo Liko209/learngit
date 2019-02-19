@@ -56,6 +56,7 @@ class MemberListItem extends React.Component<
       isThePersonAdmin,
       isCurrentUserAdmin,
       currentUserId,
+      isOnlyOneAdmin,
     } = this.props;
     const { isHover } = this.state;
     const presence = <Presence uid={pid} borderSize="medium" />;
@@ -65,6 +66,7 @@ class MemberListItem extends React.Component<
     const ListItemGuest = JuiProfileDialogContentMemberListItemGuest;
     const ListRightWrapper = JuiProfileDialogContentMemberListItemRightWrapper;
     const isCurrentUserSelf = currentUserId === pid;
+    const ableChangeAdmin = !(isOnlyOneAdmin && isCurrentUserSelf);
     return (
       <ListItem
         data-id={pid}
@@ -87,13 +89,15 @@ class MemberListItem extends React.Component<
             {t('guest')}
           </ListItemGuest>
         )}
-        {isCurrentUserAdmin && !isCurrentUserSelf && isHover && (
+        {isCurrentUserAdmin && isHover && ableChangeAdmin && (
           <ListRightWrapper>
             <Menu
               personId={pid}
               groupId={cid}
               onMenuClose={this._onMenuClose}
               isCurrentUserSelf={isCurrentUserSelf}
+              isThePersonAdmin={isThePersonAdmin}
+              isThePersonGuest={isThePersonGuest}
             />
           </ListRightWrapper>
         )}

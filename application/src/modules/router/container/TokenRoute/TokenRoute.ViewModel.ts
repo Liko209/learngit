@@ -50,7 +50,8 @@ class TokenRouteViewModel extends StoreViewModel {
   unifiedLogin = async () => {
     try {
       const { location } = history;
-      const { code, id_token: token } = this._getUrlParams(location);
+      const { code, id_token, t } = this._getUrlParams(location);
+      const token = t || id_token;
       if (code || token) {
         await this._authService.unifiedLogin({ code, token });
       }

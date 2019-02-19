@@ -12,11 +12,16 @@ enum UA_EVENT {
 
 enum WEBPHONE_SESSION_STATE {
   ACCEPTED = 'accepted',
+  CONFIRMED = 'confirmed',
   BYE = 'bye',
   FAILED = 'failed',
   PROGRESS = 'progress',
   REINVITE_ACCEPTED = 'reinviteAccepted',
   REINVITE_FAILED = 'reinviteFailed',
+}
+
+enum RC_SIP_HEADER_NAME {
+  RC_API_IDS = 'P-Rc-Api-Ids',
 }
 
 enum WEBPHONE_SESSION_EVENT {
@@ -37,6 +42,7 @@ type ProvisionDataOptions = {
 export {
   UA_EVENT,
   WEBPHONE_SESSION_STATE,
+  RC_SIP_HEADER_NAME,
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
 };

@@ -1,5 +1,6 @@
 import { service, mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { ProgressService } from 'sdk/module/progress';
 import { GroupService } from 'sdk/module/group';
@@ -9,7 +10,6 @@ import { PermissionService } from 'sdk/module/permission';
 const {
   CompanyService,
   GroupConfigService,
-  PostService,
   PresenceService,
   ProfileService,
   ENTITY,

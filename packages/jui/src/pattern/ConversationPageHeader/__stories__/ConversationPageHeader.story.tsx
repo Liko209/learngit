@@ -26,12 +26,12 @@ storiesOf('Pattern', module)
         title={getTitleKnob()}
         status={getStatusKnob()}
         SubTitle={
-          <JuiButtonBar size="medium" overlapSize={2}>
+          <JuiButtonBar overlapSize={2}>
             <JuiCheckboxButton
               tooltipTitle="This is a public team"
               checkedIconName="lock"
               color="grey.500"
-              iconName="unlock"
+              iconName="lock_open"
             />
             <JuiCheckboxButton
               tooltipTitle="Add to Favorite"
@@ -41,12 +41,12 @@ storiesOf('Pattern', module)
             />
           </JuiButtonBar>}
         Right={
-          <JuiButtonBar size="medium" overlapSize={1}>
+          <JuiButtonBar overlapSize={1}>
             <JuiIconButton tooltipTitle="Start Conference Call">
-              local_phone
+              phone
             </JuiIconButton>
             <JuiIconButton tooltipTitle="Start Video Call">
-              videocam
+              meetings
             </JuiIconButton>
             <JuiIconButton tooltipTitle="Conversation Settings">
               settings
