@@ -36,7 +36,8 @@
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
     "tsc": "tsc -v && tsc -p application && tsc -p packages/jui && tsc -p packages/sdk && tsc -p packages/voip && tsc -p packages/foundation",
-    "webpack": "cd application && npm run webpack"
+    "webpack": "cd application && npm run webpack",
+    "fixed:version": "ts-node fixedVersion.ts"
   },
   "devDependencies": {
     "@types/enzyme": "3.1.14",
