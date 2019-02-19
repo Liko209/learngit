@@ -42,6 +42,11 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   }
 
   @computed
+  get isOnlyOneAdmin() {
+    return this._group.permissions.admin.uids.length === 1;
+  }
+
+  @computed
   get isThePersonAdmin() {
     return this._group.isThePersonAdmin(this.pid);
   }

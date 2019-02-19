@@ -71,6 +71,11 @@ const ToggleButton = styled(MuiSwitch)`
       opacity: 1;
     }
   }
+
+  input {
+    transform: ${({ checked, theme }) =>
+      `translateX(${spacing(checked ? -2 : 2)({ theme })})`};
+  }
 `;
 
 export { ToggleButton };

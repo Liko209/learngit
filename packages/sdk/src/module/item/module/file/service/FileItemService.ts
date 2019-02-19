@@ -67,6 +67,10 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
     return this.fileUploadController.getUploadItems(groupId);
   }
 
+  async initialUploadItemsFromDraft(groupId: number) {
+    return await this.fileUploadController.initialUploadItemsFromDraft(groupId);
+  }
+
   async hasValidItemFile(itemId: number) {
     return await this.fileUploadController.hasValidItemFile(itemId);
   }
@@ -117,6 +121,10 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
       width,
       height,
     );
+  }
+
+  hasUploadingFiles() {
+    return this.fileUploadController.hasUploadingFiles();
   }
 }
 

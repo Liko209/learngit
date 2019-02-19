@@ -27,7 +27,7 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { GroupAvatar } from '@/containers/Avatar';
 import { toTitleCase } from '@/utils/string';
 import { JuiDivider } from 'jui/components/Divider';
-import { JuiToggleButton } from 'jui/components/Buttons';
+import { JuiToggleButton, JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
 
 type State = {
@@ -140,6 +140,34 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
+  handleDeleteTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const { t, groupName, deleteTeam } = this.props;
+    const dialog = Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'deleteTeamConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'deleteTeamOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'deleteTeamCancelButton' },
+      size: 'small',
+      okType: 'negative',
+      title: t('deleteTeamConfirmTitle'),
+      content: t('deleteTeamConfirmContent', {
+        teamName: groupName,
+      }),
+      okText: toTitleCase(t('deleteTeamConfirmOk')),
+      cancelText: toTitleCase(t('cancel')),
+      onOK: async () => {
+        dialog.startLoading();
+        const result = await deleteTeam();
+        dialog.stopLoading();
+        if (!result) {
+          return false;
+        }
+        dialog.dismiss();
+        portalManager.dismissLast();
+        return true;
+      },
+    });
+  }
+
   leaveTeamOKButtonHandler = async () => {
     portalManager.dismissLast();
     this.props.leaveTeam();
@@ -245,6 +273,20 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           </ButtonListItemText>
         </ButtonListItem>
         {isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        <ButtonListItem
+          data-test-automation-id="deleteTeamButton"
+          color="semantic.negative"
+          onClick={this.handleDeleteTeamClick}
+          hide={!isAdmin || isCompanyTeam}
+        >
+          <ButtonListItemText color="semantic.negative">
+            {t('deleteTeam')}
+          </ButtonListItemText>
+          <JuiIconButton variant="plain" tooltipTitle={t('deleteTeamToolTip')}>
+            info
+          </JuiIconButton>
+        </ButtonListItem>
+        {!isAdmin || isCompanyTeam ? null : <JuiDivider />}
       </ButtonList>
     );
   }

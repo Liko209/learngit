@@ -27,6 +27,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { TeamSetting } from './CreateTeam.ViewModel';
 
 type State = {
   items: JuiListToggleItemProps[];
@@ -58,19 +59,25 @@ class CreateTeam extends React.Component<ViewProps, State> {
         type: 'isPublic',
         text: i18next.t('PublicTeam'),
         checked: false,
-        automationId: 'create-team-isPublic',
-      },
-      {
-        type: 'canPost',
-        text: i18next.t('MembersMayPostMessages'),
-        checked: true,
-        automationId: 'create-team-canPost',
+        automationId: 'CreateTeamIsPublic',
       },
       {
         type: 'canAddMember',
         text: i18next.t('MembersMayAddOtherMembers'),
         checked: true,
-        automationId: 'create-team-canAddMember',
+        automationId: 'CreateTeamCanAddMember',
+      },
+      {
+        type: 'canPost',
+        text: i18next.t('MembersMayPostMessages'),
+        checked: true,
+        automationId: 'CreateTeamCanPost',
+      },
+      {
+        type: 'canPin',
+        text: i18next.t('MembersMayPinPosts'),
+        checked: true,
+        automationId: 'CreateTeamCanPinPost',
       },
     ];
   }
@@ -109,6 +116,13 @@ class CreateTeam extends React.Component<ViewProps, State> {
           checked,
         };
       }
+      if (oldItem.type === 'canPin' && item.type === 'canPost') {
+        return {
+          ...oldItem,
+          checked,
+          disabled: !checked,
+        };
+      }
       return oldItem;
     });
     this.setState({
@@ -128,15 +142,17 @@ class CreateTeam extends React.Component<ViewProps, State> {
       isPublic: boolean;
       canAddMember: boolean;
       canPost: boolean;
+      canPin: boolean;
     };
 
-    const teamSetting = {
+    const teamSetting: TeamSetting = {
       description,
       name: teamName,
       isPublic: uiSetting.isPublic,
       permissionFlags: {
         TEAM_ADD_MEMBER: uiSetting.canAddMember,
         TEAM_POST: uiSetting.canPost,
+        TEAM_PIN_POST: uiSetting.canPin,
       },
     };
 

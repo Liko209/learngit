@@ -12,9 +12,9 @@ type State = {
   portals: Portals;
 };
 
-class DialogPortal extends React.Component<Props, State> {
+class ModalPortal extends React.Component<Props, State> {
   state: State = {
-    portals: [],
+    portals: new Map(),
   };
 
   constructor(props: Props) {
@@ -28,17 +28,19 @@ class DialogPortal extends React.Component<Props, State> {
 
   render() {
     const { portals } = this.state;
-    return portals.map(({ component: Component, props, dismiss }) => {
-      if (Component instanceof Function) {
-        return (
-          <DialogContext.Provider value={dismiss} key={props.key}>
-            <Component {...props} />
-          </DialogContext.Provider>
-        );
-      }
-      return Element;
-    });
+    return [...portals.values()].map(
+      ({ component: Component, props, dismiss }) => {
+        if (Component instanceof Function) {
+          return (
+            <DialogContext.Provider value={dismiss} key={props.key}>
+              <Component {...props} />
+            </DialogContext.Provider>
+          );
+        }
+        return Element;
+      },
+    );
   }
 }
 
-export { DialogPortal };
+export { ModalPortal };

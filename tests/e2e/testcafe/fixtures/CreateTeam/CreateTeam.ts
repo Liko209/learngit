@@ -100,11 +100,11 @@ test(formalName('Check the new team can be created successfully', ['P1', 'JPT-12
   });
 
   await h(t).withLog('Then I can set the team as Public', async () => {
-    await createTeamModal.clickPublicTeamButton();
+    await createTeamModal.turnOffIsPublic();
   });
 
   await h(t).withLog('Then Turn off the toggle of "Members may post messages"', async () => {
-    await createTeamModal.clickMayPostButton();
+    await createTeamModal.turnOffMayPostMessage();
   });
 
   await h(t).withLog('Then Tap create team button', async () => {
@@ -335,7 +335,7 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
     await openCreateTeamModal();
     await createTeamModal.typeTeamName(notAllowToAddUserTeamName);
     await createTeamModal.addMember(anotherUserName);
-    await createTeamModal.clickMayAddOtherMemberButton();
+    await createTeamModal.turnOffMayAddMember();
     await createTeamModal.clickCreateButton();
   });
 

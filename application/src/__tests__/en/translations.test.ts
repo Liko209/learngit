@@ -70,6 +70,9 @@ describe('i18next-en', () => {
     expect(i18next.t('MembersMayAddOtherMembers')).toEqual(
       'Allow members to add other members',
     );
+    expect(i18next.t('MembersMayPinPosts')).toEqual(
+      'Allow members to pin posts',
+    );
     expect(
       i18next.t('addedToTeam', { inviter: 'Lip', newUser: 'Valor' }),
     ).toEqual('Lip added Valor to the team');
@@ -401,4 +404,21 @@ describe('i18next-en', () => {
   expect(i18next.t('postMessages')).toEqual('Post messages');
   expect(i18next.t('pinPosts')).toEqual('Pin posts');
   expect(i18next.t('allowTeamMembersTo')).toEqual('Allow team members to');
+  expect(i18next.t('deleteTeamServerErrorContent')).toEqual(
+    "Sorry, we weren't able to delete this team. Try again.",
+  );
+  expect(i18next.t('deleteTeamNetworkErrorContent')).toEqual(
+    "Sorry, we weren't able to delete this team.",
+  );
+  expect(i18next.t('deleteTeamConfirmTitle')).toEqual('Delete Team?');
+  expect(i18next.t('deleteTeamConfirmContent', { teamName: 'team 1' })).toEqual(
+    'Are you sure you want to permanently delete team 1?',
+  );
+  expect(i18next.t('deleteTeamConfirmOk')).toEqual('delete');
+  expect(i18next.t('deleteTeamSuccessMsg')).toEqual(
+    'Team deleted successfully.',
+  );
+  expect(i18next.t('pinPosts')).toEqual('Pin posts');
+  expect(i18next.t('deleteTeam')).toEqual('Delete team');
+  expect(i18next.t('deleteTeamToolTip')).toEqual('Delete a team permanently.');
 });

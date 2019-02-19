@@ -17,6 +17,6 @@ function getKnobs() {
 }
 
 storiesOf('Components/Buttons', module).add('ToggleButton', () => {
-  const onChange = (event, checked) => console.log(checked);
+  const onChange = (checked: any) => console.log(checked);
   return <JuiToggleButton onChange={onChange} disabled={getKnobs().disabled} />;
 });
