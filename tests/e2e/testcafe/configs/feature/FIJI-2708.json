@@ -9,6 +9,17 @@
       "P2",
       "P3"
     ],
+    "exclude_tags": [
+      "JPT-384",
+      "JPT-950",
+      "JPT-953",
+      "JPT-211",
+      "JPT-105",
+      "JPT-463",
+      "JPT-252",
+      "JPT-314",
+      "JPT-704"
+    ],
     "browsers": [
       "selenium:chrome"
     ]
