@@ -32,13 +32,13 @@ import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
@@ -192,9 +192,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  async loadPrevPosts() {
+  async loadPrevPosts(limit: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, limit);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
@@ -202,9 +202,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  async loadNextPosts() {
+  async loadNextPosts(limit: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, limit);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);

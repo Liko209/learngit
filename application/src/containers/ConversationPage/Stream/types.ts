@@ -72,7 +72,8 @@ type StreamViewProps = {
   firstHistoryUnreadPostId?: number;
   loadInitialPostsError?: Error;
   loading?: boolean;
-  loadPrevPosts: () => Promise<any>;
+  loadPrevPosts: (limit: number) => Promise<any>;
+  loadNextPosts: (limit: number) => Promise<any>;
 };
 
 type TDeltaWithData = TDelta & {

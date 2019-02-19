@@ -73,7 +73,6 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     entities.map(async (entity: T) => {
       if (this.isInPreInsert(entity.version)) {
         entityMap.set(entity.id, entity.version);
-        this.updateStatus(entity, PROGRESS_STATUS.SUCCESS);
       }
     });
 

@@ -33,6 +33,49 @@ describe('NetworkRequestExecutor', () => {
         NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION,
       );
     });
+
+    it('Should call callback when getting response with error code 502', () => {
+      networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
+      networkExecutor.retryCount = 0;
+      const spyApiCB = jest.spyOn(
+        networkExecutor,
+        '_callXApiCompletionCallback',
+      );
+      const spy502CB = jest
+        .spyOn(networkExecutor, '_handle502XApiCompletionCallback')
+        .mockImplementation(() => {});
+      const response = getFakeResponse();
+      response.status = HTTP_STATUS_CODE.BAD_GATEWAY;
+      response.statusText = NETWORK_FAIL_TYPE.BAD_GATEWAY;
+      networkExecutor.onFailure(response);
+      expect(spy502CB).toBeCalled();
+      expect(spyApiCB).toBeCalled();
+      expect(networkExecutor.status).toEqual(
+        NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION,
+      );
+    });
+
+    it('Should call callback when getting response with error code 503', () => {
+      networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
+      networkExecutor.retryCount = 0;
+      const spyApiCB = jest.spyOn(
+        networkExecutor,
+        '_callXApiCompletionCallback',
+      );
+      const spy503CB = jest
+        .spyOn(networkExecutor, '_handle503XApiCompletionCallback')
+        .mockImplementation(() => {});
+      const response = getFakeResponse();
+      response.status = HTTP_STATUS_CODE.SERVICE_UNAVAILABLE;
+      response.statusText = NETWORK_FAIL_TYPE.SERVICE_UNAVAILABLE;
+      networkExecutor.onFailure(response);
+      expect(spy503CB).toBeCalled();
+      expect(spyApiCB).toBeCalled();
+      expect(networkExecutor.status).toEqual(
+        NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION,
+      );
+    });
+
     it('should retry when retrycount>0', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.EXECUTING;
       networkExecutor.retryCount = 3;

@@ -5,12 +5,12 @@
  */
 import { Group } from '../../module/group/entity';
 import { IProcessor } from '../../framework/processor/IProcessor';
-import { NewPostService } from '../../module/post';
+import { PostService } from '../../module/post';
 import { mainLogger } from 'foundation';
 import { StateService } from '../../module/state';
 import { QUERY_DIRECTION } from '../../dao/constants';
-import { NewGroupService } from '../../module/group';
-import { IRequestRemotePostAndSave } from '../../module/post/entity/Post';
+import { GroupService } from '../../module/group';
+import { IRemotePostRequest } from '../../module/post/entity/Post';
 
 const DEFAULT_DIRECTION: QUERY_DIRECTION = QUERY_DIRECTION.OLDER;
 const ONE_PAGE: number = 20;
@@ -34,15 +34,15 @@ class PreloadPostsProcessor implements IProcessor {
       } count:${result.limit}`,
     );
     if (result.shouldPreload) {
-      const params: IRequestRemotePostAndSave = {
+      const params: IRemotePostRequest = {
         limit: result.limit,
         direction: DEFAULT_DIRECTION,
         groupId: this._group.id,
         postId: 0,
         shouldSaveToDb: true,
       };
-      const postService: NewPostService = NewPostService.getInstance();
-      await postService.getRemotePostsByGroupIdAndSave(params);
+      const postService: PostService = PostService.getInstance();
+      await postService.getRemotePostsByGroupId(params);
     }
     return true;
   }
@@ -65,8 +65,8 @@ class PreloadPostsProcessor implements IProcessor {
     const stateService: StateService = StateService.getInstance();
     const state = await stateService.getById(this._group.id);
 
-    const postService: NewPostService = NewPostService.getInstance();
-    const groupService: NewGroupService = NewGroupService.getInstance();
+    const postService: PostService = PostService.getInstance();
+    const groupService: GroupService = GroupService.getInstance();
     if (this._isFavorite || !this._group.is_team) {
       // if unread count < one page, load one page
       limit = ONE_PAGE;

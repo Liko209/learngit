@@ -17,15 +17,15 @@ class BaseSubItemService<K extends Item, T extends SanitizedItem>
     super(false);
   }
 
-  async createItem(item: K) {
+  async createLocalItem(item: K) {
     await this._subItemDao.put(this.toSanitizedItem(item));
   }
 
-  async updateItem(item: K) {
+  async updateLocalItem(item: K) {
     await this._subItemDao.update(this.toSanitizedItem(item));
   }
 
-  async deleteItem(itemId: number) {
+  async deleteLocalItem(itemId: number) {
     await this._subItemDao.delete(itemId);
   }
 

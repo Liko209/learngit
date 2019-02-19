@@ -10,12 +10,12 @@ import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import storeManager from '@/store';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { ToastMessageAlign } from '../../../../ToastWrapper/Toast/types';
 
 jest.mock('sdk/module/group', () => ({
-  NewGroupService: jest.fn(),
+  GroupService: jest.fn(),
 }));
 jest.mock('../../../../../store/utils');
 jest.mock('@/utils/error');
@@ -26,8 +26,8 @@ const mockData = {
   displayName: 'Group name',
   isTeam: true,
 };
-const groupService: NewGroupService = new NewGroupService();
-NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+const groupService: GroupService = new GroupService();
+GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 const props = {
   id: 1,
 };

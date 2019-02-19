@@ -5,7 +5,7 @@
  */
 
 import { Notification } from '@/containers/Notification';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
@@ -13,7 +13,7 @@ import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
@@ -23,8 +23,8 @@ const mockGroupEntityData = {
 jest.mock('@/store/utils', () => ({
   getEntity: jest.fn(() => mockGroupEntityData),
 }));
+jest.mock('sdk/api');
 
-const { GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
 };
@@ -97,7 +97,7 @@ const itemService = {
   canUploadFiles: jest.fn().mockImplementation(() => true),
 };
 
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 

@@ -20,12 +20,15 @@ import { PreInsertController } from '../../common/controller/impl/PreInsertContr
 import { ProgressService } from '../../progress';
 import { PostFetchController } from './PostFetchController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
+import { ISendPostController } from './interface/ISendPostController';
+import { PostDataController } from './PostDataController';
 
 class PostController {
   private _actionController: PostActionController;
-  private _sendController: SendPostController;
+  private _sendController: ISendPostController;
   private _preInsertController: IPreInsertController;
   private _fetchController: PostFetchController;
+  private _postDataController: PostDataController;
 
   constructor() {}
 
@@ -52,12 +55,13 @@ class PostController {
         partialModifyController,
         requestController,
         this._getPreInsertController(),
+        entitySourceController,
       );
     }
     return this._actionController;
   }
 
-  getSendPostController(): SendPostController {
+  getSendPostController(): ISendPostController {
     if (!this._sendController) {
       this._sendController = new SendPostController(
         this.getPostActionController(),
@@ -77,11 +81,28 @@ class PostController {
       );
 
       this._fetchController = new PostFetchController(
-        this._getPreInsertController(),
+        this.getPostDataController(),
         entitySourceController,
       );
     }
     return this._fetchController;
+  }
+
+  getPostDataController() {
+    if (!this._postDataController) {
+      const persistentController = buildEntityPersistentController<Post>(
+        daoManager.getDao(PostDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
+      );
+
+      this._postDataController = new PostDataController(
+        this._getPreInsertController(),
+        entitySourceController,
+      );
+    }
+    return this._postDataController;
   }
 
   private _getPreInsertController() {

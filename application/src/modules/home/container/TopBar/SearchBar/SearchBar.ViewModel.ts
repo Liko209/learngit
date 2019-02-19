@@ -6,8 +6,15 @@
 import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PersonService } from 'sdk/module/person';
-import GroupService from 'sdk/service/group';
-import { SectionType, ViewProps, Person, Group, Props } from './types';
+import { GroupService } from 'sdk/module/group';
+import {
+  SectionType,
+  SortableModel,
+  ViewProps,
+  Person,
+  Group,
+  Props,
+} from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
@@ -58,7 +65,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     groups: SectionType<Group>,
     teams: SectionType<Group>,
   ) {
-    return [persons, groups, teams].reduce((prev, current, currentIndex) => {
+    return [persons, groups, teams].reduce((prev, current) => {
       return current && current.sortableModels.length > 0 ? prev + 1 : prev;
     },                                     0);
   }
@@ -77,33 +84,32 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   getSection<T>(section: SectionType<T>, sectionCount: number) {
+    const models =
+      section &&
+      section.sortableModels.slice(0, this.getSectionItemSize(sectionCount));
+    const ids = (models || []).map((model: SortableModel<T>) => model.id);
     return {
-      sortableModel:
-        (section &&
-          section.sortableModels.slice(
-            0,
-            this.getSectionItemSize(sectionCount),
-          )) ||
-        [],
+      ids,
       hasMore: this.hasMore<T>(section, sectionCount),
     };
   }
 
   search = async (key: string) => {
+    if (!key) return;
+
     const [persons, groups, teams] = await Promise.all([
       this.personService.doFuzzySearchPersons(key, false),
       this.groupService.doFuzzySearchGroups(key),
       this.groupService.doFuzzySearchTeams(key),
     ]);
     const sectionCount = this.calculateSectionCount(persons, groups, teams);
-
     return {
       terms:
         (persons && persons.terms) ||
         (groups && groups.terms) ||
         (teams && teams.terms) ||
         [],
-      persons: this.getSection<Person>(persons, sectionCount),
+      people: this.getSection<Person>(persons, sectionCount),
       groups: this.getSection<Group>(groups, sectionCount),
       teams: this.getSection<Group>(teams, sectionCount),
     };

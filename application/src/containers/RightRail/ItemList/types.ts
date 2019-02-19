@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { TabConfig } from './config';
+import { ItemListDataSource } from './ItemList.DataSource';
 
 type LoadStatus = {
   firstLoaded: boolean;
@@ -23,12 +23,7 @@ type Props = {
 };
 
 type ViewProps = {
-  ids: number[];
-  totalCount: number;
-  loadStatus: LoadStatus;
-  tabConfig: TabConfig;
-  forceReload: () => void;
-  fetchNextPageItems: () => Promise<any>;
+  dataSource: ItemListDataSource;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };
