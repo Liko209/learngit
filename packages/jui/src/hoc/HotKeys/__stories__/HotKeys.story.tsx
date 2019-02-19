@@ -3,18 +3,17 @@
  * @Date: 2018-11-23 13:57:46
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment, PureComponent } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import styled from '../../../foundation/styled-components';
 import { HotKeys } from '../';
 
 class Test extends React.PureComponent<{}, {}> {
-  onEnter(e, combo) {
+  onEnter(e: any, combo: any) {
     console.log('---enter', e, combo);
   }
 
-  save(e, combo) {
+  save(e: any, combo: any) {
     console.log('command + s', e, combo);
     return false; // same as jquery event return false
   }
@@ -45,11 +44,11 @@ class Test extends React.PureComponent<{}, {}> {
 }
 
 class Test1 extends React.PureComponent<{}, {}> {
-  onEsc(e, combo) {
+  onEsc(e: any, combo: any) {
     console.log('---Test1 onEsc', e, combo);
   }
 
-  save = async (e, combo) => {
+  save = async (e: any, combo: any) => {
     console.log('-----Test1 command + s', e, combo);
     return false; // same as jquery event return false
   }
