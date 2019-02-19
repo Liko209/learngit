@@ -35,10 +35,10 @@
     "bt": "lerna bootstrap --hoist --no-ci -- --cache-min 9999999",
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
-    "tsc": "tsc -v && tsc -p application && tsc -p packages/jui && tsc -p packages/sdk && tsc -p packages/voip && tsc -p packages/foundation",
+    "tsc": "concurrently \"tsc -p application/tsconfig.dev.json\" \"tsc -p packages/sdk/tsconfig.dev.json\" \"tsc -p packages/jui/tsconfig.dev.json\" \"tsc -p packages/voip/tsconfig.dev.json\" \"tsc -p packages/foundation/tsconfig.dev.json\"",
     "webpack": "cd application && npm run webpack",
-    "fixed:version": "ts-node fixedVersion.ts",
-    "terser": "3.14.1"
+    "terser": "3.14.1",
+    "fixed:version": "ts-node fixedVersion.ts"
   },
   "devDependencies": {
     "@types/enzyme": "3.1.14",
