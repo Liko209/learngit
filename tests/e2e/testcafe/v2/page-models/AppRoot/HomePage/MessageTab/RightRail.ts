@@ -303,8 +303,8 @@ class PinnedTab extends BaseTab {
     return this.getComponent(PinnedItem, this.items.nth(n))
   }
 
-  ItemByPostId(postId: string) {
-    return this.getComponent(PinnedItem, this.items.filter(`[data-postid=${postId}]`));
+  itemByPostId(postId: string) {
+    return this.getComponent(PinnedItem, this.items.filter(`[data-postid="${postId}"]`));
   }
 }
 

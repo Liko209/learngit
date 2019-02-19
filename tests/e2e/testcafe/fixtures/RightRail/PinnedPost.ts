@@ -168,7 +168,7 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
   await h(t).glip(loginUser).init();
 
   const postText = uuid();
-  const userName = await h(t).glip(loginUser).getPersonPartialData('display_name');
+  const newPostText = uuid();
 
   let teamId, textPostId;
   await h(t).withLog('Given I have a team before login ', async () => {
@@ -204,15 +204,17 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
     await pinnedTab.countOnSubTitleShouldBe(1);
     await pinnedTab.countInListShouldBe(1);
     await pinnedTab.nthItem(0).shouldBePostId(textPostId);
-    await pinnedTab.nthItem(0).shouldBeCreator(userName);
     await pinnedTab.nthItem(0).postTextShouldBe(postText);
   });
 
+  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And I Update a pinned item's following elements:  Text content Attachment's info (e.g. update link url)`, async () => {
-
+    await conversationPage.postItemById(textPostId).clickMoreItemOnActionBar();
+    await conversationPage.postItemById(textPostId).actionBarMoreMenu.editPost.enter();
+    await conversationPage.postItemById(textPostId).editMessage(newPostText, {replace: true});
   });
 
   await h(t).withLog('Then The unpinned item disappear from Pinned tab immediately', async () => {
-    await t.expect(pinnedTab.items.exists).notOk();
+    await pinnedTab.itemByPostId(textPostId).postTextShouldBe(newPostText);
   });
 });
