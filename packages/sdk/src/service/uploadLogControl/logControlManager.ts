@@ -3,9 +3,10 @@
  * @Date: 2018-06-08 11:05:46
  */
 import notificationCenter from '../notificationCenter';
-import { SERVICE, WINDOW } from '../../service/eventKey';
+import { SERVICE, WINDOW, ENTITY } from '../../service/eventKey';
 import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
 import { LogUploader } from './LogUploader';
+import { PermissionService, UserPermissionType } from '../../module/permission';
 
 notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
   LogControlManager.instance().setNetworkState(onLine);
@@ -32,6 +33,10 @@ class LogControlManager implements IAccessor {
     logManager.config({
       uploadLogApi: new LogUploader(),
       uploadAccessor: this,
+    });
+    this.configByPermission();
+    notificationCenter.on(ENTITY.USER_PERMISSION, () => {
+      this.configByPermission();
     });
   }
 
@@ -65,6 +70,29 @@ class LogControlManager implements IAccessor {
 
   subscribe(onChange: (accessible: boolean) => void): void {
     this._onUploadAccessorChange = onChange;
+  }
+
+  async configByPermission() {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    try {
+      const logEnabled = await permissionService.hasPermission(
+        UserPermissionType.JUPITER_LOG,
+      );
+      const logUploadEnabled = await permissionService.hasPermission(
+        UserPermissionType.JUPITER_LOG_UPLOAD,
+      );
+      logManager.config({
+        browser: {
+          enabled: logEnabled,
+        },
+        consumer: {
+          ...(logManager.getConfig().consumer || {}),
+          enabled: logUploadEnabled,
+        },
+      });
+    } catch (error) {
+      mainLogger.warn('getUserPermission fail:', error);
+    }
   }
 
   private _updateLogSystemLevel() {

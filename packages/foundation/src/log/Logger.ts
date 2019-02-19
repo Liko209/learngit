@@ -92,14 +92,14 @@ export class Logger implements ILogger, ILoggerCore {
     const {
       consumer: { enabled },
     } = configManager.getConfig();
-    return logEntity.level > LOG_LEVEL.WARN || enabled;
+    return logEntity.level >= LOG_LEVEL.WARN || enabled;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {
     const {
       browser: { enabled },
     } = configManager.getConfig();
-    return logEntity.level > LOG_LEVEL.WARN || enabled;
+    return logEntity.level >= LOG_LEVEL.WARN || enabled;
   }
 }
 

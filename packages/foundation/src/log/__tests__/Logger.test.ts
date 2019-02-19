@@ -114,7 +114,51 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(mockProcess).toBeCalledWith(mockLog);
     });
-    it('should config.consumer.enabled work', () => {
+    it('should call browserLogger when config.browser.enabled=true', () => {
+      const logger = new Logger();
+      const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.LOG,
+      });
+      // browserEnabled = true
+      configManager.setConfig(
+        logConfigFactory.build({
+          level: LOG_LEVEL.ALL,
+          filter: jest.fn().mockReturnValue(true),
+          consumer: consumerConfigFactory.build({
+            enabled: false,
+          }),
+          browser: {
+            enabled: true,
+          },
+        }),
+      );
+      logger.doLog(mockLog);
+      expect(spyDoLog).toBeCalledWith(mockLog);
+    });
+    it('should not call browserLogger when config.browser.enabled=false', () => {
+      const logger = new Logger();
+      const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.LOG,
+      });
+      // browserEnabled = false
+      configManager.setConfig(
+        logConfigFactory.build({
+          level: LOG_LEVEL.ALL,
+          filter: jest.fn().mockReturnValue(true),
+          consumer: consumerConfigFactory.build({
+            enabled: false,
+          }),
+          browser: {
+            enabled: false,
+          },
+        }),
+      );
+      logger.doLog(mockLog);
+      expect(spyDoLog).toBeCalledTimes(0);
+    });
+    it('should call consumerLog when config.consumer.enabled=true', () => {
       const logger = new Logger();
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
@@ -122,7 +166,9 @@ describe('Logger', () => {
       const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
-      const mockLog = logEntityFactory.build();
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.LOG,
+      });
       // consumerEnabled = true
       configManager.setConfig(
         logConfigFactory.build({
@@ -135,6 +181,18 @@ describe('Logger', () => {
       );
       logger.doLog(mockLog);
       expect(spyConsumerOnLog).toBeCalledWith(mockLog);
+    });
+    it('should call consumerLog when config.consumer.enabled=false', () => {
+      const logger = new Logger();
+      const mockProcess = jest
+        .spyOn(logger['_logEntityProcessor'], 'process')
+        .mockImplementation(item => item);
+      const mockConsumer = new LogConsumer();
+      logger.setConsumer(mockConsumer);
+      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.LOG,
+      });
 
       // consumerEnabled = false
       configManager.setConfig(
@@ -147,8 +205,63 @@ describe('Logger', () => {
         }),
       );
       logger.doLog(mockLog);
-      spyConsumerOnLog.mockClear();
       expect(spyConsumerOnLog).toBeCalledTimes(0);
+    });
+    it('should ignore browser.enabled, when loglevel>=warning', () => {
+      const logger = new Logger();
+      const mockProcess = jest
+        .spyOn(logger['_logEntityProcessor'], 'process')
+        .mockImplementation(item => item);
+      const mockConsumer = new LogConsumer();
+      logger.setConsumer(mockConsumer);
+      const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.WARN,
+      });
+
+      // browserEnabled = false
+      configManager.setConfig(
+        logConfigFactory.build({
+          level: LOG_LEVEL.ALL,
+          filter: jest.fn().mockReturnValue(true),
+          consumer: consumerConfigFactory.build({
+            enabled: false,
+          }),
+          browser: {
+            enabled: false,
+          },
+        }),
+      );
+      logger.doLog(mockLog);
+      expect(spyDoLog).toBeCalledTimes(1);
+    });
+    it('should ignore consumer.enabled when loglevel>=warning', () => {
+      const logger = new Logger();
+      const mockProcess = jest
+        .spyOn(logger['_logEntityProcessor'], 'process')
+        .mockImplementation(item => item);
+      const mockConsumer = new LogConsumer();
+      logger.setConsumer(mockConsumer);
+      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.WARN,
+      });
+
+      // consumerEnabled = false
+      configManager.setConfig(
+        logConfigFactory.build({
+          level: LOG_LEVEL.ALL,
+          filter: jest.fn().mockReturnValue(true),
+          consumer: consumerConfigFactory.build({
+            enabled: false,
+          }),
+          browser: {
+            enabled: false,
+          },
+        }),
+      );
+      logger.doLog(mockLog);
+      expect(spyConsumerOnLog).toBeCalledTimes(1);
     });
     it('Log prettier format should correct [JPT-538]', () => {
       const logger = new Logger();
@@ -157,7 +270,6 @@ describe('Logger', () => {
         .mockImplementation(item => item.params);
       const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
-      // consumerEnabled = false
       configManager.setConfig(
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
