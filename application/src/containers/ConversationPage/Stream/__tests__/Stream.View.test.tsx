@@ -45,6 +45,7 @@ const baseProps = {
   resetJumpToPostId: () => null,
   resetAll: (id: number) => {},
   loadPrevPosts: async () => {},
+  loadNextPosts: async () => {},
 };
 
 function renderJumpToFirstUnreadButton({
