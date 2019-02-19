@@ -156,7 +156,7 @@ test(formalName(`The team can't be displayed on conversation list and search res
   const deleteTeamDialog = app.homePage.deleteTeamDialog;
 
   let teamId;
-  await h(t).withLog(`Given I have one new team`, async () => {
+  await h(t).withLog(`Given I have one new team ${teamName}`, async () => {
     teamId = await h(t).platform(adminUser).createAndGetGroupId({
       name: teamName,
       type: 'Team',
@@ -182,14 +182,6 @@ test(formalName(`The team can't be displayed on conversation list and search res
   });
 
   // JPT-1104
-  await h(t).withLog(`When hover the "i" icon beside the 'Delete team' button`, async () => {
-    await t.hover(teamSettingDialog.deleteTeamButtonInfo);
-  });
-
-  await h(t).withLog(`Then there should be tooltip displayed 'Delete a team permanently.'`, async () => {
-    await teamSettingDialog.showTooltip(deleteTooltip);
-  });
-
   // skip check point (click info icon) due to Function not implemented @chris
   // await h(t).withLog(`When hover the "i" icon beside the 'Delete team' button`, async () => {
   //   await t.click(teamSettingDialog.deleteTeamButtonInfo);
@@ -222,7 +214,7 @@ test(formalName(`The team can't be displayed on conversation list and search res
     await t.useRole(roleMember);
   });
 
-  await h(t).withLog(`Then can't find the team A in conversation list`, async () => {
+  await h(t).withLog(`Then can't find the team in conversation list`, async () => {
     await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
