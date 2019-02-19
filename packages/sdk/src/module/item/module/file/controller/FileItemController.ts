@@ -67,6 +67,7 @@ class FileItemController {
       this._fileUploadController = new FileUploadController(
         partialModifyController,
         itemRequestController,
+        entitySourceController,
       );
     }
 

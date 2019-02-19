@@ -15,7 +15,6 @@ import {
   buildRequestController,
   buildEntityPersistentController,
 } from '../../../../../../framework/controller';
-import { FileItem } from '../../entity/FileItem';
 import { Api } from '../../../../../../api';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';

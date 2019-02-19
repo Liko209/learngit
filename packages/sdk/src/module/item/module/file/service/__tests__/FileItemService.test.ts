@@ -7,7 +7,6 @@
 import { FileItemController } from '../../controller/FileItemController';
 import { FileUploadController } from '../../controller/FileUploadController';
 import { daoManager } from '../../../../../../dao';
-import { IItemService } from '../../../../service/IItemService';
 import { FileItemDao } from '../../dao/FileItemDao';
 import { FileItemService } from '../FileItemService';
 import { FileItem } from '../../entity';
@@ -28,7 +27,6 @@ function clearMocks() {
 describe('FileItemService', () => {
   let fileUploadController: FileUploadController;
   let fileItemController: FileItemController;
-  const itemService = {};
   let fileItemService: FileItemService;
   let fileItemDao: FileItemDao;
   let fileActionController: FileActionController;
@@ -36,7 +34,7 @@ describe('FileItemService', () => {
     fileItemDao = new FileItemDao(null);
     daoManager.getDao = jest.fn().mockReturnValue(fileItemDao);
     fileActionController = new FileActionController(null);
-    fileUploadController = new FileUploadController(null, null);
+    fileUploadController = new FileUploadController(null, null, null);
     fileItemController = new FileItemController();
     fileItemService = new FileItemService();
     Object.defineProperties(fileItemService, {
