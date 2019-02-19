@@ -25,8 +25,6 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
-  const postText = uuid();
-  const readOnlyText = "This team is read-only";
 
   let teamId;
   await h(t).withLog('Given I have team with 1 admin and 1 member', async () => {
@@ -90,7 +88,6 @@ test(formalName(`Restrict non-admin team members from pinning posts in Team sett
 
   await h(t).withLog(`Then The sending post status should on and pinning post should off (via API).`, async () => {
     await H.retryUntilPass(async () => {
-
       const userPermissionsValue = await h(t).glip(adminUser).getGroup(teamId).then(res => res.data.permissions.user.level);
       assert.ok(1 << 0 & Number(userPermissionsValue), `permission value Error: ${userPermissionsValue}`);
       assert.ok(!(1 << 3 & Number(userPermissionsValue)), `permission value Error: ${userPermissionsValue}`);

@@ -109,4 +109,4 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 }
 
-export { CreateTeamViewModel };
+export { CreateTeamViewModel, TeamSetting };

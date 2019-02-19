@@ -75,6 +75,7 @@ const name2icon = {
   default_video: 'default-video',
   default_avatar: 'default-avatar',
   pin: 'pin',
+  info: 'info',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
