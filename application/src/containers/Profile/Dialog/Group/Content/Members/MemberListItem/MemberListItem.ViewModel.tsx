@@ -48,7 +48,8 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
 
   @computed
   get adminNumber() {
-    return this._group.permissions && this._group.permissions.admin.uids.length;
+    const { permissions } = this._group;
+    return permissions && permissions.admin.uids.length;
   }
 
   @computed
